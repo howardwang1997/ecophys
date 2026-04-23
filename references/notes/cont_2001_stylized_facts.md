@@ -70,13 +70,21 @@ Already implemented in `ecomd/eval/stylized_facts.py` (v0 = first 4):
 - ✅ #9 Leverage effect (`leverage_effect`) — note modern caveat: may be weak for individual intraday
 
 Still to implement in Phase 1:
-- #1 Absence of autocorrelation — simple ACF(r_t) with Ljung-Box
-- #3 Gain/loss asymmetry — skewness + tail-quantile comparison
-- #4 Aggregational Gaussianity — kurtosis(Δt) curve + KS distance to Gaussian across Δt
-- #5 Intermittency — Fano factor for >99th percentile extremes
-- #7 Conditional heavy tails — kurtosis of GARCH-standardized residuals (use `arch` package for GARCH(1,1) fit)
-- #10 Volume/volatility correlation — cross-correlation(V_t, \|r_t\|)
-- #11 Asymmetry in timescales — Zumbach's A(τ) and D(τ) — the hardest to compute, coarse/fine volatility construction
+- ✅ #1 Absence of autocorrelation — `autocorr_returns` (mean |ACF| + Ljung-Box Q/p)
+- ✅ #3 Gain/loss asymmetry — `gain_loss_asymmetry` (skew + left/right tail-quantile ratio)
+- ✅ #4 Aggregational Gaussianity — `aggregational_gaussianity` (κ curve + KS-to-normal across scales)
+- ✅ #5 Intermittency — `intermittency_fano` (Fano factor for >99th percentile extremes)
+- ✅ #7 Conditional heavy tails — `conditional_kurtosis` (GARCH(1,1) residual κ via arch package)
+- ✅ #10 Volume/volatility correlation — `volume_volatility_corr` (contemp + cross-lag)
+- ✅ #11 Asymmetry in timescales — `zumbach_asymmetry` with gap to remove overlap bias
+- ✅ `compute_all(returns, volume=None)` orchestrator runs all 11, catches per-metric errors
+
+**Multi-order DFA investigation (2026-04-23, same day)**:
+Implemented `dfa_hurst_multi_order(series, orders=(1,2,3))`. Empirical finding on SPX/SPY 2015-2026 daily + BTC/ETH 2024Q1 1m:
+- Full-series DFA-1 gives H ≈ 0.98 (SPX/SPY) and 0.90 (crypto). Multi-order detrending barely changes this (Δ(1→3) ≤ 0.04), **ruling out polynomial trend as the cause**.
+- Sub-period DFA on 500-day chunks of SPX daily: H1 median = 0.83, H2 median = 0.69 — right in Cont's expected [0.55, 0.80] range after higher-order detrending.
+- The chunk covering the COVID crash (2020-Q1 to 2021-Q2, index 1000-1500) has H1 = 1.22 and dominates the full-series estimate.
+- **Conclusion**: full-series H inflation is driven by non-polynomial regime shifts that DFA can't correct. For Paper A, report full H + per-regime H + DFA-2 to give a complete picture. Segmented estimation is the right default for any crisis-containing window.
 
 ### Reference-value tables (Phase 1 M1 deliverable)
 
