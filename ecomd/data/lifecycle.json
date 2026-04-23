@@ -1,0 +1,30 @@
+{
+  "Rules": [
+    {
+      "ID": "tier-down-raw-and-processed",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "" },
+      "Transitions": [
+        { "Days": 90,  "StorageClass": "GLACIER_IR" },
+        { "Days": 365, "StorageClass": "DEEP_ARCHIVE" }
+      ],
+      "NoncurrentVersionExpiration": { "NoncurrentDays": 30 },
+      "AbortIncompleteMultipartUpload": { "DaysAfterInitiation": 7 }
+    },
+    {
+      "ID": "keep-experiments-warm",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "experiments/" },
+      "Transitions": [
+        { "Days": 180, "StorageClass": "GLACIER_IR" }
+      ],
+      "NoncurrentVersionExpiration": { "NoncurrentDays": 90 }
+    },
+    {
+      "ID": "keep-papers-standard",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "papers/" },
+      "Transitions": []
+    }
+  ]
+}
