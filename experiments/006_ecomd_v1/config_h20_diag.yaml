@@ -1,0 +1,70 @@
+# EcoMD v1 — H20 diagnostic rerun (2026-04-24)
+#
+# Purpose: isolate the chunk_steps=24 / warmup=16 → 8-step BPTT window issue
+# identified in the first H20 v1 run. That run hit acf_sim=-0.08 (target +0.25)
+# with no visible vol-clustering signal — consistent with the hypothesis that
+# 8 gradient-carrying steps is too short for ACF-sq to develop observable
+# signal within a chunk.
+#
+# Restore v0.5-era BPTT window (48 steps) by halving N to fit the larger chunk
+# in 96 GB HBM:
+#   - chunk_steps 24 → 64  (warmup_steps=16 stays)
+#   - N            10K → 4K
+#   - body_order=4, normal noise, fixed β — all other fields identical to v1
+#
+# Result interpretation:
+#   - If acf_sim becomes POSITIVE and approaches +0.25: chunk_steps was the
+#     root cause. Proceed to write activation-checkpoint path to restore N=10K.
+#   - If acf_sim still negative: problem is architectural, not BPTT window.
+#     Debug further (maybe OverdampedLangevin at large N averages out signal,
+#     or price_formation kwargs need tuning).
+#
+# Expected wall time: ~2× of v1 run (~210s) because 64/24 is 2.67× work per
+# iter but N halved → net ~107s × 2.67 × 0.4 = 114s. Similar order.
+#
+# OOM fallback: if 96 GB HBM overflows at N=4000 chunk=64, drop to
+# N=3000 chunk=48 (keeps 32-step BPTT window, still 4× current signal).
+
+simulator:
+  n_agents: 4000
+  d_state: 32
+  hidden: 64
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: normal
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: false
+  pairwise_kind: mace_lite
+  mace_k: 32
+  mace_body_order: 4
+  mace_n_classes: 4
+  mace_n_rbf: 8
+  mace_knn_refresh: 10
+
+training:
+  n_iters: 200
+  chunk_steps: 64
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 10
+  grad_clip_max_norm: 1.0
+  seed: 0
+  checkpoint_every_s: 1800
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 16
+    hill_k_frac: 0.05
