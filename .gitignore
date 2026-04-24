@@ -207,19 +207,25 @@ marimo/_lsp/
 __marimo__/
 
 # ───── EcoPhys project-specific ─────
-# Local data caches (canonical store is S3)
+# Local data caches (canonical store is R2)
 data/cache/
 data/raw/
 *.parquet
 *.feather
 *.h5
 *.npz
+# Small curated samples live in git (data/sample/) — un-ignore explicitly
+!data/sample/
+!data/sample/**
 # Experiment outputs / artifacts
 experiments/**/results/
 experiments/**/outputs/
 experiments/**/checkpoints/
 outputs/
 checkpoints/
+
+# macOS metadata
+.DS_Store
 # W&B local
 wandb/
 # Hydra
