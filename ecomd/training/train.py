@@ -156,6 +156,7 @@ def _detach_price(ps: Any) -> Any:
         last_log_return=ps.last_log_return.detach(),
         volatility=ps.volatility.detach(),
         step=ps.step,
+        hawkes_memory=(ps.hawkes_memory.detach() if ps.hawkes_memory is not None else None),
     )
 
 

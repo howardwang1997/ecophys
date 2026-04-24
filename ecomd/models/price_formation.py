@@ -45,6 +45,9 @@ class PriceState:
     last_log_return: Tensor  # scalar Tensor
     volatility: Tensor  # scalar Tensor — EWMA of |r|
     step: int = 0
+    # v1.0 (Hawkes self-excitation, optional): memory of past-vol-weighted shocks.
+    # If the price module uses it, this tracks Σ_k exp(-(t-t_k)/τ)·|r_k|.
+    hawkes_memory: Tensor | None = None
 
 
 @dataclass
@@ -87,6 +90,14 @@ class ExcessDemandParams:
     #       with regime. Reduces spurious return autocorrelation (#1 ACF).
     learnable_beta: bool = False
     beta_hidden: int = 16
+    # v1.0 Hawkes self-excitation: adds a deterministic, differentiable
+    # "excitation" term to log_ret that grows with recent |r|. Models Hawkes-
+    # like vol clustering without discrete jumps (so backprop stays clean).
+    #   log_ret = β·ED - 0.5σ² + σ·η  +  κ · memory_t
+    #   memory_{t+1} = (1-α) · memory_t + α · |log_ret_core_t|
+    # hawkes_kappa = 0 disables (backwards-compat). Recommended start: α=0.1, κ=0.3.
+    hawkes_alpha: float = 0.0           # EMA decay rate (0 = disabled)
+    hawkes_kappa: float = 0.0           # excitation strength in log-ret units
 
 
 class ExcessDemandPrice(nn.Module):
@@ -121,11 +132,15 @@ class ExcessDemandPrice(nn.Module):
         return 3
 
     def init_state(self, device: torch.device, dtype: torch.dtype) -> PriceState:
+        hawkes_mem: Tensor | None = None
+        if self.params.hawkes_alpha > 0.0:
+            hawkes_mem = torch.zeros((), device=device, dtype=dtype)
         return PriceState(
             log_price=torch.tensor(self.params.initial_log_price, device=device, dtype=dtype),
             last_log_return=torch.tensor(0.0, device=device, dtype=dtype),
             volatility=torch.tensor(self.params.sigma_price, device=device, dtype=dtype),
             step=0,
+            hawkes_memory=hawkes_mem,
         )
 
     def _effective_beta(self, state: PriceState) -> Tensor:
@@ -157,7 +172,25 @@ class ExcessDemandPrice(nn.Module):
         # Log-price step: log p_{t+1} = log p_t + β · ED · dt - 0.5 σ² + σ · η
         # With dt absorbed into β for v0 (we use unit dt for the price step).
         eta = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
-        log_ret = beta_eff * excess_demand - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
+        log_ret_core = beta_eff * excess_demand - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
+
+        # v1.0 Hawkes self-excitation (optional, off when hawkes_alpha=0).
+        # Memory tracks EMA of |past log-ret|. Adds sign-coherent excitation:
+        # boosts same-direction moves when recent vol was high, decays over time.
+        # `memory_prev` is carried in the PriceState; the simulator detaches
+        # across iteration boundaries via persistent_state, so BPTT chain
+        # only spans one chunk (same as vol EWMA).
+        if p.hawkes_alpha > 0.0:
+            mem_prev = state.hawkes_memory
+            if mem_prev is None:
+                mem_prev = torch.zeros((), device=s_next.device, dtype=s_next.dtype)
+            excitation = p.hawkes_kappa * mem_prev * torch.sign(log_ret_core)
+            log_ret = log_ret_core + excitation
+            hawkes_mem_next = (1 - p.hawkes_alpha) * mem_prev + p.hawkes_alpha * log_ret_core.abs()
+        else:
+            log_ret = log_ret_core
+            hawkes_mem_next = state.hawkes_memory  # pass through None/zeros
+
         log_price_next = state.log_price + log_ret
 
         vol_next = (1 - p.ewma_alpha) * state.volatility + p.ewma_alpha * log_ret.abs()
@@ -167,6 +200,7 @@ class ExcessDemandPrice(nn.Module):
             last_log_return=log_ret,
             volatility=vol_next,
             step=state.step + 1,
+            hawkes_memory=hawkes_mem_next,
         )
         context = torch.stack([log_price_next, vol_next, log_ret])
         aux: dict[str, Tensor] = {

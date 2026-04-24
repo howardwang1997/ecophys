@@ -29,6 +29,7 @@ from ..physics.integrator import LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
 from .mace_lite import MACELitePotential, build_mace_lite
 from .potentials import (
+    StochasticPairwisePotential,
     ConservativePotential,
     DissipationParams,
     DissipationPotential,
@@ -72,6 +73,9 @@ class EcoMDConfig:
     mace_readout_mode: str = "per_node"      # 'per_node' | 'per_edge' | 'hybrid'
     mace_readout_multiplier: float = 1.0     # F1: multiply V output by this
     mace_readout_init_gain: float = 0.5      # F2: xavier gain for readout last layer
+    # v0.9 StochasticPairwisePotential — random pair sampling for scaling
+    sps_k_random: int = 50                   # random partners per agent per step
+    sps_resample_per_step: bool = True       # resample edges every forward?
 
 
 class EcoMDSimulator(nn.Module):
@@ -102,6 +106,12 @@ class EcoMDSimulator(nn.Module):
         pairwise: nn.Module
         if self.cfg.pairwise_kind == "mlp":
             pairwise = PairwisePotential(d=d, hidden=self.cfg.hidden)
+        elif self.cfg.pairwise_kind == "stochastic_mlp":
+            pairwise = StochasticPairwisePotential(
+                d=d, hidden=self.cfg.hidden,
+                k_random=self.cfg.sps_k_random,
+                resample_per_step=self.cfg.sps_resample_per_step,
+            )
         elif self.cfg.pairwise_kind == "mace_lite":
             pairwise = build_mace_lite(
                 d_state=d,
@@ -117,7 +127,10 @@ class EcoMDSimulator(nn.Module):
                 readout_init_gain=self.cfg.mace_readout_init_gain,
             )
         else:
-            raise ValueError(f"unknown pairwise_kind {self.cfg.pairwise_kind!r}; expected 'mlp' or 'mace_lite'")
+            raise ValueError(
+                f"unknown pairwise_kind {self.cfg.pairwise_kind!r}; "
+                f"expected 'mlp' | 'stochastic_mlp' | 'mace_lite'"
+            )
         external = ExternalPotential(
             d=d, context_dim=self.price_formation.context_dim, hidden=self.cfg.hidden
         )
@@ -211,10 +224,12 @@ class EcoMDSimulator(nn.Module):
     # ── Rollouts ───────────────────────────────────────────────────────────
 
     def _reset_potential_cache(self) -> None:
-        """Invalidate any graph caches (MACE-lite k-NN) before a fresh rollout."""
+        """Invalidate any graph/edge caches before a fresh rollout."""
         pairwise = getattr(self.potential, "pairwise", None)
         if isinstance(pairwise, MACELitePotential):
             pairwise.reset_graph_cache()
+        elif isinstance(pairwise, StochasticPairwisePotential):
+            pairwise.reset_edge_cache()
 
     def rollout_chunk(
         self,
