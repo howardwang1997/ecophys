@@ -97,6 +97,11 @@ CMD=(torchrun
 )
 
 echo ""
+# Default to gloo — NCCL 2.19.3 on this H20 node fails with 4+ ranks
+# (Cuda failure 101 'invalid device ordinal'). Override with NCCL if fixed.
+export DIST_BACKEND="${DIST_BACKEND:-gloo}"
+
+echo " DIST_BACKEND=$DIST_BACKEND"
 echo " Launch command:"
 echo "   ${CMD[*]}"
 echo ""
