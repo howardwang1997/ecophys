@@ -27,6 +27,7 @@ from torch import Tensor
 
 from ..physics.integrator import LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
+from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
 from .mace_lite import MACELitePotential, build_mace_lite
 from .potentials import (
     StochasticPairwisePotential,
@@ -76,6 +77,16 @@ class EcoMDConfig:
     # v0.9 StochasticPairwisePotential — random pair sampling for scaling
     sps_k_random: int = 50                   # random partners per agent per step
     sps_resample_per_step: bool = True       # resample edges every forward?
+    # v2 EcoMDv2Potential — market-microstructure-derived architecture
+    v2_k_types: int = 4                      # number of persistent agent types
+    v2_d_type_emb: int = 8                   # learned type embedding dim
+    v2_d_pi: int = 4                         # Kyle per-agent demand-contrib dim
+    v2_k_random: int = 50                    # SPS random partners in v2 relational layer
+    v2_kyle_enabled: bool = True             # include Kyle global (λ·||Σπ||²)?
+    v2_kyle_lambda_init: float = 0.01        # initial Kyle λ
+    v2_kyle_lambda_learnable: bool = True
+    v2_gauge_axis: int = 0                   # state axis enforced gauge-invariant (log-price)
+    v2_type_seed: int = 42                   # seed for initial type-label sampling
 
 
 class EcoMDSimulator(nn.Module):
@@ -112,6 +123,25 @@ class EcoMDSimulator(nn.Module):
                 k_random=self.cfg.sps_k_random,
                 resample_per_step=self.cfg.sps_resample_per_step,
             )
+        elif self.cfg.pairwise_kind == "ecomd_v2":
+            v2_cfg = EcoMDv2Config(
+                d_state=d,
+                hidden=self.cfg.hidden,
+                k_types=self.cfg.v2_k_types,
+                d_type_emb=self.cfg.v2_d_type_emb,
+                d_pi=self.cfg.v2_d_pi,
+                k_random=self.cfg.v2_k_random,
+                kyle_enabled=self.cfg.v2_kyle_enabled,
+                kyle_lambda_init=self.cfg.v2_kyle_lambda_init,
+                kyle_lambda_learnable=self.cfg.v2_kyle_lambda_learnable,
+                gauge_axis=self.cfg.v2_gauge_axis,
+            )
+            type_gen = torch.Generator().manual_seed(self.cfg.v2_type_seed)
+            pairwise = EcoMDv2Potential(
+                n_agents=self.cfg.n_agents,
+                config=v2_cfg,
+                type_gen=type_gen,
+            )
         elif self.cfg.pairwise_kind == "mace_lite":
             pairwise = build_mace_lite(
                 d_state=d,
@@ -129,7 +159,7 @@ class EcoMDSimulator(nn.Module):
         else:
             raise ValueError(
                 f"unknown pairwise_kind {self.cfg.pairwise_kind!r}; "
-                f"expected 'mlp' | 'stochastic_mlp' | 'mace_lite'"
+                f"expected 'mlp' | 'stochastic_mlp' | 'mace_lite' | 'ecomd_v2'"
             )
         external = ExternalPotential(
             d=d, context_dim=self.price_formation.context_dim, hidden=self.cfg.hidden
