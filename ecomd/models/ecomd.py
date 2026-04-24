@@ -27,6 +27,7 @@ from torch import Tensor
 
 from ..physics.integrator import LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
+from .mace_lite import MACELitePotential, build_mace_lite
 from .potentials import (
     ConservativePotential,
     DissipationParams,
@@ -59,6 +60,13 @@ class EcoMDConfig:
     learn_temperature: bool = True
     noise_dist: str = "normal"               # 'normal' or 't' (Student-t, v0.6+)
     noise_df: int = 5                        # only used when noise_dist='t'
+    # v1 (MACE-lite) settings — only used when pairwise_kind == "mace_lite"
+    pairwise_kind: str = "mlp"               # 'mlp' (v0.x) or 'mace_lite' (v1+)
+    mace_k: int = 16                         # k-NN neighbours
+    mace_body_order: int = 2                 # 2, 3, or 4
+    mace_n_classes: int = 4                  # K agent-type classes
+    mace_n_rbf: int = 8                      # Gaussian RBF centers
+    mace_knn_refresh: int = 10               # steps between k-NN recomputes
 
 
 class EcoMDSimulator(nn.Module):
@@ -86,7 +94,21 @@ class EcoMDSimulator(nn.Module):
             # register as child so its params are included in self.parameters()
             self.add_module("_price_formation_mod", self.price_formation)
 
-        pairwise = PairwisePotential(d=d, hidden=self.cfg.hidden)
+        pairwise: nn.Module
+        if self.cfg.pairwise_kind == "mlp":
+            pairwise = PairwisePotential(d=d, hidden=self.cfg.hidden)
+        elif self.cfg.pairwise_kind == "mace_lite":
+            pairwise = build_mace_lite(
+                d_state=d,
+                k=self.cfg.mace_k,
+                hidden=self.cfg.hidden,
+                body_order=self.cfg.mace_body_order,
+                n_classes=self.cfg.mace_n_classes,
+                n_rbf=self.cfg.mace_n_rbf,
+                knn_refresh=self.cfg.mace_knn_refresh,
+            )
+        else:
+            raise ValueError(f"unknown pairwise_kind {self.cfg.pairwise_kind!r}; expected 'mlp' or 'mace_lite'")
         external = ExternalPotential(
             d=d, context_dim=self.price_formation.context_dim, hidden=self.cfg.hidden
         )
@@ -179,6 +201,12 @@ class EcoMDSimulator(nn.Module):
 
     # ── Rollouts ───────────────────────────────────────────────────────────
 
+    def _reset_potential_cache(self) -> None:
+        """Invalidate any graph caches (MACE-lite k-NN) before a fresh rollout."""
+        pairwise = getattr(self.potential, "pairwise", None)
+        if isinstance(pairwise, MACELitePotential):
+            pairwise.reset_graph_cache()
+
     def rollout_chunk(
         self,
         s: Tensor,
@@ -190,6 +218,7 @@ class EcoMDSimulator(nn.Module):
         create_graph: bool = True,
     ) -> tuple[Tensor, PriceState, EcoMDTrajectory]:
         """Differentiable chunk rollout — returns (s_final, price_state_final, traj)."""
+        self._reset_potential_cache()
         recorder = TrajectoryRecorder(dt=self.cfg.dt, meta={"n_steps": n_steps})
         for _ in range(n_steps):
             s_next, price_state, rec = self.step(
@@ -231,6 +260,7 @@ class EcoMDSimulator(nn.Module):
         s_prev = s.detach().clone()
         price_state = self.init_price()
 
+        self._reset_potential_cache()
         recorder = TrajectoryRecorder(
             dt=self.cfg.dt,
             meta={"n_steps": n_steps, "seed": seed if seed is not None else -1,
