@@ -1,13 +1,23 @@
-# EcoMD v2 H20 — SPX daily, N=10K, full Kyle + Typed + Gauge + Hawkes stack.
+# EcoMD v2.1 — H20 production config (SPX daily, N=10K)
 #
-# Headline Paper A experiment: market-microstructure-derived architecture at
-# scale on H20, matching or beating v0.8 Mac (7/11) on SPX daily.
+# Uses the Mac-validated v2.1 winning recipe (gauge off, T=ones, Kyle off).
+# Discovery summary: v2.0 (gauge on + T=eye+noise + Kyle on) was stuck at
+# 4/11 across 33 configs on Mac. Disabling these three and keeping only the
+# persistent type embedding + learnable type-coupling matrix (initialised
+# all-ones so every type pair is active) recovered 6/11 on Mac — matching
+# v0.6 while keeping v2's architectural novelty.
 #
-# Expected memory: N=10K × k=50 → 500K edges × 3·32 floats = ~192 MB input;
+# Goal at H20 N=10K: reach ≥7/11 by leveraging larger agent population to
+# produce fatter tails (#2 Hill, #3 skew) and stronger Zumbach asymmetry (#11).
+#
+# Launch:
+#   bash scripts/h20_launch_v2_ablation.sh  (single GPU grid, many configs)
+#   or for DDP single-run:
+#   torchrun --nproc_per_node=4 --standalone -m ecomd.training.train_distributed \
+#     --config experiments/016_ecomd_v2/config_h20_spx_N10k.yaml
+#
+# Expected memory: N=10K × k=50 → 500K edges × (3·32 + 16) = ~224 MB input;
 # chunk=32 with BPTT ≈ 32 GB/card on 4-card H20 DDP.
-#
-# NOTE: tuning — if v0.9 SPS already works at this scale, v2 should at
-# worst match v0.9. If Kyle + Type + Gauge add value, v2 should beat it.
 
 simulator:
   n_agents: 10000
@@ -38,11 +48,17 @@ simulator:
   v2_d_type_emb: 8
   v2_d_pi: 4
   v2_k_random: 50
-  v2_kyle_enabled: true
-  v2_kyle_lambda_init: 0.05
-  v2_kyle_lambda_learnable: true
-  v2_gauge_axis: 0
+  # v2.1 winning recipe (Mac ablation 2026-04-25)
+  v2_kyle_enabled: false            # Kyle anti-herding suppresses clustering
+  v2_gauge_enforce: false           # allow full (s_i, s_j, |Δs|) pair input
+  v2_T_init_mode: ones              # T=ones so all type pairs equally coupled
+  v2_phi_init_gain: 1.0             # force magnitude ~v0.8 baseline
+  v2_kyle_lambda_init: 0.05         # unused since kyle_enabled=false
+  v2_kyle_lambda_learnable: true    # unused
+  v2_gauge_axis: 0                  # unused since gauge_enforce=false
   v2_type_seed: 42
+  v2_pi_init_gain: 0.5              # unused
+  v2_T_offdiag_init: 0.1            # unused with T_init_mode=ones
 
 training:
   n_iters: 200
@@ -51,7 +67,7 @@ training:
   persistent_state: true
   lr: 1.0e-3
   lr_warmup_iters: 10
-  grad_clip_max_norm: 100.0         # H20 diag lesson: clip=1 kills signal
+  grad_clip_max_norm: 100.0         # H20 scaling: clip=1 caps effective lr (diag 2026-04-24)
   seed: 0
   checkpoint_every_s: 1800
   target_dataset: spx
@@ -62,7 +78,7 @@ training:
     w_hill: 0.1
     max_lag: 8
     hill_k_frac: 0.05
-    w_acf_shape: 0.0                # turn on for stronger shape enforcement later
+    w_acf_shape: 0.0                # Optional: turn to 0.5 to push decay shape
     acf_shape_target_ratio: 2.0
     acf_shape_lag_peak: 1
     acf_shape_lag_tail: 10
