@@ -1,181 +1,158 @@
-# 数据采购单 v2 — 按论文顺序（2026-04-24）
+# 数据采购单 v2 — Path C（高频投入，2026-04-24 修订）
 
-替代 `buy_order_zh.md`（v1）。采购优先级按 plan v3 的论文投稿顺序重排：
-**Paper A → Paper B（Nature Physics）→ Paper B.5（companion PRL）→ Paper C**。
-只买每篇论文真正 load-bearing 的数据，按论文出稿顺序采购。
+替代 v2 早稿与 v1。对齐 plan v3 + Path C：用户选择承诺高频数据采购，
+让 Nature Physics flagship 有物理级 protocol 支撑。论文顺序：
+**Paper A → Paper B（NP）→ Paper B.5（PRL）→ Paper C**。
 
 ## 预算总盘
 
 | 类别 | 金额 |
 |---|---|
 | 总预算（已批） | $50,000 |
-| **前期锁定投入** | **$6–10k** |
-| 预留（Phase 4/5 应急） | $40–44k |
+| **前期锁定（Path C）** | **$8–12k** |
+| 预留（Phase 4/5 应急） | $38–42k |
 
-预留重设计：plan v3 承认 flagship 失败概率不低，多数预算保持流动让我们在
-Gate 2（M3.5）分叉时可以灵活切换数据采购方向。
-
----
-
-## Tier 0 — 已在仓库 / 免费（成本 $0）
-
-已提交到 git `data/sample/`：
-
-- **yfinance**：SPY + ^GSPC 日线，2015–2026。管道可扩展到任意 ticker。
-- **Binance**：BTCUSDT + ETHUSDT 分钟，2024 Q1。管道可扩展到任意现货对。
-- **LOBSTER 免费样本**：8 个 ZIP（AAPL、AMZN、GOOG、MSFT、SPY）× 2012-06-21。
-
-**够用场景**：v0 到 v1 训练、smoke tests、M2（Wk 16）之前的全部开发工作。
+Path C 比纯日线方案前期多投 $3-5k，但 NP 概率从 10-15% 提到 15-22%。
+多花的钱买的是对 reviewer 三个主要攻击的物理级回应：Jarzynski work
+protocol、TUR 平稳性、T_eff 相对 Mantegna-Stanley 1995 的新颖性。
 
 ---
 
-## Tier A — Paper A（方法论，NeurIPS/ICML main），Wk 26 arXiv
+## Tier 0 — 已在 git / 免费（成本 $0）
 
-Paper A 在 M3（Wk 26）出稿。它需要：
+- **yfinance**：SPY + ^GSPC 日线 2015-2026（管道可扩展到任意 ticker）
+- **Binance**：BTCUSDT + ETHUSDT 分钟 2024 Q1（管道可扩展到任意现货对）
+- **LOBSTER 免费样本**：8 个 ZIP，2012-06-21（免费学术版）
 
-- v1 训练用的 SPX + BTC 收益率（✓ Tier 0 已有）
-- 11 项 Cont stylized facts 对比表（✓ experiments 000–005 已出）
-- 可选：微观结构附录与 LOB 对比
-
-### 必需
-**无**。Paper A 可以只靠免费数据出稿。
-
-### 推荐（如果想要 LOB 微观结构章节）
-- **LOBSTER 学术订阅**：10–20 symbols × 1 个月，L10
-  - **目标价**：$500–$1,500
-  - **为什么**：Paper A 的 reviewer-2 会问 "你的 agent 模拟器与真实 LOB 微观结构是否
-    匹配？" 回答需要至少 20k 事件在 5+ symbols 上
-  - **决策门槛**：**仅当 v1 在 SPX 上达到 ≥7/11**（M2，~Wk 16）时才买。
-    如果 v1 卡住，这笔钱转入预留
- 
-### 跳过
-- 任何报价 > $2k 的 LOB sample —— 免费 LOBSTER sample + 后面 Tier C 的订阅更便宜
-  且覆盖同一 claim
-
-**Paper A 前期锁定**：$0（保证）；$500–1500 取决于 M2 成功与否。
+**够用场景**：v0 到 v1 在 SPX 日线上训练、smoke tests、Mac 开发全程。
 
 ---
 
-## Tier B — Paper B（Nature Physics flagship），Wk 48 投稿
+## Tier A — Paper A（方法论，NeurIPS/ICML），Wk 28 arXiv
 
-Paper B 是 flagship。它的 load-bearing claim 是跨市场普适性（A1：T_eff 标度）+
-Jarzynski 自洽（B2）。Gate 2（Wk 30）如果普适性失败就 kill Paper B，所以数据
-必须在 Wk 28–30 到位。
+- **必需**：无额外采购（v1 在 SPX 日线 + BTC 分钟上训练，已有）
+- **推荐**：等 Tier B 的 LOBSTER 采购到位（Wk 16-20）后写一段微观结构附录
+- **前期锁定**：$0（所有 LOB 需求由 Tier B 覆盖）
 
-### 必需
-8 个市场 × 多年收益率。大部分 yfinance 免费：
+---
 
-| 市场 | Ticker | 成本 |
-|---|---|---|
-| S&P 500 | ^GSPC | $0（✓ 已有）|
-| Russell 2000 | ^RUT | $0（yfinance）|
-| 日经 225 | ^N225 | $0（yfinance）|
-| DAX 30 | ^GDAXI | $0（yfinance）|
-| FTSE 100 | ^FTSE | $0（yfinance）|
-| 恒生 | ^HSI | $0（yfinance）|
-| 比特币 | BTCUSDT | $0（✓ 已有）|
-| 以太币 | ETHUSDT | $0（✓ 已有）|
-| （外汇 可选）| EURUSD=X | $0（yfinance）|
+## Tier B — Paper B（Nature Physics flagship），Wk 54 投稿
 
-只需将现有 yfinance ingest 脚本扩展到新的 tickers，不需要任何第三方供应商。
+**钱主要花在这里。** Paper B flagship 需要：
+- A1 普适性在 ≥3 个时间尺度上验证（日线、分钟、L2 事件级）
+- B2 Jarzynski 用物理可接受的 work protocol（FOMC / 财报日 intraday）
+- B3 TUR 在 L2 事件速率下（稳态近似最干净）
+- 跨资产覆盖：股票 + 加密
 
-### 强烈推荐
-- **Tardis.dev crypto L2 数据**：BTCUSDT + ETHUSDT × 3 个月，完整订单簿变更
-  - **目标价**：$2,500–$3,500
-  - **为什么**：A1 普适性 claim 如果只基于日线，会被 "你没在微观结构时间尺度测试"
-    这一攻击拆穿。Tardis L2（跨资产 L2 的最便宜路径）关掉这个攻击面
-  - **决策门槛**：Wk 27 买。Gate 2（3 市场日线 A1 pilot）若看似有希望即买
+### B.1 — Tardis.dev crypto L2（必买，Wk 16）
+- **范围**：BTCUSDT + ETHUSDT × **6 个月**（早稿是 3 个月），完整 L2 订单簿 + trades
+- **目标价**：**$4,000–$5,500**
+- **为什么**：提供最干净的 L2 事件级数据做 B3 TUR 和微观结构时间尺度的跨资产普适性。
+  6 个月（不是 3 个月）是为了覆盖 ≥2 次 regime shift 做平稳性检查
+- **决策门槛**：Wk 16 v1 在 SPX 日线收敛后买
+
+### B.2 — FirstRate（或 AlgoSeek）美股分钟（必买，Wk 16-17）
+- **范围**：20 symbols × **3 年**（优先 2019-2022，覆盖 COVID + 通胀 + SVB），1 分钟
+  OHLCV + survivorship-bias-free
+- **目标价**：**$1,500–$2,500**
+- **为什么**：A1 普适性 claim 在股票 intraday 时间尺度需要。Paper B abstract 的
+  "多时间尺度" 措辞必需。顺便支撑 Paper C 的 crash EWS 分钟分辨率
+- **决策门槛**：与 B.1 并行采购
+
+### B.3 — LOBSTER 研究订阅（必买，Wk 17-18）
+- **范围**：20-50 symbols × **2-3 年**，L10，覆盖 2019-2022 或 2020-2023
+- **目标价**：**$3,000–$4,500**
+- **为什么**：事件级美股 LOB 做 B3 TUR 饱和、B2 Jarzynski 用开盘/收盘作 protocol、
+  A1 事件时间尺度。同时服务 Paper C 最优执行（Tier C 合并到这里）
+- **决策门槛**：Wk 17 在 B.1 和 B.2 谈判启动后买
 
 ### 跳过
-- 更高端的股票 LOB 用于普适性实验（比如 $10k+ 的分钟数据供应商）。
-  日线 + crypto L2 已足以支撑普适性 claim；不要过度采购
+- Bloomberg / Refinitiv 机构级 feeds —— 对我们规模过度
+- NASDAQ TotalView 原始 raw —— LOBSTER 重构已覆盖
+- FX 供应商（OANDA / Refinitiv FX）—— yfinance EURUSD=X 免费版够用
 
-**Paper B 前期锁定**：$0（保证）；**$3k 取决于** Gate 2 pilot 看到希望
-
----
-
-## Tier B.5 — Companion PRL（TUR 饱和）
-
-复用 Paper B 的数据。**无额外投入**。
+**Paper B 前期锁定**：**$8.5–12.5k**（early draft 是 $3k）
 
 ---
 
-## Tier C — Paper C（应用，QF/JEDC），Wk 45+
+## Tier B.5 — Companion PRL (TUR)，Wk 54
 
-Paper C 两个产出：crash EWS（复用 Paper B 数据）+ 最优执行（需要 LOB 消息）
-
-### 必需（仅针对最优执行产出）
-- **LOBSTER 研究订阅** 或 **AlgoSeek LOB feed**
-  - 20–50 symbols × 2–3 年，L10，覆盖 2019–2022 或 2020–2023
-  - **目标价**：$3,000–$5,000
-  - **为什么**：没有真实 LOB 消息无法 benchmark 执行策略。免费 LOBSTER sample 只
-    覆盖 1 天 × 8 symbols —— 不足以稳健训练 RL 或做 Almgren-Chriss 回测
-  - **决策门槛**：仅当 Paper A 被接收或明显在正轨上（Wk 34）时才买
-
-### 跳过
-- 机构级 feeds（NASDAQ TotalView direct）—— 对我们的规模过度
-- 替代数据 / 新闻 / 情绪数据 —— 超 Paper C 范围
-
-**Paper C 前期锁定**：$3–5k 取决于 Paper A 投稿轨迹
+复用 Tier B 数据。**无额外投入**
 
 ---
 
-## 采购时间轴（对齐 plan v3 gates）
+## Tier C — Paper C（应用），Wk 52+
+
+使用 Tier B 已购数据：
+- LOBSTER (B.3) → 最优执行
+- FirstRate 分钟 (B.2) → crash EWS 分钟分辨率
+- Tardis L2 (B.1) → 加密执行 benchmark
+
+**Paper C 前期锁定**：**$0**（全部 Tier B 覆盖）
+
+### Tier C 可选扩展（仅 Paper A/B 进展良好时）
+- Bloomberg 企业事件日历（~$500–1000）—— 精确 FOMC / 财报时间戳
+- Interactive Brokers / 机构执行磁带（~$1-2k）—— 对标真实经纪商
+- **决策门槛**：Wk 40+ 评估，仅 flagship 有望成功时买
+
+---
+
+## 采购时间轴（Path C，对齐 plan v3 修订）
 
 | 周 | 触发条件 | 采购 | $ |
 |---|---|---|---|
-| **现在（Wk ~17）** | v1 在 H20 开训 | 无 | 0 |
-| Wk 22–24 | v1 收敛 ≥7/11 | 无（现有数据跑） | 0 |
-| Wk 26 | **M3 arXiv 投稿** | yfinance 扩展 8 市场（免费）| 0 |
-| Wk 27–28 | **Gate 2 A1 pilot 之前** | （可选）Tardis crypto L2 | $3k |
-| Wk 30 | **Gate 2 结果** | （视情况）小 LOBSTER 用于 Paper A 修订 | $500–1500 |
-| Wk 34–36 | Paper C 启动、A1 full 推进 | （视情况）LOBSTER 订阅 | $3–5k |
-| Wk 48+ | Paper B/B.5 投稿 | 无（数据已锁）| 0 |
+| **现在（Wk 17）** | v1 开训 | 无（Tier 0 覆盖 v1）| 0 |
+| **Wk 17-18** | v1 SPX 日线 works | **Tardis L2 6mo + FirstRate 分钟 3y + LOBSTER 订阅** | **$8.5–12.5k** |
+| Wk 18-20 | 数据 ingestion | 无（处理中） | 0 |
+| **Wk 20 (M1.5)** | 高频数据就位 | 无（里程碑，不是采购）| 0 |
+| Wk 22-28 | v1 + 高频实验 | 无 | 0 |
+| Wk 28 (M3) | Paper A arXiv | 无 | 0 |
+| Wk 34 (M3.5) | A1 pilot gate | 无（已买）| 0 |
+| Wk 40+ | Paper C 应用 | 可选企业事件供应商 | $500–2k |
+| Wk 54 (M6) | NP 投稿 | 无 | 0 |
 
-**最大前期投入**：$6.5–9.5k，占 $50k 预算的 13–19%
+**总前期锁定**：**$8.5–12.5k**（Wk 17-18）
+**若加 Tier C 可选扩展**：**$9–14.5k**
+**剩余预留**：**$35.5–41.5k**（预算的 71–83%）
 
 ---
 
-## 流程图 — 决策节点
+## Path C 决策流
 
 ```
-现在 ───── v1 跑免费数据 ──────────────┐
-                                        │
-                              v1 ≥ 7/11 ?
-                                ├── 否 ──→ 继续免费数据，迭代架构
-                                └── 是 ──→ Wk 26：arXiv Paper A preprint
-                                            │
-                                            ↓
-                              Wk 27：买 Tardis crypto L2？($3k)
-                                ├── （Gate 2 pilot 看好）是 ─→ 买
-                                └── （Gate 2 pilot 弱）    否 ─→ 留作预留
-                                            │
-                                            ↓
-                              Wk 30 Gate 2：A1 pilot 普适性？
-                                ├── 通过 ──→ Paper B flagship 继续；
-                                │            Wk 34：买 LOBSTER ($3–5k) 用于 Paper C
-                                └── 失败 ──→ 退到 2-PRL 拆分；
-                                             暂时不买 LOBSTER
-                                             （Paper C 延后）
+Wk 17 现在：v1 在 SPX 日线收敛
+  ↓ 买高频数据包 (Tier B.1 + B.2 + B.3)
+Wk 18-20：入库 + 验证 (M1.5 gate)
+  ↓ [M1.5 失败 = 供应商延迟] 退回到 Tardis 3mo only，M3 推后到 Wk 30
+Wk 28 (M3)：Paper A arXiv + 多尺度 stylized facts 对比表
+  ↓
+Wk 34 (M3.5)：A1 pilot on 3 markets × 3 timescales
+  ├── 通过 ──→ 继续 flagship 到 M6
+  └── 失败 ──→ Paper A priority 已锁，退到 2-PRL + 1 QF
+              （$8-12k 高频采购不浪费 —— Paper C / PRL / Paper A 参考表都用得上）
 ```
+
+**关键性质**：即使 flagship 在 M3.5 失败，$8-12k 高频采购**不浪费**——它们喂给 Paper C（Tier C 合并）、PRL 退路论文、Paper A 的 stylized facts 参考表
+
+---
+
+## 为什么与 v2 早稿不同
+
+- v2 早稿（Path C 之前）：$3k Tardis L2 3 个月是唯一高频投入。NP 概率 10-15%
+- **v2 Path C**（本版）：$8-12k Tardis 6mo + FirstRate 3y + LOBSTER 3y。NP 概率 15-22%
+- 多花的 $5-9k 买了：Jarzynski protocol 可定义 + TUR 平稳性 + 多时间尺度
+  普适性——NP 的三大 load-bearing reviewer 防御
+
+## 为什么与 v1（plan v2 时代）不同
+
+- v1 列的数据类似但没有 paper-gate 纪律，前期全部承诺
+- v2 Path C 把每笔采购绑到具体的 Paper B claim，并说清 Paper C 已由 Tier B 覆盖
 
 ---
 
 ## 操作细节
 
-- 给供应商的询价模板在 `ecomd/data/data_wishlist.md`
-- 所有采购先进 R2（`r2://ecophys/vendor/<vendor>/<date>/`），再通过
+- 每份 vendor package 带 `PROVENANCE.md`（CLAUDE.md 数据纪律要求）
+- 原始数据先上 R2（`r2://ecophys/vendor/<vendor>/<date>/`），再通过
   `scripts/h20_pull_from_r2.sh` 同步到 H20 NFS
-- 每份 vendor package 要附带 provenance 文件（其目录下 `PROVENANCE.md`），
-  符合 `CLAUDE.md` 的数据纪律规则
-
----
-
-## 为什么与 buy_order_v1 不同
-
-- v1 在 plan v2（系列论文，无 Nature Physics 承诺）下写的，把美股分钟 + LOB 
-  采购都前置了
-- v2 在 plan v3（Nature Physics flagship + 退路）下写的，把较大的 LOB 开支
-  延后到 Paper C / Tier C，并且把 Tardis crypto L2 作为 Paper B 普适性 claim
-  下最划算的单次采购
-- 净效果：前期承诺更少、Phase 4/5 预留更多、采购由真实研究里程碑触发
+- 供应商询价模板：`ecomd/data/data_wishlist.md`
