@@ -63,8 +63,18 @@ class EcoMDv2Config:
     # Tunable knobs (added 2026-04-25 for quick-tune + H20 ablation)
     phi_init_gain: float = 0.5             # xavier gain for phi_net (pair kernel)
     pi_init_gain: float = 0.5              # xavier gain for pi_net (Kyle demand-contrib)
-    T_offdiag_init: float = 0.1            # init scale for off-diagonal entries of T
-                                           # (diagonal init = 1.0 kept)
+    T_offdiag_init: float = 0.1            # legacy: random-init off-diagonal scale
+                                           # kept for backward-compat; see T_init_mode
+    T_init_mode: str = "eye_plus_noise"    # 'eye_plus_noise' (legacy), 'ones', 'uniform'
+    # Discovery 2026-04-25: T=identity+noise kills 75% of inter-type edges (at K=4
+    # random types, P(τ_i=τ_j) = 1/4), effectively reducing pair force to 25% of
+    # v0.8. T_init_mode='ones' recovers full coupling; needed for vol clustering
+    # (#5 Fano, #6 ACF(r²), #10 corr(V,|r|)).
+    # Gauge enforcement — v2.1 addition (2026-04-25 late):
+    # 33 gauged configs stuck at 4/11 vs v0.8's 7/11. Ilinski gauge on s[0]
+    # (agent position) discards |s_i|-dependent information needed for vol
+    # clustering. Default FALSE = v0.8-style full (s_i, s_j, |Δs|) pair input.
+    gauge_enforce: bool = False
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -221,12 +231,20 @@ class TypedRelationalPotential(nn.Module):
     def __init__(self, d_state: int, k_types: int, d_type_emb: int,
                  hidden: int, k_random: int,
                  phi_init_gain: float = 0.5,
-                 T_offdiag_init: float = 0.1) -> None:
+                 T_offdiag_init: float = 0.1,
+                 gauge_enforce: bool = True,
+                 T_init_mode: str = "eye_plus_noise") -> None:
         super().__init__()
         self.d_state = d_state
         self.k_random = k_random
-        # φ_θ takes Δs_ij + τ_emb_i + τ_emb_j → scalar per edge
-        phi_in = d_state + 2 * d_type_emb
+        self.gauge_enforce = gauge_enforce
+        # φ_θ input layout:
+        #   gauge_enforce=True  → [Δs_ij, τ_i, τ_j]         (d + 2K') — Δs only
+        #   gauge_enforce=False → [s_i, s_j, |Δs|, τ_i, τ_j] (3d + 2K') — v0.8-style
+        if gauge_enforce:
+            phi_in = d_state + 2 * d_type_emb
+        else:
+            phi_in = 3 * d_state + 2 * d_type_emb
         self.phi_net = nn.Sequential(
             nn.Linear(phi_in, hidden),
             nn.SiLU(),
@@ -238,39 +256,61 @@ class TypedRelationalPotential(nn.Module):
             if isinstance(m, nn.Linear):
                 nn.init.xavier_uniform_(m.weight, gain=phi_init_gain)
                 nn.init.zeros_(m.bias)
-        # T_θ: K × K learnable coupling matrix. Diag = 1, off-diag controlled by init scale.
-        self.T = nn.Parameter(torch.eye(k_types) + T_offdiag_init * torch.randn(k_types, k_types))
+        # T_θ: K × K learnable coupling matrix. Initialization controlled by T_init_mode:
+        #   eye_plus_noise: T = eye + offdiag_init * randn  (legacy; kills 75% of edges at K=4)
+        #   ones:           T = ones                         (all type pairs equally coupled)
+        #   uniform:        T = ones + offdiag_init * randn  (ones with small perturbation)
+        if T_init_mode == "eye_plus_noise":
+            T_init = torch.eye(k_types) + T_offdiag_init * torch.randn(k_types, k_types)
+        elif T_init_mode == "ones":
+            T_init = torch.ones(k_types, k_types)
+        elif T_init_mode == "uniform":
+            T_init = torch.ones(k_types, k_types) + T_offdiag_init * torch.randn(k_types, k_types)
+        else:
+            raise ValueError(
+                f"T_init_mode must be 'eye_plus_noise' | 'ones' | 'uniform'; got {T_init_mode!r}"
+            )
+        self.T = nn.Parameter(T_init)
 
     def forward(self, s: Tensor, type_labels: Tensor, type_emb: Tensor,
                 gauge_axis: int = 0) -> Tensor:
-        """V_rel as a scalar."""
+        """V_rel as a scalar.
+
+        ``gauge_axis`` is kept for compatibility but ignored; the kernel's
+        gauge behaviour is set by ``self.gauge_enforce`` at construction
+        (gauge_enforce=True → Δs only; False → v0.8-style full (s_i, s_j)).
+        """
+        del gauge_axis
         n = s.shape[0]
         edges = _sample_edges(n, self.k_random, s.device).detach()
         src, dst = edges[0], edges[1]                          # (E,)
-        E = src.shape[0]
 
-        # Δs with optional gauge: zero out the gauge_axis BEFORE subtraction
-        # is incorrect (s_i - s_j on that axis IS already gauge-invariant).
-        # Leaving full Δs works: s_i[0] - s_j[0] is gauge-inv automatically.
-        # But if we want to drop the log-price axis entirely from the force,
-        # use gauge_axis = -1 logic (handled above). Here we keep full Δs.
-        delta_s = s[src] - s[dst]                              # (E, d_state)
+        s_i = s[src]                                           # (E, d_state)
+        s_j = s[dst]                                           # (E, d_state)
+        delta_s = s_i - s_j
 
         # Type embeddings for src and dst
         tau_src = type_emb[src]                                # (E, d_type_emb)
         tau_dst = type_emb[dst]                                # (E, d_type_emb)
 
-        # Symmetric kernel: φ(Δs, τ_i, τ_j) + φ(-Δs, τ_j, τ_i), averaged
-        inp_ij = torch.cat([delta_s, tau_src, tau_dst], dim=-1)   # (E, d+2K')
-        inp_ji = torch.cat([-delta_s, tau_dst, tau_src], dim=-1)
+        # Build symmetrized pair input. With gauge_enforce=False, include full
+        # (s_i, s_j, |Δs|) so the kernel can learn |s_i|-dependent forces —
+        # required for vol clustering (learned 2026-04-25 ablation: 33 gauged
+        # configs all stuck at 4/11; v0.8 with full input got 7/11).
+        if self.gauge_enforce:
+            inp_ij = torch.cat([delta_s, tau_src, tau_dst], dim=-1)
+            inp_ji = torch.cat([-delta_s, tau_dst, tau_src], dim=-1)
+        else:
+            abs_delta = delta_s.abs()
+            inp_ij = torch.cat([s_i, s_j, abs_delta, tau_src, tau_dst], dim=-1)
+            inp_ji = torch.cat([s_j, s_i, abs_delta, tau_dst, tau_src], dim=-1)
         phi_ij = self.phi_net(inp_ij).squeeze(-1)              # (E,)
         phi_ji = self.phi_net(inp_ji).squeeze(-1)              # (E,)
         phi = 0.5 * (phi_ij + phi_ji)
 
         # Type-coupling multiplier per edge: T[τ_i, τ_j]
-        # Symmetrize T for stability: T_sym = 0.5*(T + T.T)
         T_sym = 0.5 * (self.T + self.T.T)
-        coupling = T_sym[type_labels[src], type_labels[dst]]   # (E,)
+        coupling = T_sym[type_labels[src], type_labels[dst]]
 
         # Weighted edge sum, with unbiased rescaling (N-1)/(2k)
         scale = (n - 1) / (2.0 * self.k_random)
@@ -313,6 +353,8 @@ class EcoMDv2Potential(nn.Module):
             hidden=c.hidden, k_random=c.k_random,
             phi_init_gain=c.phi_init_gain,
             T_offdiag_init=c.T_offdiag_init,
+            gauge_enforce=c.gauge_enforce,
+            T_init_mode=c.T_init_mode,
         )
 
     def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:

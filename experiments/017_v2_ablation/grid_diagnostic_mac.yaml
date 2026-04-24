@@ -1,0 +1,29 @@
+# Architecture-ablation diagnostic for v2.
+#
+# The mac_quick grid (Kyle-λ × phi-gain × shape-loss, 16 runs) all stuck at
+# 3-4/11 with shape loss ≈ 1.3. This suggests the issue is STRUCTURAL, not
+# tunable via those 3 knobs. This grid instead tests whether turning OFF
+# specific v2 components recovers v0.8-level performance (7/11 on SPX Mac).
+#
+# Four architectures:
+#   A. Kyle off, gauge off, complete graph  → should match v0.8 + Δs/type
+#      If A fails, Type/Δs-enforcement is the regression.
+#   B. Kyle off, gauge off, k=50              → isolates SPS variance
+#   C. Kyle on, gauge off, complete graph   → Kyle's isolated contribution
+#   D. Kyle off, gauge on, complete graph   → Gauge's isolated cost
+#
+# Compared to v0.8's 7/11 baseline:
+#   A ≥ v0.8: type/Δs-only is fine, issue is elsewhere (Kyle or gauge)
+#   A < v0.8: type/Δs architecture is the root regression
+
+base_config: base_config.yaml
+
+grid:
+  simulator.v2_kyle_enabled: [true, false]
+  simulator.v2_gauge_axis: [-1, 0]
+  simulator.v2_k_random: [50, 199]
+
+# Cartesian product = 2×2×2 = 8 runs total; no skips
+skip_when: []
+
+variant_template: "diag_K{simulator.v2_kyle_enabled}_g{simulator.v2_gauge_axis}_k{simulator.v2_k_random}"
