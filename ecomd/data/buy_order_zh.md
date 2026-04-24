@@ -1,5 +1,9 @@
 # 数据采购清单（给 vendor 的中文版）— EcoPhys
 
+> ⚠️ **已废弃**：由 `buy_order_v2_zh.md`（Path C，2026-04-24 晚间）取代。
+> v2 按论文顺序重排采购，并为 Nature Physics flagship 承诺 $8–12k 高频数据。
+> 本文保留作历史参考。
+
 > 用途：直接发给数据 vendor 询价。按优先级排列；总预算 ~$15k–25k。
 
 ---
