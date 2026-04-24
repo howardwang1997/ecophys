@@ -1,0 +1,20 @@
+# v2.1 Mac sweep — confirm 6/11 replicates and see if Hawkes/shape push higher.
+#
+# Fixed: gauge off, T=ones, Kyle off, phi=1.0 (winning config).
+# Sweep: hawkes_kappa × w_acf_shape to try for 7/11 on Mac.
+
+base_config: base_config.yaml
+
+grid:
+  # Lock v2.1 winning structural choices
+  simulator.v2_T_init_mode: [ones]
+  simulator.v2_gauge_enforce: [false]
+  simulator.v2_kyle_enabled: [false]
+  simulator.v2_phi_init_gain: [1.0]
+  # Sweep
+  simulator.price_formation_kwargs.hawkes_kappa: [0.1, 0.3, 1.0, 2.0]
+  training.loss_weights.w_acf_shape: [0.0, 0.3, 1.0]
+
+skip_when: []
+
+variant_template: "v21_hK{simulator.price_formation_kwargs.hawkes_kappa}_s{training.loss_weights.w_acf_shape}"
