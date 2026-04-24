@@ -1,26 +1,34 @@
-# EcoPhys / EcoMD — Plan v3
+# EcoPhys / EcoMD — Plan v3 (revision 2026-04-24 evening)
 
-**Date**: 2026-04-24
+**Date**: 2026-04-24 (original); **Revised 2026-04-24 (Path C commitment)**
 **Supersedes**: `plan_v2.md`
 **Primary target**: Nature Physics (flagship paper B) + supporting papers
-**Total timeline**: 52 weeks (vs v2 的 46)
+**Total timeline**: **58 weeks** to M6 (was 52 before Path C; data pipeline adds ~6 weeks)
 **Compute**: 8×H20 NVLink, long-term access
-**Data budget**: $50k (unchanged from v2)
+**Data budget**: $50k (unchanged envelope, **commitment upped from $6-10k to $8-12k**)
 
 ---
 
-## 0. 本版 vs v2 的变化
+## 0. 本版 vs v2 + Path C 修订总结
 
-| 维度 | v2 | **v3** |
-|---|---|---|
-| 硬件 | 4×H20 (pull-and-train) | **8×H20 NVLink**, single node, long-term |
-| 策略 | Series-paper (Paper A 先，B/C 后) | **Flagship (Paper B → Nature Physics) + 系列 papers 作退路** |
-| NP 概率估算 | 5–12% | **10–15%**（A1+B2 + rigor 条款生效后） |
-| 时间 | 46 周到 M6 | **52 周到 M6**（加 2 个新 gate） |
-| Paper A arXiv 时机 | Wk 27 (M3.5) | **Wk 26 (与 M3 同步)，pre-register crash list** |
-| 新硬约束 | — | **三条科研严谨性条款**（见 §6） |
+| 维度 | v2 | v3 初版 (早) | **v3 + Path C (晚)** |
+|---|---|---|---|
+| 硬件 | 4×H20 | 8×H20 NVLink | 8×H20 NVLink |
+| 策略 | Series-paper | Flagship + 退路 | **Flagship + 高频数据全面投入** |
+| NP 概率 | 5–12% | 10–15% | **15–22%** |
+| NP 接受条件 | — | A1 + B2 | **A1 + B2 at ≥3 timescales + B3 at L2** |
+| 时间 | 46 周 | 52 周 | **58 周** |
+| Paper A arXiv | Wk 27 | Wk 26 | **Wk 28**（+2 周让高频数据就位） |
+| 数据前期锁定 | $15-25k | $6-10k | **$8-12k**（LOBSTER 从 Tier C 提到 Tier B）|
+| 高频数据 | 可选 | Tardis L2 $3k | **Tardis 6 月 + FirstRate 3 年 + LOBSTER 3 年 ≈ $8-12k** |
 
-**核心战略变化**：从 "多少都发，能多好多好" 变成 "flagship 失败有退路，但 flagship 按 NP 级别严谨度执行"。
+**核心战略变化（Path C commitment 2026-04-24 晚间）**：
+
+用户审阅后指出 daily 数据对 Nature Physics 级别物理主张是薄弱的——Jarzynski 在日线上没有 clean work protocol；TUR 需要 steady-state 但日线 30 年是非平稳；T_eff 标度如果只在日线上见过会被 reviewer 认为是 1995 Mantegna-Stanley 的扩展，不够新。
+
+**Path C 决策**：为 NP 承诺采购高频数据的全部组合：Tardis crypto L2 (6 月 × 2 pair)、FirstRate 美股分钟 (3 年 × 20 symbols)、LOBSTER 订阅 (2-3 年 × 20-50 symbols) —— 累计 $8-12k。这让 A1 能在 ≥3 时间尺度上验证普适性、B2 能使用 FOMC/财报日 intraday 作为 work protocol、B3 能在分钟级稳态窗口计算 generalized TUR。时间线因此延后 4-6 周（数据 ingestion + 高频分析管道）。
+
+**换来**：NP 概率从 10-15% 提到 15-22%。三个主要 reviewer 攻击全部有物理级回应。
 
 ---
 
@@ -64,59 +72,77 @@ Paper B 核心 claim 候选，**四个同时测量，三层 load-bearing 结构*
 
 ---
 
-## 3. 诚实概率表
+## 3. 诚实概率表（Path C 修订后）
+
+以下数字假设 **Path C 数据已购**（Tardis 6 月 + FirstRate 3 年 + LOBSTER 3 年）。
+没有这些高频数据的对应概率（v3 初版）写在括号内作对照。
 
 | 事件 | 独立概率 |
 |---|---|
-| v1 达 ≥9/11 且 stable（M3） | 50–65% |
-| A1 在 ≥6 市场上满足 ν 一致 | 35–45% |
+| v1 达 ≥9/11 且 stable（M2） | 55–70% (原 50–65%) |
+| A1 ν 在 ≥6 市场上一致于 ±0.05 | 40–50% (原 35–45%) |
+| **A1 ν 在 ≥3 时间尺度上一致**（新增, Path C 关键） | 40–55% |
 | A2 hyperscaling 在 ≥6 市场 | 25–35% |
-| B2 Jarzynski 自洽在 ≥5 市场 | 50–60% |
-| B3 TUR 饱和在 ≥5 市场 | 40–50% |
+| B2 Jarzynski 在 FOMC/earnings 作 protocol 下自洽 | 55–65% (原 50–60%, intraday data 让 protocol 可定义) |
+| B3 TUR saturation 在 L2 数据上 | 50–60% (原 40–50%, L2 提供 steady-state 窗口) |
 | 全部 sanity checks 通过 | 60–70% |
-| **Paper B 主 claim 存活到投稿** | **25–30%** |
-| **Nature Physics 接收（conditional on 投稿）** | **40–55%** |
-| **Joint: Nature Physics paper** | **10–15%** |
+| **Paper B 主 claim 存活到投稿** | **30–40%** (原 25–30%) |
+| **Nature Physics 接收（conditional on 投稿）** | **45–60%** (原 40–55%, 多尺度证据提升) |
+| **Joint: Nature Physics paper** | **15–22%** (原 10–15%) |
 
-**翻译**：85–90% 概率 NP 不成，但**每个失败层级都有清晰退路**（见 §7）。
+**翻译**：78–85% 概率 NP 仍不成，但通过购买合适的高频数据，reviewer-2 的三个主要攻击（Jarzynski protocol、TUR 平稳性、T_eff 新颖性）都有物理级回应。每个失败层级仍保留退路（见 §7）。
 
 ---
 
-## 4. 时间线与硬 gate
+## 4. 时间线与硬 gate（Path C 修订）
 
-| M | 名称 | 周 | 硬 gate 条件 | 失败退路 |
-|---|---|---|---|---|
-| M0 | 数据/基础 | 4 | — | ✓ 已达成 |
-| M1 | Baselines + stylized facts | 10 | — | ✓ 已达成 |
-| M2 | v1 at ≥7/11 | 16 | v1 ≥7/11 stable | 架构回炉 |
-| **M3** | v1 全面训练 | **26** | ≥9/11 on ≥2 markets **+ Paper A arXiv preprint with pre-registered crash list** | ≤7/11 → 放弃 NP，NeurIPS 路线 |
-| **M3.5** | A1 pilot (3 markets) + ALL sanity checks | **30** | (1) ν 一致 on 3/3 pilot markets + (2) surrogate null passes + (3) no sanity check fails | fail → **立即停 flagship，Paper A arXiv 起步独立系列** |
-| M4 | A1 full (8 markets) + A2 + B2 + B3 主实验 | 36 | A1 pass on ≥6/8 + B2 pass on ≥5/8 | 任一 fail → 降级 PRL |
-| **M5** | "一句话物理" 正式化 | **42** | 能用 ≤3 公式描述发现 + sanity appendix 完整 | fail → 拆 2 PRL + 1 QF |
-| M6 | Nature Physics 投稿 | 48 | paper 就绪 + 所有 gates 通过 + pre-registration 合规 | — |
-| M7 | 终局 | 52 | accept / desk reject / revision | rejection → 1 周内转 PRL |
+| M | 名称 | 周 (v3 初版) | **周 (Path C)** | 硬 gate 条件 | 失败退路 |
+|---|---|---|---|---|---|
+| M0 | 数据/基础 | 4 | ✓ 已达成 | — | — |
+| M1 | Baselines + stylized facts | 10 | ✓ 已达成 | — | — |
+| **M1.5** | **高频数据采购 + 入库**（Path C 新增） | — | **20** | Tardis + FirstRate + LOBSTER 已下载、验证、分片、ingest 管道跑通 | 供应商延迟 → 用已有 Tardis L2 3 月缩水执行 |
+| M2 | v1 at ≥7/11 | 16 | **18** (+2) | v1 ≥7/11 stable on SPX daily | 架构回炉 |
+| **M3** | v1 全面训练（包括高频） | 26 | **28** (+2) | ≥9/11 on ≥2 markets **+ 高频数据 pipeline 就位 + Paper A arXiv preprint with pre-registered crash list + 多时间尺度 stylized facts 对比** | ≤7/11 → 放弃 NP，NeurIPS 路线 |
+| **M3.5** | A1 pilot (3 markets × 3 时间尺度) + ALL sanity checks | 30 | **34** (+4) | (1) ν 一致 on 3/3 markets **× 3/3 时间尺度** + (2) surrogate null passes + (3) no sanity check fails | fail → **立即停 flagship**，Paper A arXiv 已投，转 PRL 系列 |
+| M4 | A1 full (8 markets) + A2 + B2 + B3 主实验 | 36 | **42** (+6) | A1 pass on ≥6/8 markets × ≥3 scales + B2 pass on FOMC/earnings protocol + B3 pass on ≥5 markets L2 | 任一 fail → 降级 PRL |
+| **M5** | "一句话物理" 正式化 | 42 | **48** (+6) | 能用 ≤3 公式描述发现 + sanity + robustness appendices 完整 | fail → 拆 2 PRL + 1 QF |
+| M6 | Nature Physics 投稿 | 48 | **54** (+6) | paper 就绪 + 所有 gates 通过 + pre-registration 合规 | — |
+| M7 | 终局 | 52 | **58** (+6) | accept / desk reject / revision | rejection → 1 周内转 PRL |
 
-### Gate 交付物
+**Path C 带来的 6 周延迟分解**：
+- Wk 17-20 (新 M1.5)：+4 周数据采购、ingestion、验证。与 v1 H20 训练**并行**（v1 不需要这些数据）
+- Wk 28-34 (新 M3.5)：+4 周 A1 pilot 现在要在 3 个时间尺度上而非 1 个
+- Wk 34-42 (新 M4)：+6 周 8 市场 × 多尺度是大量独立实验
+- Wk 48-54 (新 M6)：+6 周 paper 文本写 robustness appendix 更长（含多时间尺度 + L2 + FOMC protocol 各自的 sanity）
 
-**M2 gate**（Wk 16）：
+### Gate 交付物（Path C 修订）
+
+**M1.5 gate**（Wk 20，Path C 新增）：
+- 高频数据全部 ingested 到 Parquet 格式
+- Tardis L2 BTC+ETH × 6 月 ingested + L2 snapshot 重建验证
+- FirstRate 美股分钟 × 3 年 × 20 symbols ingested + 与 yfinance 日线交叉验证
+- LOBSTER 订阅 × 3 年 × 20-50 symbols ingested + 事件流重建正确性测试
+- R2 + H20 NFS 同步完成
+
+**M2 gate**（Wk 18）：
 - v1 code frozen
-- test suite ≥ 120 tests
-- Paper A 结果表（5-way comparison）
+- test suite ≥ 130 tests（加 vendor_schemas 多格式测试）
+- Paper A 结果表（SPX 日线 5-way comparison）
 
-**M3 gate**（Wk 26）：
-- **arXiv preprint** 提交（Paper A + pre-registered crash list + 实验方案）
+**M3 gate**（Wk 28）：
+- **arXiv preprint** 提交（Paper A + pre-registered crash list + 实验方案 + 多时间尺度 stylized facts 对比）
 - 至少 2 市场 v1 ≥9/11
 - Phase 3 实验配置冻结
 
-**M3.5 gate**（Wk 30）——最关键的 hard cut：
-- A1 pilot on SPX + BTC + EUR/USD 全部 3 市场 ν 一致
+**M3.5 gate**（Wk 34）——最关键的 hard cut：
+- A1 pilot on SPX (daily + minute) + BTC (minute + L2) + EUR/USD 全部 **3 市场 × 3 时间尺度 ν 一致**
 - IID null + GARCH null sanity checks 通过
 - 7 项 sanity checks 全部通过
-- **任一失败 → 停 flagship**
+- **任一失败 → 停 flagship**（Paper A arXiv 已锁 priority）
 
-**M5 gate**（Wk 42）：
+**M5 gate**（Wk 48）：
 - Paper B abstract 能写出 ≤ 3 个 equation
-- Robustness appendix 完整（所有 sanity checks 结果）
+- Robustness appendix 完整（所有 sanity checks + 多时间尺度 + L2 验证 + FOMC protocol sanity）
 - Pre-registration 合规 (arXiv 已公开)
 
 ---
