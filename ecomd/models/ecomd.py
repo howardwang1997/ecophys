@@ -67,6 +67,7 @@ class EcoMDConfig:
     mace_n_classes: int = 4                  # K agent-type classes
     mace_n_rbf: int = 8                      # Gaussian RBF centers
     mace_knn_refresh: int = 10               # steps between k-NN recomputes
+    mace_use_layernorm: bool = True          # LN on h^(1) before tensor products (ablation)
 
 
 class EcoMDSimulator(nn.Module):
@@ -106,6 +107,7 @@ class EcoMDSimulator(nn.Module):
                 n_classes=self.cfg.mace_n_classes,
                 n_rbf=self.cfg.mace_n_rbf,
                 knn_refresh=self.cfg.mace_knn_refresh,
+                use_layernorm=self.cfg.mace_use_layernorm,
             )
         else:
             raise ValueError(f"unknown pairwise_kind {self.cfg.pairwise_kind!r}; expected 'mlp' or 'mace_lite'")

@@ -1,0 +1,71 @@
+# EcoMD v1 ablation A — MATCHED to v0.6 training recipe.
+#
+# Hypothesis tested: is v1 MACE-lite's failure on acf(r²) (Mac smoke = -0.008)
+# caused by the ARCHITECTURE, or by the fact that v1 Mac smoke used a gutted
+# recipe (n_iters=10, normal noise, fixed β) vs v0.6's full recipe
+# (n_iters=80, Student-t noise, learnable β)?
+#
+# This config is v0.6's `config.yaml` with ONE change:
+#   pairwise_kind: mlp → mace_lite (k=8, body=2)
+#
+# Every other field matches v0.6 byte-for-byte: noise=t, df=5, learnable_beta=true,
+# n_iters=80, chunk=32, warmup=16, lr=1e-3, eval 2000 steps × 3 realizations.
+#
+# Expected outcome:
+#   - acf(r²) ≥ 0.15 → v1 arch is fine, Mac smoke was just undertrained.
+#     Proceed to H20 with matched recipe.
+#   - acf(r²) still near 0 → arch drop-off is real, run B/C/D ablations next.
+
+simulator:
+  n_agents: 200
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: true
+    beta_hidden: 16
+  pairwise_kind: mace_lite
+  mace_k: 8
+  mace_body_order: 2
+  mace_n_classes: 4
+  mace_n_rbf: 8
+  mace_knn_refresh: 10
+  mace_use_layernorm: true
+
+training:
+  n_iters: 80
+  chunk_steps: 32
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 3
+  grad_clip_max_norm: 1.0
+  seed: 0
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+
+evaluation:
+  n_realizations: 3
+  eval_steps: 2000
+
+variant: A_matched

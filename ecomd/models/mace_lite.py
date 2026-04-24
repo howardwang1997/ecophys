@@ -42,6 +42,7 @@ class MACELiteConfig:
     rbf_cutoff: float = 5.0          # RBF centers span [0, cutoff]
     body_order: int = 2              # 2, 3, or 4 — which higher-body features to include
     knn_refresh: int = 10            # recompute k-NN every N steps
+    use_layernorm: bool = True       # LayerNorm on h^(1) before tensor products (ablation D)
 
     def __post_init__(self) -> None:
         if self.body_order not in (2, 3, 4):
@@ -140,8 +141,9 @@ class MACELitePotential(nn.Module):
             nn.Linear(c.hidden, F),
         )
 
-        # LayerNorm on h⁽¹⁾ before tensor products (prevents blow-up)
-        self.norm1 = nn.LayerNorm(F) if c.body_order >= 3 else None
+        # LayerNorm on h⁽¹⁾ before tensor products (prevents blow-up).
+        # Disable via use_layernorm=False for ablation studies.
+        self.norm1 = nn.LayerNorm(F) if (c.body_order >= 3 and c.use_layernorm) else None
 
         # Higher-body readouts (only if body_order allows)
         self.body3_net: nn.Module | None = None
@@ -222,15 +224,15 @@ class MACELitePotential(nn.Module):
         feats: list[Tensor] = [h1]
 
         if c.body_order >= 3:
-            assert self.norm1 is not None and self.body3_net is not None
-            h1_norm = self.norm1(h1)
+            assert self.body3_net is not None
+            h1_norm = self.norm1(h1) if self.norm1 is not None else h1
             h2_raw = h1_norm * h1_norm                           # elementwise product
             h2 = self.body3_net(h2_raw)
             feats.append(h2)
 
         if c.body_order >= 4:
-            assert self.norm1 is not None and self.body4_net is not None
-            h1_norm = self.norm1(h1)
+            assert self.body4_net is not None
+            h1_norm = self.norm1(h1) if self.norm1 is not None else h1
             h3_raw = h1_norm * h1_norm * h1_norm
             h3 = self.body4_net(h3_raw)
             feats.append(h3)
@@ -256,6 +258,7 @@ def build_mace_lite(
     n_classes: int,
     n_rbf: int,
     knn_refresh: int,
+    use_layernorm: bool = True,
 ) -> MACELitePotential:
     cfg = MACELiteConfig(
         d_state=d_state,
@@ -266,5 +269,6 @@ def build_mace_lite(
         n_rbf=n_rbf,
         body_order=body_order,
         knn_refresh=knn_refresh,
+        use_layernorm=use_layernorm,
     )
     return MACELitePotential(cfg)
