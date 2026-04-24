@@ -10,9 +10,20 @@ executes it remotely.
 # After fresh git clone on H20:
 bash scripts/h20_setup_once.sh          # install conda env + pyproject
 conda activate ecophys
-bash scripts/h20_pull_from_r2.sh data/  # pull data from Cloudflare R2
+# Data: data/sample/ (SPX daily 2015-2026) ships in git — enough for v1 training.
+# Additional data from R2 only needed for multi-market work (M3.5+):
+# bash scripts/h20_pull_from_r2.sh data/
 wandb login                              # or set WANDB_API_KEY
 ```
+
+## Data you need at each phase
+
+| Phase | Data | Source |
+|---|---|---|
+| **v1 / v1+ training** (now) | SPX daily 12 yr | ✓ in `data/sample/` (git) |
+| M3 Paper A final | SPX full + BTC + LOBSTER | R2 pull (Tier 1 LOBSTER) |
+| M3.5 A1 pilot | SPX + BTC + EUR/USD | yfinance + Binance + extra EUR/USD |
+| M4 A1 full 8-market | + 5 more markets | yfinance + Tardis ~$3k |
 
 ## Training (v1 and v1+)
 
@@ -68,10 +79,42 @@ rendezvous.
 
 ```bash
 # In another SSH session:
-tail -f experiments/006_ecomd_v1/results/training_log.json   # after save
+tail -f experiments/006_ecomd_v1/results/run_*.log           # live stdout
 nvidia-smi                                                   # GPU utilization
 nvidia-smi topo -m                                           # NVLink topology
 wandb                                                        # live at wandb.ai
+```
+
+## Capturing results for retrieval on Mac
+
+Training + inference both **automatically** write:
+
+```
+experiments/<exp>/results/
+├── training_log.json            # per-iter loss trace, wall time
+├── checkpoint.pt                # model weights (every 30 min)
+├── inference_merged.json        # stylized facts from N rollouts
+├── inference_rank_*.json        # per-rank raw outputs
+├── run_YYYYMMDD-HHMMSS.log      # full stdout/stderr from this invocation
+├── inference_YYYYMMDD-HHMMSS.log  # inference stdout
+└── run_info.json                # git SHA, hostname, GPU count, timestamp
+```
+
+Retrieve to Mac after H20 run completes:
+
+```bash
+# On H20 — push lightweight artifacts (excludes checkpoint.pt by default)
+bash scripts/h20_push_results_to_r2.sh
+
+# On Mac
+python -m ecomd.data.r2_sync download h20_results/ ./h20_results/
+# Then hand me the path and I'll generate the 8-way comparison table.
+```
+
+Need the checkpoint back (e.g. for further local analysis)?
+
+```bash
+INCLUDE_CKPT=1 bash scripts/h20_push_results_to_r2.sh 006   # v1 only
 ```
 
 ## Troubleshooting
