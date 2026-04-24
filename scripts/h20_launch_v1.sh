@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # H20 launch script for EcoMD v1 distributed training.
 #
-# Defaults to 4 cards (NPROC=4); override with `NPROC=8 bash scripts/h20_launch_v1.sh`
-# to scale to 8 cards once 4-card run is verified stable.
+# Defaults to 4 cards (NPROC=4); override with `NPROC=8 bash scripts/h20_launch_v1.sh`.
+# v1+ runs fine on 4 cards too — NPROC only affects wall-clock, not memory.
 #
-# Prerequisites (run ONCE per H20 after a fresh git pull):
-#   1. `bash scripts/h20_setup_once.sh`
-#   2. Activate conda env: `conda activate ecophys`
-#   3. Login to wandb: `wandb login` (or set WANDB_API_KEY env var)
-#   4. Ensure data is pulled: `bash scripts/h20_pull_from_r2.sh ...`
+# Results captured into experiments/<exp>/results/:
+#   training_log.json        — per-iter loss trace (primary deliverable)
+#   checkpoint.pt            — model weights (every 30 min)
+#   run_TIMESTAMP.log        — full stdout/stderr (this script tees here)
+#   run_info.json            — env snapshot (git SHA, nvidia-smi, timestamp)
 #
 # Usage:
 #   bash scripts/h20_launch_v1.sh              # 4 cards, fresh run
@@ -25,24 +25,29 @@ if [[ "${RESUME:-0}" == "1" ]]; then
     RESUME_FLAG="--resume"
 fi
 
-# Repo root = dir containing this script's parent
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
+
+# Derive experiment's results directory from config path
+EXP_DIR="$(dirname "$CONFIG")"
+RESULTS_DIR="$EXP_DIR/results"
+mkdir -p "$RESULTS_DIR"
+
+TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
+RUN_LOG="$RESULTS_DIR/run_${TIMESTAMP}.log"
+RUN_INFO="$RESULTS_DIR/run_info.json"
 
 echo "─────────────────────────────────────────────────────────────"
 echo " EcoMD v1 distributed training launch"
 echo " NPROC=$NPROC   CONFIG=$CONFIG   RESUME=${RESUME:-0}"
 echo " REPO=$REPO_ROOT"
+echo " LOG=$RUN_LOG"
 echo "─────────────────────────────────────────────────────────────"
 
 # Sanity checks
 if ! command -v torchrun >/dev/null 2>&1; then
     echo "ERROR: torchrun not found — activate conda env (conda activate ecophys)?"
     exit 1
-fi
-
-if [[ -n "${CUDA_VISIBLE_DEVICES+x}" ]]; then
-    echo " CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 fi
 
 if command -v nvidia-smi >/dev/null 2>&1; then
@@ -52,16 +57,36 @@ if command -v nvidia-smi >/dev/null 2>&1; then
         echo "WARNING: NPROC=$NPROC but only $n_gpus_visible GPU(s) visible — aborting."
         exit 1
     fi
-fi
-
-# Check if NVLink is active (heuristic — look for NVL in topo)
-if command -v nvidia-smi >/dev/null 2>&1; then
     if nvidia-smi topo -m 2>/dev/null | grep -q "NV"; then
         echo " NVLink detected in topology."
     else
         echo " Warning: no NVLink in topology; expected performance reduced."
     fi
 fi
+
+# Write structured run info BEFORE training starts (captures intent + env).
+GIT_SHA="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
+GIT_STATUS="$(git status --porcelain 2>/dev/null | head -20)"
+HOSTNAME="$(hostname)"
+PYTHON_VERSION="$(python --version 2>&1)"
+TORCH_VERSION="$(python -c 'import torch; print(torch.__version__)' 2>/dev/null || echo unknown)"
+
+cat > "$RUN_INFO" <<EOF
+{
+  "timestamp": "$TIMESTAMP",
+  "hostname": "$HOSTNAME",
+  "git_sha": "$GIT_SHA",
+  "git_dirty": $(if [[ -n "$GIT_STATUS" ]]; then echo true; else echo false; fi),
+  "nproc": $NPROC,
+  "config": "$CONFIG",
+  "resume": ${RESUME:-0},
+  "python": "$PYTHON_VERSION",
+  "torch": "$TORCH_VERSION",
+  "run_log": "run_${TIMESTAMP}.log",
+  "script": "h20_launch_v1.sh"
+}
+EOF
+echo " Wrote $RUN_INFO"
 
 CMD=(torchrun
     --nproc_per_node="$NPROC"
@@ -81,4 +106,18 @@ if [[ "${DRY_RUN:-0}" == "1" ]]; then
     exit 0
 fi
 
-exec "${CMD[@]}"
+# tee stdout + stderr into the run log so user can retrieve it afterwards.
+START=$(date +%s)
+"${CMD[@]}" 2>&1 | tee "$RUN_LOG"
+EXIT_CODE=${PIPESTATUS[0]}
+END=$(date +%s)
+ELAPSED=$((END - START))
+
+echo ""
+echo "─────────────────────────────────────────────────────────────"
+echo " Training finished: exit_code=$EXIT_CODE elapsed=${ELAPSED}s (~$((ELAPSED/60))min)"
+echo " Log: $RUN_LOG"
+echo " Results: $RESULTS_DIR/"
+echo "─────────────────────────────────────────────────────────────"
+
+exit "$EXIT_CODE"
