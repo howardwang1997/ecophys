@@ -1,0 +1,58 @@
+# EcoMD v0.9 — Stochastic Pair Sampling on H20, N=10000 agents, SPX daily.
+#
+# This is the headline Paper A scaling experiment. Trains v0.8 recipe with
+# random-pair sampling potential (unbiased estimator of full pair sum) at
+# 50× the Mac-validated scale.
+#
+# Expected: v0.8 baseline (7/11 on SPX at N=200) should translate to N=10⁴
+# with only variance from stochastic gradient, not systematic bias.
+#
+# Memory: N=10K × k=50 = 500K edges per step × 3·32 floats ≈ 192 MB input;
+# chunk=32 with BPTT ≈ 32 GB/card, fits comfortably on 96 GB H20.
+#
+# Wall time on 4-card DDP estimate: ~5-10 min training + ~2 min eval.
+
+simulator:
+  n_agents: 10000
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: false              # v0.8-style
+    beta_hidden: 16
+    hawkes_alpha: 0.0                   # v1.0 disabled for pure SPS test
+    hawkes_kappa: 0.0
+  pairwise_kind: stochastic_mlp         # v0.9 Stochastic Pair Sampling
+  sps_k_random: 50                      # 50 random partners per agent per step
+  sps_resample_per_step: true           # fresh edges each forward (SGD-style)
+
+training:
+  n_iters: 200
+  chunk_steps: 32
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 10
+  grad_clip_max_norm: 100.0             # v0.9 scale → let stochastic grads through
+  seed: 0
+  checkpoint_every_s: 1800
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05

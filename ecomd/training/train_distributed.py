@@ -117,6 +117,27 @@ def load_spx_returns_any_rank(repo_root: Path) -> np.ndarray:
     raise FileNotFoundError("no ^GSPC yfinance data found in data/raw or data/sample")
 
 
+def load_btc_1m_returns_any_rank(repo_root: Path) -> np.ndarray:
+    for root in (repo_root / "data" / "raw", repo_root / "data" / "sample"):
+        d = root / "binance" / "market=spot" / "interval=1m" / "symbol=BTCUSDT" / "year=2024"
+        if d.exists():
+            frames = [pd.read_parquet(p) for p in sorted(d.glob("month=*.parquet"))]
+            if frames:
+                df = pd.concat(frames, ignore_index=True).sort_values("open_time").reset_index(drop=True)
+                return log_returns_from_prices(df["close"].to_numpy())
+    raise FileNotFoundError("no BTCUSDT Binance data found in data/raw or data/sample")
+
+
+def load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray:
+    """Dispatch data loading by target_dataset/target_period fields in config."""
+    if dataset == "spx" and period in ("2015-2026_daily", "daily"):
+        return load_spx_returns_any_rank(repo_root)
+    if dataset == "btcusdt" and period == "2024Q1_1m":
+        return load_btc_1m_returns_any_rank(repo_root)
+    # Fallback: default to SPX
+    return load_spx_returns_any_rank(repo_root)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Checkpoint
 # ─────────────────────────────────────────────────────────────────────────────
@@ -344,7 +365,11 @@ def main() -> None:
     repo_root = Path(__file__).resolve().parents[2]
 
     # Build targets (each rank loads independently — data is small)
-    real_r = load_spx_returns_any_rank(repo_root)
+    target_dataset = train_cfg.get("target_dataset", "spx")
+    target_period = train_cfg.get("target_period", "daily")
+    real_r = load_real_returns(repo_root, target_dataset, target_period)
+    if _is_main(rank):
+        log.info(f"loaded {len(real_r):,} returns for {target_dataset}/{target_period}")
     weights = LossWeights(**train_cfg["loss_weights"])
     targets = build_targets_from_returns(real_r, max_lag=weights.max_lag, k_frac=weights.hill_k_frac)
     if _is_main(rank):

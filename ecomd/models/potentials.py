@@ -88,6 +88,118 @@ class PairwisePotential(nn.Module):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Stochastic pair sampling (v0.9): V ≈ unbiased Monte Carlo over random pairs
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class StochasticPairwisePotential(nn.Module):
+    """Same symmetric pair kernel as ``PairwisePotential`` but evaluated on a
+    random subset of pairs per forward pass.
+
+    Each agent i samples ``k_random`` other agents uniformly (with replacement
+    excluded from self). The full V = Σ_{i<j} φ(s_i, s_j) is estimated by
+
+        V_stoch(s) = (N-1)/(2k) · Σ_{(i,j) ∈ E_random} φ(s_i, s_j)
+
+    with E[V_stoch] = V_full (unbiased). Variance scales as O((P-E)/E) where
+    P = N(N-1)/2 and E = N·k. At N=10^4, k=50 → std-to-signal ~10%,
+    comparable to minibatch SGD noise.
+
+    Memory cost: O(N·k·d) forward per step (vs O(N²·d) for the dense
+    version), enabling N ≥ 10^4 on a single H20 card.
+
+    Key design choice vs MACE-lite's k-NN: **pairs are sampled uniformly at
+    random**, not by feature-space proximity. Random sampling gives an
+    unbiased estimator of the full-pair potential; k-NN gives a biased
+    estimator favouring local interactions, which we showed today (2026-04-24
+    Session 17) produces flat-ACF dynamics instead of real vol clustering.
+
+    Parameters
+    ----------
+    d : state dimension
+    hidden : MLP hidden dim
+    k_random : number of random pair partners per agent per forward (50 default)
+    resample_per_step : if True, sample fresh edges each forward; if False,
+        keep the same edges within a training chunk (faster but higher variance).
+    """
+
+    def __init__(
+        self,
+        d: int,
+        hidden: int = 64,
+        k_random: int = 50,
+        resample_per_step: bool = True,
+    ) -> None:
+        super().__init__()
+        self.d = d
+        self.k_random = k_random
+        self.resample_per_step = resample_per_step
+        self.net = nn.Sequential(
+            nn.Linear(3 * d, hidden),
+            nn.SiLU(),
+            nn.Linear(hidden, hidden),
+            nn.SiLU(),
+            nn.Linear(hidden, 1),
+        )
+        for m in self.net.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight, gain=0.5)
+                nn.init.zeros_(m.bias)
+        # Cache for non-resampling mode
+        self._cached_edges: Tensor | None = None
+
+    def reset_edge_cache(self) -> None:
+        self._cached_edges = None
+
+    def _sample_edges(self, n: int, device: torch.device) -> Tensor:
+        """Return (2, N·k) long tensor of (src, dst) pairs."""
+        k = min(self.k_random, n - 1)
+        # For each i ∈ [n], pick k distinct j ≠ i. Use torch.randperm per-row,
+        # then drop self-match. Vectorized with rand + topk.
+        rand = torch.rand(n, n, device=device)
+        rand.fill_diagonal_(-1.0)  # push self to bottom after largest-k selection
+        _, idx = torch.topk(rand, k=k + 1, dim=1, largest=True)
+        # idx[:,0] might still be the diagonal if it was +1 (unlikely but
+        # possible after fill_diagonal_=-1). Actually -1 is below any rand in [0,1],
+        # so diagonal will never win topk(largest). Safe to use all k columns.
+        idx = idx[:, :k]  # (n, k)
+        src = torch.arange(n, device=device).unsqueeze(1).expand(n, k).reshape(-1)
+        dst = idx.reshape(-1)
+        return torch.stack([src, dst], dim=0)
+
+    def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
+        del context
+        n, d = s.shape
+        assert d == self.d, f"expected last dim {self.d}, got {d}"
+
+        if self.resample_per_step or self._cached_edges is None:
+            edges = self._sample_edges(n, s.device).detach()
+            if not self.resample_per_step:
+                self._cached_edges = edges
+        else:
+            edges = self._cached_edges
+        src, dst = edges[0], edges[1]                           # (E,)
+        E = src.shape[0]
+
+        s_i = s[src]                                            # (E, d)
+        s_j = s[dst]                                            # (E, d)
+        diff = (s_i - s_j).abs()
+
+        inp_ij = torch.cat([s_i, s_j, diff], dim=-1)
+        inp_ji = torch.cat([s_j, s_i, diff], dim=-1)
+        phi_ij = self.net(inp_ij).squeeze(-1)
+        phi_ji = self.net(inp_ji).squeeze(-1)
+        phi = 0.5 * (phi_ij + phi_ji)                           # (E,)
+
+        # Rescale to estimate the full sum over N·(N-1)/2 unique pairs.
+        # Each agent contributes k random partners → N·k ordered edges, but
+        # the original V_full sum is over unordered pairs. The factor
+        # (N-1)/(2k) makes E[V_stoch] = V_full.
+        scale = (n - 1) / (2.0 * self.k_random)
+        return scale * phi.sum()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # External potential: V_external(s, context) = Σ_i ψ_θ(s_i, context)
 # ─────────────────────────────────────────────────────────────────────────────
 
