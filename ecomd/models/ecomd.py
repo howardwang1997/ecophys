@@ -87,6 +87,9 @@ class EcoMDConfig:
     v2_kyle_lambda_learnable: bool = True
     v2_gauge_axis: int = 0                   # state axis enforced gauge-invariant (log-price)
     v2_type_seed: int = 42                   # seed for initial type-label sampling
+    v2_phi_init_gain: float = 0.5            # xavier gain for pair kernel MLP
+    v2_pi_init_gain: float = 0.5             # xavier gain for Kyle π MLP
+    v2_T_offdiag_init: float = 0.1           # init scale for T off-diagonal
 
 
 class EcoMDSimulator(nn.Module):
@@ -135,6 +138,9 @@ class EcoMDSimulator(nn.Module):
                 kyle_lambda_init=self.cfg.v2_kyle_lambda_init,
                 kyle_lambda_learnable=self.cfg.v2_kyle_lambda_learnable,
                 gauge_axis=self.cfg.v2_gauge_axis,
+                phi_init_gain=self.cfg.v2_phi_init_gain,
+                pi_init_gain=self.cfg.v2_pi_init_gain,
+                T_offdiag_init=self.cfg.v2_T_offdiag_init,
             )
             type_gen = torch.Generator().manual_seed(self.cfg.v2_type_seed)
             pairwise = EcoMDv2Potential(

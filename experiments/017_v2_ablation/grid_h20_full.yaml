@@ -1,0 +1,40 @@
+# H20 full v2 ablation grid. Run AFTER Mac quick-tune narrows the range.
+#
+# This expands to ~50-100 runs; on 4-card H20 gloo at ~5-10 min each, that's
+# 6-15 hours of total compute. Run overnight.
+#
+# Knob sweeps:
+#   - N: scale effect (Mac 200 vs H20 10K)
+#   - k_random: SPS density
+#   - kyle_enabled: with/without Kyle (ablation)
+#   - phi_init_gain: force magnitude
+#   - kyle_lambda_init: Kyle initial strength
+#   - T_offdiag_init: cross-type coupling
+#   - w_acf_shape: shape loss on/off (Goodhart defense)
+#   - hawkes_kappa: self-excitation strength
+
+base_config: base_config.yaml
+
+grid:
+  simulator.n_agents: [10000]
+  simulator.v2_k_random: [50, 100]
+  simulator.v2_kyle_enabled: [true, false]                # Kyle on/off ablation
+  simulator.v2_phi_init_gain: [0.5, 2.0]                  # force scale
+  simulator.v2_kyle_lambda_init: [0.05, 1.0]              # Kyle init strength
+  simulator.v2_T_offdiag_init: [0.1, 0.5]                 # cross-type coupling
+  simulator.price_formation_kwargs.hawkes_kappa: [0.0, 0.3, 1.0]  # Hawkes on/off/strong
+  training.loss_weights.w_acf_shape: [0.0, 0.5]
+  training.n_iters: [200]
+  training.chunk_steps: [32]
+  training.grad_clip_max_norm: [100.0]                    # H20 default
+
+# Always skip when Kyle is disabled but kyle_lambda is set (meaningless)
+skip_when:
+  - simulator.v2_kyle_enabled: false
+    simulator.v2_kyle_lambda_init: 1.0
+  # Avoid extreme combos that known to diverge
+  - simulator.v2_phi_init_gain: 2.0
+    simulator.v2_kyle_lambda_init: 1.0
+    simulator.v2_T_offdiag_init: 0.5
+
+variant_template: "h20_k{simulator.v2_k_random}_K{simulator.v2_kyle_enabled}_g{simulator.v2_phi_init_gain}_λ{simulator.v2_kyle_lambda_init}_T{simulator.v2_T_offdiag_init}_h{simulator.price_formation_kwargs.hawkes_kappa}_s{training.loss_weights.w_acf_shape}"
