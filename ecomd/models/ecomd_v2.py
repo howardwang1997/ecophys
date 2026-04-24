@@ -60,6 +60,11 @@ class EcoMDv2Config:
     # Gauge enforcement
     gauge_axis: int = 0                    # which state axis is log-price (gauge-inv)
                                            # -1 to disable gauge; default s[0].
+    # Tunable knobs (added 2026-04-25 for quick-tune + H20 ablation)
+    phi_init_gain: float = 0.5             # xavier gain for phi_net (pair kernel)
+    pi_init_gain: float = 0.5              # xavier gain for pi_net (Kyle demand-contrib)
+    T_offdiag_init: float = 0.1            # init scale for off-diagonal entries of T
+                                           # (diagonal init = 1.0 kept)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -152,7 +157,8 @@ class KyleGlobalPotential(nn.Module):
     """
 
     def __init__(self, d_state: int, d_type_emb: int, d_pi: int, hidden: int,
-                 lambda_init: float = 0.01, lambda_learnable: bool = True) -> None:
+                 lambda_init: float = 0.01, lambda_learnable: bool = True,
+                 init_gain: float = 0.5) -> None:
         super().__init__()
         self.d_pi = d_pi
         self.pi_net = nn.Sequential(
@@ -162,7 +168,7 @@ class KyleGlobalPotential(nn.Module):
         )
         for m in self.pi_net.modules():
             if isinstance(m, nn.Linear):
-                nn.init.xavier_uniform_(m.weight, gain=0.5)
+                nn.init.xavier_uniform_(m.weight, gain=init_gain)
                 nn.init.zeros_(m.bias)
         # λ as a raw scalar; learnable or buffer
         if lambda_learnable:
@@ -213,7 +219,9 @@ class TypedRelationalPotential(nn.Module):
     """
 
     def __init__(self, d_state: int, k_types: int, d_type_emb: int,
-                 hidden: int, k_random: int) -> None:
+                 hidden: int, k_random: int,
+                 phi_init_gain: float = 0.5,
+                 T_offdiag_init: float = 0.1) -> None:
         super().__init__()
         self.d_state = d_state
         self.k_random = k_random
@@ -228,10 +236,10 @@ class TypedRelationalPotential(nn.Module):
         )
         for m in self.phi_net.modules():
             if isinstance(m, nn.Linear):
-                nn.init.xavier_uniform_(m.weight, gain=0.5)
+                nn.init.xavier_uniform_(m.weight, gain=phi_init_gain)
                 nn.init.zeros_(m.bias)
-        # T_θ: K × K learnable coupling matrix. Init to identity + small random.
-        self.T = nn.Parameter(torch.eye(k_types) + 0.1 * torch.randn(k_types, k_types))
+        # T_θ: K × K learnable coupling matrix. Diag = 1, off-diag controlled by init scale.
+        self.T = nn.Parameter(torch.eye(k_types) + T_offdiag_init * torch.randn(k_types, k_types))
 
     def forward(self, s: Tensor, type_labels: Tensor, type_emb: Tensor,
                 gauge_axis: int = 0) -> Tensor:
@@ -296,12 +304,15 @@ class EcoMDv2Potential(nn.Module):
             d_state=c.d_state, d_type_emb=c.d_type_emb, d_pi=c.d_pi,
             hidden=c.hidden, lambda_init=c.kyle_lambda_init,
             lambda_learnable=c.kyle_lambda_learnable,
+            init_gain=c.pi_init_gain,
         ) if c.kyle_enabled else None
 
         # Typed relational pair term
         self.rel = TypedRelationalPotential(
             d_state=c.d_state, k_types=c.k_types, d_type_emb=c.d_type_emb,
             hidden=c.hidden, k_random=c.k_random,
+            phi_init_gain=c.phi_init_gain,
+            T_offdiag_init=c.T_offdiag_init,
         )
 
     def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:

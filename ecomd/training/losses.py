@@ -133,6 +133,12 @@ class LossWeights:
     w_hill: float = 0.1
     max_lag: int = 20
     hill_k_frac: float = 0.05
+    # Optional ACF-shape penalty to prevent flat-regime Goodhart failure
+    # (added 2026-04-25). See :mod:`ecomd.eval.acf_shape`.
+    w_acf_shape: float = 0.0                 # 0 disables
+    acf_shape_target_ratio: float = 2.0      # acf[peak]/|acf[tail]| must be ≥ this
+    acf_shape_lag_peak: int = 1              # numerator lag
+    acf_shape_lag_tail: int = 10             # denominator lag
 
 
 def moment_matching_loss(
@@ -158,8 +164,7 @@ def moment_matching_loss(
     dev_hill = (hill_sim - targets.hill_alpha).abs()
 
     total = w.w_acf_sq * dev_acf + w.w_leverage * dev_lev + w.w_hill * dev_hill
-    return {
-        "total": total,
+    out: dict[str, Tensor] = {
         "acf_sq": dev_acf,
         "leverage": dev_lev,
         "hill": dev_hill,
@@ -167,6 +172,21 @@ def moment_matching_loss(
         "leverage_sim": lev_sim.detach(),
         "hill_sim": hill_sim.detach(),
     }
+
+    # ACF-shape penalty (optional; disabled when w_acf_shape=0)
+    if w.w_acf_shape > 0.0:
+        from ..eval.acf_shape import acf_shape_loss
+        shape_pen = acf_shape_loss(
+            sim_returns,
+            target_ratio=w.acf_shape_target_ratio,
+            lag_peak=w.acf_shape_lag_peak,
+            lag_tail=w.acf_shape_lag_tail,
+        )
+        total = total + w.w_acf_shape * shape_pen
+        out["acf_shape"] = shape_pen
+
+    out["total"] = total
+    return out
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -136,6 +136,8 @@ def train_ecomd(
             "gamma": float(sim.gamma.item()),
             "temperature": float(sim.temperature.item()),
         }
+        if "acf_shape" in out:
+            rec["acf_shape_pen"] = float(out["acf_shape"].item())
         history.append(rec)
         if it == 0 or (it + 1) % max(1, n_iters // 10) == 0:
             log.info(

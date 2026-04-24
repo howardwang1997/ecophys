@@ -1,0 +1,30 @@
+# Mac quick-tune grid for v2. Small, targeted, runnable in ~30-45 min.
+#
+# Knob sweeps (most promising candidates, based on Session 20 analysis):
+#   1. phi_init_gain: boosts pair force magnitude
+#   2. kyle_lambda_init: Kyle contribution at init
+#   3. w_acf_shape: whether to add shape penalty to loss
+#
+# Grid-expanded as Cartesian product, but the runner prunes obvious bad
+# combinations (e.g., extremely high gain + extremely high lambda together).
+#
+# Total runs: 3 × 3 × 2 = 18, minus prunes ≈ 12-15 runs × ~1.7 min = ~25 min.
+
+base_config: base_config.yaml
+
+grid:
+  # v2 Kyle scale
+  simulator.v2_kyle_lambda_init: [0.05, 0.5, 2.0]
+  # v2 force magnitude
+  simulator.v2_phi_init_gain: [0.5, 1.5, 3.0]
+  # Shape loss (Goodhart defense)
+  training.loss_weights.w_acf_shape: [0.0, 0.5]
+
+# Skip configs where both high lambda AND high gain are set
+# (avoid runaway gradients during init)
+skip_when:
+  - simulator.v2_kyle_lambda_init: 2.0
+    simulator.v2_phi_init_gain: 3.0
+
+# Variant naming template — interpolates grid values
+variant_template: "mac_λ{simulator.v2_kyle_lambda_init}_g{simulator.v2_phi_init_gain}_s{training.loss_weights.w_acf_shape}"
