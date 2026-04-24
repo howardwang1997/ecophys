@@ -1,0 +1,68 @@
+# EcoMD v0.7 — v0.6 + tighter volume-volatility correlation (#10 target).
+#
+# v0.6 passes 6/11. The closest-to-passing metric is #10 corr(V, |r|):
+# v0.6 produces +0.078 vs required >+0.1 (gap 0.022).
+#
+# Diagnosis (ecomd/models/price_formation.py):
+#   log_ret   = β_eff · excess_demand  −  0.5·σ²  +  σ · η
+#   volume    = |Δposition|.sum()
+# The σ·η noise term decorrelates log_ret from volume. v0.6's σ=0.005 adds
+# independent noise worth ~30-50% of typical return variance. Dropping it
+# should tighten corr(V, |r|) since both become driven by the same dpos field.
+#
+# ONLY CHANGE from v0.6: sigma_price 0.005 → 0.001 (5× smaller).
+#
+# Risk: other metrics (especially #5 Fano, #7 kurtosis) may shift because
+# the return distribution becomes less noisy. Re-evaluate all 11.
+
+simulator:
+  n_agents: 200
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.001                # v0.6 was 0.005; this is the single change
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: true
+    beta_hidden: 16
+
+training:
+  n_iters: 80
+  chunk_steps: 32
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 3
+  grad_clip_max_norm: 1.0
+  seed: 0
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+
+evaluation:
+  n_realizations: 3
+  eval_steps: 2000
+
+smoke:
+  n_agents: 100
+  n_iters: 8
+  chunk_steps: 32
+  eval_steps: 600
+  n_realizations: 2
