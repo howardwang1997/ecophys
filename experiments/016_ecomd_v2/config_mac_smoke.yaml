@@ -1,0 +1,78 @@
+# EcoMD v2 Mac smoke — sanity check for market-microstructure-derived arch.
+#
+# Verifies:
+#   - Training pipeline runs end-to-end at N=200
+#   - 80 iterations, v0.6 recipe (t-noise, persistent_state, etc.)
+#   - Force scale sensible (no MACE-style "dead" V)
+#
+# Comparison to v0.8 Mac (our current best, 7/11 on SPX):
+#   v0.8: pairwise_kind=mlp (complete O(N²)), 7/11
+#   v2:   pairwise_kind=ecomd_v2 (Kyle + Typed + Gauge + SPS-based O(N·k))
+# If v2 ≥ 6/11 on Mac smoke, architecture is competitive; scale to H20 next.
+
+simulator:
+  n_agents: 200
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: false        # v0.8-style (β_fixed won SPX Pareto)
+    beta_hidden: 16
+    hawkes_alpha: 0.1            # v1.0 Hawkes self-excitation (differentiable EMA)
+    hawkes_kappa: 0.3
+  # v2 architecture
+  pairwise_kind: ecomd_v2
+  v2_k_types: 4                  # fundamentalist / chartist / noise / MM analogue
+  v2_d_type_emb: 8
+  v2_d_pi: 4                     # Kyle demand-contribution dim
+  v2_k_random: 50                # SPS random partners per agent
+  v2_kyle_enabled: true
+  v2_kyle_lambda_init: 0.05
+  v2_kyle_lambda_learnable: true
+  v2_gauge_axis: 0               # enforce gauge on log-price axis
+  v2_type_seed: 42
+
+training:
+  n_iters: 80
+  chunk_steps: 32
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 3
+  grad_clip_max_norm: 1.0
+  seed: 0
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+    # v2: optional ACF-shape loss to prevent Goodhart flat-curve failure.
+    # Disabled for v2 smoke so we can compare to v0.8 apples-to-apples;
+    # enable in production.
+    w_acf_shape: 0.0
+    acf_shape_target_ratio: 2.0
+    acf_shape_lag_peak: 1
+    acf_shape_lag_tail: 10
+
+evaluation:
+  n_realizations: 3
+  eval_steps: 2000
+
+variant: v2_mac_smoke
