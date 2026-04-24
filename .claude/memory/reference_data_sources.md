@@ -1,10 +1,20 @@
 ---
 name: Data source registry (EcoPhys)
-description: Ranked list of cheap/free financial data sources for US equity (daily/minute/LOB) and crypto (minute/tick), with cost, coverage, and access mechanism notes. Based on 2026-04-23 survey.
+description: Ranked list of financial data sources for US equity (daily/minute/LOB) and crypto (minute/tick/L2). Includes free tiers for development plus the Path C paid stack (Tardis L2, FirstRate minute, LOBSTER) committed 2026-04-24 for Nature Physics flagship. Cost, coverage, and access mechanism notes.
 type: reference
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 # Data Source Registry — EcoPhys
+
+## Path C paid stack (committed 2026-04-24, $8–12k)
+
+| Source | Price target | Coverage | Paper dependency |
+|---|---|---|---|
+| **Tardis.dev crypto L2** | $4–5.5k | BTC + ETH × 6 months, full L2 book changes + trades | Paper B (B3 TUR + cross-asset universality), Paper B.5 |
+| **FirstRate / AlgoSeek US equity minute** | $1.5–2.5k | 20 symbols × 3 years, 1m OHLCV, survivorship-bias-free | Paper B (A1 intraday-equity scale), Paper C (crash EWS) |
+| **LOBSTER research subscription** | $3–4.5k | 20–50 symbols × 2–3 years, L10 reconstruction | Paper B (B3 event-level), Paper C (optimal execution) |
+
+See `ecomd/data/buy_order_v2_{en,zh}.md` for purchasing decision flow tied to plan v3 gates.
 
 ## US Equity
 
@@ -14,9 +24,9 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 | Polygon.io | Free tier → $79/mo | EOD free; 10yr at $79 | REST API | Good step-up when yfinance insufficient. |
 | Alpha Vantage | Free (5 req/min, 25/day) → $429/mo | Daily/minute | REST API | Free limits too tight for serious work. |
 | Databento | $125 free credit → tiered | Tick, 1m, daily | Python SDK | **Recommended for initial minute-level experiments** — the $125 credit covers a meaningful prototype. |
-| FirstRate Data | ~$60–100/mo per ticker | 1m, tick (10–15yr) | One-time CSV purchase | Consider for production if minute data becomes critical. |
+| FirstRate Data | ~$60–100/mo per ticker or bulk discount | 1m, tick (10–15yr) | One-time CSV purchase | **Path C: committed.** Primary source for US equity minute (20 symbols × 3 yr ~ $1.5–2.5k). |
 | Kibot | $350–500 per symbol | 1m, tick (17+ yr) | One-time download | Alternative to FirstRate; older. |
-| LOBSTER | Free samples; full ~$3–5k/yr | NASDAQ LOB reconstruction | Direct download | **Use free samples** for microstructure ablations; don't pay unless crucial. |
+| LOBSTER | Free samples (in `data/sample/`); full ~$3–4.5k for 2–3 yr | NASDAQ LOB reconstruction | Direct download | **Path C: committed.** Free samples still useful for pipeline development. |
 | CRSP/WRDS | Institutional (via university) | Daily since 1925, TAQ tick since 1997/2003 | WRDS portal | Only if user has university affiliation. |
 | FRED | Free | Daily indices | REST API | Macro/indices only. |
 | Stooq | Free | Daily, hourly, 1m | Manual CSV | 30+ yr some stocks. No API — fine for one-off downloads. |
@@ -29,7 +39,7 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 |---|---|---|---|---|
 | Binance data.binance.vision | **Free** | 1m klines, aggTrades (tick) | HTTPS bulk download | **Main source**: https://data.binance.vision/ — monthly ZIP files per symbol. BTC/ETH/SOL 1yr ≈ 50–200 GB zstd compressed. |
 | CryptoDataDownload | Free | Minute OHLCV | CSV download | 400+ exchanges. Convenient for cross-exchange replicates. |
-| Tardis.dev | Academic $450/mo; biz $3.5k+ | L2 book, trades, liquidations, options | Python SDK | Best-in-class tick + L2 coverage. Consider for Paper B physics experiments if identified necessary. |
+| Tardis.dev | Academic $450/mo; biz $3.5k+ | L2 book, trades, liquidations, options | Python SDK | **Path C: committed.** BTC + ETH × 6 months (~$4–5.5k). Paper B B3 TUR + universality at microstructure scale rely on this. |
 | Kaiko | Institutional (expensive) | Standardized OHLCV + indices | API | Regulatory-grade; skip unless specific need. |
 | Databento | $125 credit → tiered | Tick, 1m | Python SDK | Also has crypto. |
 | CoinAPI.io | Free 100 req/day → $10–500/mo | OHLCV, quotes, L2/L3 | REST | Flexible for spot-checking individual pairs. |

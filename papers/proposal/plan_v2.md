@@ -1,5 +1,10 @@
 # EcoPhys: 分子动力学视角下的金融市场群体动力学研究
 
+> ⚠️ **SUPERSEDED**: This plan has been replaced by `plan_v3.md` (2026-04-24,
+> Path C commitment — Nature Physics flagship with $8–12k high-freq data buy-in
+> and 58-week timeline). Kept for historical reference.
+> **Do not use this document for current planning decisions.**
+
 **Plan version**: v2 (2026-04-23, 同日修订：$50k 数据预算 + H20 内网约束 + M3→arXiv 确认)
 **Author**: Claude (以 AI 学术研究者 + critical reviewer 视角)
 **Working directory**: `/Users/howardwang/Desktop/playground/ecophys`

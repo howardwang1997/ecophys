@@ -1,5 +1,9 @@
 # EcoPhys: 分子动力学视角下的金融市场群体动力学研究
 
+> ⚠️ **SUPERSEDED**: This plan has been replaced by `plan_v2.md` (same day revision)
+> and ultimately by `plan_v3.md` (2026-04-24, Path C commitment). Kept for historical
+> reference. **Do not use this document for current planning decisions.**
+
 **Plan version**: v1 (2026-04-23)
 **Author**: Claude (以 AI 学术研究者 + critical reviewer 视角)
 **Working directory**: `/Users/howardwang/Desktop/playground/ecophys`

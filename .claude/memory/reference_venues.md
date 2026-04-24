@@ -20,9 +20,9 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 
 | Venue | Scope | Fit | Notes |
 |---|---|---|---|
-| **Nature Physics** | New physical phenomena, cross-domain universality | Stretch lottery only if M4 exceptional (universal quantity + cross-market + falsifiable prediction) | ~3–8% realistic probability per §3.1.1 of plan. Try once after Paper B if M4 succeeds; else fallback to PRL. |
-| **PNAS** | Interdisciplinary | Similar bar to Nature Physics, more applied-leaning | Alternative stretch. |
-| **Physical Review Letters (PRL)** | Short letters, broad interest | **Primary target for Paper B**. Tóth-Lux-Sornette 2018 was published here. | 4-page limit — forces clarity; good for "new physics quantity" papers. |
+| **Nature Physics** | New physical phenomena, cross-domain universality | **PRIMARY target for Paper B (plan v3 + Path C, 2026-04-24).** Requires: A1 T_eff critical scaling on ≥3 timescales + B2 Jarzynski with FOMC/earnings protocol + all 7 sanity checks pass + Wk 28 arXiv pre-registration. | **15–22%** joint probability after Path C high-freq data commitment ($8–12k). Was ~3–8% under plan v2. Multi-scale A1 + FOMC-protocol B2 + L2 B3 each close a specific reviewer attack. See `plan_v3.md` §3, §6. |
+| **PNAS** | Interdisciplinary | Alternative flagship if NP desks-reject; more applied-leaning framing | Re-home Paper B with minor framing changes if needed. |
+| **Physical Review Letters (PRL)** | Short letters, broad interest | **Primary retreat target** for Paper B if NP fails any gate. Also: **Paper B.5 (TUR companion) independently targets PRL.** | 4-page limit — forces clarity. Tóth-Lux-Sornette 2018 published here. Tested retreat path in plan v3 §7. |
 | **Physical Review X** | Longer, open-access, high-impact | Alternative to PRL with more length | Slower review. |
 | **Physical Review E** | Stat mech, nonlinear dynamics, complex systems | Solid tier-2 fallback | Well-defined audience; comfortable home for econophysics. |
 | **Physica A** | Stat mech + applications | Tier-3, higher acceptance | Always-open fallback. |

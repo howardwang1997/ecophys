@@ -1,5 +1,9 @@
 # Data Buy Order v1 — EcoPhys (2026-04-23)
 
+> ⚠️ **SUPERSEDED**: Replaced by `buy_order_v2_en.md` (Path C, 2026-04-24 evening).
+> v2 restructures purchases by paper sequence and commits to $8–12k high-freq
+> data for the Nature Physics flagship. Kept here for historical reference.
+
 **Context**: User has vendor contacts covering all markets we need. Budget $50k, planned spend $15k–25k. This doc = prioritized list for vendors.
 
 ## Priority 1 — buy immediately (estimated $6k–12k)

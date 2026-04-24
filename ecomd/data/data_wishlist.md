@@ -1,6 +1,15 @@
-# Data Wishlist — EcoPhys (v2, 2026-04-23)
+# Data Wishlist — EcoPhys (v2, 2026-04-23 — Path C addendum 2026-04-24)
 
-**Budget**: up to $50,000. Planned spend: $15k–30k on Tier 1 + 1.5; reserve $20k+ for Phase 4/5 contingencies.
+> ⚠️ **OPERATIONAL ROLE**: This document is a raw inventory of datasets we've
+> evaluated. For the **current purchasing plan** aligned to plan v3 + Path C,
+> use `buy_order_v2_en.md` / `buy_order_v2_zh.md` — those are the authoritative
+> decision documents. The tiering below (Tier 1 / Tier 1.5 / etc.) still reflects
+> earlier plan-v2 thinking; the Path C commitment consolidates purchases into
+> a single $8–12k package at Wk 17–18 (Tardis L2 6mo + FirstRate minute 3y +
+> LOBSTER 2–3y).
+
+**Budget**: up to $50,000. **Path C commitment**: **$8–12k** up-front.
+**Reserve**: **$38–42k** for Phase 4/5 contingencies.
 
 **Use**: hand this to data vendors / contacts. Priority-ordered by research ROI.
 
