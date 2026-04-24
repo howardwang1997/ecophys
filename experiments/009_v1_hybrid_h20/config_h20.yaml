@@ -53,9 +53,10 @@ simulator:
 
 training:
   n_iters: 200
-  chunk_steps: 16                      # k=64 hybrid readout needs more HBM
-  warmup_steps: 4                      # leave 12 effective BPTT steps
-  warmup_steps: 16
+  # k=64 hybrid readout + body=4 fits 96 GB HBM at chunk=24. Mac H winner used
+  # chunk=32 warmup=16 (BPTT=16 effective). Keeping BPTT=16 for comparability.
+  chunk_steps: 24
+  warmup_steps: 8
   persistent_state: true
   lr: 1.0e-3
   lr_warmup_iters: 10
