@@ -90,6 +90,8 @@ class EcoMDConfig:
     v2_phi_init_gain: float = 0.5            # xavier gain for pair kernel MLP
     v2_pi_init_gain: float = 0.5             # xavier gain for Kyle π MLP
     v2_T_offdiag_init: float = 0.1           # init scale for T off-diagonal
+    v2_gauge_enforce: bool = False           # if True: Δs only pair input; False: full (s_i, s_j)
+    v2_T_init_mode: str = "eye_plus_noise"   # 'eye_plus_noise' | 'ones' | 'uniform'
 
 
 class EcoMDSimulator(nn.Module):
@@ -141,6 +143,8 @@ class EcoMDSimulator(nn.Module):
                 phi_init_gain=self.cfg.v2_phi_init_gain,
                 pi_init_gain=self.cfg.v2_pi_init_gain,
                 T_offdiag_init=self.cfg.v2_T_offdiag_init,
+                gauge_enforce=self.cfg.v2_gauge_enforce,
+                T_init_mode=self.cfg.v2_T_init_mode,
             )
             type_gen = torch.Generator().manual_seed(self.cfg.v2_type_seed)
             pairwise = EcoMDv2Potential(

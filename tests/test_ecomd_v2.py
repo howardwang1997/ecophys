@@ -39,6 +39,9 @@ def small_config():
         kyle_enabled=True,
         kyle_lambda_init=0.05,
         gauge_axis=0,
+        gauge_enforce=True,      # tests explicitly verify gauge-invariance path;
+                                 # production default is False since Mac ablation
+                                 # 2026-04-25 showed gauge hurts stylized facts.
     )
 
 

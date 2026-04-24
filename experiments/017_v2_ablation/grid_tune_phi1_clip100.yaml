@@ -1,0 +1,20 @@
+# phi=1.0 grid WITH grad_clip=100 (not 1.0 like Mac default).
+#
+# Diagnosis: phi=0.5 Mac runs stuck at 4/11 because forces too weak.
+# phi=1.0 gives |F|=0.88 (matches v0.8), but at clip=1.0 the training
+# gradient is capped too aggressively for the scaled-up forces.
+# H20 diagnostic found clip=100 is necessary at v1 scale; same likely
+# applies to v2. This grid runs the phi sweet-spot WITH clip=100.
+
+base_config: base_config.yaml
+
+grid:
+  simulator.v2_phi_init_gain: [0.8, 1.0, 1.2]
+  simulator.v2_kyle_enabled: [true, false]
+  simulator.v2_gauge_axis: [-1, 0]
+  simulator.v2_k_random: [50]
+  training.grad_clip_max_norm: [100.0]            # ← key change
+
+skip_when: []
+
+variant_template: "phiC_{simulator.v2_phi_init_gain}_K{simulator.v2_kyle_enabled}_g{simulator.v2_gauge_axis}"
