@@ -107,3 +107,50 @@ def test_registry_readout():
 def test_registry_unknown():
     with pytest.raises(ValueError):
         build_price_formation("nonsense", d=4)
+
+
+# ── v0.6: learnable β ───────────────────────────────────────────────────────
+
+
+def test_excess_demand_learnable_beta_has_params():
+    pf = ExcessDemandPrice(ExcessDemandParams(learnable_beta=True))
+    params = list(pf.parameters())
+    assert len(params) >= 2  # at least one Linear's weight+bias
+
+
+def test_excess_demand_learnable_beta_starts_near_base():
+    """At initialization, β_net outputs ≈ 0 → factor ≈ 1 → β_eff ≈ β_base."""
+    torch.manual_seed(0)
+    pf = ExcessDemandPrice(ExcessDemandParams(beta=0.3, learnable_beta=True))
+    st = pf.init_state(device=torch.device("cpu"), dtype=torch.float32)
+    beta = pf._effective_beta(st)
+    assert abs(float(beta.detach()) - 0.3) < 0.1
+
+
+def test_excess_demand_learnable_beta_backprops():
+    """β-net must receive gradient so it can learn regime-dependent response."""
+    torch.manual_seed(0)
+    pf = ExcessDemandPrice(ExcessDemandParams(beta=0.5, learnable_beta=True))
+    s_prev = _state(5, 4, seed=0)
+    s_next = _state(5, 4, seed=1) + 0.05  # nonzero ΔPos
+    st = pf.init_state(device=s_prev.device, dtype=s_prev.dtype)
+    out = pf.step(st, s_prev, s_next, generator=torch.Generator().manual_seed(0))
+    out.state.log_price.backward()
+    has_grad = any(p.grad is not None and torch.isfinite(p.grad).all()
+                   for p in pf.beta_net.parameters())
+    assert has_grad
+
+
+def test_excess_demand_constant_beta_has_no_beta_net():
+    pf = ExcessDemandPrice(ExcessDemandParams(learnable_beta=False))
+    assert pf.beta_net is None
+
+
+def test_excess_demand_aux_reports_beta_eff():
+    pf = ExcessDemandPrice(ExcessDemandParams(beta=0.5, learnable_beta=True))
+    s_prev = _state(4, 3, seed=0)
+    s_next = _state(4, 3, seed=1)
+    st = pf.init_state(device=s_prev.device, dtype=s_prev.dtype)
+    out = pf.step(st, s_prev, s_next, generator=torch.Generator().manual_seed(0))
+    assert "beta_eff" in out.aux
+    assert torch.isfinite(out.aux["beta_eff"])

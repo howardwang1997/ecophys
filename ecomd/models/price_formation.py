@@ -76,11 +76,17 @@ class PriceFormation(Protocol):
 
 @dataclass(frozen=True)
 class ExcessDemandParams:
-    beta: float = 0.5          # market-maker price response to excess demand
-    kappa: float = 1.0         # scales ΔPos into ED
+    beta: float = 0.5           # market-maker price response to excess demand (base value)
+    kappa: float = 1.0          # scales ΔPos into ED
     sigma_price: float = 0.005  # residual noise on price (lognormal)
     ewma_alpha: float = 0.05    # volatility EWMA weight on |r|
     initial_log_price: float = 0.0
+    # v0.6: state-dependent β(vol, last_return). When enabled, effective β is
+    #       beta_base * softplus(mlp([vol, last_r])) / softplus(0), which preserves
+    #       β ≈ beta_base at MLP init but lets the market maker's response vary
+    #       with regime. Reduces spurious return autocorrelation (#1 ACF).
+    learnable_beta: bool = False
+    beta_hidden: int = 16
 
 
 class ExcessDemandPrice(nn.Module):
@@ -95,6 +101,19 @@ class ExcessDemandPrice(nn.Module):
     def __init__(self, params: ExcessDemandParams | None = None) -> None:
         super().__init__()
         self.params = params or ExcessDemandParams()
+        if self.params.learnable_beta:
+            self.beta_net: nn.Module | None = nn.Sequential(
+                nn.Linear(2, self.params.beta_hidden),
+                nn.SiLU(),
+                nn.Linear(self.params.beta_hidden, 1),
+            )
+            # Init last layer near zero so β_eff ≈ β_base at start
+            for m in self.beta_net.modules():
+                if isinstance(m, nn.Linear):
+                    nn.init.xavier_uniform_(m.weight, gain=0.1)
+                    nn.init.zeros_(m.bias)
+        else:
+            self.beta_net = None
 
     @property
     def context_dim(self) -> int:
@@ -108,6 +127,16 @@ class ExcessDemandPrice(nn.Module):
             volatility=torch.tensor(self.params.sigma_price, device=device, dtype=dtype),
             step=0,
         )
+
+    def _effective_beta(self, state: PriceState) -> Tensor:
+        base = torch.as_tensor(self.params.beta, device=state.log_price.device, dtype=state.log_price.dtype)
+        if self.beta_net is None:
+            return base
+        inp = torch.stack([state.volatility, state.last_log_return])
+        raw = self.beta_net(inp).squeeze()
+        # Multiplicative perturbation centered at 1; clamped to [0.1×, 5×] base for stability.
+        factor = torch.clamp(torch.exp(raw), min=0.1, max=5.0)
+        return base * factor
 
     def step(
         self,
@@ -123,10 +152,12 @@ class ExcessDemandPrice(nn.Module):
         excess_demand = p.kappa * dpos.sum()
         volume = dpos.abs().sum()
 
+        beta_eff = self._effective_beta(state)
+
         # Log-price step: log p_{t+1} = log p_t + β · ED · dt - 0.5 σ² + σ · η
         # With dt absorbed into β for v0 (we use unit dt for the price step).
         eta = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
-        log_ret = p.beta * excess_demand - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
+        log_ret = beta_eff * excess_demand - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
         log_price_next = state.log_price + log_ret
 
         vol_next = (1 - p.ewma_alpha) * state.volatility + p.ewma_alpha * log_ret.abs()
@@ -142,6 +173,7 @@ class ExcessDemandPrice(nn.Module):
             "excess_demand": excess_demand.detach(),
             "volume": volume.detach(),
             "log_return": log_ret.detach(),
+            "beta_eff": beta_eff.detach(),
         }
         return PriceStepResult(state=new_state, context=context, aux=aux)
 
