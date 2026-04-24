@@ -41,7 +41,7 @@ simulator:
     learnable_beta: true
     beta_hidden: 16
   pairwise_kind: mace_lite
-  mace_k: 200                          # dense-but-not-complete (2% coverage)
+  mace_k: 64                           # fits 96GB HBM; 200 OOMs
   mace_body_order: 4
   mace_n_classes: 4
   mace_n_rbf: 8
@@ -53,7 +53,8 @@ simulator:
 
 training:
   n_iters: 200
-  chunk_steps: 48                      # BPTT window = 48-16 = 32 steps
+  chunk_steps: 16                      # k=64 hybrid readout needs more HBM
+  warmup_steps: 4                      # leave 12 effective BPTT steps
   warmup_steps: 16
   persistent_state: true
   lr: 1.0e-3
