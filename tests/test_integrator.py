@@ -4,6 +4,7 @@ Key physics gates:
 - Energy conservation at T=0 under a simple harmonic V_cons (drift only).
 - Fluctuation-dissipation relation: equilibrium ⟨s²⟩ ≈ T / k (for V = 0.5 k s²).
 - Seed reproducibility.
+- v0.6: Student-t noise has unit variance and excess kurtosis > 0.
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ import math
 import pytest
 import torch
 
-from ecomd.physics.integrator import OverdampedLangevin, UnderdampedLangevin
+from ecomd.physics.integrator import OverdampedLangevin, UnderdampedLangevin, _sample_unit_t
 
 
 # ── Simple harmonic test fixture ─────────────────────────────────────────────
@@ -150,3 +151,89 @@ def test_underdamped_stub_raises():
     s = torch.zeros(3, 2)
     with pytest.raises(NotImplementedError):
         u.step(s, torch.zeros_like(s), torch.zeros_like(s), T=0.1, gamma=1.0, dt=0.01)
+
+
+# ── v0.6: Student-t noise ────────────────────────────────────────────────────
+
+
+def test_sample_unit_t_is_unit_variance():
+    """Unit-variance normalization: ⟨ε²⟩ ≈ 1 over large sample."""
+    gen = torch.Generator().manual_seed(0)
+    samples = _sample_unit_t((20000,), df=5, generator=gen,
+                              device=torch.device("cpu"), dtype=torch.float32)
+    assert abs(samples.var().item() - 1.0) < 0.10
+
+
+def test_sample_unit_t_has_heavy_tails():
+    """Student-t(df=5) unit-variance has excess kurtosis 6/(df-4) = 6. Gaussian has 0."""
+    gen = torch.Generator().manual_seed(0)
+    samples = _sample_unit_t((30000,), df=5, generator=gen,
+                              device=torch.device("cpu"), dtype=torch.float32)
+    # 4th central moment / var² - 3 = excess kurtosis
+    m = samples.mean()
+    var = samples.var(unbiased=False)
+    excess_kurt = ((samples - m) ** 4).mean() / var.pow(2) - 3.0
+    assert excess_kurt > 2.0, f"expected heavy tail kurtosis > 2, got {excess_kurt.item():.2f}"
+
+
+def test_sample_unit_t_reproducible():
+    def draw(seed: int):
+        gen = torch.Generator().manual_seed(seed)
+        return _sample_unit_t((100,), df=5, generator=gen,
+                               device=torch.device("cpu"), dtype=torch.float32)
+    assert torch.allclose(draw(7), draw(7))
+    assert not torch.allclose(draw(7), draw(8))
+
+
+def test_overdamped_t_noise_preserves_fdt():
+    """Student-t noise at unit variance must still satisfy ⟨s²⟩ ≈ T/k."""
+    integ = OverdampedLangevin(noise_dist="t", noise_df=5)
+    torch.manual_seed(11)
+    n, d = 500, 3
+    s = torch.zeros(n, d)
+    k, T, gamma, dt = 1.0, 0.5, 1.0, 0.02
+    gen = torch.Generator().manual_seed(11)
+    for _ in range(2500):
+        f = -k * s
+        s = integ.step(s, f, torch.zeros_like(s), T=T, gamma=gamma, dt=dt, generator=gen).s_next
+    s2 = 0.0
+    for _ in range(1000):
+        f = -k * s
+        s = integ.step(s, f, torch.zeros_like(s), T=T, gamma=gamma, dt=dt, generator=gen).s_next
+        s2 += s.pow(2).mean().item()
+    s2 /= 1000
+    # FDT should hold for any unit-variance noise (is the key reason we want unit-variance)
+    assert abs(s2 - T / k) / (T / k) < 0.12
+
+
+def test_overdamped_t_noise_has_heavier_tail_than_gaussian():
+    """Integrated trajectory kurtosis: Student-t driver > Gaussian driver."""
+    kurts = {}
+    for name, integ in [("normal", OverdampedLangevin("normal")),
+                        ("t5",     OverdampedLangevin("t", noise_df=5))]:
+        torch.manual_seed(3)
+        s = torch.zeros(200, 2)
+        gen = torch.Generator().manual_seed(3)
+        # weak restoring force → noise dominates; let it run long
+        increments = []
+        for _ in range(500):
+            f = -0.1 * s
+            out = integ.step(s, f, torch.zeros_like(s), T=1.0, gamma=1.0, dt=0.01, generator=gen)
+            increments.append((out.s_next - s).flatten())
+            s = out.s_next
+        inc = torch.cat(increments)
+        m = inc.mean()
+        var = inc.var(unbiased=False)
+        kurts[name] = ((inc - m) ** 4).mean() / var.pow(2) - 3.0
+    assert kurts["t5"] > kurts["normal"] + 0.3, (
+        f"t-noise trajectory kurtosis {kurts['t5']:.2f} not clearly above Gaussian {kurts['normal']:.2f}"
+    )
+
+
+def test_overdamped_noise_dist_validation():
+    with pytest.raises(ValueError):
+        OverdampedLangevin(noise_dist="cauchy")
+    with pytest.raises(ValueError):
+        OverdampedLangevin(noise_dist="t", noise_df=2)
+    with pytest.raises(ValueError):
+        OverdampedLangevin(noise_dist="t", noise_df=1.5)  # type: ignore[arg-type]

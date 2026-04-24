@@ -17,14 +17,17 @@ Overdamped Langevin update (Euler-Maruyama):
 
     s_{t+1} = s_t + (f_cons + f_diss) * dt / gamma + √(2 T dt / gamma) * ε
 
-with ε ~ N(0, I). The noise amplitude satisfies the fluctuation-dissipation
-relation with the ``gamma`` used here.
+with ε ~ N(0, I) by default. From v0.6 onward, ε can be a unit-variance
+Student-t random variate (set ``noise_dist='t'``); this preserves the
+Einstein relation ⟨ε²⟩ = 1 while injecting heavy tails that the Gaussian
+integrator cannot reproduce (stylized facts #2 Hill-α, #5 Fano).
 """
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Literal, Protocol
 
 import torch
 from torch import Tensor
@@ -69,11 +72,62 @@ class LangevinIntegrator(Protocol):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+def _sample_unit_t(
+    shape: tuple[int, ...],
+    df: int,
+    *,
+    generator: torch.Generator | None,
+    device: torch.device,
+    dtype: torch.dtype,
+) -> Tensor:
+    """Unit-variance Student-t via x / sqrt(χ²_df / df), then var-normalized.
+
+    Composed from :func:`torch.randn` so the given ``generator`` governs the
+    sampling — this keeps experiments seed-reproducible. Requires integer
+    df > 2 so the distribution has finite variance.
+    """
+    if not isinstance(df, int) or df <= 2:
+        raise ValueError(f"Student-t df must be integer > 2, got {df}")
+    x = torch.randn(shape, generator=generator, device=device, dtype=dtype)
+    chi_sq = torch.zeros(shape, device=device, dtype=dtype)
+    for _ in range(df):
+        z = torch.randn(shape, generator=generator, device=device, dtype=dtype)
+        chi_sq = chi_sq + z * z
+    t = x / torch.sqrt(chi_sq / df)
+    return t / math.sqrt(df / (df - 2.0))
+
+
 class OverdampedLangevin:
     """Euler-Maruyama overdamped Langevin step.
 
     s_{t+1} = s + (f_cons + f_diss) / gamma * dt + sqrt(2 T dt / gamma) * eps
+
+    Noise ε has unit variance by construction in either noise distribution
+    (Gaussian or Student-t), preserving the fluctuation-dissipation relation.
     """
+
+    def __init__(
+        self,
+        noise_dist: Literal["normal", "t"] = "normal",
+        noise_df: int = 5,
+    ) -> None:
+        if noise_dist not in ("normal", "t"):
+            raise ValueError(f"noise_dist must be 'normal' or 't', got {noise_dist!r}")
+        if noise_dist == "t" and (not isinstance(noise_df, int) or noise_df <= 2):
+            raise ValueError(f"noise_df must be integer > 2 for Student-t, got {noise_df}")
+        self.noise_dist = noise_dist
+        self.noise_df = noise_df
+
+    def _sample_noise(
+        self,
+        shape: tuple[int, ...],
+        generator: torch.Generator | None,
+        device: torch.device,
+        dtype: torch.dtype,
+    ) -> Tensor:
+        if self.noise_dist == "normal":
+            return torch.randn(shape, generator=generator, device=device, dtype=dtype)
+        return _sample_unit_t(shape, self.noise_df, generator=generator, device=device, dtype=dtype)
 
     def step(
         self,
@@ -98,7 +152,7 @@ class OverdampedLangevin:
         T_t = torch.clamp(T_t, min=0.0)
 
         noise_scale = torch.sqrt(2.0 * T_t * dt / gamma_t)
-        eps = torch.randn(s.shape, generator=generator, device=s.device, dtype=s.dtype)
+        eps = self._sample_noise(tuple(s.shape), generator, s.device, s.dtype)
         stoch_displacement = noise_scale * eps
 
         drift = (f_cons + f_diss) / gamma_t * dt

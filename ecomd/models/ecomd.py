@@ -57,6 +57,8 @@ class EcoMDConfig:
     lam_dissipation: float = 0.01
     learn_gamma: bool = True
     learn_temperature: bool = True
+    noise_dist: str = "normal"               # 'normal' or 't' (Student-t, v0.6+)
+    noise_df: int = 5                        # only used when noise_dist='t'
 
 
 class EcoMDSimulator(nn.Module):
@@ -91,7 +93,9 @@ class EcoMDSimulator(nn.Module):
         self.potential = ConservativePotential(pairwise, external)
         self.dissipation = DissipationPotential(DissipationParams(lam=self.cfg.lam_dissipation))
 
-        self.integrator = integrator or OverdampedLangevin()
+        self.integrator = integrator or OverdampedLangevin(
+            noise_dist=self.cfg.noise_dist, noise_df=self.cfg.noise_df
+        )
 
         # learnable log-parametrised γ, T (positivity by construction)
         log_gamma = torch.tensor(float(torch.log(torch.tensor(self.cfg.gamma_init))))
