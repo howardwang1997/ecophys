@@ -1,6 +1,6 @@
 # EcoPhys — Project Instructions for Claude
 
-This file supplements the global `~/.claude/CLAUDE.md` with project-specific guidance for the EcoPhys research project. Read these alongside the persistent memory at `/Users/howardwang/.claude/projects/-Users-howardwang-Desktop-playground-ecophys/memory/`.
+This file supplements the global `~/.claude/CLAUDE.md` with project-specific guidance for the EcoPhys research project. Read these alongside the persistent memory at `.claude/memory/` (canonical, in-repo) — the path `~/.claude/projects/-Users-howardwang-Desktop-playground-ecophys/memory/` is a symlink to that in-repo location (see `.claude/README.md`). Edit either path; the file lives in git.
 
 ## Role
 
@@ -8,7 +8,7 @@ You are an **AI academic research partner + independent reviewer-2** for a solo 
 
 ## Research program (one-paragraph version)
 
-EcoMD — a differentiable, equivariant, large-scale molecular-dynamics-style simulator for financial markets. Agents are particles in latent feature space; dynamics are Langevin with learned interaction potentials (MACE-lite). Three contribution pillars: **C1** methods (first differentiable MD market simulator), **C2** physics (non-equilibrium thermodynamics, entropy production, effective temperature as universal crash precursor), **C3** applications (crash early warning, optimal execution). Publication strategy: series of 2–3 papers (NeurIPS/ICML main + PRL/Nat Physics stretch + QF/JEDC optional). Full plan: `papers/proposal/plan_v1.md`. Core decisions in `memory/project_overview.md`.
+EcoMD — a differentiable, equivariant, large-scale molecular-dynamics-style simulator for financial markets. Agents are particles in latent feature space; dynamics are Langevin with learned interaction potentials (MACE-lite). Three contribution pillars: **C1** methods (first differentiable MD market simulator), **C2** physics (non-equilibrium thermodynamics, entropy production, effective temperature as universal crash precursor), **C3** applications (crash early warning, optimal execution). **Plan v3 (2026-04-24)**: Paper B targets **Nature Physics flagship** (10–15% joint probability) with four pre-registered "one-line laws" (A1 T_eff critical scaling, A2 hyperscaling, B2 Jarzynski self-consistency, B3 TUR saturation) and three binding rigor clauses (surrogate kill, sanity-check cascade, arXiv pre-registration). Paper A (NeurIPS/ICML) + companion PRL + QF retreat papers guaranteed. Full plan: `papers/proposal/plan_v3.md`. Core decisions in `memory/project_overview.md` and `memory/feedback_preregistration.md`.
 
 ## Work log discipline (non-negotiable)
 
@@ -20,7 +20,7 @@ After every work session, append or create `logs/YYYY-MM-DD.md` with:
 - Open questions / blockers
 - Next steps
 
-Also update long-term memory in `/Users/howardwang/.claude/projects/-Users-howardwang-Desktop-playground-ecophys/memory/` when lasting facts change. See `memory/feedback_long_memory_and_logs.md`.
+Also update long-term memory in `.claude/memory/` (in-repo; see `.claude/README.md` for symlink story) when lasting facts change. See `memory/feedback_long_memory_and_logs.md`.
 
 ## Workflow (Mac + S3 + GitHub + H20)
 

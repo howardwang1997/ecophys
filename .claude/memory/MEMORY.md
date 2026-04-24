@@ -1,0 +1,9 @@
+- [User role](user_role.md) — independent full-time researcher, 6–18 mo, **8×H20 NVLink long-term**, cheap-data preference ($50k budget), Mac+R2+GitHub+H20 workflow
+- [Project overview](project_overview.md) — EcoPhys/EcoMD: differentiable physics-inspired market simulator; C1/C2/C3 pillars; **plan v3: Paper B → Nature Physics flagship with retreat paths** (10–15% joint NP probability)
+- [Pre-registration clauses](feedback_preregistration.md) — 3 rigor clauses user accepted 2026-04-24 (surrogate kill, sanity-check cascade, arXiv pre-registration); binding for Paper B
+- [Critical thinking stance](feedback_critical_thinking.md) — act as independent reviewer-2; honest probability estimates; pushback when warranted
+- [Memory + work log discipline](feedback_long_memory_and_logs.md) — update memory after each session; write dated logs in repo `logs/`
+- [Workflow split](feedback_workflow.md) — Mac dev + R2 data + GitHub code + H20 pull-and-train; H20 is remote, not accessible from Claude
+- [Data source registry](reference_data_sources.md) — ranked cheap/free sources for US equity + crypto, storage cost estimates, crash-event data availability
+- [Target venue registry](reference_venues.md) — ML/physics/finance venues with fit, deadlines, go/no-go gates
+- [Research plan v3](../../../plans/4-h20-claude-ai-playful-bubble.md) — full plan at /Users/howardwang/.claude/plans/4-h20-claude-ai-playful-bubble.md (mirror at papers/proposal/plan_v3.md)
