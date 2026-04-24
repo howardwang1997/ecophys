@@ -68,6 +68,10 @@ class EcoMDConfig:
     mace_n_rbf: int = 8                      # Gaussian RBF centers
     mace_knn_refresh: int = 10               # steps between k-NN recomputes
     mace_use_layernorm: bool = True          # LN on h^(1) before tensor products (ablation)
+    # F1-F4 force-magnitude fixes — defaults preserve original v1 behaviour
+    mace_readout_mode: str = "per_node"      # 'per_node' | 'per_edge' | 'hybrid'
+    mace_readout_multiplier: float = 1.0     # F1: multiply V output by this
+    mace_readout_init_gain: float = 0.5      # F2: xavier gain for readout last layer
 
 
 class EcoMDSimulator(nn.Module):
@@ -108,6 +112,9 @@ class EcoMDSimulator(nn.Module):
                 n_rbf=self.cfg.mace_n_rbf,
                 knn_refresh=self.cfg.mace_knn_refresh,
                 use_layernorm=self.cfg.mace_use_layernorm,
+                readout_mode=self.cfg.mace_readout_mode,
+                readout_multiplier=self.cfg.mace_readout_multiplier,
+                readout_init_gain=self.cfg.mace_readout_init_gain,
             )
         else:
             raise ValueError(f"unknown pairwise_kind {self.cfg.pairwise_kind!r}; expected 'mlp' or 'mace_lite'")
