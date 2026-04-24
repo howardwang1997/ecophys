@@ -1,0 +1,71 @@
+# EcoMD v1 ablation H (F4 fix) — hybrid: per-edge + per-node (body=4) readout.
+#
+# V = Σ_{(i,j)∈E} g(m_ij, z_i, z_j)   +   Σ_i U(h¹_i, h²_i, h³_i, z_i)
+#     ↑ 2-body pair-sum scaling            ↑ higher-body MACE expressiveness
+#
+# Best of both worlds: restores v0.6-scale pair interactions AND keeps
+# MACE-lite's 3/4-body expressive power. Scale factor kept at 1 since
+# per-edge already contributes O(N·k) = 1600 terms at N=200, k=8.
+#
+# Changes from A_matched:
+#   mace_readout_mode: per_node → hybrid
+#   mace_body_order:   2 → 4
+
+simulator:
+  n_agents: 200
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: true
+    beta_hidden: 16
+  pairwise_kind: mace_lite
+  # Complete graph + hybrid: per-edge handles the 2-body pair-sum (restores v0.6
+  # scale), per-node body≥3 readout adds MACE-lite expressiveness on top.
+  mace_k: 199
+  mace_body_order: 4
+  mace_n_classes: 4
+  mace_n_rbf: 8
+  mace_knn_refresh: 10
+  mace_use_layernorm: true
+  mace_readout_mode: hybrid
+  mace_readout_multiplier: 10.0
+  mace_readout_init_gain: 0.5
+
+training:
+  n_iters: 80
+  chunk_steps: 32
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 3
+  grad_clip_max_norm: 1.0
+  seed: 0
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+
+evaluation:
+  n_realizations: 3
+  eval_steps: 2000
+
+variant: H_F4_hybrid

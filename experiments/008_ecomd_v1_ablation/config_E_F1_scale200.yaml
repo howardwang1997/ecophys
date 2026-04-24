@@ -1,0 +1,68 @@
+# EcoMD v1 ablation E (F1 fix) — readout_multiplier = N = 200.
+#
+# Force-magnitude diagnosis (logs/2026-04-24.md Session 16+): trained v1 MACE-lite
+# has |F_pair| ≈ 0.023 vs v0.6's 1.43 (61× smaller), dominated by Langevin noise
+# σ ≈ 0.032. Result: all A/B/C/D variants collapse to Gaussian white noise.
+#
+# F1 fix: multiply the per-node readout sum by N to restore v0.6-style pair-sum
+# magnitude. V_pair should now be O(200 × U_i) ≈ O(v0.6 magnitude).
+#
+# Only change from A_matched: mace_readout_multiplier 1.0 → 200.0.
+# If F1 works alone, acf(r²) should exit 0 region and approach target +0.22.
+
+simulator:
+  n_agents: 200
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: true
+    beta_hidden: 16
+  pairwise_kind: mace_lite
+  mace_k: 8
+  mace_body_order: 2
+  mace_n_classes: 4
+  mace_n_rbf: 8
+  mace_knn_refresh: 10
+  mace_use_layernorm: true
+  mace_readout_mode: per_node
+  mace_readout_multiplier: 200.0
+  mace_readout_init_gain: 0.5
+
+training:
+  n_iters: 80
+  chunk_steps: 32
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 3
+  grad_clip_max_norm: 1.0
+  seed: 0
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+
+evaluation:
+  n_realizations: 3
+  eval_steps: 2000
+
+variant: E_F1_scale200

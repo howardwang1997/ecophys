@@ -43,12 +43,25 @@ class MACELiteConfig:
     body_order: int = 2              # 2, 3, or 4 — which higher-body features to include
     knn_refresh: int = 10            # recompute k-NN every N steps
     use_layernorm: bool = True       # LayerNorm on h^(1) before tensor products (ablation D)
+    # ── Ablation fixes E-H (force-magnitude too small: see logs/2026-04-24.md) ──
+    readout_mode: str = "per_node"   # 'per_node' | 'per_edge' | 'hybrid'
+    readout_multiplier: float = 1.0  # F1: multiply final V by this scalar
+    readout_init_gain: float = 0.5   # F2: xavier_uniform_ gain for readout last layer
 
     def __post_init__(self) -> None:
         if self.body_order not in (2, 3, 4):
             raise ValueError(f"body_order must be 2, 3, or 4; got {self.body_order}")
         if self.k < 2:
             raise ValueError(f"k must be ≥ 2; got {self.k}")
+        if self.readout_mode not in ("per_node", "per_edge", "hybrid"):
+            raise ValueError(
+                f"readout_mode must be 'per_node' | 'per_edge' | 'hybrid'; got {self.readout_mode}"
+            )
+        if self.readout_mode == "per_edge" and self.body_order != 2:
+            raise ValueError(
+                f"per_edge readout requires body_order=2 (no per-node feature path for 3/4-body); "
+                f"got body_order={self.body_order}. Use 'hybrid' for body>2."
+            )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -160,11 +173,26 @@ class MACELitePotential(nn.Module):
             )
 
         # Readout: concat([h⁽¹⁾, h⁽²⁾, h⁽³⁾, z_i]) → scalar per agent
+        # (used by readout_mode='per_node' and 'hybrid')
         readout_in = F + (F if c.body_order >= 3 else 0) + (F if c.body_order >= 4 else 0) + K
-        self.readout = nn.Sequential(
-            nn.Linear(readout_in, c.hidden), nn.SiLU(),
-            nn.Linear(c.hidden, 1),
-        )
+        self.readout: nn.Module | None = None
+        if c.readout_mode in ("per_node", "hybrid"):
+            self.readout = nn.Sequential(
+                nn.Linear(readout_in, c.hidden), nn.SiLU(),
+                nn.Linear(c.hidden, 1),
+            )
+
+        # Per-edge readout: used by readout_mode='per_edge' and 'hybrid'.
+        # g(m_ij, z_i, z_j) → scalar per edge; final V = Σ over edges.
+        # This restores v0.6-style pair-sum scaling (E edges, with E = N·k for
+        # k-NN or N·(N-1) for complete graph) while keeping MACE-lite messaging.
+        self.edge_readout: nn.Module | None = None
+        if c.readout_mode in ("per_edge", "hybrid"):
+            edge_readout_in = F + 2 * K
+            self.edge_readout = nn.Sequential(
+                nn.Linear(edge_readout_in, c.hidden), nn.SiLU(),
+                nn.Linear(c.hidden, 1),
+            )
 
         self._init_weights()
 
@@ -173,9 +201,20 @@ class MACELitePotential(nn.Module):
         self._step_since_refresh: int = 0
 
     def _init_weights(self) -> None:
+        # Message / body-3 / body-4 / type_net layers use gain=0.5 (original).
+        # All readout linear layers (both per-node and per-edge) use the
+        # configurable readout_init_gain so F2 knob meaningfully scales V output.
+        readout_linear_ids: set[int] = set()
+        for module in (self.readout, self.edge_readout):
+            if module is not None:
+                for m in module.modules():
+                    if isinstance(m, nn.Linear):
+                        readout_linear_ids.add(id(m))
+
         for m in self.modules():
             if isinstance(m, nn.Linear):
-                nn.init.xavier_uniform_(m.weight, gain=0.5)
+                gain = self.cfg.readout_init_gain if id(m) in readout_linear_ids else 0.5
+                nn.init.xavier_uniform_(m.weight, gain=gain)
                 nn.init.zeros_(m.bias)
 
     # ── Graph ────────────────────────────────────────────────────────────
@@ -237,12 +276,21 @@ class MACELitePotential(nn.Module):
             h3 = self.body4_net(h3_raw)
             feats.append(h3)
 
-        # (6) Per-agent readout
-        u_in = torch.cat([*feats, z], dim=-1)                   # (N, readout_in)
-        u_i = self.readout(u_in).squeeze(-1)                    # (N,)
+        # (6) Readout — per_node / per_edge / hybrid
+        v_total = s.new_zeros(())
+        if c.readout_mode in ("per_node", "hybrid"):
+            assert self.readout is not None
+            u_in = torch.cat([*feats, z], dim=-1)               # (N, readout_in)
+            u_i = self.readout(u_in).squeeze(-1)                # (N,)
+            v_total = v_total + u_i.sum()
+        if c.readout_mode in ("per_edge", "hybrid"):
+            assert self.edge_readout is not None
+            edge_in = torch.cat([m, z_src, z_dst], dim=-1)      # (E, F + 2K)
+            u_ij = self.edge_readout(edge_in).squeeze(-1)       # (E,)
+            v_total = v_total + u_ij.sum()
 
-        # (7) V_pairwise = sum of per-agent potentials
-        return u_i.sum()
+        # (7) F1 scaling — restore v0.6-style pair-sum magnitude
+        return v_total * c.readout_multiplier
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -259,6 +307,9 @@ def build_mace_lite(
     n_rbf: int,
     knn_refresh: int,
     use_layernorm: bool = True,
+    readout_mode: str = "per_node",
+    readout_multiplier: float = 1.0,
+    readout_init_gain: float = 0.5,
 ) -> MACELitePotential:
     cfg = MACELiteConfig(
         d_state=d_state,
@@ -270,5 +321,8 @@ def build_mace_lite(
         body_order=body_order,
         knn_refresh=knn_refresh,
         use_layernorm=use_layernorm,
+        readout_mode=readout_mode,
+        readout_multiplier=readout_multiplier,
+        readout_init_gain=readout_init_gain,
     )
     return MACELitePotential(cfg)
