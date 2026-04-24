@@ -351,18 +351,33 @@ v0.6 vs v0.8 是 **Pareto frontier 上的两个点**：
 2. **结构不生成 burst dynamics**：强制 scale（F1 multiplier）后 force 量级对了，acf(r²) 仍为 0。per-node readout MLP 的 SiLU/LN 组合产生平滑 equilibrium dynamics，而 vol clustering 来自 intermittent burst + slow decay。
 3. **hybrid 变体（H）触及 acf 均值 +0.202 但形状 flat**：经典 Goodhart — 单一均值 target 被 "常数高方差 regime" 作弊满足，物理上不是真 clustering。
 
-**Paper A 里 v1 不作为主 claim，而作为 "scaling attempt + negative result"**（见下面的 Paper A 战略）。Phase 4 (T_eff scaling, M3+) 如果需要 N ≥ 10⁴，考虑 v0.x + sparse attention pass，不继续推 MACE-lite 路线。
+**Paper A 里 v1 不作为主 claim，而作为 "scaling attempt + negative result"**（见下面的 Paper A 战略）。对于 N ≥ 10⁴ 的 scaling 需求，采用 **v0.9 stochastic pair sampling**（见 §9.5 和 papers/proposal/scaling_v1.md）——**保持 v0.x 的 pair-sum 物理，用 SGD-style 无偏 采样代替 MACE 的有偏局部稀疏化**。
 
-### 9.5 未来 12 周 roadmap（刷新）
+### 9.5 v0.9 Scaling 策略（Mac 已 M2 → H20 用满）
 
-| 周 | 目标 |
-|---|---|
-| +1 (Wk 10) | Paper A methodology draft + v0.6/v0.8 ablation 表 |
-| +2 (Wk 11) | Cross-asset 复现（BTC 1m）+ Paper A results 章 |
-| +3 (Wk 12) | Paper A arXiv pre-print draft 完成 |
-| +4-6 | Phase 3 T_eff 初探（v0.6 长 rollout）+ pre-registration 文档 |
-| +6-8 | Path C vendor 数据到货（Tardis L2、FirstRate）→ 高频 v0.x training |
-| +8-12 | M3 冲刺（v0.x 在 ≥2 markets 达 ≥7/11） + Paper B 起步 |
+用户硬要求 "4-8 卡 H20 不能只跑 toy"。MACE-lite 失败后，新 scaling 设计见 `papers/proposal/scaling_v1.md`：
+
+**核心**：
+```
+Current:  V = Σ_{i<j ∈ N²} φ(s_i, s_j)                # O(N²), N ≤ 10³
+v0.9:     V = (N-1)/(2k) · Σ_{(i,j) ∈ random E} φ(s_i, s_j)    # O(N·k), unbiased estimator
+```
+
+每 step 每 agent 随机采 k 个邻居（不是 k-NN），得到 V 的无偏估计。Unlike MACE-lite's **biased** k-NN locality，random sampling 只引入 variance 不引入 bias — preserve v0.x 的 burst-decay 动力学。
+
+**Target 规模**：N=10⁴, k=50, chunk=32 → 32 GB/H20 card，4 卡 DDP 舒服。
+
+### 9.6 未来 12 周 roadmap（刷新 v3.1）
+
+| 周 | 目标 | 产出 |
+|---|---|---|
+| +1 (今-Wk 10) | **v0.9 StochasticPairwisePotential** 实现 + Mac 验证 | experiments/013 |
+| +1 (Wk 10) | v0.9 on H20 N=10⁴ 首跑（SPX daily）| experiments/014 |
+| +2 (Wk 11) | v0.9 跨 3 资产（SPX + BTC + ETH）+ loss 形状约束 | N=10⁴ 三表 |
+| +3 (Wk 12) | Paper A methodology draft（含 v0.9 + v1 negative result）| arXiv preprint v1 |
+| +4-5 | Paper A results + ablation 表 + ABIDES 对比 pipeline | 正式投 ICAIF 2026 |
+| +5-8 | Phase 4 T_eff 初探（v0.9 长 rollout）+ pre-registration | Paper B 起步 |
+| +8-12 | Path C vendor 数据到货 + 高频 v0.x（minute + L2）| Paper B 数据层 |
 
 ---
 
