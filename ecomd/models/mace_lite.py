@@ -79,26 +79,32 @@ class GaussianRBF(nn.Module):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def knn_edge_index(s: Tensor, k: int) -> Tensor:
+def knn_edge_index(s: Tensor, k: int, chunk_size: int = 2048) -> Tensor:
     """Return edge_index of shape (2, N·k) giving i → j for each agent's k nearest.
 
     Distance = Euclidean in feature space. Self-loops excluded.
     Result is detached (we don't backprop through graph selection).
+    Computes distances in chunks to keep peak memory O(chunk_size * N * d)
+    instead of O(N² * d).
     """
     with torch.no_grad():
         n = s.shape[0]
         if k >= n:
             k = n - 1
-        # (N, N) pairwise squared distances
-        diff = s.unsqueeze(1) - s.unsqueeze(0)              # (N, N, d)
-        d2 = diff.pow(2).sum(dim=-1)                         # (N, N)
-        # exclude self by setting diagonal to +inf
-        d2.fill_diagonal_(float("inf"))
-        # top-k smallest distances → nearest neighbours
-        _, nbr_idx = torch.topk(d2, k=k, dim=1, largest=False)   # (N, k)
-        src = torch.arange(n, device=s.device).unsqueeze(1).expand(n, k).reshape(-1)  # (N·k,)
+        nbr_parts: list[Tensor] = []
+        for start in range(0, n, chunk_size):
+            end = min(start + chunk_size, n)
+            diff = s[start:end].unsqueeze(1) - s.unsqueeze(0)  # (chunk, N, d)
+            d2 = diff.pow(2).sum(dim=-1)                        # (chunk, N)
+            # exclude self-loops within this chunk
+            rows = torch.arange(end - start, device=s.device)
+            d2[rows, rows + start] = float("inf")
+            _, idx = torch.topk(d2, k=k, dim=1, largest=False)
+            nbr_parts.append(idx)
+        nbr_idx = torch.cat(nbr_parts, dim=0)                   # (N, k)
+        src = torch.arange(n, device=s.device).unsqueeze(1).expand(n, k).reshape(-1)
         dst = nbr_idx.reshape(-1)
-        return torch.stack([src, dst], dim=0)                # (2, N·k)
+        return torch.stack([src, dst], dim=0)                   # (2, N·k)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

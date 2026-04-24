@@ -58,6 +58,8 @@ echo " CKPT=$CKPT"
 echo " LOG=$RUN_LOG"
 echo "─────────────────────────────────────────────────────────────"
 
+export DIST_BACKEND="${DIST_BACKEND:-gloo}"
+
 CMD=(torchrun
     --nproc_per_node="$NPROC"
     --standalone
