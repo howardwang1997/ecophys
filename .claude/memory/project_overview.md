@@ -38,9 +38,10 @@ Three binding rigor conditions documented in `feedback_preregistration.md`:
 ## Key timeline (v3 + Path C, 58 weeks)
 - ✓ Phase 0 (Wk 1–4): infra + literature → M0
 - ✓ Phase 1 (Wk 5–10): stylized facts + baselines → M1
+- ✓ **M2 GATE PASSED 2026-04-24**: EcoMD v0.8 (shared MLP PairwisePotential, Student-t noise, β_fixed, persistent state, warmup detach) → **7/11 SPX daily**. v0.6 is Pareto-alternative with stronger vol clustering (6/11 but acf(r²)=+0.306 vs v0.8's +0.079). v1 MACE-lite attempted during Phase 2 but failed: force magnitude 60× smaller than v0.x, no burst dynamics. Paper A will position v1 as "scaling attempt + negative result" rather than main claim.
 - Phase 1.5 (Wk 17–20): **high-freq data procurement + ingest** (parallel with v1 training) → **M1.5 NEW**
-- Phase 2 (Wk 11–18): EcoMD v0 → v0.5 → v0.6 → v1 reaches ≥7/11 on SPX daily → M2 (+2 weeks)
-- Phase 3 (Wk 19–28): MACE-lite + tensor-parallel multi-market on NVLink with high-freq data → M3 (≥9/11) + **Paper A arXiv (Wk 28)**
+- Phase 2 (Wk 11–18): EcoMD v0 → v0.5 → v0.6 → v0.8 reaches **7/11** on SPX daily → M2 ✓ (+2 weeks)
+- Phase 3 (Wk 19–28): **Paper A drafting (v0.6/v0.8 Pareto frontier)** + cross-asset BTC/ETH replication + T_eff initial probing → M3 + **Paper A arXiv (Wk 28)**
 - Phase 3.5 (Wk 29–34): A1 pilot on **3 markets × 3 timescales** + 7 sanity checks → **M3.5 hard gate (Wk 34)**
 - Phase 4 (Wk 35–42): A1 full 8-market × multi-scale + A2 + B2 (FOMC protocol) + B3 (L2 TUR) → M4 (+6)
 - Phase 5 (Wk 43–48): "one-line physics" formalization → **M5 hard gate (Wk 48)**
@@ -49,9 +50,9 @@ Three binding rigor conditions documented in `feedback_preregistration.md`:
 
 ## Core design commitments (fixed across v1/v2/v3)
 - **C2 early-core**: architecture already reserves explicit Langevin form with conservative/dissipative force separation, F-v-s triplet logging for fluctuation-theorem analysis.
-- **Equivariant via feature-space locality, not physical space**: agents interact via k-NN graph in trader feature space.
+- **Main architecture (post-M2, 2026-04-24)**: `PairwisePotential` = MLP over concat(s_i, s_j) summed over **all N² pairs** (complete graph). N ≤ 10³ limit. v1 MACE-lite (k-NN + body-order 4) attempted for N=10⁴-10⁵ scaling but failed to reproduce vol clustering: force magnitude from ∑-over-N readout is 60× smaller than v0.x's ∑-over-N² pair sum, and per-node readout MLP smooths dynamics so no burst-and-decay emerges.
 - **Honest MD-analogy critique**: single traders not observable → agent defined in latent space; non-stationarity → time-varying potential + regime; utility ≠ energy minimum → conservative/dissipative split.
-- **Pluggable price formation** (v3 added): `ExcessDemandPrice` (default, designated-position) + `ReadoutPrice` (ablation). Designated-position mechanism gives stylized fact #10 (volume/vol correlation) for free, which is Paper A's differentiation target.
+- **Pluggable price formation** (v3 added): `ExcessDemandPrice` (default, designated-position) + `ReadoutPrice` (ablation). Designated-position mechanism gives stylized fact #10 (volume/vol correlation) **when β is fixed** — learnable β breaks #10 by injecting state-dependent amplification. v0.6 (β_learn) vs v0.8 (β_fixed) are two Pareto points.
 
 ## Hardware (v3)
 **8×H20 NVLink, single node, long-term access** (upgraded from 4×H20 in v2). Enables:

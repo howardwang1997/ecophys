@@ -316,30 +316,53 @@ Gate 2 检验：pilot 通过才进阶段 4；否则停止 flagship。
 - ✓ M0（数据 + 基础设施）
 - ✓ M1（stylized facts + baselines）
 - ✓ Phase 2 起步（EcoMD v0/v0.5，5/11 命中波动率结构 facts）
+- ✓ **M2 GATE PASSED（2026-04-24）**：EcoMD v0.8 命中 **7/11** stylized facts on SPX daily，超过 GARCH(1,1)-t 基线（7/11），打破 LM99（5/11）。架构是 shared MLP PairwisePotential（v0.x 系）；v1 MACE-lite 暂未通过（见 9.4）。
 
-### 9.2 本周（2026-04-24 起）
+### 9.2 当前状态（2026-04-24）
+
+| 模型 | 命中 | 关键特征 |
+|---|---|---|
+| GARCH(1,1)-t fitted | 7/11 | 单变量基线 |
+| LM99 (3-type heterogeneous) | 5/11 | ABM 基线 |
+| **EcoMD v0.6 trained** | 6/11 | **最强 vol clustering（acf(r²)=+0.306），Student-t noise + learnable β** |
+| **EcoMD v0.8 trained** | **7/11** | **M2 winner。v0.6 关掉 learnable β 即达，保 #1/#8/#10** |
+| EcoMD v1 MACE-lite (best: H F4 hybrid) | 6/11 | acf(r²)=+0.202 但 **形状 flat 而非 peak-decay**（见附录 B） |
+
+v0.6 vs v0.8 是 **Pareto frontier 上的两个点**：
+- v0.6 胜在 #2 Hill、#3 skew、#6 ACF(r²) 强度（heavy tails 更对）
+- v0.8 胜在 #1 ACF(r)、#8 DFA、#10 corr(V,\|r\|)（volume-vol 一致性更对）
+
+### 9.3 下周（2026-04-25 起）Phase 3 Paper A 准备
 
 **立刻 (Mac/CPU)**：
-1. v0.6 实现 Student-t noise 替换 Langevin Gaussian 噪声（目标：补 #2 Hill, #5 Fano）
-2. v0.6 实现 state-dependent β（目标：补 #1 ACF）
-3. experiments/005_ecomd_v0p6/ 新建 + 运行
-4. 目标：v0.6 ≥ 7/11，达 M2
+1. 写 Paper A methodology 章（v0.x shared MLP + training recipe: persistent state + warmup detach + Student-t + cosine LR）
+2. 补充 ablation 表：noise_dist, learnable_β, persistent_state, init_state_scale 单独效应
+3. 跨资产复现：把 v0.6 / v0.8 recipe 拿 BTC 1m 跑一遍（data/sample 已有）
+4. **不**继续在 v1 MACE-lite 上花时间（见 9.4 诊断）
 
-**不要做**：
-- ❌ 不要动 H20 — v0.6 没跑通前，H20 只帮倒忙
-- ❌ 不要提前开 A1/B2 实验 — 架构 unstable 时做 universality 测试只是浪费
-- ❌ 不要新开 Paper B draft — claim 未定型，写稿等于 fantasy
+**Phase 3 并行起步**：
+5. 用 v0.6（vol clustering 最强）算 T_eff 初探：长 rollout 10⁴ 步，测 cross-timescale T_eff 相似度 → 给 Paper B 打底
 
-### 9.3 未来 12 周 roadmap
+### 9.4 v1 MACE-lite 为什么没有跑通（今日确诊）
+
+经过 A-H 八个架构变体 + 力量级 probe，病因是**架构设计与金融市场物理不匹配**，不是工程 bug。主要结论（详见 logs/2026-04-24.md Session 17-18）：
+
+1. **V_pair 量级不足**：v0.x PairwisePotential `V = Σ_{N²} f(s_i, s_j)` 自然 O(N²) scale；MACE-lite `V = Σ_{N} U(h_i)` 只有 O(N) scale，force 差 60-190×，被 Langevin 噪声完全淹没。
+2. **结构不生成 burst dynamics**：强制 scale（F1 multiplier）后 force 量级对了，acf(r²) 仍为 0。per-node readout MLP 的 SiLU/LN 组合产生平滑 equilibrium dynamics，而 vol clustering 来自 intermittent burst + slow decay。
+3. **hybrid 变体（H）触及 acf 均值 +0.202 但形状 flat**：经典 Goodhart — 单一均值 target 被 "常数高方差 regime" 作弊满足，物理上不是真 clustering。
+
+**Paper A 里 v1 不作为主 claim，而作为 "scaling attempt + negative result"**（见下面的 Paper A 战略）。Phase 4 (T_eff scaling, M3+) 如果需要 N ≥ 10⁴，考虑 v0.x + sparse attention pass，不继续推 MACE-lite 路线。
+
+### 9.5 未来 12 周 roadmap（刷新）
 
 | 周 | 目标 |
 |---|---|
-| 本周 | v0.6 Student-t + state-β |
-| +1–2 | v0.6 评估 + 可能的 v0.7 | 
-| +2–3 | v1 架构设计（MACE-lite k-NN + agent type prior） |
-| +4–6 | v1 CPU/smoke 验证 |
-| +6–8 | v1 上 H20 主训练（NVLink tensor-parallel） |
-| +8–12 | M2 冲刺 + M3 准备（pre-registration 文档 draft） |
+| +1 (Wk 10) | Paper A methodology draft + v0.6/v0.8 ablation 表 |
+| +2 (Wk 11) | Cross-asset 复现（BTC 1m）+ Paper A results 章 |
+| +3 (Wk 12) | Paper A arXiv pre-print draft 完成 |
+| +4-6 | Phase 3 T_eff 初探（v0.6 长 rollout）+ pre-registration 文档 |
+| +6-8 | Path C vendor 数据到货（Tardis L2、FirstRate）→ 高频 v0.x training |
+| +8-12 | M3 冲刺（v0.x 在 ≥2 markets 达 ≥7/11） + Paper B 起步 |
 
 ---
 
