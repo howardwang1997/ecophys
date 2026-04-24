@@ -1,0 +1,56 @@
+# EcoMD v0.5 — training-strategy fixes on top of v0 architecture.
+#
+# Differences from experiments/003_ecomd_v0/config.yaml:
+#   - lr: 3e-3 → 1e-3 + cosine schedule with 3-iter warmup
+#   - loss_weights.max_lag: 20 → 8       (matches shorter useful window at chunk=32)
+#   - persistent_state: true             (carry s/s_prev/price_state across iters)
+#   - warmup_steps: 16                   (drop first 16 steps of each chunk from loss)
+#   - n_iters: 30 → 80                   (persistent state + lower LR need more iters)
+
+simulator:
+  n_agents: 200
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+
+training:
+  n_iters: 80
+  chunk_steps: 32
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 3
+  grad_clip_max_norm: 1.0
+  seed: 0
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+
+evaluation:
+  n_realizations: 3
+  eval_steps: 2000
+
+smoke:
+  n_agents: 100
+  n_iters: 8
+  chunk_steps: 32
+  eval_steps: 600
+  n_realizations: 2
