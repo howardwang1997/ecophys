@@ -29,6 +29,7 @@ from ..physics.integrator import LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
 from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
 from .mace_lite import MACELitePotential, build_mace_lite
+from .regime_latent import RegimeGRU, RegimeGRUConfig, RegimeReadHead
 from .potentials import (
     StochasticPairwisePotential,
     ConservativePotential,
@@ -92,6 +93,21 @@ class EcoMDConfig:
     v2_T_offdiag_init: float = 0.1           # init scale for T off-diagonal
     v2_gauge_enforce: bool = False           # if True: Δs only pair input; False: full (s_i, s_j)
     v2_T_init_mode: str = "eye_plus_noise"   # 'eye_plus_noise' | 'ones' | 'uniform'
+    # v3 regime-switching slow latent (P3) — non-stationary regime carrier
+    regime_enabled: bool = False             # off = legacy v0/v1 behavior
+    regime_d: int = 16                       # latent dimension
+    regime_update_every: int = 8             # GRU stepped every k sim steps
+    regime_init_gain: float = 0.1            # init scale for GRU
+    regime_modulate_gamma: bool = True       # γ_eff = γ * head_γ(h_regime)
+    regime_modulate_temp: bool = True        # T_eff = T * head_T(h_regime)
+    regime_modulate_kappa: bool = True       # Hawkes excitation_mul = head_κ(h_regime)
+    # v3 two-population per-type γ, T (P4) — heterogeneous Langevin per agent type.
+    # Uses v2's persistent K=4 type embedding; no K×K coupling needed.
+    # If twopop_enabled and pairwise_kind != ecomd_v2, we still build a type
+    # vector of length k_types using v2_type_seed.
+    twopop_enabled: bool = False
+    twopop_gamma_scale: tuple = (1.0, 1.0, 1.0, 1.0)  # per-type multiplier on γ
+    twopop_temp_scale: tuple  = (1.0, 1.0, 1.0, 1.0)  # per-type multiplier on T
 
 
 class EcoMDSimulator(nn.Module):
@@ -187,6 +203,45 @@ class EcoMDSimulator(nn.Module):
         self.log_gamma = nn.Parameter(log_gamma, requires_grad=self.cfg.learn_gamma)
         self.log_temperature = nn.Parameter(log_T, requires_grad=self.cfg.learn_temperature)
 
+        # v3 regime latent (P3 + P5 T_eff head share infrastructure)
+        self.regime_gru: RegimeGRU | None = None
+        self.regime_head_gamma: RegimeReadHead | None = None
+        self.regime_head_T: RegimeReadHead | None = None
+        self.regime_head_kappa: RegimeReadHead | None = None
+        if self.cfg.regime_enabled:
+            self.regime_gru = RegimeGRU(RegimeGRUConfig(
+                d_regime=self.cfg.regime_d,
+                update_every=self.cfg.regime_update_every,
+                init_gain=self.cfg.regime_init_gain,
+            ))
+            if self.cfg.regime_modulate_gamma:
+                self.regime_head_gamma = RegimeReadHead(self.cfg.regime_d)
+            if self.cfg.regime_modulate_temp:
+                self.regime_head_T = RegimeReadHead(self.cfg.regime_d)
+            if self.cfg.regime_modulate_kappa:
+                self.regime_head_kappa = RegimeReadHead(self.cfg.regime_d)
+
+        # v3 two-population per-type γ, T (P4)
+        if self.cfg.twopop_enabled:
+            K = len(self.cfg.twopop_gamma_scale)
+            assert K == len(self.cfg.twopop_temp_scale), \
+                "twopop_gamma_scale and twopop_temp_scale must have the same length"
+            gen = torch.Generator().manual_seed(self.cfg.v2_type_seed)
+            type_idx = torch.randint(0, K, (self.cfg.n_agents,), generator=gen)
+            self.register_buffer("twopop_type_idx", type_idx, persistent=False)
+            self.register_buffer(
+                "twopop_gamma_per_type",
+                torch.tensor(list(self.cfg.twopop_gamma_scale), dtype=torch.float32),
+                persistent=False,
+            )
+            self.register_buffer(
+                "twopop_temp_per_type",
+                torch.tensor(list(self.cfg.twopop_temp_scale), dtype=torch.float32),
+                persistent=False,
+            )
+        else:
+            self.twopop_type_idx = None
+
     # ── Properties ─────────────────────────────────────────────────────────
 
     @property
@@ -215,6 +270,12 @@ class EcoMDSimulator(nn.Module):
     def init_price(self) -> PriceState:
         return self.price_formation.init_state(device=self.device, dtype=torch.float32)
 
+    def init_regime(self) -> Tensor | None:
+        """Initial slow-regime latent. None when regime is disabled."""
+        if self.regime_gru is None:
+            return None
+        return self.regime_gru.init_h(self.device, torch.float32)
+
     # ── Step ───────────────────────────────────────────────────────────────
 
     def step(
@@ -225,18 +286,63 @@ class EcoMDSimulator(nn.Module):
         *,
         generator: torch.Generator | None = None,
         create_graph: bool = True,
-    ) -> tuple[Tensor, PriceState, dict[str, Tensor]]:
-        """Advance one step. Returns (s_next, price_state_next, record_dict)."""
+        h_regime: Tensor | None = None,
+        step_idx: int = 0,
+    ) -> tuple[Tensor, PriceState, dict[str, Tensor], Tensor | None]:
+        """Advance one step. Returns (s_next, price_state_next, record_dict, h_regime_next).
+
+        v3 additions:
+        - ``h_regime``: optional slow regime latent. If passed and
+          ``regime_enabled``, it gets updated every ``regime_update_every`` steps.
+          Used by read-heads to modulate γ, T, and Hawkes excitation strength.
+        - ``step_idx``: integer step counter inside the rollout. Drives the
+          regime GRU's "slow update" cadence.
+        """
         context = torch.stack([price_state.log_price, price_state.volatility, price_state.last_log_return])
         f_cons = conservative_forces(self.potential, s, context, create_graph=create_graph)
         f_diss = dissipative_forces(self.dissipation, s, s_prev, create_graph=create_graph)
+
+        # Compute γ_eff, T_eff (per-step optional regime modulation)
+        T_eff: Tensor | float = self.temperature
+        gamma_eff: Tensor | float = self.gamma
+        excitation_mul: Tensor | float = 1.0
+        h_regime_next = h_regime
+
+        if self.regime_gru is not None and h_regime is not None:
+            # market_stats: (vol, |last_r|, log_ret_signed, autocorr_proxy)
+            ret = price_state.last_log_return
+            stats = torch.stack([
+                price_state.volatility,
+                ret.abs(),
+                ret,
+                ret * (price_state.last_log_return.detach()),  # r·r_{t-1} proxy
+            ])
+            h_regime_next = self.regime_gru.maybe_step(h_regime, step_idx, stats)
+            if self.regime_head_gamma is not None:
+                gamma_eff = self.gamma * self.regime_head_gamma(h_regime_next)
+            if self.regime_head_T is not None:
+                T_eff = self.temperature * self.regime_head_T(h_regime_next)
+            if self.regime_head_kappa is not None:
+                excitation_mul = self.regime_head_kappa(h_regime_next)
+
+        # Two-population per-type γ, T (broadcast (N,) to multiply T/γ per agent)
+        if self.cfg.twopop_enabled and self.twopop_type_idx is not None:
+            gamma_mul_per_agent = self.twopop_gamma_per_type[self.twopop_type_idx]
+            T_mul_per_agent = self.twopop_temp_per_type[self.twopop_type_idx]
+            # broadcast to (N, 1) so integrator can use per-agent γ
+            base_gamma = gamma_eff if isinstance(gamma_eff, Tensor) else torch.tensor(
+                float(gamma_eff), device=s.device, dtype=s.dtype)
+            base_T = T_eff if isinstance(T_eff, Tensor) else torch.tensor(
+                float(T_eff), device=s.device, dtype=s.dtype)
+            gamma_eff = (base_gamma * gamma_mul_per_agent).unsqueeze(-1)
+            T_eff = (base_T * T_mul_per_agent).unsqueeze(-1)
 
         step_out = self.integrator.step(
             s=s,
             f_cons=f_cons,
             f_diss=f_diss,
-            T=self.temperature,
-            gamma=self.gamma,
+            T=T_eff,
+            gamma=gamma_eff,
             dt=self.cfg.dt,
             generator=generator,
         )
@@ -246,6 +352,7 @@ class EcoMDSimulator(nn.Module):
             s_prev=s,
             s_next=step_out.s_next,
             generator=generator,
+            excitation_mul=excitation_mul,
         )
 
         record = {
@@ -259,7 +366,7 @@ class EcoMDSimulator(nn.Module):
             "volume": price_step.aux["volume"],
             "excess_demand": price_step.aux["excess_demand"],
         }
-        return step_out.s_next, price_step.state, record
+        return step_out.s_next, price_step.state, record, h_regime_next
 
     # ── Rollouts ───────────────────────────────────────────────────────────
 
@@ -280,15 +387,21 @@ class EcoMDSimulator(nn.Module):
         *,
         generator: torch.Generator | None = None,
         create_graph: bool = True,
-    ) -> tuple[Tensor, PriceState, EcoMDTrajectory]:
-        """Differentiable chunk rollout — returns (s_final, price_state_final, traj)."""
+        h_regime: Tensor | None = None,
+    ) -> tuple[Tensor, PriceState, EcoMDTrajectory, Tensor | None]:
+        """Differentiable chunk rollout — returns (s_final, price_state_final,
+        traj, h_regime_final). ``h_regime_final`` is None when regime disabled."""
         self._reset_potential_cache()
+        if h_regime is None and self.regime_gru is not None:
+            h_regime = self.init_regime()
         recorder = TrajectoryRecorder(dt=self.cfg.dt, meta={"n_steps": n_steps})
-        for _ in range(n_steps):
-            s_next, price_state, rec = self.step(
+        for k in range(n_steps):
+            s_next, price_state, rec, h_regime = self.step(
                 s, s_prev, price_state,
                 generator=generator,
                 create_graph=create_graph,
+                h_regime=h_regime,
+                step_idx=k,
             )
             recorder.record(
                 s=rec["s"],
@@ -303,7 +416,7 @@ class EcoMDSimulator(nn.Module):
             )
             s_prev = s
             s = s_next
-        return s, price_state, recorder.finalize()
+        return s, price_state, recorder.finalize(), h_regime
 
     @torch.no_grad()
     def run(
@@ -323,6 +436,7 @@ class EcoMDSimulator(nn.Module):
         s = s_init if s_init is not None else self.init_state(generator=generator)
         s_prev = s.detach().clone()
         price_state = self.init_price()
+        h_regime = self.init_regime()
 
         self._reset_potential_cache()
         recorder = TrajectoryRecorder(
@@ -330,11 +444,13 @@ class EcoMDSimulator(nn.Module):
             meta={"n_steps": n_steps, "seed": seed if seed is not None else -1,
                   "n_agents": self.cfg.n_agents, "d_state": self.cfg.d_state},
         )
-        for _ in range(n_steps):
-            s_next, price_state, rec = self.step(
+        for k in range(n_steps):
+            s_next, price_state, rec, h_regime = self.step(
                 s, s_prev, price_state,
                 generator=generator,
                 create_graph=False,
+                h_regime=h_regime,
+                step_idx=k,
             )
             recorder.record(
                 s=rec["s"].detach(),

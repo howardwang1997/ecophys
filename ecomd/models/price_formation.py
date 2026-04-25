@@ -48,6 +48,8 @@ class PriceState:
     # v1.0 (Hawkes self-excitation, optional): memory of past-vol-weighted shocks.
     # If the price module uses it, this tracks Σ_k exp(-(t-t_k)/τ)·|r_k|.
     hawkes_memory: Tensor | None = None
+    # v3 multi-scale Hawkes: optional second EMA channel with longer τ
+    hawkes_memory_long: Tensor | None = None
 
 
 @dataclass
@@ -69,6 +71,7 @@ class PriceFormation(Protocol):
         s_prev: Tensor,
         s_next: Tensor,
         generator: torch.Generator | None = None,
+        excitation_mul: Tensor | float = 1.0,
     ) -> PriceStepResult: ...
 
 
@@ -98,6 +101,15 @@ class ExcessDemandParams:
     # hawkes_kappa = 0 disables (backwards-compat). Recommended start: α=0.1, κ=0.3.
     hawkes_alpha: float = 0.0           # EMA decay rate (0 = disabled)
     hawkes_kappa: float = 0.0           # excitation strength in log-ret units
+    # v3 multi-scale Hawkes (Bacry-Muzy 2015 multi-exponential): a SECOND
+    # exponential channel with smaller alpha (= longer time scale) added to
+    # the base hawkes_kappa channel. Captures longer-memory effects (zumbach
+    # asymmetry, ACF tail shape) that single-exp can't represent.
+    #   excitation = κ·memory_t + κ_long·memory_long_t
+    #   memory_long_{t+1} = (1-α_long)·memory_long_t + α_long·|log_ret_core_t|
+    # hawkes_kappa_long = 0 disables. Recommended: α_long=0.01, κ_long=0.2.
+    hawkes_alpha_long: float = 0.0
+    hawkes_kappa_long: float = 0.0
 
 
 class ExcessDemandPrice(nn.Module):
@@ -133,14 +145,18 @@ class ExcessDemandPrice(nn.Module):
 
     def init_state(self, device: torch.device, dtype: torch.dtype) -> PriceState:
         hawkes_mem: Tensor | None = None
+        hawkes_mem_long: Tensor | None = None
         if self.params.hawkes_alpha > 0.0:
             hawkes_mem = torch.zeros((), device=device, dtype=dtype)
+        if self.params.hawkes_alpha_long > 0.0:
+            hawkes_mem_long = torch.zeros((), device=device, dtype=dtype)
         return PriceState(
             log_price=torch.tensor(self.params.initial_log_price, device=device, dtype=dtype),
             last_log_return=torch.tensor(0.0, device=device, dtype=dtype),
             volatility=torch.tensor(self.params.sigma_price, device=device, dtype=dtype),
             step=0,
             hawkes_memory=hawkes_mem,
+            hawkes_memory_long=hawkes_mem_long,
         )
 
     def _effective_beta(self, state: PriceState) -> Tensor:
@@ -159,7 +175,11 @@ class ExcessDemandPrice(nn.Module):
         s_prev: Tensor,
         s_next: Tensor,
         generator: torch.Generator | None = None,
+        excitation_mul: Tensor | float = 1.0,
     ) -> PriceStepResult:
+        """Advance one step. ``excitation_mul`` multiplicatively scales the
+        Hawkes excitation term per step — used by the regime latent (P3)
+        to modulate self-excitation strength with regime."""
         p = self.params
         pos_prev = s_prev[:, 0]
         pos_next = s_next[:, 0]
@@ -180,16 +200,33 @@ class ExcessDemandPrice(nn.Module):
         # `memory_prev` is carried in the PriceState; the simulator detaches
         # across iteration boundaries via persistent_state, so BPTT chain
         # only spans one chunk (same as vol EWMA).
+        # v3 multi-scale: second EMA channel with longer time scale (smaller α).
+        excitation = torch.zeros((), device=s_next.device, dtype=s_next.dtype)
         if p.hawkes_alpha > 0.0:
             mem_prev = state.hawkes_memory
             if mem_prev is None:
                 mem_prev = torch.zeros((), device=s_next.device, dtype=s_next.dtype)
-            excitation = p.hawkes_kappa * mem_prev * torch.sign(log_ret_core)
-            log_ret = log_ret_core + excitation
+            excitation = excitation + p.hawkes_kappa * mem_prev * torch.sign(log_ret_core)
             hawkes_mem_next = (1 - p.hawkes_alpha) * mem_prev + p.hawkes_alpha * log_ret_core.abs()
         else:
+            hawkes_mem_next = state.hawkes_memory
+
+        if p.hawkes_alpha_long > 0.0:
+            mem_long_prev = state.hawkes_memory_long
+            if mem_long_prev is None:
+                mem_long_prev = torch.zeros((), device=s_next.device, dtype=s_next.dtype)
+            excitation = excitation + p.hawkes_kappa_long * mem_long_prev * torch.sign(log_ret_core)
+            hawkes_mem_long_next = (
+                (1 - p.hawkes_alpha_long) * mem_long_prev
+                + p.hawkes_alpha_long * log_ret_core.abs()
+            )
+        else:
+            hawkes_mem_long_next = state.hawkes_memory_long
+
+        if p.hawkes_alpha > 0.0 or p.hawkes_alpha_long > 0.0:
+            log_ret = log_ret_core + excitation_mul * excitation
+        else:
             log_ret = log_ret_core
-            hawkes_mem_next = state.hawkes_memory  # pass through None/zeros
 
         log_price_next = state.log_price + log_ret
 
@@ -201,6 +238,7 @@ class ExcessDemandPrice(nn.Module):
             volatility=vol_next,
             step=state.step + 1,
             hawkes_memory=hawkes_mem_next,
+            hawkes_memory_long=hawkes_mem_long_next,
         )
         context = torch.stack([log_price_next, vol_next, log_ret])
         aux: dict[str, Tensor] = {
@@ -268,6 +306,7 @@ class ReadoutPrice(nn.Module):
         s_prev: Tensor,
         s_next: Tensor,
         generator: torch.Generator | None = None,
+        excitation_mul: Tensor | float = 1.0,
     ) -> PriceStepResult:
         p = self.params
         mean = s_next.mean(dim=0)
