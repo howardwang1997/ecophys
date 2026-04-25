@@ -32,12 +32,33 @@ BANDS = {
 }
 
 JOBS = [
+    # A series: original v3 architectures
     ("A0_baseline_spx",            "experiments/022_h20_batch/results_a0/inference_merged.json"),
     ("A1_multi_asset",             "experiments/022_h20_batch/results_a1/inference_merged.json"),
     ("A2_+multiscale_hawkes",      "experiments/022_h20_batch/results_a2/inference_merged.json"),
     ("A3_+regime_GRU",             "experiments/022_h20_batch/results_a3/inference_merged.json"),
     ("A4_+twopop_γT",              "experiments/022_h20_batch/results_a4/inference_merged.json"),
     ("A5_all_features",            "experiments/022_h20_batch/results_a5/inference_merged.json"),
+    # B series: conservative v3 hyperparams
+    ("B0_baseline_redo",           "experiments/022_h20_batch/results_b0/inference_merged.json"),
+    ("B1_multi_asset",             "experiments/022_h20_batch/results_b1/inference_merged.json"),
+    ("B2_+mshawkes_conservative",  "experiments/022_h20_batch/results_b2/inference_merged.json"),
+    ("B3_+regime_conservative",    "experiments/022_h20_batch/results_b3/inference_merged.json"),
+    ("B4_+twopop_conservative",    "experiments/022_h20_batch/results_b4/inference_merged.json"),
+    ("B5_all_conservative",        "experiments/022_h20_batch/results_b5/inference_merged.json"),
+    # C series: A architectures + expanded loss (autocorr_r + hill_max)
+    ("C0_baseline_+exploss",       "experiments/022_h20_batch/results_c0/inference_merged.json"),
+    ("C1_multi_asset_+exploss",    "experiments/022_h20_batch/results_c1/inference_merged.json"),
+    ("C2_+mshawkes_+exploss",      "experiments/022_h20_batch/results_c2/inference_merged.json"),
+    ("C3_+regime_+exploss",        "experiments/022_h20_batch/results_c3/inference_merged.json"),
+    ("C4_+twopop_+exploss",        "experiments/022_h20_batch/results_c4/inference_merged.json"),
+    ("C5_all_+exploss",            "experiments/022_h20_batch/results_c5/inference_merged.json"),
+    # D series: longer training (400 iters) on best candidates
+    ("D0_a0_long",                 "experiments/022_h20_batch/results_d0/inference_merged.json"),
+    ("D1_b0_long",                 "experiments/022_h20_batch/results_d1/inference_merged.json"),
+    ("D2_b4_long",                 "experiments/022_h20_batch/results_d2/inference_merged.json"),
+    ("D3_c0_long",                 "experiments/022_h20_batch/results_d3/inference_merged.json"),
+    ("D4_c4_long",                 "experiments/022_h20_batch/results_d4/inference_merged.json"),
 ]
 
 
