@@ -1,6 +1,15 @@
 # Paper A — EcoMD: A Differentiable Equivariant GNN for Financial Markets
 
-**Working title**: *EcoMD: A Differentiable Equivariant Graph Neural Network for Financial Market Simulation Derived from Microstructure Symmetries*
+**Working title** (revised 2026-04-25): *EcoMD: A Differentiable Typed Pair Potential for Financial Market Simulation, with a Quantitative Survey of Failed Microstructure-Inspired Symmetries*
+
+**Earlier title (NOT used)**: "Equivariant Graph Neural Network ... Derived from Microstructure Symmetries"
+**Why dropped**: a careful reading of v2.1 — the only working architecture
+in our family — shows it carries only permutation-within-type
+equivariance, which is **strictly weaker** than the full permutation
+equivariance v0.x already has from any pair-sum. None of the additional
+microstructure-derived symmetries we tried (Ilinski log-price gauge,
+Kyle global mean-field potential, MACE-style SE(3) tensor products)
+survive ablation. Calling v2.1 "equivariant" beyond v0.x is dishonest.
 
 **Target venue (primary)**: ICAIF 2026 (Aug deadline) — realistic 65-85% accept
 **Stretch target**: NeurIPS 2027 Main / ICLR 2027 Main if narrative tightens
@@ -8,15 +17,42 @@
 
 ---
 
-## Top-line claim
+## Top-line claim (revised honest version)
 
-We design and validate a differentiable, GNN-based market simulator (EcoMD)
-trainable end-to-end via moment matching on Cont (2001) stylized facts. We
-show that **architecturally derived market symmetries** (permutation-within-type,
-typed pair coupling) succeed where direct transfer of materials-physics
-GNNs (MACE/SE(3)-equivariant) fails. We provide quantitative ablations
-across 4 architecture families and demonstrate cross-asset universality
-across SPX daily and BTC 1-minute.
+We present **EcoMD**, a differentiable particle-based market simulator
+trainable end-to-end via moment matching on Cont (2001) stylized facts.
+The architecture is a **typed pair potential**: pair-MLP over per-agent
+state plus a learnable K×K coupling matrix between persistent agent
+type labels (Lux-Marchesi 1999 instantiation), combined with Hawkes
+self-excitation in price formation.
+
+We further perform an unusually thorough **architectural survey of
+microstructure-theory-inspired symmetries** as inductive biases. Of six
+symmetries we tried (SE(3) equivariance, Ilinski log-price gauge, Kyle
+global mean-field, body-order ≥ 3 tensor products, full permutation,
+T = identity initialization), **five fail under ablation** and the
+sixth (permutation-within-type) is a strict weakening of permutation
+equivariance that v0.x already has. We document each failure mode
+quantitatively: force-magnitude probes (figure 1), ACF decay shape
+(figure 2), and 41 stylized-fact runs (table 3).
+
+The minimal architecture that matches v0.x baseline 7/11 stylized
+facts on SPX daily *and* extends naturally to typed agent populations
+(Paper B's universality target) is the typed pair potential of v2.1.
+
+## What we are NOT claiming (negative space, important)
+
+- We are **not** claiming a novel equivariant GNN. v2.1's equivariance
+  group (permutation-within-type) is strictly smaller than v0.x's
+  (full permutation). Adding type labels *breaks* a symmetry, not
+  adds one.
+- We are **not** claiming microstructure theory uniquely determines
+  the architecture. Five of six theory-derived symmetries hurt.
+- We are **not** claiming Ilinski gauge applies to particle market
+  simulators (it does not — agent positions are not log-prices).
+- We are **not** claiming the materials-physics GNN literature
+  (MACE / NequIP / TorchMD-Net) transfers to markets (it does not —
+  documented quantitatively in §4).
 
 ---
 
