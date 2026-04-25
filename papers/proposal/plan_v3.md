@@ -318,7 +318,7 @@ Gate 2 检验：pilot 通过才进阶段 4；否则停止 flagship。
 - ✓ Phase 2 起步（EcoMD v0/v0.5，5/11 命中波动率结构 facts）
 - ✓ **M2 GATE PASSED（2026-04-24）**：EcoMD v0.8 命中 **7/11** stylized facts on SPX daily，超过 GARCH(1,1)-t 基线（7/11），打破 LM99（5/11）。架构是 shared MLP PairwisePotential（v0.x 系）；v1 MACE-lite 暂未通过（见 9.4）。
 
-### 9.2 当前状态（2026-04-24）
+### 9.2 当前状态（2026-04-25 凌晨 v2.1 breakthrough 后）
 
 | 模型 | 命中 | 关键特征 |
 |---|---|---|
@@ -326,11 +326,20 @@ Gate 2 检验：pilot 通过才进阶段 4；否则停止 flagship。
 | LM99 (3-type heterogeneous) | 5/11 | ABM 基线 |
 | **EcoMD v0.6 trained** | 6/11 | **最强 vol clustering（acf(r²)=+0.306），Student-t noise + learnable β** |
 | **EcoMD v0.8 trained** | **7/11** | **M2 winner。v0.6 关掉 learnable β 即达，保 #1/#8/#10** |
-| EcoMD v1 MACE-lite (best: H F4 hybrid) | 6/11 | acf(r²)=+0.202 但 **形状 flat 而非 peak-decay**（见附录 B） |
+| v0.9 SPS (unbiased pair sampling) | ? | H20 待跑 — scales v0.x 到 N=10⁴ |
+| EcoMD v1 MACE-lite (best: H F4 hybrid) | 6/11 | acf(r²)=+0.202 但 **形状 flat**（见附录 B）→ negative result |
+| **v2.0 (gauge on, T=eye init)** | **4/11** × 33 configs | **架构 bug：gauge 误用 + T 初始化抑制 75% pair edges** |
+| **v2.1 (gauge off, T=ones)** | **6/11 Mac** | **匹配 v0.6，保留 v2 类标签 novelty。H20 N=10⁴ 待跑** |
 
 v0.6 vs v0.8 是 **Pareto frontier 上的两个点**：
 - v0.6 胜在 #2 Hill、#3 skew、#6 ACF(r²) 强度（heavy tails 更对）
 - v0.8 胜在 #1 ACF(r)、#8 DFA、#10 corr(V,\|r\|)（volume-vol 一致性更对）
+
+**v2.1 的 architectural novelty 缩水但仍有**：
+- ✓ **Persistent type embedding + learnable K×K coupling matrix T_θ**（Lux-Marchesi 1999 NN 化首次）
+- ✗ Ilinski log-price gauge invariance — 实验证明对 agent position 不适用（**Paper A 负面发现**）
+- ✗ Kyle global mean-field `λ·||Σπ||²` — 实验证明是 anti-herding 抑制 vol clustering（**Paper A 负面发现**）
+- ✓ Hawkes-Langevin 混合动力学（保留，未单独 ablate）
 
 ### 9.3 下周（2026-04-25 起）Phase 3 Paper A 准备
 
