@@ -24,6 +24,11 @@ declare -a JOBS=(
     "v09_spx|experiments/013_v0p9_sps/config_h20_spx_N10k.yaml|experiments/013_v0p9_sps/results_spx"
     "v09_btc|experiments/013_v0p9_sps/config_h20_btc_N10k.yaml|experiments/013_v0p9_sps/results_btc"
     "v10_hawkes|experiments/014_v1p0_hawkes/config_h20_spx_hawkes.yaml|experiments/014_v1p0_hawkes/results_spx"
+    "v21_retryA|experiments/016_ecomd_v2/config_h20_spx_N10k_retryA.yaml|experiments/016_ecomd_v2/results_h20_retryA"
+    "n500|experiments/020_n_scaling/config_n500.yaml|experiments/020_n_scaling/results_n500"
+    "n2000|experiments/020_n_scaling/config_n2000.yaml|experiments/020_n_scaling/results_n2000"
+    "n5000|experiments/020_n_scaling/config_n5000.yaml|experiments/020_n_scaling/results_n5000"
+    "n10000|experiments/020_n_scaling/config_n10000.yaml|experiments/020_n_scaling/results_n10000"
 )
 
 REQUESTED="${1:-all}"
