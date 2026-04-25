@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 """Score the v3 H20 batch — produces a markdown scoreboard.
 
-Reads each results_a{0..5}/inference_merged.json, applies the 10-fact
-band scoring used in run #2 analysis, writes
-experiments/022_h20_batch/scoreboard.md.
+Reads each results_a{0..5}/inference_merged.json, applies the 11-fact
+band scoring, writes experiments/022_h20_batch/scoreboard.md.
 
 Run on Mac after H20 push:
     git pull
@@ -17,7 +16,6 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 
-# Same band definitions as in _h20_run2_analysis.md
 BANDS = {
     "autocorr_returns":           (-0.1, 0.20),
     "hill_tail_index":            (2.0, 4.0),
@@ -25,6 +23,7 @@ BANDS = {
     "aggregational_gaussianity":  (10, 200),
     "intermittency_fano":         (5, 100),
     "acf_squared_returns":        (0.15, 0.55),
+    "conditional_kurtosis":       (-1.0, 3.0),
     "dfa_hurst_abs_r":            (0.6, 0.9),
     "leverage_effect":            (-6.0, -0.5),
     "volume_volatility_corr":     (0.3, 0.8),
@@ -87,23 +86,23 @@ def main() -> None:
     lines: list[str] = []
     lines.append("# v3 batch scoreboard")
     lines.append("")
-    lines.append("Inference 11-fact (10 actually scored — conditional_kurtosis missing in")
-    lines.append("inference module) on the trained ckpt of each batch variant.")
+    lines.append("Inference 11-fact (all scored) on the trained ckpt of each batch variant.")
     lines.append("")
 
     # Summary table
-    lines.append("| Variant | n/10 | acf(r²) | hill | leverage | zumbach | aggr_g |")
-    lines.append("|---|---:|---:|---:|---:|---:|---:|")
+    lines.append("| Variant | n/11 | acf(r²) | hill | cond_κ | leverage | zumbach | aggr_g |")
+    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
     summary_rows = []
     for label, p_str in JOBS:
         p = REPO / p_str
         s = score_one(p)
         if s is None:
-            lines.append(f"| {label} | — | (missing) | — | — | — | — |")
+            lines.append(f"| {label} | — | (missing) | — | — | — | — | — |")
             continue
         rows = s["rows"]
         acf = rows.get("acf_squared_returns", (None, False))[0]
         hill = rows.get("hill_tail_index", (None, False))[0]
+        cκ = rows.get("conditional_kurtosis", (None, False))[0]
         lev = rows.get("leverage_effect", (None, False))[0]
         zum = rows.get("zumbach_asymmetry", (None, False))[0]
         aggr = rows.get("aggregational_gaussianity", (None, False))[0]
@@ -114,7 +113,7 @@ def main() -> None:
         flag = "★" if s["n_pass"] >= 7 else ("+" if s["n_pass"] >= 5 else "")
         lines.append(
             f"| {label} | **{s['n_pass']}/{s['n_total']}** {flag}"
-            f" | {fmt(acf)} | {fmt(hill)} | {fmt(lev)} | {fmt(zum)} | {fmt(aggr)} |"
+            f" | {fmt(acf)} | {fmt(hill)} | {fmt(cκ)} | {fmt(lev)} | {fmt(zum)} | {fmt(aggr)} |"
         )
         summary_rows.append((label, s))
     lines.append("")
