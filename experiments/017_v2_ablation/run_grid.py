@@ -32,6 +32,7 @@ import copy
 import itertools
 import json
 import logging
+import os
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -52,7 +53,7 @@ log = logging.getLogger("v2_grid")
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
-RAW_DIR = REPO / "data" / "raw"
+RAW_DIR = Path(os.environ.get("ECOPHYS_DATA_DIR", str(REPO / "data" / "raw")))
 
 
 # ─── Dotted-key utilities ──────────────────────────────────────────────────
