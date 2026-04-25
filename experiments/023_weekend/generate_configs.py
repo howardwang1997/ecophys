@@ -1,15 +1,15 @@
 """Generate ~60 weekend H20 configs from a compact spec.
 
 Series:
-  E (5)  — C4 multi-seed (variance estimate on 7/10 win)
-  F (15) — push C4 past 8/10 (zumbach loss, hyperparam tweaks, capacity)
+  E (5)  — C4 multi-seed (variance estimate on 8/11 win)
+  F (15) — push C4 past 9/11 (zumbach loss, hyperparam tweaks, capacity)
   G (10) — multi-asset universality (4-5 assets, asymmetric weights, isolation)
   H (5)  — N scaling (20K, 50K, with C4 + F3 best)
   I (8)  — architectural composition (C4 + regime + mshawkes combos)
   J (6)  — negative result documentation (over-train, under-train, tight clip)
   K (5)  — mid-iter checkpoints (loss/facts misalignment evidence)
 
-C4 = config_c4_multi_asset_twopop.yaml; current 7/10 winner.
+C4 = config_c4_multi_asset_twopop.yaml; current 8/11 winner.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import yaml
 HERE = Path(__file__).resolve().parent
 HERE.mkdir(parents=True, exist_ok=True)
 
-# ─── C4 baseline (canonical 7/10 from overnight batch) ─────────────────────
+# ─── C4 baseline (canonical 8/11 from overnight batch) ─────────────────────
 C4_BASE = {
     "simulator": {
         "n_agents": 10000,
@@ -115,9 +115,9 @@ def gen_E():
               {"training": {"seed": seed}})
 
 
-# ─── F series — push past 8/10 ─────────────────────────────────────────────
+# ─── F series — push past 9/11 ─────────────────────────────────────────────
 def gen_F():
-    print("F series — push C4 past 8/10")
+    print("F series — push C4 past 9/11")
     # F0: stronger autocorr penalty
     write("f0_high_autocorr_w",
           "F0: w_autocorr_r=1.5 (was 0.5) — try harder on fact #1",
@@ -238,7 +238,7 @@ def gen_G():
           {"training": {"joint_assets": [base_assets[2]]}})
     # G8: all 3 + zumbach loss (best loss + universality)
     write("g8_all3_zumbach",
-          "G8: SPX+BTC+ETH + zumbach loss — universality + push past 7/10",
+          "G8: SPX+BTC+ETH + zumbach loss — universality + push past 8/11",
           {"training": {"loss_weights": {"w_zumbach": 1.0}}})
     # G9: 3-asset + extra realizations target (more eval steps)
     write("g9_all3_no_twopop",

@@ -93,9 +93,11 @@ main() {
 }
 
 if [[ "$DAEMON" == "1" ]]; then
-    nohup bash -c 'main' >> "$QUEUE_LOG" 2>&1 &
-    echo "started PID $!  log: $QUEUE_LOG"
-    echo "$!" > "${QUEUE_LOG}.pid"
+    (main) >> "$QUEUE_LOG" 2>&1 < /dev/null &
+    pid=$!
+    disown "$pid" 2>/dev/null || true
+    echo "started PID $pid  log: $QUEUE_LOG"
+    echo "$pid" > "${QUEUE_LOG}.pid"
 else
     main
 fi

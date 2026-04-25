@@ -160,8 +160,10 @@ main() {
 }
 
 if [[ "$DAEMON" == "1" ]]; then
-    nohup bash -c "$(declare -f train_one eval_one main); main" >> "$QUEUE_LOG" 2>&1 &
+    # Subshell preserves all local vars (JOBS array, $QUEUE_LOG, $TIMESTAMP).
+    (main) >> "$QUEUE_LOG" 2>&1 < /dev/null &
     pid=$!
+    disown "$pid" 2>/dev/null || true
     echo "$pid" > "${QUEUE_LOG}.pid"
     echo "started PID $pid; tail -f $QUEUE_LOG"
 else
