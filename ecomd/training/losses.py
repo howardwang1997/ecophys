@@ -50,6 +50,18 @@ def acf_sq_mean(returns: Tensor, max_lag: int = 20) -> Tensor:
     return torch.stack(acf_vals).mean()
 
 
+def autocorr_returns_lag1(returns: Tensor) -> Tensor:
+    """Lag-1 autocorrelation of *raw* returns (NOT squared).
+
+    Stylized fact #1: real markets have near-zero return autocorrelation.
+    Used as a soft penalty term — anything outside ~[-0.05, 0.05] is bad.
+    """
+    r = returns - returns.mean()
+    var = (r ** 2).mean() + 1e-12
+    cov_lag1 = (r[:-1] * r[1:]).mean()
+    return cov_lag1 / var
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Leverage effect
 # ─────────────────────────────────────────────────────────────────────────────
@@ -139,6 +151,16 @@ class LossWeights:
     acf_shape_target_ratio: float = 2.0      # acf[peak]/|acf[tail]| must be ≥ this
     acf_shape_lag_peak: int = 1              # numerator lag
     acf_shape_lag_tail: int = 10             # denominator lag
+    # v3 (2026-04-26 night): expanded loss to fight Goodhart from v3 features.
+    # When v3 features add capacity, the simulator over-fits the 3 base
+    # moments while breaking #1 autocorr_r + #2 hill upper bound.
+    # w_autocorr_r: penalty on |lag-1 ACF of raw returns| (target ≈ 0)
+    w_autocorr_r: float = 0.0                # 0 disables
+    # w_hill_max: relu penalty on (hill - hill_max_target). Hill exploding
+    # to 100+ in simulator means tails too thin → big loss term, but the
+    # MAE penalty above is dominated by other moments. Hard ceiling here.
+    w_hill_max: float = 0.0
+    hill_max_target: float = 10.0            # cap simulator hill at this
 
 
 def moment_matching_loss(
@@ -184,6 +206,20 @@ def moment_matching_loss(
         )
         total = total + w.w_acf_shape * shape_pen
         out["acf_shape"] = shape_pen
+
+    # v3: penalize raw-return lag-1 autocorr (Cont fact #1)
+    if w.w_autocorr_r > 0.0:
+        ar = autocorr_returns_lag1(sim_returns)
+        ar_pen = ar.abs()
+        total = total + w.w_autocorr_r * ar_pen
+        out["autocorr_r"] = ar.detach()
+        out["autocorr_r_pen"] = ar_pen
+
+    # v3: hard ceiling on hill via relu(hill - hill_max_target)
+    if w.w_hill_max > 0.0:
+        hill_excess = torch.relu(hill_sim - w.hill_max_target)
+        total = total + w.w_hill_max * hill_excess
+        out["hill_excess"] = hill_excess
 
     out["total"] = total
     return out
