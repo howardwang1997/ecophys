@@ -62,6 +62,61 @@ def autocorr_returns_lag1(returns: Tensor) -> Tensor:
     return cov_lag1 / var
 
 
+def zumbach_asymmetry_diff(
+    returns: Tensor, coarse_window: int = 30, max_lag: int = 20,
+    avg_lags: int = 10,
+) -> Tensor:
+    """Differentiable Zumbach asymmetry estimator (Cont fact #11).
+
+    D̄ = mean over τ=1..avg_lags of [A(+τ) - A(-τ)]
+    A(τ) = corr(σ_coarse(t), σ_fine(t+τ))   where σ_coarse is mean r²
+    over a past window of size ``coarse_window`` separated by gap=max_lag+1.
+
+    Real markets: D̄ > 0 (Zumbach effect — past coarse vol predicts future
+    fine vol better than the reverse). Used as loss term to nudge sim
+    above ~+0.01.
+
+    Mirrors :func:`ecomd.eval.stylized_facts.zumbach_asymmetry`.
+    """
+    fine = returns ** 2
+    n = returns.shape[0]
+    gap = max_lag + 1
+    cw = coarse_window
+    t_lo = gap + cw - 1
+    t_hi = n - 1 - max_lag
+    m = t_hi - t_lo + 1
+    if m < 50:
+        return torch.zeros((), dtype=returns.dtype, device=returns.device)
+
+    csum = torch.cat([
+        torch.zeros(1, dtype=returns.dtype, device=returns.device),
+        torch.cumsum(fine, dim=0),
+    ])
+    ts = torch.arange(t_lo, t_hi + 1, device=returns.device)
+    coarse = (csum[ts - gap + 1] - csum[ts - gap - cw + 1]) / cw
+    cmean = coarse.mean()
+    cdev = coarse - cmean
+    cstd = (cdev ** 2).mean().sqrt() + 1e-12
+
+    D_terms = []
+    K = min(avg_lags, max_lag)
+    for k in range(1, K + 1):
+        f_pos = fine[ts + k]
+        f_neg = fine[ts - k]
+        for fa, sign in ((f_pos, +1.0), (f_neg, -1.0)):
+            pass  # placeholder — handled below
+        # A(+k)
+        fpd = f_pos - f_pos.mean()
+        fps = (fpd ** 2).mean().sqrt() + 1e-12
+        a_pos = (cdev * fpd).mean() / (cstd * fps)
+        # A(-k)
+        fnd = f_neg - f_neg.mean()
+        fns = (fnd ** 2).mean().sqrt() + 1e-12
+        a_neg = (cdev * fnd).mean() / (cstd * fns)
+        D_terms.append(a_pos - a_neg)
+    return torch.stack(D_terms).mean()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Leverage effect
 # ─────────────────────────────────────────────────────────────────────────────
@@ -161,6 +216,12 @@ class LossWeights:
     # MAE penalty above is dominated by other moments. Hard ceiling here.
     w_hill_max: float = 0.0
     hill_max_target: float = 10.0            # cap simulator hill at this
+    # v3 (2026-04-26): zumbach asymmetry penalty. Hinge loss against
+    # zumbach_target — positive when sim D̄ < target. Real markets: D̄≈+0.05.
+    w_zumbach: float = 0.0                   # 0 disables
+    zumbach_target: float = 0.05
+    zumbach_coarse_window: int = 30
+    zumbach_avg_lags: int = 10
 
 
 def moment_matching_loss(
@@ -220,6 +281,19 @@ def moment_matching_loss(
         hill_excess = torch.relu(hill_sim - w.hill_max_target)
         total = total + w.w_hill_max * hill_excess
         out["hill_excess"] = hill_excess
+
+    # v3 (weekend): zumbach asymmetry penalty — hinge below target
+    if w.w_zumbach > 0.0:
+        zum = zumbach_asymmetry_diff(
+            sim_returns,
+            coarse_window=w.zumbach_coarse_window,
+            max_lag=w.max_lag,
+            avg_lags=w.zumbach_avg_lags,
+        )
+        zum_pen = torch.relu(w.zumbach_target - zum)
+        total = total + w.w_zumbach * zum_pen
+        out["zumbach_sim"] = zum.detach()
+        out["zumbach_pen"] = zum_pen
 
     out["total"] = total
     return out
