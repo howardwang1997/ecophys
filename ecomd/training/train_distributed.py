@@ -53,6 +53,7 @@ import pandas as pd
 import torch
 import torch.distributed as dist
 import yaml
+from torch import Tensor
 
 from ..eval.stylized_facts import log_returns_from_prices
 from ..models.ecomd import EcoMDConfig, EcoMDSimulator
@@ -117,15 +118,23 @@ def load_spx_returns_any_rank(repo_root: Path) -> np.ndarray:
     raise FileNotFoundError("no ^GSPC yfinance data found in data/raw or data/sample")
 
 
-def load_btc_1m_returns_any_rank(repo_root: Path) -> np.ndarray:
+def load_binance_1m_returns_any_rank(repo_root: Path, symbol: str) -> np.ndarray:
     for root in (repo_root / "data" / "raw", repo_root / "data" / "sample"):
-        d = root / "binance" / "market=spot" / "interval=1m" / "symbol=BTCUSDT" / "year=2024"
+        d = root / "binance" / "market=spot" / "interval=1m" / f"symbol={symbol}" / "year=2024"
         if d.exists():
             frames = [pd.read_parquet(p) for p in sorted(d.glob("month=*.parquet"))]
             if frames:
                 df = pd.concat(frames, ignore_index=True).sort_values("open_time").reset_index(drop=True)
                 return log_returns_from_prices(df["close"].to_numpy())
-    raise FileNotFoundError("no BTCUSDT Binance data found in data/raw or data/sample")
+    raise FileNotFoundError(f"no {symbol} Binance data found in data/raw or data/sample")
+
+
+def load_btc_1m_returns_any_rank(repo_root: Path) -> np.ndarray:
+    return load_binance_1m_returns_any_rank(repo_root, "BTCUSDT")
+
+
+def load_eth_1m_returns_any_rank(repo_root: Path) -> np.ndarray:
+    return load_binance_1m_returns_any_rank(repo_root, "ETHUSDT")
 
 
 def load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray:
@@ -134,6 +143,8 @@ def load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray:
         return load_spx_returns_any_rank(repo_root)
     if dataset == "btcusdt" and period == "2024Q1_1m":
         return load_btc_1m_returns_any_rank(repo_root)
+    if dataset == "ethusdt" and period == "2024Q1_1m":
+        return load_eth_1m_returns_any_rank(repo_root)
     # Fallback: default to SPX
     return load_spx_returns_any_rank(repo_root)
 
@@ -149,16 +160,23 @@ def save_checkpoint(
     sim: EcoMDSimulator,
     optim: torch.optim.Optimizer,
     iter_idx: int,
-    targets: MomentTargets,
+    targets: MomentTargets | list[tuple[str, MomentTargets, float]],
     sim_config: dict[str, Any],
     train_config: dict[str, Any],
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    if isinstance(targets, MomentTargets):
+        targets_serialised: Any = asdict(targets)
+    else:
+        targets_serialised = [
+            {"label": lbl, "targets": asdict(t), "weight": w}
+            for lbl, t, w in targets
+        ]
     torch.save({
         "iter_idx": iter_idx,
         "sim_state_dict": sim.state_dict(),
         "optim_state_dict": optim.state_dict(),
-        "targets": asdict(targets),
+        "targets": targets_serialised,
         "sim_config": sim_config,
         "train_config": train_config,
     }, path)
@@ -185,7 +203,7 @@ def try_load_checkpoint(
 
 def train_distributed(
     sim: EcoMDSimulator,
-    targets: MomentTargets,
+    targets: MomentTargets | list[tuple[str, MomentTargets, float]],
     weights: LossWeights,
     *,
     n_iters: int,
@@ -206,7 +224,25 @@ def train_distributed(
     Gradients are all-reduced after each iter's backward. Loss metrics
     logged here are per-rank (mean over world reduced separately for
     printing).
+
+    Multi-asset training: ``targets`` may be a single MomentTargets
+    (backwards-compatible single-asset path) OR a list of
+    (label, MomentTargets, weight) tuples (joint training across assets).
+    In the multi-asset case, each iter does ONE rollout and computes a
+    weighted-sum loss against all assets' targets — the simulator learns
+    a Pareto-compromise distribution that minimises avg deviation across
+    markets.
     """
+    # Normalise targets into list-of-tuples for uniform handling
+    if isinstance(targets, MomentTargets):
+        targets_list: list[tuple[str, MomentTargets, float]] = [("default", targets, 1.0)]
+    else:
+        targets_list = list(targets)
+        # normalise weights to sum to 1
+        total_w = sum(w for _, _, w in targets_list)
+        if total_w > 0:
+            targets_list = [(lbl, t, w / total_w) for lbl, t, w in targets_list]
+
     device = sim.device
     optim = torch.optim.Adam(sim.parameters(), lr=lr)
 
@@ -224,6 +260,7 @@ def train_distributed(
     s = sim.init_state(generator=gen)
     s_prev = s.detach().clone()
     price_state = sim.init_price()
+    h_regime = sim.init_regime()
 
     last_ckpt_time = time.time()
 
@@ -240,14 +277,18 @@ def train_distributed(
             s = sim.init_state(generator=gen)
             s_prev = s.detach().clone()
             price_state = sim.init_price()
+            h_regime = sim.init_regime()
         else:
             s = s.detach()
             s_prev = s_prev.detach()
             price_state = _detach_price(price_state)
+            if h_regime is not None:
+                h_regime = h_regime.detach()
 
-        s, price_state, traj = sim.rollout_chunk(
+        s, price_state, traj, h_regime = sim.rollout_chunk(
             s, s_prev, price_state,
             n_steps=chunk_steps, generator=gen, create_graph=True,
+            h_regime=h_regime,
         )
         if chunk_steps >= 2:
             s_prev = traj.states[-2].detach()
@@ -258,8 +299,23 @@ def train_distributed(
         if start >= traj.log_returns.shape[0]:
             start = max(1, traj.log_returns.shape[0] - 4)
         sim_returns = traj.log_returns[start:]
-        out = moment_matching_loss(sim_returns, targets, weights)
-        total = out["total"]
+
+        # Multi-asset weighted-sum loss
+        per_asset_outs: dict[str, dict[str, Tensor]] = {}
+        total = None
+        out: dict[str, Tensor] = {}
+        for lbl, ts, w in targets_list:
+            out_a = moment_matching_loss(sim_returns, ts, weights)
+            per_asset_outs[lbl] = out_a
+            term = w * out_a["total"]
+            total = term if total is None else (total + term)
+        # For logging, expose per-asset acf_sim/leverage_sim/hill_sim under the
+        # default-asset name so existing log readers still work; also store
+        # all assets as <metric>_<label>.
+        # In single-asset mode (targets_list len 1), out is the per-asset dict.
+        first_lbl = targets_list[0][0]
+        out = dict(per_asset_outs[first_lbl])  # acf_sim etc. from first asset
+        out["total"] = total
         total.backward()
 
         # All-reduce gradients across ranks (standard DDP-style mean)
@@ -364,17 +420,40 @@ def main() -> None:
 
     repo_root = Path(__file__).resolve().parents[2]
 
-    # Build targets (each rank loads independently — data is small)
-    target_dataset = train_cfg.get("target_dataset", "spx")
-    target_period = train_cfg.get("target_period", "daily")
-    real_r = load_real_returns(repo_root, target_dataset, target_period)
-    if _is_main(rank):
-        log.info(f"loaded {len(real_r):,} returns for {target_dataset}/{target_period}")
+    # Build targets (each rank loads independently — data is small).
+    # Multi-asset: train_cfg["joint_assets"] is a list of dicts with
+    # {dataset, period, weight}. If absent, fall back to single
+    # target_dataset/target_period.
     weights = LossWeights(**train_cfg["loss_weights"])
-    targets = build_targets_from_returns(real_r, max_lag=weights.max_lag, k_frac=weights.hill_k_frac)
-    if _is_main(rank):
-        log.info(f"targets: acf_sq={targets.acf_sq_mean:.3f} leverage_sum={targets.leverage_sum:+.3f} "
-                 f"hill_alpha={targets.hill_alpha:.2f}")
+    joint_assets = train_cfg.get("joint_assets")
+    if joint_assets:
+        targets_list: list[tuple[str, MomentTargets, float]] = []
+        for asset_cfg in joint_assets:
+            ds = asset_cfg["dataset"]
+            pd_ = asset_cfg.get("period", "daily")
+            w = float(asset_cfg.get("weight", 1.0))
+            real_r = load_real_returns(repo_root, ds, pd_)
+            ts = build_targets_from_returns(real_r, max_lag=weights.max_lag,
+                                            k_frac=weights.hill_k_frac)
+            label = f"{ds}/{pd_}"
+            targets_list.append((label, ts, w))
+            if _is_main(rank):
+                log.info(f"[multi-asset] {label}: n={len(real_r):,}  "
+                         f"acf_sq={ts.acf_sq_mean:+.3f}  lev={ts.leverage_sum:+.3f}  "
+                         f"hill={ts.hill_alpha:.2f}  weight={w}")
+        targets: MomentTargets | list[tuple[str, MomentTargets, float]] = targets_list
+    else:
+        target_dataset = train_cfg.get("target_dataset", "spx")
+        target_period = train_cfg.get("target_period", "daily")
+        real_r = load_real_returns(repo_root, target_dataset, target_period)
+        if _is_main(rank):
+            log.info(f"loaded {len(real_r):,} returns for {target_dataset}/{target_period}")
+        targets = build_targets_from_returns(real_r, max_lag=weights.max_lag,
+                                             k_frac=weights.hill_k_frac)
+        if _is_main(rank):
+            log.info(f"targets: acf_sq={targets.acf_sq_mean:.3f} "
+                     f"leverage_sum={targets.leverage_sum:+.3f} "
+                     f"hill_alpha={targets.hill_alpha:.2f}")
 
     # Build simulator
     simulator_config = EcoMDConfig(**sim_cfg_dict)
@@ -409,9 +488,16 @@ def main() -> None:
 
     if _is_main(rank):
         log.info(f"training finished in {t_total:.1f}s ({len(history)} iters, world_size={world_size})")
+        if isinstance(targets, MomentTargets):
+            targets_dump: Any = asdict(targets)
+        else:
+            targets_dump = [
+                {"label": lbl, "targets": asdict(t), "weight": w}
+                for lbl, t, w in targets
+            ]
         (out_dir / "training_log.json").write_text(json.dumps({
             "config": {"simulator": sim_cfg_dict, "training": train_cfg},
-            "targets": asdict(targets),
+            "targets": targets_dump,
             "history": history,
             "train_time_seconds": t_total,
             "world_size": world_size,

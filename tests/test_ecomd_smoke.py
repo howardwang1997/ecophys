@@ -37,7 +37,7 @@ def test_rollout_chunk_gives_grad():
     s_prev = s.detach().clone()
     price_state = sim.init_price()
 
-    _, _, traj = sim.rollout_chunk(s, s_prev, price_state, n_steps=16, generator=gen, create_graph=True)
+    _, _, traj, _ = sim.rollout_chunk(s, s_prev, price_state, n_steps=16, generator=gen, create_graph=True)
     loss = traj.log_returns.pow(2).mean()
     loss.backward()
 
@@ -56,7 +56,7 @@ def test_learnable_gamma_T_have_grad():
     s = sim.init_state(generator=gen)
     s_prev = s.detach().clone()
     price_state = sim.init_price()
-    _, _, traj = sim.rollout_chunk(s, s_prev, price_state, n_steps=8, generator=gen, create_graph=True)
+    _, _, traj, _ = sim.rollout_chunk(s, s_prev, price_state, n_steps=8, generator=gen, create_graph=True)
     loss = (traj.velocities ** 2).mean()
     loss.backward()
     assert sim.log_gamma.grad is not None

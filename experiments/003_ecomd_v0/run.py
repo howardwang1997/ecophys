@@ -91,7 +91,7 @@ def train_ecomd(
         s_prev = s.detach().clone()
         price_state = sim.init_price()
 
-        _, _, traj = sim.rollout_chunk(
+        _, _, traj, _ = sim.rollout_chunk(
             s, s_prev, price_state,
             n_steps=chunk_steps,
             generator=gen,

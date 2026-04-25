@@ -72,6 +72,7 @@ def train_ecomd(
     s = sim.init_state(generator=gen)
     s_prev = s.detach().clone()
     price_state = sim.init_price()
+    h_regime = sim.init_regime()
 
     for it in range(n_iters):
         # LR schedule
@@ -85,17 +86,21 @@ def train_ecomd(
             s = sim.init_state(generator=gen)
             s_prev = s.detach().clone()
             price_state = sim.init_price()
+            h_regime = sim.init_regime()
         else:
             # detach gradient across iter boundary; keep values so simulation is continuous
             s = s.detach()
             s_prev = s_prev.detach()
             price_state = _detach_price(price_state)
+            if h_regime is not None:
+                h_regime = h_regime.detach()
 
-        s, price_state, traj = sim.rollout_chunk(
+        s, price_state, traj, h_regime = sim.rollout_chunk(
             s, s_prev, price_state,
             n_steps=chunk_steps,
             generator=gen,
             create_graph=True,
+            h_regime=h_regime,
         )
         # update s_prev for next iter to be traj.states[-2] (the step before final)
         if chunk_steps >= 2:
@@ -159,6 +164,8 @@ def _detach_price(ps: Any) -> Any:
         volatility=ps.volatility.detach(),
         step=ps.step,
         hawkes_memory=(ps.hawkes_memory.detach() if ps.hawkes_memory is not None else None),
+        hawkes_memory_long=(ps.hawkes_memory_long.detach()
+                            if ps.hawkes_memory_long is not None else None),
     )
 
 
