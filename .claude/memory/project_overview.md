@@ -38,7 +38,9 @@ Three binding rigor conditions documented in `feedback_preregistration.md`:
 ## Key timeline (v3 + Path C, 58 weeks)
 - ✓ Phase 0 (Wk 1–4): infra + literature → M0
 - ✓ Phase 1 (Wk 5–10): stylized facts + baselines → M1
-- ✓ **M2 GATE PASSED 2026-04-24**: EcoMD v0.8 (shared MLP PairwisePotential, Student-t noise, β_fixed, persistent state, warmup detach) → **7/11 SPX daily**. v0.6 is Pareto-alternative with stronger vol clustering (6/11 but acf(r²)=+0.306 vs v0.8's +0.079). v1 MACE-lite attempted during Phase 2 but failed: force magnitude 60× smaller than v0.x, no burst dynamics. Paper A will position v1 as "scaling attempt + negative result" rather than main claim.
+- ✓ **M2 GATE PASSED 2026-04-24**: EcoMD v0.8 (shared MLP PairwisePotential, Student-t noise, β_fixed, persistent state, warmup detach) → **7/11 SPX daily**. v0.6 is Pareto-alternative with stronger vol clustering (6/11 but acf(r²)=+0.306 vs v0.8's +0.079).
+- v1 MACE-lite (Phase 2 attempt at N=10K scaling) **failed at 0-4/11** across 8 architecture variants: SE(3)-equivariant inductive biases are domain-mismatched for markets, force magnitude 60-190× too small, per-node readout smooths dynamics. Captured as negative result for Paper A.
+- ✓ **EcoMD v2.1 (2026-04-25 night)**: market-microstructure-derived equivariant GNN (permutation-within-type × persistent type-coupling matrix T_θ). After 33 v2.0 configs all stuck at 4/11, two architectural bugs found: (a) Ilinski gauge invariance was misapplied to agent positions (which have absolute meaning), (b) T = identity initialization killed 75% of inter-type pair forces at K=4 types. Fixed via `gauge_enforce=False` + `T_init_mode=ones` + `kyle_enabled=False` + `phi_init_gain=1.0` → **6/11 on Mac**. v2.1 H20 config + 60-run ablation grid ready; H20 N=10K test pending.
 - Phase 1.5 (Wk 17–20): **high-freq data procurement + ingest** (parallel with v1 training) → **M1.5 NEW**
 - Phase 2 (Wk 11–18): EcoMD v0 → v0.5 → v0.6 → v0.8 reaches **7/11** on SPX daily → M2 ✓ (+2 weeks)
 - Phase 3 (Wk 19–28): **Paper A drafting (v0.6/v0.8 Pareto frontier)** + cross-asset BTC/ETH replication + T_eff initial probing → M3 + **Paper A arXiv (Wk 28)**
@@ -50,7 +52,11 @@ Three binding rigor conditions documented in `feedback_preregistration.md`:
 
 ## Core design commitments (fixed across v1/v2/v3)
 - **C2 early-core**: architecture already reserves explicit Langevin form with conservative/dissipative force separation, F-v-s triplet logging for fluctuation-theorem analysis.
-- **Main architecture (post-M2, 2026-04-24)**: `PairwisePotential` = MLP over concat(s_i, s_j) summed over **all N² pairs** (complete graph). N ≤ 10³ limit. v1 MACE-lite (k-NN + body-order 4) attempted for N=10⁴-10⁵ scaling but failed to reproduce vol clustering: force magnitude from ∑-over-N readout is 60× smaller than v0.x's ∑-over-N² pair sum, and per-node readout MLP smooths dynamics so no burst-and-decay emerges.
+- **Main architecture options as of 2026-04-25**:
+  1. v0.x `PairwisePotential` = MLP(concat(s_i, s_j, |Δs|)) summed over all N² pairs. Capped at N ≤ 10³. **v0.8 (β_fixed) reaches 7/11 on SPX daily — current best**.
+  2. v0.9 `StochasticPairwisePotential` = same kernel but unbiased random k-pair subsampling. Scales to N=10⁴+. H20 test pending.
+  3. **v2.1 EcoMDv2Potential** = persistent type embedding + learnable K×K coupling matrix T_θ (init T=ones is critical) + Hawkes self-excitation. v2's "novel architectural ideas from microstructure theory" reduced after ablation: gauge invariance and Kyle global term were both shown to *hurt* (each is documented as negative result). What survives in v2.1: persistent typed pair coupling (Lux-Marchesi-style) and Hawkes-Langevin hybrid. Mac 6/11; H20 pending.
+- v1 MACE-lite (SE(3)-equivariant GNN with body-order 4 tensor products) attempted but **failed at 0-4/11** across all 8 ablation variants — captured as Paper A negative result demonstrating SE(3) inductive biases don't transfer to markets.
 - **Honest MD-analogy critique**: single traders not observable → agent defined in latent space; non-stationarity → time-varying potential + regime; utility ≠ energy minimum → conservative/dissipative split.
 - **Pluggable price formation** (v3 added): `ExcessDemandPrice` (default, designated-position) + `ReadoutPrice` (ablation). Designated-position mechanism gives stylized fact #10 (volume/vol correlation) **when β is fixed** — learnable β breaks #10 by injecting state-dependent amplification. v0.6 (β_learn) vs v0.8 (β_fixed) are two Pareto points.
 
