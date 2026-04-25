@@ -110,9 +110,16 @@ run_h20_job \
     "experiments/014_v1p0_hawkes/results_spx"
 
 # ─── Job 4: Crash OOS validation (runs on Mac scale, fast, no DDP) ───
+# Use whichever Python is on PATH inside the active conda env. On H20 the
+# previous "conda run -n ecophys python ..." failed because the inner shell
+# couldn't resolve `python` — `conda run` requires either the env's bin to
+# be on PATH or `--cwd` set. Using `${CONDA_PREFIX}/bin/python` if defined,
+# else falling back to plain `python` (assumes user already activated env).
+PY_BIN="${PY_BIN:-${CONDA_PREFIX:+${CONDA_PREFIX}/bin/python}}"
+PY_BIN="${PY_BIN:-python}"
 run_mac_job \
     "04_crash_oos_v08_train2015_2019" \
-    "conda run -n ecophys python experiments/015_crash_oos/run.py --config experiments/015_crash_oos/config_v08_train_2015_2019.yaml"
+    "$PY_BIN experiments/015_crash_oos/run.py --config experiments/015_crash_oos/config_v08_train_2015_2019.yaml"
 
 echo ""
 echo "─────────────────────────────────────────────────────────────" | tee -a "$QUEUE_LOG"
