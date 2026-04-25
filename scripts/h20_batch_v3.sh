@@ -18,6 +18,17 @@ DAEMON="${DAEMON:-0}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# Guard against stale NPROC=1 in env (run #2 was wasted on single-GPU)
+n_gpu="$(nvidia-smi -L 2>/dev/null | wc -l | tr -d ' ')"
+if [[ "$n_gpu" -ge 2 && "$NPROC" -lt 2 ]]; then
+    echo "WARNING: env has NPROC=$NPROC but $n_gpu GPUs visible — this would"
+    echo "         waste 7/8 of the cards. Override with NPROC=$n_gpu."
+    echo "         To force single-GPU intentionally, prefix with FORCE_NPROC=1."
+    if [[ -z "${FORCE_NPROC:-}" ]]; then
+        NPROC="$n_gpu"
+    fi
+fi
+
 export DIST_BACKEND="${DIST_BACKEND:-gloo}"
 export ECOPHYS_DATA_DIR="${ECOPHYS_DATA_DIR:-$REPO_ROOT/data/sample}"
 export PYTHONPATH="${PYTHONPATH:-$REPO_ROOT}"
