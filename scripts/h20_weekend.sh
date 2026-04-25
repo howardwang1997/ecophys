@@ -3,7 +3,7 @@
 #
 # Series:
 #   E (5)  — C4 multi-seed
-#   F (15) — push C4 past 8/10 (zumbach loss + hyperparam tweaks + capacity)
+#   F (15) — push C4 past 9/11 (zumbach loss + hyperparam tweaks + capacity)
 #   G (10) — multi-asset universality (single, crypto-only, weighted)
 #   H (5)  — N scaling (20K, 50K, 100K)
 #   I (8)  — architectural composition (C4 + regime/mshawkes combos)
@@ -64,7 +64,7 @@ train_one() {
     echo "═ TRAIN $label ═ $(date +%H:%M:%S)" | tee -a "$QUEUE_LOG"
     local start=$(date +%s)
     local job_log="$outdir/train_${TIMESTAMP}.log"
-    timeout 900 torchrun --nproc_per_node="$NPROC" --standalone \
+    timeout 2700 torchrun --nproc_per_node="$NPROC" --standalone \
         -m ecomd.training.train_distributed \
         --config "$config" --out-dir "$outdir" 2>&1 \
       | tee "$job_log" >> "$QUEUE_LOG"
@@ -93,7 +93,7 @@ eval_one() {
     echo "═ EVAL  $label ═ $(date +%H:%M:%S)" | tee -a "$QUEUE_LOG"
     local start=$(date +%s)
     local elog="$outdir/eval_${TIMESTAMP}.log"
-    timeout 900 torchrun --nproc_per_node="$NPROC" --standalone \
+    timeout 2700 torchrun --nproc_per_node="$NPROC" --standalone \
         -m ecomd.inference.run_large \
         --ckpt "$outdir/checkpoint.pt" --config "$config" \
         --n-steps 4000 --n-realizations-per-rank 2 2>&1 \
@@ -150,9 +150,11 @@ main() {
 }
 
 if [[ "$DAEMON" == "1" ]]; then
-    nohup bash -c "$(declare -f train_one eval_one run_phase main); main" \
-        >> "$QUEUE_LOG" 2>&1 &
+    # Subshell preserves all local vars (JOBS array, $PHASES, $QUEUE_LOG,
+    # $TIMESTAMP, exported env). Disown so it survives parent exit.
+    (main) >> "$QUEUE_LOG" 2>&1 < /dev/null &
     pid=$!
+    disown "$pid" 2>/dev/null || true
     echo "$pid" > "${QUEUE_LOG}.pid"
     echo "started PID $pid; tail -f $QUEUE_LOG"
 else

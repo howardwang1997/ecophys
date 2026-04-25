@@ -8,7 +8,7 @@ self-contained training run; H20 user runs them sequentially via
 
 | ID | Config | Multi-asset | Multi-scale Hawkes | Regime GRU | Two-pop γ/T | Notes |
 |---|---|---|---|---|---|---|
-| A0 | `config_a0_baseline.yaml`           | SPX only | ✗ | ✗ | ✗ | v1.0 Hawkes recipe — H20 7/10 baseline |
+| A0 | `config_a0_baseline.yaml`           | SPX only | ✗ | ✗ | ✗ | v1.0 Hawkes recipe — **H20 7/11** baseline |
 | A1 | `config_a1_multi_asset.yaml`        | ✓ SPX+BTC+ETH | ✗ | ✗ | ✗ | universality datum |
 | A2 | `config_a2_multi_asset_mshawkes.yaml`| ✓ | ✓ | ✗ | ✗ | + zumbach / acf-shape fix |
 | A3 | `config_a3_multi_asset_regime.yaml` | ✓ | ✗ | ✓ | ✗ | + non-stationary regime |
@@ -16,7 +16,7 @@ self-contained training run; H20 user runs them sequentially via
 | A5 | `config_a5_all_features.yaml`       | ✓ | ✓ | ✓ | ✓ | the kitchen sink |
 
 Each ablation isolates one feature against A1 (multi-asset baseline) so
-we can attribute n/10 deltas to specific architectural choices.
+we can attribute n/11 deltas to specific architectural choices.
 
 ## Run order on H20
 
