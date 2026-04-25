@@ -1,0 +1,65 @@
+# A5 — All features on: multi-asset + multi-scale Hawkes + regime + twopop.
+# The kitchen sink. If A5 is best, the features compose; if not, the
+# A2/A3/A4 ablations tell us which one works.
+
+simulator:
+  n_agents: 10000
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: false
+    beta_hidden: 16
+    hawkes_alpha: 0.1
+    hawkes_kappa: 0.3
+    hawkes_alpha_long: 0.01
+    hawkes_kappa_long: 0.2
+  pairwise_kind: stochastic_mlp
+  sps_k_random: 50
+  sps_resample_per_step: true
+  regime_enabled: true
+  regime_d: 16
+  regime_update_every: 8
+  regime_init_gain: 0.1
+  regime_modulate_gamma: true
+  regime_modulate_temp: true
+  regime_modulate_kappa: true
+  twopop_enabled: true
+  twopop_gamma_scale: [0.7, 1.5, 1.0, 0.5]
+  twopop_temp_scale:  [0.5, 2.0, 1.0, 0.3]
+  v2_type_seed: 42
+
+training:
+  n_iters: 200
+  chunk_steps: 24
+  warmup_steps: 16
+  persistent_state: true
+  lr: 1.0e-3
+  lr_warmup_iters: 10
+  grad_clip_max_norm: 100.0
+  seed: 0
+  checkpoint_every_s: 1800
+  joint_assets:
+    - {dataset: spx,     period: 2015-2026_daily, weight: 1.0}
+    - {dataset: btcusdt, period: 2024Q1_1m,        weight: 1.0}
+    - {dataset: ethusdt, period: 2024Q1_1m,        weight: 1.0}
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
