@@ -1,37 +1,36 @@
 # v3 batch scoreboard
 
-Inference 11-fact (10 actually scored — conditional_kurtosis missing in
-inference module) on the trained ckpt of each batch variant.
+Inference 11-fact (all scored) on the trained ckpt of each batch variant.
 
-| Variant | n/10 | acf(r²) | hill | leverage | zumbach | aggr_g |
-|---|---:|---:|---:|---:|---:|---:|
-| A0_baseline_spx | **6/10** + | +0.367 | +1.676 | -4.545 | -0.012 | +44.658 |
-| A1_multi_asset | **4/10**  | +0.205 | +7.148 | -3.647 | -0.022 | +511.368 |
-| A2_+multiscale_hawkes | **2/10**  | +0.638 | +403.083 | -7.329 | -0.005 | +51.103 |
-| A3_+regime_GRU | **4/10**  | +0.339 | +3544.595 | -3.936 | -0.016 | +1040.517 |
-| A4_+twopop_γT | **6/10** + | +0.162 | +137.756 | +2.696 | -0.011 | +192.111 |
-| A5_all_features | **0/10**  | +0.043 | +70.170 | +0.669 | -0.004 | -9.780 |
-| B0_baseline_redo | **4/10**  | +0.154 | +5.297 | -2.785 | -0.005 | +452.515 |
-| B1_multi_asset | **3/10**  | +0.143 | +11.330 | -2.358 | -0.008 | +466.495 |
-| B2_+mshawkes_conservative | **4/10**  | +0.377 | +52.649 | -4.943 | -0.001 | +310.727 |
-| B3_+regime_conservative | **6/10** + | +0.197 | +3.248 | -3.298 | -0.012 | +327.403 |
-| B4_+twopop_conservative | **3/10**  | +0.083 | +42.518 | -1.724 | -0.001 | +349.772 |
-| B5_all_conservative | **4/10**  | +0.092 | +27.137 | -1.263 | -0.002 | +58.725 |
-| C0_baseline_+exploss | **6/10** + | +0.201 | +2.838 | -3.455 | -0.031 | +373.230 |
-| C1_multi_asset_+exploss | **4/10**  | +0.161 | +5.170 | -3.070 | -0.056 | +563.511 |
-| C2_+mshawkes_+exploss | **5/10** + | +0.151 | +6.207 | -2.949 | +0.036 | +539.748 |
-| C3_+regime_+exploss | **4/10**  | +0.113 | +18.257 | -2.526 | +0.015 | +692.181 |
-| C4_+twopop_+exploss | **7/10** ★ | +0.235 | +3.380 | -2.368 | -0.067 | +48.748 |
-| C5_all_+exploss | **4/10**  | +0.292 | +3.356 | -1.881 | -0.063 | -7.858 |
-| D0_a0_long | **2/10**  | +0.083 | +75.964 | -1.759 | -0.001 | +1228.197 |
-| D1_b0_long | **2/10**  | +0.083 | +75.720 | -1.765 | -0.003 | +1226.371 |
-| D2_b4_long | **3/10**  | +0.752 | +6.282 | -7.984 | -0.012 | +11.532 |
-| D3_c0_long | **4/10**  | +0.594 | +60.365 | -6.647 | +0.002 | +93.192 |
-| D4_c4_long | **4/10**  | +0.299 | +3.748 | -1.214 | -0.017 | -10.277 |
+| Variant | n/11 | acf(r²) | hill | cond_κ | leverage | zumbach | aggr_g |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| A0_baseline_spx | **7/11** ★ | +0.367 | +1.676 | -0.708 | -4.545 | -0.012 | +44.658 |
+| A1_multi_asset | **4/11**  | +0.205 | +7.148 | +665.767 | -3.647 | -0.022 | +511.368 |
+| A2_+multiscale_hawkes | **2/11**  | +0.638 | +403.083 | +879.532 | -7.329 | -0.005 | +51.103 |
+| A3_+regime_GRU | **4/11**  | +0.339 | +3544.595 | +1240.633 | -3.936 | -0.016 | +1040.517 |
+| A4_+twopop_γT | **6/11** + | +0.162 | +137.756 | +240.489 | +2.696 | -0.011 | +192.111 |
+| A5_all_features | **0/11**  | +0.043 | +70.170 | +17.382 | +0.669 | -0.004 | -9.780 |
+| B0_baseline_redo | **4/11**  | +0.154 | +5.297 | +110.400 | -2.785 | -0.005 | +452.515 |
+| B1_multi_asset | **3/11**  | +0.143 | +11.330 | +406.313 | -2.358 | -0.008 | +466.495 |
+| B2_+mshawkes_conservative | **4/11**  | +0.377 | +52.649 | +1833.072 | -4.943 | -0.001 | +310.727 |
+| B3_+regime_conservative | **6/11** + | +0.197 | +3.248 | +254.771 | -3.298 | -0.012 | +327.403 |
+| B4_+twopop_conservative | **3/11**  | +0.083 | +42.518 | +66.457 | -1.724 | -0.001 | +349.772 |
+| B5_all_conservative | **4/11**  | +0.092 | +27.137 | +3.586 | -1.263 | -0.002 | +58.725 |
+| C0_baseline_+exploss | **6/11** + | +0.201 | +2.838 | +36.096 | -3.455 | -0.031 | +373.230 |
+| C1_multi_asset_+exploss | **4/11**  | +0.161 | +5.170 | +172.228 | -3.070 | -0.056 | +563.511 |
+| C2_+mshawkes_+exploss | **5/11** + | +0.151 | +6.207 | +436.774 | -2.949 | +0.036 | +539.748 |
+| C3_+regime_+exploss | **4/11**  | +0.113 | +18.257 | +554.934 | -2.526 | +0.015 | +692.181 |
+| C4_+twopop_+exploss | **8/11** ★ | +0.235 | +3.380 | -0.590 | -2.368 | -0.067 | +48.748 |
+| C5_all_+exploss | **4/11**  | +0.292 | +3.356 | -1.411 | -1.881 | -0.063 | -7.858 |
+| D0_a0_long | **2/11**  | +0.083 | +75.964 | +1325.477 | -1.759 | -0.001 | +1228.197 |
+| D1_b0_long | **2/11**  | +0.083 | +75.720 | +1327.304 | -1.765 | -0.003 | +1226.371 |
+| D2_b4_long | **4/11**  | +0.752 | +6.282 | -0.091 | -7.984 | -0.012 | +11.532 |
+| D3_c0_long | **4/11**  | +0.594 | +60.365 | +1182.132 | -6.647 | +0.002 | +93.192 |
+| D4_c4_long | **4/11**  | +0.299 | +3.748 | -1.720 | -1.214 | -0.017 | -10.277 |
 
 Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 
-## A0_baseline_spx — 6/10 (n_realiz=8)
+## A0_baseline_spx — 7/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -41,12 +40,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +44.658 | [+10.00, +200.00] | ✓ |
 | intermittency_fano | +38.030 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.367 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | -0.708 | [-1.00, +3.00] | ✓ |
 | dfa_hurst_abs_r | +1.076 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -4.545 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | +0.661 | [+0.30, +0.80] | ✓ |
 | zumbach_asymmetry | -0.012 | [+0.00, +0.50] | ✗ |
 
-## A1_multi_asset — 4/10 (n_realiz=8)
+## A1_multi_asset — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -56,12 +56,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +511.368 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +38.030 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.205 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +665.767 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.580 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -3.647 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | +0.872 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.022 | [+0.00, +0.50] | ✗ |
 
-## A2_+multiscale_hawkes — 2/10 (n_realiz=8)
+## A2_+multiscale_hawkes — 2/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -71,12 +72,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +51.103 | [+10.00, +200.00] | ✓ |
 | intermittency_fano | +4.520 | [+5.00, +100.00] | ✗ |
 | acf_squared_returns | +0.638 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +879.532 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +1.138 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -7.329 | [-6.00, -0.50] | ✗ |
 | volume_volatility_corr | +0.585 | [+0.30, +0.80] | ✓ |
 | zumbach_asymmetry | -0.005 | [+0.00, +0.50] | ✗ |
 
-## A3_+regime_GRU — 4/10 (n_realiz=8)
+## A3_+regime_GRU — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -86,12 +88,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +1040.517 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +2.144 | [+5.00, +100.00] | ✗ |
 | acf_squared_returns | +0.339 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +1240.633 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.723 | [+0.60, +0.90] | ✓ |
 | leverage_effect | -3.936 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | +0.669 | [+0.30, +0.80] | ✓ |
 | zumbach_asymmetry | -0.016 | [+0.00, +0.50] | ✗ |
 
-## A4_+twopop_γT — 6/10 (n_realiz=8)
+## A4_+twopop_γT — 6/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -101,12 +104,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +192.111 | [+10.00, +200.00] | ✓ |
 | intermittency_fano | +5.361 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.162 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +240.489 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.631 | [+0.60, +0.90] | ✓ |
 | leverage_effect | +2.696 | [-6.00, -0.50] | ✗ |
 | volume_volatility_corr | +0.497 | [+0.30, +0.80] | ✓ |
 | zumbach_asymmetry | -0.011 | [+0.00, +0.50] | ✗ |
 
-## A5_all_features — 0/10 (n_realiz=8)
+## A5_all_features — 0/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -116,12 +120,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | -9.780 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +3.383 | [+5.00, +100.00] | ✗ |
 | acf_squared_returns | +0.043 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +17.382 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.564 | [+0.60, +0.90] | ✗ |
 | leverage_effect | +0.669 | [-6.00, -0.50] | ✗ |
 | volume_volatility_corr | +0.209 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.004 | [+0.00, +0.50] | ✗ |
 
-## B0_baseline_redo — 4/10 (n_realiz=8)
+## B0_baseline_redo — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -131,12 +136,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +452.515 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +13.641 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.154 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +110.400 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.403 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -2.785 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.561 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.005 | [+0.00, +0.50] | ✗ |
 
-## B1_multi_asset — 3/10 (n_realiz=8)
+## B1_multi_asset — 3/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -146,12 +152,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +466.495 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +14.684 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.143 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +406.313 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.460 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -2.358 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.018 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.008 | [+0.00, +0.50] | ✗ |
 
-## B2_+mshawkes_conservative — 4/10 (n_realiz=8)
+## B2_+mshawkes_conservative — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -161,12 +168,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +310.727 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +20.284 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.377 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +1833.072 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.362 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -4.943 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.460 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.001 | [+0.00, +0.50] | ✗ |
 
-## B3_+regime_conservative — 6/10 (n_realiz=8)
+## B3_+regime_conservative — 6/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -176,12 +184,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +327.403 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +36.862 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.197 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +254.771 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.756 | [+0.60, +0.90] | ✓ |
 | leverage_effect | -3.298 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.685 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.012 | [+0.00, +0.50] | ✗ |
 
-## B4_+twopop_conservative — 3/10 (n_realiz=8)
+## B4_+twopop_conservative — 3/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -191,12 +200,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +349.772 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +6.818 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.083 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +66.457 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.216 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -1.724 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.649 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.001 | [+0.00, +0.50] | ✗ |
 
-## B5_all_conservative — 4/10 (n_realiz=8)
+## B5_all_conservative — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -206,12 +216,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +58.725 | [+10.00, +200.00] | ✓ |
 | intermittency_fano | +5.444 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.092 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +3.586 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.313 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -1.263 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.679 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.002 | [+0.00, +0.50] | ✗ |
 
-## C0_baseline_+exploss — 6/10 (n_realiz=8)
+## C0_baseline_+exploss — 6/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -221,12 +232,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +373.230 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +38.030 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.201 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +36.096 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.661 | [+0.60, +0.90] | ✓ |
 | leverage_effect | -3.455 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.891 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.031 | [+0.00, +0.50] | ✗ |
 
-## C1_multi_asset_+exploss — 4/10 (n_realiz=8)
+## C1_multi_asset_+exploss — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -236,12 +248,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +563.511 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +37.797 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.161 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +172.228 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.534 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -3.070 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.701 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.056 | [+0.00, +0.50] | ✗ |
 
-## C2_+mshawkes_+exploss — 5/10 (n_realiz=8)
+## C2_+mshawkes_+exploss — 5/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -251,12 +264,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +539.748 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +13.366 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.151 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | +436.774 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.313 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -2.949 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.356 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | +0.036 | [+0.00, +0.50] | ✓ |
 
-## C3_+regime_+exploss — 4/10 (n_realiz=8)
+## C3_+regime_+exploss — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -266,12 +280,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +692.181 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +4.566 | [+5.00, +100.00] | ✗ |
 | acf_squared_returns | +0.113 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +554.934 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.145 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -2.526 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.397 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | +0.015 | [+0.00, +0.50] | ✓ |
 
-## C4_+twopop_+exploss — 7/10 (n_realiz=8)
+## C4_+twopop_+exploss — 8/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -281,12 +296,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +48.748 | [+10.00, +200.00] | ✓ |
 | intermittency_fano | +24.665 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.235 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | -0.590 | [-1.00, +3.00] | ✓ |
 | dfa_hurst_abs_r | +0.900 | [+0.60, +0.90] | ✓ |
 | leverage_effect | -2.368 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.381 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.067 | [+0.00, +0.50] | ✗ |
 
-## C5_all_+exploss — 4/10 (n_realiz=8)
+## C5_all_+exploss — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -296,12 +312,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | -7.858 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +22.134 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.292 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | -1.411 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.911 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -1.881 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.231 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.063 | [+0.00, +0.50] | ✗ |
 
-## D0_a0_long — 2/10 (n_realiz=8)
+## D0_a0_long — 2/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -311,12 +328,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +1228.197 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +4.079 | [+5.00, +100.00] | ✗ |
 | acf_squared_returns | +0.083 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +1325.477 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.162 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -1.759 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.029 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.001 | [+0.00, +0.50] | ✗ |
 
-## D1_b0_long — 2/10 (n_realiz=8)
+## D1_b0_long — 2/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -326,12 +344,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +1226.371 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +4.485 | [+5.00, +100.00] | ✗ |
 | acf_squared_returns | +0.083 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +1327.304 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.167 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -1.765 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.031 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.003 | [+0.00, +0.50] | ✗ |
 
-## D2_b4_long — 3/10 (n_realiz=8)
+## D2_b4_long — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -341,12 +360,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +11.532 | [+10.00, +200.00] | ✓ |
 | intermittency_fano | +37.096 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.752 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | -0.091 | [-1.00, +3.00] | ✓ |
 | dfa_hurst_abs_r | +1.443 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -7.984 | [-6.00, -0.50] | ✗ |
 | volume_volatility_corr | -0.521 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | -0.012 | [+0.00, +0.50] | ✗ |
 
-## D3_c0_long — 4/10 (n_realiz=8)
+## D3_c0_long — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -356,12 +376,13 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | +93.192 | [+10.00, +200.00] | ✓ |
 | intermittency_fano | +20.833 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.594 | [+0.15, +0.55] | ✗ |
+| conditional_kurtosis | +1182.132 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +0.794 | [+0.60, +0.90] | ✓ |
 | leverage_effect | -6.647 | [-6.00, -0.50] | ✗ |
 | volume_volatility_corr | +0.016 | [+0.30, +0.80] | ✗ |
 | zumbach_asymmetry | +0.002 | [+0.00, +0.50] | ✓ |
 
-## D4_c4_long — 4/10 (n_realiz=8)
+## D4_c4_long — 4/11 (n_realiz=8)
 
 | fact | value | band | pass |
 |---|---:|---|:-:|
@@ -371,6 +392,7 @@ Real targets: acf=+0.342, hill=2.68, leverage=−0.79, zumbach>0, aggr 10-200
 | aggregational_gaussianity | -10.277 | [+10.00, +200.00] | ✗ |
 | intermittency_fano | +17.942 | [+5.00, +100.00] | ✓ |
 | acf_squared_returns | +0.299 | [+0.15, +0.55] | ✓ |
+| conditional_kurtosis | -1.720 | [-1.00, +3.00] | ✗ |
 | dfa_hurst_abs_r | +1.136 | [+0.60, +0.90] | ✗ |
 | leverage_effect | -1.214 | [-6.00, -0.50] | ✓ |
 | volume_volatility_corr | -0.491 | [+0.30, +0.80] | ✗ |
