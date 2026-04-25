@@ -1,14 +1,23 @@
 # EcoMD v2.1 — H20 production config (SPX daily, N=10K)
 #
-# Uses the Mac-validated v2.1 winning recipe (gauge off, T=ones, Kyle off).
-# Discovery summary: v2.0 (gauge on + T=eye+noise + Kyle on) was stuck at
-# 4/11 across 33 configs on Mac. Disabling these three and keeping only the
-# persistent type embedding + learnable type-coupling matrix (initialised
-# all-ones so every type pair is active) recovered 6/11 on Mac — matching
-# v0.6 while keeping v2's architectural novelty.
+# Mac-validated winning recipe (sweep 017_v2_ablation, 2026-04-25):
+#   gauge_enforce=false, T_init_mode=ones, kyle_enabled=false (the v2.1 base)
+#   + Hawkes κ=2.0, w_acf_shape=0.3 → **9/11 on SPX daily, N=200**.
 #
-# Goal at H20 N=10K: reach ≥7/11 by leveraging larger agent population to
-# produce fatter tails (#2 Hill, #3 skew) and stronger Zumbach asymmetry (#11).
+# Hawkes×shape sweep (12 configs at N=200, 80 iters):
+#   κ=0.1, ws=0.3   → 7/11   (weak Hawkes + shape loss)
+#   κ=0.1, ws=1.0   → 7/11
+#   κ=1.0, ws=0.0   → 7/11   (strong Hawkes alone)
+#   κ=2.0, ws=0.0   → 7/11
+#   κ=2.0, ws=0.3   → 9/11 ★ chosen
+#   κ=2.0, ws=1.0   → 9/11   (slightly higher final loss)
+# Two stragglers at 9/11: autocorr_returns (sim +0.33 vs real ±0.05, return
+# memory too strong) and conditional_kurtosis. Both expected to ease at
+# N=10K where the extra agents add noise that washes out short-term return
+# autocorrelation.
+#
+# Goal at H20 N=10K: reach 9-10/11 with longer training (200 iters) and
+# population effects on tails (#2 Hill).
 #
 # Launch:
 #   bash scripts/h20_launch_v2_ablation.sh  (single GPU grid, many configs)
@@ -42,7 +51,7 @@ simulator:
     learnable_beta: false
     beta_hidden: 16
     hawkes_alpha: 0.1
-    hawkes_kappa: 0.3
+    hawkes_kappa: 2.0           # Mac sweep: κ=2.0 dominates (9/11 with ws=0.3)
   pairwise_kind: ecomd_v2
   v2_k_types: 4
   v2_d_type_emb: 8
@@ -78,7 +87,7 @@ training:
     w_hill: 0.1
     max_lag: 8
     hill_k_frac: 0.05
-    w_acf_shape: 0.0                # Optional: turn to 0.5 to push decay shape
+    w_acf_shape: 0.3                # Mac sweep: 0.3 with κ=2.0 → 9/11 (vs 7/11 at 0)
     acf_shape_target_ratio: 2.0
     acf_shape_lag_peak: 1
     acf_shape_lag_tail: 10
