@@ -1,15 +1,24 @@
 # Paper A — EcoMD: A Differentiable Equivariant GNN for Financial Markets
 
-**Working title** (revised 2026-04-25): *EcoMD: A Differentiable Typed Pair Potential for Financial Market Simulation, with a Quantitative Survey of Failed Microstructure-Inspired Symmetries*
+**Working title** (revised v3, 2026-04-25 goal-driven):
+*EcoMD: A Calibrated Differentiable Particle Simulator for Non-Equilibrium Analysis of Financial Markets*
 
-**Earlier title (NOT used)**: "Equivariant Graph Neural Network ... Derived from Microstructure Symmetries"
-**Why dropped**: a careful reading of v2.1 — the only working architecture
-in our family — shows it carries only permutation-within-type
-equivariance, which is **strictly weaker** than the full permutation
-equivariance v0.x already has from any pair-sum. None of the additional
-microstructure-derived symmetries we tried (Ilinski log-price gauge,
-Kyle global mean-field potential, MACE-style SE(3) tensor products)
-survive ablation. Calling v2.1 "equivariant" beyond v0.x is dishonest.
+**Earlier titles, dropped**:
+- v1: "Equivariant Graph Neural Network ... Derived from Microstructure
+  Symmetries" — overclaims; v2.1 has strictly weaker equivariance than v0.x.
+- v2: "Differentiable Typed Pair Potential ... with Quantitative Survey of
+  Failed Microstructure-Inspired Symmetries" — methodology-centric but
+  doesn't connect to the actual research goal (enable Paper B physics
+  analysis).
+
+**Why this title**: the project's purpose is to enable non-equilibrium
+thermodynamic analysis of markets (T_eff scaling, Jarzynski identity,
+TUR — see Paper B plan). For that, we need a **calibrated** simulator
+(matches data) that is **differentiable** (gradient-based calibration
+on event windows) and **particle-based** (agent-level state for
+entropy-production decomposition). Paper A's goal is to deliver THAT
+tool, not to set a stylized-facts SOTA or invent a novel GNN. The
+title and every section flow from this goal.
 
 **Target venue (primary)**: ICAIF 2026 (Aug deadline) — realistic 65-85% accept
 **Stretch target**: NeurIPS 2027 Main / ICLR 2027 Main if narrative tightens
@@ -17,61 +26,84 @@ survive ablation. Calling v2.1 "equivariant" beyond v0.x is dishonest.
 
 ---
 
-## Top-line claim (revised honest version)
+## Goal-driven framing
 
-We present **EcoMD**, a differentiable particle-based market simulator
-trainable end-to-end via moment matching on Cont (2001) stylized facts.
-The architecture is a **typed pair potential**: pair-MLP over per-agent
-state plus a learnable K×K coupling matrix between persistent agent
-type labels (Lux-Marchesi 1999 instantiation), combined with Hawkes
-self-excitation in price formation.
+**The goal**: enable Paper B's non-equilibrium thermodynamic analysis of
+markets (universal T_eff critical scaling, Jarzynski work identity,
+thermodynamic uncertainty relation). Such analysis demands:
 
-We further perform an unusually thorough **architectural survey of
-microstructure-theory-inspired symmetries** as inductive biases. Of six
-symmetries we tried (SE(3) equivariance, Ilinski log-price gauge, Kyle
-global mean-field, body-order ≥ 3 tensor products, full permutation,
-T = identity initialization), **five fail under ablation** and the
-sixth (permutation-within-type) is a strict weakening of permutation
-equivariance that v0.x already has. We document each failure mode
-quantitatively: force-magnitude probes (figure 1), ACF decay shape
-(figure 2), and 41 stylized-fact runs (table 3).
+1. A **particle-based** simulator (agent-level states, so entropy
+   production decomposes per particle).
+2. **Calibrated to real data** (so measured T_eff reflects the market,
+   not the model's noise floor).
+3. **Differentiable** (so calibration is feasible at the
+   minutes/seconds-resolution data needed for intraday Jarzynski).
 
-The minimal architecture that matches v0.x baseline 7/11 stylized
-facts on SPX daily *and* extends naturally to typed agent populations
-(Paper B's universality target) is the typed pair potential of v2.1.
+Paper A delivers exactly that tool. Stylized facts (Cont 2001) are the
+**calibration target**, not the headline result. Architectural choices
+are **evidence-based**, with ablations showing why each piece is
+included.
 
-## What we are NOT claiming (negative space, important)
+## Top-line statement
 
-- We are **not** claiming a novel equivariant GNN. v2.1's equivariance
-  group (permutation-within-type) is strictly smaller than v0.x's
-  (full permutation). Adding type labels *breaks* a symmetry, not
-  adds one.
-- We are **not** claiming microstructure theory uniquely determines
-  the architecture. Five of six theory-derived symmetries hurt.
-- We are **not** claiming Ilinski gauge applies to particle market
-  simulators (it does not — agent positions are not log-prices).
-- We are **not** claiming the materials-physics GNN literature
-  (MACE / NequIP / TorchMD-Net) transfers to markets (it does not —
-  documented quantitatively in §4).
+EcoMD is a differentiable particle-based market simulator with
+Overdamped Langevin dynamics in latent agent state, a typed pair
+potential, and Hawkes-augmented excess-demand price formation.
+Trained by moment-matching to 11 Cont (2001) stylized facts in 80
+gradient iterations, it matches **7/11** on S&P 500 daily and **7/11**
+on BTC/USDT 1-minute with the same recipe — a calibration sufficient
+to support Paper B's physics analysis.
+
+## What this paper does NOT try to be
+
+- **Not a SOTA stylized-facts paper.** GARCH(1,1)-t already achieves
+  7/11 on SPX. We do not claim numerical superiority on summary statistics.
+- **Not an equivariant-GNN paper.** v2.1, the only working architecture
+  in our v2 family, has strictly weaker equivariance than v0.x's
+  PairwisePotential (full permutation). We are honest about this.
+- **Not a beat-ABIDES benchmark.** ABIDES runs N=10⁴ with realistic
+  LOB; EcoMD's particles live in latent space. Different goals.
+- **Not a microstructure-theory derivation.** We started by trying to
+  derive the architecture from Kyle/Lux-Marchesi/Ilinski/Hawkes;
+  five of six theory-suggested ingredients hurt under ablation.
 
 ---
 
-## Section structure
+## Section structure (goal-driven, every section serves "calibrated tool for Paper B")
 
-### 1. Introduction (~1 page)
+### 1. Introduction (~1 page) — frame the need
 
-- Market simulation as a generative modeling problem.
-- Why differentiable: gradient calibration is sample-efficient (80 iter)
-  vs Simulation-Based Inference (10⁴+ rollouts in ABIDES literature).
-- Why GNN: agents = particles, pair interactions = market microstructure.
-- Why our specific GNN: market has its own symmetry group, distinct from SE(3).
-- Three contributions:
-    1. **EcoMD v2.1 architecture** with persistent type embedding + learnable
-       K×K coupling matrix (Lux-Marchesi 1999 NN-ization)
-    2. **Quantitative ablation of 4 architectures**: shows 33+8 configs needed
-       to find what works; 5 negative results documented as findings
-    3. **Cross-asset universality**: same training recipe transfers daily
-       equity ↔ minute crypto
+- The non-equilibrium physics of markets is a 25-year-old open question
+  (Mantegna-Stanley 1999; Bouchaud 2001; Tóth-Lux-Sornette 2018; Doshi 2025).
+- Recent progress requires per-particle entropy production and event-driven
+  Jarzynski measurements at intraday-to-daily timescales — needs (a) particle
+  simulator, (b) calibrated to data, (c) differentiable.
+- Existing tools fall short: ABIDES is forward-only (calibration via SBI
+  takes 10⁴+ rollouts), GAN/diffusion sims have no agent axis, MACE-style
+  materials GNNs don't transfer to markets.
+- Our contribution: **EcoMD**, a differentiable particle simulator
+  calibrated by gradient descent in 80 iterations, suitable for the
+  measurement protocols Paper B requires.
+
+### 1.5. Three measurement requirements from Paper B (~0.5 page)
+
+This section explicitly lists what Paper B needs from a market simulator,
+to motivate the design choices in §3. (Brief — full Paper B is separate.)
+- T_eff(t) demands tracked per-agent forces (Langevin decomposition)
+- Jarzynski over FOMC windows demands gradient-trainable state-action paths
+- TUR over L2 events demands microstructure realism + reproducibility
+
+### 2. Related work (~0.75 page)
+
+- Particle / agent-based market sims: ABIDES (Byrd 2020), ABIDES-Gym
+  (Amrouni 2021), Lux-Marchesi 1999, Cont-Bouchaud 2000.
+- Differentiable ABM: GradABM (Chopra 2022 AAMAS), Andelfinger SIGSIM 2021,
+  Dyer ICAIF 2023, JAX-LOB (Frey ICAIF 2023).
+- Generative time-series: TimeGAN (Yoon 2019), QuantGAN (Wiese 2020),
+  Cont-Cucuringu LOB GAN 2023.
+- Materials-physics GNNs as TEMPLATES we tested and found unsuitable for
+  markets: MACE (Batatia NeurIPS 2022), TorchMD-Net (Thölke NeurIPS 2022),
+  EquiformerV2 (Liao 2023). See §4.1.
 
 ### 2. Related work (~0.75 page)
 
