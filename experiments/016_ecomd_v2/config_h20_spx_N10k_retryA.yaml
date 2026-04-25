@@ -1,0 +1,85 @@
+# EcoMD v2.1 — H20 retry "Path A" (conservative, post-divergence diagnosis)
+#
+# Background. First H20 run (results_h20/, 2026-04-25 14:30 CST) used Mac
+# winner config (κ=2.0, w_acf_shape=0.3) and diverged: loss 3.9 → 3208,
+# grad_norm 124 → 39M. iter 30 onward grad_clip=100 stopped helping.
+#
+# Path A reverts to the next-best Mac config (κ=1.0 alone gives 7/11 on
+# Mac N=200) plus tighter clip/lr to absorb N=10K's 50× burst amplitude:
+#   - hawkes_kappa: 1.0 (was 2.0)
+#   - w_acf_shape:  0.0 (was 0.3) — Mac sweep had this hitting 7/11 alone
+#   - grad_clip:    10  (was 100) — hard ceiling against runaway
+#   - lr:           5e-4 (was 1e-3) — half-rate for N=10K stability
+#   - lr_warmup:    30  (was 10)   — settle init before full lr
+#
+# Path B (separate retry, not this file): keep κ=2.0 + ws=0.3 but apply all
+# safety brakes — only run if Path A reaches ≥7/11 to confirm scoring path
+# works first.
+#
+# Launch on H20:
+#   git pull
+#   CONFIG=experiments/016_ecomd_v2/config_h20_spx_N10k_retryA.yaml \
+#     bash scripts/h20_launch_v2.sh
+
+simulator:
+  n_agents: 10000
+  d_state: 32
+  hidden: 48
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: false
+    beta_hidden: 16
+    hawkes_alpha: 0.1
+    hawkes_kappa: 1.0           # Mac sweep: κ=1.0 + ws=0 → 7/11
+  pairwise_kind: ecomd_v2
+  v2_k_types: 4
+  v2_d_type_emb: 8
+  v2_d_pi: 4
+  v2_k_random: 50
+  v2_kyle_enabled: false
+  v2_gauge_enforce: false
+  v2_T_init_mode: ones
+  v2_phi_init_gain: 1.0
+  v2_kyle_lambda_init: 0.05
+  v2_kyle_lambda_learnable: true
+  v2_gauge_axis: 0
+  v2_type_seed: 42
+  v2_pi_init_gain: 0.5
+  v2_T_offdiag_init: 0.1
+
+training:
+  n_iters: 200
+  chunk_steps: 24                 # 32 OOMs at 96GB HBM
+  warmup_steps: 16
+  persistent_state: true
+  lr: 5.0e-4                      # half-rate for N=10K stability
+  lr_warmup_iters: 30             # settle init before full lr
+  grad_clip_max_norm: 10.0        # hard ceiling — first run hit grad=39M
+  seed: 0
+  checkpoint_every_s: 1800
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+    w_acf_shape: 0.0              # Mac: κ=1.0 alone gives 7/11
+    acf_shape_target_ratio: 2.0
+    acf_shape_lag_peak: 1
+    acf_shape_lag_tail: 10
