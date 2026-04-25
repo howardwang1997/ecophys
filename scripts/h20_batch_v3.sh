@@ -13,21 +13,27 @@
 
 set -uo pipefail
 
+# Guard 1: if env has stale NPROC=1, unset it (very common bug after running
+# a single-GPU debug session). Override with FORCE_NPROC=1 if you really want
+# 1 process. Otherwise default to 4.
+if [[ "${NPROC:-}" == "1" && -z "${FORCE_NPROC:-}" ]]; then
+    echo "[guard] env had NPROC=1 — unsetting to use default 4-card DDP"
+    echo "        (use FORCE_NPROC=1 to keep single-GPU)"
+    unset NPROC
+fi
 NPROC="${NPROC:-4}"
 DAEMON="${DAEMON:-0}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-# Guard against stale NPROC=1 in env (run #2 was wasted on single-GPU)
-n_gpu="$(nvidia-smi -L 2>/dev/null | wc -l | tr -d ' ')"
-if [[ "$n_gpu" -ge 2 && "$NPROC" -lt 2 ]]; then
-    echo "WARNING: env has NPROC=$NPROC but $n_gpu GPUs visible — this would"
-    echo "         waste 7/8 of the cards. Override with NPROC=$n_gpu."
-    echo "         To force single-GPU intentionally, prefix with FORCE_NPROC=1."
-    if [[ -z "${FORCE_NPROC:-}" ]]; then
-        NPROC="$n_gpu"
-    fi
+# Guard 2: confirm we'll actually have that many GPUs (best-effort)
+n_gpu_str="$(nvidia-smi -L 2>/dev/null | wc -l | tr -d ' ')"
+n_gpu="${n_gpu_str:-0}"
+if [[ "$n_gpu" -ge 1 && "$NPROC" -gt "$n_gpu" ]]; then
+    echo "[guard] NPROC=$NPROC > visible GPUs $n_gpu — clamping to $n_gpu"
+    NPROC="$n_gpu"
 fi
+echo "[guard] using NPROC=$NPROC  (visible GPUs: $n_gpu)"
 
 export DIST_BACKEND="${DIST_BACKEND:-gloo}"
 export ECOPHYS_DATA_DIR="${ECOPHYS_DATA_DIR:-$REPO_ROOT/data/sample}"

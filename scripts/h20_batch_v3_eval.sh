@@ -3,15 +3,13 @@
 
 set -uo pipefail
 
+if [[ "${NPROC:-}" == "1" && -z "${FORCE_NPROC:-}" ]]; then
+    echo "[guard] env had NPROC=1 — unsetting to use default 4"
+    unset NPROC
+fi
 NPROC="${NPROC:-4}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
-
-n_gpu="$(nvidia-smi -L 2>/dev/null | wc -l | tr -d ' ')"
-if [[ "$n_gpu" -ge 2 && "$NPROC" -lt 2 ]]; then
-    echo "WARNING: NPROC=$NPROC with $n_gpu GPUs visible; bumping NPROC=$n_gpu."
-    [[ -z "${FORCE_NPROC:-}" ]] && NPROC="$n_gpu"
-fi
 
 declare -a JOBS=(
     "A0|experiments/022_h20_batch/config_a0_baseline.yaml|experiments/022_h20_batch/results_a0"
