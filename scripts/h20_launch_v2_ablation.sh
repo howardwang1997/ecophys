@@ -19,8 +19,11 @@
 set -uo pipefail
 
 GRID_NAME="${1:-mac_quick}"
+DAEMON="${DAEMON:-0}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
+export ECOPHYS_DATA_DIR="${ECOPHYS_DATA_DIR:-$REPO_ROOT/data/sample}"
+export PYTHONPATH="${PYTHONPATH:-$REPO_ROOT}"
 
 if [[ -n "${GRID_FILE:-}" ]]; then
     GRID_PATH="$GRID_FILE"
@@ -56,16 +59,27 @@ fi
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
 START=$(date +%s)
-python experiments/017_v2_ablation/run_grid.py --grid "$GRID_PATH" 2>&1 | tee "$RUN_LOG"
-EXIT_CODE=${PIPESTATUS[0]}
+CMD="python experiments/017_v2_ablation/run_grid.py --grid "$GRID_PATH" 2>&1 | tee "$RUN_LOG""
+
+if [[ "$DAEMON" == "1" ]]; then
+    echo " Running as daemon (nohup). PID written to $RUN_LOG.pid"
+    nohup bash -c "$CMD" >> "$RUN_LOG" 2>&1 &
+    echo $! > "${RUN_LOG}.pid"
+    echo " Monitor: tail -f $RUN_LOG"
+else
+    eval "$CMD"
+    EXIT_CODE=${PIPESTATUS[0]}
+fi
 END=$(date +%s)
 ELAPSED=$((END - START))
 
 echo ""
 echo "─────────────────────────────────────────────────────────────"
-echo " Grid finished: exit=$EXIT_CODE  elapsed=${ELAPSED}s (~$((ELAPSED/60))min)"
+echo " Grid finished: exit=${EXIT_CODE:-running}  elapsed=${ELAPSED}s (~$((ELAPSED/60))min)"
 echo " Summary: experiments/017_v2_ablation/results/grid_summary.md"
 echo " Log: $RUN_LOG"
 echo "─────────────────────────────────────────────────────────────"
 
-exit "$EXIT_CODE"
+if [[ "$DAEMON" != "1" ]]; then
+    exit "${EXIT_CODE:-1}"
+fi
