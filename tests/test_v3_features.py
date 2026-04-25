@@ -194,6 +194,46 @@ def test_force_decomposition():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Zumbach asymmetry loss
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def test_zumbach_asymmetry_diff_runs():
+    from ecomd.training.losses import zumbach_asymmetry_diff
+    torch.manual_seed(0)
+    r = torch.randn(2000) * 0.01
+    z = zumbach_asymmetry_diff(r)
+    assert z.dim() == 0
+    assert torch.isfinite(z)
+
+
+def test_zumbach_loss_grad_flows():
+    from ecomd.training.losses import LossWeights, MomentTargets, moment_matching_loss
+    r = torch.zeros(500, requires_grad=True)
+    with torch.no_grad():
+        r += torch.randn(500) * 0.01
+    ts = MomentTargets(0.34, -0.79, 2.68)
+    out = moment_matching_loss(r, ts, LossWeights(w_zumbach=1.0))
+    out["total"].backward()
+    assert r.grad is not None
+    assert r.grad.abs().sum() > 0
+
+
+def test_zumbach_target_hinge():
+    """Penalty is 0 when sim D̄ ≥ target, positive otherwise."""
+    from ecomd.training.losses import LossWeights, MomentTargets, moment_matching_loss
+    torch.manual_seed(0)
+    r = torch.randn(800) * 0.01
+    ts = MomentTargets(0.34, -0.79, 2.68)
+    # very high target → sim definitely below → penalty positive
+    out_high = moment_matching_loss(r, ts, LossWeights(w_zumbach=1.0, zumbach_target=10.0))
+    # very low target → sim above → penalty zero
+    out_low = moment_matching_loss(r, ts, LossWeights(w_zumbach=1.0, zumbach_target=-10.0))
+    assert float(out_high["zumbach_pen"]) > float(out_low["zumbach_pen"])
+    assert float(out_low["zumbach_pen"]) == 0.0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Combined: regime + twopop + multi-scale Hawkes all on
 # ─────────────────────────────────────────────────────────────────────────────
 
