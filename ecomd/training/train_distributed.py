@@ -580,8 +580,23 @@ def main() -> None:
     )
     t_total = time.time() - t0
 
+    # Peak HBM profile (CUDA only) — helps calibrate memory model for
+    # configs across (N, chunk_steps, K). Captured per-rank; rank 0
+    # writes to training_log.
+    peak_hbm: dict[str, float] = {}
+    if torch.cuda.is_available():
+        try:
+            dev = sim.device
+            peak_hbm["alloc_gb"] = float(torch.cuda.max_memory_allocated(dev) / (1024 ** 3))
+            peak_hbm["reserved_gb"] = float(torch.cuda.max_memory_reserved(dev) / (1024 ** 3))
+        except Exception:
+            pass
+
     if _is_main(rank):
         log.info(f"training finished in {t_total:.1f}s ({len(history)} iters, world_size={world_size})")
+        if peak_hbm:
+            log.info(f"[rank 0] peak HBM: alloc={peak_hbm.get('alloc_gb', 0):.2f} GB, "
+                     f"reserved={peak_hbm.get('reserved_gb', 0):.2f} GB")
         if isinstance(targets, MomentTargets):
             targets_dump: Any = asdict(targets)
         else:
@@ -595,6 +610,7 @@ def main() -> None:
             "history": history,
             "train_time_seconds": t_total,
             "world_size": world_size,
+            "peak_hbm": peak_hbm,
         }, indent=2))
         log.info(f"[rank 0] wrote {out_dir}/training_log.json")
 
