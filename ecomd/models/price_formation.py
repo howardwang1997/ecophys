@@ -110,6 +110,21 @@ class ExcessDemandParams:
     # hawkes_kappa_long = 0 disables. Recommended: α_long=0.01, κ_long=0.2.
     hawkes_alpha_long: float = 0.0
     hawkes_kappa_long: float = 0.0
+    # v3 (paper-a-solidify O series): sign mode of Hawkes excitation.
+    #   "coherent" (default): excitation = κ·M·sign(log_ret_core) — boosts
+    #       same-direction streaks → produces vol clustering AND positive
+    #       return autocorrelation (Cont fact #1 fail).
+    #   "flipping": excitation = -κ·M·sign(log_ret_core) — pushes against
+    #       streaks (mean-reverting in price). Tests whether the autocorr
+    #       fail comes from sign coherence.
+    #   "none": excitation = κ·M (sign-free magnitude only) — pure
+    #       vol-clustering boost without directional bias.
+    hawkes_sign_mode: str = "coherent"
+    # v3 (paper-a-solidify O series): volume reporting mode.
+    #   "delta_pos" (default): volume = Σ_i |Δs_{i,0}| — agent inventory turnover.
+    #   "price_driven": volume = N · |Δlog_p| — proxy for trading volume that
+    #       tracks price-burst regimes (real markets: high vol → high volume).
+    volume_mode: str = "delta_pos"
 
 
 class ExcessDemandPrice(nn.Module):
@@ -202,11 +217,18 @@ class ExcessDemandPrice(nn.Module):
         # only spans one chunk (same as vol EWMA).
         # v3 multi-scale: second EMA channel with longer time scale (smaller α).
         excitation = torch.zeros((), device=s_next.device, dtype=s_next.dtype)
+        # Sign factor: coherent (+sign), flipping (-sign), or none (1.0).
+        if p.hawkes_sign_mode == "flipping":
+            sign_factor = -torch.sign(log_ret_core)
+        elif p.hawkes_sign_mode == "none":
+            sign_factor = torch.ones_like(log_ret_core)
+        else:  # "coherent" (default, backward compat)
+            sign_factor = torch.sign(log_ret_core)
         if p.hawkes_alpha > 0.0:
             mem_prev = state.hawkes_memory
             if mem_prev is None:
                 mem_prev = torch.zeros((), device=s_next.device, dtype=s_next.dtype)
-            excitation = excitation + p.hawkes_kappa * mem_prev * torch.sign(log_ret_core)
+            excitation = excitation + p.hawkes_kappa * mem_prev * sign_factor
             hawkes_mem_next = (1 - p.hawkes_alpha) * mem_prev + p.hawkes_alpha * log_ret_core.abs()
         else:
             hawkes_mem_next = state.hawkes_memory
@@ -215,7 +237,7 @@ class ExcessDemandPrice(nn.Module):
             mem_long_prev = state.hawkes_memory_long
             if mem_long_prev is None:
                 mem_long_prev = torch.zeros((), device=s_next.device, dtype=s_next.dtype)
-            excitation = excitation + p.hawkes_kappa_long * mem_long_prev * torch.sign(log_ret_core)
+            excitation = excitation + p.hawkes_kappa_long * mem_long_prev * sign_factor
             hawkes_mem_long_next = (
                 (1 - p.hawkes_alpha_long) * mem_long_prev
                 + p.hawkes_alpha_long * log_ret_core.abs()
@@ -227,6 +249,10 @@ class ExcessDemandPrice(nn.Module):
             log_ret = log_ret_core + excitation_mul * excitation
         else:
             log_ret = log_ret_core
+
+        # v3 paper-a-solidify: optional price-driven volume mode
+        if p.volume_mode == "price_driven":
+            volume = log_ret.abs() * float(s_next.shape[0])
 
         log_price_next = state.log_price + log_ret
 
