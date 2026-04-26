@@ -66,6 +66,9 @@ def main() -> None:
     parser.add_argument("--n-realizations-per-rank", type=int, default=2)
     parser.add_argument("--out-dir", default=None)
     parser.add_argument("--seed-base", type=int, default=10_000)
+    parser.add_argument("--save-trajectory", action="store_true",
+                        help="save (returns, volumes, log_prices) of each "
+                             "realization as compressed npz for offline analysis")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -111,6 +114,18 @@ def main() -> None:
         })
         log.info(f"[rank {rank}] rollout {r_idx+1}/{args.n_realizations_per_rank} "
                  f"seed={seed} took {dt:.1f}s")
+
+        if args.save_trajectory:
+            traj_path = out_dir / f"trajectory_rank{rank}_r{r_idx}.npz"
+            np.savez_compressed(
+                traj_path,
+                log_returns=returns,
+                volumes=volumes,
+                log_prices=traj.log_prices.detach().cpu().numpy(),
+                excess_demand=traj.excess_demand.detach().cpu().numpy(),
+                seed=seed, n_steps=args.n_steps, rank=rank,
+            )
+            log.info(f"[rank {rank}] saved trajectory → {traj_path.name}")
 
     per_rank_path = out_dir / f"inference_rank_{rank}.json"
     per_rank_path.write_text(json.dumps(rank_results, indent=2))

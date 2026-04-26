@@ -107,15 +107,45 @@ def all_reduce_mean(x: torch.Tensor) -> torch.Tensor:
 
 
 def load_spx_returns_any_rank(repo_root: Path) -> np.ndarray:
+    return load_yfinance_daily_any_rank(repo_root, "^GSPC")
+
+
+def load_yfinance_daily_any_rank(
+    repo_root: Path, symbol: str,
+    year_lo: int | None = None, year_hi: int | None = None,
+) -> np.ndarray:
+    """Generic yfinance daily loader. Optional year-range filter for crash OOS.
+
+    Looks for `data/raw/yfinance/interval=1d/symbol={symbol}/year=*.parquet`
+    (falls back to data/sample/). Returns log returns from adjusted_close
+    (or close) prices. ``year_lo`` and ``year_hi`` are inclusive end-points
+    on the parquet shard's `year=YYYY` partition; both None = use all.
+    """
     for root in (repo_root / "data" / "raw", repo_root / "data" / "sample"):
-        d = root / "yfinance" / "interval=1d" / "symbol=^GSPC"
+        d = root / "yfinance" / "interval=1d" / f"symbol={symbol}"
         if d.exists():
-            frames = [pd.read_parquet(p) for p in sorted(d.glob("year=*.parquet"))]
+            shards = sorted(d.glob("year=*.parquet"))
+            # Filter by year if requested
+            if year_lo is not None or year_hi is not None:
+                kept = []
+                for p in shards:
+                    yr_str = p.stem.split("=")[-1]
+                    try:
+                        yr = int(yr_str)
+                    except ValueError:
+                        continue
+                    if year_lo is not None and yr < year_lo:
+                        continue
+                    if year_hi is not None and yr > year_hi:
+                        continue
+                    kept.append(p)
+                shards = kept
+            frames = [pd.read_parquet(p) for p in shards]
             if frames:
                 df = pd.concat(frames, ignore_index=True).sort_values("timestamp").reset_index(drop=True)
                 col = "adjusted_close" if "adjusted_close" in df.columns else "close"
                 return log_returns_from_prices(df[col].to_numpy())
-    raise FileNotFoundError("no ^GSPC yfinance data found in data/raw or data/sample")
+    raise FileNotFoundError(f"no {symbol} yfinance data found in data/raw or data/sample")
 
 
 def load_binance_1m_returns_any_rank(repo_root: Path, symbol: str) -> np.ndarray:
@@ -137,15 +167,63 @@ def load_eth_1m_returns_any_rank(repo_root: Path) -> np.ndarray:
     return load_binance_1m_returns_any_rank(repo_root, "ETHUSDT")
 
 
+_YFINANCE_DAILY_SYMBOL = {
+    "spx":         "^GSPC",
+    "spy":         "SPY",
+    "qqq":         "QQQ",
+    "iwm":         "IWM",
+    "dax":         "^GDAXI",
+    "stoxx50":     "^STOXX50E",
+    "hsi":         "^HSI",
+    "nikkei":      "^N225",
+    "gold":        "GLD",
+    "eurusd":      "EURUSD=X",
+}
+
+
+def _parse_period(period: str) -> tuple[int | None, int | None]:
+    """Return (year_lo, year_hi) inclusive bounds parsed from a period string.
+
+    Supported:
+      'daily', '2015-2026_daily', '2015-2019_daily', 'all', '' → (None, None)
+      'YYYY-YYYY_daily' → (YYYY, YYYY)
+      Otherwise: (None, None) — caller falls back to all data.
+    """
+    if not period or period in ("daily", "all", "2015-2026_daily"):
+        return (None, None)
+    body = period.split("_")[0]
+    if "-" in body:
+        try:
+            lo_s, hi_s = body.split("-", 1)
+            return (int(lo_s), int(hi_s))
+        except ValueError:
+            return (None, None)
+    return (None, None)
+
+
 def load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray:
-    """Dispatch data loading by target_dataset/target_period fields in config."""
-    if dataset == "spx" and period in ("2015-2026_daily", "daily"):
-        return load_spx_returns_any_rank(repo_root)
+    """Dispatch data loading by target_dataset/target_period fields in config.
+
+    Daily yfinance: `dataset` ∈ {spx, spy, qqq, iwm, dax, stoxx50, hsi,
+    nikkei, gold, eurusd}; `period` ∈ {2015-2026_daily, 2015-2019_daily,
+    2015-2021_daily, ...}. Period parses to a (year_lo, year_hi) filter
+    on the parquet shard partition.
+
+    Crypto 1-minute: `dataset` ∈ {btcusdt, ethusdt}; `period == 2024Q1_1m`.
+    """
+    # Daily yfinance dispatch
+    if dataset in _YFINANCE_DAILY_SYMBOL:
+        symbol = _YFINANCE_DAILY_SYMBOL[dataset]
+        if period.endswith("_daily") or period in ("daily", "all"):
+            year_lo, year_hi = _parse_period(period)
+            return load_yfinance_daily_any_rank(repo_root, symbol,
+                                                 year_lo=year_lo, year_hi=year_hi)
+    # Crypto 1m dispatch (existing)
     if dataset == "btcusdt" and period == "2024Q1_1m":
         return load_btc_1m_returns_any_rank(repo_root)
     if dataset == "ethusdt" and period == "2024Q1_1m":
         return load_eth_1m_returns_any_rank(repo_root)
-    # Fallback: default to SPX
+    # Fallback: default to SPX 2015-2026 daily
     return load_spx_returns_any_rank(repo_root)
 
 
