@@ -108,6 +108,14 @@ class EcoMDConfig:
     twopop_enabled: bool = False
     twopop_gamma_scale: tuple = (1.0, 1.0, 1.0, 1.0)  # per-type multiplier on γ
     twopop_temp_scale: tuple  = (1.0, 1.0, 1.0, 1.0)  # per-type multiplier on T
+    # BPTT gradient checkpointing (paper-a-loss-redesign 2026-04-26):
+    # 0 = off (store all activations, original behavior).
+    # K > 0 = wrap rollout_chunk in groups of K steps via
+    #   torch.utils.checkpoint(use_reentrant=False) — recompute activations
+    #   during backward instead of storing them. Memory drops ~K-fold,
+    #   compute increases ~1.5×. Unlocks chunk_steps=64-128 at N=20K-50K.
+    # Recommended: K=8 for chunk=64, K=16 for chunk=128.
+    bptt_checkpoint_every: int = 0
 
 
 class EcoMDSimulator(nn.Module):
@@ -390,32 +398,200 @@ class EcoMDSimulator(nn.Module):
         h_regime: Tensor | None = None,
     ) -> tuple[Tensor, PriceState, EcoMDTrajectory, Tensor | None]:
         """Differentiable chunk rollout — returns (s_final, price_state_final,
-        traj, h_regime_final). ``h_regime_final`` is None when regime disabled."""
+        traj, h_regime_final). ``h_regime_final`` is None when regime disabled.
+
+        When ``self.cfg.bptt_checkpoint_every > 0`` and ``create_graph=True``,
+        rolls out in groups of K steps wrapped in
+        ``torch.utils.checkpoint.checkpoint(use_reentrant=False)`` —
+        activations are recomputed during backward instead of stored,
+        trading ~1.5× compute for ~K× memory savings. RNG state of the
+        custom ``generator`` is manually snapshotted before each group and
+        restored on the recompute pass to keep gradients deterministic.
+
+        IMPORTANT: under checkpointing, the generator's *post-rollout* state
+        ends up at the START of the last group after backward (because
+        recompute rewinds it). The training loop is responsible for
+        snapshotting the post-forward state and restoring it after
+        backward when ``bptt_checkpoint_every > 0``.
+        """
         self._reset_potential_cache()
         if h_regime is None and self.regime_gru is not None:
             h_regime = self.init_regime()
         recorder = TrajectoryRecorder(dt=self.cfg.dt, meta={"n_steps": n_steps})
-        for k in range(n_steps):
-            s_next, price_state, rec, h_regime = self.step(
-                s, s_prev, price_state,
-                generator=generator,
-                create_graph=create_graph,
-                h_regime=h_regime,
-                step_idx=k,
+
+        K = int(self.cfg.bptt_checkpoint_every) if create_graph else 0
+        if K <= 0:
+            # Original (no-checkpoint) path
+            for k in range(n_steps):
+                s_next, price_state, rec, h_regime = self.step(
+                    s, s_prev, price_state,
+                    generator=generator,
+                    create_graph=create_graph,
+                    h_regime=h_regime,
+                    step_idx=k,
+                )
+                recorder.record(
+                    s=rec["s"],
+                    f_cons=rec["f_cons"],
+                    f_diss=rec["f_diss"],
+                    f_stoch=rec["f_stoch"],
+                    velocity=rec["velocity"],
+                    log_price=rec["log_price"],
+                    log_return=rec["log_return"],
+                    volume=rec["volume"],
+                    excess_demand=rec["excess_demand"],
+                )
+                s_prev = s
+                s = s_next
+            return s, price_state, recorder.finalize(), h_regime
+
+        # ── Grouped-checkpoint path ────────────────────────────────────────
+        has_hawkes = price_state.hawkes_memory is not None
+        has_hawkes_long = price_state.hawkes_memory_long is not None
+        has_regime = h_regime is not None
+        # Placeholder zero tensor for h_regime when disabled (so we always
+        # pass tensors through checkpoint, never None).
+        zero_h = torch.zeros((), device=s.device, dtype=s.dtype)
+        h_reg_tensor = h_regime if has_regime else zero_h
+
+        # Reference to the simulator (avoid `self` capture issues when
+        # defining the closure inside a loop body).
+        sim_self = self
+
+        step_offset = 0
+        while step_offset < n_steps:
+            this_group = min(K, n_steps - step_offset)
+            local_step_start = step_offset
+
+            # Snapshot RNG so backward's recompute reproduces the same noise.
+            # `.clone()` decouples from the generator's internal storage so a
+            # later set_state() on the same generator doesn't mutate it.
+            if generator is not None:
+                gen_state_before = generator.get_state().clone()
+            else:
+                gen_state_before = None
+
+            def _run_group(
+                s_in, s_prev_in,
+                lp_in, llr_in, vol_in, hk_in, hkl_in,
+                h_reg_in,
+                # Closure-captured constants (bound at definition time):
+                _step_start=local_step_start,
+                _this_group=this_group,
+                _gen=generator,
+                _gen_state=gen_state_before,
+                _has_hawkes=has_hawkes,
+                _has_hawkes_long=has_hawkes_long,
+                _has_regime=has_regime,
+                _create_graph=create_graph,
+                _sim=sim_self,
+            ):
+                # Restore RNG state at start of group — happens both on
+                # initial forward (no-op, gen already there) and on recompute
+                # during backward (rewinds gen).
+                if _gen is not None and _gen_state is not None:
+                    _gen.set_state(_gen_state)
+
+                ps_local = PriceState.from_tensors(
+                    (lp_in, llr_in, vol_in, hk_in, hkl_in),
+                    step=_step_start,
+                    has_hawkes=_has_hawkes,
+                    has_hawkes_long=_has_hawkes_long,
+                )
+                h_reg_local = h_reg_in if _has_regime else None
+
+                states_list: list[Tensor] = []
+                f_cons_list: list[Tensor] = []
+                f_diss_list: list[Tensor] = []
+                f_stoch_list: list[Tensor] = []
+                velocities_list: list[Tensor] = []
+                log_prices_list: list[Tensor] = []
+                log_returns_list: list[Tensor] = []
+                volumes_list: list[Tensor] = []
+                excess_demand_list: list[Tensor] = []
+
+                s_local = s_in
+                s_prev_local = s_prev_in
+
+                for k in range(_this_group):
+                    s_next, ps_local, rec, h_reg_local = _sim.step(
+                        s_local, s_prev_local, ps_local,
+                        generator=_gen, create_graph=_create_graph,
+                        h_regime=h_reg_local, step_idx=_step_start + k,
+                    )
+                    states_list.append(rec["s"])
+                    f_cons_list.append(rec["f_cons"])
+                    f_diss_list.append(rec["f_diss"])
+                    f_stoch_list.append(rec["f_stoch"])
+                    velocities_list.append(rec["velocity"])
+                    log_prices_list.append(rec["log_price"])
+                    log_returns_list.append(rec["log_return"])
+                    volumes_list.append(rec["volume"])
+                    excess_demand_list.append(rec["excess_demand"])
+                    s_prev_local = s_local
+                    s_local = s_next
+
+                ps_t = ps_local.to_tensors()
+                h_reg_out = h_reg_local if (_has_regime and h_reg_local is not None) \
+                    else torch.zeros((), device=s_local.device, dtype=s_local.dtype)
+
+                return (
+                    s_local, s_prev_local,
+                    ps_t[0], ps_t[1], ps_t[2], ps_t[3], ps_t[4],
+                    h_reg_out,
+                    torch.stack(states_list),
+                    torch.stack(f_cons_list),
+                    torch.stack(f_diss_list),
+                    torch.stack(f_stoch_list),
+                    torch.stack(velocities_list),
+                    torch.stack(log_prices_list),
+                    torch.stack(log_returns_list),
+                    torch.stack(volumes_list),
+                    torch.stack(excess_demand_list),
+                )
+
+            ps_in_t = price_state.to_tensors()
+            outputs = torch.utils.checkpoint.checkpoint(
+                _run_group,
+                s, s_prev,
+                ps_in_t[0], ps_in_t[1], ps_in_t[2], ps_in_t[3], ps_in_t[4],
+                h_reg_tensor,
+                use_reentrant=False,
             )
-            recorder.record(
-                s=rec["s"],
-                f_cons=rec["f_cons"],
-                f_diss=rec["f_diss"],
-                f_stoch=rec["f_stoch"],
-                velocity=rec["velocity"],
-                log_price=rec["log_price"],
-                log_return=rec["log_return"],
-                volume=rec["volume"],
-                excess_demand=rec["excess_demand"],
+
+            (s, s_prev,
+             lp_out, llr_out, vol_out, hk_out, hkl_out,
+             h_reg_tensor,
+             states_stack, f_cons_stack, f_diss_stack, f_stoch_stack,
+             velocities_stack, log_prices_stack, log_returns_stack,
+             volumes_stack, excess_demand_stack) = outputs
+
+            price_state = PriceState.from_tensors(
+                (lp_out, llr_out, vol_out, hk_out, hkl_out),
+                step=step_offset + this_group,
+                has_hawkes=has_hawkes,
+                has_hawkes_long=has_hawkes_long,
             )
-            s_prev = s
-            s = s_next
+            if has_regime:
+                h_regime = h_reg_tensor
+            # else: h_regime stays None
+
+            # Append this group's K stacked records into the global recorder.
+            for k in range(this_group):
+                recorder.record(
+                    s=states_stack[k],
+                    f_cons=f_cons_stack[k],
+                    f_diss=f_diss_stack[k],
+                    f_stoch=f_stoch_stack[k],
+                    velocity=velocities_stack[k],
+                    log_price=log_prices_stack[k],
+                    log_return=log_returns_stack[k],
+                    volume=volumes_stack[k],
+                    excess_demand=excess_demand_stack[k],
+                )
+
+            step_offset += this_group
+
         return s, price_state, recorder.finalize(), h_regime
 
     @torch.no_grad()

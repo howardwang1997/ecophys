@@ -368,6 +368,15 @@ def train_distributed(
             n_steps=chunk_steps, generator=gen, create_graph=True,
             h_regime=h_regime,
         )
+        # When BPTT checkpointing is on, the generator's state gets rewound
+        # by recompute on backward. Snapshot the post-forward state here and
+        # restore it after backward to keep the noise stream coherent across
+        # iterations.
+        bptt_K = int(getattr(sim.cfg, "bptt_checkpoint_every", 0))
+        gen_state_after_forward = (
+            gen.get_state().clone() if (bptt_K > 0 and gen is not None) else None
+        )
+
         if chunk_steps >= 2:
             s_prev = traj.states[-2].detach()
         else:
@@ -395,6 +404,13 @@ def train_distributed(
         out = dict(per_asset_outs[first_lbl])  # acf_sim etc. from first asset
         out["total"] = total
         total.backward()
+
+        # Post-backward: restore the generator state to where forward ended.
+        # Without this, with BPTT checkpointing on, gen would be rewound by
+        # the recompute pass and the next iter's noise stream would diverge
+        # from the no-checkpoint baseline.
+        if gen_state_after_forward is not None and gen is not None:
+            gen.set_state(gen_state_after_forward)
 
         # All-reduce gradients across ranks (standard DDP-style mean)
         if world_size > 1:
