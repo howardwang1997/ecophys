@@ -8,6 +8,13 @@ Series:
   P (4)  — Direct baselines (GARCH+ABIDES if available; Shi NH deferred)
   Q (10) — Hyperparam refine around C4
 
+ALSO present in this directory (NOT generated here, copied from
+experiments/023_weekend/ during weekend rerun-failed integration):
+  R (12) — Rerun of weekend's 12 failed configs.
+           R0-R4 = F4-F8 originals (rerun fresh; launcher wipes ckpt).
+           R5-R11 = OOM-shrunk *_safe versions of F11/F14/H0-H4.
+           Launcher (h20_paper_a_solidify.sh) handles them automatically.
+
 Run on Mac:
   conda run -n ecophys python experiments/025_paper_a_solidify/generate_configs.py
 """
