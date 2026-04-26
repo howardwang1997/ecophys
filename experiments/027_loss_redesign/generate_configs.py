@@ -251,8 +251,10 @@ def gen_phase1_chunk_bptt():
     }
     variants = [
         ("chunk24_K0", "chunk=24 (current), no BPTT checkpoint", 24, 0),
-        ("chunk64_K8", "chunk=64, BPTT K=8 (memory ÷ 8, compute × 1.5)", 64, 8),
-        ("chunk128_K16", "chunk=128, BPTT K=16", 128, 16),
+        ("chunk64_K8", "chunk=64, BPTT K=8 (peak ≈ 28 GB at N=10K)", 64, 8),
+        # IMPORTANT: K is the size of one checkpointed group → peak ∝ K. Small
+        # K saves memory. K=8 at chunk=128 → 28 GB peak (vs K=16 → 56 GB).
+        ("chunk128_K8", "chunk=128, BPTT K=8 (peak ≈ 28 GB at N=10K)", 128, 8),
     ]
     for name, label, chunk, K in variants:
         for s in P1_SEEDS:
@@ -422,10 +424,19 @@ def gen_phase4_scale():
         for s in [0, 1, 2, 3, 4]:
             over = copy.deepcopy(WINNER_OVER)
             over["simulator"]["n_agents"] = N
-            # Larger N may need larger K to keep memory bounded; bump K=16
-            # for N=50K to stay under HBM at chunk=64.
+            # CRITICAL: K (bptt_checkpoint_every) is the size of ONE
+            # checkpointed group — peak HBM ∝ K × per_step_memory. SMALL K
+            # saves memory (more frequent rematerialisation). Calibration
+            # from chunk=24 N=10K = 85 GB (no ckpt) → ~3.5 GB / step at N=10K
+            # → ~17.5 GB / step at N=50K. With chunk=64:
+            #   K=2 → 2*17.5 = 35 GB peak ✓ comfy on 96 GB single card
+            #   K=4 → 4*17.5 = 70 GB peak ✓ tight but safe
+            #   K=8 → 8*17.5 = 140 GB peak ✗ OOM
+            # Default: K=4 for N=50K (tight); K=8 for N=20K (60 GB peak).
             if N >= 50_000:
-                over["simulator"]["bptt_checkpoint_every"] = 16
+                over["simulator"]["bptt_checkpoint_every"] = 4
+            else:
+                over["simulator"]["bptt_checkpoint_every"] = 8
             over["training"]["seed"] = s
             write(
                 "phase4",
