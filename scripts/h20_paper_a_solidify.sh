@@ -26,7 +26,7 @@ fi
 NPROC="${NPROC:-4}"
 DAEMON="${DAEMON:-0}"
 SKIP_DONE="${SKIP_DONE:-1}"
-PHASES="${1:-L M N O P Q}"
+PHASES="${1:-L M N O P Q R}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
@@ -58,6 +58,11 @@ train_one() {
     if [[ "$label" == p1_* || "$label" == p2_* || "$label" == p3_* ]]; then
         echo "  [skip $label] placeholder (deferred to follow-up)" | tee -a "$QUEUE_LOG"
         return 0
+    fi
+    # R series: rerun-failed weekend configs — wipe stale ckpt before training
+    # to fix "parameter incompatibility" caused by prior-shape ckpt residue
+    if [[ "$label" == r* ]]; then
+        rm -f "$outdir/checkpoint.pt"
     fi
     echo "" | tee -a "$QUEUE_LOG"
     echo "═ TRAIN $label ═ $(date +%H:%M:%S)" | tee -a "$QUEUE_LOG"
