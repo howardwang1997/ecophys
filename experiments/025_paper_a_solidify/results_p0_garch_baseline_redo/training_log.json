@@ -1,0 +1,88 @@
+{
+  "config": {
+    "simulator": {
+      "n_agents": 10000,
+      "d_state": 32,
+      "hidden": 48,
+      "dt": 0.01,
+      "gamma_init": 1.0,
+      "temperature_init": 0.05,
+      "init_state_scale": 0.1,
+      "lam_dissipation": 0.01,
+      "learn_gamma": true,
+      "learn_temperature": true,
+      "noise_dist": "t",
+      "noise_df": 5,
+      "price_formation": "excess_demand",
+      "price_formation_kwargs": {
+        "beta": 0.02,
+        "kappa": 0.5,
+        "sigma_price": 0.005,
+        "ewma_alpha": 0.05,
+        "initial_log_price": 0.0,
+        "learnable_beta": false,
+        "beta_hidden": 16,
+        "hawkes_alpha": 0.0,
+        "hawkes_kappa": 0.0
+      },
+      "pairwise_kind": "stochastic_mlp",
+      "sps_k_random": 50,
+      "sps_resample_per_step": true,
+      "twopop_enabled": false,
+      "twopop_gamma_scale": [
+        0.7,
+        1.5,
+        1.0,
+        0.5
+      ],
+      "twopop_temp_scale": [
+        0.5,
+        2.0,
+        1.0,
+        0.3
+      ],
+      "v2_type_seed": 42
+    },
+    "training": {
+      "n_iters": 1,
+      "chunk_steps": 24,
+      "warmup_steps": 16,
+      "persistent_state": true,
+      "lr": 0.001,
+      "lr_warmup_iters": 10,
+      "grad_clip_max_norm": 100.0,
+      "seed": 0,
+      "checkpoint_every_s": 1800,
+      "loss_weights": {
+        "w_acf_sq": 1.0,
+        "w_leverage": 0.2,
+        "w_hill": 0.1,
+        "max_lag": 8,
+        "hill_k_frac": 0.05
+      },
+      "target_dataset": "spx",
+      "target_period": "2015-2026_daily"
+    }
+  },
+  "targets": {
+    "acf_sq_mean": 0.34173300862312317,
+    "leverage_sum": -0.7899317741394043,
+    "hill_alpha": 2.6832098960876465
+  },
+  "history": [
+    {
+      "iter": 0,
+      "lr": 0.0001,
+      "total_rank0": 6.862445831298828,
+      "total_world_mean": 11.663966178894043,
+      "acf_sim": -0.6191708445549011,
+      "leverage_sim": -3.716508388519287,
+      "hill_sim": 55.84547424316406,
+      "grad_norm": 6100.04541015625,
+      "gamma": 0.9999000430107117,
+      "temperature": 0.04999500513076782
+    }
+  ],
+  "train_time_seconds": 2.0484988689422607,
+  "world_size": 4
+}
