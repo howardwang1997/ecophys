@@ -51,6 +51,42 @@ class PriceState:
     # v3 multi-scale Hawkes: optional second EMA channel with longer τ
     hawkes_memory_long: Tensor | None = None
 
+    def to_tensors(self) -> tuple[Tensor, Tensor, Tensor, Tensor, Tensor]:
+        """Pack tensor fields into a fixed-arity tuple for torch.utils.checkpoint.
+
+        Returns 5 scalar tensors: (log_price, last_log_return, volatility,
+        hawkes_memory_or_zero, hawkes_memory_long_or_zero). None Hawkes
+        memories are replaced with a zero tensor placeholder; the caller
+        must remember whether each channel was active (use ``has_hawkes``
+        flags). The integer ``step`` field is omitted (carried out-of-band).
+        """
+        zero = torch.zeros((), device=self.log_price.device, dtype=self.log_price.dtype)
+        return (
+            self.log_price,
+            self.last_log_return,
+            self.volatility,
+            self.hawkes_memory if self.hawkes_memory is not None else zero,
+            self.hawkes_memory_long if self.hawkes_memory_long is not None else zero,
+        )
+
+    @classmethod
+    def from_tensors(
+        cls,
+        tensors: tuple[Tensor, Tensor, Tensor, Tensor, Tensor],
+        step: int,
+        has_hawkes: bool,
+        has_hawkes_long: bool,
+    ) -> "PriceState":
+        log_price, last_log_return, volatility, hk_mem, hk_mem_long = tensors
+        return cls(
+            log_price=log_price,
+            last_log_return=last_log_return,
+            volatility=volatility,
+            step=step,
+            hawkes_memory=hk_mem if has_hawkes else None,
+            hawkes_memory_long=hk_mem_long if has_hawkes_long else None,
+        )
+
 
 @dataclass
 class PriceStepResult:
