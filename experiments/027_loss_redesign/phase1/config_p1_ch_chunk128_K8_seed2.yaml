@@ -1,4 +1,4 @@
-# Phase1 chunk×BPTT axis: chunk=128, BPTT K=16 (seed=1)
+# Phase1 chunk×BPTT axis: chunk=128, BPTT K=8 (peak ≈ 28 GB at N=10K) (seed=2)
 
 simulator:
   n_agents: 10000
@@ -39,7 +39,7 @@ simulator:
   - 1.0
   - 0.3
   v2_type_seed: 42
-  bptt_checkpoint_every: 16
+  bptt_checkpoint_every: 8
 training:
   n_iters: 200
   chunk_steps: 128
@@ -48,7 +48,7 @@ training:
   lr: 0.001
   lr_warmup_iters: 10
   grad_clip_max_norm: 100.0
-  seed: 1
+  seed: 2
   checkpoint_every_s: 1800
   target_dataset: spx
   target_period: 2015-2026_daily
