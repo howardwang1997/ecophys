@@ -111,11 +111,28 @@ class EcoMDConfig:
     # BPTT gradient checkpointing (paper-a-loss-redesign 2026-04-26):
     # 0 = off (store all activations, original behavior).
     # K > 0 = wrap rollout_chunk in groups of K steps via
-    #   torch.utils.checkpoint(use_reentrant=False) — recompute activations
-    #   during backward instead of storing them. Memory drops ~K-fold,
-    #   compute increases ~1.5×. Unlocks chunk_steps=64-128 at N=20K-50K.
-    # Recommended: K=8 for chunk=64, K=16 for chunk=128.
+    #   torch.utils.checkpoint(use_reentrant=False) — but this has been
+    #   shown empirically (2026-04-27) to fail for EcoMD because
+    #   create_graph=True in conservative_forces pins V-graphs across
+    #   group boundaries via the s_next.grad_fn chain.
+    # Recommended: leave at 0 unless you understand the OOM tradeoff.
     bptt_checkpoint_every: int = 0
+    # Custom autograd.Function-based per-step BPTT (Sprint 2, 2026-04-27):
+    # When True, replaces ``rollout_chunk``'s standard ``sim.step()`` call
+    # with ``EcoMDStepFunction.apply()``. Each step runs forward in
+    # ``no_grad`` (no V-graph kept); backward locally rebuilds the V-graph
+    # ONE step at a time and propagates gradients via torch.autograd.grad
+    # with explicit grad outputs — releases the local graph after each
+    # step's backward. Peak memory ≈ ONE step's V-graph (~3.5 GB at
+    # N=10K) regardless of chunk_steps. Compute overhead ~2× (forward is
+    # cheaper than baseline; backward repeats forward).
+    # IMPORTANT: this changes WHERE gradients flow. Trainer's loss must
+    # only differentiate ``traj.log_returns`` (the only output that
+    # carries grad through the Function chain). The per-step diagnostic
+    # channels (states, f_cons, f_diss, f_stoch, velocities) become
+    # detached. This matches our actual training loss but breaks tests
+    # that try to differentiate other channels.
+    bptt_custom_function: bool = False
 
 
 class EcoMDSimulator(nn.Module):
@@ -420,6 +437,41 @@ class EcoMDSimulator(nn.Module):
         recorder = TrajectoryRecorder(dt=self.cfg.dt, meta={"n_steps": n_steps})
 
         K = int(self.cfg.bptt_checkpoint_every) if create_graph else 0
+        use_custom_fn = bool(self.cfg.bptt_custom_function) and create_graph
+
+        if use_custom_fn:
+            # Sprint 2 path: per-step custom autograd.Function. Memory bounded
+            # by ONE step's V-graph regardless of chunk_steps. Diagnostic
+            # channels (f_cons, velocities, etc.) are detached — see
+            # bptt_step_function.py docstring.
+            from .bptt_step_function import step_via_function
+            zero_aux = lambda shape, dtype=s.dtype: torch.zeros(
+                shape, device=s.device, dtype=dtype
+            )
+            for k in range(n_steps):
+                s_next, s_prev_next, price_state, h_regime, log_return = step_via_function(
+                    self, s, s_prev, price_state,
+                    generator=generator, h_regime=h_regime, step_idx=k,
+                )
+                # Recorder gets log_return live; aux channels detached
+                # placeholders to keep schema compatible with downstream code.
+                # NOTE: any consumer of f_cons / states etc. with gradient
+                # expectation will fail under bptt_custom_function=True.
+                recorder.record(
+                    s=s_next.detach(),
+                    f_cons=zero_aux(s_next.shape),
+                    f_diss=zero_aux(s_next.shape),
+                    f_stoch=zero_aux(s_next.shape),
+                    velocity=zero_aux(s_next.shape),
+                    log_price=price_state.log_price,
+                    log_return=log_return,
+                    volume=zero_aux(()),
+                    excess_demand=zero_aux(()),
+                )
+                s_prev = s_prev_next
+                s = s_next
+            return s, price_state, recorder.finalize(), h_regime
+
         if K <= 0:
             # Original (no-checkpoint) path
             for k in range(n_steps):
