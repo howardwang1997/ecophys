@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+"""Aggregate per-config 11-fact scores and 5-seed bootstrap CI for any
+experiments/<dir>/results_<label>/inference_merged.json files.
+
+Particularly designed for Phase C and Phase H (PLAN_2026-04-28 v2):
+- Phase C (031_chunk_effect): groups by chunk; reports mean/CI per chunk
+- Phase H (032_arch_regime_sweep): groups by axis (lr/iters/init/n_seeds);
+  reports mean/CI per variant + 10-seed distribution histogram
+
+Usage:
+    conda run -n ecophys python scripts/score_phase.py experiments/031_chunk_effect
+    conda run -n ecophys python scripts/score_phase.py experiments/032_arch_regime_sweep
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+
+REPO = Path(__file__).resolve().parent.parent
+
+# Canonical 11-fact bands (must match score_paper_a_solidify.py /
+# score_loss_ablation.py)
+BANDS = {
+    "autocorr_returns":           (-0.1, 0.20),
+    "hill_tail_index":            (2.0, 4.0),
+    "gain_loss_asymmetry":        (-30.0, -3.0),
+    "aggregational_gaussianity":  (10, 200),
+    "intermittency_fano":         (5, 100),
+    "acf_squared_returns":        (0.15, 0.55),
+    "conditional_kurtosis":       (-1.0, 3.0),
+    "dfa_hurst_abs_r":            (0.6, 0.9),
+    "leverage_effect":            (-6.0, -0.5),
+    "volume_volatility_corr":     (0.3, 0.8),
+    "zumbach_asymmetry":          (0.001, 0.5),
+}
+
+
+def score_one(p: Path) -> int | None:
+    if not p.exists():
+        return None
+    try:
+        d = json.loads(p.read_text())
+    except Exception:
+        return None
+    agg = d.get("aggregated", {})
+    n_pass = 0
+    for k, (lo, hi) in BANDS.items():
+        if k not in agg:
+            continue
+        v = agg[k]["mean"]
+        if lo <= v <= hi:
+            n_pass += 1
+    return n_pass
+
+
+def bootstrap_ci(values: list[int], n_boot: int = 10_000) -> tuple[float, float, float]:
+    if not values:
+        return float("nan"), float("nan"), float("nan")
+    arr = np.array(values, dtype=float)
+    rng = np.random.default_rng(seed=0)
+    boots = rng.choice(arr, size=(n_boot, len(arr)), replace=True).mean(axis=1)
+    return float(arr.mean()), float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))
+
+
+def parse_label(label: str) -> dict:
+    """Extract structure from label like:
+      pc_chunk128_seed3      → {phase: pc, chunk: 128, seed: 3}
+      ph_lr_1e-3_seed1       → {phase: ph, group: lr, lr: 1e-3, seed: 1}
+      ph_iters_400_seed0     → {phase: ph, group: iters, n_iters: 400, seed: 0}
+      ph_init_s01_h48_seed1  → {phase: ph, group: init, init_scale: 01, hidden: 48, seed: 1}
+      ph_n_seeds_default_seed3 → {phase: ph, group: n_seeds, seed: 3}
+    """
+    parts = label.split("_")
+    out: dict = {"phase": parts[0], "raw": label}
+    if parts[0] == "pc":
+        for tok in parts[1:]:
+            if tok.startswith("chunk"):
+                out["chunk"] = int(tok.removeprefix("chunk"))
+            elif tok.startswith("seed"):
+                out["seed"] = int(tok.removeprefix("seed"))
+        return out
+    if parts[0] == "ph":
+        out["group"] = parts[1]
+        for tok in parts[2:]:
+            if tok.startswith("seed"):
+                out["seed"] = int(tok.removeprefix("seed"))
+            elif tok.startswith("h"):
+                out["hidden"] = int(tok[1:]) if tok[1:].isdigit() else None
+            elif tok.startswith("s") and tok != "seeds":
+                out["init_scale_tag"] = tok[1:]
+        # variant key for grouping
+        if out.get("group") == "lr":
+            out["variant"] = parts[2]   # e.g., 1e-3
+        elif out.get("group") == "iters":
+            out["variant"] = parts[2]   # e.g., 400
+        elif out.get("group") == "init":
+            # ph_init_s01_h48_seed1
+            out["variant"] = "_".join(parts[2:-1])
+        elif out.get("group") == "n_seeds":
+            out["variant"] = "default"
+    return out
+
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        print("usage: score_phase.py <config_dir>", file=sys.stderr)
+        sys.exit(1)
+    cfg_dir = Path(sys.argv[1])
+    if not cfg_dir.exists():
+        print(f"no such dir: {cfg_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    rows = []
+    for d in sorted(cfg_dir.glob("results_*")):
+        if not d.is_dir():
+            continue
+        label = d.name.replace("results_", "")
+        score = score_one(d / "inference_merged.json")
+        rows.append({"label": label, "score": score, **parse_label(label)})
+
+    lines: list[str] = [f"# Score — {cfg_dir.name}", ""]
+    n_total = len(rows)
+    n_done = sum(1 for r in rows if r["score"] is not None)
+    lines.append(f"Discovered {n_total} runs, {n_done} with eval.")
+    lines.append("")
+
+    # Phase C-style: group by chunk
+    if any(r.get("phase") == "pc" for r in rows):
+        lines.append("## Group by chunk")
+        lines.append("| chunk | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append("|---:|---:|---:|---|---:|")
+        groups: dict[int, list[int]] = defaultdict(list)
+        for r in rows:
+            if r.get("phase") == "pc" and r.get("score") is not None:
+                groups[r["chunk"]].append(r["score"])
+        for chunk in sorted(groups):
+            scores = groups[chunk]
+            m, lo, hi = bootstrap_ci(scores)
+            std = float(np.std(scores, ddof=1)) if len(scores) > 1 else 0.0
+            lines.append(f"| {chunk} | {len(scores)} | **{m:.2f}** | "
+                         f"[{lo:.2f}, {hi:.2f}] | {std:.2f} |")
+        lines.append("")
+
+        # Per-seed across chunks
+        lines.append("## Per-seed across chunks (looking for seed dominance)")
+        lines.append("| seed | chunk=24 | chunk=64 | chunk=128 |")
+        lines.append("|---:|---:|---:|---:|")
+        seed_lookup: dict[tuple[int, int], int] = {}
+        for r in rows:
+            if r.get("phase") == "pc" and r.get("score") is not None:
+                seed_lookup[(r["seed"], r["chunk"])] = r["score"]
+        for seed in sorted({r.get("seed") for r in rows if r.get("seed") is not None}):
+            line = f"| {seed} |"
+            for c in (24, 64, 128):
+                v = seed_lookup.get((seed, c))
+                line += f" {v}/11 |" if v is not None else " — |"
+            lines.append(line)
+        lines.append("")
+
+    # Phase H-style: group by (group, variant)
+    if any(r.get("phase") == "ph" for r in rows):
+        ph_groups: dict[tuple[str, str], list[int]] = defaultdict(list)
+        for r in rows:
+            if r.get("phase") == "ph" and r.get("score") is not None:
+                key = (r.get("group", "?"), r.get("variant", "?"))
+                ph_groups[key].append(r["score"])
+
+        # Group by axis
+        lines.append("## Phase H — by axis × variant")
+        for axis in ("lr", "iters", "init", "n_seeds"):
+            entries = [(v, scores) for (g, v), scores in ph_groups.items() if g == axis]
+            if not entries:
+                continue
+            lines.append(f"### Axis `{axis}`")
+            lines.append("| variant | n_seeds | mean n/11 | 95% CI | std |")
+            lines.append("|---|---:|---:|---|---:|")
+            for variant, scores in sorted(entries):
+                m, lo, hi = bootstrap_ci(scores)
+                std = float(np.std(scores, ddof=1)) if len(scores) > 1 else 0.0
+                lines.append(f"| `{variant}` | {len(scores)} | **{m:.2f}** | "
+                             f"[{lo:.2f}, {hi:.2f}] | {std:.2f} |")
+            lines.append("")
+
+        # 10-seed distribution histogram for n_seeds group
+        n_seeds_group = ph_groups.get(("n_seeds", "default"), [])
+        if n_seeds_group:
+            lines.append("### 10-seed distribution at default config")
+            from collections import Counter
+            counter = Counter(n_seeds_group)
+            for s in range(0, 12):
+                n = counter.get(s, 0)
+                bar = "█" * n
+                lines.append(f"  {s}/11: {bar} ({n})")
+            lines.append("")
+
+    # Top 10 individual scores
+    ranked = sorted([r for r in rows if r["score"] is not None],
+                    key=lambda x: -x["score"])[:10]
+    lines.append("## Top 10 individual runs")
+    lines.append("| run | n/11 |")
+    lines.append("|---|---:|")
+    for r in ranked:
+        lines.append(f"| `{r['label']}` | **{r['score']}/11** |")
+    lines.append("")
+
+    out = cfg_dir / "scoreboard.md"
+    out.write_text("\n".join(lines) + "\n")
+    print(f"wrote {out}")
+
+
+if __name__ == "__main__":
+    main()
