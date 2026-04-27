@@ -78,6 +78,13 @@ class EcoMDConfig:
     # v0.9 StochasticPairwisePotential — random pair sampling for scaling
     sps_k_random: int = 50                   # random partners per agent per step
     sps_resample_per_step: bool = True       # resample edges every forward?
+    # Spatial-checkpoint sharding (paper-a-2026-04-27):
+    # 0 = off (process all edges at once, original behaviour).
+    # B > 0 = process pairwise edges in chunks of B, wrap each in
+    #   torch.utils.checkpoint so per-batch MLP intermediates get
+    #   recomputed on backward. Reduces peak pairwise forward memory
+    #   from O(N×k) to O(B). Recommended values: 50_000 to 200_000 edges.
+    sps_spatial_batch_size: int = 0
     # v2 EcoMDv2Potential — market-microstructure-derived architecture
     v2_k_types: int = 4                      # number of persistent agent types
     v2_d_type_emb: int = 8                   # learned type embedding dim
@@ -151,6 +158,7 @@ class EcoMDSimulator(nn.Module):
                 d=d, hidden=self.cfg.hidden,
                 k_random=self.cfg.sps_k_random,
                 resample_per_step=self.cfg.sps_resample_per_step,
+                spatial_batch_size=self.cfg.sps_spatial_batch_size,
             )
         elif self.cfg.pairwise_kind == "ecomd_v2":
             v2_cfg = EcoMDv2Config(

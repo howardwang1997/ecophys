@@ -129,11 +129,19 @@ class StochasticPairwisePotential(nn.Module):
         hidden: int = 64,
         k_random: int = 50,
         resample_per_step: bool = True,
+        spatial_batch_size: int = 0,
     ) -> None:
         super().__init__()
         self.d = d
         self.k_random = k_random
         self.resample_per_step = resample_per_step
+        # spatial_batch_size: 0 = off (process all edges at once);
+        # B > 0 = process edges in chunks of B, wrap each chunk in
+        # torch.utils.checkpoint so MLP intermediate activations are
+        # released between chunks (recomputed on backward). Reduces
+        # per-step pairwise memory from O(N×k) to O(B). Compute overhead
+        # ~1.3-1.5×. Recommended: B = 50_000 to 200_000 edges.
+        self.spatial_batch_size = spatial_batch_size
         self.net = nn.Sequential(
             nn.Linear(3 * d, hidden),
             nn.SiLU(),
@@ -167,6 +175,21 @@ class StochasticPairwisePotential(nn.Module):
         dst = idx.reshape(-1)
         return torch.stack([src, dst], dim=0)
 
+    def _phi_batch(self, s: Tensor, edges_b: Tensor) -> Tensor:
+        """Compute (1/2)(phi_ij + phi_ji).sum() for a batch of edges.
+
+        Returns a scalar — the contribution to V from this edge batch.
+        """
+        src, dst = edges_b[0], edges_b[1]
+        s_i = s[src]
+        s_j = s[dst]
+        diff = (s_i - s_j).abs()
+        inp_ij = torch.cat([s_i, s_j, diff], dim=-1)
+        inp_ji = torch.cat([s_j, s_i, diff], dim=-1)
+        phi_ij = self.net(inp_ij).squeeze(-1)
+        phi_ji = self.net(inp_ji).squeeze(-1)
+        return 0.5 * (phi_ij + phi_ji).sum()
+
     def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
         del context
         n, d = s.shape
@@ -178,25 +201,39 @@ class StochasticPairwisePotential(nn.Module):
                 self._cached_edges = edges
         else:
             edges = self._cached_edges
-        src, dst = edges[0], edges[1]                           # (E,)
-        E = src.shape[0]
-
-        s_i = s[src]                                            # (E, d)
-        s_j = s[dst]                                            # (E, d)
-        diff = (s_i - s_j).abs()
-
-        inp_ij = torch.cat([s_i, s_j, diff], dim=-1)
-        inp_ji = torch.cat([s_j, s_i, diff], dim=-1)
-        phi_ij = self.net(inp_ij).squeeze(-1)
-        phi_ji = self.net(inp_ji).squeeze(-1)
-        phi = 0.5 * (phi_ij + phi_ji)                           # (E,)
+        E = edges.shape[1]
 
         # Rescale to estimate the full sum over N·(N-1)/2 unique pairs.
-        # Each agent contributes k random partners → N·k ordered edges, but
-        # the original V_full sum is over unordered pairs. The factor
-        # (N-1)/(2k) makes E[V_stoch] = V_full.
         scale = (n - 1) / (2.0 * self.k_random)
-        return scale * phi.sum()
+
+        B = int(self.spatial_batch_size)
+        if B <= 0 or B >= E or not s.requires_grad:
+            # Original path — all edges at once. Fast for small E or no-grad
+            # forward (inference). Avoids the checkpoint overhead.
+            phi_total = self._phi_batch(s, edges)
+            return scale * phi_total
+
+        # Spatial-checkpoint path: process edges in chunks of B, wrap each
+        # in torch.utils.checkpoint so the MLP intermediate activations get
+        # discarded after summing each batch's contribution. The per-batch
+        # contribution is recomputed during backward.
+        # NOTE: this reduces pairwise *forward* peak memory by ~E/B factor.
+        # When the outer caller uses ``create_graph=True`` (e.g. via
+        # conservative_forces for BPTT), the inner V_b's higher-order
+        # gradient graph may still be retained for second-order autograd —
+        # so this primarily helps when N (and therefore E) is very large
+        # and the per-batch MLP size dominates a single step's memory.
+        V_total = torch.zeros((), device=s.device, dtype=s.dtype)
+        for start in range(0, E, B):
+            end = min(start + B, E)
+            edges_b = edges[:, start:end].contiguous()
+            V_b = torch.utils.checkpoint.checkpoint(
+                self._phi_batch, s, edges_b,
+                use_reentrant=False,
+                preserve_rng_state=False,  # pairwise MLP has no RNG inside
+            )
+            V_total = V_total + V_b
+        return scale * V_total
 
 
 # ─────────────────────────────────────────────────────────────────────────────
