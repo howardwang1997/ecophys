@@ -1,0 +1,142 @@
+{
+  "config": {
+    "simulator": {
+      "n_agents": 10000,
+      "d_state": 32,
+      "hidden": 48,
+      "dt": 0.01,
+      "gamma_init": 1.0,
+      "temperature_init": 0.05,
+      "init_state_scale": 0.1,
+      "lam_dissipation": 0.01,
+      "learn_gamma": true,
+      "learn_temperature": true,
+      "noise_dist": "t",
+      "noise_df": 5,
+      "price_formation": "excess_demand",
+      "price_formation_kwargs": {
+        "beta": 0.02,
+        "kappa": 0.5,
+        "sigma_price": 0.005,
+        "ewma_alpha": 0.05,
+        "initial_log_price": 0.0,
+        "learnable_beta": false,
+        "beta_hidden": 16,
+        "hawkes_alpha": 0.1,
+        "hawkes_kappa": 0.3
+      },
+      "pairwise_kind": "stochastic_mlp",
+      "sps_k_random": 50,
+      "sps_resample_per_step": true,
+      "sps_spatial_batch_size": 100000,
+      "twopop_enabled": true,
+      "twopop_gamma_scale": [
+        0.7,
+        1.5,
+        1.0,
+        0.5
+      ],
+      "twopop_temp_scale": [
+        0.5,
+        2.0,
+        1.0,
+        0.3
+      ],
+      "v2_type_seed": 42,
+      "bptt_checkpoint_every": 0
+    },
+    "training": {
+      "n_iters": 5,
+      "chunk_steps": 24,
+      "warmup_steps": 16,
+      "persistent_state": true,
+      "lr": 0.001,
+      "lr_warmup_iters": 1,
+      "grad_clip_max_norm": 100.0,
+      "seed": 0,
+      "checkpoint_every_s": 999999,
+      "target_dataset": "spx",
+      "target_period": "2015-2026_daily",
+      "loss_weights": {
+        "w_acf_sq": 1.0,
+        "w_leverage": 0.2,
+        "w_hill": 0.1,
+        "max_lag": 8,
+        "hill_k_frac": 0.05
+      }
+    }
+  },
+  "targets": {
+    "acf_sq_mean": 0.34173300862312317,
+    "leverage_sum": -0.7899317741394043,
+    "hill_alpha": 2.6832098960876465
+  },
+  "history": [
+    {
+      "iter": 0,
+      "lr": 0.001,
+      "total_rank0": 5.283840179443359,
+      "total_world_mean": 5.283840179443359,
+      "acf_sim": -0.5135051012039185,
+      "leverage_sim": -3.081447124481201,
+      "hill_sim": 42.38619613647461,
+      "grad_norm": 288.4172668457031,
+      "gamma": 1.0010005235671997,
+      "temperature": 0.05005002021789551
+    },
+    {
+      "iter": 1,
+      "lr": 0.001,
+      "total_rank0": 15.399420738220215,
+      "total_world_mean": 15.399420738220215,
+      "acf_sim": -0.10990852117538452,
+      "leverage_sim": -0.659034013748169,
+      "hill_sim": 151.89920043945312,
+      "grad_norm": 1329.432373046875,
+      "gamma": 1.0019879341125488,
+      "temperature": 0.05009772628545761
+    },
+    {
+      "iter": 2,
+      "lr": 0.0008681980515339464,
+      "total_rank0": 2.7911741733551025,
+      "total_world_mean": 2.7911741733551025,
+      "acf_sim": -0.3926320970058441,
+      "leverage_sim": -2.333555221557617,
+      "hill_sim": 20.164052963256836,
+      "grad_norm": 388.6160888671875,
+      "gamma": 1.0026602745056152,
+      "temperature": 0.050137825310230255
+    },
+    {
+      "iter": 3,
+      "lr": 0.00055,
+      "total_rank0": 1.705501914024353,
+      "total_world_mean": 1.705501914024353,
+      "acf_sim": -0.2672968804836273,
+      "leverage_sim": 1.5716252326965332,
+      "hill_sim": 8.924816131591797,
+      "grad_norm": 89.8641128540039,
+      "gamma": 1.003002643585205,
+      "temperature": 0.050157565623521805
+    },
+    {
+      "iter": 4,
+      "lr": 0.00023180194846605365,
+      "total_rank0": 3.831878423690796,
+      "total_world_mean": 3.831878423690796,
+      "acf_sim": -0.11339563131332397,
+      "leverage_sim": 0.6833453178405762,
+      "hill_sim": 33.504154205322266,
+      "grad_norm": 247.78823852539062,
+      "gamma": 1.0031126737594604,
+      "temperature": 0.05016595125198364
+    }
+  ],
+  "train_time_seconds": 5.204096078872681,
+  "world_size": 1,
+  "peak_hbm": {
+    "alloc_gb": 66.03152322769165,
+    "reserved_gb": 71.84765625
+  }
+}
