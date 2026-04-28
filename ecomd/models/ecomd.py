@@ -29,6 +29,7 @@ from ..physics.integrator import LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
 from .agent_memory import AgentMemoryConfig, AgentMemoryGRU
 from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
+from .global_state import GlobalStateConfig, GlobalStateGRU
 from .isab_pairwise import ISABPairwisePotential
 from .mace_lite import MACELitePotential, build_mace_lite
 from .regime_latent import RegimeGRU, RegimeGRUConfig, RegimeReadHead
@@ -155,6 +156,17 @@ class EcoMDConfig:
     #   pairwise_kind="isab". Memory O(N·M) via M learnable inducing points.
     isab_m_inducing: int = 64
     isab_n_heads: int = 4
+    # Tier 4.1 — MEGNet-style global state. Distinct from h_regime
+    #   (modulates γ, T, κ scalars) and h_agent (per-agent memory): u is a
+    #   global vector updated from aggregated agent state + market scalars,
+    #   and is concatenated INTO the pair kernel + external context so the
+    #   V surface itself is shaped by global "phase". Hypothesis: lets one
+    #   network instantiate different ``φ(s_i, s_j)`` shapes at different
+    #   times — addresses the orthogonal-basin ceiling directly.
+    global_state_enabled: bool = False
+    global_state_d: int = 16
+    global_state_update_every: int = 1
+    global_state_into_pair: bool = True   # if False, u only feeds external
     # Custom autograd.Function-based per-step BPTT (Sprint 2, 2026-04-27):
     # When True, replaces ``rollout_chunk``'s standard ``sim.step()`` call
     # with ``EcoMDStepFunction.apply()``. Each step runs forward in
@@ -207,6 +219,14 @@ class EcoMDSimulator(nn.Module):
             gen_t = torch.Generator().manual_seed(self.cfg.v2_type_seed)
             type_idx_buf = torch.randint(0, K_types, (self.cfg.n_agents,), generator=gen_t)
 
+        # Tier 4.1: pairwise modules consume u when both
+        # ``global_state_enabled`` AND ``global_state_into_pair`` are True.
+        d_global_in_pair = (
+            self.cfg.global_state_d
+            if (self.cfg.global_state_enabled and self.cfg.global_state_into_pair)
+            else 0
+        )
+
         pairwise: nn.Module
         if self.cfg.pairwise_kind == "mlp":
             pairwise = PairwisePotential(d=d, hidden=self.cfg.hidden)
@@ -221,6 +241,7 @@ class EcoMDSimulator(nn.Module):
                 type_idx=type_idx_buf,
                 n_types=K_types,
                 pair_features_extra=self.cfg.pair_features_extra,
+                d_global_in=d_global_in_pair,
             )
         elif self.cfg.pairwise_kind == "isab":
             pairwise = ISABPairwisePotential(
@@ -228,6 +249,7 @@ class EcoMDSimulator(nn.Module):
                 hidden=self.cfg.hidden,
                 m_inducing=self.cfg.isab_m_inducing,
                 n_heads=self.cfg.isab_n_heads,
+                d_global_in=d_global_in_pair,
             )
         elif self.cfg.pairwise_kind == "ecomd_v2":
             v2_cfg = EcoMDv2Config(
@@ -275,6 +297,10 @@ class EcoMDSimulator(nn.Module):
         ext_ctx_dim = self.price_formation.context_dim
         if self.cfg.agent_memory_enabled:
             ext_ctx_dim += self.cfg.agent_memory_d
+        # Tier 4.1: external also consumes u (always, when enabled — the
+        # ``global_state_into_pair`` flag only gates the pair side).
+        if self.cfg.global_state_enabled:
+            ext_ctx_dim += self.cfg.global_state_d
         external = ExternalPotential(
             d=d, context_dim=ext_ctx_dim, hidden=self.cfg.hidden
         )
@@ -344,6 +370,18 @@ class EcoMDSimulator(nn.Module):
                 ),
             )
 
+        # Tier 4.1 — MEGNet-style global state.
+        self.global_state: GlobalStateGRU | None = None
+        if self.cfg.global_state_enabled:
+            self.global_state = GlobalStateGRU(
+                d_state=d,
+                config=GlobalStateConfig(
+                    d_global=self.cfg.global_state_d,
+                    update_every=self.cfg.global_state_update_every,
+                ),
+                d_agent=(self.cfg.agent_memory_d if self.cfg.agent_memory_enabled else 0),
+            )
+
         # Tier 2.2 — multi-timescale fast/slow agent mask. ``is_fast_agent``
         # is a (N,) bool buffer derived from a deterministic seed so the
         # split is reproducible across runs with the same v2_type_seed.
@@ -397,6 +435,12 @@ class EcoMDSimulator(nn.Module):
             return None
         return self.agent_memory.init_h(self.cfg.n_agents, self.device, torch.float32)
 
+    def init_global_state(self) -> Tensor | None:
+        """Initial MEGNet-style global state vector. None when Tier 4.1 is disabled."""
+        if self.global_state is None:
+            return None
+        return self.global_state.init_h(self.device, torch.float32)
+
     # ── Step ───────────────────────────────────────────────────────────────
 
     def step(
@@ -409,8 +453,9 @@ class EcoMDSimulator(nn.Module):
         create_graph: bool = True,
         h_regime: Tensor | None = None,
         h_agent: Tensor | None = None,
+        h_global: Tensor | None = None,
         step_idx: int = 0,
-    ) -> tuple[Tensor, PriceState, dict[str, Tensor], Tensor | None, Tensor | None]:
+    ) -> tuple[Tensor, PriceState, dict[str, Tensor], Tensor | None, Tensor | None, Tensor | None]:
         """Advance one step. Returns (s_next, price_state_next, record_dict,
         h_regime_next, h_agent_next).
 
@@ -435,12 +480,36 @@ class EcoMDSimulator(nn.Module):
                 price_state.last_log_return, price_state.volatility,
             )
 
+        # Tier 4.1: update MEGNet-style global state before computing forces
+        # so V uses this step's u.
+        h_global_next = h_global
+        if self.global_state is not None and h_global is not None:
+            h_global_next = self.global_state.maybe_step(
+                h_global, step_idx, s,
+                price_state.last_log_return, price_state.volatility,
+                h_agent=h_agent_next,
+            )
+
         ctx_parts = [price_state.log_price, price_state.volatility, price_state.last_log_return]
         context = torch.stack(ctx_parts)
         if self.agent_memory is not None and h_agent_next is not None:
             mem_global = self.agent_memory.read_global(h_agent_next)
             context = torch.cat([context, mem_global], dim=0)
-        f_cons = conservative_forces(self.potential, s, context, create_graph=create_graph)
+        if self.global_state is not None and h_global_next is not None:
+            context = torch.cat([context, h_global_next], dim=0)
+        # Pair-side: only when global_state_into_pair is True does the pair
+        # kernel see u. (External always sees u via context above.)
+        u_for_pair = (
+            h_global_next
+            if (self.global_state is not None
+                and h_global_next is not None
+                and self.cfg.global_state_into_pair)
+            else None
+        )
+        f_cons = conservative_forces(
+            self.potential, s, context,
+            create_graph=create_graph, u_global=u_for_pair,
+        )
         f_diss = dissipative_forces(self.dissipation, s, s_prev, create_graph=create_graph)
 
         # Compute γ_eff, T_eff (per-step optional regime modulation)
@@ -518,7 +587,7 @@ class EcoMDSimulator(nn.Module):
             "volume": price_step.aux["volume"],
             "excess_demand": price_step.aux["excess_demand"],
         }
-        return step_out.s_next, price_step.state, record, h_regime_next, h_agent_next
+        return step_out.s_next, price_step.state, record, h_regime_next, h_agent_next, h_global_next
 
     # ── Rollouts ───────────────────────────────────────────────────────────
 
@@ -543,6 +612,7 @@ class EcoMDSimulator(nn.Module):
         create_graph: bool = True,
         h_regime: Tensor | None = None,
         h_agent: Tensor | None = None,
+        h_global: Tensor | None = None,
     ) -> tuple[Tensor, PriceState, EcoMDTrajectory, Tensor | None]:
         """Differentiable chunk rollout — returns (s_final, price_state_final,
         traj, h_regime_final). ``h_regime_final`` is None when regime disabled.
@@ -566,6 +636,8 @@ class EcoMDSimulator(nn.Module):
             h_regime = self.init_regime()
         if h_agent is None and self.agent_memory is not None:
             h_agent = self.init_agent_memory()
+        if h_global is None and self.global_state is not None:
+            h_global = self.init_global_state()
         recorder = TrajectoryRecorder(dt=self.cfg.dt, meta={"n_steps": n_steps})
 
         K = int(self.cfg.bptt_checkpoint_every) if create_graph else 0
@@ -581,9 +653,12 @@ class EcoMDSimulator(nn.Module):
                 shape, device=s.device, dtype=dtype
             )
             for k in range(n_steps):
-                s_next, s_prev_next, price_state, h_regime, h_agent, log_return = step_via_function(
+                (s_next, s_prev_next, price_state,
+                 h_regime, h_agent, h_global, log_return) = step_via_function(
                     self, s, s_prev, price_state,
-                    generator=generator, h_regime=h_regime, h_agent=h_agent, step_idx=k,
+                    generator=generator,
+                    h_regime=h_regime, h_agent=h_agent, h_global=h_global,
+                    step_idx=k,
                 )
                 # Recorder gets log_return live; aux channels detached
                 # placeholders to keep schema compatible with downstream code.
@@ -607,12 +682,13 @@ class EcoMDSimulator(nn.Module):
         if K <= 0:
             # Original (no-checkpoint) path
             for k in range(n_steps):
-                s_next, price_state, rec, h_regime, h_agent = self.step(
+                s_next, price_state, rec, h_regime, h_agent, h_global = self.step(
                     s, s_prev, price_state,
                     generator=generator,
                     create_graph=create_graph,
                     h_regime=h_regime,
                     h_agent=h_agent,
+                    h_global=h_global,
                     step_idx=k,
                 )
                 recorder.record(
@@ -635,13 +711,17 @@ class EcoMDSimulator(nn.Module):
         has_hawkes_long = price_state.hawkes_memory_long is not None
         has_regime = h_regime is not None
         has_agent = h_agent is not None
-        # Placeholder zero tensor for h_regime / h_agent when disabled (so we
-        # always pass tensors through checkpoint, never None).
+        has_global = h_global is not None
+        # Placeholder zero tensor for h_regime / h_agent / h_global when
+        # disabled (so we always pass tensors through checkpoint, never None).
         zero_h = torch.zeros((), device=s.device, dtype=s.dtype)
         h_reg_tensor = h_regime if has_regime else zero_h
         zero_h_agent = torch.zeros((self.cfg.n_agents, self.cfg.agent_memory_d),
                                    device=s.device, dtype=s.dtype)
         h_agent_tensor = h_agent if has_agent else zero_h_agent
+        zero_h_global = torch.zeros((self.cfg.global_state_d,),
+                                    device=s.device, dtype=s.dtype)
+        h_global_tensor = h_global if has_global else zero_h_global
 
         # Reference to the simulator (avoid `self` capture issues when
         # defining the closure inside a loop body).
@@ -665,6 +745,7 @@ class EcoMDSimulator(nn.Module):
                 lp_in, llr_in, vol_in, hk_in, hkl_in,
                 h_reg_in,
                 h_agent_in,
+                h_global_in,
                 # Closure-captured constants (bound at definition time):
                 _step_start=local_step_start,
                 _this_group=this_group,
@@ -674,6 +755,7 @@ class EcoMDSimulator(nn.Module):
                 _has_hawkes_long=has_hawkes_long,
                 _has_regime=has_regime,
                 _has_agent=has_agent,
+                _has_global=has_global,
                 _create_graph=create_graph,
                 _sim=sim_self,
             ):
@@ -691,6 +773,7 @@ class EcoMDSimulator(nn.Module):
                 )
                 h_reg_local = h_reg_in if _has_regime else None
                 h_agent_local = h_agent_in if _has_agent else None
+                h_global_local = h_global_in if _has_global else None
 
                 states_list: list[Tensor] = []
                 f_cons_list: list[Tensor] = []
@@ -706,10 +789,12 @@ class EcoMDSimulator(nn.Module):
                 s_prev_local = s_prev_in
 
                 for k in range(_this_group):
-                    s_next, ps_local, rec, h_reg_local, h_agent_local = _sim.step(
+                    (s_next, ps_local, rec,
+                     h_reg_local, h_agent_local, h_global_local) = _sim.step(
                         s_local, s_prev_local, ps_local,
                         generator=_gen, create_graph=_create_graph,
                         h_regime=h_reg_local, h_agent=h_agent_local,
+                        h_global=h_global_local,
                         step_idx=_step_start + k,
                     )
                     states_list.append(rec["s"])
@@ -730,12 +815,16 @@ class EcoMDSimulator(nn.Module):
                 h_agent_out = h_agent_local if (_has_agent and h_agent_local is not None) \
                     else torch.zeros((sim_self.cfg.n_agents, sim_self.cfg.agent_memory_d),
                                      device=s_local.device, dtype=s_local.dtype)
+                h_global_out = h_global_local if (_has_global and h_global_local is not None) \
+                    else torch.zeros((sim_self.cfg.global_state_d,),
+                                     device=s_local.device, dtype=s_local.dtype)
 
                 return (
                     s_local, s_prev_local,
                     ps_t[0], ps_t[1], ps_t[2], ps_t[3], ps_t[4],
                     h_reg_out,
                     h_agent_out,
+                    h_global_out,
                     torch.stack(states_list),
                     torch.stack(f_cons_list),
                     torch.stack(f_diss_list),
@@ -754,6 +843,7 @@ class EcoMDSimulator(nn.Module):
                 ps_in_t[0], ps_in_t[1], ps_in_t[2], ps_in_t[3], ps_in_t[4],
                 h_reg_tensor,
                 h_agent_tensor,
+                h_global_tensor,
                 use_reentrant=False,
             )
 
@@ -761,6 +851,7 @@ class EcoMDSimulator(nn.Module):
              lp_out, llr_out, vol_out, hk_out, hkl_out,
              h_reg_tensor,
              h_agent_tensor,
+             h_global_tensor,
              states_stack, f_cons_stack, f_diss_stack, f_stoch_stack,
              velocities_stack, log_prices_stack, log_returns_stack,
              volumes_stack, excess_demand_stack) = outputs
@@ -777,6 +868,9 @@ class EcoMDSimulator(nn.Module):
             if has_agent:
                 h_agent = h_agent_tensor
             # else: h_agent stays None
+            if has_global:
+                h_global = h_global_tensor
+            # else: h_global stays None
 
             # Append this group's K stacked records into the global recorder.
             for k in range(this_group):
@@ -816,6 +910,7 @@ class EcoMDSimulator(nn.Module):
         price_state = self.init_price()
         h_regime = self.init_regime()
         h_agent = self.init_agent_memory()
+        h_global = self.init_global_state()
 
         self._reset_potential_cache()
         recorder = TrajectoryRecorder(
@@ -824,12 +919,13 @@ class EcoMDSimulator(nn.Module):
                   "n_agents": self.cfg.n_agents, "d_state": self.cfg.d_state},
         )
         for k in range(n_steps):
-            s_next, price_state, rec, h_regime, h_agent = self.step(
+            s_next, price_state, rec, h_regime, h_agent, h_global = self.step(
                 s, s_prev, price_state,
                 generator=generator,
                 create_graph=False,
                 h_regime=h_regime,
                 h_agent=h_agent,
+                h_global=h_global,
                 step_idx=k,
             )
             recorder.record(

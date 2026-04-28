@@ -99,15 +99,18 @@ class ISABPairwisePotential(nn.Module):
         m_inducing: int = 64,
         n_heads: int = 4,
         init_gain: float = 0.5,
+        d_global_in: int = 0,
     ) -> None:
         super().__init__()
         self.d = d
         self.hidden = hidden
         self.m = m_inducing
+        self.d_global_in = int(d_global_in)
 
-        # input projection
+        # input projection. Tier 4.1: when d_global_in>0, broadcast u and
+        # concatenate to each per-agent state before projection.
         self.in_proj = nn.Sequential(
-            nn.Linear(d, hidden),
+            nn.Linear(d + self.d_global_in, hidden),
             nn.SiLU(),
         )
         # learnable inducing points
@@ -132,11 +135,22 @@ class ISABPairwisePotential(nn.Module):
         return
 
     def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
-        del context
+        # Tier 4.1: when d_global_in>0, simulator passes the global state u
+        # via the context channel (1-D, length d_global_in).
         n, d = s.shape
         assert d == self.d, f"expected last dim {self.d}, got {d}"
 
-        x = self.in_proj(s)                          # (N, hidden)
+        if self.d_global_in > 0:
+            if context is None:
+                u = torch.zeros(self.d_global_in, device=s.device, dtype=s.dtype)
+            else:
+                u = context
+            u_b = u.unsqueeze(0).expand(n, self.d_global_in)
+            x_in = torch.cat([s, u_b], dim=-1)
+        else:
+            x_in = s
+
+        x = self.in_proj(x_in)                       # (N, hidden)
         h = self.compress(self.I, x)                 # (M, hidden)
         y = self.broadcast(x, h)                     # (N, hidden)
         v = self.readout(y).squeeze(-1)              # (N,)

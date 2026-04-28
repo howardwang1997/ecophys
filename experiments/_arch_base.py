@@ -116,6 +116,25 @@ TIER_OVERRIDES: dict[str, dict] = {
             # stochastic_mlp).
         },
     },
+    "tier_4_1_megnet": {
+        "simulator": {
+            "global_state_enabled": True,
+            "global_state_d": 16,
+            "global_state_update_every": 1,
+            "global_state_into_pair": True,
+        },
+    },
+    "tier_4_1_megnet_external_only": {
+        # Ablation: u feeds external context but NOT pair kernel. Lets us
+        # measure the marginal value of pair-side global awareness vs.
+        # external-side global awareness.
+        "simulator": {
+            "global_state_enabled": True,
+            "global_state_d": 16,
+            "global_state_update_every": 1,
+            "global_state_into_pair": False,
+        },
+    },
 }
 
 
