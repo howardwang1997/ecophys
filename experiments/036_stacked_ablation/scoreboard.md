@@ -6,11 +6,18 @@ Discovered 40 runs, 28 with eval.
 Reference: stacked-full (035) mean 2.40/11. Look for cells
 where mean RECOVERS to ≥ 4-5/11 — that knob is the saboteur.
 
-| cell | n_seeds | mean n/11 | 95% CI | std |
-|---|---:|---:|---|---:|
-| `no_chunk128` | 10 | **3.20** | [2.10, 4.30] | 1.93 |
-| `no_h96` | 8 | **3.00** | [2.25, 3.62] | 1.07 |
-| `no_init01` | 10 | **2.20** | [1.50, 2.90] | 1.23 |
+| cell | n_seeds | mean n/11 | 95% CI | std | note |
+|---|---:|---:|---|---:|---|
+| `no_chunk128` | 10 | **3.20** | [2.10, 4.30] | 1.93 | |
+| `no_h96` | 8 | **3.00** | [2.25, 3.62] | 1.07 | 2 evals failed |
+| `no_init01` | 10 | **2.20** | [1.50, 2.90] | 1.23 | |
+| `no_sprint2` | — | **OOM** | — | — | default autograd + h96 + chunk128 > 95GB/card |
+
+**Key finding**: `bptt_custom_function: false` (default autograd) with h96+chunk128
+OOMs on 95GB H20 even with 8-card DDP (each card holds full autograd graph).
+This means sprint2's custom autograd function is **not optional** for h96+chunk128 —
+it is a *prerequisite*. The ablation cell is infeasible, which itself is evidence
+that the custom autograd path enables a regime the default path cannot reach.
 
 ## Top 10 individual runs
 | run | n/11 |
