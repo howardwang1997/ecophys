@@ -70,6 +70,9 @@ def bootstrap_ci(values: list[int], n_boot: int = 10_000) -> tuple[float, float,
 def parse_label(label: str) -> dict:
     """Extract structure from label like:
       pc_chunk128_seed3      → {phase: pc, chunk: 128, seed: 3}
+      pcfix_chunk128_seed3   → {phase: pcfix, chunk: 128, seed: 3}
+      ct_default_seed3       → {phase: ct, variant: default, seed: 3}
+      ct_sprint2_seed3       → {phase: ct, variant: sprint2, seed: 3}
       ph_lr_1e-3_seed1       → {phase: ph, group: lr, lr: 1e-3, seed: 1}
       ph_iters_400_seed0     → {phase: ph, group: iters, n_iters: 400, seed: 0}
       ph_init_s01_h48_seed1  → {phase: ph, group: init, init_scale: 01, hidden: 48, seed: 1}
@@ -77,29 +80,33 @@ def parse_label(label: str) -> dict:
     """
     parts = label.split("_")
     out: dict = {"phase": parts[0], "raw": label}
-    if parts[0] == "pc":
+    if parts[0] in ("pc", "pcfix"):
         for tok in parts[1:]:
             if tok.startswith("chunk"):
                 out["chunk"] = int(tok.removeprefix("chunk"))
             elif tok.startswith("seed"):
                 out["seed"] = int(tok.removeprefix("seed"))
         return out
-    if parts[0] == "ph":
-        out["group"] = parts[1]
+    if parts[0] == "ct":
+        out["variant"] = parts[1]
         for tok in parts[2:]:
             if tok.startswith("seed"):
                 out["seed"] = int(tok.removeprefix("seed"))
-            elif tok.startswith("h"):
-                out["hidden"] = int(tok[1:]) if tok[1:].isdigit() else None
-            elif tok.startswith("s") and tok != "seeds":
+        return out
+    if parts[0] == "ph":
+        out["group"] = parts[1]
+        for tok in parts[2:]:
+            if tok.startswith("seed") and tok != "seeds" and len(tok) > 4 and tok[4:].isdigit():
+                out["seed"] = int(tok[4:])
+            elif tok.startswith("h") and len(tok) > 1 and tok[1:].isdigit():
+                out["hidden"] = int(tok[1:])
+            elif tok.startswith("s") and tok not in ("seeds", "seed") and len(tok) > 1:
                 out["init_scale_tag"] = tok[1:]
-        # variant key for grouping
         if out.get("group") == "lr":
-            out["variant"] = parts[2]   # e.g., 1e-3
+            out["variant"] = parts[2]
         elif out.get("group") == "iters":
-            out["variant"] = parts[2]   # e.g., 400
+            out["variant"] = parts[2]
         elif out.get("group") == "init":
-            # ph_init_s01_h48_seed1
             out["variant"] = "_".join(parts[2:-1])
         elif out.get("group") == "n_seeds":
             out["variant"] = "default"
@@ -128,6 +135,62 @@ def main() -> None:
     n_done = sum(1 for r in rows if r["score"] is not None)
     lines.append(f"Discovered {n_total} runs, {n_done} with eval.")
     lines.append("")
+
+    # Contamination paired (ct): group by variant (default vs sprint2)
+    if any(r.get("phase") == "ct" for r in rows):
+        ct_groups: dict[str, list[int]] = defaultdict(list)
+        for r in rows:
+            if r.get("phase") == "ct" and r.get("score") is not None:
+                ct_groups[r["variant"]].append(r["score"])
+
+        lines.append("## Contamination paired — default vs sprint2 (custom autograd)")
+        lines.append("| variant | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append("|---|---:|---:|---|---:|")
+        for variant in sorted(ct_groups):
+            scores = ct_groups[variant]
+            m, lo, hi = bootstrap_ci(scores)
+            std = float(np.std(scores, ddof=1)) if len(scores) > 1 else 0.0
+            lines.append(f"| `{variant}` | {len(scores)} | **{m:.2f}** | "
+                         f"[{lo:.2f}, {hi:.2f}] | {std:.2f} |")
+        lines.append("")
+
+        # Per-seed paired comparison
+        if "default" in ct_groups and "sprint2" in ct_groups:
+            lines.append("### Per-seed paired comparison")
+            lines.append("| seed | default | sprint2 | delta |")
+            lines.append("|---:|---:|---:|---:|")
+            ct_lookup: dict[tuple[str, int], int] = {}
+            for r in rows:
+                if r.get("phase") == "ct" and r.get("score") is not None:
+                    ct_lookup[(r["variant"], r["seed"])] = r["score"]
+            seeds = sorted({r["seed"] for r in rows if r.get("phase") == "ct" and r.get("seed") is not None})
+            for seed in seeds:
+                d_val = ct_lookup.get(("default", seed))
+                s_val = ct_lookup.get(("sprint2", seed))
+                delta = (s_val - d_val) if (d_val is not None and s_val is not None) else None
+                d_str = f"{d_val}/11" if d_val is not None else "—"
+                s_str = f"{s_val}/11" if s_val is not None else "—"
+                delta_str = f"+{delta}" if (delta is not None and delta > 0) else (str(delta) if delta is not None else "—")
+                lines.append(f"| {seed} | {d_str} | {s_str} | {delta_str} |")
+            lines.append("")
+
+    # Loss noise fix (pcfix): group by chunk
+    if any(r.get("phase") == "pcfix" for r in rows):
+        pcfix_groups: dict[int, list[int]] = defaultdict(list)
+        for r in rows:
+            if r.get("phase") == "pcfix" and r.get("score") is not None:
+                pcfix_groups[r["chunk"]].append(r["score"])
+
+        lines.append("## Loss noise fix — by chunk")
+        lines.append("| chunk | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append("|---:|---:|---:|---|---:|")
+        for chunk in sorted(pcfix_groups):
+            scores = pcfix_groups[chunk]
+            m, lo, hi = bootstrap_ci(scores)
+            std = float(np.std(scores, ddof=1)) if len(scores) > 1 else 0.0
+            lines.append(f"| {chunk} | {len(scores)} | **{m:.2f}** | "
+                         f"[{lo:.2f}, {hi:.2f}] | {std:.2f} |")
+        lines.append("")
 
     # Phase C-style: group by chunk
     if any(r.get("phase") == "pc" for r in rows):
