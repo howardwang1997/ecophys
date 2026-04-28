@@ -90,6 +90,7 @@ class EcoMDStepFunction(torch.autograd.Function):
         has_hawkes: bool,
         has_hawkes_long: bool,
         has_regime: bool,
+        has_agent: bool,
         s: Tensor,
         s_prev: Tensor,
         lp: Tensor,
@@ -98,6 +99,7 @@ class EcoMDStepFunction(torch.autograd.Function):
         hk: Tensor,
         hkl: Tensor,
         h_reg: Tensor,
+        h_agent: Tensor,
         *params: Tensor,
     ) -> tuple[Tensor, ...]:
         # Save context for backward (Python objects)
@@ -108,10 +110,11 @@ class EcoMDStepFunction(torch.autograd.Function):
         ctx.has_hawkes = bool(has_hawkes)
         ctx.has_hawkes_long = bool(has_hawkes_long)
         ctx.has_regime = bool(has_regime)
+        ctx.has_agent = bool(has_agent)
         ctx.n_params = len(params)
 
         # Save tensors for backward
-        ctx.save_for_backward(s, s_prev, lp, llr, vol, hk, hkl, h_reg, *params)
+        ctx.save_for_backward(s, s_prev, lp, llr, vol, hk, hkl, h_reg, h_agent, *params)
 
         # Run step in no-grad → bounded memory, no autograd tape.
         # Detach inputs first to break any external autograd connections
@@ -132,18 +135,21 @@ class EcoMDStepFunction(torch.autograd.Function):
                 has_hawkes_long=ctx.has_hawkes_long,
             )
             h_regime_in = h_reg.detach() if ctx.has_regime else None
+            h_agent_in = h_agent.detach() if ctx.has_agent else None
 
-            s_next, ps_next, rec, h_regime_next = sim.step(
+            s_next, ps_next, rec, h_regime_next, h_agent_next = sim.step(
                 s_in, s_prev_in, ps,
                 generator=generator,
                 create_graph=False,   # KEY: no V-graph kept beyond this call
                 h_regime=h_regime_in,
+                h_agent=h_agent_in,
                 step_idx=ctx.step_idx,
             )
 
             ps_t = ps_next.to_tensors()
             zero = torch.zeros((), device=s.device, dtype=s.dtype)
             h_reg_out = h_regime_next if (ctx.has_regime and h_regime_next is not None) else zero
+            h_agent_out = h_agent_next if (ctx.has_agent and h_agent_next is not None) else h_agent
             log_return = rec["log_return"].clone()
 
         # Outputs: clone to ensure they aren't aliased to internal tensors
@@ -156,6 +162,7 @@ class EcoMDStepFunction(torch.autograd.Function):
             ps_t[3].clone(),
             ps_t[4].clone(),
             h_reg_out.clone(),
+            h_agent_out.clone(),
             log_return,
         )
 
@@ -163,12 +170,12 @@ class EcoMDStepFunction(torch.autograd.Function):
     def backward(ctx, *grad_outputs):
         # Unpack grads matching forward output order
         (g_s_next, g_s_prev_next, g_lp, g_llr, g_vol, g_hk, g_hkl,
-         g_h_reg, g_log_return) = grad_outputs
+         g_h_reg, g_h_agent, g_log_return) = grad_outputs
 
         # Restore inputs
         saved = ctx.saved_tensors
-        s, s_prev, lp, llr, vol, hk, hkl, h_reg = saved[:8]
-        params = list(saved[8:])
+        s, s_prev, lp, llr, vol, hk, hkl, h_reg, h_agent = saved[:9]
+        params = list(saved[9:])
 
         # Re-run forward LOCALLY with create_graph=True so we have a graph to
         # backprop through. This is the only place V-graph is materialised.
@@ -192,6 +199,8 @@ class EcoMDStepFunction(torch.autograd.Function):
                      if ctx.has_hawkes_long else hkl.detach())
             h_reg_l = (h_reg.detach().clone().requires_grad_(True)
                        if ctx.has_regime else h_reg.detach())
+            h_agent_l = (h_agent.detach().clone().requires_grad_(True)
+                         if ctx.has_agent else h_agent.detach())
 
             ps_l = PriceState.from_tensors(
                 (lp_l, llr_l, vol_l, hk_l, hkl_l),
@@ -200,28 +209,32 @@ class EcoMDStepFunction(torch.autograd.Function):
                 has_hawkes_long=ctx.has_hawkes_long,
             )
             h_regime_l = h_reg_l if ctx.has_regime else None
+            h_agent_in_l = h_agent_l if ctx.has_agent else None
 
-            s_next_l, ps_next_l, rec_l, h_regime_next_l = ctx.sim_ref.step(
+            s_next_l, ps_next_l, rec_l, h_regime_next_l, h_agent_next_l = ctx.sim_ref.step(
                 s_l, s_prev_l, ps_l,
                 generator=ctx.generator,
                 create_graph=True,
                 h_regime=h_regime_l,
+                h_agent=h_agent_in_l,
                 step_idx=ctx.step_idx,
             )
 
             ps_t_l = ps_next_l.to_tensors()
             zero = torch.zeros((), device=s.device, dtype=s.dtype)
             h_reg_out_l = (h_regime_next_l if (ctx.has_regime and h_regime_next_l is not None) else zero)
+            h_agent_out_l = (h_agent_next_l if (ctx.has_agent and h_agent_next_l is not None) else h_agent_l)
             log_return_l = rec_l["log_return"]
 
             outputs = [
                 s_next_l, s_l,                          # s_prev_next was s
                 ps_t_l[0], ps_t_l[1], ps_t_l[2], ps_t_l[3], ps_t_l[4],
                 h_reg_out_l,
+                h_agent_out_l,
                 log_return_l,
             ]
             grads = [g_s_next, g_s_prev_next, g_lp, g_llr, g_vol, g_hk, g_hkl,
-                     g_h_reg, g_log_return]
+                     g_h_reg, g_h_agent, g_log_return]
 
             # Filter out (output, grad) pairs where grad is None or output
             # is a non-grad placeholder (zero h_reg when has_regime=False, etc.)
@@ -248,6 +261,7 @@ class EcoMDStepFunction(torch.autograd.Function):
                 ("hk", hk_l),
                 ("hkl", hkl_l),
                 ("h_reg", h_reg_l),
+                ("h_agent", h_agent_l),
             ]
             param_inputs = list(params)  # all nn.Parameters
 
@@ -282,6 +296,7 @@ class EcoMDStepFunction(torch.autograd.Function):
             g_hk_in = _g_or_zero("hk", hk_l)
             g_hkl_in = _g_or_zero("hkl", hkl_l)
             g_h_reg_in = _g_or_zero("h_reg", h_reg_l)
+            g_h_agent_in = _g_or_zero("h_agent", h_agent_l)
 
             param_grads = []
             for i, p in enumerate(param_inputs):
@@ -300,6 +315,7 @@ class EcoMDStepFunction(torch.autograd.Function):
             None,            # has_hawkes
             None,            # has_hawkes_long
             None,            # has_regime
+            None,            # has_agent
             g_s,             # s
             g_s_prev_in,     # s_prev
             g_lp_in,         # lp
@@ -308,6 +324,7 @@ class EcoMDStepFunction(torch.autograd.Function):
             g_hk_in,         # hk
             g_hkl_in,        # hkl
             g_h_reg_in,      # h_reg
+            g_h_agent_in,    # h_agent
             *param_grads,    # *params
         )
 
@@ -320,17 +337,26 @@ def step_via_function(
     *,
     generator: torch.Generator | None,
     h_regime: Tensor | None,
+    h_agent: Tensor | None,
     step_idx: int,
-) -> tuple[Tensor, Tensor, PriceState, Tensor | None, Tensor]:
+) -> tuple[Tensor, Tensor, PriceState, Tensor | None, Tensor | None, Tensor]:
     """Convenience wrapper that flattens PriceState → tensors, calls
     EcoMDStepFunction, and returns (s_next, s_prev_next, price_state_next,
-    h_regime_next, log_return)."""
+    h_regime_next, h_agent_next, log_return)."""
     has_hawkes = price_state.hawkes_memory is not None
     has_hawkes_long = price_state.hawkes_memory_long is not None
     has_regime = h_regime is not None
+    has_agent = h_agent is not None
 
     zero_h = torch.zeros((), device=s.device, dtype=s.dtype)
     h_reg_in = h_regime if has_regime else zero_h
+    # h_agent placeholder shape must match the real one (N, d_memory) so
+    # that grad outputs flow with consistent shapes.
+    if has_agent:
+        h_agent_in = h_agent
+    else:
+        d_mem = sim.cfg.agent_memory_d
+        h_agent_in = torch.zeros((sim.cfg.n_agents, d_mem), device=s.device, dtype=s.dtype)
 
     ps_t = price_state.to_tensors()
     gen_state = (
@@ -341,14 +367,15 @@ def step_via_function(
 
     out = EcoMDStepFunction.apply(
         sim, generator, gen_state, step_idx,
-        has_hawkes, has_hawkes_long, has_regime,
+        has_hawkes, has_hawkes_long, has_regime, has_agent,
         s, s_prev,
         ps_t[0], ps_t[1], ps_t[2], ps_t[3], ps_t[4],
         h_reg_in,
+        h_agent_in,
         *params,
     )
     (s_next, s_prev_next, lp_n, llr_n, vol_n, hk_n, hkl_n,
-     h_reg_n, log_return) = out
+     h_reg_n, h_agent_n, log_return) = out
 
     ps_next = PriceState.from_tensors(
         (lp_n, llr_n, vol_n, hk_n, hkl_n),
@@ -357,4 +384,5 @@ def step_via_function(
         has_hawkes_long=has_hawkes_long,
     )
     h_regime_next = h_reg_n if has_regime else None
-    return s_next, s_prev_next, ps_next, h_regime_next, log_return
+    h_agent_next = h_agent_n if has_agent else None
+    return s_next, s_prev_next, ps_next, h_regime_next, h_agent_next, log_return

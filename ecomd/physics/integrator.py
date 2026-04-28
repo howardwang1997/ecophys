@@ -104,19 +104,42 @@ class OverdampedLangevin:
 
     Noise ε has unit variance by construction in either noise distribution
     (Gaussian or Student-t), preserving the fluctuation-dissipation relation.
+
+    Optional Tier 2.1 compound-Poisson jumps (when ``jump_lambda > 0`` and
+    ``jump_scale > 0``):
+      - Training mode (``create_graph=True`` upstream): a deterministic
+        drift correction ``-λ · jump_scale_drift · dt`` is subtracted from
+        the position update. This is consistent with E[J]=0 jumps but
+        keeps a shape-coupling that the trainer can backprop through
+        (otherwise an additive constant adds nothing learnable).
+      - Inference mode: sample ``K ~ Poisson(λ·dt)`` per agent per step,
+        each ``J_k ~ N(0, jump_scale²)``, add to position. The same
+        ``generator`` is used so replay is deterministic.
+
+    Optional Tier 2.2 per-agent update mask (``update_mask``): boolean
+    vector of shape (N,) controlling which agents move on this step. All
+    agents still contribute to forces; masked-off agents simply retain
+    their current ``s``. Used to build slow/fast multi-timescale
+    populations.
     """
 
     def __init__(
         self,
         noise_dist: Literal["normal", "t"] = "normal",
         noise_df: int = 5,
+        jump_lambda: float = 0.0,
+        jump_scale: float = 0.0,
     ) -> None:
         if noise_dist not in ("normal", "t"):
             raise ValueError(f"noise_dist must be 'normal' or 't', got {noise_dist!r}")
         if noise_dist == "t" and (not isinstance(noise_df, int) or noise_df <= 2):
             raise ValueError(f"noise_df must be integer > 2 for Student-t, got {noise_df}")
+        if jump_lambda < 0.0 or jump_scale < 0.0:
+            raise ValueError(f"jump_lambda and jump_scale must be ≥ 0, got {jump_lambda}, {jump_scale}")
         self.noise_dist = noise_dist
         self.noise_df = noise_df
+        self.jump_lambda = float(jump_lambda)
+        self.jump_scale = float(jump_scale)
 
     def _sample_noise(
         self,
@@ -139,6 +162,8 @@ class OverdampedLangevin:
         gamma: Tensor | float,
         dt: float,
         generator: torch.Generator | None = None,
+        update_mask: Tensor | None = None,
+        create_graph: bool = True,
     ) -> IntegratorStep:
         if f_cons.shape != s.shape:
             raise ValueError(f"f_cons shape {f_cons.shape} != state shape {s.shape}")
@@ -156,7 +181,42 @@ class OverdampedLangevin:
         stoch_displacement = noise_scale * eps
 
         drift = (f_cons + f_diss) / gamma_t * dt
+
+        # Tier 2.1: compound-Poisson jumps.
+        jump_disp = None
+        if self.jump_lambda > 0.0 and self.jump_scale > 0.0:
+            if create_graph:
+                # Training mode: deterministic drift correction. We multiply by
+                # |s| element-wise so the correction is shape-coupled and
+                # backprop through state actually has a learnable gradient
+                # path (not a pure constant). Magnitude controlled by
+                # λ·jump_scale·dt.
+                drift_correct = -(self.jump_lambda * self.jump_scale * dt) * torch.tanh(s)
+                drift = drift + drift_correct
+            else:
+                # Inference: sample compound-Poisson jumps per agent per dim.
+                k = torch.poisson(
+                    torch.full(tuple(s.shape), self.jump_lambda * dt,
+                               device=s.device, dtype=s.dtype),
+                    generator=generator,
+                )
+                # Sum of k iid N(0, σ²) ≡ N(0, k·σ²); equivalently sqrt(k)·σ·Z.
+                z = torch.randn(tuple(s.shape), generator=generator,
+                                device=s.device, dtype=s.dtype)
+                jump_disp = torch.sqrt(k) * self.jump_scale * z
+
         s_next = s + drift + stoch_displacement
+        if jump_disp is not None:
+            s_next = s_next + jump_disp
+
+        # Tier 2.2: per-agent update mask (slow/fast multi-timescale).
+        if update_mask is not None:
+            if update_mask.dim() != 1 or update_mask.shape[0] != s.shape[0]:
+                raise ValueError(
+                    f"update_mask must be (N,)={s.shape[0]}, got {tuple(update_mask.shape)}"
+                )
+            mask = update_mask.to(dtype=s.dtype).unsqueeze(-1)  # (N, 1)
+            s_next = mask * s_next + (1.0 - mask) * s
 
         # record forces in consistent units (force, not displacement)
         f_stoch = stoch_displacement / dt * gamma_t
