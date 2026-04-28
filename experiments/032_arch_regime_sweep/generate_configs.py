@@ -41,10 +41,11 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 
-# Phase H assumes Phase C declared chunk=128 the winner (= default loss
-# operating with sim_returns length 111). If Phase C reveals chunk
-# doesn't matter, edit CHUNK_DEFAULT to 24 and regenerate.
-CHUNK_DEFAULT = 128
+# Phase C result (commit 6428f88, 2026-04-28): chunk=24/64/128 all
+# give mean 2.6-2.8/11 — chunk extension does NOT improve fact
+# reproduction. Loss-noise hypothesis rejected. Use chunk=24 for Phase H
+# (4× faster training; same expected outcome).
+CHUNK_DEFAULT = 24
 
 BASE: dict = {
     "simulator": {
