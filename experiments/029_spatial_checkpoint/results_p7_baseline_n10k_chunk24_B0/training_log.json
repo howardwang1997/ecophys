@@ -1,0 +1,142 @@
+{
+  "config": {
+    "simulator": {
+      "n_agents": 10000,
+      "d_state": 32,
+      "hidden": 48,
+      "dt": 0.01,
+      "gamma_init": 1.0,
+      "temperature_init": 0.05,
+      "init_state_scale": 0.1,
+      "lam_dissipation": 0.01,
+      "learn_gamma": true,
+      "learn_temperature": true,
+      "noise_dist": "t",
+      "noise_df": 5,
+      "price_formation": "excess_demand",
+      "price_formation_kwargs": {
+        "beta": 0.02,
+        "kappa": 0.5,
+        "sigma_price": 0.005,
+        "ewma_alpha": 0.05,
+        "initial_log_price": 0.0,
+        "learnable_beta": false,
+        "beta_hidden": 16,
+        "hawkes_alpha": 0.1,
+        "hawkes_kappa": 0.3
+      },
+      "pairwise_kind": "stochastic_mlp",
+      "sps_k_random": 50,
+      "sps_resample_per_step": true,
+      "sps_spatial_batch_size": 0,
+      "twopop_enabled": true,
+      "twopop_gamma_scale": [
+        0.7,
+        1.5,
+        1.0,
+        0.5
+      ],
+      "twopop_temp_scale": [
+        0.5,
+        2.0,
+        1.0,
+        0.3
+      ],
+      "v2_type_seed": 42,
+      "bptt_checkpoint_every": 0
+    },
+    "training": {
+      "n_iters": 5,
+      "chunk_steps": 24,
+      "warmup_steps": 16,
+      "persistent_state": true,
+      "lr": 0.001,
+      "lr_warmup_iters": 1,
+      "grad_clip_max_norm": 100.0,
+      "seed": 0,
+      "checkpoint_every_s": 999999,
+      "target_dataset": "spx",
+      "target_period": "2015-2026_daily",
+      "loss_weights": {
+        "w_acf_sq": 1.0,
+        "w_leverage": 0.2,
+        "w_hill": 0.1,
+        "max_lag": 8,
+        "hill_k_frac": 0.05
+      }
+    }
+  },
+  "targets": {
+    "acf_sq_mean": 0.34173300862312317,
+    "leverage_sum": -0.7899317741394043,
+    "hill_alpha": 2.6832098960876465
+  },
+  "history": [
+    {
+      "iter": 0,
+      "lr": 0.001,
+      "total_rank0": 5.241330146789551,
+      "total_world_mean": 5.241330146789551,
+      "acf_sim": -0.49141725897789,
+      "leverage_sim": -2.9482784271240234,
+      "hill_sim": 42.44831085205078,
+      "grad_norm": 286.94384765625,
+      "gamma": 1.0010005235671997,
+      "temperature": 0.05005002021789551
+    },
+    {
+      "iter": 1,
+      "lr": 0.001,
+      "total_rank0": 6.181997776031494,
+      "total_world_mean": 6.181997776031494,
+      "acf_sim": -0.20548014342784882,
+      "leverage_sim": -1.2314953804016113,
+      "hill_sim": 58.147926330566406,
+      "grad_norm": 513.7589721679688,
+      "gamma": 1.0016995668411255,
+      "temperature": 0.050040166825056076
+    },
+    {
+      "iter": 2,
+      "lr": 0.0008681980515339464,
+      "total_rank0": 1.850962519645691,
+      "total_world_mean": 1.850962519645691,
+      "acf_sim": -0.6167113780975342,
+      "leverage_sim": -3.6483097076416016,
+      "hill_sim": 5.891635894775391,
+      "grad_norm": 324.3370666503906,
+      "gamma": 1.0021198987960815,
+      "temperature": 0.05003061145544052
+    },
+    {
+      "iter": 3,
+      "lr": 0.00055,
+      "total_rank0": 5.632425785064697,
+      "total_world_mean": 5.632425785064697,
+      "acf_sim": -0.37846702337265015,
+      "leverage_sim": 2.280777931213379,
+      "hill_sim": 45.66404342651367,
+      "grad_norm": 322.5111999511719,
+      "gamma": 1.0023953914642334,
+      "temperature": 0.05003941431641579
+    },
+    {
+      "iter": 4,
+      "lr": 0.00023180194846605365,
+      "total_rank0": 7.507630825042725,
+      "total_world_mean": 7.507630825042725,
+      "acf_sim": -0.5349158644676208,
+      "leverage_sim": 3.21294903755188,
+      "hill_sim": 60.987266540527344,
+      "grad_norm": 538.880615234375,
+      "gamma": 1.0024387836456299,
+      "temperature": 0.05004309117794037
+    }
+  ],
+  "train_time_seconds": 3.6747963428497314,
+  "world_size": 1,
+  "peak_hbm": {
+    "alloc_gb": 79.5856409072876,
+    "reserved_gb": 80.68359375
+  }
+}
