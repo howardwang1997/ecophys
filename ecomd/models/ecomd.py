@@ -27,7 +27,9 @@ from torch import Tensor
 
 from ..physics.integrator import LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
+from .agent_memory import AgentMemoryConfig, AgentMemoryGRU
 from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
+from .isab_pairwise import ISABPairwisePotential
 from .mace_lite import MACELitePotential, build_mace_lite
 from .regime_latent import RegimeGRU, RegimeGRUConfig, RegimeReadHead
 from .potentials import (
@@ -117,6 +119,42 @@ class EcoMDConfig:
     #   group boundaries via the s_next.grad_fn chain.
     # Recommended: leave at 0 unless you understand the OOM tradeoff.
     bptt_checkpoint_every: int = 0
+    # ── feature/arch-extensions (2026-04-28) — six architectural tiers ──────
+    # All default OFF: when all flags below take their defaults, simulator
+    # output is bit-identical to the pre-arch-extensions baseline.
+    #
+    # Tier 1.1 — Per-agent GRU memory. Each agent carries h_i ∈ R^d_memory
+    #   updated every `agent_memory_update_every` sim steps from (s_i,
+    #   log_return, vol). Aggregated read enters the external potential's
+    #   context. Hypothesis: helps DFA Hurst, zumbach, autocorr facts.
+    agent_memory_enabled: bool = False
+    agent_memory_d: int = 16
+    agent_memory_update_every: int = 1
+    # Tier 1.2 — Heterogeneous (type-aware) pairwise kernel heads. Routes
+    #   each pair (src, dst) to one of K² last-layer heads based on
+    #   (type_src, type_dst). Requires twopop_enabled=True (the type_idx
+    #   buffer is reused). Hypothesis: helps volume_corr, gain_loss.
+    pair_heterogeneous_heads: bool = False
+    # Tier 1.3 — Extra pair features. "none" reproduces baseline behavior.
+    #   "distance" appends ||Δs||, "inner_prod" appends ⟨s_i, s_j⟩,
+    #   "signed_diff" replaces |Δs| with Δs (asymmetric), "all" combines.
+    pair_features_extra: str = "none"
+    # Tier 2.1 — Compound-Poisson jumps. Training mode uses a tanh-coupled
+    #   drift correction; inference mode samples discrete jumps. Both
+    #   zero ⇒ no-op. Hypothesis: helps hill, gain_loss, autocorr.
+    jump_lambda: float = 0.0
+    jump_scale: float = 0.0
+    # Tier 2.2 — Multi-timescale per-agent mask. A `timescale_fast_frac`
+    #   fraction of agents always update; the rest update every
+    #   `timescale_slow_freq` steps. All agents always contribute to forces.
+    #   Hypothesis: helps DFA, zumbach (multi-scale temporal structure).
+    multi_timescale_enabled: bool = False
+    timescale_fast_frac: float = 0.8
+    timescale_slow_freq: int = 4
+    # Tier 3.1 — ISAB attention pairwise. Activate by setting
+    #   pairwise_kind="isab". Memory O(N·M) via M learnable inducing points.
+    isab_m_inducing: int = 64
+    isab_n_heads: int = 4
     # Custom autograd.Function-based per-step BPTT (Sprint 2, 2026-04-27):
     # When True, replaces ``rollout_chunk``'s standard ``sim.step()`` call
     # with ``EcoMDStepFunction.apply()``. Each step runs forward in
@@ -160,14 +198,36 @@ class EcoMDSimulator(nn.Module):
             # register as child so its params are included in self.parameters()
             self.add_module("_price_formation_mod", self.price_formation)
 
+        # Tier 1.2: prebuild persistent agent type_idx if either Tier 1.2
+        # heads or twopop are enabled. We use the twopop seed for both so
+        # heads share types with twopop γ/T (the natural physical reading).
+        K_types = len(self.cfg.twopop_gamma_scale)
+        type_idx_buf: Tensor | None = None
+        if self.cfg.pair_heterogeneous_heads or self.cfg.twopop_enabled:
+            gen_t = torch.Generator().manual_seed(self.cfg.v2_type_seed)
+            type_idx_buf = torch.randint(0, K_types, (self.cfg.n_agents,), generator=gen_t)
+
         pairwise: nn.Module
         if self.cfg.pairwise_kind == "mlp":
             pairwise = PairwisePotential(d=d, hidden=self.cfg.hidden)
         elif self.cfg.pairwise_kind == "stochastic_mlp":
+            if self.cfg.pair_heterogeneous_heads:
+                assert type_idx_buf is not None
             pairwise = StochasticPairwisePotential(
                 d=d, hidden=self.cfg.hidden,
                 k_random=self.cfg.sps_k_random,
                 resample_per_step=self.cfg.sps_resample_per_step,
+                type_aware_heads=self.cfg.pair_heterogeneous_heads,
+                type_idx=type_idx_buf,
+                n_types=K_types,
+                pair_features_extra=self.cfg.pair_features_extra,
+            )
+        elif self.cfg.pairwise_kind == "isab":
+            pairwise = ISABPairwisePotential(
+                d=d,
+                hidden=self.cfg.hidden,
+                m_inducing=self.cfg.isab_m_inducing,
+                n_heads=self.cfg.isab_n_heads,
             )
         elif self.cfg.pairwise_kind == "ecomd_v2":
             v2_cfg = EcoMDv2Config(
@@ -210,16 +270,22 @@ class EcoMDSimulator(nn.Module):
         else:
             raise ValueError(
                 f"unknown pairwise_kind {self.cfg.pairwise_kind!r}; "
-                f"expected 'mlp' | 'stochastic_mlp' | 'mace_lite' | 'ecomd_v2'"
+                f"expected 'mlp' | 'stochastic_mlp' | 'mace_lite' | 'ecomd_v2' | 'isab'"
             )
+        ext_ctx_dim = self.price_formation.context_dim
+        if self.cfg.agent_memory_enabled:
+            ext_ctx_dim += self.cfg.agent_memory_d
         external = ExternalPotential(
-            d=d, context_dim=self.price_formation.context_dim, hidden=self.cfg.hidden
+            d=d, context_dim=ext_ctx_dim, hidden=self.cfg.hidden
         )
         self.potential = ConservativePotential(pairwise, external)
         self.dissipation = DissipationPotential(DissipationParams(lam=self.cfg.lam_dissipation))
 
         self.integrator = integrator or OverdampedLangevin(
-            noise_dist=self.cfg.noise_dist, noise_df=self.cfg.noise_df
+            noise_dist=self.cfg.noise_dist,
+            noise_df=self.cfg.noise_df,
+            jump_lambda=self.cfg.jump_lambda,
+            jump_scale=self.cfg.jump_scale,
         )
 
         # learnable log-parametrised γ, T (positivity by construction)
@@ -251,9 +317,9 @@ class EcoMDSimulator(nn.Module):
             K = len(self.cfg.twopop_gamma_scale)
             assert K == len(self.cfg.twopop_temp_scale), \
                 "twopop_gamma_scale and twopop_temp_scale must have the same length"
-            gen = torch.Generator().manual_seed(self.cfg.v2_type_seed)
-            type_idx = torch.randint(0, K, (self.cfg.n_agents,), generator=gen)
-            self.register_buffer("twopop_type_idx", type_idx, persistent=False)
+            assert K == K_types, "twopop_gamma_scale length must match K_types prebuild"
+            assert type_idx_buf is not None
+            self.register_buffer("twopop_type_idx", type_idx_buf, persistent=False)
             self.register_buffer(
                 "twopop_gamma_per_type",
                 torch.tensor(list(self.cfg.twopop_gamma_scale), dtype=torch.float32),
@@ -266,6 +332,30 @@ class EcoMDSimulator(nn.Module):
             )
         else:
             self.twopop_type_idx = None
+
+        # Tier 1.1 — per-agent GRU memory.
+        self.agent_memory: AgentMemoryGRU | None = None
+        if self.cfg.agent_memory_enabled:
+            self.agent_memory = AgentMemoryGRU(
+                d_state=d,
+                config=AgentMemoryConfig(
+                    d_memory=self.cfg.agent_memory_d,
+                    update_every=self.cfg.agent_memory_update_every,
+                ),
+            )
+
+        # Tier 2.2 — multi-timescale fast/slow agent mask. ``is_fast_agent``
+        # is a (N,) bool buffer derived from a deterministic seed so the
+        # split is reproducible across runs with the same v2_type_seed.
+        if self.cfg.multi_timescale_enabled:
+            gen_mt = torch.Generator().manual_seed(self.cfg.v2_type_seed + 1)
+            n_fast = int(round(self.cfg.timescale_fast_frac * self.cfg.n_agents))
+            perm = torch.randperm(self.cfg.n_agents, generator=gen_mt)
+            mask = torch.zeros(self.cfg.n_agents, dtype=torch.bool)
+            mask[perm[:n_fast]] = True
+            self.register_buffer("is_fast_agent", mask, persistent=False)
+        else:
+            self.is_fast_agent = None
 
     # ── Properties ─────────────────────────────────────────────────────────
 
@@ -301,6 +391,12 @@ class EcoMDSimulator(nn.Module):
             return None
         return self.regime_gru.init_h(self.device, torch.float32)
 
+    def init_agent_memory(self) -> Tensor | None:
+        """Initial per-agent memory. None when Tier 1.1 is disabled."""
+        if self.agent_memory is None:
+            return None
+        return self.agent_memory.init_h(self.cfg.n_agents, self.device, torch.float32)
+
     # ── Step ───────────────────────────────────────────────────────────────
 
     def step(
@@ -312,9 +408,11 @@ class EcoMDSimulator(nn.Module):
         generator: torch.Generator | None = None,
         create_graph: bool = True,
         h_regime: Tensor | None = None,
+        h_agent: Tensor | None = None,
         step_idx: int = 0,
-    ) -> tuple[Tensor, PriceState, dict[str, Tensor], Tensor | None]:
-        """Advance one step. Returns (s_next, price_state_next, record_dict, h_regime_next).
+    ) -> tuple[Tensor, PriceState, dict[str, Tensor], Tensor | None, Tensor | None]:
+        """Advance one step. Returns (s_next, price_state_next, record_dict,
+        h_regime_next, h_agent_next).
 
         v3 additions:
         - ``h_regime``: optional slow regime latent. If passed and
@@ -322,8 +420,26 @@ class EcoMDSimulator(nn.Module):
           Used by read-heads to modulate γ, T, and Hawkes excitation strength.
         - ``step_idx``: integer step counter inside the rollout. Drives the
           regime GRU's "slow update" cadence.
+
+        feature/arch-extensions:
+        - ``h_agent``: optional per-agent GRU memory of shape
+          (N, d_memory). Updated every ``agent_memory_update_every`` steps;
+          its mean-pool is appended to the external potential's context.
         """
-        context = torch.stack([price_state.log_price, price_state.volatility, price_state.last_log_return])
+        # Tier 1.1: update per-agent memory before computing forces so the
+        # current step's potential sees this step's memory readout.
+        h_agent_next = h_agent
+        if self.agent_memory is not None and h_agent is not None:
+            h_agent_next = self.agent_memory.maybe_step(
+                h_agent, step_idx, s,
+                price_state.last_log_return, price_state.volatility,
+            )
+
+        ctx_parts = [price_state.log_price, price_state.volatility, price_state.last_log_return]
+        context = torch.stack(ctx_parts)
+        if self.agent_memory is not None and h_agent_next is not None:
+            mem_global = self.agent_memory.read_global(h_agent_next)
+            context = torch.cat([context, mem_global], dim=0)
         f_cons = conservative_forces(self.potential, s, context, create_graph=create_graph)
         f_diss = dissipative_forces(self.dissipation, s, s_prev, create_graph=create_graph)
 
@@ -362,6 +478,15 @@ class EcoMDSimulator(nn.Module):
             gamma_eff = (base_gamma * gamma_mul_per_agent).unsqueeze(-1)
             T_eff = (base_T * T_mul_per_agent).unsqueeze(-1)
 
+        # Tier 2.2: build update_mask if multi-timescale enabled.
+        update_mask: Tensor | None = None
+        if self.cfg.multi_timescale_enabled and self.is_fast_agent is not None:
+            slow_should_update = (step_idx % max(1, self.cfg.timescale_slow_freq) == 0)
+            if slow_should_update:
+                update_mask = None  # everyone updates this step
+            else:
+                update_mask = self.is_fast_agent  # only fast agents
+
         step_out = self.integrator.step(
             s=s,
             f_cons=f_cons,
@@ -370,6 +495,8 @@ class EcoMDSimulator(nn.Module):
             gamma=gamma_eff,
             dt=self.cfg.dt,
             generator=generator,
+            update_mask=update_mask,
+            create_graph=create_graph,
         )
 
         price_step = self.price_formation.step(
@@ -391,7 +518,7 @@ class EcoMDSimulator(nn.Module):
             "volume": price_step.aux["volume"],
             "excess_demand": price_step.aux["excess_demand"],
         }
-        return step_out.s_next, price_step.state, record, h_regime_next
+        return step_out.s_next, price_step.state, record, h_regime_next, h_agent_next
 
     # ── Rollouts ───────────────────────────────────────────────────────────
 
@@ -401,6 +528,8 @@ class EcoMDSimulator(nn.Module):
         if isinstance(pairwise, MACELitePotential):
             pairwise.reset_graph_cache()
         elif isinstance(pairwise, StochasticPairwisePotential):
+            pairwise.reset_edge_cache()
+        elif isinstance(pairwise, ISABPairwisePotential):
             pairwise.reset_edge_cache()
 
     def rollout_chunk(
@@ -413,6 +542,7 @@ class EcoMDSimulator(nn.Module):
         generator: torch.Generator | None = None,
         create_graph: bool = True,
         h_regime: Tensor | None = None,
+        h_agent: Tensor | None = None,
     ) -> tuple[Tensor, PriceState, EcoMDTrajectory, Tensor | None]:
         """Differentiable chunk rollout — returns (s_final, price_state_final,
         traj, h_regime_final). ``h_regime_final`` is None when regime disabled.
@@ -434,6 +564,8 @@ class EcoMDSimulator(nn.Module):
         self._reset_potential_cache()
         if h_regime is None and self.regime_gru is not None:
             h_regime = self.init_regime()
+        if h_agent is None and self.agent_memory is not None:
+            h_agent = self.init_agent_memory()
         recorder = TrajectoryRecorder(dt=self.cfg.dt, meta={"n_steps": n_steps})
 
         K = int(self.cfg.bptt_checkpoint_every) if create_graph else 0
@@ -449,9 +581,9 @@ class EcoMDSimulator(nn.Module):
                 shape, device=s.device, dtype=dtype
             )
             for k in range(n_steps):
-                s_next, s_prev_next, price_state, h_regime, log_return = step_via_function(
+                s_next, s_prev_next, price_state, h_regime, h_agent, log_return = step_via_function(
                     self, s, s_prev, price_state,
-                    generator=generator, h_regime=h_regime, step_idx=k,
+                    generator=generator, h_regime=h_regime, h_agent=h_agent, step_idx=k,
                 )
                 # Recorder gets log_return live; aux channels detached
                 # placeholders to keep schema compatible with downstream code.
@@ -475,11 +607,12 @@ class EcoMDSimulator(nn.Module):
         if K <= 0:
             # Original (no-checkpoint) path
             for k in range(n_steps):
-                s_next, price_state, rec, h_regime = self.step(
+                s_next, price_state, rec, h_regime, h_agent = self.step(
                     s, s_prev, price_state,
                     generator=generator,
                     create_graph=create_graph,
                     h_regime=h_regime,
+                    h_agent=h_agent,
                     step_idx=k,
                 )
                 recorder.record(
@@ -501,10 +634,14 @@ class EcoMDSimulator(nn.Module):
         has_hawkes = price_state.hawkes_memory is not None
         has_hawkes_long = price_state.hawkes_memory_long is not None
         has_regime = h_regime is not None
-        # Placeholder zero tensor for h_regime when disabled (so we always
-        # pass tensors through checkpoint, never None).
+        has_agent = h_agent is not None
+        # Placeholder zero tensor for h_regime / h_agent when disabled (so we
+        # always pass tensors through checkpoint, never None).
         zero_h = torch.zeros((), device=s.device, dtype=s.dtype)
         h_reg_tensor = h_regime if has_regime else zero_h
+        zero_h_agent = torch.zeros((self.cfg.n_agents, self.cfg.agent_memory_d),
+                                   device=s.device, dtype=s.dtype)
+        h_agent_tensor = h_agent if has_agent else zero_h_agent
 
         # Reference to the simulator (avoid `self` capture issues when
         # defining the closure inside a loop body).
@@ -527,6 +664,7 @@ class EcoMDSimulator(nn.Module):
                 s_in, s_prev_in,
                 lp_in, llr_in, vol_in, hk_in, hkl_in,
                 h_reg_in,
+                h_agent_in,
                 # Closure-captured constants (bound at definition time):
                 _step_start=local_step_start,
                 _this_group=this_group,
@@ -535,6 +673,7 @@ class EcoMDSimulator(nn.Module):
                 _has_hawkes=has_hawkes,
                 _has_hawkes_long=has_hawkes_long,
                 _has_regime=has_regime,
+                _has_agent=has_agent,
                 _create_graph=create_graph,
                 _sim=sim_self,
             ):
@@ -551,6 +690,7 @@ class EcoMDSimulator(nn.Module):
                     has_hawkes_long=_has_hawkes_long,
                 )
                 h_reg_local = h_reg_in if _has_regime else None
+                h_agent_local = h_agent_in if _has_agent else None
 
                 states_list: list[Tensor] = []
                 f_cons_list: list[Tensor] = []
@@ -566,10 +706,11 @@ class EcoMDSimulator(nn.Module):
                 s_prev_local = s_prev_in
 
                 for k in range(_this_group):
-                    s_next, ps_local, rec, h_reg_local = _sim.step(
+                    s_next, ps_local, rec, h_reg_local, h_agent_local = _sim.step(
                         s_local, s_prev_local, ps_local,
                         generator=_gen, create_graph=_create_graph,
-                        h_regime=h_reg_local, step_idx=_step_start + k,
+                        h_regime=h_reg_local, h_agent=h_agent_local,
+                        step_idx=_step_start + k,
                     )
                     states_list.append(rec["s"])
                     f_cons_list.append(rec["f_cons"])
@@ -586,11 +727,15 @@ class EcoMDSimulator(nn.Module):
                 ps_t = ps_local.to_tensors()
                 h_reg_out = h_reg_local if (_has_regime and h_reg_local is not None) \
                     else torch.zeros((), device=s_local.device, dtype=s_local.dtype)
+                h_agent_out = h_agent_local if (_has_agent and h_agent_local is not None) \
+                    else torch.zeros((sim_self.cfg.n_agents, sim_self.cfg.agent_memory_d),
+                                     device=s_local.device, dtype=s_local.dtype)
 
                 return (
                     s_local, s_prev_local,
                     ps_t[0], ps_t[1], ps_t[2], ps_t[3], ps_t[4],
                     h_reg_out,
+                    h_agent_out,
                     torch.stack(states_list),
                     torch.stack(f_cons_list),
                     torch.stack(f_diss_list),
@@ -608,12 +753,14 @@ class EcoMDSimulator(nn.Module):
                 s, s_prev,
                 ps_in_t[0], ps_in_t[1], ps_in_t[2], ps_in_t[3], ps_in_t[4],
                 h_reg_tensor,
+                h_agent_tensor,
                 use_reentrant=False,
             )
 
             (s, s_prev,
              lp_out, llr_out, vol_out, hk_out, hkl_out,
              h_reg_tensor,
+             h_agent_tensor,
              states_stack, f_cons_stack, f_diss_stack, f_stoch_stack,
              velocities_stack, log_prices_stack, log_returns_stack,
              volumes_stack, excess_demand_stack) = outputs
@@ -627,6 +774,9 @@ class EcoMDSimulator(nn.Module):
             if has_regime:
                 h_regime = h_reg_tensor
             # else: h_regime stays None
+            if has_agent:
+                h_agent = h_agent_tensor
+            # else: h_agent stays None
 
             # Append this group's K stacked records into the global recorder.
             for k in range(this_group):
@@ -665,6 +815,7 @@ class EcoMDSimulator(nn.Module):
         s_prev = s.detach().clone()
         price_state = self.init_price()
         h_regime = self.init_regime()
+        h_agent = self.init_agent_memory()
 
         self._reset_potential_cache()
         recorder = TrajectoryRecorder(
@@ -673,11 +824,12 @@ class EcoMDSimulator(nn.Module):
                   "n_agents": self.cfg.n_agents, "d_state": self.cfg.d_state},
         )
         for k in range(n_steps):
-            s_next, price_state, rec, h_regime = self.step(
+            s_next, price_state, rec, h_regime, h_agent = self.step(
                 s, s_prev, price_state,
                 generator=generator,
                 create_graph=False,
                 h_regime=h_regime,
+                h_agent=h_agent,
                 step_idx=k,
             )
             recorder.record(

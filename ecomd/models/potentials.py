@@ -129,22 +129,68 @@ class StochasticPairwisePotential(nn.Module):
         hidden: int = 64,
         k_random: int = 50,
         resample_per_step: bool = True,
+        type_aware_heads: bool = False,
+        type_idx: Tensor | None = None,
+        n_types: int = 4,
+        pair_features_extra: str = "none",
     ) -> None:
         super().__init__()
         self.d = d
         self.k_random = k_random
         self.resample_per_step = resample_per_step
-        self.net = nn.Sequential(
-            nn.Linear(3 * d, hidden),
-            nn.SiLU(),
-            nn.Linear(hidden, hidden),
-            nn.SiLU(),
-            nn.Linear(hidden, 1),
-        )
-        for m in self.net.modules():
-            if isinstance(m, nn.Linear):
-                nn.init.xavier_uniform_(m.weight, gain=0.5)
-                nn.init.zeros_(m.bias)
+        # Tier 1.3: pair features extra
+        if pair_features_extra not in ("none", "distance", "inner_prod", "signed_diff", "all"):
+            raise ValueError(
+                f"pair_features_extra must be one of "
+                f"'none'|'distance'|'inner_prod'|'signed_diff'|'all', "
+                f"got {pair_features_extra!r}"
+            )
+        self.pair_features_extra = pair_features_extra
+        # base input is concat(s_i, s_j, |Δs|) → 3d. Adjust per extra-feature mode.
+        # Note: "signed_diff" REPLACES |Δs| with Δs, so dim stays 3d.
+        # "distance" adds 1 scalar; "inner_prod" adds 1 scalar; "all" adds 2 + signed_diff (no extra dim).
+        in_dim = 3 * d
+        if pair_features_extra in ("distance", "all"):
+            in_dim += 1
+        if pair_features_extra in ("inner_prod", "all"):
+            in_dim += 1
+
+        # Tier 1.2: type-aware heads. Shared backbone (all but last layer);
+        # per-(src-type, dst-type) last linear → K² heads.
+        self.type_aware_heads = type_aware_heads
+        if type_aware_heads:
+            assert type_idx is not None, "type_aware_heads=True requires type_idx"
+            self.n_types = int(n_types)
+            self.register_buffer("type_idx", type_idx.to(torch.long), persistent=False)
+            self.backbone = nn.Sequential(
+                nn.Linear(in_dim, hidden),
+                nn.SiLU(),
+                nn.Linear(hidden, hidden),
+                nn.SiLU(),
+            )
+            # K² parallel last-layer heads, parameterised as (K², hidden) + (K²,)
+            K2 = self.n_types * self.n_types
+            self.head_w = nn.Parameter(torch.empty(K2, hidden))
+            self.head_b = nn.Parameter(torch.zeros(K2))
+            nn.init.xavier_uniform_(self.head_w, gain=0.5)
+            for m in self.backbone.modules():
+                if isinstance(m, nn.Linear):
+                    nn.init.xavier_uniform_(m.weight, gain=0.5)
+                    nn.init.zeros_(m.bias)
+        else:
+            self.n_types = 0
+            self.type_idx = None
+            self.net = nn.Sequential(
+                nn.Linear(in_dim, hidden),
+                nn.SiLU(),
+                nn.Linear(hidden, hidden),
+                nn.SiLU(),
+                nn.Linear(hidden, 1),
+            )
+            for m in self.net.modules():
+                if isinstance(m, nn.Linear):
+                    nn.init.xavier_uniform_(m.weight, gain=0.5)
+                    nn.init.zeros_(m.bias)
         # Cache for non-resampling mode
         self._cached_edges: Tensor | None = None
 
@@ -167,6 +213,54 @@ class StochasticPairwisePotential(nn.Module):
         dst = idx.reshape(-1)
         return torch.stack([src, dst], dim=0)
 
+    def _build_pair_inputs(
+        self,
+        s_i: Tensor,
+        s_j: Tensor,
+    ) -> tuple[Tensor, Tensor]:
+        """Return (inp_ij, inp_ji) per pair-feature mode."""
+        if self.pair_features_extra in ("none", "distance", "inner_prod"):
+            base_diff = (s_i - s_j).abs()
+        else:  # "signed_diff" or "all"
+            base_diff = (s_i - s_j)
+
+        parts_ij = [s_i, s_j, base_diff]
+        parts_ji = [s_j, s_i, base_diff if self.pair_features_extra == "none" else
+                    -base_diff if self.pair_features_extra in ("signed_diff", "all")
+                    else base_diff]
+
+        if self.pair_features_extra in ("distance", "all"):
+            dist = (s_i - s_j).norm(dim=-1, keepdim=True)            # (E, 1)
+            parts_ij.append(dist)
+            parts_ji.append(dist)
+        if self.pair_features_extra in ("inner_prod", "all"):
+            inner = (s_i * s_j).sum(dim=-1, keepdim=True)            # (E, 1)
+            parts_ij.append(inner)
+            parts_ji.append(inner)
+
+        return torch.cat(parts_ij, dim=-1), torch.cat(parts_ji, dim=-1)
+
+    def _eval_kernel(self, inp_ij: Tensor, inp_ji: Tensor, src: Tensor, dst: Tensor) -> Tensor:
+        """φ(s_i, s_j) (symmetrized). Type-aware when enabled."""
+        if not self.type_aware_heads:
+            phi_ij = self.net(inp_ij).squeeze(-1)
+            phi_ji = self.net(inp_ji).squeeze(-1)
+            return 0.5 * (phi_ij + phi_ji)
+        # Type-aware: route each edge to its (type_src, type_dst) head.
+        h_ij = self.backbone(inp_ij)                             # (E, hidden)
+        h_ji = self.backbone(inp_ji)
+        t_src = self.type_idx[src]                               # (E,)
+        t_dst = self.type_idx[dst]
+        head_idx_ij = (t_src * self.n_types + t_dst).clamp_(0, self.n_types ** 2 - 1)
+        head_idx_ji = (t_dst * self.n_types + t_src).clamp_(0, self.n_types ** 2 - 1)
+        w_ij = self.head_w[head_idx_ij]                          # (E, hidden)
+        w_ji = self.head_w[head_idx_ji]
+        b_ij = self.head_b[head_idx_ij]                          # (E,)
+        b_ji = self.head_b[head_idx_ji]
+        phi_ij = (h_ij * w_ij).sum(dim=-1) + b_ij                # (E,)
+        phi_ji = (h_ji * w_ji).sum(dim=-1) + b_ji
+        return 0.5 * (phi_ij + phi_ji)
+
     def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
         del context
         n, d = s.shape
@@ -179,17 +273,12 @@ class StochasticPairwisePotential(nn.Module):
         else:
             edges = self._cached_edges
         src, dst = edges[0], edges[1]                           # (E,)
-        E = src.shape[0]
 
         s_i = s[src]                                            # (E, d)
         s_j = s[dst]                                            # (E, d)
-        diff = (s_i - s_j).abs()
 
-        inp_ij = torch.cat([s_i, s_j, diff], dim=-1)
-        inp_ji = torch.cat([s_j, s_i, diff], dim=-1)
-        phi_ij = self.net(inp_ij).squeeze(-1)
-        phi_ji = self.net(inp_ji).squeeze(-1)
-        phi = 0.5 * (phi_ij + phi_ji)                           # (E,)
+        inp_ij, inp_ji = self._build_pair_inputs(s_i, s_j)
+        phi = self._eval_kernel(inp_ij, inp_ji, src, dst)       # (E,)
 
         # Rescale to estimate the full sum over N·(N-1)/2 unique pairs.
         # Each agent contributes k random partners → N·k ordered edges, but
