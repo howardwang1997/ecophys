@@ -134,12 +134,19 @@ class StochasticPairwisePotential(nn.Module):
         n_types: int = 4,
         pair_features_extra: str = "none",
         d_global_in: int = 0,
+        edge_gating: bool = False,
+        gate_init_p: float = 0.7,
+        gate_input_u: bool = True,
     ) -> None:
         super().__init__()
         self.d = d
         self.k_random = k_random
         self.resample_per_step = resample_per_step
         self.d_global_in = int(d_global_in)
+        # Tier 4.2: dynamic graph via learned soft gate on each random edge.
+        self.edge_gating = bool(edge_gating)
+        self.gate_init_p = float(gate_init_p)
+        self.gate_input_u = bool(gate_input_u)
         # Tier 1.3: pair features extra
         if pair_features_extra not in ("none", "distance", "inner_prod", "signed_diff", "all"):
             raise ValueError(
@@ -197,6 +204,28 @@ class StochasticPairwisePotential(nn.Module):
                     nn.init.zeros_(m.bias)
         # Cache for non-resampling mode
         self._cached_edges: Tensor | None = None
+
+        # Tier 4.2: gate MLP. Input is (s_i, s_j, |Δs|) plus optional u.
+        # Output is a per-edge logit; we sigmoid + rescale by 1/gate_init_p
+        # so E[w·phi] ≈ E[phi] at init (initial bias makes sigmoid ≈ p).
+        if self.edge_gating:
+            gate_in_dim = 3 * d
+            if self.gate_input_u and self.d_global_in > 0:
+                gate_in_dim += self.d_global_in
+            self.gate_mlp = nn.Sequential(
+                nn.Linear(gate_in_dim, hidden),
+                nn.SiLU(),
+                nn.Linear(hidden, 1),
+            )
+            for m in self.gate_mlp.modules():
+                if isinstance(m, nn.Linear):
+                    nn.init.xavier_uniform_(m.weight, gain=0.1)
+                    nn.init.zeros_(m.bias)
+            # Set output bias so sigmoid(b0) = gate_init_p initially.
+            import math as _math
+            p = max(min(self.gate_init_p, 0.99), 0.01)
+            b0 = _math.log(p / (1.0 - p))
+            self.gate_mlp[-1].bias.data.fill_(b0)
 
     def reset_edge_cache(self) -> None:
         self._cached_edges = None
@@ -294,12 +323,28 @@ class StochasticPairwisePotential(nn.Module):
         else:
             edges = self._cached_edges
         src, dst = edges[0], edges[1]                           # (E,)
+        E = src.shape[0]
 
         s_i = s[src]                                            # (E, d)
         s_j = s[dst]                                            # (E, d)
 
         inp_ij, inp_ji = self._build_pair_inputs(s_i, s_j, u=u)
         phi = self._eval_kernel(inp_ij, inp_ji, src, dst)       # (E,)
+
+        # Tier 4.2: per-edge soft gate, optionally regime-conditioned via u.
+        # The gate uses raw (s_i, s_j, |Δs|) features (independent of the
+        # pair_features_extra mode) so it's interpretable as "should this
+        # edge contribute to V at all?" rather than "with what kernel?".
+        if self.edge_gating:
+            gate_inp = torch.cat([s_i, s_j, (s_i - s_j).abs()], dim=-1)
+            if self.gate_input_u and self.d_global_in > 0 and u is not None:
+                gate_inp = torch.cat(
+                    [gate_inp, u.unsqueeze(0).expand(E, self.d_global_in)],
+                    dim=-1,
+                )
+            w = torch.sigmoid(self.gate_mlp(gate_inp)).squeeze(-1)   # (E,)
+            # Rescale by 1/gate_init_p so E[w·phi] ≈ E[phi] at init.
+            phi = phi * w / self.gate_init_p
 
         # Rescale to estimate the full sum over N·(N-1)/2 unique pairs.
         # Each agent contributes k random partners → N·k ordered edges, but
