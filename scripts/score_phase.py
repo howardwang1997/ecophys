@@ -100,6 +100,14 @@ def parse_label(label: str) -> dict:
             if tok.startswith("seed"):
                 out["seed"] = int(tok.removeprefix("seed"))
         return out
+    if parts[0] == "abl":
+        # abl_no_sprint2_seed3 → {phase: abl, cell: "no_sprint2", seed: 3}
+        # Last token is "seedN", everything between "abl" and "seed" is cell
+        seed_idx = next((i for i, t in enumerate(parts) if t.startswith("seed")), None)
+        if seed_idx is not None:
+            out["cell"] = "_".join(parts[1:seed_idx])
+            out["seed"] = int(parts[seed_idx].removeprefix("seed"))
+        return out
     if parts[0] == "ph":
         out["group"] = parts[1]
         for tok in parts[2:]:
@@ -180,6 +188,27 @@ def main() -> None:
                 delta_str = f"+{delta}" if (delta is not None and delta > 0) else (str(delta) if delta is not None else "—")
                 lines.append(f"| {seed} | {d_str} | {s_str} | {delta_str} |")
             lines.append("")
+
+    # Stacked-winner ablation (abl): group by cell, 10 seeds each
+    if any(r.get("phase") == "abl" for r in rows):
+        abl_groups: dict[str, list[int]] = defaultdict(list)
+        for r in rows:
+            if r.get("phase") == "abl" and r.get("score") is not None:
+                abl_groups[r.get("cell", "?")].append(r["score"])
+
+        lines.append("## Stacked-winner ablation — which knob breaks the stack?")
+        lines.append("Reference: stacked-full (035) mean 2.40/11. Look for cells")
+        lines.append("where mean RECOVERS to ≥ 4-5/11 — that knob is the saboteur.")
+        lines.append("")
+        lines.append("| cell | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append("|---|---:|---:|---|---:|")
+        for cell in sorted(abl_groups):
+            scores = abl_groups[cell]
+            m, lo, hi = bootstrap_ci(scores)
+            std = float(np.std(scores, ddof=1)) if len(scores) > 1 else 0.0
+            lines.append(f"| `{cell}` | {len(scores)} | **{m:.2f}** | "
+                         f"[{lo:.2f}, {hi:.2f}] | {std:.2f} |")
+        lines.append("")
 
     # Stacked winner (sw): single config × multiple seeds
     if any(r.get("phase") == "sw" for r in rows):
