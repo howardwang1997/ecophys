@@ -93,6 +93,13 @@ def parse_label(label: str) -> dict:
             if tok.startswith("seed"):
                 out["seed"] = int(tok.removeprefix("seed"))
         return out
+    if parts[0] == "sw":
+        # sw_stacked_seed3 → {phase: sw, variant: stacked, seed: 3}
+        out["variant"] = parts[1] if len(parts) > 1 else "default"
+        for tok in parts[1:]:
+            if tok.startswith("seed"):
+                out["seed"] = int(tok.removeprefix("seed"))
+        return out
     if parts[0] == "ph":
         out["group"] = parts[1]
         for tok in parts[2:]:
@@ -172,6 +179,30 @@ def main() -> None:
                 s_str = f"{s_val}/11" if s_val is not None else "—"
                 delta_str = f"+{delta}" if (delta is not None and delta > 0) else (str(delta) if delta is not None else "—")
                 lines.append(f"| {seed} | {d_str} | {s_str} | {delta_str} |")
+            lines.append("")
+
+    # Stacked winner (sw): single config × multiple seeds
+    if any(r.get("phase") == "sw" for r in rows):
+        sw_scores = [r["score"] for r in rows
+                     if r.get("phase") == "sw" and r.get("score") is not None]
+        if sw_scores:
+            m, lo, hi = bootstrap_ci(sw_scores)
+            std = float(np.std(sw_scores, ddof=1)) if len(sw_scores) > 1 else 0.0
+            lines.append("## Stacked winner — Sprint 2 + chunk=128 + hidden=96 + init=0.1")
+            lines.append(f"| n_seeds | mean n/11 | 95% CI | std |")
+            lines.append("|---:|---:|---|---:|")
+            lines.append(f"| {len(sw_scores)} | **{m:.2f}** | "
+                         f"[{lo:.2f}, {hi:.2f}] | {std:.2f} |")
+            lines.append("")
+
+            # Histogram
+            from collections import Counter
+            counter = Counter(sw_scores)
+            lines.append("### Distribution")
+            for s in range(0, 12):
+                n = counter.get(s, 0)
+                bar = "█" * n
+                lines.append(f"  {s}/11: {bar} ({n})")
             lines.append("")
 
     # Loss noise fix (pcfix): group by chunk
