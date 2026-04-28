@@ -33,11 +33,13 @@ DIRS=(
     "experiments/040_arch_tier_2_1_jumps"
     "experiments/042_arch_tier_3_1_isab"
     "experiments/045_arch_tier_4_1_megnet"
+    "experiments/047_arch_tier_4_2_dyngraph"
     "experiments/038_arch_tier_1_2_kernels"
     "experiments/039_arch_tier_1_3_features"
     "experiments/041_arch_tier_2_2_multitimescale"
     "experiments/043_arch_pairs"
     "experiments/046_arch_megnet_pairs"
+    "experiments/048_arch_dyngraph_pairs"
     "experiments/044_arch_all_stacked"
 )
 

@@ -167,6 +167,13 @@ class EcoMDConfig:
     global_state_d: int = 16
     global_state_update_every: int = 1
     global_state_into_pair: bool = True   # if False, u only feeds external
+    # Tier 4.2 — dynamic graph via learned soft edge gating on the SPS pool.
+    #   Only consumed when pairwise_kind == "stochastic_mlp". Each random
+    #   edge (i, j) is weighted by ``w_ij = σ(gate_mlp(s_i, s_j, |Δs|, u))``
+    #   and rescaled by 1/gate_init_p so E[w·phi] ≈ E[phi] at init.
+    edge_gating_enabled: bool = False
+    edge_gating_init_p: float = 0.7
+    edge_gating_input_u: bool = True   # if False, gate ignores u even when 4.1 active
     # Custom autograd.Function-based per-step BPTT (Sprint 2, 2026-04-27):
     # When True, replaces ``rollout_chunk``'s standard ``sim.step()`` call
     # with ``EcoMDStepFunction.apply()``. Each step runs forward in
@@ -242,6 +249,9 @@ class EcoMDSimulator(nn.Module):
                 n_types=K_types,
                 pair_features_extra=self.cfg.pair_features_extra,
                 d_global_in=d_global_in_pair,
+                edge_gating=self.cfg.edge_gating_enabled,
+                gate_init_p=self.cfg.edge_gating_init_p,
+                gate_input_u=self.cfg.edge_gating_input_u,
             )
         elif self.cfg.pairwise_kind == "isab":
             pairwise = ISABPairwisePotential(

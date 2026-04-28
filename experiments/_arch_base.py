@@ -135,6 +135,30 @@ TIER_OVERRIDES: dict[str, dict] = {
             "global_state_into_pair": False,
         },
     },
+    "tier_4_2_dyngraph_no_u": {
+        # Soft per-edge gating WITHOUT regime conditioning — the gate sees
+        # only (s_i, s_j, |Δs|). Tests whether topology dynamics alone
+        # (independent of u) help.
+        "simulator": {
+            "edge_gating_enabled": True,
+            "edge_gating_init_p": 0.7,
+            "edge_gating_input_u": False,
+        },
+    },
+    "tier_4_2_dyngraph": {
+        # The "full" dynamic graph: gate sees u (regime-conditioned), AND
+        # u also feeds the pair kernel via Tier 4.1. Tests the topology +
+        # phase coupling hypothesis end-to-end.
+        "simulator": {
+            "edge_gating_enabled": True,
+            "edge_gating_init_p": 0.7,
+            "edge_gating_input_u": True,
+            "global_state_enabled": True,
+            "global_state_d": 16,
+            "global_state_update_every": 1,
+            "global_state_into_pair": True,
+        },
+    },
 }
 
 
