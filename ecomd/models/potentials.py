@@ -133,11 +133,13 @@ class StochasticPairwisePotential(nn.Module):
         type_idx: Tensor | None = None,
         n_types: int = 4,
         pair_features_extra: str = "none",
+        d_global_in: int = 0,
     ) -> None:
         super().__init__()
         self.d = d
         self.k_random = k_random
         self.resample_per_step = resample_per_step
+        self.d_global_in = int(d_global_in)
         # Tier 1.3: pair features extra
         if pair_features_extra not in ("none", "distance", "inner_prod", "signed_diff", "all"):
             raise ValueError(
@@ -149,11 +151,13 @@ class StochasticPairwisePotential(nn.Module):
         # base input is concat(s_i, s_j, |Δs|) → 3d. Adjust per extra-feature mode.
         # Note: "signed_diff" REPLACES |Δs| with Δs, so dim stays 3d.
         # "distance" adds 1 scalar; "inner_prod" adds 1 scalar; "all" adds 2 + signed_diff (no extra dim).
+        # Tier 4.1: optionally append a broadcast global-state vector u (d_global_in).
         in_dim = 3 * d
         if pair_features_extra in ("distance", "all"):
             in_dim += 1
         if pair_features_extra in ("inner_prod", "all"):
             in_dim += 1
+        in_dim += self.d_global_in
 
         # Tier 1.2: type-aware heads. Shared backbone (all but last layer);
         # per-(src-type, dst-type) last linear → K² heads.
@@ -217,8 +221,13 @@ class StochasticPairwisePotential(nn.Module):
         self,
         s_i: Tensor,
         s_j: Tensor,
+        u: Tensor | None = None,
     ) -> tuple[Tensor, Tensor]:
-        """Return (inp_ij, inp_ji) per pair-feature mode."""
+        """Return (inp_ij, inp_ji) per pair-feature mode.
+
+        ``u``: optional broadcast global-state vector of shape (d_global_in,).
+        When provided AND ``self.d_global_in > 0``, broadcast and concat.
+        """
         if self.pair_features_extra in ("none", "distance", "inner_prod"):
             base_diff = (s_i - s_j).abs()
         else:  # "signed_diff" or "all"
@@ -237,6 +246,15 @@ class StochasticPairwisePotential(nn.Module):
             inner = (s_i * s_j).sum(dim=-1, keepdim=True)            # (E, 1)
             parts_ij.append(inner)
             parts_ji.append(inner)
+
+        if self.d_global_in > 0:
+            E = s_i.shape[0]
+            if u is None:
+                u_b = torch.zeros((E, self.d_global_in), device=s_i.device, dtype=s_i.dtype)
+            else:
+                u_b = u.unsqueeze(0).expand(E, self.d_global_in)
+            parts_ij.append(u_b)
+            parts_ji.append(u_b)
 
         return torch.cat(parts_ij, dim=-1), torch.cat(parts_ji, dim=-1)
 
@@ -262,7 +280,10 @@ class StochasticPairwisePotential(nn.Module):
         return 0.5 * (phi_ij + phi_ji)
 
     def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
-        del context
+        # Tier 4.1: when d_global_in>0, the simulator passes the global state
+        # vector u via the ``context`` channel (1-D, length d_global_in). When
+        # d_global_in==0 we ignore context as before.
+        u = context if (self.d_global_in > 0 and context is not None) else None
         n, d = s.shape
         assert d == self.d, f"expected last dim {self.d}, got {d}"
 
@@ -277,7 +298,7 @@ class StochasticPairwisePotential(nn.Module):
         s_i = s[src]                                            # (E, d)
         s_j = s[dst]                                            # (E, d)
 
-        inp_ij, inp_ji = self._build_pair_inputs(s_i, s_j)
+        inp_ij, inp_ji = self._build_pair_inputs(s_i, s_j, u=u)
         phi = self._eval_kernel(inp_ij, inp_ji, src, dst)       # (E,)
 
         # Rescale to estimate the full sum over N·(N-1)/2 unique pairs.
@@ -371,8 +392,19 @@ class ConservativePotential(nn.Module):
         self.pairwise = pairwise
         self.external = external
 
-    def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
-        return self.pairwise(s) + self.external(s, context)
+    def forward(
+        self,
+        s: Tensor,
+        context: Tensor | None = None,
+        u_global: Tensor | None = None,
+    ) -> Tensor:
+        # External potential gets the price (+ optional agent-pool) context.
+        # Pairwise potential gets the global state u (Tier 4.1) when set —
+        # we pass u via the pairwise's own context channel since pairwise
+        # has its own d_global_in flag controlling whether it's consumed.
+        v_pair = self.pairwise(s, context=u_global)
+        v_ext = self.external(s, context)
+        return v_pair + v_ext
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -386,13 +418,17 @@ def conservative_forces(
     context: Tensor | None = None,
     *,
     create_graph: bool = True,
+    u_global: Tensor | None = None,
 ) -> Tensor:
-    """F_cons = -∇_s V_cons(s, context). Shape (N, d)."""
-    # Force extraction needs autograd even during inference — temporarily enable.
+    """F_cons = -∇_s V_cons(s, context, u_global). Shape (N, d).
+
+    ``u_global`` is the Tier 4.1 MEGNet-style global state. When None,
+    the pairwise potential receives no global vector (back-compat).
+    """
     with torch.enable_grad():
         if not s.requires_grad:
             s = s.detach().requires_grad_(True)
-        u = potential(s, context)
+        u = potential(s, context, u_global=u_global)
         (grad_s,) = torch.autograd.grad(u, s, create_graph=create_graph)
     return -grad_s
 
