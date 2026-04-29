@@ -1,3 +1,4 @@
+- [Tier 4.2 dynamic-graph breakthrough](project_arch_breakthrough.md) — 2026-04-29: gate-without-u at mean 6.10/11, top 9/11, breaks orthogonal-basin ceiling. u HURTS gate. LayerNorm load-bearing.
 - [User role](user_role.md) — independent full-time researcher, 6–18 mo, **8×H20 NVLink long-term**, cheap-data preference ($50k budget), Mac+R2+GitHub+H20 workflow
 - [Project overview](project_overview.md) — EcoPhys/EcoMD: differentiable physics-inspired market simulator; C1/C2/C3 pillars; **plan v3 + Path C: Paper B → Nature Physics flagship, 15–22% joint probability, $8–12k high-freq data commitment, 58-week timeline**
 - [Pre-registration clauses](feedback_preregistration.md) — 3 rigor clauses user accepted 2026-04-24 (surrogate kill, sanity-check cascade, arXiv pre-registration); binding for Paper B
