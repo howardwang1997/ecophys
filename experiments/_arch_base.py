@@ -90,6 +90,10 @@ TIER_OVERRIDES: dict[str, dict] = {
     "tier_1_3_features_all": {
         "simulator": {
             "pair_features_extra": "all",
+            # REQUIRED: without LN, 4000-step inference rollout NaNs
+            # because the trained pair MLP extrapolates badly to large
+            # state magnitudes. See potentials.py docstring.
+            "pair_input_layernorm": True,
         },
     },
     "tier_2_1_jumps": {
@@ -138,11 +142,13 @@ TIER_OVERRIDES: dict[str, dict] = {
     "tier_4_2_dyngraph_no_u": {
         # Soft per-edge gating WITHOUT regime conditioning — the gate sees
         # only (s_i, s_j, |Δs|). Tests whether topology dynamics alone
-        # (independent of u) help.
+        # (independent of u) help. LayerNorm on the gate input keeps it
+        # stable through long inference rollouts.
         "simulator": {
             "edge_gating_enabled": True,
             "edge_gating_init_p": 0.7,
             "edge_gating_input_u": False,
+            "pair_input_layernorm": True,
         },
     },
     "tier_4_2_dyngraph": {
@@ -157,6 +163,7 @@ TIER_OVERRIDES: dict[str, dict] = {
             "global_state_d": 16,
             "global_state_update_every": 1,
             "global_state_into_pair": True,
+            "pair_input_layernorm": True,
         },
     },
 }
