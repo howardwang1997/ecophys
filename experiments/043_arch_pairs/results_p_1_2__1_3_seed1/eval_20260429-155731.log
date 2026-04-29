@@ -1,0 +1,77 @@
+2026-04-29 16:37:16,398 INFO inference_run_large [dist] world_size=1 cuda=True
+2026-04-29 16:37:17,228 INFO inference_run_large loaded checkpoint iter=200 from /AI4S/Users/howardwang/h204/ecophys/experiments/043_arch_pairs/results_p_1_2__1_3_seed1/checkpoint.pt
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/inference/run_large.py", line 167, in <module>
+    main()
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/inference/run_large.py", line 103, in main
+    traj = sim.run(n_steps=args.n_steps, seed=seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/models/ecomd.py", line 941, in run
+    s_next, price_state, rec, h_regime, h_agent, h_global = self.step(
+                                                            ^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/models/ecomd.py", line 528, in step
+    f_cons = conservative_forces(
+             ^^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/models/potentials.py", line 518, in conservative_forces
+    u = potential(s, context, u_global=u_global)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/models/potentials.py", line 492, in forward
+    v_pair = self.pairwise(s, context=u_global)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/models/potentials.py", line 372, in forward
+    phi = self._eval_kernel(inp_ij, inp_ji, src, dst)       # (E,)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/models/potentials.py", line 347, in _eval_kernel
+    phi_ij = (h_ij * w_ij).sum(dim=-1) + b_ij                # (E,)
+              ~~~~~^~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 184.00 MiB. GPU 0 has a total capacity of 95.08 GiB of which 174.31 MiB is free. Process 1244919 has 75.09 GiB memory in use. Including non-PyTorch memory, this process has 19.81 GiB memory in use. Of the allocated memory 18.89 GiB is allocated by PyTorch, and 439.77 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+E0429 16:39:35.718000 1252923 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 0 (pid: 1253210) of binary: /root/miniconda3/envs/ecophys/bin/python3.12
+Traceback (most recent call last):
+  File "/root/miniconda3/envs/ecophys/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/run.py", line 918, in main
+    run(args)
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+ecomd.inference.run_large FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-04-29_16:39:35
+  host      : nb-755846ce0e46404ee8-5cfd549bf-wxkpg
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 1253210)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
