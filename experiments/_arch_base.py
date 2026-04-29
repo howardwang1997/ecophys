@@ -90,6 +90,9 @@ TIER_OVERRIDES: dict[str, dict] = {
     "tier_1_3_features_all": {
         "simulator": {
             "pair_features_extra": "all",
+            # REQUIRED to avoid 4000-step inference rollout NaN — see
+            # potentials.py docstring + 2026-04-29 NaN diagnosis.
+            "pair_input_layernorm": True,
         },
     },
     "tier_2_1_jumps": {

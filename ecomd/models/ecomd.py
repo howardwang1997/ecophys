@@ -139,6 +139,12 @@ class EcoMDConfig:
     #   "distance" appends ||Δs||, "inner_prod" appends ⟨s_i, s_j⟩,
     #   "signed_diff" replaces |Δs| with Δs (asymmetric), "all" combines.
     pair_features_extra: str = "none"
+    # Pair-MLP input LayerNorm — REQUIRED for stable inference rollouts when
+    # using pair_features_extra='all' or extra-feature variants. Without it
+    # the trained pair MLP overfits to the small-state training distribution
+    # and extrapolates badly during 4000-step inference → forces explode →
+    # NaN (observed 2026-04-29 in 039 all 10 seeds).
+    pair_input_layernorm: bool = False
     # Tier 2.1 — Compound-Poisson jumps. Training mode uses a tanh-coupled
     #   drift correction; inference mode samples discrete jumps. Both
     #   zero ⇒ no-op. Hypothesis: helps hill, gain_loss, autocorr.
@@ -221,6 +227,7 @@ class EcoMDSimulator(nn.Module):
                 type_idx=type_idx_buf,
                 n_types=K_types,
                 pair_features_extra=self.cfg.pair_features_extra,
+                input_layernorm=self.cfg.pair_input_layernorm,
             )
         elif self.cfg.pairwise_kind == "isab":
             pairwise = ISABPairwisePotential(
