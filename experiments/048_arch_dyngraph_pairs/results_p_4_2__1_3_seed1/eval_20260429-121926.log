@@ -1,0 +1,49 @@
+2026-04-29 12:30:47,584 INFO inference_run_large [dist] world_size=1 cuda=True
+2026-04-29 12:30:49,171 INFO inference_run_large loaded checkpoint iter=200 from /AI4S/Users/howardwang/h204/ecophys/experiments/048_arch_dyngraph_pairs/results_p_4_2__1_3_seed1/checkpoint.pt
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/inference/run_large.py", line 167, in <module>
+    main()
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/inference/run_large.py", line 107, in main
+    facts = compute_all(returns, volume=volumes)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/eval/stylized_facts.py", line 715, in compute_all
+    r = _clean(returns)
+        ^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h204/ecophys/ecomd/eval/stylized_facts.py", line 757, in _clean
+    raise ValueError("empty array after NaN removal")
+ValueError: empty array after NaN removal
+E0429 12:31:54.425000 955299 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 0 (pid: 956045) of binary: /root/miniconda3/envs/ecophys/bin/python3.12
+Traceback (most recent call last):
+  File "/root/miniconda3/envs/ecophys/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/run.py", line 918, in main
+    run(args)
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+ecomd.inference.run_large FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-04-29_12:31:54
+  host      : nb-755846ce0e46404ee8-5cfd549bf-wxkpg
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 956045)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
