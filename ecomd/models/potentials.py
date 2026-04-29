@@ -268,11 +268,19 @@ class StochasticPairwisePotential(nn.Module):
                     else base_diff]
 
         if self.pair_features_extra in ("distance", "all"):
-            dist = (s_i - s_j).norm(dim=-1, keepdim=True)            # (E, 1)
+            # Per-element scale (1/sqrt(d)) so dist stays O(1) regardless of
+            # state dimension, matching the magnitude of s_i / s_j elements.
+            # Without this, ||Δs|| grows as √d and dominates the MLP input
+            # as state magnitudes increase during training — caused 039 NaN
+            # (Tier 1.3 ``pair_features_extra='all'``, observed 2026-04-29:
+            # all 10 seeds OOM'd loss to NaN late in training).
+            dist = (s_i - s_j).norm(dim=-1, keepdim=True) * (self.d ** -0.5)
             parts_ij.append(dist)
             parts_ji.append(dist)
         if self.pair_features_extra in ("inner_prod", "all"):
-            inner = (s_i * s_j).sum(dim=-1, keepdim=True)            # (E, 1)
+            # Per-element scale (1/d) — raw inner product is O(d) and was
+            # the dominant NaN driver in 039.
+            inner = (s_i * s_j).sum(dim=-1, keepdim=True) * (1.0 / self.d)
             parts_ij.append(inner)
             parts_ji.append(inner)
 
