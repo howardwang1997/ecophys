@@ -137,6 +137,7 @@ class StochasticPairwisePotential(nn.Module):
         edge_gating: bool = False,
         gate_init_p: float = 0.7,
         gate_input_u: bool = True,
+        input_layernorm: bool = False,
     ) -> None:
         super().__init__()
         self.d = d
@@ -147,6 +148,16 @@ class StochasticPairwisePotential(nn.Module):
         self.edge_gating = bool(edge_gating)
         self.gate_init_p = float(gate_init_p)
         self.gate_input_u = bool(gate_input_u)
+        # Inference-stability fix (2026-04-29): when pair_features_extra is
+        # "all" or "inner_prod" the per-pair MLP input contains terms that
+        # scale with state magnitude. Training stays in the init regime
+        # (state ~ 0.1) but the 4000-step inference rollout drifts state
+        # out of distribution → MLP extrapolates → forces explode → NaN.
+        # Applying LayerNorm to the pair input makes the MLP scale-
+        # invariant: regardless of state magnitude, the MLP sees a
+        # standardised input. Off by default (preserves baseline
+        # equivalence); turned on for the modes where it's needed.
+        self.input_layernorm = bool(input_layernorm)
         # Tier 1.3: pair features extra
         if pair_features_extra not in ("none", "distance", "inner_prod", "signed_diff", "all"):
             raise ValueError(
@@ -165,6 +176,11 @@ class StochasticPairwisePotential(nn.Module):
         if pair_features_extra in ("inner_prod", "all"):
             in_dim += 1
         in_dim += self.d_global_in
+        # Build the LayerNorm now (in_dim is final).
+        if self.input_layernorm:
+            self.pair_input_ln = nn.LayerNorm(in_dim)
+        else:
+            self.pair_input_ln = None
 
         # Tier 1.2: type-aware heads. Shared backbone (all but last layer);
         # per-(src-type, dst-type) last linear → K² heads.
@@ -226,6 +242,14 @@ class StochasticPairwisePotential(nn.Module):
             p = max(min(self.gate_init_p, 0.99), 0.01)
             b0 = _math.log(p / (1.0 - p))
             self.gate_mlp[-1].bias.data.fill_(b0)
+            # Same scale-invariance fix for the gate MLP input when
+            # input_layernorm flag is on.
+            if self.input_layernorm:
+                self.gate_input_ln = nn.LayerNorm(gate_in_dim)
+            else:
+                self.gate_input_ln = None
+        else:
+            self.gate_input_ln = None
 
     def reset_edge_cache(self) -> None:
         self._cached_edges = None
@@ -297,6 +321,14 @@ class StochasticPairwisePotential(nn.Module):
 
     def _eval_kernel(self, inp_ij: Tensor, inp_ji: Tensor, src: Tensor, dst: Tensor) -> Tensor:
         """φ(s_i, s_j) (symmetrized). Type-aware when enabled."""
+        # Optional input LayerNorm: makes the pair MLP scale-invariant in
+        # state magnitude. Critical for ``pair_features_extra='all'`` whose
+        # raw inputs (signed_diff component, etc.) scale linearly with
+        # state — without LN, the MLP extrapolates badly during long
+        # inference rollouts and forces explode.
+        if self.pair_input_ln is not None:
+            inp_ij = self.pair_input_ln(inp_ij)
+            inp_ji = self.pair_input_ln(inp_ji)
         if not self.type_aware_heads:
             phi_ij = self.net(inp_ij).squeeze(-1)
             phi_ji = self.net(inp_ji).squeeze(-1)
@@ -350,6 +382,8 @@ class StochasticPairwisePotential(nn.Module):
                     [gate_inp, u.unsqueeze(0).expand(E, self.d_global_in)],
                     dim=-1,
                 )
+            if self.gate_input_ln is not None:
+                gate_inp = self.gate_input_ln(gate_inp)
             w = torch.sigmoid(self.gate_mlp(gate_inp)).squeeze(-1)   # (E,)
             # Rescale by 1/gate_init_p so E[w·phi] ≈ E[phi] at init.
             phi = phi * w / self.gate_init_p
