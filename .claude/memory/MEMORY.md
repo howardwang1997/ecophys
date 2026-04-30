@@ -1,3 +1,6 @@
+- [Arch state 2026-04-30](project_arch_state_2026-04-30.md) — current best `p_4_2__2_1` (gate + u + jumps): 35-seed mean **5.40/11** [4.86, 5.97], peak 10/11. Lottery-shaped, not robust improvement
+- [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 5-seed inflates ~30% twice now (047→049, 048→052)
+- [Chunk OOM constraint](project_chunk_oom_constraint.md) — full 4.2 arch + N=10K, chunk>24 OOMs single-card; 8 cards = DDP not tensor-parallel; bf16 / N reduction / rollout-reg are the levers
 - [User role](user_role.md) — independent full-time researcher, 6–18 mo, **8×H20 NVLink long-term**, cheap-data preference ($50k budget), Mac+R2+GitHub+H20 workflow
 - [Project overview](project_overview.md) — EcoPhys/EcoMD: differentiable physics-inspired market simulator; C1/C2/C3 pillars; **plan v3 + Path C: Paper B → Nature Physics flagship, 15–22% joint probability, $8–12k high-freq data commitment, 58-week timeline**
 - [Pre-registration clauses](feedback_preregistration.md) — 3 rigor clauses user accepted 2026-04-24 (surrogate kill, sanity-check cascade, arXiv pre-registration); binding for Paper B
