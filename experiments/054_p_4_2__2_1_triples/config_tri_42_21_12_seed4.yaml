@@ -1,0 +1,79 @@
+# Triple: 4.2 dyngraph + 2.1 jumps + 1.2 K² kernels, seed=4
+
+simulator:
+  n_agents: 10000
+  d_state: 32
+  hidden: 96
+  dt: 0.01
+  gamma_init: 1.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  lam_dissipation: 0.01
+  learn_gamma: true
+  learn_temperature: true
+  noise_dist: t
+  noise_df: 5
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: false
+    beta_hidden: 16
+    hawkes_alpha: 0.1
+    hawkes_kappa: 0.3
+  pairwise_kind: stochastic_mlp
+  sps_k_random: 50
+  sps_resample_per_step: true
+  twopop_enabled: true
+  twopop_gamma_scale:
+  - 0.7
+  - 1.5
+  - 1.0
+  - 0.5
+  twopop_temp_scale:
+  - 0.5
+  - 2.0
+  - 1.0
+  - 0.3
+  v2_type_seed: 42
+  bptt_checkpoint_every: 0
+  bptt_custom_function: true
+  edge_gating_enabled: true
+  edge_gating_init_p: 0.7
+  edge_gating_input_u: true
+  global_state_enabled: true
+  global_state_d: 16
+  global_state_update_every: 1
+  global_state_into_pair: true
+  pair_input_layernorm: true
+  jump_lambda: 0.5
+  jump_scale: 0.01
+  pair_heterogeneous_heads: true
+training:
+  n_iters: 200
+  chunk_steps: 24
+  warmup_steps: 16
+  persistent_state: true
+  lr: 0.001
+  lr_warmup_iters: 10
+  grad_clip_max_norm: 100.0
+  seed: 4
+  checkpoint_every_s: 1800
+  target_dataset: spx
+  target_period: 2015-2026_daily
+  loss_weights:
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    max_lag: 8
+    hill_k_frac: 0.05
+    w_autocorr_r: 0.5
+    w_hill_max: 0.3
+    hill_max_target: 10.0
+    loss_family: moments
+    distance_mode: l1
+    tail_estimator: soft_hill
+    balance_mode: fixed
