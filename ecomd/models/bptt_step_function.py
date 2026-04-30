@@ -81,6 +81,7 @@ class EcoMDStepFunction(torch.autograd.Function):
     """
 
     @staticmethod
+    @torch.amp.custom_fwd(device_type="cuda")
     def forward(
         ctx,
         sim,
@@ -176,6 +177,7 @@ class EcoMDStepFunction(torch.autograd.Function):
         )
 
     @staticmethod
+    @torch.amp.custom_bwd(device_type="cuda")
     def backward(ctx, *grad_outputs):
         # Unpack grads matching forward output order
         (g_s_next, g_s_prev_next, g_lp, g_llr, g_vol, g_hk, g_hkl,

@@ -275,6 +275,80 @@ def try_load_checkpoint(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Rollout regularization (057) — long-horizon SF supervision
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _compute_rollout_reg_loss(
+    sim: EcoMDSimulator,
+    targets_list: list[tuple[str, MomentTargets, float]],
+    weights: LossWeights,
+    gen: torch.Generator,
+    *,
+    steps: int,
+    chunk: int,
+    warmup_steps: int,
+    use_amp: bool,
+    amp_device_type: str,
+    amp_dtype: torch.dtype,
+) -> Tensor | None:
+    """Multi-chunk truncated-BPTT rollout from fresh init, with SF loss
+    computed on the concatenated returns. Each chunk's gradient flows to
+    params independently (state detached at boundary), so peak memory at
+    backward ≈ ONE chunk's V-graph — same as main training.
+
+    Returns the SF loss (already in fp32) or None if no usable returns.
+    """
+    s = sim.init_state(generator=gen)
+    s_prev = s.detach().clone()
+    price_state = sim.init_price()
+    h_regime = sim.init_regime()
+
+    all_returns: list[Tensor] = []
+    n_done = 0
+    while n_done < steps:
+        n_step = min(chunk, steps - n_done)
+        with torch.amp.autocast(device_type=amp_device_type, dtype=amp_dtype, enabled=use_amp):
+            s_new, price_state_new, traj, h_regime_new = sim.rollout_chunk(
+                s, s_prev, price_state,
+                n_steps=n_step, generator=gen, create_graph=True,
+                h_regime=h_regime,
+            )
+        # Skip warmup only at the very first chunk (state is fresh-init).
+        # Subsequent chunks have a state that's continuous from prior chunks.
+        if n_done == 0:
+            start = 1 + min(warmup_steps, max(0, n_step - 4))
+        else:
+            start = 1
+        if start < traj.log_returns.shape[0]:
+            all_returns.append(traj.log_returns[start:])
+        # Detach state at boundary — gradient barrier between chunks.
+        s = s_new.detach()
+        if n_step >= 2:
+            s_prev = traj.states[-2].detach()
+        else:
+            s_prev = s_new.detach()
+        # Detach price + regime states too
+        from .train import _detach_price
+        price_state = _detach_price(price_state_new)
+        h_regime = h_regime_new.detach() if h_regime_new is not None else None
+        n_done += n_step
+
+    if not all_returns:
+        return None
+    sim_returns = torch.cat(all_returns, dim=0)
+    if use_amp:
+        sim_returns = sim_returns.float()
+
+    total = None
+    for lbl, ts, w in targets_list:
+        out = moment_matching_loss(sim_returns, ts, weights)
+        term = w * out["total"]
+        total = term if total is None else (total + term)
+    return total
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Training loop (data-parallel)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -296,6 +370,8 @@ def train_distributed(
     world_size: int,
     checkpoint_path: Path | None,
     checkpoint_every_s: float,
+    mixed_precision: str = "fp32",
+    rollout_reg_cfg: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Each rank runs train_ecomd-style iterations with its own seed.
 
@@ -323,6 +399,15 @@ def train_distributed(
 
     device = sim.device
     optim = torch.optim.Adam(sim.parameters(), lr=lr)
+
+    # Mixed precision: bf16 cuts activation memory ~2× and on H20 SXM5
+    # also ~2× compute throughput. fp16 needs GradScaler (not implemented);
+    # bf16 needs no scaler since exponent range matches fp32.
+    use_amp = mixed_precision in ("bf16", "bfloat16")
+    amp_dtype = torch.bfloat16 if use_amp else torch.float32
+    amp_device_type = "cuda" if device.type == "cuda" else "cpu"
+    if use_amp and _is_main(rank):
+        log.info(f"[amp] mixed_precision={mixed_precision} dtype={amp_dtype} device={amp_device_type}")
 
     start_iter = 0
     if checkpoint_path is not None:
@@ -363,11 +448,12 @@ def train_distributed(
             if h_regime is not None:
                 h_regime = h_regime.detach()
 
-        s, price_state, traj, h_regime = sim.rollout_chunk(
-            s, s_prev, price_state,
-            n_steps=chunk_steps, generator=gen, create_graph=True,
-            h_regime=h_regime,
-        )
+        with torch.amp.autocast(device_type=amp_device_type, dtype=amp_dtype, enabled=use_amp):
+            s, price_state, traj, h_regime = sim.rollout_chunk(
+                s, s_prev, price_state,
+                n_steps=chunk_steps, generator=gen, create_graph=True,
+                h_regime=h_regime,
+            )
         # When BPTT checkpointing is on, the generator's state gets rewound
         # by recompute on backward. Snapshot the post-forward state here and
         # restore it after backward to keep the noise stream coherent across
@@ -387,7 +473,12 @@ def train_distributed(
             start = max(1, traj.log_returns.shape[0] - 4)
         sim_returns = traj.log_returns[start:]
 
-        # Multi-asset weighted-sum loss
+        # Multi-asset weighted-sum loss. Loss kept in fp32 — autocast
+        # promotes back automatically on the cross-entropy / MSE-like ops,
+        # but we explicitly cast sim_returns to fp32 first to avoid bf16
+        # precision loss in the moment statistics.
+        if use_amp:
+            sim_returns = sim_returns.float()
         per_asset_outs: dict[str, dict[str, Tensor]] = {}
         total = None
         out: dict[str, Tensor] = {}
@@ -403,6 +494,29 @@ def train_distributed(
         first_lbl = targets_list[0][0]
         out = dict(per_asset_outs[first_lbl])  # acf_sim etc. from first asset
         out["total"] = total
+
+        # Long-horizon rollout regularization (057): every K iters, compute
+        # SF loss over a fresh-init multi-chunk rollout. Each chunk has its
+        # own gradient graph (state detached at chunk boundary, so memory
+        # peaks at one chunk's V-graph). Goal: reduce the train(24-step) /
+        # eval(4000-step) horizon mismatch by giving the model supervision
+        # on a longer trajectory.
+        reg_loss_val = 0.0
+        if rollout_reg_cfg and rollout_reg_cfg.get("enabled") and \
+                (it % max(1, rollout_reg_cfg.get("every", 5)) == 0):
+            reg_steps = int(rollout_reg_cfg["steps"])
+            reg_chunk = int(rollout_reg_cfg["chunk"])
+            reg_weight = float(rollout_reg_cfg["weight"])
+            reg_total = _compute_rollout_reg_loss(
+                sim, targets_list, weights, gen,
+                steps=reg_steps, chunk=reg_chunk, warmup_steps=warmup_steps,
+                use_amp=use_amp, amp_device_type=amp_device_type,
+                amp_dtype=amp_dtype,
+            )
+            if reg_total is not None:
+                total = total + reg_weight * reg_total
+                reg_loss_val = float(reg_total.detach().item())
+
         total.backward()
 
         # Post-backward: restore the generator state to where forward ended.
@@ -442,6 +556,7 @@ def train_distributed(
             "grad_norm": float(grad_norm.item()),
             "gamma": float(sim.gamma.item()),
             "temperature": float(sim.temperature.item()),
+            "reg_loss": reg_loss_val,
         }
         history.append(rec)
 
@@ -577,6 +692,14 @@ def main() -> None:
         world_size=world_size,
         checkpoint_path=checkpoint_path,
         checkpoint_every_s=train_cfg.get("checkpoint_every_s", 1800.0),
+        mixed_precision=train_cfg.get("mixed_precision", "fp32"),
+        rollout_reg_cfg={
+            "enabled": bool(train_cfg.get("rollout_reg_enabled", False)),
+            "steps": int(train_cfg.get("rollout_reg_steps", 100)),
+            "chunk": int(train_cfg.get("rollout_reg_chunk", 24)),
+            "weight": float(train_cfg.get("rollout_reg_weight", 0.1)),
+            "every": int(train_cfg.get("rollout_reg_every", 5)),
+        },
     )
     t_total = time.time() - t0
 
