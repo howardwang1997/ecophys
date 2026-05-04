@@ -1,4 +1,6 @@
-- [Arch state 2026-04-30](project_arch_state_2026-04-30.md) — current best `p_4_2__2_1` (gate + u + jumps): 35-seed mean **5.40/11** [4.86, 5.97], peak 10/11. Lottery-shaped, not robust improvement
+- [Arch state 2026-05-04](project_arch_state_2026-05-04.md) — `p_4_2__2_1` 85-seed mean **5.14/11** (was 5.40); long-weekend 053-066 found no architectural lift; only 057 `rr_s120_w10_e5` (n=6, mean 6.83) worth retesting
+- [AR(1) drift artifact](project_ar1_drift_artifact.md) — returns are AR(1) ρ̂=0.904, not random walk. autocorr_returns 4% pre→ 94% post-whitening pass. Likely inflates acf_sq² and Hurst → real arch pass count ~3/11
+- [Arch state 2026-04-30](project_arch_state_2026-04-30.md) — superseded; kept for history
 - [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 5-seed inflates ~30% twice now (047→049, 048→052)
 - [Chunk OOM constraint](project_chunk_oom_constraint.md) — full 4.2 arch + N=10K, chunk>24 OOMs single-card; 8 cards = DDP not tensor-parallel; bf16 / N reduction / rollout-reg are the levers
 - [User role](user_role.md) — independent full-time researcher, 6–18 mo, **8×H20 NVLink long-term**, cheap-data preference ($50k budget), Mac+R2+GitHub+H20 workflow
