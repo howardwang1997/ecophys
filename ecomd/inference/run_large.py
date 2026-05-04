@@ -117,6 +117,9 @@ def main() -> None:
 
         if args.save_trajectory:
             traj_path = out_dir / f"trajectory_rank{rank}_r{r_idx}.npz"
+            extras = {}
+            if traj.total_potential is not None:
+                extras["total_potential"] = traj.total_potential.detach().cpu().numpy()
             np.savez_compressed(
                 traj_path,
                 log_returns=returns,
@@ -124,6 +127,7 @@ def main() -> None:
                 log_prices=traj.log_prices.detach().cpu().numpy(),
                 excess_demand=traj.excess_demand.detach().cpu().numpy(),
                 seed=seed, n_steps=args.n_steps, rank=rank,
+                **extras,
             )
             log.info(f"[rank {rank}] saved trajectory → {traj_path.name}")
 

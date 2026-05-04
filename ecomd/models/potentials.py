@@ -506,17 +506,23 @@ def conservative_forces(
     *,
     create_graph: bool = True,
     u_global: Tensor | None = None,
-) -> Tensor:
+    return_potential: bool = False,
+) -> Tensor | tuple[Tensor, Tensor]:
     """F_cons = -∇_s V_cons(s, context, u_global). Shape (N, d).
 
     ``u_global`` is the Tier 4.1 MEGNet-style global state. When None,
     the pairwise potential receives no global vector (back-compat).
+
+    When ``return_potential=True``, also returns the scalar U value
+    (detached). Used by inference for Paper-B Jarzynski W = ΔU bookkeeping.
     """
     with torch.enable_grad():
         if not s.requires_grad:
             s = s.detach().requires_grad_(True)
         u = potential(s, context, u_global=u_global)
         (grad_s,) = torch.autograd.grad(u, s, create_graph=create_graph)
+    if return_potential:
+        return -grad_s, u.detach()
     return -grad_s
 
 

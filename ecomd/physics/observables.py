@@ -32,6 +32,7 @@ class EcoMDTrajectory:
     - log_prices: (T,)
     - log_returns: (T,) — includes step 0 which is 0 by convention
     - volumes, excess_demand: (T,)
+    - total_potential: (T,)  scalar U_θ(s_t) at each step (Paper-B Jarzynski prep)
     """
 
     states: Tensor
@@ -44,6 +45,7 @@ class EcoMDTrajectory:
     volumes: Tensor
     excess_demand: Tensor
     dt: float
+    total_potential: Tensor | None = None
     meta: dict[str, float | int | str] = field(default_factory=dict)
 
     @property
@@ -76,6 +78,8 @@ class EcoMDTrajectory:
             volumes=self.volumes.to(device),
             excess_demand=self.excess_demand.to(device),
             dt=self.dt,
+            total_potential=(self.total_potential.to(device)
+                             if self.total_potential is not None else None),
             meta=dict(self.meta),
         )
 
@@ -91,6 +95,8 @@ class EcoMDTrajectory:
             volumes=self.volumes.detach(),
             excess_demand=self.excess_demand.detach(),
             dt=self.dt,
+            total_potential=(self.total_potential.detach()
+                             if self.total_potential is not None else None),
             meta=dict(self.meta),
         )
 
@@ -110,6 +116,7 @@ class TrajectoryRecorder:
         self._log_returns: list[Tensor] = []
         self._volumes: list[Tensor] = []
         self._excess_demand: list[Tensor] = []
+        self._total_potential: list[Tensor] = []
 
     def record(
         self,
@@ -122,6 +129,7 @@ class TrajectoryRecorder:
         log_return: Tensor,
         volume: Tensor,
         excess_demand: Tensor,
+        total_potential: Tensor | None = None,
     ) -> None:
         self._states.append(s)
         self._f_cons.append(f_cons)
@@ -132,10 +140,17 @@ class TrajectoryRecorder:
         self._log_returns.append(log_return)
         self._volumes.append(volume)
         self._excess_demand.append(excess_demand)
+        if total_potential is not None:
+            self._total_potential.append(total_potential)
 
     def finalize(self) -> EcoMDTrajectory:
         if not self._states:
             raise RuntimeError("recorder is empty; call record() at least once")
+        total_potential = (
+            torch.stack(self._total_potential)
+            if len(self._total_potential) == len(self._states)
+            else None
+        )
         return EcoMDTrajectory(
             states=torch.stack(self._states),
             f_cons=torch.stack(self._f_cons),
@@ -147,5 +162,6 @@ class TrajectoryRecorder:
             volumes=torch.stack(self._volumes),
             excess_demand=torch.stack(self._excess_demand),
             dt=self.dt,
+            total_potential=total_potential,
             meta=self.meta,
         )

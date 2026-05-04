@@ -525,9 +525,10 @@ class EcoMDSimulator(nn.Module):
                 and self.cfg.global_state_into_pair)
             else None
         )
-        f_cons = conservative_forces(
+        f_cons, U_value = conservative_forces(
             self.potential, s, context,
             create_graph=create_graph, u_global=u_for_pair,
+            return_potential=True,
         )
         f_diss = dissipative_forces(self.dissipation, s, s_prev, create_graph=create_graph)
 
@@ -605,6 +606,7 @@ class EcoMDSimulator(nn.Module):
             "log_return": price_step.state.last_log_return,
             "volume": price_step.aux["volume"],
             "excess_demand": price_step.aux["excess_demand"],
+            "total_potential": U_value,
         }
         return step_out.s_next, price_step.state, record, h_regime_next, h_agent_next, h_global_next
 
@@ -957,6 +959,7 @@ class EcoMDSimulator(nn.Module):
                 log_return=rec["log_return"].detach(),
                 volume=rec["volume"].detach(),
                 excess_demand=rec["excess_demand"].detach(),
+                total_potential=rec.get("total_potential"),
             )
             s_prev = s
             s = s_next
