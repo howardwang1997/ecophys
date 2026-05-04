@@ -118,49 +118,30 @@ class PriceFormation(Protocol):
 
 @dataclass(frozen=True)
 class ExcessDemandParams:
-    beta: float = 0.5           # market-maker price response to excess demand (base value)
-    kappa: float = 1.0          # scales ΔPos into ED
-    sigma_price: float = 0.005  # residual noise on price (lognormal)
-    ewma_alpha: float = 0.05    # volatility EWMA weight on |r|
+    beta: float = 0.5
+    kappa: float = 1.0
+    sigma_price: float = 0.005
+    ewma_alpha: float = 0.05
     initial_log_price: float = 0.0
-    # v0.6: state-dependent β(vol, last_return). When enabled, effective β is
-    #       beta_base * softplus(mlp([vol, last_r])) / softplus(0), which preserves
-    #       β ≈ beta_base at MLP init but lets the market maker's response vary
-    #       with regime. Reduces spurious return autocorrelation (#1 ACF).
     learnable_beta: bool = False
     beta_hidden: int = 16
-    # v1.0 Hawkes self-excitation: adds a deterministic, differentiable
-    # "excitation" term to log_ret that grows with recent |r|. Models Hawkes-
-    # like vol clustering without discrete jumps (so backprop stays clean).
-    #   log_ret = β·ED - 0.5σ² + σ·η  +  κ · memory_t
-    #   memory_{t+1} = (1-α) · memory_t + α · |log_ret_core_t|
-    # hawkes_kappa = 0 disables (backwards-compat). Recommended start: α=0.1, κ=0.3.
-    hawkes_alpha: float = 0.0           # EMA decay rate (0 = disabled)
-    hawkes_kappa: float = 0.0           # excitation strength in log-ret units
-    # v3 multi-scale Hawkes (Bacry-Muzy 2015 multi-exponential): a SECOND
-    # exponential channel with smaller alpha (= longer time scale) added to
-    # the base hawkes_kappa channel. Captures longer-memory effects (zumbach
-    # asymmetry, ACF tail shape) that single-exp can't represent.
-    #   excitation = κ·memory_t + κ_long·memory_long_t
-    #   memory_long_{t+1} = (1-α_long)·memory_long_t + α_long·|log_ret_core_t|
-    # hawkes_kappa_long = 0 disables. Recommended: α_long=0.01, κ_long=0.2.
+    hawkes_alpha: float = 0.0
+    hawkes_kappa: float = 0.0
     hawkes_alpha_long: float = 0.0
     hawkes_kappa_long: float = 0.0
-    # v3 (paper-a-solidify O series): sign mode of Hawkes excitation.
-    #   "coherent" (default): excitation = κ·M·sign(log_ret_core) — boosts
-    #       same-direction streaks → produces vol clustering AND positive
-    #       return autocorrelation (Cont fact #1 fail).
-    #   "flipping": excitation = -κ·M·sign(log_ret_core) — pushes against
-    #       streaks (mean-reverting in price). Tests whether the autocorr
-    #       fail comes from sign coherence.
-    #   "none": excitation = κ·M (sign-free magnitude only) — pure
-    #       vol-clustering boost without directional bias.
     hawkes_sign_mode: str = "coherent"
-    # v3 (paper-a-solidify O series): volume reporting mode.
-    #   "delta_pos" (default): volume = Σ_i |Δs_{i,0}| — agent inventory turnover.
-    #   "price_driven": volume = N · |Δlog_p| — proxy for trading volume that
-    #       tracks price-burst regimes (real markets: high vol → high volume).
     volume_mode: str = "delta_pos"
+    # v4 (autocorr fix): multiplicative noise on ED response.
+    #   log_ret_core = β·ED·(1 + σ_ed·ξ) + σ_price·η
+    # ξ ~ N(0,1) iid per step. When σ_ed > 0, the deterministic drift
+    # β·ED is multiplied by an iid random factor, breaking inter-step
+    # autocorrelation while preserving Var(r_t) ∝ ED² (vol clustering).
+    # σ_ed=0 recovers old additive behaviour.
+    sigma_ed: float = 0.0
+    # v4 (autocorr fix): normalize ED by sqrt(N) to prevent √N SNR
+    # amplification in large-N regimes. When true, ED is divided by
+    # √(n_agents) before the β·ED term.
+    ed_normalize: bool = False
 
 
 class ExcessDemandPrice(nn.Module):
@@ -236,14 +217,19 @@ class ExcessDemandPrice(nn.Module):
         pos_next = s_next[:, 0]
         dpos = pos_next - pos_prev
         excess_demand = p.kappa * dpos.sum()
+        if p.ed_normalize:
+            n_agents = float(s_prev.shape[0])
+            excess_demand = excess_demand / (n_agents ** 0.5)
         volume = dpos.abs().sum()
 
         beta_eff = self._effective_beta(state)
 
-        # Log-price step: log p_{t+1} = log p_t + β · ED · dt - 0.5 σ² + σ · η
-        # With dt absorbed into β for v0 (we use unit dt for the price step).
         eta = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
-        log_ret_core = beta_eff * excess_demand - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
+        ed_term = beta_eff * excess_demand
+        if p.sigma_ed > 0.0:
+            xi = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
+            ed_term = ed_term * (1.0 + p.sigma_ed * xi)
+        log_ret_core = ed_term - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
 
         # v1.0 Hawkes self-excitation (optional, off when hawkes_alpha=0).
         # Memory tracks EMA of |past log-ret|. Adds sign-coherent excitation:
