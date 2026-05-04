@@ -120,6 +120,12 @@ class EcoMDConfig:
     #   group boundaries via the s_next.grad_fn chain.
     # Recommended: leave at 0 unless you understand the OOM tradeoff.
     bptt_checkpoint_every: int = 0
+    # v4 adiabatic timescale separation. When > 1, each outer step runs
+    # ``inner_steps_per_price`` agent-dynamics steps (force + integrator)
+    # against a frozen slow state, then ONE price formation step. Targets
+    # AR(1) drift: per outer step the return is the sum of N independent
+    # agent walks, decorrelating across outer steps.
+    inner_steps_per_price: int = 1
     # ── feature/arch-extensions (2026-04-28) — six architectural tiers ──────
     # All default OFF: when all flags below take their defaults, simulator
     # output is bit-identical to the pre-arch-extensions baseline.
@@ -489,6 +495,16 @@ class EcoMDSimulator(nn.Module):
         - ``h_agent``: optional per-agent GRU memory of shape
           (N, d_memory). Updated every ``agent_memory_update_every`` steps;
           its mean-pool is appended to the external potential's context.
+
+        v4 (adiabatic timescale separation):
+        - ``cfg.inner_steps_per_price`` (default 1): when > 1, the agent
+          dynamics (force + integrator) iterates this many times against a
+          FROZEN slow state (price_state, regime, agent_memory, global_state)
+          before a single price formation update. Models the physical
+          ε-separation: many fast agent decisions per slow market-clearing.
+          Targets the AR(1) drift root cause: per outer-step the realized
+          return is the sum of ``inner_steps`` independent agent walks,
+          producing a much more random-walk-like return series.
         """
         # Tier 1.1: update per-agent memory before computing forces so the
         # current step's potential sees this step's memory readout.
@@ -525,12 +541,6 @@ class EcoMDSimulator(nn.Module):
                 and self.cfg.global_state_into_pair)
             else None
         )
-        f_cons = conservative_forces(
-            self.potential, s, context,
-            create_graph=create_graph, u_global=u_for_pair,
-        )
-        f_diss = dissipative_forces(self.dissipation, s, s_prev, create_graph=create_graph)
-
         # Compute γ_eff, T_eff (per-step optional regime modulation)
         T_eff: Tensor | float = self.temperature
         gamma_eff: Tensor | float = self.gamma
@@ -575,22 +585,40 @@ class EcoMDSimulator(nn.Module):
             else:
                 update_mask = self.is_fast_agent  # only fast agents
 
-        step_out = self.integrator.step(
-            s=s,
-            f_cons=f_cons,
-            f_diss=f_diss,
-            T=T_eff,
-            gamma=gamma_eff,
-            dt=self.cfg.dt,
-            generator=generator,
-            update_mask=update_mask,
-            create_graph=create_graph,
-        )
+        # v4 adiabatic: inner agent dynamics loop. inner_steps_per_price=1
+        # reproduces the original single-step semantics exactly.
+        inner_n = max(1, int(self.cfg.inner_steps_per_price))
+        s_outer_in = s
+        s_running = s
+        s_prev_running = s_prev
+        last_step_out = None
+        for _inner_idx in range(inner_n):
+            f_cons = conservative_forces(
+                self.potential, s_running, context,
+                create_graph=create_graph, u_global=u_for_pair,
+            )
+            f_diss = dissipative_forces(
+                self.dissipation, s_running, s_prev_running, create_graph=create_graph,
+            )
+            last_step_out = self.integrator.step(
+                s=s_running,
+                f_cons=f_cons,
+                f_diss=f_diss,
+                T=T_eff,
+                gamma=gamma_eff,
+                dt=self.cfg.dt,
+                generator=generator,
+                update_mask=update_mask,
+                create_graph=create_graph,
+            )
+            s_prev_running = s_running
+            s_running = last_step_out.s_next
+        step_out = last_step_out  # last inner step's IntegratorStep (forces, velocity)
 
         price_step = self.price_formation.step(
             state=price_state,
-            s_prev=s,
-            s_next=step_out.s_next,
+            s_prev=s_outer_in,
+            s_next=s_running,
             generator=generator,
             excitation_mul=excitation_mul,
         )

@@ -384,6 +384,145 @@ class ReadoutPrice(nn.Module):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# CollectivePrice (v4 — collective coordinate transformation)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@dataclass(frozen=True)
+class CollectiveParams:
+    """Hyperparameters for :class:`CollectivePrice`.
+
+    The price is the soft aggregate of per-agent intent:
+
+        intent_i  = MLP_intent(s_i)  ∈ R    (signed; >0 = buy, <0 = sell)
+        weight_i  = softplus(MLP_weight(s_i)) / Σ_j softplus(...)   (∈ Δ^{N-1})
+        ED        = Σ_i weight_i · intent_i      (mean-field-like collective coord.)
+        volume    = Σ_i weight_i · |intent_i|
+
+        log_ret = beta · ED + sigma_price · sqrt(dt) · η
+
+    Differences from :class:`ExcessDemandPrice`:
+      - ED no longer privileges ``s[:,0]``; it's a learned functional of the
+        *full* agent state.
+      - Weight + intent are separated → reviewer-friendly mean-field structure.
+        Weight defaults to uniform (1/N) when ``learnable_weight=False``.
+      - No Hawkes self-excitation (kept clean for Paper-B FDT/Jarzynski).
+        If you need Hawkes, stay with ExcessDemandPrice.
+      - σ_ed multiplicative noise option mirrors ExcessDemand for ablation.
+
+    The collective coordinate framing is the standard non-equilibrium
+    statistical-mechanics treatment of slow observables emerging from
+    fast microscopic dynamics (Mori-Zwanzig formalism).
+    """
+    beta: float = 0.5
+    sigma_price: float = 0.005
+    ewma_alpha: float = 0.05
+    initial_log_price: float = 0.0
+    intent_hidden: int = 16
+    learnable_weight: bool = False
+    sigma_ed: float = 0.0
+
+
+class CollectivePrice(nn.Module):
+    """Collective-coordinate price formation: p emerges as a learned mean-field
+    aggregate over the agent population.
+
+    Permutation-invariant by construction (sums over agents).
+    """
+
+    def __init__(self, d: int, params: CollectiveParams | None = None) -> None:
+        super().__init__()
+        self.d = d
+        self.params = params or CollectiveParams()
+        self.intent_net = nn.Sequential(
+            nn.Linear(d, self.params.intent_hidden),
+            nn.SiLU(),
+            nn.Linear(self.params.intent_hidden, 1),
+        )
+        for m in self.intent_net.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight, gain=0.3)
+                nn.init.zeros_(m.bias)
+        if self.params.learnable_weight:
+            self.weight_net: nn.Module | None = nn.Sequential(
+                nn.Linear(d, self.params.intent_hidden),
+                nn.SiLU(),
+                nn.Linear(self.params.intent_hidden, 1),
+            )
+            for m in self.weight_net.modules():
+                if isinstance(m, nn.Linear):
+                    nn.init.xavier_uniform_(m.weight, gain=0.1)
+                    nn.init.zeros_(m.bias)
+        else:
+            self.weight_net = None
+
+    @property
+    def context_dim(self) -> int:
+        return 3  # (log_price, vol, last_log_return)
+
+    def init_state(self, device: torch.device, dtype: torch.dtype) -> PriceState:
+        return PriceState(
+            log_price=torch.tensor(self.params.initial_log_price, device=device, dtype=dtype),
+            last_log_return=torch.tensor(0.0, device=device, dtype=dtype),
+            volatility=torch.tensor(self.params.sigma_price, device=device, dtype=dtype),
+            step=0,
+        )
+
+    def step(
+        self,
+        state: PriceState,
+        s_prev: Tensor,
+        s_next: Tensor,
+        generator: torch.Generator | None = None,
+        excitation_mul: Tensor | float = 1.0,
+    ) -> PriceStepResult:
+        del s_prev, excitation_mul  # not used in collective formulation
+        p = self.params
+        n = s_next.shape[0]
+
+        # Per-agent intent (signed) — uses full state, not just s[:,0].
+        intent = self.intent_net(s_next).squeeze(-1)        # (N,)
+
+        # Per-agent weight (positive, sums to 1).
+        if self.weight_net is not None:
+            raw_w = self.weight_net(s_next).squeeze(-1)
+            weight = torch.softmax(raw_w, dim=0)            # (N,)
+        else:
+            weight = torch.full((n,), 1.0 / n,
+                                device=s_next.device, dtype=s_next.dtype)
+
+        # Collective coordinate: weighted mean intent ⇒ ED.
+        excess_demand = (weight * intent).sum()
+        volume = (weight * intent.abs()).sum() * float(n)   # extensive volume
+
+        eta = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
+        ed_term = p.beta * excess_demand
+        if p.sigma_ed > 0.0:
+            xi = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
+            ed_term = ed_term * (1.0 + p.sigma_ed * xi)
+        log_ret = ed_term - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
+
+        log_price_next = state.log_price + log_ret
+        vol_next = (1 - p.ewma_alpha) * state.volatility + p.ewma_alpha * log_ret.abs()
+
+        new_state = PriceState(
+            log_price=log_price_next,
+            last_log_return=log_ret,
+            volatility=vol_next,
+            step=state.step + 1,
+        )
+        context = torch.stack([log_price_next, vol_next, log_ret])
+        aux: dict[str, Tensor] = {
+            "excess_demand": excess_demand.detach(),
+            "volume": volume.detach(),
+            "log_return": log_ret.detach(),
+            "intent_mean": intent.mean().detach(),
+            "intent_abs_mean": intent.abs().mean().detach(),
+        }
+        return PriceStepResult(state=new_state, context=context, aux=aux)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Registry (for Hydra config)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -395,4 +534,10 @@ def build_price_formation(kind: str, d: int, **kwargs: Any) -> PriceFormation:
     if kind == "readout":
         params = ReadoutParams(**kwargs) if kwargs else None
         return ReadoutPrice(d=d, params=params)
-    raise ValueError(f"unknown price formation {kind!r}; expected 'excess_demand' or 'readout'")
+    if kind == "collective":
+        params = CollectiveParams(**kwargs) if kwargs else None
+        return CollectivePrice(d=d, params=params)
+    raise ValueError(
+        f"unknown price formation {kind!r}; "
+        f"expected 'excess_demand' | 'readout' | 'collective'"
+    )
