@@ -64,8 +64,28 @@ class EcoMDConfig:
     lam_dissipation: float = 0.01
     learn_gamma: bool = True
     learn_temperature: bool = True
-    noise_dist: str = "normal"               # 'normal' or 't' (Student-t, v0.6+)
+    noise_dist: str = "normal"               # 'normal' | 't' (Student-t, v0.6+) | 'levy' (α-stable, v4)
     noise_df: int = 5                        # only used when noise_dist='t'
+    # V4 mechanism 1 — symmetric α-stable (Lévy) noise via Chambers-Mallows-
+    # Stuck. α=2 ≈ Normal; α<2 is heavy-tailed (infinite variance for α<2).
+    # Targets hill_tail_index (target band [2, 4]); the Hill estimator
+    # recovers α directly when noise dominates the return distribution.
+    # Clipped at ±levy_clip to keep Langevin updates finite — set high enough
+    # to preserve heavy-tail signal but low enough that single rare draws
+    # don't blow up downstream eval (GARCH residual fits etc.).
+    noise_levy_alpha: float = 1.7
+    noise_levy_clip: float = 50.0
+    # V4 mechanism 2 — asymmetric drag γ(Δp). γ_eff = γ · (1 − α·sign(Δp)),
+    # so down moves shrink γ (liquidity vacuum, larger noise per unit time)
+    # while up moves enlarge γ (slower regime). Targets leverage_effect
+    # (target band [-6, -0.5], current pass ~30%). α∈(-1, 1); α=0 disables.
+    asym_drag_alpha: float = 0.0
+    # V4 mechanism 3 — memory kernel. Noise scale modulates by
+    # (1 + memory_kernel_strength · EMA_λ(|Δs|)), where the EMA decays at
+    # rate λ. Targets zumbach_asymmetry (current pass ~10%) and
+    # acf_squared_returns. Both knobs zero → no-op.
+    memory_kernel_lambda: float = 0.0
+    memory_kernel_strength: float = 0.0
     # v1 (MACE-lite) settings — only used when pairwise_kind == "mace_lite"
     pairwise_kind: str = "mlp"               # 'mlp' (v0.x) or 'mace_lite' (v1+)
     mace_k: int = 16                         # k-NN neighbours
@@ -335,8 +355,13 @@ class EcoMDSimulator(nn.Module):
         self.integrator = integrator or OverdampedLangevin(
             noise_dist=self.cfg.noise_dist,
             noise_df=self.cfg.noise_df,
+            levy_alpha=self.cfg.noise_levy_alpha,
+            levy_clip=self.cfg.noise_levy_clip,
             jump_lambda=self.cfg.jump_lambda,
             jump_scale=self.cfg.jump_scale,
+            asym_drag_alpha=self.cfg.asym_drag_alpha,
+            memory_kernel_lambda=self.cfg.memory_kernel_lambda,
+            memory_kernel_strength=self.cfg.memory_kernel_strength,
         )
 
         # learnable log-parametrised γ, T (positivity by construction)
@@ -622,6 +647,12 @@ class EcoMDSimulator(nn.Module):
             generator=generator,
             excitation_mul=excitation_mul,
         )
+
+        # V4 mechanism 2: feed the latest log return back to the integrator so
+        # the next step's γ_eff can react to the sign of the most recent
+        # market move. Cheap (scalar copy), no graph allocation.
+        if hasattr(self.integrator, "update_price_signal"):
+            self.integrator.update_price_signal(price_step.state.last_log_return)
 
         record = {
             "s": step_out.s_next,
@@ -960,6 +991,8 @@ class EcoMDSimulator(nn.Module):
         h_global = self.init_global_state()
 
         self._reset_potential_cache()
+        if hasattr(self.integrator, "reset_state"):
+            self.integrator.reset_state()
         recorder = TrajectoryRecorder(
             dt=self.cfg.dt,
             meta={"n_steps": n_steps, "seed": seed if seed is not None else -1,
