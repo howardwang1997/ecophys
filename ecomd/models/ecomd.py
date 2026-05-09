@@ -32,13 +32,20 @@ from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
 from .global_state import GlobalStateConfig, GlobalStateGRU
 from .isab_pairwise import ISABPairwisePotential
 from .mace_lite import MACELitePotential, build_mace_lite
-from .regime_latent import RegimeGRU, RegimeGRUConfig, RegimeReadHead
+from .regime_latent import (
+    DiscreteRegimeGRU,
+    DiscreteRegimeGRUConfig,
+    RegimeGRU,
+    RegimeGRUConfig,
+    RegimeReadHead,
+)
 from .potentials import (
     StochasticPairwisePotential,
     ConservativePotential,
     DissipationParams,
     DissipationPotential,
     ExternalPotential,
+    PowerLawExternalPotential,
     PairwisePotential,
     conservative_forces,
     dissipative_forces,
@@ -86,6 +93,32 @@ class EcoMDConfig:
     # acf_squared_returns. Both knobs zero → no-op.
     memory_kernel_lambda: float = 0.0
     memory_kernel_strength: float = 0.0
+    # B-round mechanism 1 — microstructure / bid-ask bounce noise. Replaces
+    # the integrator's ε with ε_eff = ε - rho · ε_{t-1}, inducing a small
+    # lag-1 NEGATIVE autocorrelation in returns that mimics real-world
+    # market microstructure. Targets autocorr_returns (target band
+    # [-0.1, 0.20]; v3 baseline mean +0.38). Default 0.0 disables.
+    microstructure_rho: float = 0.0
+    # B-round mechanism 4 — power-law external potential. Replaces the MLP
+    # external potential with V_ext(s) = w_mlp · MLP + w_pow · |s|^α / α.
+    # Sub-linear restoring force at large |s| produces fat-tailed return
+    # distributions intrinsically (not just through noise). Targets
+    # hill_tail_index (target band [2, 4]; v3 / Lévy baselines fail).
+    # Default off reproduces v3 behavior exactly.
+    power_law_external: bool = False
+    power_law_alpha: float = 1.5
+    power_law_w_pow: float = 0.5
+    power_law_w_mlp: float = 1.0
+    # B-round mechanism 3 — discrete Gumbel-softmax regime. Replaces the
+    # continuous regime GRU with K-state discrete switching. Each state
+    # has its own learned d_regime embedding consumed by RegimeReadHead.
+    # Targets aggregational_gaussianity (band [10, 200]; v4 winners hit
+    # 300+ because no quiet regime exists). When enabled, requires
+    # regime_enabled=True (the simulator branches on the new flag inside
+    # the regime block). Default off reproduces continuous-GRU behavior.
+    regime_discrete_enabled: bool = False
+    regime_n_states: int = 3
+    regime_gumbel_tau: float = 1.0
     # v1 (MACE-lite) settings — only used when pairwise_kind == "mace_lite"
     pairwise_kind: str = "mlp"               # 'mlp' (v0.x) or 'mace_lite' (v1+)
     mace_k: int = 16                         # k-NN neighbours
@@ -346,9 +379,17 @@ class EcoMDSimulator(nn.Module):
         # ``global_state_into_pair`` flag only gates the pair side).
         if self.cfg.global_state_enabled:
             ext_ctx_dim += self.cfg.global_state_d
-        external = ExternalPotential(
-            d=d, context_dim=ext_ctx_dim, hidden=self.cfg.hidden
-        )
+        if self.cfg.power_law_external:
+            external = PowerLawExternalPotential(
+                d=d, context_dim=ext_ctx_dim, hidden=self.cfg.hidden,
+                alpha=self.cfg.power_law_alpha,
+                w_pow=self.cfg.power_law_w_pow,
+                w_mlp=self.cfg.power_law_w_mlp,
+            )
+        else:
+            external = ExternalPotential(
+                d=d, context_dim=ext_ctx_dim, hidden=self.cfg.hidden
+            )
         self.potential = ConservativePotential(pairwise, external)
         self.dissipation = DissipationPotential(DissipationParams(lam=self.cfg.lam_dissipation))
 
@@ -362,6 +403,7 @@ class EcoMDSimulator(nn.Module):
             asym_drag_alpha=self.cfg.asym_drag_alpha,
             memory_kernel_lambda=self.cfg.memory_kernel_lambda,
             memory_kernel_strength=self.cfg.memory_kernel_strength,
+            microstructure_rho=self.cfg.microstructure_rho,
         )
 
         # learnable log-parametrised γ, T (positivity by construction)
@@ -371,16 +413,29 @@ class EcoMDSimulator(nn.Module):
         self.log_temperature = nn.Parameter(log_T, requires_grad=self.cfg.learn_temperature)
 
         # v3 regime latent (P3 + P5 T_eff head share infrastructure)
-        self.regime_gru: RegimeGRU | None = None
+        # When ``regime_discrete_enabled`` is True, swap the continuous
+        # GRU for the B-round DiscreteRegimeGRU. State carried as logits
+        # of size ``regime_n_states``; read heads consume the d_regime
+        # embedding produced by ``regime_gru.read(h)``.
+        self.regime_gru: RegimeGRU | DiscreteRegimeGRU | None = None
         self.regime_head_gamma: RegimeReadHead | None = None
         self.regime_head_T: RegimeReadHead | None = None
         self.regime_head_kappa: RegimeReadHead | None = None
         if self.cfg.regime_enabled:
-            self.regime_gru = RegimeGRU(RegimeGRUConfig(
-                d_regime=self.cfg.regime_d,
-                update_every=self.cfg.regime_update_every,
-                init_gain=self.cfg.regime_init_gain,
-            ))
+            if self.cfg.regime_discrete_enabled:
+                self.regime_gru = DiscreteRegimeGRU(DiscreteRegimeGRUConfig(
+                    n_states=self.cfg.regime_n_states,
+                    d_regime=self.cfg.regime_d,
+                    update_every=self.cfg.regime_update_every,
+                    init_gain=self.cfg.regime_init_gain,
+                    gumbel_tau=self.cfg.regime_gumbel_tau,
+                ))
+            else:
+                self.regime_gru = RegimeGRU(RegimeGRUConfig(
+                    d_regime=self.cfg.regime_d,
+                    update_every=self.cfg.regime_update_every,
+                    init_gain=self.cfg.regime_init_gain,
+                ))
             if self.cfg.regime_modulate_gamma:
                 self.regime_head_gamma = RegimeReadHead(self.cfg.regime_d)
             if self.cfg.regime_modulate_temp:
@@ -582,12 +637,16 @@ class EcoMDSimulator(nn.Module):
                 ret * (price_state.last_log_return.detach()),  # r·r_{t-1} proxy
             ])
             h_regime_next = self.regime_gru.maybe_step(h_regime, step_idx, stats)
+            # B3 separation: persistent state may be logits (DiscreteRegimeGRU)
+            # or the latent itself (RegimeGRU). Both classes implement
+            # ``read(h)`` to return the d_regime vector consumed by read heads.
+            h_regime_emb = self.regime_gru.read(h_regime_next)
             if self.regime_head_gamma is not None:
-                gamma_eff = self.gamma * self.regime_head_gamma(h_regime_next)
+                gamma_eff = self.gamma * self.regime_head_gamma(h_regime_emb)
             if self.regime_head_T is not None:
-                T_eff = self.temperature * self.regime_head_T(h_regime_next)
+                T_eff = self.temperature * self.regime_head_T(h_regime_emb)
             if self.regime_head_kappa is not None:
-                excitation_mul = self.regime_head_kappa(h_regime_next)
+                excitation_mul = self.regime_head_kappa(h_regime_emb)
 
         # Two-population per-type γ, T (broadcast (N,) to multiply T/γ per agent)
         if self.cfg.twopop_enabled and self.twopop_type_idx is not None:

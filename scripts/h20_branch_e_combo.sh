@@ -1,21 +1,49 @@
 #!/usr/bin/env bash
-# Branch E — Paper A v4 combo + leftover.
+# Branch E — Paper A v4 combo + leftover + B-round (Option B, full).
 #
-# Three experiment dirs (~5h H20 estimated, after SKIP_DONE filtering):
-#   082 v4 combo leave-one-out + dose-response   180 cfgs (~2.6h)
-#   075 adiabatic inner_{3,10,20} leftover        90 cfgs effective (~1.3h)
-#                                                 (150 total, 60 done from Branch D)
-#   081 BTC cross-asset (regen w/ correct schema) 60 cfgs (~0.9h)
+# Nine experiment phases (~12h H20 estimated, after SKIP_DONE filtering):
 #
-# This batch runs after Branch D (077-081) and addresses two issues:
-#   (a) 081 v4combo configs were buggy: Lévy not enabled (wrong field name)
-#       AND target_dataset:btc silently fell back to SPX (trainer recognises
-#       only btcusdt/2024Q1_1m). The 60 configs (30 baseline + 30 v4combo)
-#       have been regenerated with the correct schema.
-#   (b) 082 tests whether v4 mechanisms compose. Flagship cell `combo_full`
-#       runs all four (Lévy + asym + memk + adiabatic); 3 leave-one-out
-#       cells quantify each mechanism's marginal contribution; 2 dose-
-#       response cells (asym=0.5, levy=1.7) provide grid finesse.
+#   A-round (decisive for Paper A direction):
+#     082 v4 combo leave-one-out + dose-response   180 cfgs (~2.6h)
+#     075 adiabatic inner_{3,10,20} leftover        90 cfgs (~1.3h)
+#     081 BTC cross-asset (regen w/ correct schema) 60 cfgs (~0.9h)
+#
+#   Completion (Paper A §4.2/§4.3 ablations):
+#     083 asym-drag fine grid (a04, a05, a07)       90 cfgs (~1.3h)
+#     073 Hawkes/jump mechanism attribution         48 cfgs (~0.7h)
+#
+#   B-round (4 new mechanisms; activates only if A-round saturates):
+#     084 B1 microstructure noise                   90 cfgs (~1.3h)
+#     085 B2 Wasserstein loss family                90 cfgs (~1.3h)
+#     086 B3 discrete Gumbel regime                 90 cfgs (~1.3h)
+#     087 B4 power-law force tail                   90 cfgs (~1.3h)
+#
+# B-round runs unconditionally tonight per user directive: write all
+# mechanisms now rather than waiting for 082 results. If 082 succeeds,
+# B-round still serves as Paper A §4.5 ablation supplement.
+#
+# Total: 828 cfgs ~12h. Past Branch D's 8h "safe overnight" threshold;
+# H20 process death is the main risk. Mitigations:
+#   - Per-cfg timeout in h20_run_phase.sh (45min cap)
+#   - Per-phase scoreboard auto-emit so partial results visible
+#   - Stability filter in score_phase.py drops blow-up seeds
+#
+# Pre-launch verification:
+#   - Schema check on 081 (Lévy + BTC dataset key)
+#   - Schema check on 082 combo_full (4 mechanisms wired)
+#   - Schema check on 086 b3 (regime_enabled + regime_discrete_enabled)
+#   - Disk free ≥ 50 GB
+#   - No orphan torchrun processes
+#   - GPU presence
+#
+# Usage (on H20):
+#   ssh h20
+#   cd ecophys
+#   git fetch --all && git checkout feature/paper-a-v4-mechanisms && git pull
+#   unset NPROC && bash scripts/h20_refresh_deps.sh
+#   bash scripts/h20_branch_e_combo.sh --dry-run    # preflight + estimate
+#   DAEMON=1 bash scripts/h20_branch_e_combo.sh
+#   tail -f experiments/_branch_e_*.log
 #
 # The launcher hardens against three Branch-D failure modes:
 #   - Pre-launch schema verification (catches the 081 bug class)
@@ -41,11 +69,28 @@ export SKIP_DONE="${SKIP_DONE:-1}"
 export PARALLEL="${PARALLEL:-8}"
 export NPROC="${NPROC:-1}"
 
-# Phase order: 082 first (most impactful + longest), then leftovers.
+# Phase order:
+#   1. 082 (flagship, longest, most impactful)
+#   2. 075 leftover (adiabatic dose-response, completes ac_pass curve)
+#   3. 081 BTC regen (cross-asset, requires fix verified by preflight)
+#   4. 083 asym fine grid (dose-response, fills 077-079 sweep gap)
+#   5. 073 Hawkes/jump ablation (mechanism attribution for §4.2)
+#   6. 084 B1 microstructure noise (autocorr fix)
+#   7. 085 B2 Wasserstein loss (universal lift via training objective)
+#   8. 086 B3 discrete regime (aggregational_gaussianity fix)
+#   9. 087 B4 power-law potential (hill_tail fix via dynamics)
+# Order rationale: A-round first (082/075/081), then completion (083/073),
+# then B-round (084/085/086/087) which only matters if A-round saturates.
 GPU_DIRS=(
     "experiments/082_v4_combo_30seed"
     "experiments/075_adiabatic_30seed"
     "experiments/081_btc_30seed"
+    "experiments/083_asym_drag_finegrid_30seed"
+    "experiments/073_hawkes_jump_ablation"
+    "experiments/084_b1_microstructure_30seed"
+    "experiments/085_b2_wasserstein_30seed"
+    "experiments/086_b3_discrete_regime_30seed"
+    "experiments/087_b4_power_law_30seed"
 )
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
@@ -95,6 +140,48 @@ preflight() {
             fi
         done
         echo "  ✓ combo_full schema verified (4 mechanisms wired)" | tee -a "$MASTER_LOG"
+    fi
+
+    # 3a. Verify B-round dirs each have 90 configs
+    for d in 083_asym_drag_finegrid 084_b1_microstructure 085_b2_wasserstein \
+             086_b3_discrete_regime 087_b4_power_law; do
+        local dir="experiments/${d}_30seed"
+        local n=$(ls "$dir"/config_*.yaml 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$n" != "90" ]]; then
+            echo "  ✗ $dir expects 90 configs, found $n" | tee -a "$MASTER_LOG"
+            fail=1
+        else
+            echo "  ✓ $dir has 90 configs" | tee -a "$MASTER_LOG"
+        fi
+    done
+
+    # 3b. Verify B-round combo cells stack correctly on combo_full's mechanisms
+    local b1c="experiments/084_b1_microstructure_30seed/config_b1_rho03_combo_seed0.yaml"
+    if [[ -f "$b1c" ]]; then
+        if grep -q "microstructure_rho: 0.3" "$b1c" && grep -q "noise_dist: levy" "$b1c"; then
+            echo "  ✓ 084 b1_rho03_combo: B1 + combo_full stacking OK" | tee -a "$MASTER_LOG"
+        else
+            echo "  ✗ 084 b1_rho03_combo: missing microstructure_rho or combo_full base" | tee -a "$MASTER_LOG"
+            fail=1
+        fi
+    fi
+    local b3c="experiments/086_b3_discrete_regime_30seed/config_b3_k3_combo_seed0.yaml"
+    if [[ -f "$b3c" ]]; then
+        if grep -q "regime_enabled: true" "$b3c" && grep -q "regime_discrete_enabled: true" "$b3c"; then
+            echo "  ✓ 086 b3_k3_combo: regime_enabled + regime_discrete_enabled OK" | tee -a "$MASTER_LOG"
+        else
+            echo "  ✗ 086 b3_k3_combo: regime flags wrong" | tee -a "$MASTER_LOG"
+            fail=1
+        fi
+    fi
+    local b4c="experiments/087_b4_power_law_30seed/config_b4_alpha15_combo_seed0.yaml"
+    if [[ -f "$b4c" ]]; then
+        if grep -q "power_law_external: true" "$b4c" && grep -q "power_law_alpha: 1.5" "$b4c"; then
+            echo "  ✓ 087 b4_alpha15_combo: power-law potential enabled" | tee -a "$MASTER_LOG"
+        else
+            echo "  ✗ 087 b4_alpha15_combo: power_law_external flag missing" | tee -a "$MASTER_LOG"
+            fail=1
+        fi
     fi
 
     # 4. Disk space (each H20 run writes ~80MB of result files).
