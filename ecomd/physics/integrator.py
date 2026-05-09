@@ -182,6 +182,7 @@ class OverdampedLangevin:
         asym_drag_alpha: float = 0.0,
         memory_kernel_lambda: float = 0.0,
         memory_kernel_strength: float = 0.0,
+        microstructure_rho: float = 0.0,
     ) -> None:
         if noise_dist not in ("normal", "t", "levy"):
             raise ValueError(f"noise_dist must be 'normal'|'t'|'levy', got {noise_dist!r}")
@@ -195,6 +196,8 @@ class OverdampedLangevin:
             raise ValueError(f"asym_drag_alpha must be in (-1, 1), got {asym_drag_alpha}")
         if not 0.0 <= memory_kernel_lambda < 1.0:
             raise ValueError(f"memory_kernel_lambda must be in [0, 1), got {memory_kernel_lambda}")
+        if not 0.0 <= microstructure_rho < 1.0:
+            raise ValueError(f"microstructure_rho must be in [0, 1), got {microstructure_rho}")
         self.noise_dist = noise_dist
         self.noise_df = noise_df
         self.levy_alpha = float(levy_alpha)
@@ -204,6 +207,7 @@ class OverdampedLangevin:
         self.asym_drag_alpha = float(asym_drag_alpha)
         self.memory_kernel_lambda = float(memory_kernel_lambda)
         self.memory_kernel_strength = float(memory_kernel_strength)
+        self.microstructure_rho = float(microstructure_rho)
         # Memory kernel state — EMA of |Δs| across calls. Initialized lazily
         # on the first step to match s shape/device. Reset by simulator
         # between rollouts via :meth:`reset_state`.
@@ -211,14 +215,19 @@ class OverdampedLangevin:
         # Last Δprice signal (scalar tensor). Updated by simulator via
         # :meth:`update_price_signal` when asymmetric drag is enabled.
         self._last_price_delta: float = 0.0
+        # B1 microstructure: previous noise sample for MA(1) bid-ask-bounce
+        # filter. Cleared by reset_state. Detached so it doesn't extend BPTT.
+        self._prev_eps: Tensor | None = None
 
     def reset_state(self) -> None:
         """Clear path-dependent buffers. Call before a fresh rollout so the
-        memory kernel and asymmetric-drag price signal don't leak across
-        episodes within the same simulator instance.
+        memory kernel, asymmetric-drag price signal, and microstructure
+        previous-noise buffer don't leak across episodes within the same
+        simulator instance.
         """
         self._mem_ema = None
         self._last_price_delta = 0.0
+        self._prev_eps = None
 
     def update_price_signal(self, log_return: float | Tensor) -> None:
         """Hook called by simulator after each price-formation step. Stores
@@ -302,6 +311,17 @@ class OverdampedLangevin:
 
         noise_scale = torch.sqrt(2.0 * T_t * dt / gamma_t) * (1.0 + mem_boost)
         eps = self._sample_noise(tuple(s.shape), generator, s.device, s.dtype)
+
+        # B1 microstructure noise: ε_eff = ε - rho_micro · ε_{t-1}
+        # MA(1) filter induces lag-1 negative autocorrelation in s_next - s,
+        # mirroring real-world bid-ask bounce that masks the underlying
+        # AR(1) drift from Langevin dynamics. Detach prev_eps so the buffer
+        # doesn't extend BPTT graph across rollout steps.
+        if self.microstructure_rho > 0.0:
+            if self._prev_eps is not None and self._prev_eps.shape == eps.shape:
+                eps = eps - self.microstructure_rho * self._prev_eps
+            self._prev_eps = eps.detach().clone()
+
         stoch_displacement = noise_scale * eps
 
         drift = (f_cons + f_diss) / gamma_t * dt

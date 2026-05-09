@@ -438,6 +438,80 @@ class ExternalPotential(nn.Module):
         return psi.sum()
 
 
+class PowerLawExternalPotential(nn.Module):
+    """B4 — power-law external potential for fat-tail return generation.
+
+    V_ext(s) = w_mlp · MLP(s, ctx).sum()  +  w_pow · Σ_i (|s_i|^α / α).sum()
+
+    The power-law term dominates at large |s|: ∇V_pow ∝ sign(s) · |s|^(α-1).
+    For α<2 (and especially α<1.5), this gives sub-linear restoring force,
+    so large excursions are penalized less than under a quadratic potential.
+    Combined with a finite Gaussian/Lévy noise temperature, this produces
+    return distributions with intrinsically heavy tails — the Hill
+    estimator should detect α-like behavior, moving hill_tail_index into
+    the empirical band [2, 4].
+
+    Backward-compat: setting ``alpha=2.0`` and ``w_pow=0`` reduces to a
+    pure-MLP potential identical to :class:`ExternalPotential` (modulo
+    init randomness). Production cells should use α ∈ [1.2, 1.9] and
+    w_pow ∈ [0.3, 1.0].
+
+    Numerical safety: clamp |s| ≥ ``eps`` (default 1e-6) inside the
+    power-law term so the gradient is bounded for any α > 0.
+    """
+
+    def __init__(
+        self,
+        d: int,
+        context_dim: int = 3,
+        hidden: int = 64,
+        alpha: float = 1.5,
+        w_pow: float = 0.5,
+        w_mlp: float = 1.0,
+        eps: float = 1e-6,
+    ) -> None:
+        super().__init__()
+        if not 0.5 <= alpha <= 2.5:
+            raise ValueError(f"power_law_alpha must be in [0.5, 2.5], got {alpha}")
+        if w_pow < 0.0 or w_mlp < 0.0:
+            raise ValueError(f"w_pow, w_mlp must be ≥ 0; got {w_pow}, {w_mlp}")
+        self.d = d
+        self.context_dim = context_dim
+        self.alpha = float(alpha)
+        self.w_pow = float(w_pow)
+        self.w_mlp = float(w_mlp)
+        self.eps = float(eps)
+        # Re-use the same MLP shape as ExternalPotential for a clean ablation
+        self.net = nn.Sequential(
+            nn.Linear(d + context_dim, hidden),
+            nn.SiLU(),
+            nn.Linear(hidden, hidden),
+            nn.SiLU(),
+            nn.Linear(hidden, 1),
+        )
+        for m in self.net.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight, gain=0.5)
+                nn.init.zeros_(m.bias)
+
+    def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
+        if context is None:
+            context = torch.zeros(self.context_dim, device=s.device, dtype=s.dtype)
+        if context.dim() != 1 or context.shape[0] != self.context_dim:
+            raise ValueError(
+                f"context must be 1-D with {self.context_dim} entries, got shape {tuple(context.shape)}"
+            )
+        n = s.shape[0]
+        ctx = context.unsqueeze(0).expand(n, self.context_dim)
+        inp = torch.cat([s, ctx], dim=-1)
+        psi_mlp = self.net(inp).squeeze(-1).sum()
+        # Power-law term: |s|^α / α  (positive, convex for α>1, concave for α<1).
+        # Clamp |s| from below so gradient at s≈0 is bounded.
+        s_abs = s.abs().clamp_min(self.eps)
+        psi_pow = (s_abs.pow(self.alpha) / self.alpha).sum()
+        return self.w_mlp * psi_mlp + self.w_pow * psi_pow
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Dissipative potential: V_dissipation(s, s_prev) = λ · Σ_i |s_i - s_i_prev|²
 # ─────────────────────────────────────────────────────────────────────────────
