@@ -58,6 +58,44 @@ def score_one(p: Path) -> int | None:
     return n_pass
 
 
+# Numerical-stability filter — drop seeds whose evaluation values indicate a
+# blown-up trajectory (heavy-tail composition can amplify variance enough to
+# push GARCH-residual fits or higher moments to wildly nonphysical magnitudes).
+# Without this, a single bad seed can push a cell's mean up by 30+ on
+# conditional_kurtosis or aggregational_gaussianity.
+INSTABILITY_LIMITS = {
+    "conditional_kurtosis":      100.0,
+    "aggregational_gaussianity": 1000.0,
+}
+
+
+def instability_reason(p: Path) -> str | None:
+    """Returns a short reason string if the run is numerically unstable, else None.
+
+    Reasons checked:
+      - any aggregated fact mean is NaN/inf
+      - conditional_kurtosis | aggregational_gaussianity exceeds INSTABILITY_LIMITS
+    """
+    if not p.exists():
+        return None  # absent != unstable; score_one already handles this
+    try:
+        d = json.loads(p.read_text())
+    except Exception:
+        return None
+    agg = d.get("aggregated", {})
+    for k, _ in BANDS.items():
+        if k not in agg:
+            continue
+        v = agg[k].get("mean")
+        if v is None or not np.isfinite(v):
+            return f"{k}=NaN/inf"
+    for k, lim in INSTABILITY_LIMITS.items():
+        v = agg.get(k, {}).get("mean")
+        if v is not None and abs(v) > lim:
+            return f"{k}={v:.1f} (>|{lim}|)"
+    return None
+
+
 def bootstrap_ci(values: list[int], n_boot: int = 10_000) -> tuple[float, float, float]:
     if not values:
         return float("nan"), float("nan"), float("nan")
@@ -142,14 +180,40 @@ def main() -> None:
         if not d.is_dir():
             continue
         label = d.name.replace("results_", "")
-        score = score_one(d / "inference_merged.json")
-        rows.append({"label": label, "score": score, **parse_label(label)})
+        merged = d / "inference_merged.json"
+        score = score_one(merged)
+        unstable = instability_reason(merged)
+        # Stability filter: a seed that evaluated successfully but is
+        # numerically unstable should NOT count toward cell mean/max.
+        # Track separately so we can report rejection counts.
+        rows.append({
+            "label": label,
+            "score": None if unstable is not None else score,
+            "unstable_reason": unstable,
+            "raw_score": score,
+            **parse_label(label),
+        })
 
     lines: list[str] = [f"# Score — {cfg_dir.name}", ""]
     n_total = len(rows)
-    n_done = sum(1 for r in rows if r["score"] is not None)
-    lines.append(f"Discovered {n_total} runs, {n_done} with eval.")
+    n_done = sum(1 for r in rows if r["raw_score"] is not None)
+    n_unstable = sum(1 for r in rows if r["unstable_reason"] is not None)
+    lines.append(f"Discovered {n_total} runs, {n_done} with eval, "
+                 f"{n_unstable} rejected for numerical instability "
+                 f"({n_done - n_unstable} counted in stats below).")
     lines.append("")
+    if n_unstable > 0:
+        lines.append("## Rejected (numerical instability)")
+        lines.append("Excluded from mean/max because conditional_kurtosis>100, "
+                     "aggregational_gaussianity>1000, or any fact NaN/inf.")
+        lines.append("")
+        lines.append("| run | reason | raw_score |")
+        lines.append("|---|---|---:|")
+        for r in rows:
+            if r["unstable_reason"]:
+                rs = f"{r['raw_score']}/11" if r["raw_score"] is not None else "—"
+                lines.append(f"| `{r['label']}` | {r['unstable_reason']} | {rs} |")
+        lines.append("")
 
     # Contamination paired (ct): group by variant (default vs sprint2)
     if any(r.get("phase") == "ct" for r in rows):

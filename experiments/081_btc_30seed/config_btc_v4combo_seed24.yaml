@@ -19,12 +19,13 @@ simulator:
   lam_dissipation: 0.01
   learn_gamma: false
   learn_temperature: false
-  levy_alpha: 1.7
   memory_kernel_lambda: 0.95
   memory_kernel_strength: 1.0
   n_agents: 10000
   noise_df: 5
-  noise_dist: t
+  noise_dist: levy
+  noise_levy_alpha: 1.7
+  noise_levy_clip: 50.0
   pair_input_layernorm: true
   pairwise_kind: stochastic_mlp
   price_formation: excess_demand
@@ -75,6 +76,6 @@ training:
   n_iters: 200
   persistent_state: true
   seed: 24
-  target_dataset: btc
-  target_period: 2017-2026_daily
+  target_dataset: btcusdt
+  target_period: 2024Q1_1m
   warmup_steps: 16
