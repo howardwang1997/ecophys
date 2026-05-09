@@ -35,24 +35,40 @@
 Goal: determine whether v4 mechanisms are additive, complementary, or conflicting.
 This is the decisive experiment for Paper A §4.3.
 
-### 082 — V4 three-mechanism combo (120 cfgs, ~3.5h H20)
+### 082 — V4 mechanism leave-one-out + dose-response (180 cfgs, ~2.6h H20)
 
-| cell | levy_α | asym_α | memk (λ, scale) | inner | hypothesis |
+**Revised 2026-05-09** after plan review uncovered that the original 4-cell
+plan (a) didn't include a clean ablation around a single flagship cell,
+and (b) didn't combine ALL four mechanisms (Lévy + asym + memk + adiabatic
+inner_steps) — yet that 4-mechanism combination is the only configuration
+that can *plausibly* break the 2-3 facts the 9/11 winners all fail.
+
+| cell | levy_α | asym_α | memk (λ, scale) | inner | answers |
 |---|---:|---:|---|---:|---|
-| `combo_levy19_asym04_memk` | 1.9 | 0.4 | (0.95, 1.0) | 1 | Full additive; expect mean ≥ 5.5 |
-| `combo_levy19_asym06` | 1.9 | 0.6 | — | 1 | Lévy + asym composition |
-| `combo_asym04_memk` | — | 0.4 | (0.95, 1.0) | 1 | asym+memk without Lévy |
-| `combo_inner3_asym04_memk` | — | 0.4 | (0.95, 1.0) | 3 | Adiabatic breaks AR(1) + asym+memk |
+| `combo_full` | 1.9 | 0.4 | (0.95, 1.0) | 3 | flagship: full additive? |
+| `combo_no_levy` | — | 0.4 | (0.95, 1.0) | 3 | does Lévy add? |
+| `combo_no_inner` | 1.9 | 0.4 | (0.95, 1.0) | 1 | does adiabatic add? |
+| `combo_no_memk` | 1.9 | 0.4 | — | 3 | does memk add? |
+| `combo_asym05` | 1.9 | 0.5 | (0.95, 1.0) | 3 | asym dose-response |
+| `combo_levy17` | 1.7 | 0.4 | (0.95, 1.0) | 3 | Lévy dose-response |
 
 **Design rationale**:
-- Not running full 16-cell grid (4 mechanisms × 2 levels × 30 seeds = 480 cfg ≈ 14h): too expensive.
-- a04 chosen because a06 (std=2.12) is numerically unstable and a03 (mean=4.57) is too weak.
-- inner_3 rather than inner_5: Branch C's inner_5 underperforms inner_1 standalone, suggesting that inner only helps when combined with other mechanisms.
+- Leave-one-out structure quantifies each mechanism's marginal contribution
+  vs the flagship — the standard ablation table reviewers expect.
+- a04 (not a06) chosen because a06 had std=2.12 driven by conditional_kurtosis
+  blowups in 4/30 seeds; a04 should be the sweet spot.
+- inner_3 (not inner_5) — Branch C's inner_5 underperformed inner_1 standalone,
+  suggesting adiabatic helps only when paired with other mechanisms.
+- Lévy α=1.9 (not 1.7) — Branch D's 077 `levy_a19` had the highest cell mean
+  (4.93). α=1.7 added as dose-response to test whether heavier tails help when
+  AR(1) is broken by adiabatic.
 
-**Success criteria**:
-- ≥ 1 cell with mean n/11 ≥ 6.0 (crosses GARCH baseline + 1σ)
-- ≥ 1 cell with max n/11 = 10 (new project record)
-- Crucially: which fact gets fixed by which combination?
+**Success criteria** (must satisfy ALL):
+- (a) `combo_full` mean n/11 ≥ 5.5 (improves on `asymdrag_a06`'s 5.10)
+- (b) `combo_full` ≥ 4/30 seeds at ≥8/11 (matches a06's stability)
+- (c) `combo_full` max n/11 ≥ 10 (new project record)
+
+Stretch: combo_full mean ≥ 6.0 AND ≥1 seed at 11/11.
 
 ### 083 — Asym-drag fine grid (90 cfgs, ~2.5h H20)
 
@@ -60,21 +76,27 @@ Cell: `asymdrag_a04`, `asymdrag_a05`, `asymdrag_a07` × 30 seeds
 
 **Goal**: dose-response curve for §4.3 ablation. Find sweet spot between a06 (high mean, high std) and a03 (low mean, stable).
 
-**Priority**: medium. Skip if H20 time constrained.
+**Priority**: medium. Skip if H20 time constrained — partially subsumed by
+082's `combo_asym05` cell.
 
-### 075 leftover — adiabatic inner_3 / inner_10 (60 cfgs, ~1.5h H20)
+### 075 leftover — adiabatic inner_3 / inner_10 / inner_20 (90 cfgs, ~1.3h H20)
 
 **Existing**: inner_1 mean=4.60 ac_pass=20%; inner_5 mean=4.07 ac_pass=43%.
+**Already-generated configs cover**: inner_3, inner_10, inner_20 × 30 seeds = 90.
 
-**Hypothesis**: ac_pass is monotonically increasing in inner_steps. If inner_10 pushes ac_pass > 60%, we have proof that adiabatic separation decouples the AR(1) artifact.
+**Hypothesis**: ac_pass is monotonically increasing in inner_steps. If inner_10 or inner_20 pushes ac_pass > 60%, we have proof that adiabatic separation decouples the AR(1) artifact.
 
 **Priority**: high. This is the only lever that has shown movement on autocorr.
 
-### 081 leftover — BTC v4combo (30 cfgs, ~0.8h H20)
+### 081 leftover — BTC v4combo + baseline regen (60 cfgs, ~0.9h H20)
 
-**Base**: `btc_v4combo` = levy_alpha=1.7 + asym=0.6 + memk(0.95, 1.0)
+**Critical fix**: existing 081 configs had TWO bugs:
+- `levy_alpha: 1.7` (wrong field name) instead of `noise_dist: levy` + `noise_levy_alpha: 1.7`
+- `target_dataset: btc` + `target_period: 2017-2026_daily` — neither matches the trainer's recognised keys (`btcusdt` + `2024Q1_1m`), so `load_real_returns` silently fell back to SPX.
 
-**Goal**: cross-asset validation of v4 mechanisms. §4.4 of Paper A.
+**Result**: every prior 081 result was SPX masquerading as BTC. The cross-asset story needs to be redone with the corrected configs. Both `btc_baseline` (30 cfg) and `btc_v4combo` (30 cfg) regenerated.
+
+**Goal**: real cross-asset validation. §4.4 of Paper A.
 
 **Priority**: high. Without this, no cross-asset story.
 
@@ -84,17 +106,17 @@ Cell: `asymdrag_a04`, `asymdrag_a05`, `asymdrag_a07` × 30 seeds
 
 **Priority**: low-medium. Paper A can proceed without but the ablation table is strengthened by having it.
 
-### A-round resource summary
+### A-round resource summary (revised)
 
-| batch | cfgs | H20 hours | priority |
-|---|---:|---:|---|
-| 082 combo | 120 | 3.5 | **MUST** |
-| 075 leftover | 60 | 1.5 | **MUST** |
-| 081 v4combo BTC | 30 | 0.8 | **MUST** |
-| 083 asym fine | 90 | 2.5 | optional |
-| 073 Hawkes | 48 | 1.2 | optional |
-| **minimum batch** | **210** | **~5.8h** | |
-| **full batch** | **348** | **~9.5h** | fits in overnight |
+| batch | total cfgs | effective (SKIP_DONE) | H20 hours | priority |
+|---|---:|---:|---:|---|
+| 082 combo (6 cells) | 180 | 180 | 2.6 | **MUST** |
+| 075 leftover | 150 | 90 | 1.3 | **MUST** |
+| 081 BTC regen | 60 | 60 | 0.9 | **MUST** |
+| 083 asym fine | 90 | 90 | 1.3 | optional |
+| 073 Hawkes | 48 | 48 | 0.7 | optional |
+| **minimum batch** | **390** | **330** | **~4.8h** | |
+| **full batch** | **528** | **468** | **~6.8h** | fits in overnight |
 
 ---
 
@@ -156,9 +178,33 @@ B-round is activated only if A-round saturates (combo mean ≤ 5.1). Listed in d
 
 **Paper A value**: Medium. Fixes one fact, but that fact is consistently failing in v4 winners.
 
-### B4 — (reserved) Combined adiabatic + asym
+### B4 — Power-law force tail in ExternalPotential (fixes hill_tail intrinsically)
 
-Not a new mechanism; already covered by 082's `combo_inner3_asym04_memk` cell.
+**Motivation**:
+- Lévy noise alone does NOT fix hill_tail — Branch D showed only 1/30 seeds in
+  077 levy_a19 actually pass the [2, 4] band (cell mean=1.29). Hill estimator
+  on a finite series is dominated by AR(1) drift contamination.
+- Even after AR(1) is broken (via inner_steps adiabatic), the noise distribution
+  alone may not give a robust hill in [2, 4] — we need a force shape that
+  generates fat tails *intrinsically* via the dynamics, not through noise.
+- Power-law external potential V_ext(s) ∝ |s|^α / α with α ∈ [1.2, 1.8] gives
+  ∇V ∝ sign(s)·|s|^(α-1) — a soft, fat-tail-friendly force. This produces
+  return distributions with naturally-heavy tails because the restoring force
+  weakens (relative to linear) far from origin.
+
+**Implementation**:
+- Add `power_alpha: float | None` to `EcoMDConfig`; when set, modify
+  `ExternalPotential.forward` to use `|s|^α / α` instead of the existing
+  quadratic.
+- File: `ecomd/models/potentials.py:ExternalPotential`
+- ~150 lines, 1.5 days.
+
+**Activation criterion**: A-round complete AND combo_full hill_tail pass < 30%
+AND B1 (or AR(1) fix) is in place. Otherwise hill remains AR(1)-dominated and
+this mechanism cannot show its effect.
+
+**Paper A value**: High if needed. Direct hit on a stylized fact that all
+existing baselines (GARCH excepted) fail.
 
 ### B-round decision tree (post-082)
 
@@ -219,15 +265,36 @@ Lead time: ~8 months. Comfortable margin.
 
 ---
 
-## 7. What to do tonight
+## 7. What to do tonight (revised 2026-05-09)
 
-1. Generate 082 combo configs (4 cells × 30 seeds = 120 cfg) via new `experiments/082_v4_combo_30seed/generate_configs.py`.
-2. Generate 075 leftover configs for inner_3 / inner_10 (already done in earlier commit).
-3. Generate 081 leftover `btc_v4combo` configs (already done).
-4. Optionally: 083 fine-grid (90 cfg) and 073 Hawkes (48 cfg).
-5. Launcher: `scripts/h20_branch_e_combo.sh` — phase-runs 082 → 075 → 081 → (optional 083 + 073), with SKIP_DONE=1 and per-phase timing.
-6. Push to GitHub, SSH H20, daemon-launch.
-7. B-round implementation **waits until 082 results are in**. Do not pre-implement B1-B3 — wastes time on mechanisms we may not need.
+✅ Completed during plan review:
+
+1. ✅ Generated 082 combo configs — 6 cells (combo_full + 3 leave-one-out + 2
+   dose-response) × 30 seeds = 180 cfg via
+   `experiments/082_v4_combo_30seed/generate_configs.py`.
+2. ✅ Fixed 081 schema bugs and regenerated:
+   - `noise_dist: levy` + `noise_levy_alpha` (was `levy_alpha:` + `noise_dist: t`)
+   - `target_dataset: btcusdt` + `target_period: 2024Q1_1m` (was `btc` +
+     `2017-2026_daily`, which silently fell back to SPX)
+   - Deleted prior 30 baseline + 30 v4combo SPX-masquerading-as-BTC results.
+3. ✅ Added numerical-stability filter to `scripts/score_phase.py`: rejects
+   seeds with conditional_kurtosis>100, aggregational_gaussianity>1000, or
+   any fact NaN/inf. Reports rejection count separately. Validated on 078
+   (24/90 rejected, all from `asymdrag_a09` over-strong cell).
+4. ✅ Wrote `scripts/h20_branch_e_combo.sh` with pre-launch checks (schema
+   verify, disk free, no orphan torchrun, GPU presence) and per-phase
+   scoreboard auto-emit.
+5. ✅ Smoke-tested combo_full on Mac (n_agents=256, n_steps=200): finite
+   returns, std=0.0129, no NaN. All 4 mechanisms compose without blowup.
+6. ✅ Re-ran V4 unit tests (27 tests pass).
+
+⏳ Next:
+
+7. Push branch to GitHub.
+8. SSH H20, pull, run `bash scripts/h20_branch_e_combo.sh --dry-run` for
+   sanity check, then `DAEMON=1 bash scripts/h20_branch_e_combo.sh`.
+9. B-round implementation **waits until 082 results are in**. Do not pre-
+   implement B1-B4 — wastes time on mechanisms we may not need.
 
 ---
 
@@ -239,3 +306,7 @@ Lead time: ~8 months. Comfortable margin.
 | 2026-05-07 | Commit to 082 combo as Paper A's decisive experiment | 9/11 winners all fail the same 2-3 facts → combo is necessary |
 | 2026-05-07 | Defer B-round implementation until 082 results | Avoid wasted code if A-round succeeds |
 | 2026-05-07 | Target ICML 2027 main, not NeurIPS 2026 | Timeline; substance over deadline |
+| 2026-05-09 | Restructure 082 as 6-cell leave-one-out + dose-response | Original 4-cell plan didn't include any all-4-mechanism flagship; ablation needed |
+| 2026-05-09 | Fix 081 BTC bugs: Lévy schema + dataset key | Prior 30 baseline runs had silently used SPX (trainer fallback path); cross-asset story was fake |
+| 2026-05-09 | Add numerical stability filter to scorer | Composing 4 mechanisms may amplify variance; need to drop blow-ups before counting |
+| 2026-05-09 | Add B4 (power-law force tail) to B-round roster | Lévy alone doesn't fix hill_tail (verified: 1/30 pass in 077 levy_a19) — need a force-shape mechanism |
