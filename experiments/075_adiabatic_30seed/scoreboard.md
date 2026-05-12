@@ -1,6 +1,6 @@
 # Score — 075_adiabatic_30seed
 
-Discovered 150 runs, 90 with eval, 19 rejected for numerical instability (71 counted in stats below).
+Discovered 90 runs, 90 with eval, 19 rejected for numerical instability (71 counted in stats below).
 
 ## Rejected (numerical instability)
 Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussianity>1000, or any fact NaN/inf.
@@ -26,6 +26,13 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `inner_5_g10_seed4` | aggregational_gaussianity=1718.6 (>|1000.0|) | 5/11 |
 | `inner_5_g10_seed7` | aggregational_gaussianity=2424.1 (>|1000.0|) | 3/11 |
 | `inner_5_g10_seed9` | aggregational_gaussianity=1038.5 (>|1000.0|) | 4/11 |
+
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `inner_3_g10` | 24 | **4.62** | [3.96, 5.29] | 1.71 | 8 | 1 | 6 |
+| `inner_1_g10` | 30 | **4.60** | [4.13, 5.10] | 1.40 | 8 | 2 | 0 |
+| `inner_5_g10` | 17 | **4.24** | [3.47, 5.00] | 1.68 | 7 | 0 | 13 |
 
 ## Top 10 individual runs
 | run | n/11 |

@@ -163,6 +163,18 @@ def parse_label(label: str) -> dict:
             out["variant"] = "_".join(parts[2:-1])
         elif out.get("group") == "n_seeds":
             out["variant"] = "default"
+        return out
+
+    # Generic fallback for cell labels not matching the older phase prefixes
+    # (e.g. 088 pair_AB_seed3, 077 levy_a19_seed8, 086 b3_k3_pure_seed4,
+    # 081 btc_v4combo_seed14). Treats everything before "_seedN" as the cell
+    # and the trailing seed token as the seed index. This is what enables
+    # the unconditional per-cell summary section emitted later.
+    seed_idx = next((i for i, t in enumerate(parts) if t.startswith("seed")
+                     and len(t) > 4 and t[4:].isdigit()), None)
+    if seed_idx is not None:
+        out["cell"] = "_".join(parts[:seed_idx])
+        out["seed"] = int(parts[seed_idx][4:])
     return out
 
 
@@ -213,6 +225,39 @@ def main() -> None:
             if r["unstable_reason"]:
                 rs = f"{r['raw_score']}/11" if r["raw_score"] is not None else "—"
                 lines.append(f"| `{r['label']}` | {r['unstable_reason']} | {rs} |")
+        lines.append("")
+
+    # Unconditional per-cell summary (added 2026-05-12).
+    # The phase-specific sections below only fire for legacy phase names
+    # (pc/pcfix/ct/sw/abl/ph). Branch D-onward dirs (077-088) use generic
+    # cell labels (combo_full, pair_AB, asymdrag_a06, etc.) that need a
+    # universal aggregator. Without this section, scoreboard.md only had
+    # "Top 10" and downstream readers cherry-picked subsets — exactly the
+    # H20 commit-message bug from 2026-05-11. This block prevents that.
+    cell_groups: dict[str, list[int]] = defaultdict(list)
+    cell_max: dict[str, int] = {}
+    cell_rej: dict[str, int] = defaultdict(int)
+    for r in rows:
+        cell = r.get("cell") or r.get("variant") or r.get("phase") or "unknown"
+        if r.get("unstable_reason") is not None:
+            cell_rej[cell] += 1
+        elif r.get("score") is not None:
+            cell_groups[cell].append(r["score"])
+            cell_max[cell] = max(cell_max.get(cell, 0), r["score"])
+    if cell_groups:
+        lines.append("## Per-cell summary (stability filter applied)")
+        lines.append("| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |")
+        lines.append("|---|---:|---:|---|---:|---:|---:|---:|")
+        # Sort by mean descending for at-a-glance "what worked"
+        for cell in sorted(cell_groups, key=lambda c: -float(np.mean(cell_groups[c]))):
+            scores = cell_groups[cell]
+            m, lo, hi = bootstrap_ci(scores)
+            std = float(np.std(scores, ddof=1)) if len(scores) > 1 else 0.0
+            n_ge8 = sum(1 for s in scores if s >= 8)
+            rej = cell_rej.get(cell, 0)
+            lines.append(f"| `{cell}` | {len(scores)} | **{m:.2f}** | "
+                         f"[{lo:.2f}, {hi:.2f}] | {std:.2f} | {cell_max[cell]} | "
+                         f"{n_ge8} | {rej} |")
         lines.append("")
 
     # Contamination paired (ct): group by variant (default vs sprint2)

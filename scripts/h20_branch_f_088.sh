@@ -48,6 +48,13 @@ export SKIP_DONE="${SKIP_DONE:-1}"
 export PARALLEL="${PARALLEL:-8}"
 export NPROC="${NPROC:-1}"
 
+# Cell priority order — conf_* first because they're the longest cells
+# (50 seeds each) and the most important for tightening Branch D/E CIs.
+# Then pair_AB (most promising single combo), then other pairs, then B3
+# tuning, then BTC pairs, then triple sanity. If H20 process dies past
+# ~10h (Branch D failure mode), the most-impactful results are already on disk.
+export CONFIG_ORDER_PREFIXES="conf_,pair_AB_,pair_AM_,pair_AB,pair_AM,pair_,b3_,btc_,triple_"
+
 GPU_DIRS=(
     "experiments/088_pairs_and_confirmation"
 )

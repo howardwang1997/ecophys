@@ -11,6 +11,13 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `b1_rho03_combo_seed15` | aggregational_gaussianity=1621.6 (>|1000.0|) | 4/11 |
 | `b1_rho05_pure_seed11` | aggregational_gaussianity=1061.9 (>|1000.0|) | 2/11 |
 
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `b1_rho03_pure` | 24 | **4.58** | [3.92, 5.21] | 1.64 | 8 | 1 | 0 |
+| `b1_rho05_pure` | 29 | **4.52** | [4.07, 4.97] | 1.24 | 7 | 0 | 1 |
+| `b1_rho03_combo` | 28 | **3.57** | [2.93, 4.29] | 1.85 | 8 | 1 | 2 |
+
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|

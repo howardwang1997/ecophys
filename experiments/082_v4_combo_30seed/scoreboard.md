@@ -39,6 +39,16 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `combo_no_memk_seed5` | aggregational_gaussianity=2535.5 (>|1000.0|) | 4/11 |
 | `combo_no_memk_seed9` | aggregational_gaussianity=1337.5 (>|1000.0|) | 6/11 |
 
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `combo_no_inner` | 23 | **4.74** | [4.13, 5.35] | 1.54 | 8 | 1 | 1 |
+| `combo_full` | 26 | **4.62** | [3.85, 5.38] | 2.04 | 9 | 2 | 4 |
+| `combo_no_levy` | 24 | **4.04** | [3.38, 4.71] | 1.68 | 8 | 1 | 6 |
+| `combo_no_memk` | 24 | **3.96** | [3.42, 4.50] | 1.40 | 6 | 0 | 6 |
+| `combo_levy17` | 21 | **3.86** | [3.10, 4.62] | 1.82 | 8 | 1 | 9 |
+| `combo_asym05` | 25 | **3.48** | [2.80, 4.16] | 1.76 | 7 | 0 | 5 |
+
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|

@@ -109,6 +109,42 @@ main() {
         echo "[error] no config_*.yaml in $CONFIG_DIR" | tee -a "$QUEUE_LOG"
         return 1
     fi
+
+    # Optional priority ordering (added 2026-05-12). When CONFIG_ORDER_PREFIXES
+    # is set (comma-separated list of cell-name prefixes), configs whose
+    # label starts with one of those prefixes are run FIRST, in the listed
+    # order. Remaining configs run after, in alphabetic order. Use this to
+    # ensure the most important / longest-running cells land before any
+    # H20 process death (Branch D failure mode at ~12h).
+    #
+    # Implementation note: we avoid bash 4 associative arrays (declare -A)
+    # because some H20 environments still ship bash 3.2 and aborting under
+    # `set -u` would kill the phase. Instead we use a delimited "taken"
+    # string and substring matching.
+    if [[ -n "${CONFIG_ORDER_PREFIXES:-}" ]]; then
+        local -a ordered=()
+        local taken=":"   # delimited so we can substring-match safely
+        local prefix cfg label
+        local IFS_BACKUP="$IFS"
+        IFS=',' read -ra prefixes <<< "$CONFIG_ORDER_PREFIXES"
+        IFS="$IFS_BACKUP"
+        for prefix in "${prefixes[@]}"; do
+            for cfg in "${cfgs[@]}"; do
+                label=$(basename "$cfg" .yaml | sed 's/^config_//')
+                if [[ "$label" == "${prefix}"* && "$taken" != *":${cfg}:"* ]]; then
+                    ordered+=("$cfg")
+                    taken="${taken}${cfg}:"
+                fi
+            done
+        done
+        for cfg in "${cfgs[@]}"; do
+            if [[ "$taken" != *":${cfg}:"* ]]; then
+                ordered+=("$cfg")
+            fi
+        done
+        cfgs=("${ordered[@]}")
+        echo "  CONFIG_ORDER_PREFIXES=$CONFIG_ORDER_PREFIXES (first ${#prefixes[@]} prefix groups prioritised)" | tee -a "$QUEUE_LOG"
+    fi
     echo "  Configs: ${#cfgs[@]}" | tee -a "$QUEUE_LOG"
 
     # Train pass

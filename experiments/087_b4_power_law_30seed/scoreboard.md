@@ -21,6 +21,13 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `b4_alpha18_combo_seed12` | aggregational_gaussianity=1699.0 (>|1000.0|) | 4/11 |
 | `b4_alpha18_combo_seed2` | aggregational_gaussianity=1527.6 (>|1000.0|) | 5/11 |
 
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `b4_alpha15_combo` | 21 | **4.67** | [3.86, 5.43] | 1.88 | 8 | 1 | 9 |
+| `b4_alpha13_pure` | 30 | **4.63** | [4.17, 5.10] | 1.30 | 7 | 0 | 0 |
+| `b4_alpha18_combo` | 26 | **3.38** | [2.73, 4.04] | 1.75 | 7 | 0 | 4 |
+
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|
