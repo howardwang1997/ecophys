@@ -25,6 +25,13 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `b3_k5_combo_seed8` | conditional_kurtosis=204.8 (>|100.0|) | 0/11 |
 | `b3_k5_combo_seed9` | aggregational_gaussianity=1311.8 (>|1000.0|) | 6/11 |
 
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `b3_k3_pure` | 24 | **5.21** | [4.67, 5.75] | 1.44 | 8 | 1 | 0 |
+| `b3_k3_combo` | 22 | **4.41** | [3.59, 5.18] | 1.97 | 7 | 0 | 8 |
+| `b3_k5_combo` | 21 | **4.05** | [3.48, 4.57] | 1.32 | 6 | 0 | 9 |
+
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|

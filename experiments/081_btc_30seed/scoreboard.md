@@ -15,6 +15,12 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `btc_v4combo_seed27` | conditional_kurtosis=363.2 (>|100.0|) | 4/11 |
 | `btc_v4combo_seed9` | aggregational_gaussianity=1200.0 (>|1000.0|) | 5/11 |
 
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `btc_v4combo` | 23 | **5.39** | [4.87, 5.96] | 1.34 | 8 | 2 | 7 |
+| `btc_baseline` | 30 | **4.80** | [4.27, 5.33] | 1.49 | 8 | 1 | 0 |
+
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|

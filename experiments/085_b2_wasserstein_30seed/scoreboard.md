@@ -19,6 +19,13 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `b2_wasserstein_combo_seed7` | aggregational_gaussianity=1728.5 (>|1000.0|) | 5/11 |
 | `b2_wasserstein_combo_seed9` | aggregational_gaussianity=1322.0 (>|1000.0|) | 3/11 |
 
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `b2_wasserstein_combo` | 26 | **4.46** | [3.73, 5.19] | 1.96 | 9 | 2 | 4 |
+| `b2_wasserstein_pure` | 22 | **4.41** | [3.95, 4.86] | 1.10 | 6 | 0 | 0 |
+| `b2_hybrid_combo` | 23 | **4.04** | [3.48, 4.61] | 1.43 | 7 | 0 | 7 |
+
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|

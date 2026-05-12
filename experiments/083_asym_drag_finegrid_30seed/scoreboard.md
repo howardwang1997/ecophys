@@ -20,6 +20,13 @@ Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussiani
 | `asymdrag_a07_seed7` | aggregational_gaussianity=1148.7 (>|1000.0|) | 5/11 |
 | `asymdrag_a07_seed9` | conditional_kurtosis=117.3 (>|100.0|) | 5/11 |
 
+## Per-cell summary (stability filter applied)
+| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |
+|---|---:|---:|---|---:|---:|---:|---:|
+| `asymdrag_a07` | 23 | **4.74** | [4.13, 5.30] | 1.45 | 7 | 0 | 7 |
+| `asymdrag_a04` | 27 | **4.33** | [3.59, 5.15] | 2.13 | 9 | 3 | 3 |
+| `asymdrag_a05` | 28 | **4.14** | [3.50, 4.79] | 1.76 | 7 | 0 | 2 |
+
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|
