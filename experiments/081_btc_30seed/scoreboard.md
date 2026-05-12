@@ -1,18 +1,31 @@
 # Score — 081_btc_30seed
 
-Discovered 60 runs, 30 with eval.
+Discovered 60 runs, 60 with eval, 7 rejected for numerical instability (53 counted in stats below).
+
+## Rejected (numerical instability)
+Excluded from mean/max because conditional_kurtosis>100, aggregational_gaussianity>1000, or any fact NaN/inf.
+
+| run | reason | raw_score |
+|---|---|---:|
+| `btc_v4combo_seed0` | conditional_kurtosis=413.6 (>|100.0|) | 5/11 |
+| `btc_v4combo_seed10` | aggregational_gaussianity=1706.1 (>|1000.0|) | 4/11 |
+| `btc_v4combo_seed13` | aggregational_gaussianity=1742.2 (>|1000.0|) | 4/11 |
+| `btc_v4combo_seed15` | aggregational_gaussianity=1063.4 (>|1000.0|) | 7/11 |
+| `btc_v4combo_seed17` | conditional_kurtosis=3333.4 (>|100.0|) | 5/11 |
+| `btc_v4combo_seed27` | conditional_kurtosis=363.2 (>|100.0|) | 4/11 |
+| `btc_v4combo_seed9` | aggregational_gaussianity=1200.0 (>|1000.0|) | 5/11 |
 
 ## Top 10 individual runs
 | run | n/11 |
 |---|---:|
 | `btc_baseline_seed22` | **8/11** |
-| `btc_baseline_seed13` | **7/11** |
-| `btc_baseline_seed11` | **6/11** |
-| `btc_baseline_seed12` | **6/11** |
-| `btc_baseline_seed26` | **6/11** |
-| `btc_baseline_seed15` | **5/11** |
-| `btc_baseline_seed16` | **5/11** |
-| `btc_baseline_seed17` | **5/11** |
-| `btc_baseline_seed19` | **5/11** |
-| `btc_baseline_seed2` | **5/11** |
+| `btc_v4combo_seed24` | **8/11** |
+| `btc_v4combo_seed26` | **8/11** |
+| `btc_baseline_seed26` | **7/11** |
+| `btc_v4combo_seed1` | **7/11** |
+| `btc_v4combo_seed16` | **7/11** |
+| `btc_v4combo_seed5` | **7/11** |
+| `btc_baseline_seed1` | **6/11** |
+| `btc_baseline_seed13` | **6/11** |
+| `btc_baseline_seed14` | **6/11** |
 

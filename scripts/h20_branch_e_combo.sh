@@ -261,7 +261,7 @@ run_main() {
         echo "" | tee -a "$MASTER_LOG"
         echo "═══ PHASE: $d ═══ $(date) ═══" | tee -a "$MASTER_LOG"
         SECONDS=0
-        if ! bash scripts/h20_run_phase.sh "$d" 2>&1 | tee -a "$MASTER_LOG"; then
+        if ! DAEMON=0 bash scripts/h20_run_phase.sh "$d" 2>&1 | tee -a "$MASTER_LOG"; then
             echo "  [WARN] phase $d returned non-zero; continuing" | tee -a "$MASTER_LOG"
         fi
         echo "  [phase $d] elapsed ${SECONDS}s" | tee -a "$MASTER_LOG"
