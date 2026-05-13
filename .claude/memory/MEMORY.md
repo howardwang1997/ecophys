@@ -1,5 +1,8 @@
-- [Arch state 2026-05-04](project_arch_state_2026-05-04.md) — `p_4_2__2_1` 85-seed mean **5.14/11** (was 5.40); long-weekend 053-066 found no architectural lift; only 057 `rr_s120_w10_e5` (n=6, mean 6.83) worth retesting
-- [AR(1) drift artifact](project_ar1_drift_artifact.md) — returns are AR(1) ρ̂=0.904, not random walk. autocorr_returns 4% pre→ 94% post-whitening pass. Likely inflates acf_sq² and Hurst → real arch pass count ~3/11
+- [Paper A → NeurIPS 2027](project_paper_a_neurips_2027.md) — 2026-05-13 reframe: "differentiable simulator as falsification tool" + calibration-speed shootout vs ABIDES+SBI as headline; ~18-25% accept estimate; plan at ~/.claude/plans/curried-cuddling-cloud.md
+- [Branch F (088) results](project_branch_f_088.md) — 460-run 50-seed sweep: pair_AB best mean 5.18, depth-2 sweet spot, BTC fact-trades not lifts, B3 most stable; Branch D/E means were inflated ~0.16 at n=30
+- [Architectural floors](project_arch_floors.md) — autocorr_returns + zumbach_asymmetry unreachable by any v3+V4+B-round mix; practical ceiling 9/11 not 11/11; AR(1) and Zumbach patches scheduled in NeurIPS 2027 plan M1
+- [Arch state 2026-05-04](project_arch_state_2026-05-04.md) — `p_4_2__2_1` 85-seed mean **5.14/11** (pre-V4 architecture; superseded by Branch D/E/F results, kept for history)
+- [AR(1) drift artifact](project_ar1_drift_artifact.md) — returns are AR(1) ρ̂=0.904, not random walk. autocorr_returns 4% pre→ 94% post-whitening pass. Source diagnosed: smooth force-field drift in integrator.py:327
 - [Arch state 2026-04-30](project_arch_state_2026-04-30.md) — superseded; kept for history
 - [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 5-seed inflates ~30% twice now (047→049, 048→052)
 - [Chunk OOM constraint](project_chunk_oom_constraint.md) — full 4.2 arch + N=10K, chunk>24 OOMs single-card; 8 cards = DDP not tensor-parallel; bf16 / N reduction / rollout-reg are the levers
