@@ -183,6 +183,11 @@ class OverdampedLangevin:
         memory_kernel_lambda: float = 0.0,
         memory_kernel_strength: float = 0.0,
         microstructure_rho: float = 0.0,
+        ar1_whiten_lambda: float = 0.0,
+        ar1_whiten_strength: float = 0.0,
+        zumbach_feedback_lambda: float = 0.0,
+        zumbach_feedback_strength: float = 0.0,
+        zumbach_feedback_mode: Literal["abs", "downside"] = "abs",
     ) -> None:
         if noise_dist not in ("normal", "t", "levy"):
             raise ValueError(f"noise_dist must be 'normal'|'t'|'levy', got {noise_dist!r}")
@@ -198,6 +203,16 @@ class OverdampedLangevin:
             raise ValueError(f"memory_kernel_lambda must be in [0, 1), got {memory_kernel_lambda}")
         if not 0.0 <= microstructure_rho < 1.0:
             raise ValueError(f"microstructure_rho must be in [0, 1), got {microstructure_rho}")
+        if not 0.0 <= ar1_whiten_lambda < 1.0:
+            raise ValueError(f"ar1_whiten_lambda must be in [0, 1), got {ar1_whiten_lambda}")
+        if not 0.0 <= ar1_whiten_strength <= 1.0:
+            raise ValueError(f"ar1_whiten_strength must be in [0, 1], got {ar1_whiten_strength}")
+        if not 0.0 <= zumbach_feedback_lambda < 1.0:
+            raise ValueError(f"zumbach_feedback_lambda must be in [0, 1), got {zumbach_feedback_lambda}")
+        if zumbach_feedback_strength < 0.0:
+            raise ValueError(f"zumbach_feedback_strength must be ≥ 0, got {zumbach_feedback_strength}")
+        if zumbach_feedback_mode not in ("abs", "downside"):
+            raise ValueError(f"zumbach_feedback_mode must be 'abs'|'downside', got {zumbach_feedback_mode!r}")
         self.noise_dist = noise_dist
         self.noise_df = noise_df
         self.levy_alpha = float(levy_alpha)
@@ -208,6 +223,11 @@ class OverdampedLangevin:
         self.memory_kernel_lambda = float(memory_kernel_lambda)
         self.memory_kernel_strength = float(memory_kernel_strength)
         self.microstructure_rho = float(microstructure_rho)
+        self.ar1_whiten_lambda = float(ar1_whiten_lambda)
+        self.ar1_whiten_strength = float(ar1_whiten_strength)
+        self.zumbach_feedback_lambda = float(zumbach_feedback_lambda)
+        self.zumbach_feedback_strength = float(zumbach_feedback_strength)
+        self.zumbach_feedback_mode = zumbach_feedback_mode
         # Memory kernel state — EMA of |Δs| across calls. Initialized lazily
         # on the first step to match s shape/device. Reset by simulator
         # between rollouts via :meth:`reset_state`.
@@ -218,29 +238,56 @@ class OverdampedLangevin:
         # B1 microstructure: previous noise sample for MA(1) bid-ask-bounce
         # filter. Cleared by reset_state. Detached so it doesn't extend BPTT.
         self._prev_eps: Tensor | None = None
+        # M1.1 AR(1) whitening: per-agent EMA of recent drift. Subtracting
+        # ar1_whiten_strength × this EMA from the current drift acts as a
+        # high-pass filter that breaks the autocorrelation chain producing
+        # AR(1) in price returns (ρ̂ ≈ 0.9 in v3 baseline).
+        self._drift_ema: Tensor | None = None
+        # M1.2 Zumbach causal-asymmetry: scalar EMA of past r² (price-level)
+        # used to boost noise scale on subsequent steps. Past-only by
+        # construction (EMA), producing the time-asymmetric coupling
+        # required for D(τ) > 0.
+        self._zumbach_ema: float = 0.0
 
     def reset_state(self) -> None:
         """Clear path-dependent buffers. Call before a fresh rollout so the
-        memory kernel, asymmetric-drag price signal, and microstructure
-        previous-noise buffer don't leak across episodes within the same
-        simulator instance.
+        memory kernel, asymmetric-drag price signal, microstructure
+        previous-noise buffer, AR(1) drift EMA, and Zumbach r² EMA don't
+        leak across episodes within the same simulator instance.
         """
         self._mem_ema = None
         self._last_price_delta = 0.0
         self._prev_eps = None
+        self._drift_ema = None
+        self._zumbach_ema = 0.0
 
     def update_price_signal(self, log_return: float | Tensor) -> None:
         """Hook called by simulator after each price-formation step. Stores
         the most recent log-return so the next ``step`` can modulate γ via
-        ``asym_drag_alpha``. Cheap (scalar copy); no allocations.
+        ``asym_drag_alpha`` and noise scale via ``zumbach_feedback_*``.
+        Cheap (scalar updates); no tensor allocations.
         """
         if isinstance(log_return, Tensor):
             try:
-                self._last_price_delta = float(log_return.detach().item())
+                r = float(log_return.detach().item())
             except Exception:
-                self._last_price_delta = 0.0
+                r = 0.0
         else:
-            self._last_price_delta = float(log_return)
+            r = float(log_return)
+        self._last_price_delta = r
+        # M1.2 Zumbach: EMA the past r² (or downside-only r²) so subsequent
+        # steps can boost noise scale. Past-only by construction; the
+        # asymmetry comes from EMA causality, not from sign filtering when
+        # mode='abs'. mode='downside' is the leverage-asymmetric variant
+        # (only down moves predict future high vol — combines Zumbach with
+        # leverage). λ controls memory length; strength controls boost.
+        if self.zumbach_feedback_strength > 0.0 and self.zumbach_feedback_lambda > 0.0:
+            if self.zumbach_feedback_mode == "downside":
+                contrib = max(0.0, -r) ** 2
+            else:
+                contrib = r * r
+            lam = self.zumbach_feedback_lambda
+            self._zumbach_ema = lam * self._zumbach_ema + (1.0 - lam) * contrib
 
     def _sample_noise(
         self,
@@ -309,7 +356,18 @@ class OverdampedLangevin:
                 self._mem_ema = torch.zeros_like(s)
             mem_boost = self.memory_kernel_strength * self._mem_ema
 
-        noise_scale = torch.sqrt(2.0 * T_t * dt / gamma_t) * (1.0 + mem_boost)
+        # M1.2 Zumbach causal-asymmetry boost: noise scale at this step is
+        # multiplicatively amplified by an EMA of past price-level r²
+        # (updated via update_price_signal between steps). EMA being past-
+        # only is the time-asymmetric coupling that produces D(τ) > 0
+        # in the zumbach_asymmetry stylized fact. Mode 'abs' uses r²
+        # symmetrically; 'downside' uses max(0, -r)² (only down moves
+        # boost vol — leverage-asymmetric variant).
+        zumbach_boost: float = 0.0
+        if self.zumbach_feedback_strength > 0.0 and self.zumbach_feedback_lambda > 0.0:
+            zumbach_boost = self.zumbach_feedback_strength * self._zumbach_ema
+
+        noise_scale = torch.sqrt(2.0 * T_t * dt / gamma_t) * (1.0 + mem_boost) * (1.0 + zumbach_boost)
         eps = self._sample_noise(tuple(s.shape), generator, s.device, s.dtype)
 
         # B1 microstructure noise: ε_eff = ε - rho_micro · ε_{t-1}
@@ -324,7 +382,25 @@ class OverdampedLangevin:
 
         stoch_displacement = noise_scale * eps
 
-        drift = (f_cons + f_diss) / gamma_t * dt
+        drift_pre = (f_cons + f_diss) / gamma_t * dt
+
+        # M1.1 AR(1) whitening: the v3 baseline shows AR(1) ρ̂≈0.9 in
+        # returns, traceable to per-agent drift autocorrelation that
+        # propagates through price formation. We subtract a fraction of
+        # the EMA of past drift (a high-pass filter), breaking the
+        # autocorrelated component while preserving the noise-driven
+        # dynamics. Detached so the EMA buffer doesn't extend BPTT
+        # across the whole rollout (mirrors memory_kernel handling).
+        if self.ar1_whiten_strength > 0.0 and self.ar1_whiten_lambda > 0.0:
+            if self._drift_ema is None or self._drift_ema.shape != drift_pre.shape:
+                self._drift_ema = drift_pre.detach().clone()
+                drift = drift_pre
+            else:
+                drift = drift_pre - self.ar1_whiten_strength * self._drift_ema
+                lam = self.ar1_whiten_lambda
+                self._drift_ema = lam * self._drift_ema + (1.0 - lam) * drift_pre.detach()
+        else:
+            drift = drift_pre
 
         # Tier 2.1: compound-Poisson jumps.
         jump_disp = None
