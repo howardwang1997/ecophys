@@ -99,6 +99,25 @@ class EcoMDConfig:
     # market microstructure. Targets autocorr_returns (target band
     # [-0.1, 0.20]; v3 baseline mean +0.38). Default 0.0 disables.
     microstructure_rho: float = 0.0
+    # M1.1 — AR(1) drift whitening. The v3 baseline shows AR(1) ρ̂≈0.9 in
+    # returns (every cell across Branches D/E/F μ ≈ 0.4 vs band [-0.1, 0.2]),
+    # caused by smooth force-field drift propagating through price formation.
+    # We subtract `ar1_whiten_strength` × EMA_λ(drift) from the per-step
+    # drift, acting as a high-pass filter that breaks the autocorrelation
+    # chain. λ controls EMA memory; strength controls how much to subtract.
+    # Targets autocorr_returns architectural floor. Both = 0 → no-op.
+    ar1_whiten_lambda: float = 0.0
+    ar1_whiten_strength: float = 0.0
+    # M1.2 — Zumbach causal-asymmetry feedback. The v3 baseline shows
+    # zumbach_asymmetry μ < 0 (wrong sign vs band [+0.001, +0.5]) for every
+    # cell, because no mechanism produces the time-asymmetric coupling
+    # required (past coarse vol → future fine vol > reverse). We boost
+    # noise scale by an EMA of past r² (price-level), past-only by
+    # construction. mode='abs' uses r²; mode='downside' uses max(0,-r)²
+    # (leverage-asymmetric variant). Both = 0 → no-op.
+    zumbach_feedback_lambda: float = 0.0
+    zumbach_feedback_strength: float = 0.0
+    zumbach_feedback_mode: str = "abs"  # 'abs' | 'downside'
     # B-round mechanism 4 — power-law external potential. Replaces the MLP
     # external potential with V_ext(s) = w_mlp · MLP + w_pow · |s|^α / α.
     # Sub-linear restoring force at large |s| produces fat-tailed return
@@ -404,6 +423,11 @@ class EcoMDSimulator(nn.Module):
             memory_kernel_lambda=self.cfg.memory_kernel_lambda,
             memory_kernel_strength=self.cfg.memory_kernel_strength,
             microstructure_rho=self.cfg.microstructure_rho,
+            ar1_whiten_lambda=self.cfg.ar1_whiten_lambda,
+            ar1_whiten_strength=self.cfg.ar1_whiten_strength,
+            zumbach_feedback_lambda=self.cfg.zumbach_feedback_lambda,
+            zumbach_feedback_strength=self.cfg.zumbach_feedback_strength,
+            zumbach_feedback_mode=self.cfg.zumbach_feedback_mode,
         )
 
         # learnable log-parametrised γ, T (positivity by construction)
