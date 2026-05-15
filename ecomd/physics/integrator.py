@@ -185,6 +185,7 @@ class OverdampedLangevin:
         microstructure_rho: float = 0.0,
         ar1_whiten_lambda: float = 0.0,
         ar1_whiten_strength: float = 0.0,
+        ar1_whiten_clip: float = 0.0,
         zumbach_feedback_lambda: float = 0.0,
         zumbach_feedback_strength: float = 0.0,
         zumbach_feedback_mode: Literal["abs", "downside"] = "abs",
@@ -207,6 +208,8 @@ class OverdampedLangevin:
             raise ValueError(f"ar1_whiten_lambda must be in [0, 1), got {ar1_whiten_lambda}")
         if not 0.0 <= ar1_whiten_strength <= 1.0:
             raise ValueError(f"ar1_whiten_strength must be in [0, 1], got {ar1_whiten_strength}")
+        if ar1_whiten_clip < 0.0:
+            raise ValueError(f"ar1_whiten_clip must be ≥ 0 (0 disables), got {ar1_whiten_clip}")
         if not 0.0 <= zumbach_feedback_lambda < 1.0:
             raise ValueError(f"zumbach_feedback_lambda must be in [0, 1), got {zumbach_feedback_lambda}")
         if zumbach_feedback_strength < 0.0:
@@ -225,6 +228,7 @@ class OverdampedLangevin:
         self.microstructure_rho = float(microstructure_rho)
         self.ar1_whiten_lambda = float(ar1_whiten_lambda)
         self.ar1_whiten_strength = float(ar1_whiten_strength)
+        self.ar1_whiten_clip = float(ar1_whiten_clip)
         self.zumbach_feedback_lambda = float(zumbach_feedback_lambda)
         self.zumbach_feedback_strength = float(zumbach_feedback_strength)
         self.zumbach_feedback_mode = zumbach_feedback_mode
@@ -396,7 +400,14 @@ class OverdampedLangevin:
                 self._drift_ema = drift_pre.detach().clone()
                 drift = drift_pre
             else:
-                drift = drift_pre - self.ar1_whiten_strength * self._drift_ema
+                whiten_contrib = self.ar1_whiten_strength * self._drift_ema
+                if self.ar1_whiten_clip > 0.0:
+                    # Bound the subtraction so a single large EMA cannot drive
+                    # drift past where the natural noise scale can recover —
+                    # addresses the s03 70%-rejection failure mode found in 089.
+                    cap = self.ar1_whiten_clip * drift_pre.detach().abs().mean().clamp_min(1e-8)
+                    whiten_contrib = whiten_contrib.clamp(min=-cap, max=cap)
+                drift = drift_pre - whiten_contrib
                 lam = self.ar1_whiten_lambda
                 self._drift_ema = lam * self._drift_ema + (1.0 - lam) * drift_pre.detach()
         else:

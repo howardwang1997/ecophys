@@ -178,6 +178,7 @@ _YFINANCE_DAILY_SYMBOL = {
     "nikkei":      "^N225",
     "gold":        "GLD",
     "eurusd":      "EURUSD=X",
+    "ndx":         "^NDX",
 }
 
 

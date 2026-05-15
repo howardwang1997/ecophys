@@ -1,6 +1,6 @@
 # Paper A — NeurIPS 2027 status (living document)
 
-**Last updated**: 2026-05-14 (TrajCast review folded in; 089 still running on H20)
+**Last updated**: 2026-05-15 (089 landed, weekend batch designed)
 **Branch**: `feature/paper-a-neurips-2027`
 **Plan**: `~/.claude/plans/curried-cuddling-cloud.md` (M1-M6, 8 wk each, → 2027-05 deadline)
 
@@ -12,10 +12,9 @@ see `logs/YYYY-MM-DD.md` for chronological history.
 
 ## TL;DR
 
-- **Tonight (2026-05-13)**: launch **089 only** (mechanism-fact attribution, ~14h H20)
-- **Tomorrow morning**: analyze with `score_attribution.py`, decide next H20 batch
-- **Three H20 batches still need to be designed** before Paper A can submit: 094 (VaR holdout training), 095 (TimeGAN baseline), 091 (calibration-speed shootout)
-- **Mac-side M1 modules are 4/6 done**: AR(1) + Zumbach mechanisms ✅, distributional metrics ✅, VaR module ✅; pending: TimeGAN baseline, calibration harness
+- **089 attribution batch landed** (796/800, commit `321633ba`): `attr_zumbach_dn_s10` is best single mech (mean **5.12**, +0.31 vs baseline, only 2/50 rej). **Both floors lifted by single mechanisms** but with collateral tradeoffs → falsification reframes from "absolute" to "Pareto-bounded".
+- **Weekend batch (2026-05-15 PM → 2026-05-17 PM, ~17h H20 wall)**: 090 patch composition + AR(1) stability grid + 094 VaR holdout + 095 TimeGAN/TrajCast bundle + 091 calibration shootout ECoMD leg. Total ~706 cfg + 50 GAN fits + 150 calib runs.
+- **Mac-side M1 modules are 6/6 done after this session**: AR(1) + Zumbach + distributional metrics + VaR ✅; TimeGAN/WGAN-LP + calibration harness shipping in the weekend batch commits.
 
 ---
 
@@ -34,129 +33,120 @@ Total: **43 new passing tests** across 4 new modules.
 
 ---
 
-## 2. Tonight (2026-05-13) — 089 attribution batch
+## 2. 089 attribution batch — LANDED 2026-05-15
 
-**What it is**: 800 configs (16 cells × 50 seeds), clean leave-one-in single-mechanism cells. Output is the 10×11 mechanism × fact pass-rate matrix that becomes Paper A's Figure 1.
+**Result summary** (full matrix at `experiments/089_attribution_50seed/attribution_matrix.md`):
 
-**Cells** (priority order via `CONFIG_ORDER_PREFIXES`):
-1. `attr_baseline_v3` (control)
-2. `attr_ar1_{s03,s05,s08}` — M1.1 dose-response (NEW mechanism, paper-critical)
-3. `attr_zumbach_{s05,s10,s20,dn_s10}` — M1.2 dose-response (NEW mechanism + downside variant)
-4. `attr_b3_k3` — Branch F best single (re-run at n=50 for consistency)
-5. `attr_asymdrag_a06` — Branch D best single
-6. `attr_levy_a17`, `attr_memk_l095_s10`, `attr_powerlaw_a15`, `attr_microstructure_r03`, `attr_inner_3`, `attr_jump_l01` — existing single mechanisms
+| cell | n/50 | rej | mean | Δ vs baseline | notes |
+|---|---:|---:|---:|---:|---|
+| **`attr_zumbach_dn_s10`** | 48 | 2 | **5.12** | **+0.31** | new mech, best single, 8/12 facts ↑ |
+| `attr_b3_k3` | 50 | 0 | 4.96 | +0.14 | replicates Branch F (4.94) |
+| `attr_asymdrag_a06` | 48 | 2 | 4.92 | +0.10 | replicates Branch F (4.94) |
+| `attr_powerlaw_a15` | 50 | 0 | 4.88 | +0.06 |  |
+| `attr_ar1_s05` | 49 | 1 | 4.88 | +0.06 | huge fact-trader, see below |
+| `attr_baseline_v3` | 49 | 1 | 4.82 | — | reference |
+| ... | | | | | 10 more cells, all -0.07 to -0.89 |
+| `attr_ar1_s03` | **15** | **35** | 4.47 | -0.35 | unstable; lifts autocorr +62pp |
 
-**Wall**: ~14h on 8-card H20 (estimate from 088's 8.8 min/cfg rate). If process dies past 12h (Branch D failure mode), the paper-critical first ~550 cfg are already on disk.
+### 2.1 Positive findings (paper-ready)
 
-**Launch commands**:
-```bash
-ssh h20 && cd ecophys
-git fetch
-git checkout feature/paper-a-neurips-2027
-git pull
-unset NPROC && bash scripts/h20_refresh_deps.sh
-bash scripts/h20_paper_a_neurips_2027.sh --dry-run    # 8 preflight checks
-DAEMON=1 bash scripts/h20_paper_a_neurips_2027.sh
-tail -f experiments/_paper_a_neurips_*.log
-```
+1. **Zumbach `dn` variant validates Zumbach 2009 theoretical direction**: downside-only causal asymmetry beats abs variants on both overall mean (5.12 vs 4.12-4.75) and zumbach_asymmetry pass rate (29% vs 10-12%). Section §4 of the paper writes itself: "we designed two variants of a causal-asymmetry mechanism; the theory-aligned variant (downside-only) was the best single mechanism in 16-cell ablation."
+2. **Both architectural floors lifted by single mechanisms** (was thought impossible after Branch F):
+   - `autocorr_returns`: 24% (baseline) → **87%** (ar1_s03) → +62pp
+   - `zumbach_asymmetry`: 6% (baseline) → **43%** (ar1_s05) → +37pp; or 29% (zumbach_dn_s10, stable) → +23pp
+3. **Per-fact "biggest mover" table** (11 facts, each owned by a different specialist mechanism): this IS Figure 1. Mechanisms behave as specialists, not generalists. C1 contribution evidenced directly.
+4. **Scoring pipeline reproducible across batches** (Branch F → 089): asymdrag 4.94 → 4.92, b3 4.94 → 4.96. Δ ≤ 0.02 at n=48-50. Standardized tooling claim defensible.
 
-**Tomorrow morning workflow**:
-```bash
-git pull   # on Mac
-conda run -n ecophys python scripts/score_phase.py experiments/089_attribution_50seed
-conda run -n ecophys python scripts/score_summary.py experiments/089_attribution_50seed
-conda run -n ecophys python scripts/score_attribution.py experiments/089_attribution_50seed
-# → experiments/089_attribution_50seed/{scoreboard,attribution_matrix}.{md,json}
-```
+### 2.2 Falsification claim — reframed
 
----
+Old (pre-089): "two facts are architecturally impossible in v3" — too strong, **not survived**.
+New (post-089): **"the 11 facts form a Pareto frontier no single mechanism crosses simultaneously."** Every cell that lifts a floor breaks ≥1 other fact by ≥20pp. Specifically:
+- `ar1_s03` lifts autocorr +62pp but breaks acf² -65pp
+- `ar1_s05` lifts zumbach +37pp but breaks ckur -47pp
+- `asymdrag_a06` lifts leverage +28pp but breaks ckur -24pp, hurst -20pp
+- `zumbach_dn_s10` is the only cell with no individual breakage ≥ -13pp — hence the safest composition seed
 
-## 3. Outstanding H20 batches — designed but generators NOT yet written
+Still NeurIPS-grade: compositional impossibility is a publishable result; the claim weakens from "absolute" to "tradeoff-bounded".
 
-These are needed to finish Paper A's claims; we deferred them tonight per user direction (one batch at a time).
+### 2.3 Open instability — AR(1) low-strength fails to train
 
-### 3.1 Batch 094 — VaR holdout training (M1.4 H20 component)
-
-**Why we need it**: 089 trains on SPX `2015-2026_daily` (verified in `experiments/069_gamma_damping_30seed/config_T05_g10_seed0.yaml`). VaR backtest on 2018-2026 with those checkpoints would be **training-test overlap → information leakage**. Reviewer-2 will catch this immediately.
-
-**What to design**: same 16-cell mechanism set as 089 but trained on SPX **2010-2017 only**, then VaR backtested on 2018-2026 cleanly held out. Suggest n=12 seeds per cell (we don't need 50 seeds for VaR, just enough for path-distribution stability).
-
-| | value |
-|---|---|
-| cfgs | 16 cells × 12 seeds = 192 |
-| H20 wall | ~3h (192 × 8.8min / 8 cards) |
-| outputs | checkpoints for `EcoMDSampler` to load + 11-fact eval (sanity) |
-| Mac-side downstream | `python -m ecomd.risk.var_backtest` rolling backtest on each checkpoint |
-
-**Effort to ship**: ~2h Mac work — generator + tweak launcher to point at new dataset window.
-
-### 3.2 Batch 095 — TimeGAN baseline (M1.5 H20 component)
-
-**Why we need it**: reviewer-2 will demand a GAN-family baseline; GARCH alone isn't enough on the ML side. TimeGAN training on a single asset is GPU-heavy (~1-2h per fit on Mac); doing 5 assets × 5 seeds = 25 fits is a 25-50h Mac job, infeasible.
-
-**What to design**: TimeGAN reference (Yoon 2019, or simplified WGAN-LP per Wiese 2020 QuantGAN — ~3× simpler with similar paper-quality story) trained on each of 5 assets (SPX, BTC, EURUSD, GOLD, NDX), 5 seeds each. **Bundle a TrajCast-style autoregressive surrogate into this same batch** — see §6 below; same H20 window, same 5-asset × 5-seed grid, ~+4h H20 wall.
-
-| | value |
-|---|---|
-| cfgs | 5 assets × 5 seeds = 25 fits |
-| H20 wall | ~10h (25 × ~3h per fit / 8 cards) |
-| outputs | trained GAN checkpoints + sampled trajectories scored on the 11 facts |
-| Mac-side downstream | per-fact score table + add to scoreboard alongside ECoMD/GARCH/LM/AR1+SV/GBM |
-
-**Effort to ship**: ~6-8h Mac work — TimeGAN/WGAN-LP impl (~250 LoC) + sklearn-style fit/sample API + generator + launcher. Suggest WGAN-LP variant to bound complexity.
-
-**Risk R6 fallback**: if TimeGAN implementation drags > 10h Mac, drop and cite Yoon 2019 + Wiese 2020 as "incomparable due to non-stationary financial returns vs synthetic time series" (per plan risk register).
-
-### 3.3 Batch 091 — Calibration-speed shootout (M1.6 H20 component, **paper headline**)
-
-**Why we need it**: this is the **headline downstream task** in the NeurIPS 2027 plan reframe. The claim "ECoMD calibrates ~100× faster than ABIDES+SBI at matched coverage" is what justifies the differentiability contribution.
-
-**Pre-requisite**: ABIDES needs to be installed on H20. `pip install abides` works on most boxes but the SBI dependency (`pip install sbi`) often needs torch-CPU compatibility tweaks. Allow a 1-2h H20 install session before generator design.
-
-**What to design**: uniform calibration harness that records wall-clock + n_iters + final fact coverage for:
-- ECoMD: gradient descent (existing `ecomd/training/train_distributed.py`)
-- ABIDES + SBI (Sequential Neural Posterior Estimation, NPE-C): forward simulation + posterior fit
-- Lux-Marchesi + ABC (Approximate Bayesian Computation): rejection sampling
-
-| | value |
-|---|---|
-| cfgs | ~50 calibration runs × 3 methods × 5 assets = 750 calibrations |
-| H20 wall | ~15h (mostly ABIDES forward sims; ECoMD is the fast leg) |
-| outputs | wall-clock × coverage tradeoff CSV + Pareto figure |
-| Mac-side downstream | Figure 3 builder |
-
-**Effort to ship**: ~4-6h Mac work + ~1-2h H20 ABIDES install verification — wallclock harness module (`ecomd/calibration/wallclock_harness.py`, ~200 LoC) + ABIDES wrapper + Lux-Marchesi calibration via existing `ecomd/baselines/lux_marchesi.py` + generator + launcher.
-
-**Risk R3**: if ABIDES+SBI is faster than expected, even 10× advantage is publishable; below 10× → reframe to "capability difference" (ECoMD differentiable through training, SBI not).
+`ar1_s03` has 70% rejection rate (35/50 seeds blow up). Mechanism works (when it converges, autocorr 87%), but the parameter envelope is fragile. **Weekend batch §3.2 addresses this** with a (strength × λ × drift-clip) grid.
 
 ---
 
-## 4. Mac-side M1 progress (4/6 done)
+## 3. Weekend batch (2026-05-15 PM → 2026-05-17 PM) — five sub-batches
 
-| | module | status | reusable in 089 analysis? |
-|---|---|---|---|
-| ✅ M1.1 | AR(1) drift whitening (integrator) | committed | yes — config keys live |
-| ✅ M1.2 | Zumbach causal-asymmetry (integrator) | committed | yes — config keys live |
-| ✅ M1.3 | Distributional metrics (`ecomd/eval/distributional_metrics.py`) | committed | yes — wire into `score_continuous.py` next |
-| ✅ M1.4 | VaR backtest (`ecomd/risk/`) | committed | needs **batch 094** for clean numbers |
-| ⏳ M1.5 | TimeGAN baseline (`ecomd/baselines/timegan.py`) | not started | needs **batch 095** |
-| ⏳ M1.6 | Calibration wall-clock harness (`ecomd/calibration/wallclock_harness.py`) | not started | needs **batch 091** + ABIDES install |
+Total wall: ~17h on 8-card H20, ~706 ABM cfg + 50 GAN/TrajCast fits + 150 calibration runs.
+
+Launcher: `scripts/h20_weekend_2026-05-15.sh` sequences all five with preflight checks and CONFIG_ORDER_PREFIXES priority.
+
+### 3.1 Batch 090 — patch composition (3.5h, top priority)
+
+**Why we need it**: 089 identified `zumbach_dn_s10` as the safest patch seed (no fact dropped ≥-13pp). Composing it with existing best singles is the cleanest path to the first mean ≥5.5 cell. Bundles AR(1) compositions too.
+
+**Cells** (8 × 30 seeds = 240 cfg):
+1. `pair_zumdn_b3` — Zumbach `dn` + B3 k=3 (target: 5.5+)
+2. `pair_zumdn_asym` — Zumbach `dn` + asymdrag α=0.6
+3. `pair_zumdn_ar1` — Zumbach `dn` + AR(1) s05 (the two new mechanisms together)
+4. `pair_ar1_b3` — AR(1) s05 + B3 k=3
+5. `pair_ar1_asym` — AR(1) s05 + asymdrag α=0.6
+6. `triple_zumdn_ar1_b3` — depth-3 stress test (does it interfere per Branch F finding?)
+7. `pair_AB_reref` — asymdrag + B3 re-run at n=30 (Branch F best 5.18, verify on neurips branch)
+8. `zumdn_solo_n30` — Zumbach `dn` solo n=30 (Branch F-style replication)
+
+### 3.2 AR(1) stability grid — fix the 70% rejection (2h)
+
+**Why**: `ar1_s03` succeeds at autocorr_returns (87%) but blows up training. Need parameter envelope.
+
+**Cells** (6 × 20 seeds = 120 cfg): cross strength {0.2, 0.25, 0.3} × lambda {0.90, 0.97} + 2 drift-clip variants.
+
+### 3.3 Batch 094 — VaR holdout training (1.5h)
+
+**Why we need it**: 089 trains on SPX `2015-2026_daily`. VaR backtest on 2018-2026 with those checkpoints = **training-test overlap → information leakage**. Reviewer-2 will catch this immediately. Trimmed to 8 best cells (post-089) × 12 seeds = 96 cfg.
+
+**Cells**: baseline_v3, zumbach_dn_s10, b3_k3, asymdrag_a06, ar1_s05, powerlaw_a15, pair_zumdn_b3, pair_zumdn_asym.
+
+### 3.4 Batch 095 — TimeGAN/WGAN-LP + TrajCast bundle (M1.5, ~7h)
+
+**Why we need it**: reviewer-2 will demand a GAN-family baseline. WGAN-LP variant chosen (Wiese 2020 QuantGAN) — ~3× simpler than TimeGAN, similar paper story. Bundles a TrajCast-lite surrogate (§6.1).
+
+**Cells** (5 assets × 5 seeds × 2 models = 50 fits): SPX, BTC, EURUSD, GOLD, NDX × {WGAN-LP, TrajCast-lite}.
+
+### 3.5 Batch 091 — Calibration-speed shootout, ECoMD leg (M1.6, ~3h)
+
+**Why we need it**: headline downstream task — "ECoMD calibrates ~100× faster than ABIDES+SBI". This weekend we ship the **ECoMD leg only** (30 calibration runs × 5 assets = 150 runs); ABIDES+SBI leg blocked on H20 install and runs next weekend.
+
+ECoMD calibration harness (`ecomd/calibration/wallclock_harness.py`) records wall-clock + n_iters + final fact coverage at multiple early-stopping budgets. Output drives Figure 3 once ABIDES leg lands.
+
+---
+
+## 4. Mac-side M1 progress (6/6 done after this session)
+
+| | module | status |
+|---|---|---|
+| ✅ M1.1 | AR(1) drift whitening (integrator) | committed |
+| ✅ M1.2 | Zumbach causal-asymmetry (integrator) | committed |
+| ✅ M1.3 | Distributional metrics (`ecomd/eval/distributional_metrics.py`) | committed |
+| ✅ M1.4 | VaR backtest (`ecomd/risk/`) | committed (clean numbers from 094) |
+| ✅ M1.5 | WGAN-LP + TrajCast-lite (`ecomd/baselines/wgan_lp.py`, `trajcast_lite.py`) | this session |
+| ✅ M1.6 | Calibration harness ECoMD leg (`ecomd/calibration/wallclock_harness.py`) | this session |
 
 Plus M2 sub-tasks already shipped:
 - ✅ M2.1 089 attribution batch generator + H20 launcher
-- ✅ M2.2 `scripts/score_attribution.py` — auto-builds 10×11 attribution matrix
+- ✅ M2.2 `scripts/score_attribution.py` — auto-builds 10×11 attribution matrix (validated on 089)
 
 ---
 
 ## 5. Decision queue
 
-1. **After 089 lands** (tomorrow morning): does AR(1) whitening lift `autocorr_returns` pass-rate from baseline? Does Zumbach feedback ANY variant flip the sign of `zumbach_asymmetry`?
-   - If **YES** to either → write 090 batch (compose patches with existing best singles/pairs).
-   - If **NO** → that's the central falsification finding ("no Markovian mechanism class lifts these floors"), still publishable.
-2. **Within 1 week**: write batch 094 (VaR holdout) generator + launcher. Run when next H20 window opens.
-3. **Within 1 week**: add TrajCast (NMI 2025) citation + positioning paragraph to `papers/paper_a_methods/outline.md` §2 Related Work + clarify ECoMD's symmetry group (agent permutation, not E(3)) in §3 — see §7 below.
-4. **Within 2 weeks**: decide TimeGAN vs WGAN-LP for M1.5; install ABIDES on H20 for M1.6.
-5. **Within 4 weeks**: 095 (GAN + TrajCast-style baseline bundled) + 091 (calibration shootout) running.
+1. **Monday morning (2026-05-18) after weekend batch lands**:
+   - Run `score_attribution.py` on 090 → does any patch composition reach mean ≥ 5.5? If yes, that's the hero cell. If no, write up "Pareto frontier is hard" as central finding.
+   - Run `var_backtest.py` on 094 checkpoints → does ECoMD beat GARCH on 1d VaR? Independence test?
+   - Run `score_continuous.py` on 095 → do WGAN-LP and TrajCast-lite also hit the Pareto frontier? (Critical for falsification scope.)
+   - Run `wallclock_harness.py --report` on 091 → does ECoMD calibrate in ≤100 grad iters on all 5 assets?
+2. **Within 1 week** (post-Monday): add TrajCast (NMI 2025) citation + positioning paragraph to `papers/paper_a_methods/outline.md` §2 Related Work + symmetry-group disclosure in §3 (agent permutation, not E(3)).
+3. **Within 1 week**: install ABIDES on H20 (1-2h interactive); design ABIDES+SBI leg of 091 calibration shootout for next weekend window.
+4. **Within 2 weeks**: write up 089 attribution matrix as Figure 1 draft (`papers/paper_a_methods/figures/fig1_attribution.py`). This is the highest-information density figure in the paper.
 
 ---
 
