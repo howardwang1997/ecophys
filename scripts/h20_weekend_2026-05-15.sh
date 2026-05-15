@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
-# Paper A NeurIPS 2027 — weekend batch launcher (2026-05-15 PM → 2026-05-17 PM).
+# Paper A NeurIPS 2027 — 3-day batch launcher (2026-05-15 PM → 2026-05-18 PM).
 #
-# Sequences five sub-batches based on 089 attribution findings:
-#   090   patch composition (top priority, ~3.5h)         240 cfg ECoMD
+# Sequences nine sub-batches based on 089 attribution findings:
+#   090   patch composition (top priority)                240 cfg ECoMD
 #   090b  AR(1) stability grid (fix the 70% rej)          120 cfg ECoMD
-#   094   VaR holdout training (clean train-test split)    96 cfg ECoMD
-#   091   calibration speed shootout (ECoMD leg only)      30 cfg ECoMD
-#   095   WGAN-LP + TrajCast-lite baselines (5 assets)     50 cfg baselines
+#   090c  n=50 SOTA confirm + AR(1)-clip × Zumbach combo  150 cfg ECoMD
+#   090d  depth-3 interference probe                      180 cfg ECoMD
+#   094   VaR holdout training                             96 cfg ECoMD
+#   091   calibration ECoMD leg                            30 cfg ECoMD
+#   092   5-asset cross-asset replication                 600 cfg ECoMD
+#   089b  BTC + EURUSD single-mech attribution            480 cfg ECoMD
+#   095   WGAN-LP + TrajCast-lite baselines               50 cfg baselines
 #
-# Total: 486 ECoMD cfg + 50 baseline fits ≈ 17h on 8-card H20.
+# Total: 1896 ECoMD cfg + 50 baseline fits ≈ 36h on 8-card H20.
 #
 # Why these five in this order
 # ────────────────────────────
@@ -60,10 +64,18 @@ phase_order_for() {
             echo "pair_zumdn_,pair_ar1_,triple_,pair_AB_,zumdn_solo_" ;;
         experiments/090b_ar1_stability_grid)
             echo "ar1_s025_,ar1_s03_clip,ar1_s05_clip,ar1_s02_" ;;
+        experiments/090c_n50_confirm_and_ar1clip_combo)
+            echo "pair_zumdn_b3,pair_ar1clip,pair_AB_reref,zumdn_solo_" ;;
+        experiments/090d_depth3_interference_30seed)
+            echo "triple_zumdn_b3_asym,triple_pair_AB_zumdn,triple_zumdn_b3_,triple_pair_AB_ar1clip" ;;
         experiments/094_var_holdout_12seed)
             echo "var_baseline_,var_zumdn_,var_b3_,var_asymdrag_,var_ar1_,var_powerlaw_,var_pair_" ;;
         experiments/091_calibration_ecomd_5asset)
             echo "calib_spx_b40_,calib_spx_b80_,calib_spx_b160_,calib_btcusdt_,calib_eurusd_,calib_gold_,calib_ndx_" ;;
+        experiments/092_5asset_replication_30seed)
+            echo "xa_spx_,xa_btcusdt_,xa_eurusd_,xa_gold_,xa_ndx_" ;;
+        experiments/089b_cross_asset_attribution_30seed)
+            echo "attr_btcusdt_baseline_,attr_btcusdt_zumbach_,attr_btcusdt_b3_,attr_btcusdt_asym,attr_btcusdt_ar1,attr_btcusdt_,attr_eurusd_" ;;
         experiments/095_baseline_5asset_5seed)
             echo "baseline_wgan_spx,baseline_trajcast_spx,baseline_wgan_,baseline_trajcast_" ;;
         *) echo "" ;;
@@ -75,8 +87,12 @@ phase_order_for() {
 ECOMD_PHASES=(
     "experiments/090_patch_composition_30seed:240:experiments/090_patch_composition_30seed/config_pair_zumdn_b3_seed0.yaml:zumbach_feedback_mode: downside"
     "experiments/090b_ar1_stability_grid:120:experiments/090b_ar1_stability_grid/config_ar1_s03_clip_seed0.yaml:ar1_whiten_clip: 1.0"
+    "experiments/090c_n50_confirm_and_ar1clip_combo:150:experiments/090c_n50_confirm_and_ar1clip_combo/config_pair_ar1clip05_zumdn_seed0.yaml:ar1_whiten_clip: 1.0"
+    "experiments/090d_depth3_interference_30seed:180:experiments/090d_depth3_interference_30seed/config_triple_zumdn_b3_asym_seed0.yaml:zumbach_feedback_mode: downside"
     "experiments/094_var_holdout_12seed:96:experiments/094_var_holdout_12seed/config_var_baseline_v3_seed0.yaml:target_period: 2010-2017_daily"
     "experiments/091_calibration_ecomd_5asset:30:experiments/091_calibration_ecomd_5asset/config_calib_spx_b40_seed0.yaml:n_iters: 40"
+    "experiments/092_5asset_replication_30seed:600:experiments/092_5asset_replication_30seed/config_xa_spx_zumdn_seed0.yaml:zumbach_feedback_mode: downside"
+    "experiments/089b_cross_asset_attribution_30seed:480:experiments/089b_cross_asset_attribution_30seed/config_attr_btcusdt_zumbach_dn_s10_seed0.yaml:zumbach_feedback_mode: downside"
 )
 BASELINE_PHASES=(
     "experiments/095_baseline_5asset_5seed:50:experiments/095_baseline_5asset_5seed/config_baseline_wgan_spx_seed0.yaml:model: wgan_lp"

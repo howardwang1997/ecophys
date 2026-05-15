@@ -13,7 +13,7 @@ see `logs/YYYY-MM-DD.md` for chronological history.
 ## TL;DR
 
 - **089 attribution batch landed** (796/800, commit `321633ba`): `attr_zumbach_dn_s10` is best single mech (mean **5.12**, +0.31 vs baseline, only 2/50 rej). **Both floors lifted by single mechanisms** but with collateral tradeoffs → falsification reframes from "absolute" to "Pareto-bounded".
-- **Weekend batch (2026-05-15 PM → 2026-05-17 PM, ~17h H20 wall)**: 090 patch composition + AR(1) stability grid + 094 VaR holdout + 095 TimeGAN/TrajCast bundle + 091 calibration shootout ECoMD leg. Total ~706 cfg + 50 GAN fits + 150 calib runs.
+- **3-day batch (2026-05-15 PM → 2026-05-18 PM, ~36h H20 wall)**: 9 sub-batches totaling 1946 cfg. Original five (090/090b/094/091/095) + four bonus phases pulling M3 work forward: 090c n=50 confirms + AR(1)-clip×Zumbach, 090d depth-3 interference, 092 5-asset replication, 089b cross-asset attribution.
 - **Mac-side M1 modules are 6/6 done after this session**: AR(1) + Zumbach + distributional metrics + VaR ✅; TimeGAN/WGAN-LP + calibration harness shipping in the weekend batch commits.
 
 ---
@@ -74,11 +74,24 @@ Still NeurIPS-grade: compositional impossibility is a publishable result; the cl
 
 ---
 
-## 3. Weekend batch (2026-05-15 PM → 2026-05-17 PM) — five sub-batches
+## 3. 3-day batch (2026-05-15 PM → 2026-05-18 PM) — nine sub-batches
 
-Total wall: ~17h on 8-card H20, ~706 ABM cfg + 50 GAN/TrajCast fits + 150 calibration runs.
+Total wall: ~36h on 8-card H20, 1946 ABM cfg + 50 GAN/TrajCast fits.
 
-Launcher: `scripts/h20_weekend_2026-05-15.sh` sequences all five with preflight checks and CONFIG_ORDER_PREFIXES priority.
+Launcher: `scripts/h20_weekend_2026-05-15.sh` sequences all nine with preflight checks and CONFIG_ORDER_PREFIXES priority.
+
+| # | batch | cfg | est wall | purpose |
+|---|---|---:|---:|---|
+| 1 | 090 patch composition | 240 | 3.5h | hero cell mean ≥5.5 hunt |
+| 2 | 090b AR(1) stability grid | 120 | 2h | fix s03 70% rej |
+| 3 | 090c n=50 confirm + AR(1)-clip×Zumbach | 150 | 2.5h | strengthen SOTA cells + new combo |
+| 4 | 090d depth-3 interference probe | 180 | 3h | strengthen depth ceiling claim |
+| 5 | 094 VaR holdout | 96 | 1.5h | clean train-test split |
+| 6 | 091 calibration ECoMD leg | 30 | 0.5h | wall × coverage |
+| 7 | **092 5-asset cross-asset replication** | 600 | 11h | reviewer-2 cross-asset attack |
+| 8 | **089b cross-asset attribution** | 480 | 9h | per-asset Figure 1 |
+| 9 | 095 WGAN-LP + TrajCast-lite baselines | 50 | 7h | §5 baseline table |
+| | **TOTAL** | **1946** | **~36h** | |
 
 ### 3.1 Batch 090 — patch composition (3.5h, top priority)
 
