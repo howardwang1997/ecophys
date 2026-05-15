@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Paper A NeurIPS 2027 — 3-day batch launcher (2026-05-15 PM → 2026-05-18 PM).
 #
-# Sequences nine sub-batches based on 089 attribution findings:
+# Sequences 14 sub-batches based on 089 attribution findings:
 #   090   patch composition (top priority)                240 cfg ECoMD
 #   090b  AR(1) stability grid (fix the 70% rej)          120 cfg ECoMD
 #   090c  n=50 SOTA confirm + AR(1)-clip × Zumbach combo  150 cfg ECoMD
@@ -10,9 +10,14 @@
 #   091   calibration ECoMD leg                            30 cfg ECoMD
 #   092   5-asset cross-asset replication                 600 cfg ECoMD
 #   089b  BTC + EURUSD single-mech attribution            480 cfg ECoMD
-#   095   WGAN-LP + TrajCast-lite baselines               50 cfg baselines
+#   096   all-pairs interaction matrix                    690 cfg ECoMD
+#   097   n_agents scaling ablation                        90 cfg ECoMD
+#   098   Zumbach `dn` strength × λ refinement            100 cfg ECoMD
+#   099   memory kernel strength × λ refinement           100 cfg ECoMD
+#   095   WGAN-LP + TrajCast-lite baselines                50 cfg baselines
+#   093   GARCH/GBM/AR1+SV/LM traditional baselines       100 cfg traditional
 #
-# Total: 1896 ECoMD cfg + 50 baseline fits ≈ 36h on 8-card H20.
+# Total: 2876 ECoMD + 50 baseline + 100 traditional cfg ≈ ~54h on 8-card H20.
 #
 # Why these five in this order
 # ────────────────────────────
@@ -78,6 +83,16 @@ phase_order_for() {
             echo "attr_btcusdt_baseline_,attr_btcusdt_zumbach_,attr_btcusdt_b3_,attr_btcusdt_asym,attr_btcusdt_ar1,attr_btcusdt_,attr_eurusd_" ;;
         experiments/095_baseline_5asset_5seed)
             echo "baseline_wgan_spx,baseline_trajcast_spx,baseline_wgan_,baseline_trajcast_" ;;
+        experiments/096_all_pairs_30seed)
+            echo "pair_zumdn_,pair_b3_,pair_asym_,pair_ar1c_,pair_levy_,pair_memk_,pair_pl_,pair_ms_" ;;
+        experiments/097_n_agents_scaling_30seed)
+            echo "scale_n1000_,scale_n5000_,scale_n500_" ;;
+        experiments/098_zumbach_dn_refinement_20seed)
+            echo "zumdn_s100_lam095,zumdn_s100_,zumdn_s075_,zumdn_s150_,zumdn_s050_,zumdn_s200_" ;;
+        experiments/099_memk_refinement_5seed)
+            echo "memk_s100_lam095,memk_s050_,memk_s075_,memk_s100_,memk_s025_,memk_s150_" ;;
+        experiments/093_5asset_traditional_baselines)
+            echo "trad_garch_spx,trad_gbm_spx,trad_ar1sv_spx,trad_lm_spx,trad_garch_,trad_gbm_,trad_ar1sv_,trad_lm_" ;;
         *) echo "" ;;
     esac
 }
@@ -93,9 +108,16 @@ ECOMD_PHASES=(
     "experiments/091_calibration_ecomd_5asset:30:experiments/091_calibration_ecomd_5asset/config_calib_spx_b40_seed0.yaml:n_iters: 40"
     "experiments/092_5asset_replication_30seed:600:experiments/092_5asset_replication_30seed/config_xa_spx_zumdn_seed0.yaml:zumbach_feedback_mode: downside"
     "experiments/089b_cross_asset_attribution_30seed:480:experiments/089b_cross_asset_attribution_30seed/config_attr_btcusdt_zumbach_dn_s10_seed0.yaml:zumbach_feedback_mode: downside"
+    "experiments/096_all_pairs_30seed:690:experiments/096_all_pairs_30seed/config_pair_zumdn_levy_seed0.yaml:zumbach_feedback_mode: downside"
+    "experiments/097_n_agents_scaling_30seed:90:experiments/097_n_agents_scaling_30seed/config_scale_n500_pair_zumdn_b3_seed0.yaml:n_agents: 500"
+    "experiments/098_zumbach_dn_refinement_20seed:100:experiments/098_zumbach_dn_refinement_20seed/config_zumdn_s100_lam095_seed0.yaml:zumbach_feedback_mode: downside"
+    "experiments/099_memk_refinement_5seed:100:experiments/099_memk_refinement_5seed/config_memk_s100_lam095_seed0.yaml:memory_kernel_strength: 1.0"
 )
 BASELINE_PHASES=(
     "experiments/095_baseline_5asset_5seed:50:experiments/095_baseline_5asset_5seed/config_baseline_wgan_spx_seed0.yaml:model: wgan_lp"
+)
+TRADITIONAL_PHASES=(
+    "experiments/093_5asset_traditional_baselines:100:experiments/093_5asset_traditional_baselines/config_trad_garch_spx_seed0.yaml:model: garch"
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -107,7 +129,7 @@ preflight() {
     echo "── preflight checks ──" | tee -a "$MASTER_LOG"
 
     # 1. Each phase has expected number of configs
-    for p in "${ECOMD_PHASES[@]}" "${BASELINE_PHASES[@]}"; do
+    for p in "${ECOMD_PHASES[@]}" "${BASELINE_PHASES[@]}" "${TRADITIONAL_PHASES[@]}"; do
         local dir=$(echo "$p" | cut -d: -f1)
         local expected=$(echo "$p" | cut -d: -f2)
         local cfgkey=$(echo "$p" | cut -d: -f3)
@@ -179,11 +201,15 @@ preflight() {
 import sys; sys.path.insert(0, '.')
 from ecomd.baselines.wgan_lp import WGANLPSimulator
 from ecomd.baselines.trajcast_lite import TrajCastLiteSimulator
+from ecomd.baselines.garch import GARCH11
+from ecomd.baselines.gbm import GBM
+from ecomd.baselines.ar1_sv import AR1SV
+from ecomd.baselines.lux_marchesi import LuxMarchesi1999, LuxMarchesiParams
 from ecomd.calibration.wallclock_harness import analyze_calibration_dir
 " >/dev/null 2>&1; then
-        echo "  ✓ M1.5/M1.6 imports OK" | tee -a "$MASTER_LOG"
+        echo "  ✓ M1.5/M1.6 + traditional baseline imports OK" | tee -a "$MASTER_LOG"
     else
-        echo "  ✗ M1.5/M1.6 imports FAILED" | tee -a "$MASTER_LOG"
+        echo "  ✗ baseline imports FAILED" | tee -a "$MASTER_LOG"
         fail=1
     fi
 
@@ -233,6 +259,23 @@ run_baseline_phase() {
         echo "  [WARN] score_summary failed for $d" | tee -a "$MASTER_LOG"
 }
 
+run_traditional_phase() {
+    local d="$1"
+    echo "" | tee -a "$MASTER_LOG"
+    echo "═══ TRADITIONAL PHASE: $d ═══ $(date) ═══" | tee -a "$MASTER_LOG"
+    export CONFIG_ORDER_PREFIXES="$(phase_order_for "$d")"
+    SECONDS=0
+    if ! bash scripts/h20_run_traditional_phase.sh "$d" 2>&1 | tee -a "$MASTER_LOG"; then
+        echo "  [WARN] traditional phase $d returned non-zero; continuing" | tee -a "$MASTER_LOG"
+    fi
+    echo "  [traditional phase $d] elapsed ${SECONDS}s" | tee -a "$MASTER_LOG"
+    conda run -n ecophys python scripts/score_phase.py "$d" 2>&1 | tee -a "$MASTER_LOG" || \
+        echo "  [WARN] scoreboard failed for $d" | tee -a "$MASTER_LOG"
+    conda run -n ecophys python scripts/score_summary.py "$d" \
+        --title "$(basename "$d")" 2>&1 | tee -a "$MASTER_LOG" || \
+        echo "  [WARN] score_summary failed for $d" | tee -a "$MASTER_LOG"
+}
+
 # ──────────────────────────────────────────────────────────────────────────
 # Main
 # ──────────────────────────────────────────────────────────────────────────
@@ -244,7 +287,7 @@ run_main() {
     if [[ "${1:-}" == "--dry-run" ]]; then
         echo "DRY RUN — listing configs only" | tee -a "$MASTER_LOG"
         local total=0 effective=0
-        for p in "${ECOMD_PHASES[@]}" "${BASELINE_PHASES[@]}"; do
+        for p in "${ECOMD_PHASES[@]}" "${BASELINE_PHASES[@]}" "${TRADITIONAL_PHASES[@]}"; do
             local d=$(echo "$p" | cut -d: -f1)
             local n=$(ls "$d"/config_*.yaml 2>/dev/null | wc -l | tr -d ' ')
             local n_done=$(find "$d" -maxdepth 2 -name "inference_merged.json" 2>/dev/null | wc -l | tr -d ' ')
@@ -276,6 +319,12 @@ run_main() {
     for p in "${BASELINE_PHASES[@]}"; do
         local d=$(echo "$p" | cut -d: -f1)
         run_baseline_phase "$d"
+    done
+
+    # Traditional baseline phases (GARCH/GBM/AR1+SV/LM via run_traditional_baseline.py)
+    for p in "${TRADITIONAL_PHASES[@]}"; do
+        local d=$(echo "$p" | cut -d: -f1)
+        run_traditional_phase "$d"
     done
 
     echo "" | tee -a "$MASTER_LOG"
