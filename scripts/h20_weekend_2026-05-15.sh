@@ -112,15 +112,17 @@ preflight() {
         fi
     done
 
-    # 2. Disk free ≥ 80 GB (5 phases worth of results)
+    # 2. Disk free ≥ 5 GB. 089 used 681MB for 800 cfg (~850KB/cfg); weekend
+    # batch is 536 cfg ≈ 450MB. 5GB gives 10× headroom for tmp files during
+    # training + W&B caches.
     local free_gb
     if df -BG "$REPO_ROOT" >/dev/null 2>&1; then
         free_gb=$(df -BG "$REPO_ROOT" | awk 'NR==2 {gsub("G","",$4); print $4}')
     else
         free_gb=$(df -k "$REPO_ROOT" | awk 'NR==2 {printf "%d", $4/1024/1024}')
     fi
-    if [[ -n "$free_gb" && "$free_gb" -lt 80 ]]; then
-        echo "  ✗ disk free $free_gb GB; need ≥ 80 GB for weekend batch" | tee -a "$MASTER_LOG"
+    if [[ -n "$free_gb" && "$free_gb" -lt 5 ]]; then
+        echo "  ✗ disk free $free_gb GB; need ≥ 5 GB for weekend batch" | tee -a "$MASTER_LOG"
         fail=1
     else
         echo "  ✓ disk free ${free_gb} GB" | tee -a "$MASTER_LOG"
