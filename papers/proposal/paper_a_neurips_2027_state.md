@@ -13,7 +13,7 @@ see `logs/YYYY-MM-DD.md` for chronological history.
 ## TL;DR
 
 - **089 attribution batch landed** (796/800, commit `321633ba`): `attr_zumbach_dn_s10` is best single mech (mean **5.12**, +0.31 vs baseline, only 2/50 rej). **Both floors lifted by single mechanisms** but with collateral tradeoffs → falsification reframes from "absolute" to "Pareto-bounded".
-- **3-day batch (2026-05-15 PM → 2026-05-18 PM, ~36h H20 wall)**: 9 sub-batches totaling 1946 cfg. Original five (090/090b/094/091/095) + four bonus phases pulling M3 work forward: 090c n=50 confirms + AR(1)-clip×Zumbach, 090d depth-3 interference, 092 5-asset replication, 089b cross-asset attribution.
+- **3-day batch (2026-05-15 PM → 2026-05-18 PM, ~50h H20 wall)**: 14 sub-batches totaling 3026 cfg. Original five (090/090b/094/091/095) + four bonus phases (090c/090d/092/089b) + five Tier-1/2 closeouts (096 all-pairs, 097 n_agents scaling, 098 Zumbach refinement, 099 memk refinement, 093 traditional baselines).
 - **Mac-side M1 modules are 6/6 done after this session**: AR(1) + Zumbach + distributional metrics + VaR ✅; TimeGAN/WGAN-LP + calibration harness shipping in the weekend batch commits.
 
 ---
@@ -91,7 +91,12 @@ Launcher: `scripts/h20_weekend_2026-05-15.sh` sequences all nine with preflight 
 | 7 | **092 5-asset cross-asset replication** | 600 | 11h | reviewer-2 cross-asset attack |
 | 8 | **089b cross-asset attribution** | 480 | 9h | per-asset Figure 1 |
 | 9 | 095 WGAN-LP + TrajCast-lite baselines | 50 | 7h | §5 baseline table |
-| | **TOTAL** | **1946** | **~36h** | |
+| 10 | **096 all-pairs interaction matrix** | 690 | 12h | **Pareto-impossibility evidence** |
+| 11 | 097 n_agents scaling ablation | 90 | 2h | rebut "ceiling is N-dependent" attack |
+| 12 | 098 Zumbach `dn` strength × λ refinement | 100 | 1.5h | SOTA dose-response surface |
+| 13 | 099 memk strength × λ refinement | 100 | 1.5h | rule out missed memk operating point |
+| 14 | 093 GARCH/GBM/AR1+SV/LM 5-asset baselines | 100 | 0.5h (CPU) | M3 baseline table close |
+| | **TOTAL** | **3026** | **~50h** | |
 
 ### 3.1 Batch 090 — patch composition (3.5h, top priority)
 

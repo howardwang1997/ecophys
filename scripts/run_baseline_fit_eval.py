@@ -56,15 +56,17 @@ def _load_model(name: str):
 
 
 def _facts_to_dict(facts) -> dict:
-    return {
-        name: {
-            "estimate": float(r.estimate) if r.estimate is not None else None,
-            **{k: (float(v) if isinstance(v, (int, float, np.floating, np.integer)) else v)
-               for k, v in r.meta.items()}
-            if hasattr(r, "meta") and r.meta else {},
-        }
-        for name, r in facts.items()
-    }
+    out = {}
+    for name, r in facts.items():
+        rec = {"estimate": float(r.estimate) if r.estimate is not None else None}
+        meta = getattr(r, "meta", None) or {}
+        for k, v in meta.items():
+            if isinstance(v, (int, float, np.floating, np.integer)):
+                rec[k] = float(v)
+            else:
+                rec[k] = v
+        out[name] = rec
+    return out
 
 
 def main() -> None:
