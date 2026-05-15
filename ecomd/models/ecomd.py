@@ -108,6 +108,10 @@ class EcoMDConfig:
     # Targets autocorr_returns architectural floor. Both = 0 → no-op.
     ar1_whiten_lambda: float = 0.0
     ar1_whiten_strength: float = 0.0
+    # ar1_whiten_clip: M1.1.1 stability knob — bounds the EMA-subtraction term
+    # to ar1_whiten_clip × mean|drift|. 0 disables clipping. Added 2026-05-15
+    # to address the 70% rejection rate seen at strength=0.3 in 089 batch.
+    ar1_whiten_clip: float = 0.0
     # M1.2 — Zumbach causal-asymmetry feedback. The v3 baseline shows
     # zumbach_asymmetry μ < 0 (wrong sign vs band [+0.001, +0.5]) for every
     # cell, because no mechanism produces the time-asymmetric coupling
@@ -425,6 +429,7 @@ class EcoMDSimulator(nn.Module):
             microstructure_rho=self.cfg.microstructure_rho,
             ar1_whiten_lambda=self.cfg.ar1_whiten_lambda,
             ar1_whiten_strength=self.cfg.ar1_whiten_strength,
+            ar1_whiten_clip=self.cfg.ar1_whiten_clip,
             zumbach_feedback_lambda=self.cfg.zumbach_feedback_lambda,
             zumbach_feedback_strength=self.cfg.zumbach_feedback_strength,
             zumbach_feedback_mode=self.cfg.zumbach_feedback_mode,
