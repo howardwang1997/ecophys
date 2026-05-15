@@ -1,6 +1,6 @@
 # Paper A — NeurIPS 2027 status (living document)
 
-**Last updated**: 2026-05-13 evening
+**Last updated**: 2026-05-14 (TrajCast review folded in; 089 still running on H20)
 **Branch**: `feature/paper-a-neurips-2027`
 **Plan**: `~/.claude/plans/curried-cuddling-cloud.md` (M1-M6, 8 wk each, → 2027-05 deadline)
 
@@ -94,7 +94,7 @@ These are needed to finish Paper A's claims; we deferred them tonight per user d
 
 **Why we need it**: reviewer-2 will demand a GAN-family baseline; GARCH alone isn't enough on the ML side. TimeGAN training on a single asset is GPU-heavy (~1-2h per fit on Mac); doing 5 assets × 5 seeds = 25 fits is a 25-50h Mac job, infeasible.
 
-**What to design**: TimeGAN reference (Yoon 2019, or simplified WGAN-LP per Wiese 2020 QuantGAN — ~3× simpler with similar paper-quality story) trained on each of 5 assets (SPX, BTC, EURUSD, GOLD, NDX), 5 seeds each.
+**What to design**: TimeGAN reference (Yoon 2019, or simplified WGAN-LP per Wiese 2020 QuantGAN — ~3× simpler with similar paper-quality story) trained on each of 5 assets (SPX, BTC, EURUSD, GOLD, NDX), 5 seeds each. **Bundle a TrajCast-style autoregressive surrogate into this same batch** — see §6 below; same H20 window, same 5-asset × 5-seed grid, ~+4h H20 wall.
 
 | | value |
 |---|---|
@@ -154,12 +154,52 @@ Plus M2 sub-tasks already shipped:
    - If **YES** to either → write 090 batch (compose patches with existing best singles/pairs).
    - If **NO** → that's the central falsification finding ("no Markovian mechanism class lifts these floors"), still publishable.
 2. **Within 1 week**: write batch 094 (VaR holdout) generator + launcher. Run when next H20 window opens.
-3. **Within 2 weeks**: decide TimeGAN vs WGAN-LP for M1.5; install ABIDES on H20 for M1.6.
-4. **Within 4 weeks**: 095 (GAN baseline) + 091 (calibration shootout) running.
+3. **Within 1 week**: add TrajCast (NMI 2025) citation + positioning paragraph to `papers/paper_a_methods/outline.md` §2 Related Work + clarify ECoMD's symmetry group (agent permutation, not E(3)) in §3 — see §7 below.
+4. **Within 2 weeks**: decide TimeGAN vs WGAN-LP for M1.5; install ABIDES on H20 for M1.6.
+5. **Within 4 weeks**: 095 (GAN + TrajCast-style baseline bundled) + 091 (calibration shootout) running.
 
 ---
 
-## 6. References
+## 6. TrajCast (Thiemann et al. 2025, NMI) — relevance + integration
+
+Reviewed 2026-05-13. Autoregressive equivariant GNN for force-free MD prediction in materials/chemistry; reports 30× longer stable forecast intervals and 15ns/day on a 4000-atom solid. Three angles for Paper A:
+
+### 6.1 Bundle a TrajCast-style autoregressive surrogate into batch 095
+
+The headline TrajCast claim is that an autoregressive GNN can replace explicit force computation while staying stable over long rollouts. For Paper A's falsification framing, the question is: **does a force-free autoregressive surrogate also hit the `autocorr_returns` and `zumbach_asymmetry` floors when trained on the same SPX/BTC/EURUSD/GOLD/NDX data?**
+
+If **yes** (likely outcome) → the floors generalize beyond ECoMD's mechanism class to the entire differentiable-surrogate family — strongest possible falsification claim, lifts acceptance estimate ~+5-8pp.
+
+If **no** → TrajCast clears a floor we cannot, which becomes a positive finding for *that* baseline and forces us to re-scope the falsification claim (still publishable, weaker headline).
+
+**Implementation**: minimal autoregressive surrogate (~300 LoC) — single MLP/transformer predicting `r_{t+1}` from `[r_{t-K:t}, σ_{t-K:t}, regime indicator]`, no explicit force decomposition. Permutation symmetry on agents collapses to a no-op since we operate on aggregate market state, not per-agent particles → compare apples to apples. Wire into `ecomd/baselines/trajcast_lite.py` parallel to `ecomd/baselines/timegan.py`.
+
+**H20 cost**: bundle into batch 095 alongside TimeGAN/WGAN-LP. Same 5 assets × 5 seeds = 25 fits. ~+4h H20 wall on top of TimeGAN's ~10h. Unified scoring through the existing 11-fact pipeline.
+
+**Decision gate** (after 089 lands): only commit to this if AR(1) and Zumbach floors persist in the 089 attribution matrix. If either floor is lifted by a single mechanism, TrajCast bundling becomes lower priority.
+
+### 6.2 Borrow rollout-stability training tricks (P1, gated on time)
+
+TrajCast's long-rollout stability comes from autoregressive training with noise/perturbation regularization (training section needs verification against their code). Our `depth ≥ 3 ⇒ degradation` finding (4.94 → 5.18 → 4.79 → 4.62) is plausibly rollout drift, not a fundamental mechanism-class limit. Adding scheduled-sampling-style perturbations to `ecomd/training/train_distributed.py` could push the compositional ceiling from depth-2 to depth-3 — that would be a paper-grade finding by itself.
+
+**Effort**: ~2-3h Mac dev + one small H20 sweep (~5h). Defer until 089 results are in; if depth-2 ceiling story holds in 089 attribution, this gets prioritized for batch 092 cross-asset replication.
+
+### 6.3 Mandatory citation + framing in §2 Related Work
+
+TrajCast (NMI 2025) must be cited in §2 with an explicit positioning sentence:
+
+> "Recent autoregressive equivariant approaches (TrajCast, Thiemann et al. 2025) learn integrator surrogates that bypass explicit force computation; ECoMD takes the complementary stance of exposing interpretable mechanism components for systematic ablation, trading rollout-length headroom for falsifiability of mechanism-class sufficiency claims."
+
+Symmetry-group disclosure in §3 to pre-empt reviewer-2: ECoMD respects **permutation symmetry over agents**, not E(3) symmetry on Cartesian coordinates, because agents inhabit a learned latent feature space, not 3D physical space. This is a deliberate scope choice — equivariant networks designed for atomic geometry do not transfer here without violating the latent-space abstraction.
+
+### 6.4 Out-of-scope for Paper A
+
+- Adopting force-free black-box dynamics — kills the mechanism-decomposition contribution
+- Lifting E(3) equivariance machinery — wrong symmetry group for our problem; reviewer-2 will catch the mismatch
+
+---
+
+## 7. References
 
 - Plan: `~/.claude/plans/curried-cuddling-cloud.md`
 - Branch F (088) analysis: `logs/2026-05-13.md` Sessions 1-2
