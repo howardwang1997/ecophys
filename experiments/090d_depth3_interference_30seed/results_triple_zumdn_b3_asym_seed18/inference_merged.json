@@ -1,0 +1,1175 @@
+{
+  "aggregated": {
+    "autocorr_returns": {
+      "mean": 0.003668763033246861,
+      "std": 6.95038609999088e-11,
+      "n": 2
+    },
+    "hill_tail_index": {
+      "mean": 0.10167722237779218,
+      "std": 0.007691946176035219,
+      "n": 2
+    },
+    "gain_loss_asymmetry": {
+      "mean": 2.0914365781842372,
+      "std": 5.601418841635841,
+      "n": 4
+    },
+    "conditional_kurtosis": {
+      "mean": 35.75,
+      "std": 18.25342433627181,
+      "n": 4
+    },
+    "leverage_effect": {
+      "mean": -1.6284270737410012e-09,
+      "std": 0.02213803138522155,
+      "n": 2
+    },
+    "volume_volatility_corr": {
+      "mean": 0.9999999999999999,
+      "std": 1.1102230246251565e-16,
+      "n": 4
+    }
+  },
+  "n_total_rollouts": 4,
+  "realizations": [
+    {
+      "rank": 0,
+      "seed": 10000,
+      "n_steps": 4000,
+      "rollout_time_s": 88.2779586315155,
+      "facts": {
+        "autocorr_returns": {
+          "name": "autocorr_returns",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=30 >= n=18"
+          }
+        },
+        "hill_tail_index": {
+          "name": "hill_tail_index",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: need at least 50 observations for a reliable Hill estimate, got 18"
+          }
+        },
+        "gain_loss_asymmetry": {
+          "name": "gain_loss_asymmetry",
+          "estimate": 4.242640687119286,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "tail_ratios": [
+              1.5815889055014671e-13,
+              1.5815887629826094e-13,
+              1.5815886667135122e-13
+            ],
+            "tail_quantiles": [
+              0.01,
+              0.005,
+              0.001
+            ]
+          },
+          "meta": {
+            "n": 18,
+            "skewness": 4.242640687119286,
+            "left_right_ratios": {
+              "left/right_q0.01": 1.5815889055014671e-13,
+              "left/right_q0.005": 1.5815887629826094e-13,
+              "left/right_q0.001": 1.5815886667135122e-13
+            },
+            "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+          }
+        },
+        "aggregational_gaussianity": {
+          "name": "aggregational_gaussianity",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "scales": [
+              1,
+              5,
+              10,
+              25,
+              50,
+              100
+            ],
+            "excess_kurtosis": [
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ],
+            "ks_to_normal": [
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ]
+          },
+          "meta": {
+            "n": 18,
+            "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+          }
+        },
+        "intermittency_fano": {
+          "name": "intermittency_fano",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: n=18 < n_windows=100"
+          }
+        },
+        "acf_squared_returns": {
+          "name": "acf_squared_returns",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=100 >= n=18"
+          }
+        },
+        "conditional_kurtosis": {
+          "name": "conditional_kurtosis",
+          "estimate": 17.999999999999996,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "conditional_vol_path_summary": [
+              5.474220256926682e+29,
+              7.458125662313895e+29,
+              8.898490999153387e+29
+            ]
+          },
+          "meta": {
+            "n": 18,
+            "unconditional_excess_kurtosis": 18.0,
+            "conditional_excess_kurtosis": 17.999999999999996,
+            "kurtosis_reduction_ratio": 0.9999999999999998,
+            "garch_params": {
+              "omega": 4.6550192805652536e+58,
+              "alpha[1]": 0.0,
+              "beta[1]": 0.9682094769687211
+            },
+            "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+          }
+        },
+        "dfa_hurst_abs_r": {
+          "name": "dfa_hurst_abs_r",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_scale=1 <= min_scale=16 (n=18)"
+          }
+        },
+        "leverage_effect": {
+          "name": "leverage_effect",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=30 >= n=18"
+          }
+        },
+        "volume_volatility_corr": {
+          "name": "volume_volatility_corr",
+          "estimate": 1.0,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              -5,
+              -4,
+              -3,
+              -2,
+              -1,
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "cross_corr_v_abs_r": [
+              0.9999997795864581,
+              0.9999999999998501,
+              0.7557585436137432,
+              0.3448131528610551,
+              0.2951741031507615,
+              1.0,
+              0.27225396183465467,
+              0.3118370322965672,
+              0.37986690324844913,
+              0.9999999999998981,
+              0.9999994411009595
+            ]
+          },
+          "meta": {
+            "n": 18,
+            "contemporaneous_corr_v_absr": 1.0,
+            "summary": "positive (\u22650.2) = volume\u2013volatility link confirmed"
+          }
+        },
+        "zumbach_asymmetry": {
+          "name": "zumbach_asymmetry",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: series too short for zumbach_asymmetry: n=18, cw=30, max_lag=20 \u2192 only -52 reference times"
+          }
+        }
+      }
+    },
+    {
+      "rank": 0,
+      "seed": 10001,
+      "n_steps": 4000,
+      "rollout_time_s": 87.38594794273376,
+      "facts": {
+        "autocorr_returns": {
+          "name": "autocorr_returns",
+          "estimate": 0.003668762963743,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30
+            ],
+            "acf": [
+              1.0,
+              -0.00034940274360819657,
+              -0.0006988120240412897,
+              -0.0010482180366911031,
+              -0.0013976240484399511,
+              -0.0017470300605518746,
+              -0.002096436072662368,
+              -0.002445842084772784,
+              -0.002795248096883211,
+              -0.0031446541089935674,
+              -0.0034940601211039856,
+              -0.003843466133214373,
+              -0.004192872145324774,
+              -0.004542278157435173,
+              -0.004891684169545574,
+              -0.00524109018165598,
+              -0.0055904961937663575,
+              -0.00593990220587676,
+              -0.006289308217987162,
+              -0.00663871423009756,
+              -0.0069881202422079625,
+              -0.007337526254318358,
+              -0.007686932266428751,
+              -0.008036338278539149,
+              -0.008385744290649548,
+              -0.008735150302759951,
+              -0.00908455631487035,
+              -0.009433962326980745,
+              -0.009783368339091145,
+              -0.010132774351201542,
+              -0.010482180363311938
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "max_lag": 30,
+            "ljung_box_lag": 20,
+            "ljung_box_q": 0.027695941238436442,
+            "ljung_box_p": 1.0,
+            "summary": "mean |ACF(r)| over lags 1..20 (small = white); LB-p > 0.05 = consistent with no autocorrelation"
+          }
+        },
+        "hill_tail_index": {
+          "name": "hill_tail_index",
+          "estimate": 0.1093691685538274,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "ks": [
+              10,
+              11,
+              12,
+              13
+            ],
+            "alpha_of_k": [
+              0.1093691685538274,
+              0.11925704073104097,
+              0.12765357346017084,
+              0.1378494913425052
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "k": 10,
+            "k_frac": 0.05,
+            "side": "both"
+          }
+        },
+        "gain_loss_asymmetry": {
+          "name": "gain_loss_asymmetry",
+          "estimate": -7.348469228349533,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "tail_ratios": [
+              2778409474222.44,
+              2778613660727.097,
+              2778694739933.633
+            ],
+            "tail_quantiles": [
+              0.01,
+              0.005,
+              0.001
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "skewness": -7.348469228349533,
+            "left_right_ratios": {
+              "left/right_q0.01": 2778409474222.44,
+              "left/right_q0.005": 2778613660727.097,
+              "left/right_q0.001": 2778694739933.633
+            },
+            "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+          }
+        },
+        "aggregational_gaussianity": {
+          "name": "aggregational_gaussianity",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "scales": [
+              1,
+              5,
+              10,
+              25,
+              50,
+              100
+            ],
+            "excess_kurtosis": [
+              54.0,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ],
+            "ks_to_normal": [
+              0.5356035454135325,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+          }
+        },
+        "intermittency_fano": {
+          "name": "intermittency_fano",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: n=54 < n_windows=100"
+          }
+        },
+        "acf_squared_returns": {
+          "name": "acf_squared_returns",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=100 >= n=54"
+          }
+        },
+        "conditional_kurtosis": {
+          "name": "conditional_kurtosis",
+          "estimate": 54.0,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "conditional_vol_path_summary": [
+              1.5160625916449779e+21,
+              3.1576189340823165e+21,
+              4.351185165883306e+21
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "unconditional_excess_kurtosis": 54.0,
+            "conditional_excess_kurtosis": 54.0,
+            "kurtosis_reduction_ratio": 1.0,
+            "garch_params": {
+              "omega": 3.1385597294381406e+41,
+              "alpha[1]": 1.5205633487324512e-12,
+              "beta[1]": 0.9999999999999919
+            },
+            "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+          }
+        },
+        "dfa_hurst_abs_r": {
+          "name": "dfa_hurst_abs_r",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_scale=5 <= min_scale=16 (n=54)"
+          }
+        },
+        "leverage_effect": {
+          "name": "leverage_effect",
+          "estimate": 0.022138029756794478,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30
+            ],
+            "corr_r_r2": [
+              -0.9999999999999998,
+              0.00035599524701911204,
+              0.0007256894071648023,
+              0.0011098779175064749,
+              0.0015094339672887648,
+              0.0019252984276663724,
+              0.002358490573891441,
+              0.0028101164284664317,
+              0.0032813781897620747,
+              0.003773584918226333,
+              0.004288164679802673,
+              0.004826678383777877,
+              0.0053908355974662025,
+              0.005982512675236884,
+              0.006603773606896105,
+              0.007256894073512216,
+              0.007944389301529128,
+              0.008669046433763209,
+              0.00943396229556585,
+              0.010242587635185776,
+              0.011098779171253943,
+              0.012006861103447439,
+              0.01297169815640303,
+              0.013998782761162232,
+              0.015094339672905362,
+              0.01626545223373423,
+              0.017520215691765154,
+              0.018867924591131697,
+              0.02031930340583413,
+              0.021886792525712764,
+              0.023584905738914606
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "max_lag": 30,
+            "summary": "sum of corr(r_t, r_{t+\u03c4}^2) for \u03c4=1..10"
+          }
+        },
+        "volume_volatility_corr": {
+          "name": "volume_volatility_corr",
+          "estimate": 0.9999999999999998,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              -5,
+              -4,
+              -3,
+              -2,
+              -1,
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "cross_corr_v_abs_r": [
+              0.9390161450614674,
+              0.9975208688630701,
+              0.9999896689191018,
+              0.4182392957477656,
+              0.9999999926603254,
+              0.9999999999999998,
+              0.9999999949875836,
+              0.4105611523948332,
+              0.9999890482100351,
+              0.9995914052304578,
+              0.947189289125082
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "contemporaneous_corr_v_absr": 0.9999999999999998,
+            "summary": "positive (\u22650.2) = volume\u2013volatility link confirmed"
+          }
+        },
+        "zumbach_asymmetry": {
+          "name": "zumbach_asymmetry",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: series too short for zumbach_asymmetry: n=54, cw=30, max_lag=20 \u2192 only -16 reference times"
+          }
+        }
+      }
+    },
+    {
+      "rank": 0,
+      "seed": 10002,
+      "n_steps": 4000,
+      "rollout_time_s": 87.43949699401855,
+      "facts": {
+        "autocorr_returns": {
+          "name": "autocorr_returns",
+          "estimate": 0.003668763102750722,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30
+            ],
+            "acf": [
+              1.0,
+              -0.0003494060103792313,
+              -0.0006988120195658865,
+              -0.0010482180293488312,
+              -0.001397624039131776,
+              -0.001747030048914721,
+              -0.0020964360586976645,
+              -0.002445842068480597,
+              -0.002795248078263542,
+              -0.0031446540880464865,
+              -0.003494060097829431,
+              -0.003843466107612376,
+              -0.00419287211739532,
+              -0.004542278127178266,
+              -0.00489168413696121,
+              -0.005241090146744155,
+              -0.0055904961565271,
+              -0.005939902166310044,
+              -0.006289308176092987,
+              -0.006638714185875932,
+              -0.006988120195658876,
+              -0.007337526205441819,
+              -0.007686932215224761,
+              -0.00803633822500771,
+              -0.008385744234790653,
+              -0.008735150244573595,
+              -0.009084556254356538,
+              -0.009433962264139482,
+              -0.009783368273922425,
+              -0.010132774283705369,
+              -0.010482180293488312
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "max_lag": 30,
+            "ljung_box_lag": 20,
+            "ljung_box_q": 0.027695940999775986,
+            "ljung_box_p": 1.0,
+            "summary": "mean |ACF(r)| over lags 1..20 (small = white); LB-p > 0.05 = consistent with no autocorrelation"
+          }
+        },
+        "hill_tail_index": {
+          "name": "hill_tail_index",
+          "estimate": 0.09398527620175696,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "ks": [
+              10,
+              11,
+              12,
+              13
+            ],
+            "alpha_of_k": [
+              0.09398527620175696,
+              0.09771714398388445,
+              0.10536927060173973,
+              0.1111946107687264
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "k": 10,
+            "k_frac": 0.05,
+            "side": "both"
+          }
+        },
+        "gain_loss_asymmetry": {
+          "name": "gain_loss_asymmetry",
+          "estimate": 7.3484692283495345,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "tail_ratios": [
+              5.962885553253434e-13,
+              5.962884394193297e-13,
+              5.962883933996223e-13
+            ],
+            "tail_quantiles": [
+              0.01,
+              0.005,
+              0.001
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "skewness": 7.3484692283495345,
+            "left_right_ratios": {
+              "left/right_q0.01": 5.962885553253434e-13,
+              "left/right_q0.005": 5.962884394193297e-13,
+              "left/right_q0.001": 5.962883933996223e-13
+            },
+            "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+          }
+        },
+        "aggregational_gaussianity": {
+          "name": "aggregational_gaussianity",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "scales": [
+              1,
+              5,
+              10,
+              25,
+              50,
+              100
+            ],
+            "excess_kurtosis": [
+              54.0,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ],
+            "ks_to_normal": [
+              0.5356035547280517,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+          }
+        },
+        "intermittency_fano": {
+          "name": "intermittency_fano",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: n=54 < n_windows=100"
+          }
+        },
+        "acf_squared_returns": {
+          "name": "acf_squared_returns",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=100 >= n=54"
+          }
+        },
+        "conditional_kurtosis": {
+          "name": "conditional_kurtosis",
+          "estimate": 54.0,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "conditional_vol_path_summary": [
+              1.1870484291605983e+29,
+              2.472356099443961e+29,
+              3.406895958397063e+29
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "unconditional_excess_kurtosis": 54.0,
+            "conditional_excess_kurtosis": 54.0,
+            "kurtosis_reduction_ratio": 1.0,
+            "garch_params": {
+              "omega": 1.924123792107472e+57,
+              "alpha[1]": 0.0,
+              "beta[1]": 1.0
+            },
+            "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+          }
+        },
+        "dfa_hurst_abs_r": {
+          "name": "dfa_hurst_abs_r",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_scale=5 <= min_scale=16 (n=54)"
+          }
+        },
+        "leverage_effect": {
+          "name": "leverage_effect",
+          "estimate": -0.022138033013648625,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30
+            ],
+            "corr_r_r2": [
+              1.0000000000000002,
+              -0.00035599857661302014,
+              -0.0007256894049342484,
+              -0.0011098779134288493,
+              -0.001509433962263234,
+              -0.0019252984212541244,
+              -0.002358490566036302,
+              -0.0028101164191070885,
+              -0.0032813781788331203,
+              -0.0037735849056580876,
+              -0.004288164665520552,
+              -0.004826678367702203,
+              -0.005390835579511551,
+              -0.005982512655311597,
+              -0.006603773584901648,
+              -0.007256894049342475,
+              -0.007944389275069656,
+              -0.0086690464048902,
+              -0.009433962264145215,
+              -0.010242587601071947,
+              -0.011098779134288486,
+              -0.012006861063457544,
+              -0.012971698113199667,
+              -0.013998782714538064,
+              -0.015094339622632345,
+              -0.016265452179560717,
+              -0.01752021563341254,
+              -0.018867924528290426,
+              -0.02031930333815892,
+              -0.021886792452816894,
+              -0.023584905660363028
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "max_lag": 30,
+            "summary": "sum of corr(r_t, r_{t+\u03c4}^2) for \u03c4=1..10"
+          }
+        },
+        "volume_volatility_corr": {
+          "name": "volume_volatility_corr",
+          "estimate": 0.9999999999999998,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              -5,
+              -4,
+              -3,
+              -2,
+              -1,
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "cross_corr_v_abs_r": [
+              0.5548513716162902,
+              0.8138541530219253,
+              0.990531972325881,
+              0.9999998209201332,
+              0.9999999999999677,
+              0.9999999999999998,
+              0.9999999999999368,
+              0.9999995536194224,
+              0.3554098072813292,
+              0.40866377663161985,
+              0.9958456761653294
+            ]
+          },
+          "meta": {
+            "n": 54,
+            "contemporaneous_corr_v_absr": 0.9999999999999998,
+            "summary": "positive (\u22650.2) = volume\u2013volatility link confirmed"
+          }
+        },
+        "zumbach_asymmetry": {
+          "name": "zumbach_asymmetry",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: series too short for zumbach_asymmetry: n=54, cw=30, max_lag=20 \u2192 only -16 reference times"
+          }
+        }
+      }
+    },
+    {
+      "rank": 0,
+      "seed": 10003,
+      "n_steps": 4000,
+      "rollout_time_s": 87.49072670936584,
+      "facts": {
+        "autocorr_returns": {
+          "name": "autocorr_returns",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=30 >= n=17"
+          }
+        },
+        "hill_tail_index": {
+          "name": "hill_tail_index",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: need at least 50 observations for a reliable Hill estimate, got 17"
+          }
+        },
+        "gain_loss_asymmetry": {
+          "name": "gain_loss_asymmetry",
+          "estimate": 4.123105625617661,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "tail_ratios": [
+              3.7585752674045224e-16,
+              3.7585752625516394e-16,
+              3.758575259237476e-16
+            ],
+            "tail_quantiles": [
+              0.01,
+              0.005,
+              0.001
+            ]
+          },
+          "meta": {
+            "n": 17,
+            "skewness": 4.123105625617661,
+            "left_right_ratios": {
+              "left/right_q0.01": 3.7585752674045224e-16,
+              "left/right_q0.005": 3.7585752625516394e-16,
+              "left/right_q0.001": 3.758575259237476e-16
+            },
+            "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+          }
+        },
+        "aggregational_gaussianity": {
+          "name": "aggregational_gaussianity",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "scales": [
+              1,
+              5,
+              10,
+              25,
+              50,
+              100
+            ],
+            "excess_kurtosis": [
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ],
+            "ks_to_normal": [
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN,
+              NaN
+            ]
+          },
+          "meta": {
+            "n": 17,
+            "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+          }
+        },
+        "intermittency_fano": {
+          "name": "intermittency_fano",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: n=17 < n_windows=100"
+          }
+        },
+        "acf_squared_returns": {
+          "name": "acf_squared_returns",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=100 >= n=17"
+          }
+        },
+        "conditional_kurtosis": {
+          "name": "conditional_kurtosis",
+          "estimate": 17.0,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "conditional_vol_path_summary": [
+              1.8019706858743792e+35,
+              2.4209157177649995e+35,
+              2.8828547856945146e+35
+            ]
+          },
+          "meta": {
+            "n": 17,
+            "unconditional_excess_kurtosis": 17.0,
+            "conditional_excess_kurtosis": 17.0,
+            "kurtosis_reduction_ratio": 1.0,
+            "garch_params": {
+              "omega": 4.880866807257053e+69,
+              "alpha[1]": 0.0,
+              "beta[1]": 0.9705211814087166
+            },
+            "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+          }
+        },
+        "dfa_hurst_abs_r": {
+          "name": "dfa_hurst_abs_r",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_scale=1 <= min_scale=16 (n=17)"
+          }
+        },
+        "leverage_effect": {
+          "name": "leverage_effect",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: max_lag=30 >= n=17"
+          }
+        },
+        "volume_volatility_corr": {
+          "name": "volume_volatility_corr",
+          "estimate": 1.0,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {
+            "lags": [
+              -5,
+              -4,
+              -3,
+              -2,
+              -1,
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "cross_corr_v_abs_r": [
+              0.32908249172679244,
+              0.23957742030732604,
+              0.999083279876614,
+              0.9999999845734883,
+              1.0,
+              1.0,
+              0.9999999999999994,
+              0.9999999585431202,
+              0.9997304095411657,
+              0.23269322250887675,
+              0.2857144123508296
+            ]
+          },
+          "meta": {
+            "n": 17,
+            "contemporaneous_corr_v_absr": 1.0,
+            "summary": "positive (\u22650.2) = volume\u2013volatility link confirmed"
+          }
+        },
+        "zumbach_asymmetry": {
+          "name": "zumbach_asymmetry",
+          "estimate": NaN,
+          "ci_low": null,
+          "ci_high": null,
+          "diagnostic": {},
+          "meta": {
+            "error": "ValueError: series too short for zumbach_asymmetry: n=17, cw=30, max_lag=20 \u2192 only -53 reference times"
+          }
+        }
+      }
+    }
+  ]
+}
