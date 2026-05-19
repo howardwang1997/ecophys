@@ -88,7 +88,7 @@ def _sample_lux_marchesi(real_r, n_paths, n_steps, seed, model_kwargs):
     paths = np.empty((n_paths, n_steps), dtype=np.float64)
     for k in range(n_paths):
         traj = model.run(n_steps=n_steps + 1, seed=seed * 1000 + k)
-        paths[k] = traj.log_returns()
+        paths[k] = traj.log_returns
     return paths
 
 
