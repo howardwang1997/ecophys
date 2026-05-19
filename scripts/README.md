@@ -12,7 +12,7 @@ bash scripts/h20_setup_once.sh          # install conda env + pyproject
 conda activate ecophys
 # Data: data/sample/ (SPX daily 2015-2026) ships in git — enough for v1 training.
 # Additional data from R2 only needed for multi-market work (M3.5+):
-# bash scripts/h20_pull_from_r2.sh data/
+# bash scripts/h20_pull_paper_a_data.sh
 wandb login                              # or set WANDB_API_KEY
 
 # Required for checkpoint offload after training:
@@ -28,8 +28,8 @@ chmod 600 .env.r2 .env.supabase
 |---|---|---|
 | **v1 / v1+ training** (now) | SPX daily 12 yr | ✓ in `data/sample/` (git) |
 | M3 Paper A final | SPX full + BTC + LOBSTER | R2 pull (Tier 1 LOBSTER) |
-| M3.5 A1 pilot | SPX + BTC + EUR/USD | yfinance + Binance + extra EUR/USD |
-| M4 A1 full 8-market | + 5 more markets | yfinance + Tardis ~$3k |
+| M3.5 A1 pilot | SPX + BTC + EUR/USD + NDX | R2 `raw/` + Supabase `data_assets` |
+| M4 A1 full 8-market | + 5 more markets | R2 `raw/` + Supabase `data_assets`; Tardis if needed |
 
 ## Training (v1 and v1+)
 

@@ -120,7 +120,25 @@ python -m ecomd.data.checkpoint_sync git-rm-cached
 
 The cleanup command performs an R2 HEAD check and compares the stored SHA-256/size metadata before deleting local files. If the R2 object is missing or mismatched, the local checkpoint is kept.
 
-### Rule 5: Lightweight results flow H20 → NFS → R2 → Mac (for inspection)
+### Rule 5: Open/reference data flows Mac → R2 + Supabase → H20
+
+Open data shards are not committed to Git. They live in R2 under their repo-relative `data/raw/...` layout and are cataloged in Supabase `public.data_assets`.
+
+```bash
+# Mac: one-time table setup
+python -m ecomd.data.data_asset_sync migrate
+
+# Mac: upload missing yfinance shards and upsert data_assets metadata
+python -m ecomd.data.data_asset_sync sync data/raw/yfinance/interval=1d/symbol=EURUSD=X
+python -m ecomd.data.data_asset_sync sync 'data/raw/yfinance/interval=1d/symbol=^NDX'
+
+# H20: pull missing shards before eval/training
+bash scripts/h20_pull_paper_a_data.sh
+```
+
+As of 2026-05-19, `EURUSD=X` and `^NDX` daily 2015-2026 shards are archived in R2 and registered in Supabase because eval for EUR/USD and NDX configs depends on them.
+
+### Rule 6: Lightweight results flow H20 → NFS → R2 → Mac (for inspection)
 
 ```bash
 # H20: after training, write artifacts to NFS
@@ -138,8 +156,8 @@ python -m ecomd.data.r2_sync download experiments/<exp-id>/ ./data/experiments/<
 ```
 r2://ecophys/
 ├── raw/                              # unmodified vendor/source downloads
-│   ├── yfinance/{symbol}/interval={iv}/year={yyyy}.parquet
-│   ├── binance/market={m}/interval={iv}/{symbol}/{yyyy}/{mm}.parquet
+│   ├── yfinance/interval={iv}/symbol={symbol}/year={yyyy}.parquet
+│   ├── binance/market={m}/interval={iv}/symbol={symbol}/year={yyyy}/month={mm}.parquet
 │   ├── lobster/{symbol}/{yyyy-mm-dd}/messages.parquet
 │   └── vendor/{vendor-slug}/...      # e.g. vendor/firstrate/sp500_minute/...
 ├── processed/                        # normalized schema ready for models

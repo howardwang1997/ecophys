@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# H20-side: pull the 7 new yfinance tickers (Paper A solidify M/N series)
-# from R2. Each ticker is 12 parquet shards × ~10 KB = ~120 KB. Total ~1 MB.
+# H20-side: pull Paper A yfinance tickers from R2. These shards are cataloged
+# in Supabase `data_assets` and stored under r2://ecophys/raw/yfinance/...
 #
 # Run on H20:
 #   bash scripts/h20_pull_paper_a_data.sh
@@ -10,7 +10,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-TICKERS=('^GDAXI' '^STOXX50E' '^HSI' '^N225' QQQ IWM GLD)
+TICKERS=('^GDAXI' '^STOXX50E' '^HSI' '^N225' QQQ IWM GLD 'EURUSD=X' '^NDX')
 
 for sym in "${TICKERS[@]}"; do
     echo "═ pulling $sym from r2://ecophys/raw/yfinance/interval=1d/symbol=$sym"

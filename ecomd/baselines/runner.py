@@ -72,7 +72,7 @@ def _load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray
         "spx":     "^GSPC", "spy":  "SPY",  "qqq": "QQQ", "iwm": "IWM",
         "dax":     "^GDAXI", "stoxx50": "^STOXX50E",
         "hsi":     "^HSI", "nikkei": "^N225",
-        "gold":    "GLD", "eurusd": "EURUSD=X",
+        "gold":    "GLD", "eurusd": "EURUSD=X", "ndx": "^NDX",
     }
     if dataset in yfinance_symbols:
         symbol = yfinance_symbols[dataset]
