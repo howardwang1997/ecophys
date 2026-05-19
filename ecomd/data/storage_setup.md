@@ -1,6 +1,6 @@
-# Storage Architecture — EcoPhys (v3, final)
+# Storage Architecture — EcoPhys (v4, checkpoint offload)
 
-**Updated 2026-04-23** — confirmed: R2 registered, H20 NFS path `/AI4S/Users/howardwang/ecophys/`, **Mac cannot mount NFS**, all Mac↔H20 data transit must go through R2.
+**Updated 2026-05-19** — confirmed: R2 registered, H20 NFS path `/AI4S/Users/howardwang/ecophys/`, **Mac cannot mount NFS**, all Mac↔H20 data transit must go through R2. Binary model checkpoints are no longer kept in Git or on Mac after verification; they live in Cloudflare R2 and are cataloged in Supabase.
 
 ## Architecture
 
@@ -36,6 +36,8 @@
 
 | Role | Location | Notes |
 |---|---|---|
+| **Canonical for checkpoint binaries** | `r2://ecophys/checkpoints/...` | Authoritative for `checkpoint*.pt`, `.ckpt`, `.pth`; local copies can be deleted after verification |
+| **Checkpoint catalog** | Supabase `public.checkpoints` | Metadata index: local path, R2 bucket/key, size, SHA-256, status, config/training summaries |
 | **Canonical for sharing between Mac ↔ H20** | `r2://ecophys/` | Authoritative during transit; kept as offsite backup afterward |
 | **Canonical on H20 / for long-term storage** | `/AI4S/Users/howardwang/ecophys/` (NFS) | On-prem, fast within company net, persists across H20 reboots |
 | **H20 hot cache** | `/root/data/ecophys/` (local data drive; target budget 500 GB) | Training reads here; rsynced from NFS before each big run |
@@ -71,13 +73,60 @@ rsync -avh --info=progress2 /AI4S/Users/howardwang/ecophys/processed/sp500_minut
 
 Training code reads exclusively from `/root/data/ecophys/`. The `$ECOPHYS_DATA_DIR` env var points at this path on H20 and at `~/Desktop/playground/ecophys/data` on Mac.
 
-### Rule 4: Checkpoints/results flow H20 → NFS → R2 → Mac (for inspection)
+### Rule 4: Checkpoints flow H20 → R2 + Supabase, then local cleanup
+
+Every H20 production task must offload checkpoints through `ecomd.data.checkpoint_sync` before the run is considered archived. This keeps the Mac working copy and GitHub history small while preserving reproducible checkpoint lookup.
+
+Required credentials on both Mac and H20:
+
+```bash
+cp .env.r2.example .env.r2
+cp .env.supabase.example .env.supabase
+chmod 600 .env.r2 .env.supabase
+```
+
+`.env.r2` provides Cloudflare R2 object storage credentials. `.env.supabase` provides `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_CHECKPOINT_TABLE`, and `DATABASE_URL` for table migration when needed. Both files are gitignored and must never be committed.
+
+One-time Supabase table setup:
+
+```bash
+python -m ecomd.data.checkpoint_sync migrate
+```
+
+After each H20 training job:
+
+```bash
+# H20: inspect what will be uploaded
+python -m ecomd.data.checkpoint_sync scan
+
+# H20: upload checkpoint binaries to R2 and upsert metadata into Supabase
+python -m ecomd.data.checkpoint_sync sync
+
+# H20: delete only local checkpoints that are verified in R2 by size + SHA-256
+python -m ecomd.data.checkpoint_sync cleanup
+```
+
+For a single-command H20 archive pass:
+
+```bash
+python -m ecomd.data.checkpoint_sync sync --delete-local
+```
+
+If a checkpoint path was accidentally added to Git, remove it from the index without deleting the local file:
+
+```bash
+python -m ecomd.data.checkpoint_sync git-rm-cached
+```
+
+The cleanup command performs an R2 HEAD check and compares the stored SHA-256/size metadata before deleting local files. If the R2 object is missing or mismatched, the local checkpoint is kept.
+
+### Rule 5: Lightweight results flow H20 → NFS → R2 → Mac (for inspection)
 
 ```bash
 # H20: after training, write artifacts to NFS
 rsync -avh /root/data/ecophys/experiments/<exp-id>/ /AI4S/Users/howardwang/ecophys/experiments/<exp-id>/
 
-# H20: also upload to R2 for Mac-side inspection
+# H20: upload lightweight results to R2 for Mac-side inspection
 python -m ecomd.data.r2_sync upload /AI4S/Users/howardwang/ecophys/experiments/<exp-id>/ experiments/<exp-id>/
 
 # Mac: pull when needed
@@ -100,7 +149,9 @@ r2://ecophys/
 │   └── v1/{train,val,test}.parquet
 ├── reference_values/                 # stylized-facts reference JSON per dataset slice
 │   └── {dataset}/{period}/stylized_facts.json
-├── experiments/                      # trained checkpoints, evaluation results
+├── checkpoints/                      # checkpoint binaries managed by checkpoint_sync + Supabase
+│   └── experiments/{experiment_id}/.../checkpoint.pt
+├── experiments/                      # lightweight evaluation results, logs, scoreboards
 │   └── {experiment_id}/
 └── papers/                           # figures + large source data
     └── paper_a/figures/...
@@ -129,6 +180,13 @@ chmod 600 .env.r2
 - Egress: $0 (R2 selling point)
 - Requests: $4.50 / million Class-A (PUT) + $0.36 / million Class-B (GET). Our access pattern ≈ 10³–10⁴ reqs/day → < $1/mo
 - **All-in R2 spend: < $15/mo**
+
+## Checkpoint operating policy
+
+- Do not commit `checkpoint*.pt`, `.ckpt`, or `.pth` files.
+- H20 jobs are complete only after checkpoint sync succeeds and Supabase has an `uploaded` row.
+- Mac should pull checkpoint binaries only when local analysis requires model weights; otherwise use Supabase metadata plus lightweight result JSON/scoreboards.
+- If Git history accidentally accumulates checkpoint blobs again, rewrite history with `git-filter-repo` before pushing.
 
 ## Confirmed pending items
 

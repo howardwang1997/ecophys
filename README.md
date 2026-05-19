@@ -66,12 +66,18 @@ conda run -n ecophys python -m pytest tests/ -q   # 135 tests should pass
 
 - **Mac local**: code editing, tests, small smoke training (N ≤ 500). 
 - **Cloudflare R2** (`r2://ecophys/...`): transit + offsite backup; canonical bulk data.
+- **Supabase**: checkpoint catalog metadata for R2-backed model weights.
 - **GitHub**: canonical code store.
 - **8×H20 NVLink remote**: all production training + inference.
 
 H20 launch scripts live in `scripts/`; see [`scripts/README.md`](scripts/README.md) for the full
 invocation sequence. Claude Code sessions work on Mac only — H20 commands are handed
 back to the user to run via SSH.
+
+Checkpoint binaries are not stored in Git. H20 jobs archive checkpoints with
+`python -m ecomd.data.checkpoint_sync sync --delete-local`, which uploads the
+weights to R2 and writes searchable metadata into Supabase. See
+[`ecomd/data/storage_setup.md`](ecomd/data/storage_setup.md) for the storage policy.
 
 Run `conda run -n ecophys python ...` for any Python commands (conda-only policy per global CLAUDE.md).
 

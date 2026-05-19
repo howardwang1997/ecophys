@@ -26,6 +26,7 @@ Also update long-term memory in `.claude/memory/` (in-repo; see `.claude/README.
 
 - **Mac**: code editing, tests, small smoke training (N ≤ 500). Conda env `ecophys` (Python 3.11, per global CLAUDE.md). Always use `conda run -n ecophys python …` not bare `python`.
 - **Cloudflare R2**: transit + canonical bulk data store. Mac cannot mount company NFS directly, so Mac↔H20 data goes via `r2://ecophys/`.
+- **Supabase**: checkpoint catalog for R2-backed model weights. After every H20 training run, archive checkpoints with `python -m ecomd.data.checkpoint_sync sync --delete-local`; do not keep checkpoint binaries in Git or on Mac unless needed for local analysis.
 - **GitHub**: canonical code store. `main` stays runnable; experiments on feature branches.
 - **8×H20 NVLink (remote)**: all production training + inference. Pulls code via git, data via R2 (`bash scripts/h20_pull_from_r2.sh`). **The H20 machine is NOT accessible from this Claude session** — for H20 tasks, produce runnable scripts + hand back commands for the user to execute via SSH. See `scripts/README.md` for the full launch sequence.
 - Distributed training via `ecomd/training/train_distributed.py` (torchrun DDP, 4-card default, 8-card via `NPROC=8`). Checkpoints saved every 30 min; W&B `resume="allow"` for interruption safety.

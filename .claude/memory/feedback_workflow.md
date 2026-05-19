@@ -6,9 +6,10 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 # Workflow
 
-**Rule** (v2 — revised for H20 network constraint 2026-04-23):
+**Rule** (v3 — revised for checkpoint offload 2026-05-19):
 - **Mac**: code editing, data ingestion + preprocessing (raw → Parquet+zstd), small smoke tests (≤10⁴ agents, <1h), paper writing.
 - **Cloud storage**: canonical processed data store. **Cloudflare R2 preferred** (zero egress, S3-API compatible, $0.015/GB-mo); AWS S3 as fallback if R2 is blocked by company firewall.
+- **Checkpoint storage**: binary checkpoints live in Cloudflare R2 under `checkpoints/...`; Supabase `public.checkpoints` stores the catalog metadata. After every H20 training run, run `python -m ecomd.data.checkpoint_sync sync --delete-local` so H20/Mac/GitHub do not retain bulky checkpoint binaries.
 - **GitHub**: canonical code store. Main always runnable. Experiments on feature branches.
 - **H20 (remote, inside company network with whitelist outbound — R2/S3/GitHub OK)**:
   - Code at `/root/ecophys/` (separate code drive)
@@ -26,6 +27,7 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 - When writing training scripts, assume they run on H20. Make them parameterized (CLI args or Hydra config), not hardcoded for Mac paths.
 - Data paths: always reference via `s3://` URIs or env-var-driven local cache (`$ECOPHYS_DATA_DIR`). Never hardcode `/Users/howardwang/...` in repo code.
 - Before starting a long training, verify: (a) code is committed + pushed, (b) data shards are uploaded to S3, (c) the H20 machine has latest git + S3 sync.
+- After a long training, verify: (a) `checkpoint_sync sync` uploaded all checkpoints to R2, (b) Supabase rows are `uploaded`, (c) `checkpoint_sync cleanup` removed verified local binaries, (d) Git does not track `checkpoint*.pt`, `.ckpt`, or `.pth`.
 - Long experiments run under `tmux` + `wandb` with `resume` enabled; checkpoint every 1h or 1000 steps, whichever first.
 - When user says "开始训练" / "start training", default to preparing the H20 remote run (unless the experiment is explicitly tiny).
 - Mac-side dev tooling: PyTorch with MPS backend for smoke tests (not production); conda env `ecophys`.
