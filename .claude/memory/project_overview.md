@@ -82,7 +82,7 @@ Remaining reserve $38-42k for Phase 4/5 contingencies. Purchases stage at Wk 16-
 2. Chopra et al., arXiv:2207.09714 — differentiable ABM methodology template.
 3. Batatia et al. (MACE, NeurIPS 2022) — equivariant GNN architecture template.
 4. Cont (2001), Quant Finance 1 — canonical 11 stylized facts.
-5. Doshi et al. (Entropy 2025) — empirical fluctuation theorem on vol; we extend.
+5. Maskawa, J. (Entropy 2025, 27(4), 435, doi: 10.3390/e27040435) — "Empirical Study on Fluctuation Theorem for Volatility Cascade Processes in Stock Markets"; we extend by embedding IFT as in-simulator measurement target.
 6. Barato & Seifert, PRL 114, 158101 (2015) — TUR original; Horowitz-Gingrich 2020 review — B3 claim basis.
 7. Koyuk & Seifert, PRL 125, 260604 (2020) — generalized TUR for non-stationary; required for B3.
 

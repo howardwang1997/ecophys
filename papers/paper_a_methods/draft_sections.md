@@ -12,8 +12,9 @@ Target: ICAIF 2026 primary; arXiv preprint Wk 28 stretch goal NeurIPS
 
 > The non-equilibrium thermodynamics of financial markets is a 25-year-old
 > open question. Tóth, Lux & Sornette (2018) derived a Boltzmann equation
-> for high-frequency limit-order books; Doshi et al. (2025) showed
-> empirical fluctuation theorems hold for realized volatility; Bouchaud
+> for high-frequency limit-order books; Maskawa (2025) showed an
+> empirical integral fluctuation theorem holds for multi-scale realized
+> volatility cascades to ~5% accuracy; Bouchaud
 > (2001) and Mantegna-Stanley (2000) raised the founding questions on
 > universality and critical scaling. Progress on these questions requires
 > measurement infrastructure that existing market simulators do not provide.

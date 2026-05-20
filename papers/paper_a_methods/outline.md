@@ -74,7 +74,7 @@ to support Paper B's physics analysis.
 ### 1. Introduction (~1 page) — frame the need
 
 - The non-equilibrium physics of markets is a 25-year-old open question
-  (Mantegna-Stanley 1999; Bouchaud 2001; Tóth-Lux-Sornette 2018; Doshi 2025).
+  (Mantegna-Stanley 1999; Bouchaud 2001; Tóth-Lux-Sornette 2018; Maskawa 2025).
 - Recent progress requires per-particle entropy production and event-driven
   Jarzynski measurements at intraday-to-daily timescales — needs (a) particle
   simulator, (b) calibrated to data, (c) differentiable.

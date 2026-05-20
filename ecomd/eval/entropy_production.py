@@ -11,7 +11,7 @@ produce most of the dissipation).
 References
 ----------
 - Seifert, Stochastic Thermodynamics (2012, Rep. Prog. Phys.)
-- Doshi et al. 2025 (Entropy) — empirical Jarzynski on volatility
+- Maskawa, J. (Entropy 2025, 27(4), 435) — empirical IFT on volatility cascade
 - Plan v3 §Phase 4 — Paper B's entropy-production claim
 """
 

@@ -47,7 +47,7 @@ See `memory/feedback_workflow.md` for full details.
 - English, LaTeX. Drafts live in `papers/paper_{a,b,c}_*/`.
 - No overclaiming. Every empirical claim has a section reference to its experiment; every theoretical claim has a proof sketch or clearly labeled "conjecture".
 - Keep a `papers/shared/` folder for figures/style files reused across papers.
-- Cite Tóth-Lux-Sornette (PRL 2018), Chopra 2022, MACE (Batatia 2022), Cont 2001, Doshi 2025 in every relevant paper.
+- Cite Tóth-Lux-Sornette (PRL 2018), Chopra 2022, MACE (Batatia 2022), Cont 2001, Maskawa 2025 (Entropy, "Empirical Study on Fluctuation Theorem for Volatility Cascade Processes in Stock Markets") in every relevant paper.
 
 ## Data discipline
 

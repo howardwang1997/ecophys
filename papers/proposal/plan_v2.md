@@ -43,7 +43,7 @@
 调研后发现关键空白：
 - **Tóth-Lux-Sornette (PRL 2018)** 已经手工推导了 HFT 的 Boltzmann 方程 —— 但**没有人用 ML 力场（MACE/NequIP 风格）去学习交易者之间的相互作用势**。物理社区和 ML force-field 社区完全分离。
 - **Chopra et al. (2022)** 的可微 ABM 只做到 ~10³–10⁴ agents，局限于流行病学，**没人在金融市场做端到端可微的粒子仿真器**。
-- **Doshi et al. (Entropy 2025)** 首次实证验证了波动率过程满足涨落定理（~5% 误差），**但没人把涨落定理作为学习目标或评估指标嵌入仿真器**。
+- **Maskawa (Entropy 2025, 27(4), 435)** 首次实证验证了股市波动率级联过程满足积分涨落定理（~5% 误差），**但没人把涨落定理作为学习目标或评估指标嵌入仿真器**。
 - **TradeFM / TRADES (2025)** 等生成模型不可微、不可策略优化、无可解释的"相互作用力"。
 
 这三条空白恰好对应本研究的三个贡献支柱（方法/物理/预测），且相互强化。
@@ -177,7 +177,7 @@
   - 加密高频：`data.binance.vision` 免费 tick/kline 下载（BTC, ETH, SOL 主流品种 1 年 ≈ 50–200 GB zstd）
   - LOBSTER 免费样本（NASDAQ 10 只股票微观结构）
 - **文献深读**（必读 15 篇 + 精读 5 篇）：
-  - Must read: Cont 2001, Bouchaud & Potters 2003, Tóth-Lux-Sornette 2018, Chopra 2022, MACE (Batatia 2022), Allegro (Musaelian 2023), ABIDES, Doshi 2025 (Entropy), Farmer-Patelli-Zovko 2005, Yakovenko-Rosser 2009, Sornette LPPL 回顾
+  - Must read: Cont 2001, Bouchaud & Potters 2003, Tóth-Lux-Sornette 2018, Chopra 2022, MACE (Batatia 2022), Allegro (Musaelian 2023), ABIDES, Maskawa 2025 (Entropy 27(4), 435), Farmer-Patelli-Zovko 2005, Yakovenko-Rosser 2009, Sornette LPPL 回顾
   - 精读：MACE 复现、Chopra GradABM 源码、ABIDES 源码
 
 **Milestone M0**: 仓库骨架 + 数据管道跑通 + 文献精读笔记 5 篇。
@@ -512,7 +512,7 @@ ecophys/
 **第二批（本周内）**：
 7. 设置 AWS S3 bucket（等你回答 §9.1.3）
 8. 数据管道 v0：yfinance 拉 S&P 500 日频 + Binance data.binance.vision 拉 BTC/ETH 分钟 → Parquet → S3
-9. 文献精读 5 篇（Cont 2001、Tóth-Lux-Sornette 2018、MACE、Chopra 2022、Doshi 2025）并写笔记入 `references/notes/`
+9. 文献精读 5 篇（Cont 2001、Tóth-Lux-Sornette 2018、MACE、Chopra 2022、Maskawa 2025）并写笔记入 `references/notes/`
 10. 实现 stylized facts suite 的骨架（先 4 项：fat tails、volatility clustering、leverage、long memory）
 
 **检查点（Wk 4 M0）**：数据管道能跑、5 篇精读笔记完成、stylized facts suite 在真实数据上跑出 reference 值。
@@ -535,7 +535,7 @@ ecophys/
 12. Byrd et al. ABIDES
 13. Zhang et al. (DeepLOB, 2018)
 14. Buehler-Horvath-Lyons (Signatures, 2020)
-15. Doshi et al. (Entropy 2025) — fluctuation theorem on volatility
+15. Maskawa, J. (Entropy 2025, 27(4), 435, doi: 10.3390/e27040435) — "Empirical Study on Fluctuation Theorem for Volatility Cascade Processes in Stock Markets"
 16. Cavalli et al. (EPJ Data Science 2024) — early warning for crashes
 17. Wiese et al. (QuantGAN)
 18. TRADES (arXiv 2502.07071)

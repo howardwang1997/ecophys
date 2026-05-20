@@ -52,7 +52,7 @@ Modify the simulator to include explicit non-equilibrium forcing:
 - FOMC-window driving (event-driven protocol — needs minute data!)
 - Detune γ/T after training so simulator runs off-calibration
 
-Then T_eff(t) WILL vary (driven system). This is what Doshi 2025 does:
+Then T_eff(t) WILL vary (driven system). This is what Maskawa 2025 does:
 they use realized vol as driving signal. We can do the same with our
 Hawkes-amplified price.
 
