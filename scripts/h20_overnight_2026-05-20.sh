@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # Overnight H20 batch — 2026-05-20
 #
-# Two sub-batches, sequenced on the same 8-card H20:
-#   099b_memk_refinement_n30  — 270 cfg, ~5-6h  (paper §4 memk dose-response)
-#   095b_baselines_n30        — 250 cfg, ~3-4h  (paper §5 baseline table C3b)
+# Three sub-batches, sequenced on the same 8-card H20, ordered by
+# paper-criticality so if H20 dies past 9h the least-critical batch is the
+# one lost:
+#   098c_zumdn_fine_grid_n30  — 180 cfg, ~2.5-3h (paper §4 Figure 1c dose-response)
+#   095b_baselines_n30        — 250 cfg, ~3-4h   (paper §5 C3b ECoMD ≥ surrogates)
+#   099b_memk_refinement_n30  — 270 cfg, ~5-6h   (negative-result confirmation)
 #
-# Total estimated wall: 8-10h. Launch ~21:00 local, finishes ~07:00 next day.
+# Total estimated wall: 11-13h. Launch ~21:00 local, finishes ~08:00-10:00 next day.
 # Score + sync after each sub-batch so partial progress is salvageable.
 #
 # Why this batch exists
@@ -48,8 +51,9 @@ export PARALLEL="${PARALLEL:-8}"
 export NPROC="${NPROC:-1}"
 
 GPU_DIRS=(
-    "experiments/099b_memk_refinement_n30"
+    "experiments/098c_zumdn_fine_grid_n30"
     "experiments/095b_baselines_n30"
+    "experiments/099b_memk_refinement_n30"
 )
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
@@ -58,6 +62,14 @@ MASTER_LOG="experiments/_overnight_2026-05-20_${TIMESTAMP}.log"
 preflight() {
     local fail=0
     echo "── preflight checks ──" | tee -a "$MASTER_LOG"
+
+    local n_098c=$(ls experiments/098c_zumdn_fine_grid_n30/config_*.yaml 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$n_098c" != "180" ]]; then
+        echo "  ✗ 098c expects 180 configs, found $n_098c" | tee -a "$MASTER_LOG"
+        fail=1
+    else
+        echo "  ✓ 098c has 180 configs" | tee -a "$MASTER_LOG"
+    fi
 
     local n_099b=$(ls experiments/099b_memk_refinement_n30/config_*.yaml 2>/dev/null | wc -l | tr -d ' ')
     if [[ "$n_099b" != "270" ]]; then
@@ -73,6 +85,16 @@ preflight() {
         fail=1
     else
         echo "  ✓ 095b has 250 configs" | tee -a "$MASTER_LOG"
+    fi
+
+    local c1="experiments/098c_zumdn_fine_grid_n30/config_zumdn_s100_lam092_seed0.yaml"
+    if [[ -f "$c1" ]]; then
+        if grep -q "zumbach_feedback_strength: 1.0" "$c1" && grep -q "zumbach_feedback_lambda: 0.92" "$c1"; then
+            echo "  ✓ zumdn_s100_lam092: (s, λ) = (1.0, 0.92)" | tee -a "$MASTER_LOG"
+        else
+            echo "  ✗ zumdn_s100_lam092: schema unexpected" | tee -a "$MASTER_LOG"
+            fail=1
+        fi
     fi
 
     local m1="experiments/099b_memk_refinement_n30/config_memk_s075_lam095_seed0.yaml"
@@ -111,8 +133,8 @@ preflight() {
     else
         free_gb=$(df -k "$REPO_ROOT" | awk 'NR==2 {printf "%d", $4/1024/1024}')
     fi
-    if [[ -n "$free_gb" && "$free_gb" -lt 60 ]]; then
-        echo "  ✗ disk free $free_gb GB; need ≥ 60 GB for 520 results" | tee -a "$MASTER_LOG"
+    if [[ -n "$free_gb" && "$free_gb" -lt 80 ]]; then
+        echo "  ✗ disk free $free_gb GB; need ≥ 80 GB for 700 results" | tee -a "$MASTER_LOG"
         fail=1
     else
         echo "  ✓ disk free ${free_gb} GB" | tee -a "$MASTER_LOG"
