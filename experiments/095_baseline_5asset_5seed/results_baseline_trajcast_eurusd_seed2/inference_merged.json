@@ -1,0 +1,423 @@
+{
+  "aggregated": {
+    "autocorr_returns": {
+      "mean": 0.01673405954487451,
+      "std": 0.002932295868548579,
+      "n": 4
+    },
+    "hill_tail_index": {
+      "mean": 4.928034885283039,
+      "std": 0.45025576980783655,
+      "n": 4
+    },
+    "gain_loss_asymmetry": {
+      "mean": 0.01964132160216474,
+      "std": 0.07758224456364872,
+      "n": 4
+    },
+    "aggregational_gaussianity": {
+      "mean": 0.5090773350385154,
+      "std": 0.30797138917994576,
+      "n": 4
+    },
+    "intermittency_fano": {
+      "mean": 1.4974747474747474,
+      "std": 0.33941924033916204,
+      "n": 4
+    },
+    "acf_squared_returns": {
+      "mean": 0.08805032476322175,
+      "std": 0.03507246476411765,
+      "n": 4
+    },
+    "conditional_kurtosis": {
+      "mean": 0.15655476947965263,
+      "std": 0.11476025406315922,
+      "n": 4
+    },
+    "dfa_hurst_abs_r": {
+      "mean": 0.6967858221645378,
+      "std": 0.023195274367753874,
+      "n": 4
+    },
+    "leverage_effect": {
+      "mean": -0.10038659667021207,
+      "std": 0.061296217167558044,
+      "n": 4
+    },
+    "zumbach_asymmetry": {
+      "mean": -0.026251359509696023,
+      "std": 0.005864655745460349,
+      "n": 4
+    }
+  },
+  "n_total_rollouts": 4,
+  "realizations": [
+    {
+      "rank": 0,
+      "seed": 2000,
+      "n_steps": 2520,
+      "rollout_time_s": 1.3544201850891113,
+      "facts": {
+        "autocorr_returns": {
+          "estimate": 0.01715989823008522,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "ljung_box_lag": 20.0,
+          "ljung_box_q": 27.34801387033526,
+          "ljung_box_p": 0.12575374789597557,
+          "summary": "mean |ACF(r)| over lags 1..20 (small = white); LB-p > 0.05 = consistent with no autocorrelation"
+        },
+        "hill_tail_index": {
+          "estimate": 4.427230047359203,
+          "n": 2520.0,
+          "k": 126.0,
+          "k_frac": 0.05,
+          "side": "both"
+        },
+        "gain_loss_asymmetry": {
+          "estimate": -0.04799253054237902,
+          "n": 2520.0,
+          "skewness": -0.04799253054237902,
+          "left_right_ratios": {
+            "left/right_q0.01": 1.0339759090750449,
+            "left/right_q0.005": 1.0982679739035093,
+            "left/right_q0.001": 1.2141539959057914
+          },
+          "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+        },
+        "aggregational_gaussianity": {
+          "estimate": 0.09075641315507443,
+          "n": 2520.0,
+          "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+        },
+        "intermittency_fano": {
+          "estimate": 1.7272727272727273,
+          "n": 2520.0,
+          "quantile": 0.99,
+          "threshold_abs_r": 0.018661140911281106,
+          "n_windows": 100.0,
+          "window_size": 25.0,
+          "mean_count_per_window": 0.25,
+          "summary": "F = var(N)/mean(N); F>1 clustering, F=1 Poisson"
+        },
+        "acf_squared_returns": {
+          "estimate": 0.13463194243389087,
+          "n": 2520.0,
+          "max_lag": 100.0,
+          "summary": "mean ACF over lags 1..20"
+        },
+        "conditional_kurtosis": {
+          "estimate": 0.04485331755766975,
+          "n": 2520.0,
+          "unconditional_excess_kurtosis": 1.099729930416113,
+          "conditional_excess_kurtosis": 0.04485331755766975,
+          "kurtosis_reduction_ratio": 0.04078575686368585,
+          "garch_params": {
+            "omega": 0.0007789468269451891,
+            "alpha[1]": 0.04888839526253398,
+            "beta[1]": 0.9510361457371121
+          },
+          "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+        },
+        "dfa_hurst_abs_r": {
+          "estimate": 0.7339179921000553,
+          "n": 2520.0,
+          "intercept": -7.702479853263529,
+          "order": 1.0
+        },
+        "leverage_effect": {
+          "estimate": -0.09873418908640988,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "summary": "sum of corr(r_t, r_{t+\u03c4}^2) for \u03c4=1..10"
+        },
+        "zumbach_asymmetry": {
+          "estimate": -0.021424312548795447,
+          "n": 2520.0,
+          "coarse_window": 30.0,
+          "max_lag": 20.0,
+          "gap": 21.0,
+          "n_reference_times": 2450.0,
+          "summary": "mean D(\u03c4) over \u03c4=1..10 with gap removing overlap bias; D>0 \u21d2 Zumbach"
+        }
+      }
+    },
+    {
+      "rank": 0,
+      "seed": 2001,
+      "n_steps": 2520,
+      "rollout_time_s": 1.4235823154449463,
+      "facts": {
+        "autocorr_returns": {
+          "estimate": 0.012994397264134875,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "ljung_box_lag": 20.0,
+          "ljung_box_q": 13.696100486685811,
+          "ljung_box_p": 0.845564017220416,
+          "summary": "mean |ACF(r)| over lags 1..20 (small = white); LB-p > 0.05 = consistent with no autocorrelation"
+        },
+        "hill_tail_index": {
+          "estimate": 5.6252182486170135,
+          "n": 2520.0,
+          "k": 126.0,
+          "k_frac": 0.05,
+          "side": "both"
+        },
+        "gain_loss_asymmetry": {
+          "estimate": 0.10411631632307243,
+          "n": 2520.0,
+          "skewness": 0.10411631632307243,
+          "left_right_ratios": {
+            "left/right_q0.01": 0.9131866854409699,
+            "left/right_q0.005": 0.891035254795115,
+            "left/right_q0.001": 0.9069536150972449
+          },
+          "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+        },
+        "aggregational_gaussianity": {
+          "estimate": 0.5833666319585258,
+          "n": 2520.0,
+          "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+        },
+        "intermittency_fano": {
+          "estimate": 1.058275058275058,
+          "n": 2520.0,
+          "quantile": 0.99,
+          "threshold_abs_r": 0.016682167947292294,
+          "n_windows": 100.0,
+          "window_size": 25.0,
+          "mean_count_per_window": 0.26,
+          "summary": "F = var(N)/mean(N); F>1 clustering, F=1 Poisson"
+        },
+        "acf_squared_returns": {
+          "estimate": 0.04302340608130911,
+          "n": 2520.0,
+          "max_lag": 100.0,
+          "summary": "mean ACF over lags 1..20"
+        },
+        "conditional_kurtosis": {
+          "estimate": 0.15629312263679518,
+          "n": 2520.0,
+          "unconditional_excess_kurtosis": 0.39047250002764455,
+          "conditional_excess_kurtosis": 0.15629312263679518,
+          "kurtosis_reduction_ratio": 0.40026665802516176,
+          "garch_params": {
+            "omega": 0.005596018866420653,
+            "alpha[1]": 0.02799460562507674,
+            "beta[1]": 0.9575846186541245
+          },
+          "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+        },
+        "dfa_hurst_abs_r": {
+          "estimate": 0.6704075461590479,
+          "n": 2520.0,
+          "intercept": -7.517156371261342,
+          "order": 1.0
+        },
+        "leverage_effect": {
+          "estimate": -0.01881366508123379,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "summary": "sum of corr(r_t, r_{t+\u03c4}^2) for \u03c4=1..10"
+        },
+        "zumbach_asymmetry": {
+          "estimate": -0.03019302907206573,
+          "n": 2520.0,
+          "coarse_window": 30.0,
+          "max_lag": 20.0,
+          "gap": 21.0,
+          "n_reference_times": 2450.0,
+          "summary": "mean D(\u03c4) over \u03c4=1..10 with gap removing overlap bias; D>0 \u21d2 Zumbach"
+        }
+      }
+    },
+    {
+      "rank": 0,
+      "seed": 2002,
+      "n_steps": 2520,
+      "rollout_time_s": 1.411445140838623,
+      "facts": {
+        "autocorr_returns": {
+          "estimate": 0.015676536754011212,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "ljung_box_lag": 20.0,
+          "ljung_box_q": 27.008418025578845,
+          "ljung_box_p": 0.13502732618786015,
+          "summary": "mean |ACF(r)| over lags 1..20 (small = white); LB-p > 0.05 = consistent with no autocorrelation"
+        },
+        "hill_tail_index": {
+          "estimate": 4.99532771007125,
+          "n": 2520.0,
+          "k": 126.0,
+          "k_frac": 0.05,
+          "side": "both"
+        },
+        "gain_loss_asymmetry": {
+          "estimate": -0.06695803183145967,
+          "n": 2520.0,
+          "skewness": -0.06695803183145967,
+          "left_right_ratios": {
+            "left/right_q0.01": 1.0133763323683804,
+            "left/right_q0.005": 1.0252600438818957,
+            "left/right_q0.001": 1.1903921873581909
+          },
+          "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+        },
+        "aggregational_gaussianity": {
+          "estimate": 0.4168060560799449,
+          "n": 2520.0,
+          "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+        },
+        "intermittency_fano": {
+          "estimate": 1.9129759129759132,
+          "n": 2520.0,
+          "quantile": 0.99,
+          "threshold_abs_r": 0.01834344197064638,
+          "n_windows": 100.0,
+          "window_size": 25.0,
+          "mean_count_per_window": 0.26,
+          "summary": "F = var(N)/mean(N); F>1 clustering, F=1 Poisson"
+        },
+        "acf_squared_returns": {
+          "estimate": 0.10627076570936984,
+          "n": 2520.0,
+          "max_lag": 100.0,
+          "summary": "mean ACF over lags 1..20"
+        },
+        "conditional_kurtosis": {
+          "estimate": 0.08227789670154362,
+          "n": 2520.0,
+          "unconditional_excess_kurtosis": 0.9724496489039036,
+          "conditional_excess_kurtosis": 0.08227789670154362,
+          "kurtosis_reduction_ratio": 0.08460890164779547,
+          "garch_params": {
+            "omega": 0.001111922452498337,
+            "alpha[1]": 0.03765511299634093,
+            "beta[1]": 0.9611195026196367
+          },
+          "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+        },
+        "dfa_hurst_abs_r": {
+          "estimate": 0.6882745167715182,
+          "n": 2520.0,
+          "intercept": -7.475055029522562,
+          "order": 1.0
+        },
+        "leverage_effect": {
+          "estimate": -0.09245735068425877,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "summary": "sum of corr(r_t, r_{t+\u03c4}^2) for \u03c4=1..10"
+        },
+        "zumbach_asymmetry": {
+          "estimate": -0.03370645365147826,
+          "n": 2520.0,
+          "coarse_window": 30.0,
+          "max_lag": 20.0,
+          "gap": 21.0,
+          "n_reference_times": 2450.0,
+          "summary": "mean D(\u03c4) over \u03c4=1..10 with gap removing overlap bias; D>0 \u21d2 Zumbach"
+        }
+      }
+    },
+    {
+      "rank": 0,
+      "seed": 2003,
+      "n_steps": 2520,
+      "rollout_time_s": 1.4687011241912842,
+      "facts": {
+        "autocorr_returns": {
+          "estimate": 0.021105405931266717,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "ljung_box_lag": 20.0,
+          "ljung_box_q": 29.14341150596361,
+          "ljung_box_p": 0.08497372508254727,
+          "summary": "mean |ACF(r)| over lags 1..20 (small = white); LB-p > 0.05 = consistent with no autocorrelation"
+        },
+        "hill_tail_index": {
+          "estimate": 4.66436353508469,
+          "n": 2520.0,
+          "k": 126.0,
+          "k_frac": 0.05,
+          "side": "both"
+        },
+        "gain_loss_asymmetry": {
+          "estimate": 0.08939953245942522,
+          "n": 2520.0,
+          "skewness": 0.08939953245942522,
+          "left_right_ratios": {
+            "left/right_q0.01": 1.0009504622633327,
+            "left/right_q0.005": 0.9429217592989273,
+            "left/right_q0.001": 0.8705829192317586
+          },
+          "summary": "skewness < 0 and left/right_q0.01 > 1 \u2192 gain/loss asymmetric (losses dominate)"
+        },
+        "aggregational_gaussianity": {
+          "estimate": 0.9453802389605164,
+          "n": 2520.0,
+          "summary": "estimate = \u03ba(scale=1) \u2212 \u03ba(scale=max); > 0 means kurtosis decays toward Gaussian"
+        },
+        "intermittency_fano": {
+          "estimate": 1.2913752913752914,
+          "n": 2520.0,
+          "quantile": 0.99,
+          "threshold_abs_r": 0.01879391286522149,
+          "n_windows": 100.0,
+          "window_size": 25.0,
+          "mean_count_per_window": 0.26,
+          "summary": "F = var(N)/mean(N); F>1 clustering, F=1 Poisson"
+        },
+        "acf_squared_returns": {
+          "estimate": 0.06827518482831715,
+          "n": 2520.0,
+          "max_lag": 100.0,
+          "summary": "mean ACF over lags 1..20"
+        },
+        "conditional_kurtosis": {
+          "estimate": 0.342794741022602,
+          "n": 2520.0,
+          "unconditional_excess_kurtosis": 0.7218565781533868,
+          "conditional_excess_kurtosis": 0.342794741022602,
+          "kurtosis_reduction_ratio": 0.4748792923651404,
+          "garch_params": {
+            "omega": 0.0017294562033895163,
+            "alpha[1]": 0.030550453003995063,
+            "beta[1]": 0.9664314200155587
+          },
+          "summary": "both should be > 0; conditional < unconditional (tails reduced but still heavy)"
+        },
+        "dfa_hurst_abs_r": {
+          "estimate": 0.6945432336275295,
+          "n": 2520.0,
+          "intercept": -7.4965820602419315,
+          "order": 1.0
+        },
+        "leverage_effect": {
+          "estimate": -0.1915411818289459,
+          "n": 2520.0,
+          "max_lag": 30.0,
+          "summary": "sum of corr(r_t, r_{t+\u03c4}^2) for \u03c4=1..10"
+        },
+        "zumbach_asymmetry": {
+          "estimate": -0.019681642766444664,
+          "n": 2520.0,
+          "coarse_window": 30.0,
+          "max_lag": 20.0,
+          "gap": 21.0,
+          "n_reference_times": 2450.0,
+          "summary": "mean D(\u03c4) over \u03c4=1..10 with gap removing overlap bias; D>0 \u21d2 Zumbach"
+        }
+      }
+    }
+  ],
+  "baseline_meta": {
+    "model": "trajcast_lite",
+    "asset": "eurusd",
+    "fit_seconds": 7.574893951416016,
+    "n_steps_per_rollout": 2520
+  }
+}
