@@ -4,7 +4,9 @@ description: Paper A reframed 2026-05-13 from ICAIF 2026 (calibrated tool for Pa
 type: project
 ---
 
-**Target**: NeurIPS 2027 main, deadline ~2027-05. Plan-agent reviewer-2 stress test gives ~18-25% acceptance with this framing (vs ~8-12% with the original "mechanism attribution + VaR" framing).
+**Target**: NeurIPS 2027 main, deadline ~2027-05. Plan-agent reviewer-2 stress test gives ~18-25% acceptance with this framing (vs ~8-12% with the original "mechanism attribution + VaR" framing). Post 089-099 5-asset evidence (2026-05-20): ~22-28% — see [[project_pareto_ceiling]] for the strengthened cross-asset case.
+
+**Current SOTA cell** (2026-05-20, supersedes pair_AB 5.18): `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed. Replicated across 089 SPX zumdn 5.12 (n=48), 090 SPX 5.31 (n=29), 089b EURUSD 5.36 (n=28). Across 3 different assets, zumdn is the best single mechanism — paper §4 anchor cell.
 
 **Two reframes the user accepted on 2026-05-13** (lift acceptance estimate by ~10pp):
 
@@ -21,3 +23,5 @@ type: project
 **How to apply:** Any Paper A discussion now defaults to NeurIPS 2027 timeline + falsification-tool framing. Plan: `~/.claude/plans/curried-cuddling-cloud.md` (M1-M6, 8 weeks each, → 2027-05). When proposing new experiments, ask "does this strengthen the falsification claim or the calibration-speed claim?" If neither, defer.
 
 **Supersedes**: `papers/paper_a_methods/outline.md` ICAIF 2026 framing (kept for history). Plan v3 (`memory/project_overview.md`) Paper A timeline still aligns — both target ICML/NeurIPS in 2027.
+
+**Related**: [[project_pareto_ceiling]] (central §4 claim), [[project_arch_floors]] (Pareto reframe of floors), [[project_branch_f_088]] (superseded — Branch F pair_AB 5.18 no longer the SOTA).

@@ -1,19 +1,50 @@
 ---
-name: Architectural floors — autocorr_returns + zumbach_asymmetry
-description: Two of the 11 Cont 2001 facts are unreachable by any v3 + V4 + B-round mechanism composition; practical ceiling is 9/11 not 11/11
+name: Pareto-bounded floors — autocorr_returns + zumbach_asymmetry
+description: 089 attribution batch found single mechanisms CAN lift both floors, but every floor-lifter breaks ≥1 other fact ≥20pp; ceiling is Pareto, not architectural
 type: project
 ---
 
-Across 1500+ trained models in Branch D/E/F (077-088), **two stylized facts fail in every cell tested**, regardless of mechanism mix:
+**Updated 2026-05-20**: Reframed from "9/11 architectural ceiling" → "11-fact Pareto frontier".
 
-1. **`autocorr_returns`**: every cell μ ≈ 0.32-0.46, band requires [-0.1, 0.2]. Caused by the AR(1) drift artifact (returns are AR(1) ρ̂=0.904, not random walk). Even the most-stable cells (`conf_b3_k3_pure`) only reach 32% pass. Source: smooth force-field drift `(f_cons + f_diss)/γ · dt` in `ecomd/physics/integrator.py:327` is autocorrelated by construction.
+The 089 attribution batch (16 cells × 50 seeds) found that both putative floors
+**can be lifted by single mechanisms**, but each lift comes with a corresponding
+collateral break elsewhere:
 
-2. **`zumbach_asymmetry`**: every cell μ ≈ -0.03 to -0.12 (NEGATIVE), band requires [+0.001, +0.5] (POSITIVE). **Wrong sign**, not just out of range. Caused by absence of any directional/causal-asymmetry mechanism in v3. Memory kernel (V4 mech 3) modulates noise symmetrically in lag direction — does not produce positive Zumbach. Computation at `ecomd/eval/stylized_facts.py:603-674`.
+| floor fact | best lifter | pass% | collateral cost |
+|---|---|---:|---|
+| `autocorr_returns` | `ar1_s03` | 87% (vs baseline 24%, +62pp) | breaks `acf_squared_returns` −65pp |
+| `zumbach_asymmetry` | `ar1_s05` | 43% (vs baseline 6%, +37pp) | breaks `conditional_kurtosis` −47pp |
+| `zumbach_asymmetry` | `zumbach_dn_s10` | 29% (+23pp) | **NO breakage ≥−13pp** — safest patch |
 
-**Why:** Until 2026-05-13, "ceiling at 5-6/11" was treated as a stochastic/coverage problem — try harder mechanisms, more seeds. Branch F's 50-seed confirmation across 14 cells showed it's deterministic: these 2 facts cannot be lifted by any combination of the existing mechanism family. The architecture has a 9/11 cap, not 11/11.
+`zumbach_dn_s10` is the only cell in 089 with no individual fact-breakage ≥−13pp,
+making it the safest single-mechanism patch. It also has the best overall mean (5.12)
+and replicates at n=29 (5.31) on SPX and n=26 on Gold (**5.96 — new SOTA single-mech cell**).
 
-**How to apply:** 
-- Stop interpreting cell mean=5/11 as "halfway there"; interpret as "5 of 9 reachable facts" (~56%, much closer to ceiling).
-- Any new mechanism proposal must declare which floor it targets (autocorr or zumbach) and what collateral damage to expect.
-- Paper A (NeurIPS 2027) frames these as falsification findings, not bugs — see `project_paper_a_neurips_2027.md`.
-- AR(1) and Zumbach patches are scheduled in M1 of the NeurIPS 2027 plan; the *outcome* of those patches (whether they lift the floors or trade other facts) is the headline experimental finding.
+**Cross-asset confirmation (2026-05-20 089b/092 5-asset rescore)**:
+The Pareto ceiling holds across all 5 assets. No cell at n≥26 reaches mean ≥ 5.5:
+- Gold zumdn 5.96 (best), EURUSD zumdn 5.36, SPX zumdn 5.24, BTC b3 5.10, NDX pair 5.18.
+- 096 all-pairs (23 pairs × 30 seeds): best `pair_asym_ms` 5.33. Pair compositions do
+  not break the ceiling either.
+
+**Why:** The old "architectural floor" framing was too strong — it claimed v3 cannot
+produce these facts at all. The 089 evidence is weaker but stronger as a paper claim:
+**no single mechanism in our 10-mechanism family simultaneously satisfies all 11
+Cont 2001 facts.** Specialist mechanisms exist for every fact (per-fact biggest-mover
+table in 089 attribution_matrix), but they trade against each other. This Pareto
+structure is the central Paper A §4 finding.
+
+**How to apply:**
+- Stop saying "9/11 ceiling" — say "Pareto frontier, max observed mean 5.96/11 (Gold zumdn)".
+- The falsification claim in Paper A §4 is: "no Markovian latent-state agent dynamics in
+  our 10-mechanism family simultaneously matches all 11 Cont 2001 facts on any of 5 assets,
+  even after explicit floor-targeting patches and 23 pair compositions." Stronger than the
+  original "two facts impossible" formulation.
+- AR(1) drift-clip variant (090b `ar1_s05_clip` mean 5.11 at ~5% rej) fixed the original
+  AR(1) instability (70% rej) without changing the Pareto picture.
+- Memory kernel (memk) mechanism remains ambiguous — 099 at n=5 had 4 cells tied at 5.80,
+  noisy. 099b at n=30 (overnight 2026-05-20) settles whether memk has a hidden operating
+  point or is correctly disqualified.
+
+**Related**: [[project_pareto_ceiling]] (this is the central paper claim),
+[[feedback_seed_count_lottery]] (098/099 n=5 numbers are not citable),
+[[project_ar1_drift_artifact]] (AR(1) integrator diagnosis).

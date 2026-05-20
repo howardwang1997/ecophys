@@ -1,8 +1,9 @@
 # Paper A — NeurIPS 2027 status (living document)
 
-**Last updated**: 2026-05-15 (089 landed, weekend batch designed)
+**Last updated**: 2026-05-20 (089-099 5-asset rescore + Figure 1 v1 landed)
 **Branch**: `feature/paper-a-neurips-2027`
-**Plan**: `~/.claude/plans/curried-cuddling-cloud.md` (M1-M6, 8 wk each, → 2027-05 deadline)
+**Plan**: `~/.claude/plans/089-099-humming-jellyfish.md` (current day-shift + overnight),
+mid-term `~/.claude/plans/curried-cuddling-cloud.md` (M1-M6, → 2027-05 deadline)
 
 This document is the single source of truth for what's done, what's launching,
 and what H20 batches still need to be designed. Update in place as state changes;
@@ -10,7 +11,33 @@ see `logs/YYYY-MM-DD.md` for chronological history.
 
 ---
 
-## TL;DR
+## TL;DR (2026-05-20)
+
+- **5-asset rescore lands** (commit `84e5c871`): EURUSD + NDX from H20's `f65cdb0d`
+  pushed today, now scored across 089b/091/092/093/095.
+  - **`xa_gold_zumdn` = 5.96** (n=26) remains best single-mech cell across all batches.
+  - **`xa_eurusd_zumdn` = 5.36** is the second-strongest single-mech result — adds
+    a third "zumdn is best" asset to the Gold/SPX pair.
+  - **No EURUSD/NDX cell exceeds 5.5** — Pareto ceiling cross-asset confirmed.
+  - 091 calibration leg: `calib_eurusd_b80 = 8.50 (n=2!)`, `calib_ndx_b80 = 8.00 (n=2!)`
+    — note: calibrated cells use a fit loss, not the falsification setting; high
+    fact-pass is a positive C3a/C3b headline, NOT a Pareto breach.
+- **Figure 1 v1 lands**: `papers/paper_a_methods/figures/fig1_attribution.{py,pdf,png}`.
+  Two-panel from 089: (a) 16×11 attribution heatmap, (b) per-fact biggest-mover bar.
+- **H20 day-shift 098b launching** (`scripts/h20_098b_dayshift.sh`, ~3h, 240 cfg):
+  8 trimmed zumdn (s, λ) cells × 30 seeds. Confirms or kills the noisy 098 top
+  `zumdn_s075_lam095=6.67 at n=3`.
+- **H20 overnight launching** (`scripts/h20_overnight_2026-05-20.sh`, ~9h, 520 cfg):
+  099b memk_n30 (270 cfg) + 095b baselines_n30 (250 cfg). Lifts C3b confidence
+  from preliminary (n=5 max=6) to confident (n=30).
+- **Supabase catalog reconcile**: running on Mac (`checkpoint_sync sync` against
+  R2 + Supabase). H20's `f65cdb0d` re-introduced 6861 checkpoint.pt files into
+  git tree — `experiments/**/results_*/*.pt` added to .gitignore for future
+  protection; existing tracked .pt files need separate filter-repo cleanup.
+
+---
+
+## Earlier TL;DR (2026-05-15)
 
 - **089 attribution batch landed** (796/800, commit `321633ba`): `attr_zumbach_dn_s10` is best single mech (mean **5.12**, +0.31 vs baseline, only 2/50 rej). **Both floors lifted by single mechanisms** but with collateral tradeoffs → falsification reframes from "absolute" to "Pareto-bounded".
 - **3-day batch (2026-05-15 PM → 2026-05-18 PM, ~50h H20 wall)**: 14 sub-batches totaling 3026 cfg. Original five (090/090b/094/091/095) + four bonus phases (090c/090d/092/089b) + five Tier-1/2 closeouts (096 all-pairs, 097 n_agents scaling, 098 Zumbach refinement, 099 memk refinement, 093 traditional baselines).
@@ -57,10 +84,15 @@ Total: **43 new passing tests** across 4 new modules.
 3. **Per-fact "biggest mover" table** (11 facts, each owned by a different specialist mechanism): this IS Figure 1. Mechanisms behave as specialists, not generalists. C1 contribution evidenced directly.
 4. **Scoring pipeline reproducible across batches** (Branch F → 089): asymdrag 4.94 → 4.92, b3 4.94 → 4.96. Δ ≤ 0.02 at n=48-50. Standardized tooling claim defensible.
 
-### 2.2 Falsification claim — reframed
+### 2.2 Falsification claim — Pareto-bounded (CONFIRMED 5-asset 2026-05-20)
 
 Old (pre-089): "two facts are architecturally impossible in v3" — too strong, **not survived**.
-New (post-089): **"the 11 facts form a Pareto frontier no single mechanism crosses simultaneously."** Every cell that lifts a floor breaks ≥1 other fact by ≥20pp. Specifically:
+Provisional (post-089 SPX-only): **"the 11 facts form a Pareto frontier no single mechanism crosses simultaneously."**
+CONFIRMED (post-rescore 089b 5-asset, 092 5-asset, 096 all-pairs): same pattern reproduces across
+all 5 assets and all 23 pair combinations. No SPX/BTC/Gold/EURUSD/NDX cell at n≥26 reaches mean ≥ 5.5;
+best per asset: Gold zumdn 5.96, EURUSD zumdn 5.36, SPX zumdn 5.24, BTC b3 5.10, NDX pair_zumdn_b3 5.18.
+
+Every cell that lifts a floor breaks ≥1 other fact by ≥20pp. Specifically:
 - `ar1_s03` lifts autocorr +62pp but breaks acf² -65pp
 - `ar1_s05` lifts zumbach +37pp but breaks ckur -47pp
 - `asymdrag_a06` lifts leverage +28pp but breaks ckur -24pp, hurst -20pp

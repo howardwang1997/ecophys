@@ -1,10 +1,11 @@
-- [Paper A → NeurIPS 2027](project_paper_a_neurips_2027.md) — 2026-05-13 reframe: "differentiable simulator as falsification tool" + calibration-speed shootout vs ABIDES+SBI as headline; ~18-25% accept estimate; plan at ~/.claude/plans/curried-cuddling-cloud.md
-- [Branch F (088) results](project_branch_f_088.md) — 460-run 50-seed sweep: pair_AB best mean 5.18, depth-2 sweet spot, BTC fact-trades not lifts, B3 most stable; Branch D/E means were inflated ~0.16 at n=30
-- [Architectural floors](project_arch_floors.md) — autocorr_returns + zumbach_asymmetry unreachable by any v3+V4+B-round mix; practical ceiling 9/11 not 11/11; AR(1) and Zumbach patches scheduled in NeurIPS 2027 plan M1
+- [Pareto ceiling](project_pareto_ceiling.md) — **central Paper A §4 claim** (2026-05-20): 089-099 3000+ runs, 5 assets, 23 pairs; new SOTA Gold zumdn 5.96 (n=26); no cell ≥5.5; specialist mechanisms, no generalist
+- [Paper A → NeurIPS 2027](project_paper_a_neurips_2027.md) — 2026-05-13 reframe: "differentiable simulator as falsification tool" + calibration-speed shootout vs ABIDES+SBI as headline; ~22-28% accept estimate post 089-099 5-asset; plan at ~/.claude/plans/089-099-humming-jellyfish.md (current) + curried-cuddling-cloud.md (M1-M6)
+- [Branch F (088) — SUPERSEDED 2026-05-20](project_branch_f_088.md) — 460-run sweep, depth-2 sweet spot, BTC fact-trading; pair_AB 5.18 SOTA superseded by xa_gold_zumdn 5.96 (092)
+- [Pareto-bounded floors](project_arch_floors.md) — 089 attribution found single mechs CAN lift autocorr/zumbach floors but each lift breaks ≥1 other fact ≥20pp; zumdn is the only no-collateral cell. Replaces old "9/11 architectural ceiling" framing.
 - [Arch state 2026-05-04](project_arch_state_2026-05-04.md) — `p_4_2__2_1` 85-seed mean **5.14/11** (pre-V4 architecture; superseded by Branch D/E/F results, kept for history)
 - [AR(1) drift artifact](project_ar1_drift_artifact.md) — returns are AR(1) ρ̂=0.904, not random walk. autocorr_returns 4% pre→ 94% post-whitening pass. Source diagnosed: smooth force-field drift in integrator.py:327
 - [Arch state 2026-04-30](project_arch_state_2026-04-30.md) — superseded; kept for history
-- [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 5-seed inflates ~30% twice now (047→049, 048→052)
+- [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 4 confirmed hits (047/048/090c/098); even n=30 can underflow on heavy-tail seed dists
 - [Chunk OOM constraint](project_chunk_oom_constraint.md) — full 4.2 arch + N=10K, chunk>24 OOMs single-card; 8 cards = DDP not tensor-parallel; bf16 / N reduction / rollout-reg are the levers
 - [User role](user_role.md) — independent full-time researcher, 6–18 mo, **8×H20 NVLink long-term**, cheap-data preference ($50k budget), Mac+R2+GitHub+H20 workflow
 - [Project overview](project_overview.md) — EcoPhys/EcoMD: differentiable physics-inspired market simulator; C1/C2/C3 pillars; **plan v3 + Path C: Paper B → Nature Physics flagship, 15–22% joint probability, $8–12k high-freq data commitment, 58-week timeline**

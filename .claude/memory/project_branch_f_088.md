@@ -1,7 +1,15 @@
 ---
-name: Branch F (088) results — depth-2 ceiling + BTC fact-trading
-description: Empirical findings from 088 pair sweep (460 cfg, 50-seed confirmation): depth-2 composition is sweet spot, BTC trades facts not lifts, B3 most stable mechanism
+name: Branch F (088) results — depth-2 ceiling + BTC fact-trading (SUPERSEDED 2026-05-20)
+description: Branch F's pair_AB 5.18 as SOTA is superseded by 089-099 — see project_pareto_ceiling for the current 5.96 Gold zumdn SOTA + Pareto-bounded ceiling claim. Branch F findings (depth-2 sweet spot, B3 stability) still hold.
 type: project
+---
+
+**SUPERSEDED 2026-05-20**: 089-099 batch produced new SOTA (`xa_gold_zumdn = 5.96` n=26)
+and confirmed Branch F's depth-2 sweet spot finding via 096 all-pairs (n=30 each, 23 pairs).
+See [[project_pareto_ceiling]] for the current central paper claim. The historical Branch F
+content below is kept for context — the depth-2 / B3 stability / BTC fact-trading findings
+all remain valid; only the "pair_AB 5.18 SOTA" headline number has been superseded.
+
 ---
 
 460-run sweep landed 2026-05-13 (commit `874557e`). Scoring via `scripts/score_summary.py` (the standardized tool we built to prevent the H20 cherry-pick bug from recurring).
