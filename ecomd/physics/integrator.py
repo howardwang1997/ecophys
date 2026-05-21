@@ -64,6 +64,7 @@ class LangevinIntegrator(Protocol):
         gamma: Tensor | float,
         dt: float,
         generator: torch.Generator | None = None,
+        noise_scale_mult: Tensor | float = 1.0,
     ) -> IntegratorStep: ...
 
 
@@ -327,6 +328,7 @@ class OverdampedLangevin:
         generator: torch.Generator | None = None,
         update_mask: Tensor | None = None,
         create_graph: bool = True,
+        noise_scale_mult: Tensor | float = 1.0,
     ) -> IntegratorStep:
         if f_cons.shape != s.shape:
             raise ValueError(f"f_cons shape {f_cons.shape} != state shape {s.shape}")
@@ -372,6 +374,11 @@ class OverdampedLangevin:
             zumbach_boost = self.zumbach_feedback_strength * self._zumbach_ema
 
         noise_scale = torch.sqrt(2.0 * T_t * dt / gamma_t) * (1.0 + mem_boost) * (1.0 + zumbach_boost)
+        # Track B-β scheduled sampling: widen f_stoch by an extra multiplier
+        # passed in by the simulator. When ==1.0 (default), this is bit-exact
+        # equivalent to omitting the term, so disabled cases preserve baseline.
+        if not (isinstance(noise_scale_mult, (int, float)) and noise_scale_mult == 1.0):
+            noise_scale = noise_scale * noise_scale_mult
         eps = self._sample_noise(tuple(s.shape), generator, s.device, s.dtype)
 
         # B1 microstructure noise: ε_eff = ε - rho_micro · ε_{t-1}
@@ -495,5 +502,6 @@ class UnderdampedLangevin:
         gamma: Tensor | float,
         dt: float,
         generator: torch.Generator | None = None,
+        noise_scale_mult: Tensor | float = 1.0,
     ) -> IntegratorStep:
         raise NotImplementedError("UnderdampedLangevin reserved for Phase 4; use OverdampedLangevin in v0")

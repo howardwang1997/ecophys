@@ -429,6 +429,15 @@ def train_distributed(
     last_ckpt_time = time.time()
 
     from .train import _lr_factor, _detach_price
+    from .scheduled_sampling import state_from_config
+
+    ss_state = state_from_config(sim.cfg)
+    if ss_state is not None and _is_main(rank):
+        log.info(
+            f"[ss] scheduled sampling enabled: max_prob={ss_state.max_prob} "
+            f"sigma_mult={ss_state.sigma_mult} ramp={ss_state.ramp_schedule} "
+            f"warmup_iters={ss_state.warmup_iters}"
+        )
 
     for it in range(start_iter, n_iters):
         lr_factor = _lr_factor(it, n_iters, lr_warmup_iters)
@@ -449,11 +458,15 @@ def train_distributed(
             if h_regime is not None:
                 h_regime = h_regime.detach()
 
+        ss_prob = ss_state.get_prob(it) if ss_state is not None else 0.0
+        ss_sigma_mult = ss_state.sigma_mult if ss_state is not None else 1.0
         with torch.amp.autocast(device_type=amp_device_type, dtype=amp_dtype, enabled=use_amp):
             s, price_state, traj, h_regime = sim.rollout_chunk(
                 s, s_prev, price_state,
                 n_steps=chunk_steps, generator=gen, create_graph=True,
                 h_regime=h_regime,
+                ss_prob=ss_prob,
+                ss_sigma_mult=ss_sigma_mult,
             )
         # When BPTT checkpointing is on, the generator's state gets rewound
         # by recompute on backward. Snapshot the post-forward state here and

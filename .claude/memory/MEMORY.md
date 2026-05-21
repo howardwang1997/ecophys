@@ -7,6 +7,7 @@
 - [AR(1) drift artifact](project_ar1_drift_artifact.md) — returns are AR(1) ρ̂=0.904, not random walk. autocorr_returns 4% pre→ 94% post-whitening pass. Source diagnosed: smooth force-field drift in integrator.py:327
 - [Arch state 2026-04-30](project_arch_state_2026-04-30.md) — superseded; kept for history
 - [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 4 confirmed hits (047/048/090c/098); even n=30 can underflow on heavy-tail seed dists
+- [Smoke-test autonomy](feedback_smoke_test_autonomous.md) — 2026-05-22 user pref: run smoke tests without permission asks; up to 3 fail-loop rounds autonomously before escalating
 - [Chunk OOM constraint](project_chunk_oom_constraint.md) — full 4.2 arch + N=10K, chunk>24 OOMs single-card; 8 cards = DDP not tensor-parallel; bf16 / N reduction / rollout-reg are the levers
 - [User role](user_role.md) — independent full-time researcher, 6–18 mo, **8×H20 NVLink long-term**, cheap-data preference ($50k budget), Mac+R2+GitHub+H20 workflow
 - [Project overview](project_overview.md) — EcoPhys/EcoMD: differentiable physics-inspired market simulator; C1/C2/C3 pillars; **plan v3 + Path C: Paper B → Nature Physics flagship, 15–22% joint probability, $8–12k high-freq data commitment, 58-week timeline**

@@ -88,6 +88,7 @@ class EcoMDStepFunction(torch.autograd.Function):
         generator,
         gen_state_before,
         step_idx: int,
+        noise_scale_mult: float,
         has_hawkes: bool,
         has_hawkes_long: bool,
         has_regime: bool,
@@ -110,6 +111,7 @@ class EcoMDStepFunction(torch.autograd.Function):
         ctx.generator = generator
         ctx.gen_state_before = gen_state_before
         ctx.step_idx = int(step_idx)
+        ctx.noise_scale_mult = float(noise_scale_mult)
         ctx.has_hawkes = bool(has_hawkes)
         ctx.has_hawkes_long = bool(has_hawkes_long)
         ctx.has_regime = bool(has_regime)
@@ -152,6 +154,7 @@ class EcoMDStepFunction(torch.autograd.Function):
                 h_agent=h_agent_in,
                 h_global=h_global_in,
                 step_idx=ctx.step_idx,
+                noise_scale_mult=ctx.noise_scale_mult,
             )
 
             ps_t = ps_next.to_tensors()
@@ -234,6 +237,7 @@ class EcoMDStepFunction(torch.autograd.Function):
                 h_agent=h_agent_in_l,
                 h_global=h_global_in_l,
                 step_idx=ctx.step_idx,
+                noise_scale_mult=ctx.noise_scale_mult,
             )
 
             ps_t_l = ps_next_l.to_tensors()
@@ -332,6 +336,7 @@ class EcoMDStepFunction(torch.autograd.Function):
             None,            # generator
             None,            # gen_state_before
             None,            # step_idx
+            None,            # noise_scale_mult
             None,            # has_hawkes
             None,            # has_hawkes_long
             None,            # has_regime
@@ -362,6 +367,7 @@ def step_via_function(
     h_agent: Tensor | None,
     h_global: Tensor | None,
     step_idx: int,
+    noise_scale_mult: float = 1.0,
 ) -> tuple[Tensor, Tensor, PriceState, Tensor | None, Tensor | None, Tensor | None, Tensor]:
     """Convenience wrapper that flattens PriceState → tensors, calls
     EcoMDStepFunction, and returns (s_next, s_prev_next, price_state_next,
@@ -395,7 +401,7 @@ def step_via_function(
     params = tuple(sim.parameters())
 
     out = EcoMDStepFunction.apply(
-        sim, generator, gen_state, step_idx,
+        sim, generator, gen_state, step_idx, noise_scale_mult,
         has_hawkes, has_hawkes_long, has_regime, has_agent, has_global,
         s, s_prev,
         ps_t[0], ps_t[1], ps_t[2], ps_t[3], ps_t[4],

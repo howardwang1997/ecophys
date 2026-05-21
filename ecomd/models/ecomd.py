@@ -281,6 +281,19 @@ class EcoMDConfig:
     # that try to differentiate other channels.
     bptt_custom_function: bool = False
 
+    # ── Track B-β: scheduled-sampling noise widening ─────────────────────────
+    # During training, with probability p(iter) that ramps from 0 to
+    # ``ss_max_prob`` over ``ss_warmup_iters`` outer iters, widen each step's
+    # f_stoch by ``ss_sigma_mult``. Disabled by default; bit-exact baseline
+    # behavior when ``scheduled_sampling_enabled=False`` (no extra RNG draws).
+    # Requires bptt_custom_function=False and bptt_checkpoint_every=0
+    # (validated in EcoMDSimulator.rollout_chunk).
+    scheduled_sampling_enabled: bool = False
+    ss_max_prob: float = 0.2
+    ss_ramp_schedule: str = "linear"   # 'linear' | 'cosine'
+    ss_warmup_iters: int = 32
+    ss_sigma_mult: float = 1.5
+
 
 class EcoMDSimulator(nn.Module):
     """Top-level EcoMD simulator.
@@ -589,6 +602,7 @@ class EcoMDSimulator(nn.Module):
         h_agent: Tensor | None = None,
         h_global: Tensor | None = None,
         step_idx: int = 0,
+        noise_scale_mult: Tensor | float = 1.0,
     ) -> tuple[Tensor, PriceState, dict[str, Tensor], Tensor | None, Tensor | None, Tensor | None]:
         """Advance one step. Returns (s_next, price_state_next, record_dict,
         h_regime_next, h_agent_next).
@@ -723,6 +737,7 @@ class EcoMDSimulator(nn.Module):
                 generator=generator,
                 update_mask=update_mask,
                 create_graph=create_graph,
+                noise_scale_mult=noise_scale_mult,
             )
             s_prev_running = s_running
             s_running = last_step_out.s_next
@@ -779,6 +794,8 @@ class EcoMDSimulator(nn.Module):
         h_regime: Tensor | None = None,
         h_agent: Tensor | None = None,
         h_global: Tensor | None = None,
+        ss_prob: float = 0.0,
+        ss_sigma_mult: float = 1.0,
     ) -> tuple[Tensor, PriceState, EcoMDTrajectory, Tensor | None]:
         """Differentiable chunk rollout — returns (s_final, price_state_final,
         traj, h_regime_final). ``h_regime_final`` is None when regime disabled.
@@ -809,6 +826,14 @@ class EcoMDSimulator(nn.Module):
         K = int(self.cfg.bptt_checkpoint_every) if create_graph else 0
         use_custom_fn = bool(self.cfg.bptt_custom_function) and create_graph
 
+        ss_active = ss_prob > 0.0 and ss_sigma_mult > 1.0
+        if ss_active and K > 0:
+            raise ValueError(
+                "scheduled sampling (ss_prob>0) currently requires "
+                "bptt_checkpoint_every=0; "
+                f"got bptt_checkpoint_every={self.cfg.bptt_checkpoint_every}"
+            )
+
         if use_custom_fn:
             # Sprint 2 path: per-step custom autograd.Function. Memory bounded
             # by ONE step's V-graph regardless of chunk_steps. Diagnostic
@@ -819,12 +844,18 @@ class EcoMDSimulator(nn.Module):
                 shape, device=s.device, dtype=dtype
             )
             for k in range(n_steps):
+                step_noise_mult: float = 1.0
+                if ss_active:
+                    u = torch.rand((), generator=generator, device=s.device, dtype=s.dtype)
+                    if float(u) < ss_prob:
+                        step_noise_mult = ss_sigma_mult
                 (s_next, s_prev_next, price_state,
                  h_regime, h_agent, h_global, log_return) = step_via_function(
                     self, s, s_prev, price_state,
                     generator=generator,
                     h_regime=h_regime, h_agent=h_agent, h_global=h_global,
                     step_idx=k,
+                    noise_scale_mult=step_noise_mult,
                 )
                 # Recorder gets log_return live; aux channels detached
                 # placeholders to keep schema compatible with downstream code.
@@ -848,6 +879,14 @@ class EcoMDSimulator(nn.Module):
         if K <= 0:
             # Original (no-checkpoint) path
             for k in range(n_steps):
+                # B-β scheduled sampling: with prob ss_prob, widen this step's
+                # noise scale by ss_sigma_mult. RNG consumption is conditional
+                # on ss_active to preserve bit-exact baseline when disabled.
+                step_noise_mult: float = 1.0
+                if ss_active:
+                    u = torch.rand((), generator=generator, device=s.device, dtype=s.dtype)
+                    if float(u) < ss_prob:
+                        step_noise_mult = ss_sigma_mult
                 s_next, price_state, rec, h_regime, h_agent, h_global = self.step(
                     s, s_prev, price_state,
                     generator=generator,
@@ -856,6 +895,7 @@ class EcoMDSimulator(nn.Module):
                     h_agent=h_agent,
                     h_global=h_global,
                     step_idx=k,
+                    noise_scale_mult=step_noise_mult,
                 )
                 recorder.record(
                     s=rec["s"],
