@@ -64,7 +64,7 @@ expected_n() {
         experiments/095b_baselines_n30)          echo 250 ;;
         experiments/098d_asset_mode_n30)         echo 180 ;;
         experiments/track_b_beta_pilot_n30)      echo 930 ;;
-        experiments/track_b_alpha_pilot_n30)     echo 900 ;;
+        experiments/track_b_alpha_pilot_n30)     echo 750 ;;
         *)                                       echo 0   ;;
     esac
 }

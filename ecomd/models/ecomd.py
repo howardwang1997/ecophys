@@ -32,6 +32,7 @@ from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
 from .global_state import GlobalStateConfig, GlobalStateGRU
 from .isab_pairwise import ISABPairwisePotential
 from .mace_lite import MACELitePotential, build_mace_lite
+from .hopfield_regime import HopfieldRegime, HopfieldRegimeConfig
 from .regime_latent import (
     DiscreteRegimeGRU,
     DiscreteRegimeGRUConfig,
@@ -142,6 +143,20 @@ class EcoMDConfig:
     regime_discrete_enabled: bool = False
     regime_n_states: int = 3
     regime_gumbel_tau: float = 1.0
+
+    # Track B-α — Hopfield regime selector. When ``regime_kind="hopfield"``,
+    # replaces the GRU with a Hopfield attention module over K learnable
+    # prototypes (paper_a_next_steps §5). Backward-compat default
+    # ``regime_kind="auto"`` ⇒ branch on ``regime_discrete_enabled`` (existing
+    # behavior); pinning to 'gru' or 'discrete_gru' is also accepted for
+    # explicit selection.
+    regime_kind: str = "auto"   # 'auto' | 'gru' | 'discrete_gru' | 'hopfield'
+    hopfield_n_prototypes: int = 4
+    hopfield_beta: float = 8.0
+    hopfield_query_hidden: int = 16
+    hopfield_collapse_reg: float = 0.0   # 0 = diagnostic only (no aux loss);
+                                         # >0 adds collapse_loss × this weight
+                                         # to total loss (training loop only)
     # v1 (MACE-lite) settings — only used when pairwise_kind == "mace_lite"
     pairwise_kind: str = "mlp"               # 'mlp' (v0.x) or 'mace_lite' (v1+)
     mace_k: int = 16                         # k-NN neighbours
@@ -459,12 +474,17 @@ class EcoMDSimulator(nn.Module):
         # GRU for the B-round DiscreteRegimeGRU. State carried as logits
         # of size ``regime_n_states``; read heads consume the d_regime
         # embedding produced by ``regime_gru.read(h)``.
-        self.regime_gru: RegimeGRU | DiscreteRegimeGRU | None = None
+        self.regime_gru: RegimeGRU | DiscreteRegimeGRU | HopfieldRegime | None = None
         self.regime_head_gamma: RegimeReadHead | None = None
         self.regime_head_T: RegimeReadHead | None = None
         self.regime_head_kappa: RegimeReadHead | None = None
         if self.cfg.regime_enabled:
-            if self.cfg.regime_discrete_enabled:
+            # Resolve regime_kind. 'auto' (default) preserves the legacy
+            # behavior of branching on regime_discrete_enabled.
+            kind = self.cfg.regime_kind
+            if kind == "auto":
+                kind = "discrete_gru" if self.cfg.regime_discrete_enabled else "gru"
+            if kind == "discrete_gru":
                 self.regime_gru = DiscreteRegimeGRU(DiscreteRegimeGRUConfig(
                     n_states=self.cfg.regime_n_states,
                     d_regime=self.cfg.regime_d,
@@ -472,12 +492,25 @@ class EcoMDSimulator(nn.Module):
                     init_gain=self.cfg.regime_init_gain,
                     gumbel_tau=self.cfg.regime_gumbel_tau,
                 ))
-            else:
+            elif kind == "gru":
                 self.regime_gru = RegimeGRU(RegimeGRUConfig(
                     d_regime=self.cfg.regime_d,
                     update_every=self.cfg.regime_update_every,
                     init_gain=self.cfg.regime_init_gain,
                 ))
+            elif kind == "hopfield":
+                self.regime_gru = HopfieldRegime(HopfieldRegimeConfig(
+                    d_regime=self.cfg.regime_d,
+                    n_prototypes=self.cfg.hopfield_n_prototypes,
+                    update_every=self.cfg.regime_update_every,
+                    beta=self.cfg.hopfield_beta,
+                    query_hidden=self.cfg.hopfield_query_hidden,
+                    init_gain=self.cfg.regime_init_gain,
+                ))
+            else:
+                raise ValueError(
+                    f"regime_kind must be 'auto'|'gru'|'discrete_gru'|'hopfield', got {kind!r}"
+                )
             if self.cfg.regime_modulate_gamma:
                 self.regime_head_gamma = RegimeReadHead(self.cfg.regime_d)
             if self.cfg.regime_modulate_temp:
