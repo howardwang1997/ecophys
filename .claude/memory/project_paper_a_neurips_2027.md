@@ -1,7 +1,10 @@
 ---
-name: Paper A target — NeurIPS 2027, problem-diagnose-solve framing
-description: Paper A NeurIPS 2027 framing pivoted 2026-05-21 from "falsification tool" (headline negative) to "problem→diagnose→solve" (headline positive). Track A memk + Track B-β scheduled-sampling + Track B-α Hopfield are primary parallel; B-γ adversarial + B-MACEv2 secondary; C multi-obj fallback.
-type: project
+name: paper-a-target-neurips-2027-problem-diagnose-solve-framing
+description: "Paper A NeurIPS 2027 framing pivoted 2026-05-21 from \"falsification tool\" (headline negative) to \"problem→diagnose→solve\" (headline positive). Track A memk + Track B-β scheduled-sampling + Track B-α Hopfield are primary parallel; B-γ adversarial + B-MACEv2 secondary; C multi-obj fallback."
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: d8f75917-cbc6-43cc-814b-11508430a13a
 ---
 
 **Target**: NeurIPS 2027 main, deadline ~2027-05. Plan-agent reviewer-2 stress test estimates: 18-25% under old "falsification tool" framing; **30-40% target** under new "problem→diagnose→solve" framing (2026-05-21 pivot, conditional on ≥2 of Track A/B-β/B-α succeeding at 5-asset mean ≥6.0). M3 (arXiv) shifts Wk 28 → Wk 32.
@@ -24,6 +27,46 @@ Five constructive solution tracks (paper §5-6 candidates):
 - **Track D** — ABIDES+SBI calibration shootout (independent parallel, §7 utility)
 
 User confirmed (2026-05-21): B-β + B-α 并行 primary; B-γ adversarial 可以做; B-MACEv2 可以做但要记住 prior failure; C 是退路, 不轻易接受.
+
+## 2026-05-22 — B-β and B-α both implemented + pilots queued
+
+Both Track B-β and B-α landed on `feature/paper-a-neurips-2027` in two
+commits: `72d75bf2` (B-β) and `e0e4ec48` (B-α). Track B-α scope was reduced
+from spec-estimated 3-5 days (480 LoC) to ~210 LoC by skipping the literal
+"per-prototype mechanism mix" force-pipeline refactor — instead K mechanism
+mixes emerge implicitly from K learned prototype embeddings + the existing
+RegimeReadHead non-linear pipeline. Minor expressivity reduction (sharp β
+recovers the spec's behavior exactly; soft β approximates a mixture). Worth
+keeping in mind if B-α pilot shows surprisingly flat results.
+
+**Implementation locations** (verify before recommending future edits):
+- B-β: `ecomd/training/scheduled_sampling.py`, plumbed through
+  `ecomd/physics/integrator.py` (noise_scale_mult on step),
+  `ecomd/models/ecomd.py` (5 EcoMDConfig fields + step + rollout_chunk),
+  `ecomd/models/bptt_step_function.py` (custom Function fwd + bwd),
+  `ecomd/training/train_distributed.py` (ScheduledSamplingState per run)
+- B-α: `ecomd/models/hopfield_regime.py` (drop-in replacement for
+  `RegimeGRU`), `ecomd/models/ecomd.py` (regime_kind branching, default
+  "auto" preserves legacy bit-exact)
+
+**Weekend H20 queue** (`scripts/h20_weekend_2026-05-22.sh`):
+6 phases × 2560 cfg ≈ 47h wall-clock on 8-card H20 (96h calendar budget,
+~49h buffer):
+1. 099B memk n=30 (Track A decision gate)
+2. 098C zumdn fine-grid (§4 figure surface)
+3. 095B WGAN+TrajCast n=30 (§4 baselines)
+4. 098D Asset×Mode 2×3 (§3 098B-regression diagnosis;
+   {SPX, joint_5} × {none, abs, downside})
+5. B-β pilot (6 max_prob × 5 sigma_mult + baseline, 930 cfg)
+6. B-α pilot (3 K × 4 β × 2 update_every + baseline, 750 cfg)
+
+**Pre-existing process-state non-determinism caught** (2026-05-22):
+`ecomd/models/potentials.py:262` uses `torch.rand(n, n, device=device)`
+without a generator for SPS edge sampling. Causes drift between sequential
+in-process train_distributed calls. Not blocking H20 (each cfg → fresh
+torchrun process); should be fixed for future in-process A/B work
+(replace with `torch.rand(..., generator=gen)` where `gen` is the rollout's
+seeded generator). Filed in `logs/2026-05-22.md`.
 
 ## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
 
