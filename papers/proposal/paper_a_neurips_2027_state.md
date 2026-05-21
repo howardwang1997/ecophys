@@ -1,13 +1,40 @@
 # Paper A — NeurIPS 2027 status (living document)
 
-**Last updated**: 2026-05-20 (089-099 5-asset rescore + Figure 1 v1 landed)
+**Last updated**: 2026-05-21 (framing pivot: ceiling as motivation, not conclusion)
 **Branch**: `feature/paper-a-neurips-2027`
-**Plan**: `~/.claude/plans/089-099-humming-jellyfish.md` (current day-shift + overnight),
-mid-term `~/.claude/plans/curried-cuddling-cloud.md` (M1-M6, → 2027-05 deadline)
+**Plan**:
+- `papers/proposal/paper_a_next_steps_2026-05-21.md` — **current** (Track A + B-β + B-α primary, B-γ + B-MACEv2 secondary, C fallback)
+- `~/.claude/plans/089-099-humming-jellyfish.md` — superseded for framing, still authoritative for in-flight H20 batches (098b/098c/099b/095b)
+- `~/.claude/plans/curried-cuddling-cloud.md` — mid-term M1-M6 (→ 2027-05 deadline)
 
 This document is the single source of truth for what's done, what's launching,
 and what H20 batches still need to be designed. Update in place as state changes;
 see `logs/YYYY-MM-DD.md` for chronological history.
+
+---
+
+## TL;DR (2026-05-21 — framing pivot)
+
+**Headline framing changed**: ceiling discovered in 089-099 (5-asset Pareto frontier
+@ 5.5 / 11 in hand-crafted Markov family) is now **motivation**, not **conclusion**.
+
+Paper A arc: **problem → diagnose → propose extensions that break ceiling → calibration-speed utility**.
+
+Five "constructive solution" tracks (B-β + B-α primary parallel; B-γ + B-MACEv2 secondary; C fallback only):
+- **Track A** — Memory kernels (memk via 099b, decision tomorrow)
+- **Track B-β** — Scheduled-sampling depth-3 (1-1.5 wk, lowest risk)
+- **Track B-α** — Hopfield regime attractors (2-3 wk, highest claim value)
+- **Track B-γ** — Adversarial per-fact discriminator (3-4 wk, GAN risk)
+- **Track B-MACEv2** — MACE-lite v2 with failure-aware fixes (2-3 wk, **canonical failure case**, pre-flight gated)
+- **Track C** — Multi-objective Pareto (fallback only, requires 5/5 B-track failures)
+- **Track D** — ABIDES+SBI calibration shootout (independent parallel, §7 utility)
+
+**Target NeurIPS 2027 acceptance: 30–40%** (conditional on ≥2 of A/B-β/B-α succeeding at 5-asset mean ≥ 6.0).
+M3 (arXiv) shifts Wk 28 → Wk 32; deadline Wk 60 leaves 28 wk buffer.
+
+**Critical**: MACE-lite v1 is the canonical failure case (0-4/11 across 8 ablations,
+2026-04-22). Any learned-potential work (B-MACEv2) requires explicit pre-flight gates
+on force magnitude + unbiased graph topology. See `papers/proposal/paper_a_next_steps_2026-05-21.md` §7.
 
 ---
 
