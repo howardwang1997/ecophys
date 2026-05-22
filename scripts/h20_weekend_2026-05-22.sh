@@ -17,7 +17,7 @@
 # Only the "solve" pilots (#5, #6) would need restart.
 #
 # Phase #6 (B-α) is **conditional**: only fires if the directory
-# experiments/track_b_alpha_pilot_n30/ exists. B-α implementation has a
+# experiments/101_track_b_alpha_pilot_n30/ exists. B-α implementation has a
 # fail-safe (see plans/ok-pull-099b-095b-lazy-feigenbaum.md §4): if the
 # Mac-side implementation doesn't land by Sun 22:00 local, the directory
 # won't be populated and this script auto-skips that phase.
@@ -51,8 +51,8 @@ PHASES=(
     "experiments/098c_zumdn_fine_grid_n30"
     "experiments/095b_baselines_n30"
     "experiments/098d_asset_mode_n30"
-    "experiments/track_b_beta_pilot_n30"
-    "experiments/track_b_alpha_pilot_n30"   # ← conditional
+    "experiments/100_track_b_beta_pilot_n30"
+    "experiments/101_track_b_alpha_pilot_n30"   # ← conditional
 )
 
 # Expected config counts and summary titles per phase. Using case statements
@@ -63,8 +63,8 @@ expected_n() {
         experiments/098c_zumdn_fine_grid_n30)    echo 180 ;;
         experiments/095b_baselines_n30)          echo 250 ;;
         experiments/098d_asset_mode_n30)         echo 180 ;;
-        experiments/track_b_beta_pilot_n30)      echo 930 ;;
-        experiments/track_b_alpha_pilot_n30)     echo 750 ;;
+        experiments/100_track_b_beta_pilot_n30)      echo 930 ;;
+        experiments/101_track_b_alpha_pilot_n30)     echo 750 ;;
         *)                                       echo 0   ;;
     esac
 }
@@ -75,8 +75,8 @@ summary_title() {
         experiments/098c_zumdn_fine_grid_n30)    echo "098c zumdn fine-grid n=30" ;;
         experiments/095b_baselines_n30)          echo "095b surrogate baselines n=30" ;;
         experiments/098d_asset_mode_n30)         echo "098d asset x mode ablation n=30" ;;
-        experiments/track_b_beta_pilot_n30)      echo "Track B-beta scheduled-sampling pilot n=30" ;;
-        experiments/track_b_alpha_pilot_n30)     echo "Track B-alpha Hopfield pilot n=30" ;;
+        experiments/100_track_b_beta_pilot_n30)      echo "Track B-beta scheduled-sampling pilot n=30" ;;
+        experiments/101_track_b_alpha_pilot_n30)     echo "Track B-alpha Hopfield pilot n=30" ;;
         *)                                       echo "$1" ;;
     esac
 }
@@ -91,7 +91,7 @@ preflight() {
     for d in "${PHASES[@]}"; do
         local expect="$(expected_n "$d")"
         if [[ ! -d "$d" ]]; then
-            if [[ "$d" == "experiments/track_b_alpha_pilot_n30" ]]; then
+            if [[ "$d" == "experiments/101_track_b_alpha_pilot_n30" ]]; then
                 echo "  ◌ $d does not exist — B-α phase will be SKIPPED (fail-safe)" \
                     | tee -a "$MASTER_LOG"
                 continue

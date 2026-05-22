@@ -45,7 +45,7 @@ import yaml
 
 REPO = Path(__file__).resolve().parent.parent.parent
 BASE_PATH = REPO / "experiments" / "099b_memk_refinement_n30" / "config_baseline_v3_seed0.yaml"
-OUT = REPO / "experiments" / "track_b_alpha_pilot_n30"
+OUT = REPO / "experiments" / "101_track_b_alpha_pilot_n30"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
