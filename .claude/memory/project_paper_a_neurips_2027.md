@@ -60,13 +60,18 @@ keeping in mind if B-α pilot shows surprisingly flat results.
 5. B-β pilot (6 max_prob × 5 sigma_mult + baseline, 930 cfg)
 6. B-α pilot (3 K × 4 β × 2 update_every + baseline, 750 cfg)
 
-**Pre-existing process-state non-determinism caught** (2026-05-22):
-`ecomd/models/potentials.py:262` uses `torch.rand(n, n, device=device)`
-without a generator for SPS edge sampling. Causes drift between sequential
-in-process train_distributed calls. Not blocking H20 (each cfg → fresh
-torchrun process); should be fixed for future in-process A/B work
-(replace with `torch.rand(..., generator=gen)` where `gen` is the rollout's
-seeded generator). Filed in `logs/2026-05-22.md`.
+**Determinism fix landed 2026-05-22 Session 2**:
+`ecomd/models/potentials.py:_sample_edges` now uses `self._step_generator`
+(set by `EcoMDSimulator.step` at the top of each inner-step loop) for
+`torch.rand`. Backward-compat default `None` → global RNG. Verified:
+340/340 tests pass; `torch.set_num_threads(1)` + the fix gives bit-exact
+identical loss across two sequential in-process `train_distributed`
+calls (max diff 0.00e+00). Residual multi-threaded CPU drift is BLAS
+reduction-order non-determinism (not in our code) — mitigated by
+`torch.set_num_threads(1)` in Mac smoke scripts when bit-exact A/B is
+needed. H20 unaffected (per-cfg torchrun isolation). `ecomd_v2.py:135`
+has the same pattern but V2 is non-primary; deferred. Filed in
+`logs/2026-05-22.md` Session 2.
 
 ## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
 

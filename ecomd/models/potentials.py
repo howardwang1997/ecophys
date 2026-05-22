@@ -144,6 +144,12 @@ class StochasticPairwisePotential(nn.Module):
         self.k_random = k_random
         self.resample_per_step = resample_per_step
         self.d_global_in = int(d_global_in)
+        # Optional per-rollout torch.Generator for deterministic edge
+        # sampling. Set externally by :meth:`EcoMDSimulator.step` to the
+        # rollout's seeded generator. When None, falls back to global RNG
+        # (pre-2026-05-22 behavior). Attribute kept off the nn.Module
+        # registration since Generator isn't a parameter/buffer.
+        self._step_generator: torch.Generator | None = None
         # Tier 4.2: dynamic graph via learned soft gate on each random edge.
         self.edge_gating = bool(edge_gating)
         self.gate_init_p = float(gate_init_p)
@@ -255,11 +261,20 @@ class StochasticPairwisePotential(nn.Module):
         self._cached_edges = None
 
     def _sample_edges(self, n: int, device: torch.device) -> Tensor:
-        """Return (2, N·k) long tensor of (src, dst) pairs."""
+        """Return (2, N·k) long tensor of (src, dst) pairs.
+
+        Uses ``self._step_generator`` (a :class:`torch.Generator`) for the
+        underlying ``torch.rand`` draw when it's set (typically by
+        ``EcoMDSimulator.step`` at the top of each rollout step), so that
+        edge sampling is deterministic given the rollout's seed. When the
+        attribute is absent or ``None`` (legacy / direct test calls), falls
+        back to the global torch RNG — same behavior as pre-2026-05-22.
+        """
         k = min(self.k_random, n - 1)
         # For each i ∈ [n], pick k distinct j ≠ i. Use torch.randperm per-row,
         # then drop self-match. Vectorized with rand + topk.
-        rand = torch.rand(n, n, device=device)
+        gen = getattr(self, "_step_generator", None)
+        rand = torch.rand(n, n, device=device, generator=gen)
         rand.fill_diagonal_(-1.0)  # push self to bottom after largest-k selection
         _, idx = torch.topk(rand, k=k + 1, dim=1, largest=True)
         # idx[:,0] might still be the diagonal if it was +1 (unlikely but
