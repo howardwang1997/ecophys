@@ -24,6 +24,8 @@ import numpy as np
 import torch
 from torch import Tensor
 
+from . import fact_surrogates
+
 # ─────────────────────────────────────────────────────────────────────────────
 # ACF of squared returns
 # ─────────────────────────────────────────────────────────────────────────────
@@ -186,11 +188,21 @@ def soft_hill_tail_index(
 
 @dataclass(frozen=True)
 class MomentTargets:
-    """Reference values from real data (SPX, BTC, etc.)."""
+    """Reference values from real data (SPX, BTC, etc.).
+
+    The first three are the legacy 3-moment targets. The optional fields
+    (added 2026-05-26, Thread 1 of the 102-105 plan) carry targets for the
+    under-covered facts so they can be put directly into the gradient; ``None``
+    means "not requested" and the corresponding loss term is skipped.
+    """
 
     acf_sq_mean: float
     leverage_sum: float
     hill_alpha: float
+    gain_loss_skew: float | None = None   # fact #3
+    agg_gaussianity: float | None = None  # fact #4
+    fano: float | None = None             # fact #5
+    dfa_hurst: float | None = None        # fact #8
 
 
 @dataclass(frozen=True)
@@ -239,6 +251,20 @@ class LossWeights:
     # Inverse-variance / GradNorm balancing across loss components.
     balance_mode: str = "fixed"              # fixed|inv_var (grad_norm TODO)
     balance_warmup: int = 20
+    # ── Multi-fact surrogates (Thread 1, 2026-05-26) ──────────────────────
+    # Explicit per-fact terms for facts not covered by the 3-moment loss. Each
+    # is matched (via distance_mode) to the corresponding MomentTargets field;
+    # disabled when weight == 0 OR the target is None. See
+    # :mod:`ecomd.training.fact_surrogates`.
+    w_gain_loss: float = 0.0                 # fact #3 skewness
+    w_agg_gauss: float = 0.0                 # fact #4 aggregational gaussianity
+    agg_gauss_scale_large: int = 50
+    w_fano: float = 0.0                      # fact #5 intermittency / Fano
+    fano_quantile: float = 0.99
+    fano_n_windows: int = 50
+    w_dfa_hurst: float = 0.0                 # fact #8 DFA-Hurst (on |r|)
+    dfa_min_scale: int = 16
+    dfa_max_scale_frac: float = 0.1
 
 
 def moment_matching_loss(
@@ -312,6 +338,14 @@ def moment_matching_loss(
         out["zumbach_sim"] = zum.detach()
         out["zumbach_pen"] = zum_pen
 
+    # Thread-1 multi-fact surrogates (facts #3/#4/#5/#8); no-op unless their
+    # weights and targets are set.
+    mf = multi_fact_terms(sim_returns, targets, w, distance_mode=getattr(w, "distance_mode", "l1"))
+    for k, v in mf.items():
+        if k != "_total":
+            out[k] = v
+    total = total + mf["_total"]
+
     out["total"] = total
     return out
 
@@ -325,14 +359,33 @@ def build_targets_from_returns(
     returns_np: np.ndarray,
     max_lag: int = 20,
     k_frac: float = 0.05,
+    include_multi_fact: bool = True,
+    agg_gauss_scale_large: int = 50,
+    fano_quantile: float = 0.99,
+    fano_n_windows: int = 50,
+    dfa_min_scale: int = 16,
+    dfa_max_scale_frac: float = 0.1,
 ) -> MomentTargets:
-    """Compute the three target moments on a numpy returns array."""
+    """Compute target moments (and, by default, the Thread-1 multi-fact targets)
+    on a numpy returns array, using the *same* differentiable surrogates as the
+    loss so sim and target are measured on a common ruler."""
     r = torch.as_tensor(np.asarray(returns_np, dtype=np.float64), dtype=torch.float32)
     with torch.no_grad():
         acf = float(acf_sq_mean(r, max_lag=max_lag).item())
         lev = float(leverage_effect_sum(r, max_lag=max_lag).item())
         hill = float(soft_hill_tail_index(r, k_frac=k_frac).item())
-    return MomentTargets(acf_sq_mean=acf, leverage_sum=lev, hill_alpha=hill)
+        if include_multi_fact:
+            skew = float(fact_surrogates.gain_loss_skew(r).item())
+            agg = float(fact_surrogates.agg_gaussianity(r, scale_large=agg_gauss_scale_large).item())
+            fano = float(fact_surrogates.soft_fano(r, quantile=fano_quantile, n_windows=fano_n_windows).item())
+            dfa = float(fact_surrogates.dfa_hurst_surrogate(
+                r.abs(), min_scale=dfa_min_scale, max_scale_frac=dfa_max_scale_frac).item())
+        else:
+            skew = agg = fano = dfa = None
+    return MomentTargets(
+        acf_sq_mean=acf, leverage_sum=lev, hill_alpha=hill,
+        gain_loss_skew=skew, agg_gaussianity=agg, fano=fano, dfa_hurst=dfa,
+    )
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -383,6 +436,62 @@ def smooth_dev(sim_value: Tensor, target_value: float | Tensor, mode: str = "mse
     if mode == "l1":
         return d.abs()
     raise ValueError(f"unknown distance_mode {mode!r}; expected mse|huber|l1")
+
+
+def multi_fact_terms(
+    sim_returns: Tensor,
+    targets: MomentTargets,
+    weights: "LossWeights",
+    distance_mode: str = "l1",
+) -> dict[str, Tensor]:
+    """Thread-1 explicit per-fact surrogate penalties (facts #3/#4/#5/#8).
+
+    Shared by both :func:`moment_matching_loss` and :func:`compute_loss` so the
+    extra facts enter the gradient regardless of ``loss_family``. Each term is
+    active only when its weight > 0 AND the matching ``MomentTargets`` field is
+    not ``None``. Returns per-term penalties, ``*_sim`` detached diagnostics, and
+    ``_total`` (the weighted sum); ``_total`` is a 0-d zero tensor when nothing is
+    active. See :mod:`ecomd.training.fact_surrogates`.
+    """
+    out: dict[str, Tensor] = {}
+    total = torch.zeros((), device=sim_returns.device, dtype=sim_returns.dtype)
+
+    if weights.w_gain_loss > 0 and targets.gain_loss_skew is not None:
+        sk = fact_surrogates.gain_loss_skew(sim_returns)
+        pen = smooth_dev(sk, targets.gain_loss_skew, mode=distance_mode)
+        out["gain_loss"] = pen
+        out["gain_loss_sim"] = sk.detach()
+        total = total + weights.w_gain_loss * pen
+
+    if weights.w_agg_gauss > 0 and targets.agg_gaussianity is not None:
+        ag = fact_surrogates.agg_gaussianity(sim_returns, scale_large=weights.agg_gauss_scale_large)
+        pen = smooth_dev(ag, targets.agg_gaussianity, mode=distance_mode)
+        out["agg_gauss"] = pen
+        out["agg_gauss_sim"] = ag.detach()
+        total = total + weights.w_agg_gauss * pen
+
+    if weights.w_fano > 0 and targets.fano is not None:
+        fn = fact_surrogates.soft_fano(
+            sim_returns, quantile=weights.fano_quantile, n_windows=weights.fano_n_windows
+        )
+        pen = smooth_dev(fn, targets.fano, mode=distance_mode)
+        out["fano"] = pen
+        out["fano_sim"] = fn.detach()
+        total = total + weights.w_fano * pen
+
+    if weights.w_dfa_hurst > 0 and targets.dfa_hurst is not None:
+        h = fact_surrogates.dfa_hurst_surrogate(
+            sim_returns.abs(),
+            min_scale=weights.dfa_min_scale,
+            max_scale_frac=weights.dfa_max_scale_frac,
+        )
+        pen = smooth_dev(h, targets.dfa_hurst, mode=distance_mode)
+        out["dfa_hurst"] = pen
+        out["dfa_hurst_sim"] = h.detach()
+        total = total + weights.w_dfa_hurst * pen
+
+    out["_total"] = total
+    return out
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -813,6 +922,13 @@ def compute_loss(
         out["zumbach_sim"] = zum.detach()
         out["zumbach_pen"] = zum_pen
         total = total + weights.w_zumbach * zum_pen
+
+    # Thread-1 multi-fact surrogates (facts #3/#4/#5/#8)
+    mf = multi_fact_terms(sim_returns, targets, weights, distance_mode=distance_mode)
+    for k, v in mf.items():
+        if k != "_total":
+            out[k] = v
+    total = total + mf["_total"]
 
     out["total"] = total
     return out

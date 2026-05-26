@@ -57,7 +57,7 @@ from torch import Tensor
 
 from ..eval.stylized_facts import log_returns_from_prices
 from ..models.ecomd import EcoMDConfig, EcoMDSimulator
-from .losses import LossWeights, MomentTargets, build_targets_from_returns, moment_matching_loss
+from .losses import LossWeights, MomentTargets, build_targets_from_returns, compute_loss
 
 log = logging.getLogger("train_distributed")
 
@@ -343,7 +343,12 @@ def _compute_rollout_reg_loss(
 
     total = None
     for lbl, ts, w in targets_list:
-        out = moment_matching_loss(sim_returns, ts, weights)
+        # compute_loss fast-paths to moment_matching_loss for the legacy
+        # (moments/l1/soft_hill) combo → bit-exact; otherwise honours
+        # distance_mode / multi-fact weights. target_returns=None is fine here
+        # (distribution-distance families need it, but they aren't used in the
+        # rollout-reg term).
+        out = compute_loss(sim_returns, None, ts, weights)
         term = w * out["total"]
         total = term if total is None else (total + term)
     return total
@@ -497,7 +502,7 @@ def train_distributed(
         total = None
         out: dict[str, Tensor] = {}
         for lbl, ts, w in targets_list:
-            out_a = moment_matching_loss(sim_returns, ts, weights)
+            out_a = compute_loss(sim_returns, None, ts, weights)
             per_asset_outs[lbl] = out_a
             term = w * out_a["total"]
             total = term if total is None else (total + term)
@@ -656,8 +661,12 @@ def main() -> None:
             pd_ = asset_cfg.get("period", "daily")
             w = float(asset_cfg.get("weight", 1.0))
             real_r = load_real_returns(repo_root, ds, pd_)
-            ts = build_targets_from_returns(real_r, max_lag=weights.max_lag,
-                                            k_frac=weights.hill_k_frac)
+            ts = build_targets_from_returns(
+                real_r, max_lag=weights.max_lag, k_frac=weights.hill_k_frac,
+                agg_gauss_scale_large=weights.agg_gauss_scale_large,
+                fano_quantile=weights.fano_quantile, fano_n_windows=weights.fano_n_windows,
+                dfa_min_scale=weights.dfa_min_scale, dfa_max_scale_frac=weights.dfa_max_scale_frac,
+            )
             label = f"{ds}/{pd_}"
             targets_list.append((label, ts, w))
             if _is_main(rank):
@@ -671,8 +680,12 @@ def main() -> None:
         real_r = load_real_returns(repo_root, target_dataset, target_period)
         if _is_main(rank):
             log.info(f"loaded {len(real_r):,} returns for {target_dataset}/{target_period}")
-        targets = build_targets_from_returns(real_r, max_lag=weights.max_lag,
-                                             k_frac=weights.hill_k_frac)
+        targets = build_targets_from_returns(
+            real_r, max_lag=weights.max_lag, k_frac=weights.hill_k_frac,
+            agg_gauss_scale_large=weights.agg_gauss_scale_large,
+            fano_quantile=weights.fano_quantile, fano_n_windows=weights.fano_n_windows,
+            dfa_min_scale=weights.dfa_min_scale, dfa_max_scale_frac=weights.dfa_max_scale_frac,
+        )
         if _is_main(rank):
             log.info(f"targets: acf_sq={targets.acf_sq_mean:.3f} "
                      f"leverage_sum={targets.leverage_sum:+.3f} "
