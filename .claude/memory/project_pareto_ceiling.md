@@ -20,10 +20,19 @@ random.
    Other depth-3 triples 4.04-4.77. Depth-2 sweet spot confirmed.
 4. **N-agents ceiling**: 097 N=500/1000/5000 mean 4.08/3.87/4.65. Ceiling is NOT
    a finite-N artefact (rebuts the obvious reviewer-2 attack).
-5. **ECoMD vs baselines**:
+5. **ECoMD vs baselines** — ⚠️ **the n=5 claim below was REFUTED at n=30 (2026-05-26)**:
    - Traditional (093): GARCH best SPX 4.60, GBM flat 2.80, AR1-SV unstable (11/15 rej).
-   - Modern surrogates (095, n=5 preliminary): TrajCast 4.00-5.00, WGAN 4.00-4.20, max ≤ 6.
-   - ECoMD beats every baseline on every asset by ≥ 1.4 mean.
+   - ~~Modern surrogates (095, n=5 preliminary): TrajCast 4.00-5.00, WGAN 4.00-4.20, max ≤ 6.~~
+   - ~~ECoMD beats every baseline on every asset by ≥ 1.4 mean.~~ **DO NOT USE in paper.**
+   - **095b n=30 (2026-05-26), common-10-fact head-to-head** (`--exclude volume_volatility_corr`,
+     baselines are returns-only): `trajcast_spx`=5.24 and `wgan_ndx`=5.12 **beat every
+     weekend-batch ECoMD cell** (best ECoMD `x5_zum_downside`=4.89; `baseline_v3`=4.14). The win
+     is **SPX/NDX-specific** — `trajcast_gold`=4.16, `trajcast_eurusd`=3.00 still lose to ECoMD.
+     Baselines are also ~2× more seed-stable (std ≈0.6–0.9 vs 1.3–1.7). Trajcast/WGAN are return
+     generators fit on the target asset, so beating ECoMD on *return* facts is unsurprising — but
+     a NeurIPS referee will run exactly this head-to-head, so "ECoMD reproduces stylized facts
+     well" is **not defensible as stated**. Full artifact + caveats:
+     `experiments/095b_baselines_n30/baseline_vs_ecomd_10fact.md`. See [[project_paper_a_neurips_2027]].
 
 ### The Pareto structure
 
@@ -38,12 +47,12 @@ random.
 
 ### What's NOT in the evidence yet (gates for §4 final)
 
-- **098b zumdn dose-response at n=30** (launching 2026-05-20 day-shift, ~3h): confirm
-  or kill the noisy 098 top `zumdn_s075_lam095=6.67 at n=3`.
-- **099b memk at n=30** (overnight 2026-05-20, ~5-6h): settle whether memk has a hidden
-  operating point we missed at n=5.
-- **095b TrajCast/WGAN at n=30** (overnight 2026-05-20, ~3-4h): lift C3b from preliminary
-  (n=5, max=6) to confident (n=30).
+- ✅ **099b memk at n=30** (landed 2026-05-26): best `memk_s025_lam090`=5.00/11 — **no hidden
+  operating point; Track A failed/demoted** (see [[project_paper_a_neurips_2027]]).
+- ✅ **095b TrajCast/WGAN at n=30** (landed 2026-05-26): **refutes** the old "ECoMD beats every
+  baseline" claim — baselines win on SPX/NDX (see point 5 above).
+- ✅ **098c zumdn fine-grid n=30** (landed 2026-05-26): best 5.07/11 — saturated, no lift over cluster.
+- **098b zumdn dose-response at n=30**: confirm/kill noisy 098 top `zumdn_s075_lam095=6.67 at n=3`.
 - **VaR backtest on 094 holdout** (Mac analysis, blocked on ECoMD unconditional sampler
   limitation — Future Work in paper).
 - **ABIDES+SBI calibration shootout** (Paper A headline, blocked on H20 install).

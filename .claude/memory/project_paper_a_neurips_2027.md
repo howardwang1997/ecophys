@@ -18,7 +18,7 @@ User instruction: "我不希望 Paper A 的主要 claim 是一个负向的 claim
 **New headline**: "We discover an empirical Pareto frontier in hand-crafted Markov mechanism families (§4 motivation), then introduce architectural extensions that break it (§5-6), and demonstrate gradient-based calibration at ~100× ABIDES+SBI wall-clock (§7 utility)."
 
 Five constructive solution tracks (paper §5-6 candidates):
-- **Track A** — Memory kernels (memk n=30 via 099b, decision tomorrow 2026-05-22)
+- **Track A** — Memory kernels (memk). **FAILED at n=30, demoted 2026-05-26** (best 5.00/11; see below)
 - **Track B-β** — Scheduled-sampling depth-3 (1-1.5 wk, lowest risk; borrows TrajCast NMI 2025 trick)
 - **Track B-α** — Hopfield regime attractors (Ramsauer 2020) replacing GRU regime (2-3 wk, highest claim value)
 - **Track B-γ** — Adversarial per-fact discriminator (3-4 wk, GAN stability risk)
@@ -73,6 +73,35 @@ needed. H20 unaffected (per-cfg torchrun isolation). `ecomd_v2.py:135`
 has the same pattern but V2 is non-primary; deferred. Filed in
 `logs/2026-05-22.md` Session 2.
 
+## 2026-05-26 — weekend-batch results landed (Mac re-score, canonical scorers)
+
+The 2560-cfg weekend batch (commits `50561de5`+`e9bf2ed6`) is in. Re-scored locally — **the
+"solve" arc has no winner yet, and a baseline-parity risk opened**:
+
+- **Track A memk — FAILED, demoted.** Best `memk_s025_lam090`=5.00/11 (n=28), barely above
+  `baseline_v3`=4.64 (z=0.97, n.s.). No hidden operating point.
+- **Track B-β scheduled-sampling — "not broken" but not better.** Best `bb_p010_s250`=5.10/11,
+  top of a 31-cell noise distribution (no monotone trend in p or σ). z=1.22 vs baseline, n.s.
+- **Track B-α Hopfield — flat ridge.** Best by mean `ha_K06_b016_u08`=5.10/11; z=1.30, n.s.
+- **⚠️ NONE of A/B-β/B-α beats `baseline_v3` at p<0.05** even *before* multiple-comparison
+  correction; all winners are best-of-6…31 cells (winner's curse). After Bonferroni, all n.s.
+  This means the §4-final acceptance condition ("≥2 of A/B-β/B-α at 5-asset mean ≥6.0") is
+  **currently UNMET** — the 30-40% estimate is at risk until a real lift appears.
+- **The "first-ever 11/11" (`ha_K04_b016_u08_seed13`) is a seed-lottery artifact**, not a
+  ceiling break: that cell's mean is 4.97±1.71 (n=30), seed 13 is the only seed ≥8 (3.6σ),
+  winning by passing the two architectural-floor facts (`hill_tail_index`, `zumbach_asymmetry`)
+  ~2/30 siblings pass. **Report the cell mean, never seed 13.** Per [[feedback_seed_count_lottery]].
+- **⚠️ Baseline-parity kill-shot risk.** On the common 10 facts, TrajCast/WGAN baselines beat
+  every weekend ECoMD cell on SPX/NDX (see [[project_pareto_ceiling]] point 5). Tooling fixed
+  (`score_summary.py`/`score_phase.py` `--exclude`); the defensible Paper A claims are the
+  mechanism-independent ceiling + capabilities baselines lack (volume channel, mechanistic
+  knobs), NOT raw fact-count superiority.
+
+**Implication for framing:** the *diagnose* half is strong (ceiling reconfirmed 5.1–5.2 across 4
+mechanism families × 30 seeds); the *solve* half (§5-6) has produced no significant lift. If no
+B-track delivers, fall back to the diagnose-centered framing with B-β/B-α/memk as
+**negative controls** establishing mechanism-independence (deferred decision, 2026-05-26).
+
 ## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
 
 `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed.
@@ -89,6 +118,8 @@ Negative-headline papers face ~15% NeurIPS acceptance ceiling regardless of evid
 ## Critical reminders
 
 - **MACE-lite v1 is the canonical failure case** (2026-04-22, 0-4/11 across 8 ablations). Any new learned-potential work must respect this. See [[project_mace_lite_failure]].
+- **Baseline-parity kill-shot (2026-05-26)**: on the common 10 facts, TrajCast/WGAN beat every weekend ECoMD cell on SPX/NDX. Never write "ECoMD reproduces stylized facts better than baselines" without the asset-specific caveat + the volume-channel capability argument. See [[project_pareto_ceiling]].
+- **Report cell means, never lottery seeds** — the `ha_K04_b016_u08_seed13` 11/11 is a 3.6σ artifact. Per [[feedback_seed_count_lottery]].
 - **n<20 seed counts forbidden in paper** per [[feedback_seed_count_lottery]] (4 confirmed hits).
 - **Goodhart on single-moment loss** — `scaling_v1.md` §5; all Track B losses must use shape constraints not just lag-1 values.
 - **5-asset n=30 replication discipline** — every paper claim requires this minimum.

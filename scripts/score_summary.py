@@ -141,11 +141,34 @@ def main() -> None:
     parser.add_argument("dirs", nargs="+", help="experiment dirs to summarise")
     parser.add_argument("--title", default=None,
                         help="commit-message first line (e.g. 'Branch F (088): pair sweep')")
+    parser.add_argument("--exclude", nargs="*", default=[], metavar="FACT",
+                        help="stylized-fact names to drop from scoring AND the instability "
+                             "filter. Use for fair head-to-head against returns-only baselines "
+                             "that cannot emit a fact, e.g. "
+                             "`--exclude volume_volatility_corr` for a common-10 comparison.")
     args = parser.parse_args()
+
+    # A returns-only baseline (WGAN-LP / TrajCast-lite) never emits
+    # volume_volatility_corr, so the 11-fact instability filter NaN-rejects every
+    # one of its seeds and the cell silently vanishes. Dropping the fact here puts
+    # such a model on the same footing as EcoMD. Mutating the module-level BANDS is
+    # deliberate: is_unstable() and n_pass() both read it, so exclusion stays
+    # consistent across scoring and rejection.
+    excluded: list[str] = []
+    for f in args.exclude:
+        if f in BANDS:
+            del BANDS[f]
+            excluded.append(f)
+        else:
+            print(f"[warn] --exclude {f!r}: not a known fact, ignored", file=sys.stderr)
+    n_facts = len(BANDS)
 
     out_lines: list[str] = []
     if args.title:
         out_lines.append(args.title)
+        out_lines.append("")
+    if excluded:
+        out_lines.append(f"[scored on {n_facts} facts — excluded: {', '.join(excluded)}]")
         out_lines.append("")
 
     all_summaries = []
@@ -180,12 +203,19 @@ def main() -> None:
     # Headline
     if best_cell_overall:
         name, r = best_cell_overall
-        sota_mean_flag = " (NEW SOTA mean!)" if r["mean"] > SOTA_MEAN else ""
-        sota_max_flag = " (NEW SOTA max!)" if r["max"] > SOTA_MAX else ""
-        out_lines.append(f"Best cell: {name}/{r['cell']} mean={r['mean']:.2f}"
-                         f" max={r['max']}{sota_mean_flag}{sota_max_flag}")
-        out_lines.append(f"(reference SOTA: mean={SOTA_MEAN:.2f} from btc_v4combo,"
-                         f" max={SOTA_MAX} from asymdrag_a06)")
+        # The SOTA reference is an 11-fact record; suppress the flag under a
+        # reduced fact set so we never compare a common-10 mean to an 11-fact SOTA.
+        if excluded:
+            out_lines.append(f"Best cell: {name}/{r['cell']} mean={r['mean']:.2f}"
+                             f" max={r['max']} (on {n_facts} facts)")
+            out_lines.append(f"(SOTA comparison N/A — facts excluded: {', '.join(excluded)})")
+        else:
+            sota_mean_flag = " (NEW SOTA mean!)" if r["mean"] > SOTA_MEAN else ""
+            sota_max_flag = " (NEW SOTA max!)" if r["max"] > SOTA_MAX else ""
+            out_lines.append(f"Best cell: {name}/{r['cell']} mean={r['mean']:.2f}"
+                             f" max={r['max']}{sota_mean_flag}{sota_max_flag}")
+            out_lines.append(f"(reference SOTA: mean={SOTA_MEAN:.2f} from btc_v4combo,"
+                             f" max={SOTA_MAX} from asymdrag_a06)")
 
     print("\n".join(out_lines))
 

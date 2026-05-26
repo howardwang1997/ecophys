@@ -14,6 +14,7 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from collections import defaultdict
@@ -179,13 +180,26 @@ def parse_label(label: str) -> dict:
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        print("usage: score_phase.py <config_dir>", file=sys.stderr)
-        sys.exit(1)
-    cfg_dir = Path(sys.argv[1])
+    parser = argparse.ArgumentParser(description="Per-config stylized-fact scoreboard.")
+    parser.add_argument("cfg_dir", help="experiments/<dir> to score")
+    parser.add_argument("--exclude", nargs="*", default=[], metavar="FACT",
+                        help="stylized-fact names to drop from scoring AND the instability "
+                             "filter (e.g. `--exclude volume_volatility_corr` for a fair "
+                             "common-fact comparison against returns-only baselines).")
+    args = parser.parse_args()
+    cfg_dir = Path(args.cfg_dir)
     if not cfg_dir.exists():
         print(f"no such dir: {cfg_dir}", file=sys.stderr)
         sys.exit(1)
+
+    # Mutating module-level BANDS keeps score_one() and instability_reason()
+    # consistent under exclusion (both read the global). denom = effective fact count.
+    for f in args.exclude:
+        if f in BANDS:
+            del BANDS[f]
+        else:
+            print(f"[warn] --exclude {f!r}: not a known fact, ignored", file=sys.stderr)
+    denom = len(BANDS)
 
     rows = []
     for d in sorted(cfg_dir.glob("results_*")):
@@ -223,7 +237,7 @@ def main() -> None:
         lines.append("|---|---|---:|")
         for r in rows:
             if r["unstable_reason"]:
-                rs = f"{r['raw_score']}/11" if r["raw_score"] is not None else "—"
+                rs = f"{r['raw_score']}/{denom}" if r["raw_score"] is not None else "—"
                 lines.append(f"| `{r['label']}` | {r['unstable_reason']} | {rs} |")
         lines.append("")
 
@@ -246,7 +260,7 @@ def main() -> None:
             cell_max[cell] = max(cell_max.get(cell, 0), r["score"])
     if cell_groups:
         lines.append("## Per-cell summary (stability filter applied)")
-        lines.append("| cell | n_seeds | mean n/11 | 95% CI | std | max | #(≥8) | rejected |")
+        lines.append(f"| cell | n_seeds | mean n/{denom} | 95% CI | std | max | #(≥8) | rejected |")
         lines.append("|---|---:|---:|---|---:|---:|---:|---:|")
         # Sort by mean descending for at-a-glance "what worked"
         for cell in sorted(cell_groups, key=lambda c: -float(np.mean(cell_groups[c]))):
@@ -268,7 +282,7 @@ def main() -> None:
                 ct_groups[r["variant"]].append(r["score"])
 
         lines.append("## Contamination paired — default vs sprint2 (custom autograd)")
-        lines.append("| variant | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append(f"| variant | n_seeds | mean n/{denom} | 95% CI | std |")
         lines.append("|---|---:|---:|---|---:|")
         for variant in sorted(ct_groups):
             scores = ct_groups[variant]
@@ -292,8 +306,8 @@ def main() -> None:
                 d_val = ct_lookup.get(("default", seed))
                 s_val = ct_lookup.get(("sprint2", seed))
                 delta = (s_val - d_val) if (d_val is not None and s_val is not None) else None
-                d_str = f"{d_val}/11" if d_val is not None else "—"
-                s_str = f"{s_val}/11" if s_val is not None else "—"
+                d_str = f"{d_val}/{denom}" if d_val is not None else "—"
+                s_str = f"{s_val}/{denom}" if s_val is not None else "—"
                 delta_str = f"+{delta}" if (delta is not None and delta > 0) else (str(delta) if delta is not None else "—")
                 lines.append(f"| {seed} | {d_str} | {s_str} | {delta_str} |")
             lines.append("")
@@ -309,7 +323,7 @@ def main() -> None:
         lines.append("Reference: stacked-full (035) mean 2.40/11. Look for cells")
         lines.append("where mean RECOVERS to ≥ 4-5/11 — that knob is the saboteur.")
         lines.append("")
-        lines.append("| cell | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append(f"| cell | n_seeds | mean n/{denom} | 95% CI | std |")
         lines.append("|---|---:|---:|---|---:|")
         for cell in sorted(abl_groups):
             scores = abl_groups[cell]
@@ -327,7 +341,7 @@ def main() -> None:
             m, lo, hi = bootstrap_ci(sw_scores)
             std = float(np.std(sw_scores, ddof=1)) if len(sw_scores) > 1 else 0.0
             lines.append("## Stacked winner — Sprint 2 + chunk=128 + hidden=96 + init=0.1")
-            lines.append(f"| n_seeds | mean n/11 | 95% CI | std |")
+            lines.append(f"| n_seeds | mean n/{denom} | 95% CI | std |")
             lines.append("|---:|---:|---|---:|")
             lines.append(f"| {len(sw_scores)} | **{m:.2f}** | "
                          f"[{lo:.2f}, {hi:.2f}] | {std:.2f} |")
@@ -337,10 +351,10 @@ def main() -> None:
             from collections import Counter
             counter = Counter(sw_scores)
             lines.append("### Distribution")
-            for s in range(0, 12):
+            for s in range(0, denom + 1):
                 n = counter.get(s, 0)
                 bar = "█" * n
-                lines.append(f"  {s}/11: {bar} ({n})")
+                lines.append(f"  {s}/{denom}: {bar} ({n})")
             lines.append("")
 
     # Loss noise fix (pcfix): group by chunk
@@ -351,7 +365,7 @@ def main() -> None:
                 pcfix_groups[r["chunk"]].append(r["score"])
 
         lines.append("## Loss noise fix — by chunk")
-        lines.append("| chunk | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append(f"| chunk | n_seeds | mean n/{denom} | 95% CI | std |")
         lines.append("|---:|---:|---:|---|---:|")
         for chunk in sorted(pcfix_groups):
             scores = pcfix_groups[chunk]
@@ -364,7 +378,7 @@ def main() -> None:
     # Phase C-style: group by chunk
     if any(r.get("phase") == "pc" for r in rows):
         lines.append("## Group by chunk")
-        lines.append("| chunk | n_seeds | mean n/11 | 95% CI | std |")
+        lines.append(f"| chunk | n_seeds | mean n/{denom} | 95% CI | std |")
         lines.append("|---:|---:|---:|---|---:|")
         groups: dict[int, list[int]] = defaultdict(list)
         for r in rows:
@@ -390,7 +404,7 @@ def main() -> None:
             line = f"| {seed} |"
             for c in (24, 64, 128):
                 v = seed_lookup.get((seed, c))
-                line += f" {v}/11 |" if v is not None else " — |"
+                line += f" {v}/{denom} |" if v is not None else " — |"
             lines.append(line)
         lines.append("")
 
@@ -409,7 +423,7 @@ def main() -> None:
             if not entries:
                 continue
             lines.append(f"### Axis `{axis}`")
-            lines.append("| variant | n_seeds | mean n/11 | 95% CI | std |")
+            lines.append(f"| variant | n_seeds | mean n/{denom} | 95% CI | std |")
             lines.append("|---|---:|---:|---|---:|")
             for variant, scores in sorted(entries):
                 m, lo, hi = bootstrap_ci(scores)
@@ -424,20 +438,20 @@ def main() -> None:
             lines.append("### 10-seed distribution at default config")
             from collections import Counter
             counter = Counter(n_seeds_group)
-            for s in range(0, 12):
+            for s in range(0, denom + 1):
                 n = counter.get(s, 0)
                 bar = "█" * n
-                lines.append(f"  {s}/11: {bar} ({n})")
+                lines.append(f"  {s}/{denom}: {bar} ({n})")
             lines.append("")
 
     # Top 10 individual scores
     ranked = sorted([r for r in rows if r["score"] is not None],
                     key=lambda x: -x["score"])[:10]
     lines.append("## Top 10 individual runs")
-    lines.append("| run | n/11 |")
+    lines.append(f"| run | n/{denom} |")
     lines.append("|---|---:|")
     for r in ranked:
-        lines.append(f"| `{r['label']}` | **{r['score']}/11** |")
+        lines.append(f"| `{r['label']}` | **{r['score']}/{denom}** |")
     lines.append("")
 
     out = cfg_dir / "scoreboard.md"
