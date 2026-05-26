@@ -102,6 +102,28 @@ mechanism families × 30 seeds); the *solve* half (§5-6) has produced no signif
 B-track delivers, fall back to the diagnose-centered framing with B-β/B-α/memk as
 **negative controls** establishing mechanism-independence (deferred decision, 2026-05-26).
 
+### 2026-05-26 Session 2 — root cause + Batch 1 (exp 102/103) launched
+
+**Root cause of the ceiling is the OBJECTIVE, not the architecture.** The loss
+(`ecomd/training/losses.py`) optimised only 3 moments (acf_sq/leverage/hill ≈ facts #6/#9/#2);
+**8 of 11 facts never entered the gradient**. All four failed tracks added *capacity* to a
+3-moment loss. Confirmed: all weekend configs were `loss_family: moments, distance_mode: l1`; the
+dormant `compute_loss` distributional families were never swept except Wasserstein (exp `085`),
+which **lost to baseline** (4.46 vs 4.64). So matching the whole return marginal is a spent lever
+— **explicit per-fact surrogates** are the move. Also corrected: `baseline_v3` ALREADY stacks
+global_state + edge_gating + twopop + SPS + t-noise, so those are NOT untested levers (real
+untested config-only levers: isab pairwise, inner_steps>1, agent_memory).
+
+**Built + pushed** (`b6ccf73f`, `e8d30cc2`): `ecomd/training/fact_surrogates.py` (differentiable
+#3/#4/#5/#8 + surrogate-kill tests ρ>0.6); `multi_fact_terms` wired into both loss paths;
+`train_distributed` routed through `compute_loss` (fast-path = legacy bit-exact) so mse/huber
+distance + multi-fact terms take effect. **Batch 1 (2-day, review 2026-05-28 AM)**: exp
+`102_multifact_loss_n30` (420 cfg, Thread 1 primary) + `103_arch_expanded_loss_n30` (390 cfg,
+arch × expanded loss), SPX screen, launcher `scripts/h20_batch1_2026-05-26.sh` (~22h). MMD (104)
++ learned-diffusion (3c) deferred to Batch 2; Track D (105) = ABIDES-install handback. 5-28 review
+promotes SPX winners → 5-asset confirm (exp 106) under the significance gate (Δ>0 vs baseline,
+Bonferroni p<0.05, **not best-of-N**). See [[project_pareto_ceiling]], [[feedback_seed_count_lottery]].
+
 ## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
 
 `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed.
