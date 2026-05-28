@@ -26,7 +26,7 @@ set -euo pipefail
 ABIDES_ENV="${ABIDES_ENV:-abides}"
 N_SEEDS="${N_SEEDS:-6}"
 END_TIME="${END_TIME:-16:00:00}"
-OUT_DIR="${OUT_DIR:-experiments/107_abides_ceiling/abides_raw}"
+OUT_DIR="${OUT_DIR:-experiments/105_abides_ceiling/abides_raw}"
 mkdir -p "$OUT_DIR"
 
 # variant tag : space-separated "key=value" build_config kwargs (CONFIRM kwarg names)

@@ -139,13 +139,13 @@ and where surrogates were active they moved the target fact toward band **with z
 `aggregational_gaussianity` on ~40–50% of seeds (real instability); `agentmem_inner4` 5.41 is
 survivorship (13/30 rejected). **Objective-coverage = untested, not falsified.**
 
-**Path A (exp 104, launched 2026-05-28):** config-only fix — enable rollout-reg
+**Path A (exp 107, launched 2026-05-28):** config-only fix — enable rollout-reg
 (`_compute_rollout_reg_loss`, 057) at `rollout_reg_steps=512` so all 4 surrogates are live while
 peak memory stays one chunk (respects [[project_chunk_oom_constraint]]); N 10K→2000 + bf16.
 Verified on Mac N=500: all 4 `grad_fn=LIVE`, gradient reaches params. Deconfounded 3-cell ladder:
 `baseline_v3` → `longroll_moments` → `mf_all_mse_longroll`. **Pre-registered failure: if
 `mf_all_mse_longroll` ≤ `baseline_v3` (Bonferroni p<0.05) → objective-coverage falsified → Path B
-(heterogeneous-node MoE first).** ABIDES ceiling probe (exp 107) runs in parallel and sets the
+(heterogeneous-node MoE first).** ABIDES ceiling probe (exp 105) runs in parallel and sets the
 Paper A narrative (≤4/11 → paradigm-SOTA = *upgrade*; ≥9/11 → Path C). Full ladder:
 `papers/proposal/plan_v3_addendum_2026-05-28.md`. Discipline per [[feedback_no_downgrade]],
 [[project_surrogate_rolloutlen_trap]], [[feedback_h20_day_budget]].

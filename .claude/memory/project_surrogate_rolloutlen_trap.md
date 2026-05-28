@@ -29,7 +29,7 @@ hypothesis, not a refutation. 3 of 4 surrogates contributed no usable gradient.
 - The fix is config-only, no `ecomd/` change: enable the existing rollout-reg path
   (`_compute_rollout_reg_loss`, "057") with `rollout_reg_steps ≥ 512`. It computes the SF loss on a
   multi-chunk truncated-BPTT rollout, peak memory ≈ one chunk — so it does NOT trip
-  [[project_chunk_oom_constraint]] (do NOT instead crank `chunk_steps`, which OOMs). Exp 104 does this.
+  [[project_chunk_oom_constraint]] (do NOT instead crank `chunk_steps`, which OOMs). Exp 107 does this.
 - Before trusting any surrogate-loss experiment, run `diagnose_surrogate_coverage.py` on it: if a
   `mf_*` cell is bit-identical to baseline, its surrogate was dead.
 - General lesson: a differentiable surrogate that passes its rank-correlation kill-test (ρ>0.6 on

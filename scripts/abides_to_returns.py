@@ -27,7 +27,7 @@ Input: a directory of CSVs named ``abides_<cell>_seed<k>.csv`` with columns
 
 Usage:
   python scripts/abides_to_returns.py --abides-dir <dir> --cell rmsc04_base \
-      --out-dir experiments/107_abides_ceiling/results_rmsc04_base --mode intraday --bar 60
+      --out-dir experiments/105_abides_ceiling/results_rmsc04_base --mode intraday --bar 60
 """
 
 from __future__ import annotations

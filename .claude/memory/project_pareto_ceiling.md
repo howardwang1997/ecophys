@@ -8,7 +8,7 @@ type: project
 > Bonferroni gate), but exp 102 was an **invalid test** — 3 of 4 multi-fact surrogates were
 > dead/degraded at the ~7-return training rollout (see [[surrogate-rollout-length-trap]]). The
 > ceiling at ~5.1 still stands as the best *fairly-tested* number; the first fair test of the
-> objective-coverage escape is exp 104 (rollout-reg steps=512), running 2026-05-28. Do not cite
+> objective-coverage escape is exp 107 (rollout-reg steps=512), running 2026-05-28. Do not cite
 > 102 as evidence the ceiling is unbreakable.
 
 **The 089-099 3-day batch (~3000 cfg) settled the central Paper A question**:

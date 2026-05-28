@@ -1,4 +1,4 @@
-"""Exp 104 — Batch 1b: the FIRST fair test of the objective-coverage hypothesis.
+"""Exp 107 — Batch 1b: the FIRST fair test of the objective-coverage hypothesis.
 
 Why this exists (2026-05-28 review of exp 102/103):
   exp 102 added per-fact surrogates to the loss but did NOT test the hypothesis —
@@ -40,7 +40,7 @@ import yaml
 
 REPO = Path(__file__).resolve().parent.parent.parent
 BASE_PATH = REPO / "experiments" / "099b_memk_refinement_n30" / "config_baseline_v3_seed0.yaml"
-OUT = REPO / "experiments" / "104_multifact_longroll_n30"
+OUT = REPO / "experiments" / "107_multifact_longroll_n30"
 OUT.mkdir(parents=True, exist_ok=True)
 
 N_SEEDS = 30

@@ -5,7 +5,7 @@
 # Usage (on H20, after `git pull`):
 #   ABIDES_ENV=abides bash scripts/h20_abides_baseline.sh
 #
-# Produces experiments/107_abides_ceiling/results_<cell>/inference_merged.json,
+# Produces experiments/105_abides_ceiling/results_<cell>/inference_merged.json,
 # scored with the SAME scorer as EcoMD so the comparison is like-for-like.
 
 set -euo pipefail
@@ -15,7 +15,7 @@ ECOPHYS_ENV="${ECOPHYS_ENV:-ecophys}"
 N_SEEDS="${N_SEEDS:-6}"
 MODE="${MODE:-intraday}"            # intraday | daily  (see abides_to_returns.py caveat)
 BAR="${BAR:-60}"
-EXP_DIR="experiments/107_abides_ceiling"
+EXP_DIR="experiments/105_abides_ceiling"
 RAW_DIR="${EXP_DIR}/abides_raw"
 LOG="${EXP_DIR}/abides_run.log"
 mkdir -p "$EXP_DIR"
@@ -46,7 +46,7 @@ conda run --no-capture-output -n "$ECOPHYS_ENV" python scripts/score_summary.py 
 #    raw mid-price CSVs (abides_raw/) are .gitignored below; only push them to R2
 #    if you want them archived (best-effort, non-fatal).
 echo "─── result handoff ───" | tee -a "$LOG"
-echo "  git: commit experiments/107_abides_ceiling (results_*/inference_merged.json + scoreboard.md) and push;" | tee -a "$LOG"
+echo "  git: commit experiments/105_abides_ceiling (results_*/inference_merged.json + scoreboard.md) and push;" | tee -a "$LOG"
 echo "       Mac pulls — same flow as 102/103." | tee -a "$LOG"
 if [[ "${PUSH_RAW_R2:-0}" == "1" ]]; then
   conda run --no-capture-output -n "$ECOPHYS_ENV" python -m ecomd.data.r2_sync upload \

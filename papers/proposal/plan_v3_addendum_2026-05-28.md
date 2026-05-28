@@ -28,9 +28,9 @@ rejected). No promotion justified.
 
 **Verdict: objective-coverage is untested, not falsified.** Path A tests it properly.
 
-## Path A — first fair test of objective-coverage (exp 104, running 2026-05-28)
+## Path A — first fair test of objective-coverage (exp 107, running 2026-05-28)
 
-`experiments/104_multifact_longroll_n30/`. Configuration-only fix (no `ecomd/`
+`experiments/107_multifact_longroll_n30/`. Configuration-only fix (no `ecomd/`
 change): enable the existing rollout-reg path (`_compute_rollout_reg_loss`, 057) at
 `rollout_reg_steps=512`, so the surrogate loss is computed on a 512-return truncated-
 BPTT rollout where all four surrogates are live, while peak memory stays at one chunk
@@ -46,9 +46,9 @@ Deconfounded 3-cell ladder (SPX, n=30): `baseline_v3` (new-N control, no reg) �
 objective-coverage is **formally falsified** → trigger Path B. If it beats the gate →
 promote to the 5-asset n=30 confirmation (exp 106) before any paper claim.
 
-## Ceiling-attribution probe — ABIDES (exp 107, parallel to A)
+## Ceiling-attribution probe — ABIDES (exp 105, parallel to A)
 
-`experiments/107_abides_ceiling/`. Score ABIDES (rmsc04 variants) with the SAME
+`experiments/105_abides_ceiling/`. Score ABIDES (rmsc04 variants) with the SAME
 11-fact evaluator + daily bands. Sets the Paper A narrative independent of A's result:
 
 | ABIDES 11-fact score | Reading | Paper A narrative |
