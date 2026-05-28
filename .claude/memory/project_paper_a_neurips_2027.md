@@ -144,8 +144,10 @@ survivorship (13/30 rejected). **Objective-coverage = untested, not falsified.**
 peak memory stays one chunk (respects [[project_chunk_oom_constraint]]); N 10K→2000 + bf16.
 Verified on Mac N=500: all 4 `grad_fn=LIVE`, gradient reaches params. Deconfounded 3-cell ladder:
 `baseline_v3` → `longroll_moments` → `mf_all_mse_longroll`. **Pre-registered failure: if
-`mf_all_mse_longroll` ≤ `baseline_v3` (Bonferroni p<0.05) → objective-coverage falsified → Path B
-(heterogeneous-node MoE first).** ABIDES ceiling probe (exp 105) runs in parallel and sets the
+`mf_all_mse_longroll` ≤ `baseline_v3` (Bonferroni p<0.05) → objective-coverage falsified → Path B,
+**first move = exp 104 MMD with long rollout** (085's Wasserstein negative is a suspect
+rollout-length artifact — chunk_steps=24 ~7 returns; MMD/W are implemented but unwired,
+need `target_returns` threaded in), then heterogeneous-node MoE.** ABIDES ceiling probe (exp 105) runs in parallel and sets the
 Paper A narrative (≤4/11 → paradigm-SOTA = *upgrade*; ≥9/11 → Path C). Full ladder:
 `papers/proposal/plan_v3_addendum_2026-05-28.md`. Discipline per [[feedback_no_downgrade]],
 [[project_surrogate_rolloutlen_trap]], [[feedback_h20_day_budget]].

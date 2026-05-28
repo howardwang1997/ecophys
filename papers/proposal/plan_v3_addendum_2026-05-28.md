@@ -60,10 +60,20 @@ promote to the 5-asset n=30 confirmation (exp 106) before any paper claim.
 ## Path B — discard the moment-matching framing (if A fails)
 
 Pre-registered candidates, each **bound to specific failing facts** with a stability +
-single-fact ablation gate; "add structure and hope" is not accepted. Priority by
-estimated P(lift ceiling) and dual-use for Paper B physics:
+single-fact ablation gate; "add structure and hope" is not accepted. Order:
 
-- **B2 — heterogeneous-node MoE (FIRST, ~35–50%).** Per-agent soft routing over K
+- **B0 — MMD with long rollout = exp 104 (FIRST Path B move).** The distribution-distance
+  loss families (`mmd_gaussian_multi_bandwidth`, `wasserstein_multi_scale`, sinkhorn) are
+  **already implemented in `losses.py`** but unwired in `train_distributed.py` (both
+  `compute_loss` calls pass `target_returns=None`, so MMD/W raise). The prior negative
+  (exp 085 Wasserstein, 4.46 < baseline) is **suspect — same rollout-length trap as 102**:
+  085 ran at chunk_steps=24 (~7 sim returns), so the distribution distance was estimated on
+  ~7 samples. MMD on multi-scale windows deserves a FAIR re-test. Work needed (small): thread
+  the real-returns tensor as `target_returns` into the main + rollout-reg `compute_loss` calls,
+  then run `loss_family=mmd` (or hybrid moments+mmd) with `rollout_reg_steps≥512`. Cheapest
+  Path B move and re-tests a likely-invalid negative — do it before the heavier MoE.
+  See [[project_surrogate_rolloutlen_trap]].
+- **B2 — heterogeneous-node MoE (~35–50%).** Per-agent soft routing over K
   expert drift/diffusion strategies + load-balancing reg; information-asymmetry channel
   (Kyle/Glosten-Milgrom prior). Targets `intermittency_fano`, tails. Dual-use: hetero
   agents are a non-equilibrium-steady-state source → feeds Paper B entropy-production /
@@ -75,9 +85,10 @@ estimated P(lift ceiling) and dual-use for Paper B physics:
 - **B3 — leader-follower dynamic graph ONLY (~20–30%).** Explicit price-leader subset →
   lead-lag autocorr. Other dyngraph variants are excluded (ISAB 2.2/11; k-NN-biased
   MACE-lite). Must pass `project_mace_lite_failure` pre-flight gates first.
-- **B-loss — adversarial / MMD objective.** WGAN-GP or RBF-MMD on multi-scale feature
-  vectors (11 facts + ACF/multifractal spectra), letting the net learn what to match.
-  MMD preferred over Wasserstein (exp 085 lost). Replaces hand-built surrogates entirely.
+- **B-loss — adversarial / feature-space objective.** Distinct from B0 (which is MMD on the
+  return samples): here a WGAN-GP discriminator or RBF-MMD on multi-scale **feature vectors**
+  (11 facts + ACF/multifractal spectra) lets the net learn what to match. Run only if B0's
+  raw-return MMD is also insufficient. Replaces hand-built surrogates entirely.
 
 ## Path C — replace the core framework (only if A and B both fail their gates)
 
@@ -89,7 +100,9 @@ A and B are exhausted by their pre-registered gates, never on a hunch.
 
 ## Binding triggers (summary)
 
-1. A's `mf_all_mse_longroll` ≤ `baseline_v3` (Bonferroni p<0.05) ⇒ enter Path B at B2.
+1. A's `mf_all_mse_longroll` ≤ `baseline_v3` (Bonferroni p<0.05) ⇒ enter Path B at **B0**
+   (exp 104 = MMD long-rollout re-test; cheapest + re-tests the suspect 085 negative), then
+   B2 (MoE) if B0 also misses. Exp 104 stays reserved for this — its trigger is "107 fails".
 2. ABIDES ≤ 4/11 ⇒ Paper A reframes to paradigm-SOTA + capabilities (not a downgrade);
    ABIDES ≥ 9/11 ⇒ jump to Path C.
 3. Any winning cell promotes to 5-asset n=30 (exp 106) before a paper claim — no

@@ -34,6 +34,13 @@ hypothesis, not a refutation. 3 of 4 surrogates contributed no usable gradient.
   `mf_*` cell is bit-identical to baseline, its surrogate was dead.
 - General lesson: a differentiable surrogate that passes its rank-correlation kill-test (ρ>0.6 on
   random inputs) can STILL be dead in training if its minimum-sample guard exceeds the rollout length.
+- **Same trap likely contaminated exp 085 (Wasserstein, "marginal-matching loses 4.46 vs 4.64").**
+  085 ran at chunk_steps=24 (~7 sim returns), so the distribution distance was estimated on ~7
+  samples — meaningless. The distribution-distance families (`mmd_gaussian_multi_bandwidth`,
+  `wasserstein_multi_scale`, sinkhorn) exist in `losses.py` but are **unwired in
+  `train_distributed.py`** (both `compute_loss` calls pass `target_returns=None` → MMD/W raise).
+  Before concluding "MMD/marginal-matching doesn't work", re-test with `target_returns` threaded in
+  + `rollout_reg_steps≥512` (exp 104 = the FIRST Path B move if exp 107 fails).
 
 **See also:** [[project_chunk_oom_constraint]] (why we use rollout-reg not long chunks),
 [[project_mace_lite_failure]] (pre-flight-gate discipline), [[feedback_no_downgrade]] (this turned a
