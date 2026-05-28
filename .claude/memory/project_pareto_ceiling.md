@@ -4,6 +4,13 @@ description: 089-099 evidence (3000+ runs, 5 assets, 23 pair combinations) shows
 type: project
 ---
 
+> **2026-05-28 update:** exp 102/103 (Batch 1) did NOT break the ceiling (0 cells past the
+> Bonferroni gate), but exp 102 was an **invalid test** — 3 of 4 multi-fact surrogates were
+> dead/degraded at the ~7-return training rollout (see [[surrogate-rollout-length-trap]]). The
+> ceiling at ~5.1 still stands as the best *fairly-tested* number; the first fair test of the
+> objective-coverage escape is exp 104 (rollout-reg steps=512), running 2026-05-28. Do not cite
+> 102 as evidence the ceiling is unbreakable.
+
 **The 089-099 3-day batch (~3000 cfg) settled the central Paper A question**:
 *can the v3 ECoMD mechanism family produce a "hero" cell that satisfies all 11
 Cont 2001 facts?* Answer: **no**, and the failure pattern is Pareto-bounded, not

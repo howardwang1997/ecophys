@@ -124,6 +124,32 @@ arch × expanded loss), SPX screen, launcher `scripts/h20_batch1_2026-05-26.sh` 
 promotes SPX winners → 5-asset confirm (exp 106) under the significance gate (Δ>0 vs baseline,
 Bonferroni p<0.05, **not best-of-N**). See [[project_pareto_ceiling]], [[feedback_seed_count_lottery]].
 
+### 2026-05-28 — Batch 1 reviewed: exp 102 was an INVALID test (not a refutation)
+
+5-28 gate: **0/14 (102) and 0/12 (103) cells beat `baseline_v3` at Bonferroni p<0.05** — no
+exp-106 promotion. But the 102 "negative" does **not** refute objective-coverage; it never
+tested it. Root cause (`scripts/diagnose_surrogate_coverage.py`): training rollout feeds only
+~7 returns (`chunk_steps=24`, `warmup_steps=16`, `train_distributed.py:490-493`), but the
+surrogate length guards need more — `soft_fano` n≥50, `dfa_hurst_surrogate` n≥~200,
+`agg_gaussianity` n≥400 for the correct (k1−kL) signal (`fact_surrogates.py:81-82,111-113,147-149`).
+So **`mf_fano`/`mf_dfa` were bit-identical to baseline (zero gradient, 30/30 seeds)** and `mf_agg`
+optimised a degraded k1-only signal (explains it hurting to 4.33). Only `gain_loss_skew` was live,
+and where surrogates were active they moved the target fact toward band **with zero collateral**
+— a weak *positive* signal. 103: ISAB dead (2.2–3.1); `inner_steps>1`/`agent_memory` blow up
+`aggregational_gaussianity` on ~40–50% of seeds (real instability); `agentmem_inner4` 5.41 is
+survivorship (13/30 rejected). **Objective-coverage = untested, not falsified.**
+
+**Path A (exp 104, launched 2026-05-28):** config-only fix — enable rollout-reg
+(`_compute_rollout_reg_loss`, 057) at `rollout_reg_steps=512` so all 4 surrogates are live while
+peak memory stays one chunk (respects [[project_chunk_oom_constraint]]); N 10K→2000 + bf16.
+Verified on Mac N=500: all 4 `grad_fn=LIVE`, gradient reaches params. Deconfounded 3-cell ladder:
+`baseline_v3` → `longroll_moments` → `mf_all_mse_longroll`. **Pre-registered failure: if
+`mf_all_mse_longroll` ≤ `baseline_v3` (Bonferroni p<0.05) → objective-coverage falsified → Path B
+(heterogeneous-node MoE first).** ABIDES ceiling probe (exp 107) runs in parallel and sets the
+Paper A narrative (≤4/11 → paradigm-SOTA = *upgrade*; ≥9/11 → Path C). Full ladder:
+`papers/proposal/plan_v3_addendum_2026-05-28.md`. Discipline per [[feedback_no_downgrade]],
+[[project_surrogate_rolloutlen_trap]], [[feedback_h20_day_budget]].
+
 ## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
 
 `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed.
