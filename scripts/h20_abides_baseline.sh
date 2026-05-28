@@ -20,7 +20,7 @@ RAW_DIR="${EXP_DIR}/abides_raw"
 LOG="${EXP_DIR}/abides_run.log"
 mkdir -p "$EXP_DIR"
 
-CELLS=(rmsc04_base rmsc04_morenoise rmsc04_fewnoise rmsc04_morevalue rmsc04_fewvalue)
+CELLS=(rmsc03_base rmsc03_morenoise rmsc03_fewnoise rmsc03_morevalue rmsc03_fewvalue)
 
 echo "═══ ABIDES ceiling probe $(date -u +%FT%TZ) ═══" | tee "$LOG"
 
@@ -39,7 +39,7 @@ done
 # 3) summarise with the canonical scorers (same as EcoMD phases)
 conda run --no-capture-output -n "$ECOPHYS_ENV" python scripts/score_phase.py "$EXP_DIR" 2>&1 | tee -a "$LOG" || true
 conda run --no-capture-output -n "$ECOPHYS_ENV" python scripts/score_summary.py "$EXP_DIR" \
-  --title "ABIDES ceiling probe (rmsc04 variants)" 2>&1 | tee -a "$LOG" || true
+  --title "ABIDES ceiling probe (rmsc03 variants)" 2>&1 | tee -a "$LOG" || true
 
 # 4) hand back results. PRIMARY path = git (lightweight JSON + scoreboard come
 #    back to Mac via `git pull`, exactly like the 102/103 results did). The big
