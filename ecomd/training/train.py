@@ -166,6 +166,9 @@ def _detach_price(ps: Any) -> Any:
         hawkes_memory=(ps.hawkes_memory.detach() if ps.hawkes_memory is not None else None),
         hawkes_memory_long=(ps.hawkes_memory_long.detach()
                             if ps.hawkes_memory_long is not None else None),
+        # neural-SDE vol latent: detach at chunk boundary so truncated-BPTT keeps
+        # peak memory at one chunk over the 512-step rollout-reg path.
+        vol_latent=(ps.vol_latent.detach() if ps.vol_latent is not None else None),
     )
 
 

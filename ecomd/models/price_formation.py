@@ -50,6 +50,12 @@ class PriceState:
     hawkes_memory: Tensor | None = None
     # v3 multi-scale Hawkes: optional second EMA channel with longer τ
     hawkes_memory_long: Tensor | None = None
+    # neural-SDE stochastic-vol latent (exp neural_sde): (K,) log-vol state.
+    # Rides in the dataclass through the vanilla rollout path automatically; the
+    # custom-autograd path threads it as a dedicated tensor (see
+    # bptt_step_function.step_via_function). NOT packed into to_tensors (which is
+    # scalar-only); carried separately like h_global.
+    vol_latent: Tensor | None = None
 
     def to_tensors(self) -> tuple[Tensor, Tensor, Tensor, Tensor, Tensor]:
         """Pack tensor fields into a fixed-arity tuple for torch.utils.checkpoint.
@@ -76,6 +82,7 @@ class PriceState:
         step: int,
         has_hawkes: bool,
         has_hawkes_long: bool,
+        vol_latent: Tensor | None = None,
     ) -> "PriceState":
         log_price, last_log_return, volatility, hk_mem, hk_mem_long = tensors
         return cls(
@@ -85,6 +92,7 @@ class PriceState:
             step=step,
             hawkes_memory=hk_mem if has_hawkes else None,
             hawkes_memory_long=hk_mem_long if has_hawkes_long else None,
+            vol_latent=vol_latent,
         )
 
 
@@ -142,6 +150,20 @@ class ExcessDemandParams:
     # amplification in large-N regimes. When true, ED is divided by
     # √(n_agents) before the β·ED term.
     ed_normalize: bool = False
+    # neural-SDE stochastic-vol head (exp neural_sde). When sv_price_enabled,
+    # a learned multi-timescale log-OU latent modulates the return scale:
+    #   sigma_eff = sigma_price * StochVolProcess(v_{t-1}, r_{t-1})
+    # Targets the volatility-structure facts (#2/#4/#5/#8). OFF (default) =
+    # bit-exact prior behaviour (the sv module is not even built, so no extra
+    # RNG draw). See ecomd/models/stoch_vol.py.
+    sv_price_enabled: bool = False
+    sv_d: int = 2
+    sv_state_dep: bool = False
+    sv_leverage: bool = True
+    sv_v_clip: float = 3.0
+    sv_kappa_init: tuple = (0.5, 0.1, 0.02)
+    sv_xi_init: float = 0.1
+    sv_gain_init: float = 0.5
 
 
 class ExcessDemandPrice(nn.Module):
@@ -170,6 +192,20 @@ class ExcessDemandPrice(nn.Module):
         else:
             self.beta_net = None
 
+        if self.params.sv_price_enabled:
+            from .stoch_vol import StochVolProcess
+            self.sv: nn.Module | None = StochVolProcess(
+                d_v=self.params.sv_d,
+                state_dep=self.params.sv_state_dep,
+                leverage=self.params.sv_leverage,
+                v_clip=self.params.sv_v_clip,
+                kappa_init=tuple(self.params.sv_kappa_init),
+                xi_init=self.params.sv_xi_init,
+                gain_init=self.params.sv_gain_init,
+            )
+        else:
+            self.sv = None
+
     @property
     def context_dim(self) -> int:
         # (log_price, vol, last_log_return)
@@ -182,6 +218,7 @@ class ExcessDemandPrice(nn.Module):
             hawkes_mem = torch.zeros((), device=device, dtype=dtype)
         if self.params.hawkes_alpha_long > 0.0:
             hawkes_mem_long = torch.zeros((), device=device, dtype=dtype)
+        vol_latent = self.sv.init_v(device, dtype) if self.sv is not None else None
         return PriceState(
             log_price=torch.tensor(self.params.initial_log_price, device=device, dtype=dtype),
             last_log_return=torch.tensor(0.0, device=device, dtype=dtype),
@@ -189,6 +226,7 @@ class ExcessDemandPrice(nn.Module):
             step=0,
             hawkes_memory=hawkes_mem,
             hawkes_memory_long=hawkes_mem_long,
+            vol_latent=vol_latent,
         )
 
     def _effective_beta(self, state: PriceState) -> Tensor:
@@ -224,12 +262,26 @@ class ExcessDemandPrice(nn.Module):
 
         beta_eff = self._effective_beta(state)
 
+        # neural-SDE stochastic-vol: learned multi-timescale latent modulates the
+        # return scale. sigma_eff = sigma_price * sigma_mult(v_{t-1}, r_{t-1}).
+        # OFF (sv is None) → sigma_eff is sigma_price (bit-exact, no extra draw).
+        vol_latent_next = state.vol_latent
+        sigma_eff: Tensor | float = p.sigma_price
+        if self.sv is not None:
+            v_prev = state.vol_latent
+            if v_prev is None:
+                v_prev = self.sv.init_v(s_next.device, s_next.dtype)
+            vol_latent_next, sigma_mult = self.sv.step(
+                v_prev, state.last_log_return, generator=generator
+            )
+            sigma_eff = p.sigma_price * sigma_mult
+
         eta = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
         ed_term = beta_eff * excess_demand
         if p.sigma_ed > 0.0:
             xi = torch.randn((), generator=generator, device=s_next.device, dtype=s_next.dtype)
             ed_term = ed_term * (1.0 + p.sigma_ed * xi)
-        log_ret_core = ed_term - 0.5 * p.sigma_price ** 2 + p.sigma_price * eta
+        log_ret_core = ed_term - 0.5 * sigma_eff ** 2 + sigma_eff * eta
 
         # v1.0 Hawkes self-excitation (optional, off when hawkes_alpha=0).
         # Memory tracks EMA of |past log-ret|. Adds sign-coherent excitation:
@@ -287,6 +339,7 @@ class ExcessDemandPrice(nn.Module):
             step=state.step + 1,
             hawkes_memory=hawkes_mem_next,
             hawkes_memory_long=hawkes_mem_long_next,
+            vol_latent=vol_latent_next,
         )
         context = torch.stack([log_price_next, vol_next, log_ret])
         aux: dict[str, Tensor] = {
@@ -295,6 +348,10 @@ class ExcessDemandPrice(nn.Module):
             "log_return": log_ret.detach(),
             "beta_eff": beta_eff.detach(),
         }
+        if self.sv is not None and vol_latent_next is not None:
+            aux["sigma_eff"] = (sigma_eff.detach() if isinstance(sigma_eff, Tensor)
+                                else torch.as_tensor(sigma_eff))
+            aux["vol_latent_mean"] = vol_latent_next.mean().detach()
         return PriceStepResult(state=new_state, context=context, aux=aux)
 
 

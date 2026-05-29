@@ -296,6 +296,16 @@ class EcoMDConfig:
     # that try to differentiate other channels.
     bptt_custom_function: bool = False
 
+    # ── neural-SDE: integrator-level stochastic-vol placement ────────────────
+    # When sv_integrator_enabled, the SAME learned vol latent that the price
+    # head carries (price_formation_kwargs.sv_price_enabled) also scales the
+    # agent-state Langevin noise: noise_scale_mult *= exp(sv_integrator_gain *
+    # vbar_{t-1}). This makes the update a multiplicative-noise overdamped-
+    # Langevin SDE (Paper-B physics readability). OFF (default) = no change.
+    # Requires the price head to expose a vol_latent (sv_price_enabled=True).
+    sv_integrator_enabled: bool = False
+    sv_integrator_gain: float = 1.0
+
     # ── Track B-β: scheduled-sampling noise widening ─────────────────────────
     # During training, with probability p(iter) that ramps from 0 to
     # ``ss_max_prob`` over ``ss_warmup_iters`` outer iters, widen each step's
@@ -745,6 +755,20 @@ class EcoMDSimulator(nn.Module):
             else:
                 update_mask = self.is_fast_agent  # only fast agents
 
+        # neural-SDE integrator-level placement: scale the agent-state Langevin
+        # noise by the price head's learned vol latent (multiplicative-noise
+        # overdamped Langevin). Composes with scheduled-sampling's mult. The
+        # incoming price_state.vol_latent is v_{t-1} (end of previous step), so
+        # this step's noise reacts to the current vol level. Differentiable in
+        # both rollout paths (computed fresh inside step()).
+        if (self.cfg.sv_integrator_enabled
+                and price_state.vol_latent is not None
+                and getattr(self.price_formation, "sv", None) is not None):
+            vbar = self.price_formation.sv.vbar(price_state.vol_latent)
+            noise_scale_mult = noise_scale_mult * torch.exp(
+                float(self.cfg.sv_integrator_gain) * vbar
+            )
+
         # v4 adiabatic: inner agent dynamics loop. inner_steps_per_price=1
         # reproduces the original single-step semantics exactly.
         inner_n = max(1, int(self.cfg.inner_steps_per_price))
@@ -874,6 +898,15 @@ class EcoMDSimulator(nn.Module):
             raise ValueError(
                 "scheduled sampling (ss_prob>0) currently requires "
                 "bptt_checkpoint_every=0; "
+                f"got bptt_checkpoint_every={self.cfg.bptt_checkpoint_every}"
+            )
+        # neural-SDE vol latent rides in PriceState; the grouped-checkpoint path
+        # packs PriceState via to_tensors (scalar-only) and would silently drop
+        # it. The vanilla and custom-fn paths carry it correctly.
+        if getattr(self.price_formation, "sv", None) is not None and K > 0:
+            raise NotImplementedError(
+                "neural-SDE stochastic-vol (sv_price_enabled) requires "
+                "bptt_checkpoint_every=0 (grouped-checkpoint drops vol_latent); "
                 f"got bptt_checkpoint_every={self.cfg.bptt_checkpoint_every}"
             )
 
