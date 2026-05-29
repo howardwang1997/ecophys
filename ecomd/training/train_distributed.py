@@ -292,6 +292,7 @@ def _compute_rollout_reg_loss(
     use_amp: bool,
     amp_device_type: str,
     amp_dtype: torch.dtype,
+    target_returns_map: dict[str, Tensor] | None = None,
 ) -> Tensor | None:
     """Multi-chunk truncated-BPTT rollout from fresh init, with SF loss
     computed on the concatenated returns. Each chunk's gradient flows to
@@ -345,10 +346,12 @@ def _compute_rollout_reg_loss(
     for lbl, ts, w in targets_list:
         # compute_loss fast-paths to moment_matching_loss for the legacy
         # (moments/l1/soft_hill) combo → bit-exact; otherwise honours
-        # distance_mode / multi-fact weights. target_returns=None is fine here
-        # (distribution-distance families need it, but they aren't used in the
-        # rollout-reg term).
-        out = compute_loss(sim_returns, None, ts, weights)
+        # distance_mode / multi-fact weights. This long rollout is the ONLY
+        # site where the distribution-distance families (mmd/wasserstein/
+        # sinkhorn, exp 104) get enough samples, so the real series is threaded
+        # here via target_returns_map; moments runs leave it None (ignored).
+        tr = target_returns_map.get(lbl) if target_returns_map else None
+        out = compute_loss(sim_returns, tr, ts, weights)
         term = w * out["total"]
         total = term if total is None else (total + term)
     return total
@@ -378,6 +381,7 @@ def train_distributed(
     checkpoint_every_s: float,
     mixed_precision: str = "fp32",
     rollout_reg_cfg: dict[str, Any] | None = None,
+    target_returns_map: dict[str, Tensor] | None = None,
 ) -> list[dict[str, Any]]:
     """Each rank runs train_ecomd-style iterations with its own seed.
 
@@ -530,7 +534,7 @@ def train_distributed(
                 sim, targets_list, weights, gen,
                 steps=reg_steps, chunk=reg_chunk, warmup_steps=warmup_steps,
                 use_amp=use_amp, amp_device_type=amp_device_type,
-                amp_dtype=amp_dtype,
+                amp_dtype=amp_dtype, target_returns_map=target_returns_map,
             )
             if reg_total is not None:
                 total = total + reg_weight * reg_total
@@ -653,6 +657,10 @@ def main() -> None:
     # {dataset, period, weight}. If absent, fall back to single
     # target_dataset/target_period.
     weights = LossWeights(**train_cfg["loss_weights"])
+    # Raw real-return series per asset label, threaded into the long rollout-reg
+    # so distribution-distance losses (mmd/wasserstein/sinkhorn, exp 104) have a
+    # target. None for moments-family runs (compute_loss ignores it there).
+    target_returns_map: dict[str, Tensor] = {}
     joint_assets = train_cfg.get("joint_assets")
     if joint_assets:
         targets_list: list[tuple[str, MomentTargets, float]] = []
@@ -669,6 +677,7 @@ def main() -> None:
             )
             label = f"{ds}/{pd_}"
             targets_list.append((label, ts, w))
+            target_returns_map[label] = torch.as_tensor(real_r, dtype=torch.float32)
             if _is_main(rank):
                 log.info(f"[multi-asset] {label}: n={len(real_r):,}  "
                          f"acf_sq={ts.acf_sq_mean:+.3f}  lev={ts.leverage_sum:+.3f}  "
@@ -686,6 +695,7 @@ def main() -> None:
             fano_quantile=weights.fano_quantile, fano_n_windows=weights.fano_n_windows,
             dfa_min_scale=weights.dfa_min_scale, dfa_max_scale_frac=weights.dfa_max_scale_frac,
         )
+        target_returns_map["default"] = torch.as_tensor(real_r, dtype=torch.float32)
         if _is_main(rank):
             log.info(f"targets: acf_sq={targets.acf_sq_mean:.3f} "
                      f"leverage_sum={targets.leverage_sum:+.3f} "
@@ -727,6 +737,7 @@ def main() -> None:
             "weight": float(train_cfg.get("rollout_reg_weight", 0.1)),
             "every": int(train_cfg.get("rollout_reg_every", 5)),
         },
+        target_returns_map=target_returns_map,
     )
     t_total = time.time() - t0
 

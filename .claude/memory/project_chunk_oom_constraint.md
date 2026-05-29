@@ -37,3 +37,14 @@ At full Tier 4.2 + Tier 2.1 architecture (gate + u + LN + jumps + N=10K + hidden
 - For paper-grade chunk size: bf16 → 48 OR (N=5K, chunk=48) — both keep memory budget
 - **N=10K, chunk=48 requires tensor-parallel — no shortcut for that combination**
 - The orthogonal fix (no chunk increase) is rollout regularization — reach for that first when "we need longer horizon" comes up
+
+**2026-05-29 — rollout-reg confirmed truncated BPTT; do NOT cut N as a budget hack:**
+`_compute_rollout_reg_loss` (`train_distributed.py:283`) detaches state at every chunk
+boundary → "peak memory at backward ≈ ONE chunk's V-graph, same as main training." So a
+512-return rollout-reg run at **N=10K, chunk=24 has the SAME peak memory** as the stable
+N=10K baseline (which fits) — long *effective* rollout is free on memory, only ~12× the
+compute (every=2). **Lesson from exp 107:** dropping N to 2000 (+bf16) to speed a sweep
+**destabilised** the model — baseline_v3 agg-gaussianity blowup went 2/30→8/30, mean
+4.64→4.14. N=2000 is a finite-size instability regime, not just noisier. For rollout-reg
+experiments keep **N=10K, fp32** (proven stable); manage budget with `rollout_reg_every`
+(2–4) or `rollout_reg_steps`, NOT by cutting N. See [[project_surrogate_rolloutlen_trap]].

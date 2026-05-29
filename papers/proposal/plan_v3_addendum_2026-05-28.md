@@ -5,6 +5,28 @@ a **pre-registered A→B→C escalation ladder** with binding failure definition
 shortfall escalates ambition (change more / discard more) rather than sliding into a
 narrative downgrade. See memory `feedback_no_downgrade`.
 
+## STATUS 2026-05-29 — Path A FALSIFIED, now executing Path B0 (MMD = exp 104)
+
+Path A (exp 107, per-fact surrogates with rollout-reg=512) **failed its
+pre-registered gate**: `mf_all_mse_longroll` Δ=+0.13 vs baseline_v3, **p=0.81**
+(surrogates verified live this time — a fair null). Per trigger #1 we escalate to
+Path B, starting at **B0 = exp 104 MMD long-rollout** (built 2026-05-29):
+- MMD wired into the rollout-reg path only (losses.py skips the distribution term
+  when `target_returns is None`; `target_returns_map` threaded into
+  `_compute_rollout_reg_loss`). MMD fires on 512 returns, never the ~7-return main loop.
+- **w_mmd swept {20,50,100}** — calibration showed raw MMD ≈0.012 vs structural ≈1.16,
+  so `w_mmd=1` would be negligible (an invalid test, the surrogate trap in a new guise).
+- **N=10K, fp32** (NOT 107's N=2000+bf16, which destabilised agg-gaussianity: baseline
+  rejects 2/30→8/30). rollout-reg is truncated BPTT so N=10K is free on memory.
+- 150 cfg, launcher `scripts/h20_104_mmd_2026-05-29.sh --probe` (timing+stability gate).
+- Binding: if NO `w_mmd` cell beats `hybrid_nomm_longroll` (Bonferroni p<0.05/3) AND none
+  exceeds `baseline_v3` → distribution-matching falsified across a 5× weight range → **B2 (MoE)**.
+
+ABIDES (exp 105) = **2–3/11** on all 5 RMSC03 variants → the ≤4/11 "paradigm-SOTA"
+branch of the decision tree below is in play, but PENDING a timescale-fair re-run
+(ABIDES ran intraday 60s/390-bar, scored on daily bands; `volume_vol_corr=1.0` is an
+extraction artifact). Do not put the ABIDES comparison in the paper until re-run fairly.
+
 ## What the 5-28 review actually found
 
 The exp-102 "negative result" (0/14 cells beat baseline at the Bonferroni gate) was

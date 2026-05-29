@@ -820,34 +820,36 @@ def compute_loss(
     total = torch.zeros((), device=sim_returns.device, dtype=sim_returns.dtype)
 
     # ── Distribution-distance term (Family 1) ─────────────────────────────
-    if family in ("wasserstein", "hybrid") and getattr(weights, "w_wasserstein", 0.0) > 0:
-        if target_returns is None:
-            raise ValueError("wasserstein loss requires target_returns")
-        scales = tuple(getattr(weights, "wasserstein_scales", (1, 5, 20)))
-        w_term = wasserstein_multi_scale(sim_returns, target_returns.to(sim_returns), scales)
-        out["wasserstein"] = w_term
-        total = total + weights.w_wasserstein * w_term
+    # These terms compare the FULL return sample against ``target_returns``.
+    # They are meaningful only with enough samples, so callers thread the real
+    # series in ONLY where the rollout is long (the 512-step rollout-reg path,
+    # exp 104); the ~7-return main-loop call passes None and the block is
+    # skipped — structural facts alone train the fast dynamics there. This
+    # avoids the rollout-length trap (a distribution distance on ~7 samples is
+    # meaningless). See project_surrogate_rolloutlen_trap.
+    if target_returns is not None:
+        if family in ("wasserstein", "hybrid") and getattr(weights, "w_wasserstein", 0.0) > 0:
+            scales = tuple(getattr(weights, "wasserstein_scales", (1, 5, 20)))
+            w_term = wasserstein_multi_scale(sim_returns, target_returns.to(sim_returns), scales)
+            out["wasserstein"] = w_term
+            total = total + weights.w_wasserstein * w_term
 
-    if family in ("mmd", "hybrid") and getattr(weights, "w_mmd", 0.0) > 0:
-        if target_returns is None:
-            raise ValueError("mmd loss requires target_returns")
-        bandwidths = tuple(getattr(weights, "mmd_bandwidths", (0.005, 0.01, 0.02, 0.05)))
-        m_term = mmd_gaussian_multi_bandwidth(
-            sim_returns, target_returns.to(sim_returns), bandwidths
-        )
-        out["mmd"] = m_term
-        total = total + weights.w_mmd * m_term
+        if family in ("mmd", "hybrid") and getattr(weights, "w_mmd", 0.0) > 0:
+            bandwidths = tuple(getattr(weights, "mmd_bandwidths", (0.005, 0.01, 0.02, 0.05)))
+            m_term = mmd_gaussian_multi_bandwidth(
+                sim_returns, target_returns.to(sim_returns), bandwidths
+            )
+            out["mmd"] = m_term
+            total = total + weights.w_mmd * m_term
 
-    if family in ("sinkhorn", "hybrid") and getattr(weights, "w_sinkhorn", 0.0) > 0:
-        if target_returns is None:
-            raise ValueError("sinkhorn loss requires target_returns")
-        s_eps = float(getattr(weights, "sinkhorn_eps", 0.01))
-        s_iters = int(getattr(weights, "sinkhorn_iters", 50))
-        s_term = sinkhorn_divergence(
-            sim_returns, target_returns.to(sim_returns), eps=s_eps, n_iters=s_iters,
-        )
-        out["sinkhorn"] = s_term
-        total = total + weights.w_sinkhorn * s_term
+        if family in ("sinkhorn", "hybrid") and getattr(weights, "w_sinkhorn", 0.0) > 0:
+            s_eps = float(getattr(weights, "sinkhorn_eps", 0.01))
+            s_iters = int(getattr(weights, "sinkhorn_iters", 50))
+            s_term = sinkhorn_divergence(
+                sim_returns, target_returns.to(sim_returns), eps=s_eps, n_iters=s_iters,
+            )
+            out["sinkhorn"] = s_term
+            total = total + weights.w_sinkhorn * s_term
 
     # ── Structural penalties (Family 3 — smooth dev) ──────────────────────
     # ACF² (always smooth dev when not in pure-moments mode)

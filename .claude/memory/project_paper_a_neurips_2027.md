@@ -152,6 +152,36 @@ Paper A narrative (≤4/11 → paradigm-SOTA = *upgrade*; ≥9/11 → Path C). F
 `papers/proposal/plan_v3_addendum_2026-05-28.md`. Discipline per [[feedback_no_downgrade]],
 [[project_surrogate_rolloutlen_trap]], [[feedback_h20_day_budget]].
 
+### 2026-05-29 — Path A FALSIFIED; ABIDES weak; Path B0 (MMD, exp 104) launched
+
+**Path A (exp 107) failed its pre-registered gate.** Welch+Bonferroni vs the new
+N=2000 baseline_v3: `mf_all_mse_longroll` 4.27±2.11 (n=26) vs 4.14±1.70 (n=22),
+Δ=+0.13, **p=0.81**; `longroll_moments` Δ=−0.09, p=0.86. Surrogates were LIVE this
+time (pre-flight verified) → a fair, clean null. **Hand-built per-fact surrogates
+do NOT break the ceiling — objective-coverage falsified.** Escalate (no downgrade).
+
+**Two findings:** (1) the N=2000+bf16 budget regime is **unstable** — baseline_v3
+went 2/30→8/30 rejected (agg-gaussianity blowup), mean 4.64→4.14. Since
+`_compute_rollout_reg_loss` is truncated BPTT (peak mem = one chunk), N=2000 was a
+throughput choice not a memory need → Path B runs at **N=10K, fp32**
+([[project_chunk_oom_constraint]]). (2) **ABIDES (exp 105) = 2–3/11** on all 5
+RMSC03 variants — vanilla agent-based SOTA misses fat tails/clustering/asymmetry.
+⇒ "paradigm-SOTA" framing (≤4/11 = *upgrade*) is on the table, **pending a
+timescale-fair re-run** (ABIDES ran intraday 60s/390-bar but scored on daily bands;
+volume_vol_corr=1.0 is an extraction artifact → mark N/A).
+
+**Path B0 built (exp 104 — MMD long-rollout, next H20 run):** wired `target_returns`
+into the rollout-reg path only — losses.py now SKIPS the distribution-distance term
+when target_returns is None (instead of raising), so MMD fires only on the 512-return
+rollout, never the ~7-return main loop. **w_mmd calibration (key catch):** raw MMD
+~0.012 vs structural ~1.16, so w_mmd=1 is negligible (an invalid test, surrogate-trap
+déjà-vu) → cell is a SWEEP `w_mmd∈{20,50,100}`. 150 cfg, N=10K fp32, steps=512 every=2.
+Launcher `scripts/h20_104_mmd_2026-05-29.sh --probe` gates on a single-config
+timing+stability check. **Pre-registered: if NO mmd_w* beats hybrid_nomm_longroll
+(Bonferroni p<0.05/3) AND none exceeds baseline_v3 → distribution-matching falsified
+across a 5× weight range → Path B2 (heterogeneous-node MoE).** Winner → exp 106
+5-asset (no best-of-N). See [[project_surrogate_rolloutlen_trap]].
+
 ## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
 
 `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed.

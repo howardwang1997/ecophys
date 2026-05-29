@@ -251,13 +251,26 @@ def test_compute_loss_wasserstein_family_uses_targets():
     assert torch.isfinite(out["total"])
 
 
-def test_compute_loss_wasserstein_requires_target_returns():
+def test_compute_loss_skips_distribution_term_when_no_target_returns():
+    # Contract change (2026-05-29, exp 104): distribution-distance terms
+    # (wasserstein/mmd/sinkhorn) compare against the FULL real series, which is
+    # only threaded into the long rollout-reg call (512 returns). The ~7-return
+    # main-loop call passes target_returns=None, so the term is SKIPPED (not
+    # raised) — a distribution distance on a handful of samples is meaningless
+    # (project_surrogate_rolloutlen_trap). Structural facts still train there.
     torch.manual_seed(0)
     sim = torch.randn(100) * 0.01
     targets = MomentTargets(acf_sq_mean=0.2, leverage_sum=-0.5, hill_alpha=3.0)
-    weights = LossWeights(loss_family="wasserstein", w_wasserstein=1.0)
-    with pytest.raises(ValueError, match="wasserstein"):
-        compute_loss(sim, None, targets, weights)
+    weights = LossWeights(loss_family="wasserstein", w_wasserstein=1.0,
+                          w_acf_sq=0.5, w_leverage=0.2)
+    out = compute_loss(sim, None, targets, weights)  # must NOT raise
+    assert "wasserstein" not in out          # distribution term skipped
+    assert "acf_sq" in out and "leverage" in out  # structural facts still computed
+    assert torch.isfinite(out["total"])
+    # And it IS active once a real series is provided:
+    real = torch.randn(500) * 0.01
+    out2 = compute_loss(sim, real, targets, weights)
+    assert "wasserstein" in out2 and torch.isfinite(out2["wasserstein"])
 
 
 def test_compute_loss_hybrid_family_combines_terms():

@@ -10,6 +10,15 @@ type: project
 > ceiling at ~5.1 still stands as the best *fairly-tested* number; the first fair test of the
 > objective-coverage escape is exp 107 (rollout-reg steps=512), running 2026-05-28. Do not cite
 > 102 as evidence the ceiling is unbreakable.
+>
+> **2026-05-29 update:** exp 107 (the fair test) **FALSIFIED** objective-coverage —
+> `mf_all_mse_longroll` Δ=+0.13 vs baseline, p=0.81 (surrogates verified live). Hand-built
+> per-fact surrogates do NOT break the ceiling; ~5.1 holds. Next escape = exp 104 MMD
+> (Path B0, [[project_paper_a_neurips_2027]]). **ABIDES (exp 105) scores only 2–3/11** on all
+> 5 RMSC03 variants — vanilla agent-based SOTA also can't reach 11/11, so the ceiling may be
+> **paradigm-level, not ECoMD-specific** (a Paper A *upgrade* to "paradigm-SOTA"), but this is
+> PENDING a timescale-fair re-run (ABIDES scored intraday-on-daily-bands; volume_vol_corr=1.0
+> is an extraction artifact). Don't put the ABIDES comparison in the paper until re-run fairly.
 
 **The 089-099 3-day batch (~3000 cfg) settled the central Paper A question**:
 *can the v3 ECoMD mechanism family produce a "hero" cell that satisfies all 11
