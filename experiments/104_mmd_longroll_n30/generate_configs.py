@@ -64,14 +64,17 @@ N_AGENTS = 10000          # proven-stable regime (107's N=2000 destabilised agg-
 PRECISION = "fp32"        # fp32 matches the stable 099b baseline
 
 # Long-rollout regularization: SF + (for the MMD cell) distribution loss on a
-# 512-return truncated-BPTT rollout. every=2 keeps the fp32/N=10K budget sane
-# (~12x baseline compute on reg cells); H20 pre-flight confirms wall-clock.
+# 512-return truncated-BPTT rollout. every=4 -> reg-cell ≈ 63 min/cfg (vs 9.9
+# min baseline; measured anchor: 099b N=10K fp32 = 9.9 min), so 150 cfg on 8
+# cards ≈ 16 h. MMD still fires 50× over 200 iters (plenty). every=2 would be
+# ~30 h (too long for one night); every=8 ~10 h / 25 fires if a tighter window
+# is needed. H20 --probe confirms the real per-cfg time first.
 REG = {
     "rollout_reg_enabled": True,
     "rollout_reg_steps": 512,
     "rollout_reg_chunk": 24,
     "rollout_reg_weight": 1.0,
-    "rollout_reg_every": 2,
+    "rollout_reg_every": 4,
 }
 
 # Hybrid family keeps all structural weights from baseline_v3 (acf_sq, leverage,

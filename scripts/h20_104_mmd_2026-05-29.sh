@@ -6,8 +6,12 @@
 #
 # 150 cfg = 5 cells × 30 seeds, SPX, N=10K, fp32 (the PROVEN-STABLE regime —
 # exp 107's N=2000/bf16 destabilised aggregational_gaussianity). MMD fires only
-# on the 512-return rollout-reg path (every=2). w_mmd swept {20,50,100} (Mac
+# on the 512-return rollout-reg path (every=4). w_mmd swept {20,50,100} (Mac
 # calibration: w_mmd~50 makes MMD ~50% of the structural scale).
+#
+# Wall-clock estimate (anchor: 099b N=10K fp32 no-reg = 9.9 min/cfg):
+#   reg-cfg ≈ 63 min, baseline-cfg ≈ 10 min -> 150 cfg on 8 cards ≈ 16 h.
+#   (every=8 -> ~10 h / 25 MMD fires; N_SEEDS=20 -> ~11 h, if a tighter window.)
 #
 # Wall-clock is UNVERIFIED for this regime (fp32 + N=10K + 512-rollout every=2),
 # so this script GATES on a single-config timing+stability probe before the full
@@ -34,7 +38,10 @@ export NPROC="${NPROC:-1}"
 PHASE="experiments/104_mmd_longroll_n30"
 EXPECT_N=150
 PROBE_CFG="$PHASE/config_mmd_w50_longroll_seed0.yaml"   # heaviest cell (MMD active)
-MAX_PROBE_MIN="${MAX_PROBE_MIN:-15}"                    # abort full run if 1 cfg slower
+# Expected ~63 min/reg-cfg (N=10K fp32, steps=512 every=4; anchor 099b=9.9 min
+# no-reg). Full 150 cfg on 8 cards ≈ 16 h. Alert if a single cfg blows past 90
+# min (=> >24 h total; drop rollout_reg_every→8 for ~10 h, or N_SEEDS→20).
+MAX_PROBE_MIN="${MAX_PROBE_MIN:-90}"
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 MASTER_LOG="experiments/_104mmd_${TIMESTAMP}.log"
