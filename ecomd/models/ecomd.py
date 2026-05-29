@@ -33,6 +33,7 @@ from .global_state import GlobalStateConfig, GlobalStateGRU
 from .isab_pairwise import ISABPairwisePotential
 from .mace_lite import MACELitePotential, build_mace_lite
 from .hopfield_regime import HopfieldRegime, HopfieldRegimeConfig
+from .moe_router import AgentExpertRouter
 from .regime_latent import (
     DiscreteRegimeGRU,
     DiscreteRegimeGRUConfig,
@@ -257,6 +258,21 @@ class EcoMDConfig:
     multi_timescale_enabled: bool = False
     timescale_fast_frac: float = 0.8
     timescale_slow_freq: int = 4
+    # exp 110 — heterogeneous-node MoE (Path B2). Soft/learned generalization of
+    # two-population: a per-agent gate routes over K (gamma,temp) experts, so a
+    # MIXTURE-of-normals produces finite-variance fat tails (an alternative to the
+    # Student-t/Lévy overshoot — see exp 108). OFF = bit-exact. See moe_router.py.
+    moe_enabled: bool = False
+    moe_n_experts: int = 4
+    moe_hidden: int = 32
+    moe_log_scale_clip: float = 1.5      # gamma/temp mult bounded to exp(±clip)
+    moe_load_balance_w: float = 0.01     # importance-loss weight (anti-collapse)
+    # Information-asymmetry channel (NESS source, Paper B): a subset of agents'
+    # gate sees a slow noisy fundamental signal F_t (others see 0).
+    info_asym_enabled: bool = False
+    info_asym_frac: float = 0.3          # fraction of "informed" agents
+    info_asym_tau: float = 0.99          # F_t EMA persistence
+    info_asym_noise: float = 0.5         # F_t innovation scale (× sigma_price units)
     # Tier 3.1 — ISAB attention pairwise. Activate by setting
     #   pairwise_kind="isab". Memory O(N·M) via M learnable inducing points.
     isab_m_inducing: int = 64
@@ -585,6 +601,31 @@ class EcoMDSimulator(nn.Module):
         else:
             self.is_fast_agent = None
 
+        # exp 110 — heterogeneous-node MoE router (soft per-agent gamma/T mixture).
+        self.moe_router: AgentExpertRouter | None = None
+        if self.cfg.moe_enabled:
+            self.moe_router = AgentExpertRouter(
+                d_state=d,
+                n_experts=self.cfg.moe_n_experts,
+                hidden=self.cfg.moe_hidden,
+                ctx_dim=2,
+                log_scale_clip=self.cfg.moe_log_scale_clip,
+                info_asym=self.cfg.info_asym_enabled,
+            )
+        # Information-asymmetry: a persistent "informed" mask + a noisy fundamental
+        # F_t carried as a detached scalar attribute (NOT in PriceState, which is
+        # scalar-pack-only). Reset each rollout in run()/rollout_chunk start.
+        if self.cfg.info_asym_enabled:
+            gen_ia = torch.Generator().manual_seed(self.cfg.v2_type_seed + 7)
+            n_inf = int(round(self.cfg.info_asym_frac * self.cfg.n_agents))
+            perm = torch.randperm(self.cfg.n_agents, generator=gen_ia)
+            mask = torch.zeros(self.cfg.n_agents, 1, dtype=torch.float32)
+            mask[perm[:n_inf], 0] = 1.0
+            self.register_buffer("is_informed", mask, persistent=False)
+        else:
+            self.is_informed = None
+        self._fundamental: float = 0.0  # F_t, detached running state
+
     # ── Properties ─────────────────────────────────────────────────────────
 
     @property
@@ -632,6 +673,18 @@ class EcoMDSimulator(nn.Module):
         return self.global_state.init_h(self.device, torch.float32)
 
     # ── Step ───────────────────────────────────────────────────────────────
+
+    def moe_load_balance(self, s: Tensor) -> Tensor | None:
+        """MoE expert load-balance regularizer (anti-collapse), evaluated on a
+        state batch. Returns a differentiable scalar (grad flows to router params
+        directly, not through the rollout), or None if MoE is off. The trainer
+        adds ``moe_load_balance_w * this`` to the loss."""
+        if self.moe_router is None:
+            return None
+        ctx = torch.zeros(2, device=s.device, dtype=s.dtype)
+        info = (self.is_informed.to(s.dtype) * float(self._fundamental)
+                if (self.cfg.info_asym_enabled and self.is_informed is not None) else None)
+        return self.moe_router.load_balance(s, ctx, info)
 
     def step(
         self,
@@ -745,6 +798,32 @@ class EcoMDSimulator(nn.Module):
                 float(T_eff), device=s.device, dtype=s.dtype)
             gamma_eff = (base_gamma * gamma_mul_per_agent).unsqueeze(-1)
             T_eff = (base_T * T_mul_per_agent).unsqueeze(-1)
+
+        # exp 110 — heterogeneous-node MoE: soft per-agent (γ,T) mixture over K
+        # experts (finite-variance fat tails). Composes multiplicatively with any
+        # regime/twopop modulation above; output is per-agent (N,1).
+        if self.moe_router is not None:
+            mctx = torch.stack([price_state.volatility, price_state.last_log_return])
+            info_signal = None
+            if self.cfg.info_asym_enabled and self.is_informed is not None:
+                info_signal = self.is_informed.to(s.dtype) * float(self._fundamental)
+            gamma_mul, temp_mul = self.moe_router(s, mctx, info_signal)  # (N,1),(N,1)
+            base_gamma = gamma_eff if isinstance(gamma_eff, Tensor) else torch.tensor(
+                float(gamma_eff), device=s.device, dtype=s.dtype)
+            base_T = T_eff if isinstance(T_eff, Tensor) else torch.tensor(
+                float(T_eff), device=s.device, dtype=s.dtype)
+            if base_gamma.dim() == 0:
+                base_gamma = base_gamma.view(1, 1)
+            if base_T.dim() == 0:
+                base_T = base_T.view(1, 1)
+            gamma_eff = base_gamma * gamma_mul
+            T_eff = base_T * temp_mul
+            # Update the detached noisy fundamental F_t (slow AR(1)); reproducible
+            # via the rollout generator.
+            if self.cfg.info_asym_enabled:
+                z = torch.randn((), generator=generator, device=s.device, dtype=s.dtype)
+                innov = float(self.cfg.info_asym_noise) * float(self.cfg.dt) ** 0.5 * float(z)
+                self._fundamental = float(self.cfg.info_asym_tau) * self._fundamental + innov
 
         # Tier 2.2: build update_mask if multi-timescale enabled.
         update_mask: Tensor | None = None
@@ -1193,6 +1272,7 @@ class EcoMDSimulator(nn.Module):
         h_regime = self.init_regime()
         h_agent = self.init_agent_memory()
         h_global = self.init_global_state()
+        self._fundamental = 0.0  # reset info-asymmetry fundamental per rollout
 
         self._reset_potential_cache()
         if hasattr(self.integrator, "reset_state"):

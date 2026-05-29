@@ -50,8 +50,14 @@ def _load_model(name: str):
         elif name == "trajcast_lite":
             from ecomd.baselines.trajcast_lite import TrajCastLiteSimulator
             MODELS[name] = TrajCastLiteSimulator
+        elif name == "score_diffusion":
+            from ecomd.baselines.score_diffusion import ScoreDiffusionSimulator
+            MODELS[name] = ScoreDiffusionSimulator
         else:
-            raise ValueError(f"unknown baseline model {name!r}; expected wgan_lp|trajcast_lite")
+            raise ValueError(
+                f"unknown baseline model {name!r}; "
+                f"expected wgan_lp|trajcast_lite|score_diffusion"
+            )
     return MODELS[name]
 
 

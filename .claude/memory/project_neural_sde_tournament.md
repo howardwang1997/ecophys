@@ -40,13 +40,32 @@ sv_d1 / sv_d3 / sv_d3_nolev / sv_d3_both. **Pre-registered scout gate (binds the
 cell advances iff it lifts ≥1 hard floor (#2/#4/#5/#8) w/o ≥20pp collateral AND mean n/11 ≥
 baseline_mmd. Attribution: d3−d1 = multi-timescale; d3−d3_nolev = leverage; both−d3 = placement.
 
-**Not yet built (weekend Phase-0 stretch):** A2 heterogeneous-node MoE; A3 score/diffusion
-return model (as a `ecomd/baselines/` fit/sample baseline for the deep-generative ceiling); the
-ABIDES timescale-fair re-run (owed; intraday-scored-on-daily-bands + volume_vol_corr=1.0 artifact).
+**2026-05-29 SCOUT RESULT (exp 108) + revised plan:** SV head = **LATERAL Pareto move** — net
+n/11 flat (~4.8 vs baseline_mmd), HELPS DFA #8 (33→45% in-band) / leverage #9 (33→50%) / gain-loss
+#3, WORSENS the worst floor. **NEW diagnostic: the blocker is a fat-tail OVERSHOOT** — hill≈1.38,
+91% of runs α<2 (infinite variance), band [2,4]; source = agent-level Student-t(df5)+jumps(λ0.5),
+which SV amplifies. `sv_d3` hero cell was SIGTERM-killed (complete on weekend). User: run a BROAD
+tournament (may exceed 60h); **demote SV** to a Paper-B confirmation leg (complete sv_d3 + keep
+sv_d3_both for DFA/leverage gains).
 
-**Weekend (60h):** Bracket 1 SOLVE — surviving entrants at N=10K n=30 SPX+NDX + winner ablations;
-Bracket 2 DIAGNOSE — three-paradigm ceiling map (TrajCast/WGAN/GARCH/AR1-SV/Lux-Marchesi/diffusion
-+ ABIDES). Champion → 5-asset n=30 confirmation the FOLLOWING weekend (no claim off the tournament).
+**Entrants BUILT + smoked 2026-05-29 (tests: 378 passed):**
+- **A2 MoE** — `ecomd/models/moe_router.py` `AgentExpertRouter`: soft learned per-agent gate over K
+  (γ,T) experts = finite-variance mixture-of-normals fat tails (Lévy alternative) + info-asymmetry
+  channel (NESS); load-balance reg via a ~4-line aux-loss hook in `train_distributed.py` (before
+  `total.backward()`). EcoMDConfig flags OFF=bit-exact. Smoke: router live, expert usage uniform
+  (no collapse), finite. ⚠ hill stayed 1.40 with tamed noise at N=500 → a DYNAMICAL tail source
+  beyond the noise dist. exp 110 (5 cells×30, N=10K, MMD every=4).
+- **A3 diffusion** — `ecomd/baselines/score_diffusion.py` conditional autoregressive DDPM
+  (fit/sample baseline, registered in `scripts/run_baseline_fit_eval.py`). Smoke: OPPOSITE failure
+  mode — finite tails (hill 5), DFA in-band, but undershoots vol-clustering. exp 111 (cond+marginal).
+- **Bracket-0 tail attack** — exp 109 config-only grid noise_df{5,10,30,normal}×jump{0.5,0.1,0}×
+  {SV off, sv_d3}, reg OFF (fast marginal screen): can hill enter [2,4] w/o collapsing Fano/agg?
+
+**Weekend orchestrator:** `scripts/h20_weekend_tournament_2026-05-30.sh --probe` → tail-attack(109)
+→ sv_d3 completion(108) → MoE(110) → diffusion(111) → score. **Per-FACT gate** (hill/agg/DFA
+in-band rate, NOT just n/11 — the scout showed net n/11 hides per-fact movement) vs baseline_mmd.
+Bracket 2 ceiling map: 111 + existing 080/095b SPX baselines + **ABIDES timescale-fair re-run**
+(still owed; scripts exist, adjust to multi-sim-day→daily). Champion → 5-asset n=30 FOLLOWING weekend.
 
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].

@@ -540,6 +540,15 @@ def train_distributed(
                 total = total + reg_weight * reg_total
                 reg_loss_val = float(reg_total.detach().item())
 
+        # exp 110 — MoE expert load-balance regularizer (anti-collapse). Evaluated
+        # on the current state; gradient flows to router params directly.
+        moe_lb = getattr(sim, "moe_load_balance", None)
+        if moe_lb is not None:
+            lb = moe_lb(s.detach())
+            if lb is not None:
+                w_lb = float(getattr(sim.cfg, "moe_load_balance_w", 0.0))
+                total = total + w_lb * lb
+
         total.backward()
 
         # Post-backward: restore the generator state to where forward ended.
