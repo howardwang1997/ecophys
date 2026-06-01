@@ -176,6 +176,28 @@ class ExcessDemandParams:
     # tail_clamp_c<=0 (default) = OFF, bit-exact (clamp skipped, no extra op).
     tail_clamp_c: float = 0.0
     tail_clamp_mode: str = "rel"
+    # 2026-06-01 Gabaix mechanism-level solve (exp 113). The fat-tail overshoot is
+    # dynamical AND the homogeneous-herding mechanism structurally overshoots α<2.
+    # Gabaix-Gopikrishnan-Plerou-Stanley (Nature 2003): real markets' inverse-cubic
+    # law (α≈3) emerges from Zipf-distributed large-trader sizes × square-root price
+    # impact — two ingredients this model lacks. Both enlarge the REACHABLE SET so a
+    # tail-matching loss (soft_hill) can then CALIBRATE ζ/δ (loss alone on the fixed
+    # mechanism was falsified, exp 107). Both OFF (default) = bit-exact.
+    #
+    # (1) Heterogeneous agent masses: ED = κ·Σ wᵢ·Δposᵢ, wᵢ ~ Pareto(ζ) (heavier
+    #     tail for smaller ζ; ζ→∞ recovers homogeneous). ζ is learnable (calibrated
+    #     by the tail loss). Quantiles are fixed per-agent (seed-deterministic).
+    het_mass_enabled: bool = False
+    mass_zeta_init: float = 2.0
+    mass_zeta_learnable: bool = True
+    mass_seed: int = 0
+    # (2) Concave (square-root) price impact (Tóth-Lillo-Bouchaud): replace the
+    #     linear β·ED with β·sign(ED)·s·(|ED|/s)^δ, δ∈(0,1) (δ=0.5 = sqrt-impact).
+    #     Concavity compresses large aggregate flow → thins the tail. δ learnable.
+    impact_concave_enabled: bool = False
+    impact_delta_init: float = 0.7
+    impact_delta_learnable: bool = True
+    impact_scale: float = 0.5
 
 
 class ExcessDemandPrice(nn.Module):
@@ -217,6 +239,40 @@ class ExcessDemandPrice(nn.Module):
             )
         else:
             self.sv = None
+
+        # exp 113 Gabaix mechanism — params built only when enabled (OFF = bit-exact,
+        # no new params/RNG). ζ via log-param (positive); δ via logit-param (→(0,1)).
+        self._mass_q: Tensor | None = None  # cached per-agent Pareto quantiles (seed-det.)
+        if self.params.het_mass_enabled:
+            import math as _math
+            self.mass_log_zeta = nn.Parameter(
+                torch.tensor(_math.log(self.params.mass_zeta_init)),
+                requires_grad=self.params.mass_zeta_learnable,
+            )
+        if self.params.impact_concave_enabled:
+            import math as _math
+            d0 = min(max(self.params.impact_delta_init, 1e-3), 1.0 - 1e-3)
+            self.impact_logit_delta = nn.Parameter(
+                torch.tensor(_math.log(d0 / (1.0 - d0))),
+                requires_grad=self.params.impact_delta_learnable,
+            )
+
+    def _agent_masses(self, n: int, device: torch.device, dtype: torch.dtype) -> Tensor:
+        """Per-agent Pareto(ζ) masses, Σw=n (scale-invariant in ζ). Differentiable in ζ."""
+        if self._mass_q is None or self._mass_q.numel() != n:
+            g = torch.Generator()
+            g.manual_seed(int(self.params.mass_seed))
+            self._mass_q = torch.rand(n, generator=g).clamp_min(1e-6)
+        u = self._mass_q.to(device=device, dtype=dtype)
+        zeta = torch.exp(self.mass_log_zeta)
+        w = u.pow(-1.0 / zeta)          # Pareto: smaller ζ → heavier mass tail
+        return w * (n / w.sum())        # normalize Σw=n so only the SHAPE varies with ζ
+
+    def _concave_impact(self, ed: Tensor) -> Tensor:
+        """Sign-preserving concave map β-side: sqrt-impact at δ=0.5 (Tóth-Lillo-Bouchaud)."""
+        s = float(self.params.impact_scale)
+        delta = torch.sigmoid(self.impact_logit_delta)  # ∈(0,1) → always concave
+        return torch.sign(ed) * s * (ed.abs() / s + 1e-8).pow(delta)
 
     @property
     def context_dim(self) -> int:
@@ -266,10 +322,17 @@ class ExcessDemandPrice(nn.Module):
         pos_prev = s_prev[:, 0]
         pos_next = s_next[:, 0]
         dpos = pos_next - pos_prev
+        # exp 113 (1): heterogeneous agent masses → mass-weighted aggregate order flow.
+        if p.het_mass_enabled:
+            w = self._agent_masses(dpos.shape[0], dpos.device, dpos.dtype)
+            dpos = w * dpos
         excess_demand = p.kappa * dpos.sum()
         if p.ed_normalize:
             n_agents = float(s_prev.shape[0])
             excess_demand = excess_demand / (n_agents ** 0.5)
+        # exp 113 (2): concave (sqrt) price impact compresses large aggregate flow.
+        if p.impact_concave_enabled:
+            excess_demand = self._concave_impact(excess_demand)
         volume = dpos.abs().sum()
 
         beta_eff = self._effective_beta(state)
