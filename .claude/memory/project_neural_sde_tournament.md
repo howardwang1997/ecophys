@@ -119,7 +119,8 @@ ExcessDemandParams floats so they DO bite. Part A (solve) + Part B (why/how-hard
 publishable either way.
 
 **2026-06-01 — user: "not just a diagnose, I want the BEST result" → mechanism-level solve
-(exp 113, PLANNED, build AFTER 112 scaling returns).** Why the tournament missed: every entrant
+(exp 113, BUILT on branch `feature/exp113-gabaix-solve` commit `566780fac`; ζ/δ ranges to be
+re-centered when 112 scaling returns).** Why the tournament missed: every entrant
 (MMD/MoE/SV/diffusion) attacked the loss/noise/paradigm layer, NONE changed the mechanism that
 SETS the tail exponent (`log_ret=β·κ·Σ Δpos_i`). The principled untried lever with theory
 predicting α≈3 = the **Gabaix mechanism** (GGPS Nature 2003): real markets' inverse-cubic law =
@@ -138,7 +139,19 @@ herding's manifold (that's what "paradigm ceiling" means). The CORRECT use: mech
 (enlarge reachable set), THEN make the new params **ζ, δ learnable** and let `soft_hill` calibrate
 them to α≈3 (loss constrains MECHANISM PARAMS, not output hill). 112 Part B's measured α(ζ,δ)
 scaling validates the learned point (theory × data). Scope: these 2 mechanisms thorough → 5-asset
-n=30, not a broad tournament. See [[project_surrogate_rolloutlen_trap]], [[feedback_no_downgrade]].
+n=30, not a broad tournament. **BUILT:** price_formation.py (het_mass + concave-impact flags,
+OFF=bit-exact, ζ=exp(mass_log_zeta)/δ=sigmoid(impact_logit_delta) learnable, join sim.parameters
+→ soft_hill-calibrated), tests/test_gabaix_mechanism.py (9 pass), experiments/113_gabaix_solve
+(6×30), scripts/score_gabaix.py (extracts LEARNED ζ/δ vs GGPS 1,0.5 + hill/acf2 gate),
+h20_113_gabaix.sh. **Mac N=1200 smoke (sign-check, below overshoot onset) CORRECTED the
+prediction:** concave impact hill 2.48→3.42 (thins tail) AND acf2 0.01→0.36 (clustering KEPT) =
+the decoupling the clamp couldn't → **concave (sqrt-impact, Tóth-Lillo-Bouchaud) is the real
+lever.** BUT **heterogeneous-masses-as-built MISFIRES**: hetmass thinned (hill→4.04) not fattened,
+because trading is DENSE+light-tailed (ED=Σ wᵢ·Δposᵢ, fixed Pareto wᵢ × Gaussian Δposᵢ = weighted
+Gaussian → thinner). GGPS needs the size dist to show up as heavy *individual* trades (sparse/
+heavy-Δpos) — absent here. So before/at H20: lead with concave+δ-calibration; either rework the
+masses leg (mass × heavy innovation, e.g. mass-weighted jumps) or drop it. Confirm at N=10K.
+See [[project_surrogate_rolloutlen_trap]], [[feedback_no_downgrade]].
 
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
