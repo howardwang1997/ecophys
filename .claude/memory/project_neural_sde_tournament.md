@@ -103,5 +103,20 @@ One untested mechanistic lever: a tail-clamp in the price-formation map (likely 
 Pareto coupling — smoke supports this, H20 confirms). Champion confirmation moot unless 112 wins;
 the diagnose figure is the deliverable.
 
+**exp 112 Part B — α scaling-curve diagnose (BUILT, pure inference, folded into the 112 launcher,
+commit `cfd691f86`):** turns the "why the overshoot exists" mechanism into a measured experiment.
+Runs `run_large` from the trained Part-A baseline checkpoints under config overrides (a ckpt loads
+cleanly across N — the N-sized buffers are `persistent=False`). 3 families, 3 ckpts × 22 cfg,
+n_steps=8000, ~40min: **B1** hill(N) ed_norm=False (does the tail fatten with N? smoke 3.06@400→
+1.39@10K), **B1n** hill(N) ed_norm=True CONTROL (should flatten → isolates aggregate-flow SNR:
+collective mode ~N vs idiosyncratic ~√N), **B2** hill(κ_hawkes) AND acf2(κ) — self-excitation is
+the SHARED source of tails+clustering, so this maps the Pareto coupling vs the actual control
+param. Pre-registered (`score_scaling.py`, verified on synthetic data): B1 fit hill=α_inf+c/N,
+**α_inf<2 ⇒ intrinsically infinite-variance in thermo limit**; B2 disjoint κ-windows ⇒ coupling
+confirmed, overlap ⇒ a coupling-tuned knob-solve (better than the clamp). NOTE: temperature/gamma
+are nn.Parameters (ckpt overrides config) so NOT scannable; hawkes_kappa/beta/ed_normalize are
+ExcessDemandParams floats so they DO bite. Part A (solve) + Part B (why/how-hard) → diagnose
+publishable either way.
+
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
