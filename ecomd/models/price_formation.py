@@ -184,12 +184,23 @@ class ExcessDemandParams:
     # tail-matching loss (soft_hill) can then CALIBRATE ζ/δ (loss alone on the fixed
     # mechanism was falsified, exp 107). Both OFF (default) = bit-exact.
     #
-    # (1) Heterogeneous agent masses: ED = κ·Σ wᵢ·Δposᵢ, wᵢ ~ Pareto(ζ) (heavier
-    #     tail for smaller ζ; ζ→∞ recovers homogeneous). ζ is learnable (calibrated
-    #     by the tail loss). Quantiles are fixed per-agent (seed-deterministic).
+    # (1) Heterogeneous-size GGPS order flow. The faithful Gabaix mechanism: large
+    #     funds (Zipf sizes ζ≈1) submit HEAVY-tailed orders, and the aggregate is
+    #     dominated by the largest active trade → heavy return tail. Implemented as an
+    #     ADDITIVE mass-weighted heavy order-flow term:
+    #         ED += g · (Σ wᵢ·tᵢ)/N,   wᵢ ~ Pareto(ζ),  tᵢ ~ Student-t(mass_innov_df)
+    #     (NOT wᵢ·Δposᵢ — weighting the dense light-tailed Δpos just gives a
+    #     whale-dominated Gaussian, which THINS the tail; the N=1200 smoke confirmed
+    #     that misfire.) The deterministic Σ Δpos still carries the clustering, so the
+    #     tail (this term) and clustering (the dynamics) are decoupled by construction.
+    #     ζ and the gain g are learnable → soft_hill (tail) + w_acf_sq (clustering)
+    #     calibrate the tail/clustering balance. Quantiles fixed per-agent (seed-det.).
     het_mass_enabled: bool = False
-    mass_zeta_init: float = 2.0
+    mass_zeta_init: float = 1.5
     mass_zeta_learnable: bool = True
+    mass_innov_df: int = 4
+    mass_flow_gain_init: float = 0.5
+    mass_flow_gain_learnable: bool = True
     mass_seed: int = 0
     # (2) Concave (square-root) price impact (Tóth-Lillo-Bouchaud): replace the
     #     linear β·ED with β·sign(ED)·s·(|ED|/s)^δ, δ∈(0,1) (δ=0.5 = sqrt-impact).
@@ -248,6 +259,10 @@ class ExcessDemandPrice(nn.Module):
             self.mass_log_zeta = nn.Parameter(
                 torch.tensor(_math.log(self.params.mass_zeta_init)),
                 requires_grad=self.params.mass_zeta_learnable,
+            )
+            self.mass_log_flow_gain = nn.Parameter(
+                torch.tensor(_math.log(self.params.mass_flow_gain_init)),
+                requires_grad=self.params.mass_flow_gain_learnable,
             )
         if self.params.impact_concave_enabled:
             import math as _math
@@ -322,14 +337,21 @@ class ExcessDemandPrice(nn.Module):
         pos_prev = s_prev[:, 0]
         pos_next = s_next[:, 0]
         dpos = pos_next - pos_prev
-        # exp 113 (1): heterogeneous agent masses → mass-weighted aggregate order flow.
-        if p.het_mass_enabled:
-            w = self._agent_masses(dpos.shape[0], dpos.device, dpos.dtype)
-            dpos = w * dpos
         excess_demand = p.kappa * dpos.sum()
         if p.ed_normalize:
             n_agents = float(s_prev.shape[0])
             excess_demand = excess_demand / (n_agents ** 0.5)
+        # exp 113 (1): GGPS heterogeneous-size heavy order flow — additive, dominated
+        # by the largest fund's heavy trade (the real Gabaix tail; weighting dense Δpos
+        # only gives a whale-dominated Gaussian). Decoupled from the clustering above.
+        if p.het_mass_enabled:
+            from ..physics.integrator import _sample_unit_t
+            n = dpos.shape[0]
+            w = self._agent_masses(n, dpos.device, dpos.dtype)
+            t_innov = _sample_unit_t((n,), int(p.mass_innov_df), generator=generator,
+                                     device=dpos.device, dtype=dpos.dtype)
+            ed_flow = (w * t_innov).sum() / n
+            excess_demand = excess_demand + torch.exp(self.mass_log_flow_gain) * ed_flow
         # exp 113 (2): concave (sqrt) price impact compresses large aggregate flow.
         if p.impact_concave_enabled:
             excess_demand = self._concave_impact(excess_demand)

@@ -33,6 +33,25 @@ def test_off_is_bit_exact():
     r2 = b.step(_state(), s_prev, s_next, generator=g2).aux["log_return"]
     assert torch.equal(r1, r2)
     assert not hasattr(a, "mass_log_zeta") and not hasattr(a, "impact_logit_delta")
+    assert not hasattr(a, "mass_log_flow_gain")
+
+
+def test_hetmass_injects_heavy_aggregate_flow():
+    # The reworked GGPS leg: mass-weighted heavy order flow ed_flow = (Σ wᵢ·tᵢ)/N
+    # should be HEAVY-tailed (dominated by the whale), unlike a Gaussian aggregate.
+    n = 4000
+    price = ExcessDemandPrice(ExcessDemandParams(het_mass_enabled=True, mass_zeta_init=1.2,
+                                                 mass_innov_df=4))
+    from ecomd.physics.integrator import _sample_unit_t
+    w = price._agent_masses(n, torch.device("cpu"), torch.float32)
+    g = torch.Generator(); g.manual_seed(0)
+    flows = torch.stack([(w * _sample_unit_t((n,), 4, generator=g,
+                                              device=torch.device("cpu"), dtype=torch.float32)).sum() / n
+                         for _ in range(400)])
+    # excess kurtosis well above Gaussian (0) → heavy aggregate tail
+    z = (flows - flows.mean()) / flows.std()
+    exkurt = float((z ** 4).mean() - 3.0)
+    assert exkurt > 1.0, f"mass-weighted flow should be heavy-tailed, excess kurtosis={exkurt:.2f}"
 
 
 def test_masses_normalized_and_heavier_tail_at_small_zeta():
@@ -85,8 +104,10 @@ def test_grad_to_zeta_and_delta(custom_fn):
                      custom_fn=custom_fn)
     pf = sim.price_formation
     assert pf.mass_log_zeta.requires_grad and pf.impact_logit_delta.requires_grad
+    assert pf.mass_log_flow_gain.requires_grad
     traj.log_returns.pow(2).sum().backward()
     assert pf.mass_log_zeta.grad is not None and pf.mass_log_zeta.grad.abs().item() > 0
+    assert pf.mass_log_flow_gain.grad is not None and pf.mass_log_flow_gain.grad.abs().item() > 0
     assert pf.impact_logit_delta.grad is not None and pf.impact_logit_delta.grad.abs().item() > 0
     assert torch.isfinite(traj.log_returns).all()
 
