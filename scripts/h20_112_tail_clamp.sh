@@ -58,10 +58,21 @@ run_main() {
     echo "  [phase] elapsed ${SECONDS}s" | tee -a "$MASTER_LOG"
     conda run -n ecophys python scripts/score_phase.py "$PHASE" 2>&1 | tee -a "$MASTER_LOG" || true
     conda run -n ecophys python scripts/score_summary.py "$PHASE" --title "112 tail-clamp n=20 SPX" 2>&1 | tee -a "$MASTER_LOG" || true
+
+    # ── Part B: α scaling-curve diagnose (pure inference from Part-A baseline ckpts,
+    #    BEFORE the delete-sync so the checkpoints are still local) ──
+    echo "" | tee -a "$MASTER_LOG"; echo "═══ PART B: α scaling diagnose — $(date) ═══" | tee -a "$MASTER_LOG"
+    conda run -n ecophys python "$PHASE/scaling/generate_scaling_configs.py" 2>&1 | tee -a "$MASTER_LOG" || true
+    SECONDS=0
+    bash scripts/h20_112_scaling.sh 2>&1 | tee -a "$MASTER_LOG" || echo "  [WARN] scaling phase non-zero" | tee -a "$MASTER_LOG"
+    echo "  [scaling] elapsed ${SECONDS}s" | tee -a "$MASTER_LOG"
+    conda run -n ecophys python scripts/score_scaling.py "$PHASE/scaling" 2>&1 | tee -a "$MASTER_LOG" || true
+
     conda run -n ecophys python -m ecomd.data.checkpoint_sync sync --delete-local 2>&1 | tee -a "$MASTER_LOG" || true
     echo "═══ DONE — $(date) ═══" | tee -a "$MASTER_LOG"
-    echo "  GATE (Mac): per-cell hill∈[2,4] AND acf2 in-band vs baseline (Welch+Bonferroni)." | tee -a "$MASTER_LOG"
-    echo "  Both → SOLVE → 5-asset n=30. Neither → coupling confirmed → diagnose-centered Paper A." | tee -a "$MASTER_LOG"
+    echo "  Part A GATE (Mac): per-cell hill∈[2,4] AND acf2 in-band vs baseline (Welch+Bonferroni)." | tee -a "$MASTER_LOG"
+    echo "    Both → SOLVE → 5-asset n=30. Neither → coupling confirmed → diagnose-centered Paper A." | tee -a "$MASTER_LOG"
+    echo "  Part B: α_inf intercept (B1), control flatness (B1n), hill/acf2 vs κ Pareto map (B2)." | tee -a "$MASTER_LOG"
 }
 
 case "${1:-}" in
