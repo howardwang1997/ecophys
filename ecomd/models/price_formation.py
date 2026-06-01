@@ -164,6 +164,18 @@ class ExcessDemandParams:
     sv_kappa_init: tuple = (0.5, 0.1, 0.02)
     sv_xi_init: float = 0.1
     sv_gain_init: float = 0.5
+    # 2026-06-01 tail-clamp probe (exp 112). The fat-tail overshoot (hill<2,
+    # infinite-variance) was shown DYNAMICAL not distributional (exp 109): no
+    # noise/mixture knob fixes it. This is the one untested mechanistic lever —
+    # a soft, differentiable saturating clamp on the realized per-step log-return:
+    #   r_clamped = scale·tanh(r / scale)
+    # tail_clamp_mode="rel": scale = c · state.volatility (running EWMA |r|), so
+    #   moves are bounded to ±c running-sigmas (clustering-relative — the version
+    #   with a real chance to enter hill∈[2,4] while keeping acf2). mode="abs":
+    #   scale = c absolute (the Pareto-blocked reference — should kill clustering).
+    # tail_clamp_c<=0 (default) = OFF, bit-exact (clamp skipped, no extra op).
+    tail_clamp_c: float = 0.0
+    tail_clamp_mode: str = "rel"
 
 
 class ExcessDemandPrice(nn.Module):
@@ -323,6 +335,17 @@ class ExcessDemandPrice(nn.Module):
             log_ret = log_ret_core + excitation_mul * excitation
         else:
             log_ret = log_ret_core
+
+        # exp 112 tail-clamp: soft saturating bound on the realized return.
+        # OFF (c<=0) = bit-exact. "rel" scales by the pre-update running vol so
+        # the cap is in running-sigma units (clustering-preserving); "abs" caps
+        # in raw log-return units. Differentiable (tanh) → safe through BPTT.
+        if p.tail_clamp_c > 0.0:
+            if p.tail_clamp_mode == "abs":
+                scale = torch.as_tensor(p.tail_clamp_c, device=log_ret.device, dtype=log_ret.dtype)
+            else:  # "rel": c · running volatility (EWMA |r| up to t-1)
+                scale = p.tail_clamp_c * state.volatility + 1e-12
+            log_ret = scale * torch.tanh(log_ret / scale)
 
         # v3 paper-a-solidify: optional price-driven volume mode
         if p.volume_mode == "price_driven":
