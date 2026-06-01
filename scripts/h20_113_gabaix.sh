@@ -26,7 +26,7 @@ PHASE="experiments/113_gabaix_solve"
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 MASTER_LOG="experiments/_113_${TIMESTAMP}.log"
-PROBE_CFG="$PHASE/config_gabaix_learn_seed0.yaml"   # both mechanisms + learnable = worst case
+PROBE_CFG="$PHASE/config_concave_learn_seed0.yaml"   # learnable δ concave = representative
 
 probe() {
     echo "── probe: $(basename "$PROBE_CFG") ──" | tee -a "$MASTER_LOG"

@@ -79,8 +79,8 @@ def main() -> None:
         return (float(np.mean(xs)), float(np.std(xs) / max(1, len(xs) ** 0.5))) if xs else (float("nan"), float("nan"))
 
     base_hill = m(cells.get("baseline", {}).get("hill", []))[0] if "baseline" in cells else float("nan")
-    print(f"# exp 113 Gabaix solve — baseline hill={base_hill:.3f}  "
-          f"(GGPS theory target: ζ≈1, δ≈0.5, hill≈3)\n")
+    print(f"# exp 113 concave-impact solve — baseline hill={base_hill:.3f} (overshoot)  "
+          f"(target: thin to hill≈3; δ control, sqrt-law δ=0.5)\n")
     hdr = f"{'cell':24}{'n':>4}{'hill[2,4]':>11}{'acf2[.15,.55]':>14}{'ζ_learned':>11}{'δ_learned':>11}{'SOLVE':>7}"
     print(hdr)
     for c in sorted(cells, key=lambda c: -m(cells[c]["hill"])[0] if cells[c]["hill"] else 0):
@@ -95,8 +95,8 @@ def main() -> None:
         print(f"{c:24}{len(s['hill']):>4}{hi:>11.3f}{ac:>14.3f}{zs:>11}{ds:>11}{solve:>7}")
     print("\n  SOLVE = hill∈[2,4] AND acf2∈[.15,.55]. Confirm winner at 5-asset n=30 "
           "(Welch+Bonferroni vs baseline, NOT best-of-N).")
-    print("  Decisive: does a learned cell land hill∈band WITH acf2 kept — and do the "
-          "learned (ζ,δ) sit near GGPS (1, 0.5)? (theory × data)")
+    print("  Decisive: (a) the hill(δ) sweep — which fixed δ lands α in [2,4] with acf2 kept; "
+          "(b) does concave_learn's δ self-calibrate there? (ζ column blank — masses dropped.)")
 
 
 if __name__ == "__main__":

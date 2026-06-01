@@ -143,15 +143,25 @@ n=30, not a broad tournament. **BUILT:** price_formation.py (het_mass + concave-
 OFF=bit-exact, ζ=exp(mass_log_zeta)/δ=sigmoid(impact_logit_delta) learnable, join sim.parameters
 → soft_hill-calibrated), tests/test_gabaix_mechanism.py (9 pass), experiments/113_gabaix_solve
 (6×30), scripts/score_gabaix.py (extracts LEARNED ζ/δ vs GGPS 1,0.5 + hill/acf2 gate),
-h20_113_gabaix.sh. **Mac N=1200 smoke (sign-check, below overshoot onset) CORRECTED the
-prediction:** concave impact hill 2.48→3.42 (thins tail) AND acf2 0.01→0.36 (clustering KEPT) =
-the decoupling the clamp couldn't → **concave (sqrt-impact, Tóth-Lillo-Bouchaud) is the real
-lever.** BUT **heterogeneous-masses-as-built MISFIRES**: hetmass thinned (hill→4.04) not fattened,
-because trading is DENSE+light-tailed (ED=Σ wᵢ·Δposᵢ, fixed Pareto wᵢ × Gaussian Δposᵢ = weighted
-Gaussian → thinner). GGPS needs the size dist to show up as heavy *individual* trades (sparse/
-heavy-Δpos) — absent here. So before/at H20: lead with concave+δ-calibration; either rework the
-masses leg (mass × heavy innovation, e.g. mass-weighted jumps) or drop it. Confirm at N=10K.
-See [[project_surrogate_rolloutlen_trap]], [[feedback_no_downgrade]].
+h20_113_gabaix.sh. **Mac smoke sign-checks reframed the swing (2 findings):** (1) concave impact hill↑ AND acf2
+KEPT (0.43→0.36) = the decoupling the clamp couldn't → **concave sqrt-impact (Tóth-Lillo-Bouchaud)
+is the real lever.** (2) heterogeneous masses MISFIRED TWICE — v1 (wᵢ·Δposᵢ) thinned (dense
+Gaussian → weighted Gaussian); v2 (additive Σwᵢ·tᵢ heavy flow) ALSO thinned (hill 3.24→5.39)
+because FIXED Pareto weights → one whale dominates every step → time-tail tracks the innovation
+(t df=4→hill≈4), NOT the size dist. Faithful GGPS would need a per-step heavy flow with learnable
+tail index — but **our baseline already OVER-produces tail (hill 1.4), so adding size-heaviness is
+the WRONG direction.** **DECISION (user 2026-06-01, option A): DROP masses, refocus exp 113 on a
+clean CONCAVE-IMPACT solve.**
+
+**exp 113 FINAL (concave-impact solve, on branch `feature/exp113-gabaix-solve`):** replace linear
+β·ED with β·sign(ED)·s·(|ED|/s)^δ (price_formation.py, impact_concave_enabled, δ=sigmoid param,
+OFF=bit-exact). 6 cells × 30: baseline / concave_d{040,050,060,070} fixed (the hill(δ) curve) /
+concave_learn (δ learnable init 0.6, soft_hill-calibrated — does the loss FIND α≈3?). Gate:
+hill∈[2,4] AND acf2∈[.15,.55] vs baseline → 5-asset n=30. score_gabaix.py extracts learned δ.
+Het-masses code REMAINS gated-OFF in price_formation.py (kept for record, unused). Paper story:
+"synchronization OVER-produces heavy tails (α<2); a concave sqrt-impact law restores the empirical
+inverse-cubic α≈3 WHILE preserving clustering (reshapes the driver, not the return) — first
+differentiable sim to hit both." See [[project_surrogate_rolloutlen_trap]], [[feedback_no_downgrade]].
 
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
