@@ -118,5 +118,27 @@ are nn.Parameters (ckpt overrides config) so NOT scannable; hawkes_kappa/beta/ed
 ExcessDemandParams floats so they DO bite. Part A (solve) + Part B (why/how-hard) → diagnose
 publishable either way.
 
+**2026-06-01 — user: "not just a diagnose, I want the BEST result" → mechanism-level solve
+(exp 113, PLANNED, build AFTER 112 scaling returns).** Why the tournament missed: every entrant
+(MMD/MoE/SV/diffusion) attacked the loss/noise/paradigm layer, NONE changed the mechanism that
+SETS the tail exponent (`log_ret=β·κ·Σ Δpos_i`). The principled untried lever with theory
+predicting α≈3 = the **Gabaix mechanism** (GGPS Nature 2003): real markets' inverse-cubic law =
+Zipf large-trader sizes (ζ≈1) × square-root impact. Our model lacks BOTH (homogeneous agents,
+`excess_demand=κ·Σ dpos` no per-agent mass; linear impact). exp 113 = heterogeneous masses
+`ED=κ·Σ wᵢ·Δposᵢ` (wᵢ power-law ζ) + concave impact `log_ret=β·sign(ED)·|ED|^δ` (δ≈0.5),
+flag-gated OFF=bit-exact. These set the UNCONDITIONAL tail (size dist + impact) — a DIFFERENT
+object from the Hawkes temporal feedback that makes clustering → plausibly DECOUPLES tails from
+clustering (the clamp can't). Odds ~35-45% (targets right physics + has quantitative theory;
+still a bet: power-law-mass training stability, concave-impact collateral unknown).
+**CRITICAL design rule (user asked "can we add the target to the loss?"):** we ALREADY do
+loss-only tail-matching (baseline `w_hill/soft_hill`; Path A exp 107 strong per-fact surrogates)
+→ FALSIFIED p=0.81. **fact-as-loss-target on a FIXED mechanism = invalid test** — a loss only
+selects within the mechanism's reachable set, and α≈3-with-clustering isn't in homogeneous
+herding's manifold (that's what "paradigm ceiling" means). The CORRECT use: mechanism FIRST
+(enlarge reachable set), THEN make the new params **ζ, δ learnable** and let `soft_hill` calibrate
+them to α≈3 (loss constrains MECHANISM PARAMS, not output hill). 112 Part B's measured α(ζ,δ)
+scaling validates the learned point (theory × data). Scope: these 2 mechanisms thorough → 5-asset
+n=30, not a broad tournament. See [[project_surrogate_rolloutlen_trap]], [[feedback_no_downgrade]].
+
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
