@@ -85,9 +85,23 @@ is now strong + mechanistically grounded**:
   frontier." Config side-finding: jumps were hurting net (normal_j00 5.20 > t5+jump anchor 4.80).
 
 Bracket 2 ceiling map: 111 + existing 080/095b SPX baselines + **ABIDES timescale-fair re-run**
-(still owed; scripts exist, adjust to multi-sim-day→daily). One untested mechanistic lever: a
-tail-clamp in the price-formation map (likely kills acf2 per Pareto coupling, but unverified).
-Champion confirmation moot (no winner); the diagnose figure is the deliverable.
+(still owed; scripts exist, adjust to multi-sim-day→daily).
+
+**2026-06-01 — exp 112 tail-clamp probe (the one untested lever; BUILT + smoked, awaiting H20):**
+soft differentiable clamp `r=scale·tanh(r/scale)` in `price_formation.py` (`tail_clamp_c`/`_mode`,
+OFF=bit-exact, via `price_formation_kwargs`). `tests/test_tail_clamp.py` (6) pass. exp 112 = 5
+cells × 20 seeds, N=10K fp32, MMD every=4; launcher `h20_112_tail_clamp.sh`. **Pre-registered:
+SOLVE iff hill∈[2,4] AND acf2 stays in-band (breaks the tail⊥dynamics coupling); else → commit
+diagnose, clamp = final negative control.** Mac N=400 directional smoke (n=1, wiring/direction
+only): clamp THINS tails (hill 3.06→4.9-5.6) AND drops acf2 (0.31→0.14-0.27) — Pareto coupling
+visible; `rel_c3` retains most acf2. **KEY new fact: the fat-tail overshoot is N-DEPENDENT —
+baseline hill=3.06 at N=400 vs 1.39 at N=10K**, so tail-fattening scales with system size (a
+physics result for the diagnose), and the SOLVE gate can only be decided at N=10K. Prior: clamp
+tightens the frontier but doesn't break it.
+
+One untested mechanistic lever: a tail-clamp in the price-formation map (likely kills acf2 per
+Pareto coupling — smoke supports this, H20 confirms). Champion confirmation moot unless 112 wins;
+the diagnose figure is the deliverable.
 
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
