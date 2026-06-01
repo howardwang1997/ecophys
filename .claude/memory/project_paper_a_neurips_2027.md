@@ -182,6 +182,28 @@ timing+stability check. **Pre-registered: if NO mmd_w* beats hybrid_nomm_longrol
 across a 5× weight range → Path B2 (heterogeneous-node MoE).** Winner → exp 106
 5-asset (no best-of-N). See [[project_surrogate_rolloutlen_trap]].
 
+### 2026-06-01 — Path B falsified (broad tournament); the DIAGNOSE is the paper
+
+The beyond-framework tournament ([[project_neural_sde_tournament]], exp 109/108/110/111,
+verified on Mac) **closes the "solve" arc with no winner**: Path B0 MMD, Path B2 MoE
+(mixture-of-Gaussians), the SV head, and A3 diffusion **all fail to break ~5.1-5.2**. The
+decisive new fact: the **fat-tail overshoot is DYNAMICAL, not distributional** — Gaussian noise
++ zero jumps (109 `normal_j00`) still gives hill=1.30 (deep α<2). So no objective/noise/mixture
+knob fixes it; it's emergent from the excess-demand dynamics.
+
+**This makes the diagnose strong enough to BE the paper, honestly.** Reframe: Paper A's central
+contribution is a **per-fact Pareto frontier across three modeling paradigms** where tail-shape
+and volatility-dynamics are mutually exclusive — physics-sim (EcoMD) reproduces dynamics
+(clustering acf2~0.25, long-memory, leverage) but structurally overshoots tails (hill<1.5);
+deep-generative (diffusion) reproduces tails (hill~3 in-band) but kills dynamics (acf2~0.09,
+agg too Gaussian); agent-based (ABIDES) reproduces neither (2-3/11). Both hill AND agg-gaussianity
+**flip the sign of their error** between the physics and generative paradigms — a clean figure.
+The §5-6 "solve" tracks (memk/B-β/B-α/MMD/MoE/SV/diffusion) become **negative controls
+establishing the frontier is paradigm-level, not a capacity artifact.** Owed for the figure:
+**ABIDES timescale-fair re-run** (multi-sim-day→daily). One untested mechanistic lever noted but
+likely Pareto-blocked: a tail-clamp in the price-formation map (would probably kill acf2).
+**Pending user decision: commit to diagnose-centered framing vs. keep hunting a solve.**
+
 ## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
 
 `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed.

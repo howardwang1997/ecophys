@@ -64,8 +64,30 @@ sv_d3_both for DFA/leverage gains).
 **Weekend orchestrator:** `scripts/h20_weekend_tournament_2026-05-30.sh --probe` → tail-attack(109)
 → sv_d3 completion(108) → MoE(110) → diffusion(111) → score. **Per-FACT gate** (hill/agg/DFA
 in-band rate, NOT just n/11 — the scout showed net n/11 hides per-fact movement) vs baseline_mmd.
+
+**2026-06-01 TOURNAMENT RESULT (commit `ba57867cc`, verified on Mac from raw inference JSONs —
+`conda run` swallows stdout here, use `~/miniconda3/envs/ecophys/bin/python` directly):**
+NO entrant breaks the ~5.1-5.2 ceiling; "solve" arc still has no winner. But the **"diagnose"
+is now strong + mechanistically grounded**:
+- **Fat-tail overshoot is DYNAMICAL, not distributional (proven, the key finding).** 109
+  `normal_j00` (Gaussian noise, jump_lambda=0) still gives hill=1.30 (band [2,4], deep α<2).
+  Removing Student-t+jumps entirely does NOT fix tails → source is the excess-demand/interaction
+  dynamics, not a noise knob. Kills noise-taming hypothesis cleanly.
+- **MoE (mixture-of-Gaussians) did NOT pull hill into band** — best `moe_k4_tamed_lbw001` hill
+  1.36, n/11 4.83 ≈ baseline parity. **Diffusion = exact OPPOSITE failure**: diffusion_cond hill
+  3.15 IN BAND but acf2=0.09 (undershoots clustering) + agg=3.15 (too Gaussian, band [10,200]).
+  Both hill AND agg flip the SIGN of their error between physics (overshoot) and generative
+  (undershoot). **SV confirmed demoted** (sv_d3 worst, 4.33).
+- **THE PAPER-A CONTRIBUTION (reframe):** a per-fact **Pareto frontier across 3 paradigms** where
+  tail-shape and vol-dynamics are mutually exclusive — physics-sim=dynamics but overshoots tails
+  (dynamically); deep-generative=tails but no dynamics; agent-based(ABIDES)=neither (2-3/11).
+  Reframes Paper A from falsified "beat SOTA" → honest, stronger "map+explain a paradigm-level
+  frontier." Config side-finding: jumps were hurting net (normal_j00 5.20 > t5+jump anchor 4.80).
+
 Bracket 2 ceiling map: 111 + existing 080/095b SPX baselines + **ABIDES timescale-fair re-run**
-(still owed; scripts exist, adjust to multi-sim-day→daily). Champion → 5-asset n=30 FOLLOWING weekend.
+(still owed; scripts exist, adjust to multi-sim-day→daily). One untested mechanistic lever: a
+tail-clamp in the price-formation map (likely kills acf2 per Pareto coupling, but unverified).
+Champion confirmation moot (no winner); the diagnose figure is the deliverable.
 
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
