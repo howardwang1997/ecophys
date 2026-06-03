@@ -99,5 +99,30 @@ Items 1–4 are the spine. 116 (depth) + 117 (clean method demonstrator) are hig
 blockers. If only 1–4 land, Paper A has: a universal theory-derived mechanism, a (possible) SOTA,
 a method framing, and a failure-mode map — a defensible NeurIPS/ICML-main submission.
 
+---
+
+## ABIDES (item ④) — run on a SEPARATE CPU machine via SSH from H20
+
+ABIDES is **CPU-only** (no GPU), so it does NOT compete with the H20 training queue — offload it to
+a side box and run it in parallel with 114/115. Orchestrated FROM H20: `scripts/h20_abides_remote.sh`
+syncs the runner over, runs ~300 sim-sessions/cell in P parallel shards on the side machine, pulls
+the CSVs back, and scores them **timescale-fair (daily mode, `volume_volatility_corr` marked N/A**
+since ABIDES mid-price has no volume — the |r|-proxy was the old spurious-1 artifact).
+
+**You set the side machine's IP on H20** (the only required setting):
+```bash
+# on H20:
+export ABIDES_HOST=<side-machine-ip>          # <-- you fill this
+# optional: ABIDES_USER, ABIDES_SSH_PORT, ABIDES_REMOTE_DIR(=~/ecophys), ABIDES_ENV(=abides), N_SEEDS(=300), PARALLEL(=8)
+bash scripts/h20_abides_remote.sh launch      # sync + start remote workers (nohup, returns immediately)
+bash scripts/h20_abides_remote.sh status      # tail remote progress (CSV count)
+bash scripts/h20_abides_remote.sh fetch       # pull CSVs back to H20 + score daily → results_*_daily
+```
+Prereq on the side machine (one-time): a clone of this repo at `ABIDES_REMOTE_DIR` + a conda env
+`ABIDES_ENV` with JPMC abides (v1) importable. The script does NOT install abides — it only runs it.
+Timescale fix wired: `h20_run_abides_calibrate.sh` now takes `SEED_START/SEED_END` (shardable) and
+`abides_to_returns.py` takes `--drop-facts` (N/A marking). The `results_*_daily` cells are the fair
+agent-based-paradigm leg of the three-paradigm Pareto frontier figure.
+
 **Honest ceiling if the sprint fully lands:** ~50–60% NeurIPS-main (up from ~30–40%), ~85%+ a
 respectable venue.

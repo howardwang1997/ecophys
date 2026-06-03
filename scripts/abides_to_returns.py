@@ -89,6 +89,10 @@ def main() -> None:
     ap.add_argument("--mode", choices=["intraday", "daily"], default="intraday")
     ap.add_argument("--bar", type=int, default=60, help="intraday bar size in seconds")
     ap.add_argument("--price-col", default="mid")
+    ap.add_argument("--drop-facts", default="",
+                    help="comma list of facts to mark N/A (omit from aggregated). ABIDES mid-price "
+                         "carries no volume → pass volume_volatility_corr to avoid the |r|-proxy "
+                         "spurious ~1 artifact (the timescale-fair daily re-run does this).")
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -126,6 +130,12 @@ def main() -> None:
                 and np.isfinite(r["facts"][k].get("estimate"))]
         if vals:
             aggregated[k] = {"mean": float(np.mean(vals)), "std": float(np.std(vals)), "n": len(vals)}
+
+    na_facts = [f.strip() for f in args.drop_facts.split(",") if f.strip()]
+    for f in na_facts:
+        aggregated.pop(f, None)
+    if na_facts:
+        log.info("marked N/A (dropped from aggregated): %s", ", ".join(na_facts))
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

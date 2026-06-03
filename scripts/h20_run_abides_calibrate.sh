@@ -15,8 +15,14 @@
 
 set -euo pipefail
 
+# TIMESCALE-FAIR DAILY re-run: each sim-session = one close-to-close return, so daily-mode scoring
+# needs MANY sessions (≥~250). Use N_SEEDS≈300. SEED_START/SEED_END shard the seed range so the
+# remote orchestrator (scripts/h20_abides_remote.sh) can run several workers in parallel:
+#   SEED_START=0 SEED_END=99 N_SEEDS=300 bash scripts/h20_run_abides_calibrate.sh
 ABIDES_ENV="${ABIDES_ENV:-abides}"
 N_SEEDS="${N_SEEDS:-6}"
+SEED_START="${SEED_START:-0}"
+SEED_END="${SEED_END:-$((N_SEEDS - 1))}"
 OUT_DIR="${OUT_DIR:-experiments/105_abides_ceiling/abides_raw}"
 mkdir -p "$OUT_DIR"
 
@@ -33,7 +39,7 @@ echo "[$(date -u +%FT%TZ)] ABIDES calibrate (rmsc03-style): ${#VARIANTS[@]} vari
 for entry in "${VARIANTS[@]}"; do
   cell="${entry%%:*}"
   kwargs="${entry#*:}"
-  for seed in $(seq 0 $((N_SEEDS - 1))); do
+  for seed in $(seq "$SEED_START" "$SEED_END"); do
     csv="${OUT_DIR}/abides_${cell}_seed${seed}.csv"
     if [[ -f "$csv" ]]; then echo "  skip existing $csv"; continue; fi
     echo "  run $cell seed=$seed kwargs='$kwargs'"
