@@ -11,7 +11,7 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 Build **EcoMD**: a differentiable, equivariant, learned-potential molecular-dynamics-style simulator for financial markets. Agents = particles in latent feature space; dynamics = Langevin; interaction potentials learned end-to-end from high-frequency order flow / return data.
 
 ## Three contribution pillars
-- **C1 (methods)**: first differentiable MD-style market simulator with learned interaction potentials (MACE-lite equivariant GNN) at ~10⁵–5×10⁵ agent scale on 8×H20 NVLink. Targets NeurIPS/ICML main.
+- **C1 (methods)**: a differentiable MD-style market simulator with learned equivariant interaction potentials (MACE-lite GNN), end-to-end pathwise BPTT. ⚠️ **NOT "first differentiable / first Langevin"** — lit check 2026-06-03 ([[reference_differentiable_priorart]]) found Bouchaud-Cont 1998 (Langevin markets) + Dyer/Quera-Bofarull 2023–25 (differentiable financial ABMs) occupy the broad claim. Demoted to a SECONDARY contribution; Paper A LEADS with the finding (concave-impact tail solve), not the artifact. Targets NeurIPS/ICML main.
 - **C2 (physics)**: non-equilibrium thermodynamics of markets — extract entropy production rate σ(t), effective temperature T_eff(t) from trained simulator, test cross-market universality via critical scaling + Jarzynski identity. **Paper B → Nature Physics flagship**; retreat to PRL.
 - **C3 (applications)**: crash early warning + optimal execution under regime shift. Targets QF/JEDC/ICAIF.
 

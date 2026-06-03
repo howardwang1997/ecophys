@@ -21,6 +21,7 @@
 - [Memory + work log discipline](feedback_long_memory_and_logs.md) — update memory after each session; write dated logs in repo `logs/`
 - [Workflow split](feedback_workflow.md) — Mac dev + R2 data + GitHub code + H20 pull-and-train; H20 is remote, not accessible from Claude
 - [H20 edits configs in place](feedback_h20_config_edits.md) — H20 runs may overwrite chunk_steps / grad_clip etc.; treat post-run YAML as authoritative, don't revert
+- [Differentiable prior-art / C1 novelty](reference_differentiable_priorart.md) — **lit check 2026-06-03: "first differentiable/Langevin market sim" is FALSE (Bouchaud-Cont 1998; Dyer/Quera-Bofarull 2023–25). Demote C1 to secondary; lead with the finding.** Read before any novelty claim.
 - [Data source registry](reference_data_sources.md) — ranked sources for US equity + crypto; Path C high-freq stack (Tardis L2, FirstRate minute, LOBSTER)
 - [Target venue registry](reference_venues.md) — ML/physics/finance venues; Paper B primary target is Nature Physics
 - [Data buy order](../../ecomd/data/buy_order_v2_en.md) — Path C purchasing plan (EN); zh mirror at buy_order_v2_zh.md
