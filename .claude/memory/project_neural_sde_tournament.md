@@ -163,5 +163,26 @@ Het-masses code REMAINS gated-OFF in price_formation.py (kept for record, unused
 inverse-cubic α≈3 WHILE preserving clustering (reshapes the driver, not the return) — first
 differentiable sim to hit both." See [[project_surrogate_rolloutlen_trap]], [[feedback_no_downgrade]].
 
+**exp 113 RESULT — LANDS (2026-06-03, commit a853c1843, 180 runs, 0 instability rejects).** The
+swing landed cleanly. baseline hill=1.52 (α<2, FAILS gate). Concave impact thins MONOTONICALLY in
+δ; ALL 5 concave cells pass hill∈[2,4] AND acf2∈[.15,.55]: d040→hill3.56, learn→3.03, d050→2.93,
+d060→2.62, d070→2.14. Best net **concave_d050 = 5.60/11** (vs baseline 4.23) = the Tóth-Lillo-
+Bouchaud √-law. **concave_learn self-calibrated to hill 3.03 ⇒ δ≈0.5 — the loss FOUND the square-
+root law on its own.** Pre-registered gate (d050 vs baseline per-fact in-band rate, n=30): hill
+**13→80% (+67pp)**, agg-gauss **27→70% (+43pp)** — both overshoot facts fixed — acf2 70→73%
+(clustering PRESERVED), worst single fact −3pp ⇒ **NO ≥20pp collateral, GATE PASSES.** Caveat:
+learned δ readback blank (checkpoints delete-synced to R2; training_log doesn't log δ) — exact δ
+needs an R2 checkpoint pull, hill curve places it at ≈0.5. **Next: 5-asset n=30 confirmation
+(d050+learn, Welch+Bonferroni, NOT best-of-N) = the gate to any "solve" claim.**
+
+**exp 112 RESULT (2026-06-03, commit 294e3250c).** Part A tail-clamp: tclamp_rel_c8=5.00 lifts net
+but abs-clamp unstable (7/20 cond_kurt>100 blowups) — concave WINS the head-to-head (reshapes
+driver not return). 112 = supporting contrast, not hero. Part B α-scaling PARTIAL: B1 (ed_norm=F)
+hill(N) 250→6.7…5000→3.26 monotone fatten; B1n control (ed_norm=T) stays ~6-7 ⇒ confirms aggregate-
+flow-SNR mechanism (√N-normalization keeps tail thin). ⚠️ score_scaling's "α_inf≈3.47 finite-var"
+headline NOT earned — forces 1/N on data stopping at N=5000, contradicted by production N=10K already
+hill≈1.5<2 (fatten STEEPER than 1/N). **B2 (hawkes-κ map) + N∈{10K,20K} did NOT run** — needed
+before citing α_inf≥2.
+
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
