@@ -104,6 +104,15 @@ def main() -> None:
         dt = time.time() - t0
         returns = traj.log_returns_np()[1:]
         volumes = traj.volumes_np()[1:]
+        traj_np = None
+        if args.save_trajectory:
+            traj_np = {
+                "log_returns": returns,
+                "volumes": volumes,
+                "log_prices": traj.log_prices.detach().cpu().numpy(),
+                "excess_demand": traj.excess_demand.detach().cpu().numpy(),
+            }
+        del traj
         facts = compute_all(returns, volume=volumes)
         rank_results.append({
             "rank": rank,
@@ -112,20 +121,21 @@ def main() -> None:
             "rollout_time_s": dt,
             "facts": {k: v.to_dict() for k, v in facts.items()},
         })
+        del returns, volumes, facts
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         log.info(f"[rank {rank}] rollout {r_idx+1}/{args.n_realizations_per_rank} "
                  f"seed={seed} took {dt:.1f}s")
 
-        if args.save_trajectory:
+        if args.save_trajectory and traj_np is not None:
             traj_path = out_dir / f"trajectory_rank{rank}_r{r_idx}.npz"
             np.savez_compressed(
                 traj_path,
-                log_returns=returns,
-                volumes=volumes,
-                log_prices=traj.log_prices.detach().cpu().numpy(),
-                excess_demand=traj.excess_demand.detach().cpu().numpy(),
                 seed=seed, n_steps=args.n_steps, rank=rank,
+                **traj_np,
             )
             log.info(f"[rank {rank}] saved trajectory → {traj_path.name}")
+            del traj_np
 
     per_rank_path = out_dir / f"inference_rank_{rank}.json"
     per_rank_path.write_text(json.dumps(rank_results, indent=2))

@@ -53,7 +53,7 @@ train_one_card() {
         local start=$(date +%s)
         local job_log="$outdir/train_${TIMESTAMP}.log"
         CUDA_VISIBLE_DEVICES="$card" \
-        timeout 2700 torchrun --nproc_per_node="$NPROC" --standalone \
+        timeout ${TIMEOUT_SECS:-14400} torchrun --nproc_per_node="$NPROC" --standalone \
             -m ecomd.training.train_distributed \
             --config "$cfg" --out-dir "$outdir" 2>&1 \
           | tee "$job_log" >> "$QUEUE_LOG"
@@ -84,7 +84,7 @@ eval_one_card() {
         local start=$(date +%s)
         local elog="$outdir/eval_${TIMESTAMP}.log"
         CUDA_VISIBLE_DEVICES="$card" \
-        timeout 2700 torchrun --nproc_per_node="$NPROC" --standalone \
+        timeout ${TIMEOUT_SECS:-14400} torchrun --nproc_per_node="$NPROC" --standalone \
             -m ecomd.inference.run_large \
             --ckpt "$outdir/checkpoint.pt" --config "$cfg" \
             --n-steps 4000 --n-realizations-per-rank 4 2>&1 \
