@@ -6,6 +6,13 @@ Attribution: concave_sv_both − concave = the SV/dynamics leg; concave_sv_both 
 the leverage channel; concave_sv_both − sv_both = the tail leg.
 
 Usage: python scripts/score_composition.py experiments/115_composition
+       python scripts/score_composition.py experiments/115_composition --json > g1.json
+With --json the human report goes to stderr and stdout carries one machine-readable JSON object
+(g1_pass, winner_cell, per-cell stats, FAIL-branch hints) for scripts/h20_sprint_driver.sh.
+
+Winner selection (pre-registered): the hero concave_sv_both if it passes G1; otherwise the
+highest-net other composition cell that passes the same criteria (net>SOTA, Welch p<0.0125 vs
+baseline, tail kept, ≥1 dynamics floor lifted). No cell passes → g1_pass=false.
 """
 
 from __future__ import annotations
@@ -52,41 +59,82 @@ def _rate(rows, k):
 
 
 def main() -> None:
-    root = Path(sys.argv[1])
+    args = [a for a in sys.argv[1:] if a != "--json"]
+    as_json = "--json" in sys.argv
+    out = sys.stderr if as_json else sys.stdout
+    print_ = lambda *a, **k: print(*a, file=out, **k)  # noqa: E731
+
+    root = Path(args[0])
     cells = ["baseline", "concave", "sv_both", "concave_sv_both", "concave_sv_nolev"]
     data = {c: _load(root, c) for c in cells}
     bnet = _net(data["baseline"]) if data["baseline"] else np.array([])
 
-    print(f"# exp 115 composition — beat-SOTA gate (prior SOTA={SOTA}).  Bonferroni m=4.\n")
-    print(f"{'cell':20}{'n':>4}{'net':>7}{'95%CI':>14}{'p_vs_base':>11}{'>SOTA':>7}")
+    print_(f"# exp 115 composition — beat-SOTA gate (prior SOTA={SOTA}).  Bonferroni m=4.\n")
+    stats_by_cell: dict[str, dict] = {}
+    print_(f"{'cell':20}{'n':>4}{'net':>7}{'95%CI':>14}{'p_vs_base':>11}{'>SOTA':>7}")
     for c in cells:
         if not data[c]:
-            print(f"{c:20}{'(missing)':>11}"); continue
+            print_(f"{c:20}{'(missing)':>11}"); continue
         net = _net(data[c]); mu = net.mean(); sem = net.std() / max(1, len(net) ** 0.5)
         p = stats.ttest_ind(net, bnet, equal_var=False)[1] if len(bnet) and c != "baseline" else float("nan")
         ps = f"{p:.4f}{'*' if (p < 0.0125) else ''}" if not np.isnan(p) else "  —"
         sota = "✓" if mu > SOTA else ""
-        print(f"{c:20}{len(net):>4}{mu:>7.2f}{f'[{mu-1.96*sem:.2f},{mu+1.96*sem:.2f}]':>14}{ps:>11}{sota:>7}")
+        print_(f"{c:20}{len(net):>4}{mu:>7.2f}{f'[{mu-1.96*sem:.2f},{mu+1.96*sem:.2f}]':>14}{ps:>11}{sota:>7}")
+        tail_kept = _rate(data[c], "hill_tail_index") >= 50 and _rate(data[c], "acf_squared_returns") >= 50
+        lifted = [k for k in DYN_FACTS
+                  if data["baseline"] and _rate(data[c], k) - _rate(data["baseline"], k) >= 10]
+        stats_by_cell[c] = {
+            "n": int(len(net)), "net_mean": float(mu),
+            "p_vs_base": None if np.isnan(p) else float(p),
+            "tail_kept": bool(tail_kept), "dynamics_lifted": lifted,
+            "passes": bool(mu > SOTA and not np.isnan(p) and p < 0.0125
+                           and tail_kept and lifted),
+        }
 
-    print("\n# per-fact in-band % — does composition lift the DISJOINT dynamics floors w/o losing tails?")
+    print_("\n# per-fact in-band % — does composition lift the DISJOINT dynamics floors w/o losing tails?")
     show = ["hill_tail_index", "acf_squared_returns", "aggregational_gaussianity"] + DYN_FACTS
-    print(f"{'fact':26}" + "".join(f"{c.replace('concave','cv').replace('_sv','+sv'):>12}" for c in cells))
+    print_(f"{'fact':26}" + "".join(f"{c.replace('concave','cv').replace('_sv','+sv'):>12}" for c in cells))
     for k in show:
         line = f"{k:26}"
         for c in cells:
             line += f"{_rate(data[c], k):>12.0f}" if data[c] else f"{'—':>12}"
-        print(line)
+        print_(line)
 
     hero = data.get("concave_sv_both")
+    g1 = False
     if hero:
-        hmu = _net(hero).mean(); htail = _rate(hero, "hill_tail_index"); hacf = _rate(hero, "acf_squared_returns")
-        lifted = [k for k in DYN_FACTS if _rate(hero, k) - _rate(data["baseline"], k) >= 10]
-        tail_kept = htail >= 50 and hacf >= 50
-        print(f"\n  HERO concave_sv_both: net={hmu:.2f}  tail-kept={tail_kept} "
-              f"(hill {htail:.0f}%, acf2 {hacf:.0f}%)  dynamics-lifted={lifted or 'none'}")
-        g1 = hmu > SOTA and tail_kept and bool(lifted)
-        print(f"  GATE G1 (net>{SOTA} AND tail kept AND ≥1 dynamics floor lifted): "
-              f"{'✓ PASS → 5-asset n=30 confirm (no best-of-N)' if g1 else '✗ — claim stays method+universality, NOT +SOTA'}")
+        h = stats_by_cell["concave_sv_both"]
+        print_(f"\n  HERO concave_sv_both: net={h['net_mean']:.2f}  tail-kept={h['tail_kept']} "
+               f"(hill {_rate(hero, 'hill_tail_index'):.0f}%, acf2 {_rate(hero, 'acf_squared_returns'):.0f}%)"
+               f"  dynamics-lifted={h['dynamics_lifted'] or 'none'}")
+        g1 = h["passes"]
+        print_(f"  GATE G1 (net>{SOTA} AND p<0.0125 AND tail kept AND ≥1 dynamics floor lifted): "
+               f"{'✓ PASS → 5-asset n=30 confirm (no best-of-N)' if g1 else '✗ — claim stays method+universality, NOT +SOTA'}")
+
+    # winner: hero first, else best-net passing composition cell (pre-registered order)
+    winner = None
+    if g1:
+        winner = "concave_sv_both"
+    else:
+        passing = [(s["net_mean"], c) for c, s in stats_by_cell.items()
+                   if c != "baseline" and s["passes"]]
+        if passing:
+            winner = max(passing)[1]
+            print_(f"  hero failed but {winner} passes the same criteria → winner={winner}")
+
+    if as_json:
+        hero_s = stats_by_cell.get("concave_sv_both", {})
+        conc_s = stats_by_cell.get("concave", {})
+        print(json.dumps({
+            "g1_pass": bool(winner is not None),
+            "winner_cell": winner,
+            "sota": SOTA,
+            "cells": stats_by_cell,
+            # FAIL-branch hints: is the hero still worth a 5-asset *universality* run (sub-SOTA)?
+            "hero_tail_kept": bool(hero_s.get("tail_kept", False)),
+            "hero_beats_concave": bool(hero_s and conc_s
+                                       and hero_s["net_mean"] > conc_s["net_mean"]),
+        }))
 
 
 if __name__ == "__main__":

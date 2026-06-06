@@ -33,7 +33,12 @@ probe() {
     SECONDS=0
     conda run -n ecophys torchrun --nproc_per_node=1 --standalone \
         -m ecomd.training.train_distributed --config "$PROBE_CFG" --out-dir "$out" 2>&1 | tee -a "$MASTER_LOG"
-    echo "  probe wall-clock: ${SECONDS}s (~$((SECONDS/60))m) on 1 card" | tee -a "$MASTER_LOG"
+    echo "  probe train wall-clock: ${SECONDS}s (~$((SECONDS/60))m) on 1 card" | tee -a "$MASTER_LOG"
+    # training does NOT emit inference_merged.json — run the eval pass before reading it
+    conda run -n ecophys torchrun --nproc_per_node=1 --standalone \
+        -m ecomd.inference.run_large --ckpt "$out/checkpoint.pt" --config "$PROBE_CFG" \
+        --n-steps 4000 --n-realizations-per-rank 4 2>&1 | tee -a "$MASTER_LOG"
+    echo "  probe train+eval wall-clock: ${SECONDS}s (~$((SECONDS/60))m) on 1 card" | tee -a "$MASTER_LOG"
     conda run -n ecophys python - "$out" <<'PY' 2>&1 | tee -a "$MASTER_LOG"
 import json, sys
 from pathlib import Path

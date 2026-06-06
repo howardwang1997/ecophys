@@ -204,7 +204,31 @@ establishing the frontier is paradigm-level, not a capacity artifact.** Owed for
 likely Pareto-blocked: a tail-clamp in the price-formation map (would probably kill acf2).
 **Pending user decision: commit to diagnose-centered framing vs. keep hunting a solve.**
 
-## Current SOTA cell (2026-05-20, supersedes pair_AB 5.18)
+### 2026-06-03→06 — concave √-impact SOLVE landed (113/114); weekend sprint driver built
+
+**The solve arc reopened and landed at the per-fact level.** Exp 113 (SPX n=30): concave price
+impact `β·sign(ED)·|ED|^δ` thins the dynamical tail overshoot INTO band while preserving
+clustering — `concave_d050` net 5.60 vs baseline 4.23 (p=0.0014, d=0.90), hill 13→80% in-band,
+no ≥20pp collateral; hill(δ) linear (r²=0.98), crossing hill=3 at **δ*≈0.509 = the TLB
+square-root law**, and learnable-δ self-calibrates to ≈0.5.
+
+**Exp 114 (5-asset confirmation) verdict — scored 2026-06-06, both halves reported honestly:**
+- Pre-registered strict per-asset gate (Welch+Bonferroni α_eff=0.002): **2/5** (spx ✓ btc ✓;
+  ndx 0.0065 / gold 0.051 / eurusd 0.062 ns). Power artifact: n=30 at α_eff=0.002 only powered
+  for d≥1.0; observed d=0.50–1.07, direction 5/5, pooled Stouffer p≈1e-8.
+- **Physics gate 5/5**: every asset hill 1.2–1.5 → 2.9–3.25, acf² in band, worst collateral −6pp.
+- δ* 2-point fits are noise (bootstrap CI [−0.2,1.4] on ndx/eurusd); spx 5-point fit
+  δ*=0.508 [0.463,0.540]. Exp 118 (δ∈{0.40,0.60} × 4 assets) closes this.
+- **User decision: honest reporting, NO seed top-up, no gate-shopping.** Paper wording:
+  "band-recovery universal (5/5), δ*≈0.5 crossing, strict per-asset gate 2/5 (power-limited)".
+
+**Weekend window (2026-06-06→08, single unattended 36–48h, EVAL_H=8 reserve):**
+`scripts/h20_sprint_driver.sh` orchestrates the whole fleet one-command (see
+[[project_h20_fleet_scheduling]]): H20-1 = 115 composition (concave+SV, G1: beat SOTA 5.96) →
+auto-scored G1 → champion (exp 119, winner × 4 assets n=30, **baselines+SPX reused** — 113/114/115
+verified identical recipe: 108 baseline_mmd base + reg_every=4) or δ-grid fallback; H20-2 = 116
+criticality FSS (Paper B fork GO/NO-GO) + δ-grid eurusd; H20-3 = δ-grid ndx→btc; H20-4 = ABIDES
+timescale-fair re-run. G1 verdict + champion result land in the window — update this memory after.
 
 `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed.
 Cross-replicated: 089 SPX 5.12 (n=48), 090 SPX 5.31 (n=29), 089b EURUSD 5.36 (n=28).
