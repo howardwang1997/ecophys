@@ -17,6 +17,7 @@
 - [Chunk OOM constraint](project_chunk_oom_constraint.md) — full 4.2 arch + N=10K, chunk>24 OOMs single-card; 8 cards = DDP not tensor-parallel; bf16 / N reduction / rollout-reg are the levers
 - [User role](user_role.md) — independent full-time researcher, 6–18 mo, **8×H20 NVLink long-term**, cheap-data preference ($50k budget), Mac+R2+GitHub+H20 workflow
 - [Project overview](project_overview.md) — EcoPhys/EcoMD: differentiable physics-inspired market simulator; C1/C2/C3 pillars; **plan v3 + Path C: Paper B → Nature Physics flagship, 15–22% joint probability, $8–12k high-freq data commitment, 58-week timeline**
+- [Paper B gates (2026-06-07)](project_paper_b_gates.md) — **M3 gate 矛盾(9/11 不可达 vs 预注册关闭条款)必须在 arXiv 预注册前于 plan v3.1 解决;S8 已跑:B2 裸 Jarzynski 在现实事件预算下不可行(GARCH-t W 连参考值都不收敛);$8-12k 采购 gate 三道闸(①周末读数 ②v3.1 ③S8=NO);B3 改"测量 Q"框架 ~80%;NP 今日 ~8-15%**
 - [Pre-registration clauses](feedback_preregistration.md) — 3 rigor clauses user accepted 2026-04-24 (surrogate kill, sanity-check cascade, arXiv pre-registration); binding for Paper B
 - [Critical thinking stance](feedback_critical_thinking.md) — act as independent reviewer-2; honest probability estimates; pushback when warranted
 - [Memory + work log discipline](feedback_long_memory_and_logs.md) — update memory after each session; write dated logs in repo `logs/`
