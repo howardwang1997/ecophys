@@ -1,0 +1,55 @@
+2026-06-06 13:23:03,475 INFO inference_run_large [dist] world_size=1 cuda=True
+/AI4S/Users/howardwang/h202_amar/ecophys/ecomd/inference/run_large.py:90: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(ckpt_path, map_location="cpu")
+2026-06-06 13:23:03,724 INFO inference_run_large loaded checkpoint iter=200 from /AI4S/Users/howardwang/h202_amar/ecophys/experiments/113_gabaix_solve/results_baseline_seed2/checkpoint.pt
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/AI4S/Users/howardwang/h202_amar/ecophys/ecomd/inference/run_large.py", line 177, in <module>
+    main()
+  File "/AI4S/Users/howardwang/h202_amar/ecophys/ecomd/inference/run_large.py", line 103, in main
+    traj = sim.run(n_steps=args.n_steps, seed=seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h202_amar/ecophys/ecomd/models/ecomd.py", line 1308, in run
+    return recorder.finalize()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/AI4S/Users/howardwang/h202_amar/ecophys/ecomd/physics/observables.py", line 144, in finalize
+    velocities=torch.stack(self._velocities),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 9.54 GiB. GPU 0 has a total capacity of 95.08 GiB of which 8.47 GiB is free. Including non-PyTorch memory, this process has 86.60 GiB memory in use. Of the allocated memory 86.07 GiB is allocated by PyTorch, and 40.80 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+E0606 13:25:52.651000 140337140836160 torch/distributed/elastic/multiprocessing/api.py:833] failed (exitcode: 1) local_rank: 0 (pid: 127265) of binary: /root/miniconda3/envs/ecophys/bin/python3.11
+Traceback (most recent call last):
+  File "/root/miniconda3/envs/ecophys/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 348, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.11/site-packages/torch/distributed/run.py", line 901, in main
+    run(args)
+  File "/root/miniconda3/envs/ecophys/lib/python3.11/site-packages/torch/distributed/run.py", line 892, in run
+    elastic_launch(
+  File "/root/miniconda3/envs/ecophys/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 133, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/ecophys/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 264, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+ecomd.inference.run_large FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-06_13:25:52
+  host      : nb-39c2f56706966040ea-68794ffb5f-swt8k
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 127265)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
