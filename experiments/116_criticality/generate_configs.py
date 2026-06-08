@@ -1,26 +1,30 @@
-"""Exp 116 — criticality probe: is the fat-tail overshoot a non-equilibrium PHASE TRANSITION?
+"""Exp 116 v2 — finite-size-scaling (FSS) of the fat-tail overshoot in system size N.
 
-The diagnose (109/112) says the overshoot is DYNAMICAL and driven by SYNCHRONIZED aggregate order
-flow (aggregate-flow SNR ~N). That smells like a collective/critical phenomenon: a control parameter
-(self-excitation coupling κ = hawkes_kappa) where the tail exponent crosses α=2 (hill crosses 2)
-as the market synchronizes. This probe sweeps κ finely at TWO system sizes N for a finite-size-
-scaling (FSS) read:
-  • a TRUE critical point → the hill(κ) transition SHARPENS with N (the crossover steepens, κ_c
-    converges) — a real phase transition.
-  • a smooth crossover → no N-dependence in sharpness.
+REFRAMED 2026-06-08 after the v1 partial run (N=2000 only; N=10k OOM'd — fixed via the
+lightweight trajectory recorder, see ecomd/inference/run_large.py). v1's N=2000 readout showed
+hill(κ) is FLAT (~3.7–4.2 across κ∈[0,1.2], never crossing 2) — so κ (Hawkes self-excitation) is
+NOT the control parameter. The control parameter is **N**: the overshoot (hill→1.3, α<2 infinite
+variance) emerges between N=2000 (hill~4) and N=10000 (hill~1.3), consistent with the diagnosed
+aggregate-flow-SNR ~ N mechanism ([[project_neural_sde_tournament]]).
 
-Dual purpose:
-  - Paper A: mechanistic DEPTH for "why tails overshoot" (the diagnose section).
-  - Paper B: the GO/NO-GO for the synchronization-transition flagship fork (a critical point with
-    scaling = a real non-equilibrium phase transition in markets, not a thermodynamic analogy).
+So this probes the right axis: hill(N) at fixed learned dynamics. The physics question —
+  is there a critical N_c where the tail index crosses α=2 (hill=2), and does the crossover
+  show finite-size scaling (a rounded step sharpening toward a true transition in N→∞),
+  or is it a smooth crossover (no critical point)?
+A scaling collapse hill(N) = f((N−N_c)/N_c · N^{1/ν}) would be a genuine non-equilibrium
+emergent-criticality result; a smooth logistic crossover keeps the honest "aggregate-flow
+crossover" reading. Either way it is the load-bearing readout for the Paper B fork.
 
-Pure inference (run_large) from existing baseline checkpoints — NO retraining. This is the un-run
-112 Part B B2, extended with a 2nd N for FSS and a finer κ grid near the expected transition.
+Pure inference (run_large, lightweight) from frozen baseline checkpoints — NO retraining.
 
-Emits config OVERRIDES (the launcher applies each to every anchor checkpoint via run_large):
-  κ ∈ {0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2}  (13 pts, finer can be added near κ_c)
-  × N ∈ {2000, 10000}                                       (FSS pair)
-  = 26 scan configs × N_CKPT anchor checkpoints.
+Grid (emitted as config OVERRIDES; the launcher applies each to N_CKPT anchor checkpoints,
+with N_REALIZATIONS seeds each for hill CIs):
+  N ∈ {1000, 2000, 3000, 4000, 6000, 8000, 10000, 14000}   (8 sizes, dense in the crossover)
+  κ ∈ {0.0, 0.4, 0.8, 1.2}                                  (4; κ=0 is the main FSS line, others
+                                                              test whether κ shifts N_c)
+  = 32 scan configs × N_CKPT anchors × N_REALIZATIONS seeds.
+ed_normalize=False (the overshoot regime). With the lightweight recorder, N=14000 × T=8000
+inference is ~O(T) memory — fits a single card.
 """
 
 from __future__ import annotations
@@ -34,8 +38,8 @@ BASE_PATH = REPO / "experiments" / "108_neural_sde_scout" / "config_baseline_mmd
 OUT = REPO / "experiments" / "116_criticality"
 OUT.mkdir(parents=True, exist_ok=True)
 
-KAPPAS = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]
-N_SIZES = [2000, 10000]  # FSS pair
+N_SIZES = [1000, 2000, 3000, 4000, 6000, 8000, 10000, 14000]   # FSS ladder
+KAPPAS = [0.0, 0.4, 0.8, 1.2]                                  # κ=0 primary; others = shift test
 
 
 def main() -> None:
@@ -46,14 +50,14 @@ def main() -> None:
             cfg = yaml.safe_load(yaml.safe_dump(base))  # deep copy
             cfg["simulator"]["n_agents"] = N
             cfg["simulator"]["price_formation_kwargs"]["hawkes_kappa"] = kap
-            cfg["simulator"]["price_formation_kwargs"]["ed_normalize"] = False  # the overshoot regime
-            tag = f"N{N}_k{str(kap).replace('.', '')}"
-            (OUT / f"config_{tag}.yaml").write_text(yaml.safe_dump(cfg))
+            cfg["simulator"]["price_formation_kwargs"]["ed_normalize"] = False
+            ktag = f"{kap:.1f}".replace(".", "")
+            (OUT / f"config_N{N}_k{ktag}.yaml").write_text(yaml.safe_dump(cfg))
             n += 1
     print(f"wrote {n} scan configs ({len(N_SIZES)} N × {len(KAPPAS)} κ) to {OUT}")
-    print(f"  κ ∈ {KAPPAS}")
-    print(f"  N ∈ {N_SIZES} (finite-size-scaling pair)  ed_normalize=False (overshoot regime)")
-    print("  launcher applies each to N_CKPT baseline checkpoints via run_large (pure inference).")
+    print(f"  N ∈ {N_SIZES}")
+    print(f"  κ ∈ {KAPPAS}  ed_normalize=False (overshoot regime)")
+    print("  launcher: × N_CKPT anchors × N_REALIZATIONS seeds, lightweight run_large (no OOM).")
 
 
 if __name__ == "__main__":

@@ -100,7 +100,9 @@ def main() -> None:
     for r_idx in range(args.n_realizations_per_rank):
         seed = args.seed_base + rank * 1000 + r_idx
         t0 = time.time()
-        traj = sim.run(n_steps=args.n_steps, seed=seed)
+        # lightweight: run_large only consumes the (T,) scalar series (returns/volumes/
+        # log_prices/excess_demand); dropping the (T,N,d) tensors avoids OOM at N=10⁴.
+        traj = sim.run(n_steps=args.n_steps, seed=seed, lightweight=True)
         dt = time.time() - t0
         returns = traj.log_returns_np()[1:]
         volumes = traj.volumes_np()[1:]

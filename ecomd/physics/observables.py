@@ -98,9 +98,16 @@ class EcoMDTrajectory:
 class TrajectoryRecorder:
     """Append per-step tensors; build an :class:`EcoMDTrajectory` at the end."""
 
-    def __init__(self, dt: float, meta: dict[str, float | int | str] | None = None) -> None:
+    def __init__(self, dt: float, meta: dict[str, float | int | str] | None = None,
+                 lightweight: bool = False) -> None:
+        # lightweight=True skips the five (T, N, d) per-step tensors (states, forces,
+        # velocities). They cost O(T·N·d) GPU memory (~100 GB at T=8000, N=10⁴) but are
+        # only needed for Phase-4 entropy production. Inference that scores stylized facts
+        # uses only the (T,) scalars, so it sets lightweight=True to keep memory O(T) and
+        # avoid the N=10⁴ OOM (see ecomd/inference/run_large.py).
         self.dt = dt
         self.meta = meta or {}
+        self.lightweight = lightweight
         self._states: list[Tensor] = []
         self._f_cons: list[Tensor] = []
         self._f_diss: list[Tensor] = []
@@ -123,29 +130,41 @@ class TrajectoryRecorder:
         volume: Tensor,
         excess_demand: Tensor,
     ) -> None:
-        self._states.append(s)
-        self._f_cons.append(f_cons)
-        self._f_diss.append(f_diss)
-        self._f_stoch.append(f_stoch)
-        self._velocities.append(velocity)
+        if not self.lightweight:
+            self._states.append(s)
+            self._f_cons.append(f_cons)
+            self._f_diss.append(f_diss)
+            self._f_stoch.append(f_stoch)
+            self._velocities.append(velocity)
         self._log_prices.append(log_price)
         self._log_returns.append(log_return)
         self._volumes.append(volume)
         self._excess_demand.append(excess_demand)
 
     def finalize(self) -> EcoMDTrajectory:
-        if not self._states:
+        if not self._log_returns:
             raise RuntimeError("recorder is empty; call record() at least once")
+        if self.lightweight:
+            # (T, 0, 0) placeholders preserve n_steps; any access to the per-agent
+            # tensors will surface as a clear shape error rather than silent garbage.
+            t = len(self._log_returns)
+            ref = self._log_returns[0]
+            empty = torch.empty((t, 0, 0), dtype=ref.dtype, device=ref.device)
+            big = {k: empty for k in ("states", "f_cons", "f_diss", "f_stoch", "velocities")}
+        else:
+            big = {
+                "states": torch.stack(self._states),
+                "f_cons": torch.stack(self._f_cons),
+                "f_diss": torch.stack(self._f_diss),
+                "f_stoch": torch.stack(self._f_stoch),
+                "velocities": torch.stack(self._velocities),
+            }
         return EcoMDTrajectory(
-            states=torch.stack(self._states),
-            f_cons=torch.stack(self._f_cons),
-            f_diss=torch.stack(self._f_diss),
-            f_stoch=torch.stack(self._f_stoch),
-            velocities=torch.stack(self._velocities),
             log_prices=torch.stack(self._log_prices),
             log_returns=torch.stack(self._log_returns),
             volumes=torch.stack(self._volumes),
             excess_demand=torch.stack(self._excess_demand),
             dt=self.dt,
             meta=self.meta,
+            **big,
         )

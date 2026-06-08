@@ -1257,8 +1257,14 @@ class EcoMDSimulator(nn.Module):
         n_steps: int,
         seed: int | None = None,
         s_init: Tensor | None = None,
+        lightweight: bool = False,
     ) -> EcoMDTrajectory:
-        """Forward-only inference rollout. No gradients retained."""
+        """Forward-only inference rollout. No gradients retained.
+
+        lightweight=True drops the (T, N, d) per-step state/force tensors (kept only for
+        entropy production); needed to run N=10⁴ inference without OOM. The returned
+        trajectory then has empty per-agent tensors but full (T,) scalar series.
+        """
         device = self.device
         if seed is not None:
             generator = torch.Generator(device=device)
@@ -1281,6 +1287,7 @@ class EcoMDSimulator(nn.Module):
             dt=self.cfg.dt,
             meta={"n_steps": n_steps, "seed": seed if seed is not None else -1,
                   "n_agents": self.cfg.n_agents, "d_state": self.cfg.d_state},
+            lightweight=lightweight,
         )
         for k in range(n_steps):
             s_next, price_state, rec, h_regime, h_agent, h_global = self.step(
