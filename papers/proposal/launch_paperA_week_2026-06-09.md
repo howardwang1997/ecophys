@@ -29,6 +29,36 @@ If anything errors, re-upload from a machine that has the parquet + `.env.r2`:
 
 ---
 
+## ★ 3-day compressed track (DEFAULT — by importance)
+
+Fits ~3 days by dropping the lowest-value/riskiest work; the **headline (δ\* universality) and the
+solve gate (n=60) stay intact**.
+- **Dropped / deferred to next window:** 117 leverage (method stretch, riskiest — concave already
+  passes leverage at the mean, so the claim isn't blocked); spx δ-grid extension (spx already has 5
+  δ-points from 113+114, doesn't need {0.35,0.55}).
+- **Trimmed:** btc δ-grid to 4 points ({0.40,0.60}); S6 to 2 representative assets (spx+ndx).
+
+```bash
+# (1) δ-grid headline — ndx/gold/eurusd +{0.35,0.55}; btc → 4 points        [240 cfg]
+python experiments/118_delta_grid/generate_configs.py --assets ndx gold eurusd --deltas 0.35 0.55 --seed-start 0 --seed-end 29
+python experiments/118_delta_grid/generate_configs.py --assets btcusdt --deltas 0.40 0.60 --seed-start 0 --seed-end 29
+# (2) power top-up n=30→60 on the 3 power-limited assets                    [180 cfg]
+python experiments/114_concave_confirm/generate_configs.py --assets ndx gold eurusd --cells baseline concave_d050 --seed-start 30 --seed-end 59
+# (3) S6 across-regime held-out, trimmed to spx+ndx                          [120 cfg]
+python experiments/121_heldout_regime/generate_configs.py --assets spx ndx --n-seeds 15
+```
+Then run the per-dir train+eval launchers (see Full track below for the exact `h20_run_phase.sh`
+lines for each dir) and the scoring block. **Compute: ~540 cfg × 1.03 card-h / 12 cards ≈ 1.9 d
+ideal → ~2.5–3 d realistic** (eval/queue/imbalance + estimates-run-short margin) → fits 3 days with
+~0.5–1 d buffer. ABIDES daily runs in parallel on H20-4 CPU (off the GPU critical path).
+
+Suggested allocation: **H20-1 (8c)** = δ-grid (240) + most of top-up; **H20-2/3 (4c)** = S6 (120) +
+the rest of top-up; **H20-4 (CPU)** = ABIDES daily.
+
+---
+
+# Full track (superset) — run the compressed track above unless you have >3 days
+
 ## H20-1 (8 cards) — GPU · ~540 cfg ≈ 2.8 d (split (A1/A2) onto H20-2/3 to halve)
 
 ```bash
