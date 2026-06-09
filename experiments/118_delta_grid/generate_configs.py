@@ -35,10 +35,12 @@ BASE_PATH = REPO / "experiments" / "108_neural_sde_scout" / "config_baseline_mmd
 OUT = REPO / "experiments" / "118_delta_grid"
 
 REG_EVERY = 4
-DELTAS = [0.40, 0.60]
+DELTAS = [0.40, 0.60]   # original 118 run; 2026-06-09 extension passes --deltas 0.35 0.55
 
-# asset -> (target_dataset, target_period); spx omitted (113 already spans δ 0.40–0.70)
+# asset -> (target_dataset, target_period). spx added 2026-06-09 for the δ-grid extension
+# (the original 118 omitted it since 113 already spans δ 0.40–0.70).
 ASSETS = {
+    "spx":     ("spx", "2015-2026_daily"),
     "ndx":     ("ndx", "2015-2026_daily"),
     "gold":    ("gold", "2015-2026_daily"),
     "eurusd":  ("eurusd", "2015-2026_daily"),
@@ -49,6 +51,8 @@ ASSETS = {
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--assets", nargs="+", default=list(ASSETS), choices=list(ASSETS))
+    ap.add_argument("--deltas", nargs="+", type=float, default=DELTAS,
+                    help="fixed δ values to emit (default the original 118 grid 0.40 0.60)")
     ap.add_argument("--seed-start", type=int, default=0)
     ap.add_argument("--seed-end", type=int, default=29)
     args = ap.parse_args()
@@ -60,7 +64,7 @@ def main() -> None:
         adir = OUT / asset
         adir.mkdir(parents=True, exist_ok=True)
         for seed in range(args.seed_start, args.seed_end + 1):
-            for delta in DELTAS:
+            for delta in args.deltas:
                 cfg = copy.deepcopy(base)
                 cfg["training"]["seed"] = seed
                 cfg["training"]["target_dataset"] = dataset
@@ -75,7 +79,7 @@ def main() -> None:
 
     est_h = n * 62 / 60
     print(f"wrote {n} configs under {OUT}/{{{','.join(args.assets)}}} "
-          f"(seeds {args.seed_start}–{args.seed_end}, δ ∈ {DELTAS}, seed-major order)")
+          f"(seeds {args.seed_start}–{args.seed_end}, δ ∈ {args.deltas}, seed-major order)")
     print(f"  recipe: N={base['simulator']['n_agents']} {base['training']['mixed_precision']} "
           f"reg_every={REG_EVERY} (identical to 113/114/115)")
     print(f"  ≈ {est_h:.0f} card-hours total (~62 min/cfg incl eval)")

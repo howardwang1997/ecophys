@@ -233,6 +233,44 @@ timescale-fair re-run. G1 verdict + champion result land in the window — updat
 `xa_gold_zumdn = 5.96 ± 1.54 (n=26, 5/26 ≥8/11)` from 092_5asset_replication_30seed.
 Cross-replicated: 089 SPX 5.12 (n=48), 090 SPX 5.31 (n=29), 089b EURUSD 5.36 (n=28).
 
+### 2026-06-09 — weekend verdict + Paper A week sprint (honest spine FINAL)
+
+**Weekend sprint (115/116/118/119) landed; the ambitious legs FAILED — spine collapsed to its
+honest core:**
+- **G1 (composition beats SOTA 5.96) = FAIL** (115); **champion (119) pooled 4.90 < 5.96, and SV
+  does NOT compose → the "≥2 composable mechanisms = method" leg BROKE.** No SOTA-break. Do NOT
+  re-chase it (failed twice — burning the week on it is where quality dies).
+- **116 criticality FSS = Paper B fork NO-GO** (smooth crossover, no critical point — see
+  [[project_neural_sde_tournament]] 2026-06-09).
+- **118 δ-grid = strongest result**: δ\*≈0.51±0.01 universal across spx/gold/eurusd/ndx (btc "0/60"
+  was an H20-clone bug — btc parquet IS present locally).
+- **HONEST SPINE (final): diagnose (3-paradigm ceiling) + concave-impact solve + δ\*≈0.5
+  universality.** Solid NeurIPS methods+physics, ~18-25%. It will NOT become a SOTA-break paper.
+
+**Week plan LAUNCHED** (runbook `papers/proposal/launch_paperA_week_2026-06-09.md`, pre-reg
+`papers/proposal/prereg_2026-06-09_power_topup_and_delta_grid.md` — frozen before results):
+1. **δ-grid ext** δ∈{0.35,0.55}×5 + btc (118 gen now takes `--deltas`, +spx) → ≥6 δ pts/asset.
+2. **n=30→60 power top-up** on ndx/gold/eurusd (114 gen now takes `--assets/--cells/--seed-start/-end`)
+   — pre-registered, **reverses the prior "no seed top-up" decision** (user 2026-06-09) to lift the
+   strict per-asset gate from 2/5.
+3. **exp 117 leverage** 2nd-mechanism sweep (`experiments/117_leverage/`, NEW): concave_d050 +
+   {asym_drag_alpha, zumbach_feedback downside} — mechanisms ALREADY in `integrator.py` (no new
+   physics). GREEN-lit + reframed: **concave_d050 already passes `leverage_effect` (-0.98, n=30)**,
+   so 117 = confirm/strengthen per-seed pass-rate, not from-scratch. Timeboxed (drop if no clean win).
+4. **ABIDES timescale-fair daily re-run** — `scripts/h20_abides_baseline.sh` fixed: threads
+   `--drop-facts`, `MODE=daily` → `results_*_daily/` + auto-drops volume_volatility_corr.
+
+**Two rigor findings (Mac, cached data, 2026-06-09):**
+- **Surrogate-kill (`scripts/score_surrogate_kill.py`): concave solve SURVIVES** — net 7/11 >
+  GARCH-t 5/11, structural (zumbach/leverage/dfa) 2/3 > GARCH 0/3. **CRITICAL caveat: the hill+acf²
+  2-fact gate IS GARCH-t-FAKEABLE** (GARCH-t hill 2.38✓ acf² 0.19✓) → the paper must lead with the
+  JOINT 11-fact + structural facts a null can't fake, NOT the 2-fact gate.
+- **3-paradigm frontier (`scripts/assemble_frontier.py` → `fig_frontier_3paradigm.png`, draft):**
+  **EcoMD-concave is the ONLY cell passing hill✓ AND acf²✓ (net 7/11)**; all neural baselines
+  (WGAN/TrajCast/diffusion) pass hill but FAIL acf² (~0.1, no clustering); ABIDES 2/11. The clean
+  "tails XOR dynamics" figure. TODO finalize: swap the real 5.96 SOTA cell into SOURCES + ABIDES
+  `_daily` once the re-run lands.
+
 ## Main claim (post-pivot)
 
 ECoMD is a differentiable MD-style market simulator with mechanism-decomposable dynamics. (1) Systematic ablation reveals an empirical Pareto frontier in hand-crafted Markov mechanism families, with no cell exceeding 5.5/11 stylized facts on 5 assets at n=30. (2) Four architectural extensions — non-Markov memory kernels, scheduled-sampling depth-3 training, Hopfield regime-attractor dynamics, and (with failure-aware safeguards) learned MACE-lite v2 potentials — are individually evaluated; the winning combination lifts the frontier to ≥6.5 on ≥3 assets. (3) Gradient-based posterior inference calibrates ECoMD ~100× faster than ABIDES+SBI at matched coverage.

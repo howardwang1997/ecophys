@@ -32,6 +32,7 @@ AND acf²∈[.15,.55], Welch + Bonferroni. SOLVE-CONFIRMED iff it holds on ≥4/
 
 from __future__ import annotations
 
+import argparse
 import copy
 from pathlib import Path
 
@@ -72,19 +73,30 @@ SKIP = {("spx", "baseline"), ("spx", "concave_d050")}
 
 
 def main() -> None:
+    # 2026-06-09: CLI added for the pre-registered n=30→60 power top-up
+    # (see papers/proposal/prereg_2026-06-09_power_topup_and_delta_grid.md). Defaults reproduce
+    # the original 114 run exactly: all assets, all cells, seeds 0–29.
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--assets", nargs="+", default=list(ASSETS), choices=list(ASSETS))
+    ap.add_argument("--cells", nargs="+", default=list(CELLS), choices=list(CELLS))
+    ap.add_argument("--seed-start", type=int, default=0)
+    ap.add_argument("--seed-end", type=int, default=N_SEEDS - 1)
+    args = ap.parse_args()
+
     base = yaml.safe_load(BASE_PATH.read_text())
     n = 0
-    for asset, (dataset, period) in ASSETS.items():
-        for cell, pf_over in CELLS.items():
+    for asset in args.assets:
+        dataset, period = ASSETS[asset]
+        for cell in args.cells:
             if (asset, cell) in SKIP:
                 continue
-            for seed in range(N_SEEDS):
+            for seed in range(args.seed_start, args.seed_end + 1):
                 cfg = copy.deepcopy(base)
                 cfg["training"]["seed"] = seed
                 cfg["training"]["target_dataset"] = dataset
                 cfg["training"]["target_period"] = period
                 cfg["training"]["rollout_reg_every"] = REG_EVERY
-                cfg["simulator"]["price_formation_kwargs"].update(pf_over)
+                cfg["simulator"]["price_formation_kwargs"].update(CELLS[cell])
                 (OUT / f"config_{asset}_{cell}_seed{seed}.yaml").write_text(yaml.safe_dump(cfg))
                 n += 1
 

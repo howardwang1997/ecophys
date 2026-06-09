@@ -3,7 +3,9 @@
 # Runs independently of the 104 training run (can go in parallel; ABIDES is CPU).
 #
 # Usage (on H20, after `git pull`):
-#   ABIDES_ENV=abides bash scripts/h20_abides_baseline.sh
+#   ABIDES_ENV=abides bash scripts/h20_abides_baseline.sh                       # intraday (shape)
+#   MODE=daily N_SEEDS=250 ABIDES_ENV=abides bash scripts/h20_abides_baseline.sh  # timescale-fair
+#     → writes results_<cell>_daily/, drops volume_volatility_corr automatically (the fair ceiling).
 #
 # Produces experiments/105_abides_ceiling/results_<cell>/inference_merged.json,
 # scored with the SAME scorer as EcoMD so the comparison is like-for-like.
@@ -15,6 +17,14 @@ ECOPHYS_ENV="${ECOPHYS_ENV:-ecophys}"
 N_SEEDS="${N_SEEDS:-6}"
 MODE="${MODE:-intraday}"            # intraday | daily  (see abides_to_returns.py caveat)
 BAR="${BAR:-60}"
+# Timescale-fair daily re-run (2026-06-09): drop volume_volatility_corr (ABIDES mid has no
+# volume → the |r|-proxy fakes ~1.0). Default ON for daily, empty for intraday (override w/ DROP_FACTS=).
+# Daily mode writes results_<cell>_daily (keeps the intraday cells intact for comparison); each
+# sim = one close-to-close return, so daily power needs N_SEEDS≈250+ (vs 6 for intraday shape).
+if [[ -z "${DROP_FACTS+x}" ]]; then
+  [[ "$MODE" == "daily" ]] && DROP_FACTS="volume_volatility_corr" || DROP_FACTS=""
+fi
+SUFFIX=""; [[ "$MODE" == "daily" ]] && SUFFIX="_daily"
 EXP_DIR="experiments/105_abides_ceiling"
 RAW_DIR="${EXP_DIR}/abides_raw"
 LOG="${EXP_DIR}/abides_run.log"
@@ -32,7 +42,8 @@ ABIDES_ENV="$ABIDES_ENV" N_SEEDS="$N_SEEDS" OUT_DIR="$RAW_DIR" \
 for cell in "${CELLS[@]}"; do
   conda run --no-capture-output -n "$ECOPHYS_ENV" python scripts/abides_to_returns.py \
     --abides-dir "$RAW_DIR" --cell "$cell" \
-    --out-dir "${EXP_DIR}/results_${cell}" --mode "$MODE" --bar "$BAR" \
+    --out-dir "${EXP_DIR}/results_${cell}${SUFFIX}" --mode "$MODE" --bar "$BAR" \
+    --drop-facts "$DROP_FACTS" \
     2>&1 | tee -a "$LOG" || echo "  [warn] scoring $cell failed" | tee -a "$LOG"
 done
 

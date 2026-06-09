@@ -184,5 +184,23 @@ headline NOT earned — forces 1/N on data stopping at N=5000, contradicted by p
 hill≈1.5<2 (fatten STEEPER than 1/N). **B2 (hawkes-κ map) + N∈{10K,20K} did NOT run** — needed
 before citing α_inf≥2.
 
+**2026-06-09 — exp 116 FSS + exp 120 train-at-N: criticality / Paper B fork = NO-GO.** The
+112-Part-B aggregate-flow-SNR mechanism scaled into a proper finite-size-scaling test.
+- **116 (fixed N=10K-trained dynamics, sweep N at inference, internally consistent all T=8000):**
+  hill(N) is a SMOOTH crossover — κ=0: 4.39(N1000)→2.58(N14000); mean NEVER crosses α=2 to N=14000;
+  **no finite-size sharpening** (the crossover doesn't steepen — the signature an emergent transition
+  needs); κ only shifts the curve down. → the pre-registered "aggregate-flow crossover", NOT
+  emergent criticality. Decisive on its own.
+- **120 (train-at-N control):** hill crosses 2 (spx~N2000, btc~N4000) → ~1.3 at N=10K, BUT its eval
+  ran **T=4000 vs 116's T=8000** → the `score_fss_train` "DISAGREE" verdict is rollout-length-
+  confounded ([[project_surrogate_rolloutlen_trap]]) and **uninterpretable as-is** (do NOT read it as
+  "criticality is a train/test artifact" — that's neither proven nor disproven).
+- **VERDICT: Paper B criticality / Nature-Physics-flagship fork = NO-GO on current evidence** (116
+  alone decides it; the artifact question is secondary). **The ONE experiment that could reopen it:
+  FSS with `ed_normalize=True` (√N normalization)** — if the N-scaling of hill SURVIVES normalization
+  → first real evidence of an intrinsic N-transition (extend ladder to N≈20-40k); if it VANISHES →
+  cleanly confirms the aggregate-flow crossover, criticality honestly closed. Paper B's thermodynamic
+  legs (entropy production / T_eff / Jarzynski) are a SEPARATE pillar, untouched by this.
+
 See [[project_paper_a_neurips_2027]], [[project_pareto_ceiling]],
 [[project_surrogate_rolloutlen_trap]], [[project_chunk_oom_constraint]], [[feedback_no_downgrade]].
