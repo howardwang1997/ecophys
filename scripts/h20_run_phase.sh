@@ -2,19 +2,14 @@
 # Generic phase runner — config-parallel train + eval for any
 # experiments/<dir>/ that contains config_*.yaml files.
 #
+# Fixed card assignment: only increments card counter when a job is
+# actually launched (not on skips), ensuring all PARALLEL cards are used.
+#
 # Usage:
 #   bash scripts/h20_run_phase.sh experiments/031_chunk_effect
-#   bash scripts/h20_run_phase.sh experiments/032_arch_regime_sweep
-#
-# Daemon mode:
+#   PARALLEL=8 bash scripts/h20_run_phase.sh experiments/031_chunk_effect
 #   DAEMON=1 bash scripts/h20_run_phase.sh experiments/031_chunk_effect
-#
-# Skip already-done:  SKIP_DONE=1 (default 1)
-# Force re-run all:   SKIP_DONE=0
-#
-# Eval is single-rank × 4 realizations per config. To switch to
-# 32 realizations (8-rank DDP) for tighter CI, set NPROC=8 PARALLEL=1
-# (one config at a time × 8 ranks each).
+#   SKIP_DONE=0 bash scripts/h20_run_phase.sh experiments/031_chunk_effect
 
 set -uo pipefail
 
@@ -40,61 +35,43 @@ QUEUE_LOG="$CONFIG_DIR/_run_${TIMESTAMP}.log"
 mkdir -p "$CONFIG_DIR"
 : > "$QUEUE_LOG"
 
-train_one_card() {
-    local card="$1"; local label="$2"; local cfg="$3"; local outdir="$4"
-    mkdir -p "$outdir"
-    if [[ "$SKIP_DONE" == "1" && -f "$outdir/training_log.json" ]]; then
-        echo "  [skip-train $label]" | tee -a "$QUEUE_LOG"
-        return 0
-    fi
-    {
-        echo "" | tee -a "$QUEUE_LOG"
-        echo "═ TRAIN $label (card $card) ═ $(date +%H:%M:%S)" | tee -a "$QUEUE_LOG"
-        local start=$(date +%s)
-        local job_log="$outdir/train_${TIMESTAMP}.log"
-        CUDA_VISIBLE_DEVICES="$card" \
-        timeout ${TIMEOUT_SECS:-14400} torchrun --nproc_per_node="$NPROC" --standalone \
-            -m ecomd.training.train_distributed \
-            --config "$cfg" --out-dir "$outdir" 2>&1 \
-          | tee "$job_log" >> "$QUEUE_LOG"
-        local exit_code=${PIPESTATUS[0]}
-        local elapsed=$(( $(date +%s) - start ))
-        if [[ $exit_code -eq 0 ]]; then
-            echo "  ✓ $label ${elapsed}s (card $card)" | tee -a "$QUEUE_LOG"
-        else
-            echo "  ✗ $label exit=$exit_code ${elapsed}s (card $card)" | tee -a "$QUEUE_LOG"
+run_one() {
+    local phase="$1" card="$2" label="$3" cfg="$4" outdir="$5"
+    local skip_file="$outdir/training_log.json"
+    local cmd_args=()
+    if [[ "$phase" == "train" ]]; then
+        skip_file="$outdir/training_log.json"
+        cmd_args=(-m ecomd.training.train_distributed --config "$cfg" --out-dir "$outdir")
+    else
+        skip_file="$outdir/inference_merged.json"
+        if [[ ! -f "$outdir/checkpoint.pt" ]]; then
+            echo "  [skip-eval $label] no checkpoint" | tee -a "$QUEUE_LOG"
+            return 1
         fi
-    } &
-    return 0
-}
+        cmd_args=(-m ecomd.inference.run_large --ckpt "$outdir/checkpoint.pt" --config "$cfg" --n-steps 4000 --n-realizations-per-rank 4)
+    fi
 
-eval_one_card() {
-    local card="$1"; local label="$2"; local cfg="$3"; local outdir="$4"
-    if [[ "$SKIP_DONE" == "1" && -f "$outdir/inference_merged.json" ]]; then
-        echo "  [skip-eval $label]" | tee -a "$QUEUE_LOG"
-        return 0
+    if [[ "$SKIP_DONE" == "1" && -f "$skip_file" ]]; then
+        echo "  [skip-$phase $label]" | tee -a "$QUEUE_LOG"
+        return 1
     fi
-    if [[ ! -f "$outdir/checkpoint.pt" ]]; then
-        echo "  [skip-eval $label] no checkpoint" | tee -a "$QUEUE_LOG"
-        return 0
-    fi
+
     {
+        local tag
+        tag=$(echo "$phase" | tr '[:lower:]' '[:upper:]')
         echo "" | tee -a "$QUEUE_LOG"
-        echo "═ EVAL  $label (card $card) ═ $(date +%H:%M:%S)" | tee -a "$QUEUE_LOG"
+        echo "═ $tag $label (card $card) ═ $(date +%H:%M:%S)" | tee -a "$QUEUE_LOG"
         local start=$(date +%s)
-        local elog="$outdir/eval_${TIMESTAMP}.log"
+        local job_log="$outdir/${phase}_${TIMESTAMP}.log"
         CUDA_VISIBLE_DEVICES="$card" \
         timeout ${TIMEOUT_SECS:-14400} torchrun --nproc_per_node="$NPROC" --standalone \
-            -m ecomd.inference.run_large \
-            --ckpt "$outdir/checkpoint.pt" --config "$cfg" \
-            --n-steps 4000 --n-realizations-per-rank 4 2>&1 \
-          | tee "$elog" >> "$QUEUE_LOG"
+            "${cmd_args[@]}" 2>&1 | tee "$job_log" >> "$QUEUE_LOG"
         local exit_code=${PIPESTATUS[0]}
         local elapsed=$(( $(date +%s) - start ))
         if [[ $exit_code -eq 0 ]]; then
-            echo "  ✓ eval $label ${elapsed}s (card $card)" | tee -a "$QUEUE_LOG"
+            echo "  ✓ $phase $label ${elapsed}s (card $card)" | tee -a "$QUEUE_LOG"
         else
-            echo "  ✗ eval $label exit=$exit_code (card $card)" | tee -a "$QUEUE_LOG"
+            echo "  ✗ $phase $label exit=$exit_code ${elapsed}s (card $card)" | tee -a "$QUEUE_LOG"
         fi
     } &
     return 0
@@ -110,20 +87,9 @@ main() {
         return 1
     fi
 
-    # Optional priority ordering (added 2026-05-12). When CONFIG_ORDER_PREFIXES
-    # is set (comma-separated list of cell-name prefixes), configs whose
-    # label starts with one of those prefixes are run FIRST, in the listed
-    # order. Remaining configs run after, in alphabetic order. Use this to
-    # ensure the most important / longest-running cells land before any
-    # H20 process death (Branch D failure mode at ~12h).
-    #
-    # Implementation note: we avoid bash 4 associative arrays (declare -A)
-    # because some H20 environments still ship bash 3.2 and aborting under
-    # `set -u` would kill the phase. Instead we use a delimited "taken"
-    # string and substring matching.
     if [[ -n "${CONFIG_ORDER_PREFIXES:-}" ]]; then
         local -a ordered=()
-        local taken=":"   # delimited so we can substring-match safely
+        local taken=":"
         local prefix cfg label
         local IFS_BACKUP="$IFS"
         IFS=',' read -ra prefixes <<< "$CONFIG_ORDER_PREFIXES"
@@ -143,35 +109,29 @@ main() {
             fi
         done
         cfgs=("${ordered[@]}")
-        echo "  CONFIG_ORDER_PREFIXES=$CONFIG_ORDER_PREFIXES (first ${#prefixes[@]} prefix groups prioritised)" | tee -a "$QUEUE_LOG"
+        echo "  CONFIG_ORDER_PREFIXES=$CONFIG_ORDER_PREFIXES" | tee -a "$QUEUE_LOG"
     fi
     echo "  Configs: ${#cfgs[@]}" | tee -a "$QUEUE_LOG"
 
-    # Train pass
-    local card=0
-    for cfg in "${cfgs[@]}"; do
-        local label=$(basename "$cfg" .yaml | sed 's/^config_//')
-        local outdir="$CONFIG_DIR/results_${label}"
-        while (( $(jobs -rp | wc -l) >= PARALLEL )); do
-            wait -n
+    for phase in train eval; do
+        local card=0
+        local launched=0
+        echo "" | tee -a "$QUEUE_LOG"
+        echo "--- $phase pass ---" | tee -a "$QUEUE_LOG"
+        for cfg in "${cfgs[@]}"; do
+            local label=$(basename "$cfg" .yaml | sed 's/^config_//')
+            local outdir="$CONFIG_DIR/results_${label}"
+            while (( $(jobs -rp | wc -l) >= PARALLEL )); do
+                wait -n
+            done
+            if run_one "$phase" "$card" "$label" "$cfg" "$outdir"; then
+                card=$(( (card + 1) % PARALLEL ))
+                launched=$((launched + 1))
+            fi
         done
-        train_one_card "$card" "$label" "$cfg" "$outdir"
-        card=$(( (card + 1) % PARALLEL ))
+        wait
+        echo "  $phase pass: $launched launched" | tee -a "$QUEUE_LOG"
     done
-    wait
-
-    # Eval pass
-    card=0
-    for cfg in "${cfgs[@]}"; do
-        local label=$(basename "$cfg" .yaml | sed 's/^config_//')
-        local outdir="$CONFIG_DIR/results_${label}"
-        while (( $(jobs -rp | wc -l) >= PARALLEL )); do
-            wait -n
-        done
-        eval_one_card "$card" "$label" "$cfg" "$outdir"
-        card=$(( (card + 1) % PARALLEL ))
-    done
-    wait
 
     echo "" | tee -a "$QUEUE_LOG"
     echo "═══ DONE — $(date) ═══" | tee -a "$QUEUE_LOG"

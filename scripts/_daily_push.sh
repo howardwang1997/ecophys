@@ -93,8 +93,11 @@ for name, d in dirs:
     local staged=$(git diff --cached --numstat 2>/dev/null | wc -l)
     if [[ $staged -gt 0 ]]; then
         git commit -m "daily results dump $(date '+%Y-%m-%d %H:%M')" 2>&1 | tail -3
-        git push origin feature/exp113-gabaix-solve 2>&1 | tail -3
-        log "Pushed $staged files."
+        if git push origin feature/exp113-gabaix-solve 2>&1 | tail -5; then
+            log "Pushed $staged files."
+        else
+            log "WARNING: push failed (auth?). Commit saved locally."
+        fi
     else
         log "Nothing new to commit."
     fi
