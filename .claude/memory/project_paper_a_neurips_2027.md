@@ -271,6 +271,66 @@ honest core:**
   "tails XOR dynamics" figure. TODO finalize: swap the real 5.96 SOTA cell into SOURCES + ABIDES
   `_daily` once the re-run lands.
 
+### 2026-06-12 — week-sprint results landed: δ* universality DOWNGRADED; top-up did NOT rescue gate
+
+Pulled the 06-10/11/12 H20 dumps (822 files, dumps only — no H20-side log). All week-sprint cells
+now complete: **118 δ-grid at full 0.35–0.60 lever arm (30 seeds/cell); 114 power top-up landed**
+(eurusd/gold baseline+d050 → 60 seeds, ndx_concave_d050 → 40). Re-scored on Mac with the canonical
+scorers. **Two pre-registered claims moved against us — report honestly, do NOT gate-shop:**
+
+- **δ\*≈0.5 is NOT universal** (`scripts/score_delta_grid.py`, authoritative). Per-asset OLS
+  hill(δ) + bootstrap-over-seeds δ\* CI: spx 0.508 [0.463,0.540] ✓, **ndx 0.531 [0.514,0.555] ✗**,
+  gold 0.513 [0.495,0.534] ✓, eurusd 0.521 [0.499,0.555] ✓, btc 0.508 [0.486,0.530] ✓ → **4/5
+  cover 0.5; ndx deviates** (CI excludes 0.5 by 0.014 — marginal but a clean pre-reg exclusion).
+  The 2-point fits (ndx 0.589 / eurusd 0.658) WERE largely noise: **eurusd corrected to 0.521
+  (covers 0.5), but ndx's is a real ~3% deviation.** ⇒ the 2026-06-09 "δ\*≈0.51 universal across 4
+  assets" line is **superseded** — honest headline is now "4/5 consistent, ndx small significant
+  deviation." (Caveat for referee: hill(δ) line r²=0.22–0.31 — large per-seed scatter; slope
+  strongly negative + δ\* CI tight from 150–180 pts, but the linear fit approximates a possibly
+  curved hill(δ). Open: test true inverse-cubic form — may pull ndx back toward 0.5.)
+- **The n=30→60 power top-up did NOT lift the strict gate** (`score_concave_confirm.py`). Even at
+  n=60, JOINT hill+acf² Bonferroni gate still **2/5** (spx p=0.0014 d=0.90, btc p=0.0002 d=1.07;
+  gold p=0.051 d=0.53, eurusd p=0.062 d=0.50, ndx p=0.0065 d=0.75 all ns). **gold/eurusd are
+  genuinely marginal (medium effect d≈0.5 + noisy discrete net-fact metric), not underpowered** —
+  more seeds won't rescue them. ⇒ frame the solve via the **pooled mechanism + frontier**, not
+  per-asset 5/5: pooled hill_tail in-band **7%→81% (+73pp)**, worst collateral −6pp (gate PASS);
+  concave is the only hill✓+acf²✓ cell ([[project_neural_sde_tournament]] frontier).
+- **Tooling bug to fix:** `score_concave_confirm.py:139` prints "...√-law crossing is UNIVERSAL" —
+  **hardcoded**, reads the stale 2-point δ\* column, now contradicts `score_delta_grid.py`. Fix
+  before exporting any figure/table from it. Log: `logs/2026-06-12.md`.
+
+**Net effect on the honest spine:** still diagnose + concave solve + δ\*, but pillar 3 is now
+"δ\*≈0.5 holds 4/5, ndx deviates" (not universal), and the solve is pooled-effect/frontier framed
+(not per-asset 5/5). Slightly weaker than the 06-09 framing; ~18-25% NeurIPS unchanged in spirit.
+
+### 2026-06-13 — TAIL-TRANSFER DERIVATION added + verified (δ≈0.5 is now DERIVED, not fitted)
+
+The δ≈0.5 result gained a clean derivation — the paper's theory backbone. **Tail-transfer lemma:**
+if excess demand has tail index ζ_ED and impact is Δp=β·sign(ED)·|ED|^δ, then the return tail index
+**α = ζ_ED/δ** (exact change-of-variables on regularly-varying tails). So the crossing to the
+empirical inverse-cubic (α=3, Gabaix 2003) is at **δ* = ζ_ED/3**; with the Gabaix half-cubic demand
+tail ζ_ED≈3/2 → **δ*=1/2 (TLB √-law)**. δ≈0.5 is the exponent reconciling a half-cubic demand tail
+with an inverse-cubic return tail — NOT a fit.
+
+**Verified in-silico on the existing δ-grid** (`scripts/score_transfer_law.py`, no retraining):
+the law's parameter-free prediction `Hill·δ = ζ_ED = const` HOLDS — Hill·δ ≈ **1.48/1.60/1.51/
+1.55/1.49** (spx/ndx/gold/eurusd/btc), CV 1–9% across the grid, all ≈ the Gabaix 1.5. Two payoffs:
+(1) the old "low r²=0.22–0.31" worry was just per-seed scatter — the per-δ *means* are a clean 1/δ
+curve; (2) **ndx's δ*=0.53 deviation is now EXPLAINED** by its heavier demand tail ζ_ED=1.60, i.e.
+δ*=ζ/3 applied per-asset — the honest headline flips from "4/5 universal, ndx mysteriously deviates"
+to "δ*=ζ_ED/3 holds for all 5; δ*=0.5 ⟺ ζ_ED=3/2." **Unifies with exp 109** (dynamical-not-
+distributional): dynamics generate the heavy ED tail (ζ); concave impact transfers ζ→α via δ. One
+causal chain. Derivation written paper-ready: `papers/paper_a_methods/theory_tail_transfer.md`.
+
+**Owed to close end-to-end (P0):** measure ζ_ED DIRECTLY (Hill on the |ED| series) — currently
+inferred via the law. Prediction: ζ_ED≈1.50 (ndx≈1.60). Realizations store only aggregated facts →
+needs a short rollout with ED logging (Mac N≤500 or 1 H20 cell). If confirmed, ED-tail→transfer→
+return-tail is measured end-to-end. **Paper structure decision (2026-06-13): user wants to SPLIT —
+framework/systems paper (ICAIF/tools, repositioned off the refuted "first differentiable" onto
+mechanism-decomposability + attribution + calibration) + this findings paper. I advised against
+(value is in the method↔finding loop; each half weaker alone) but it's reasonable if driven by
+land-grab / guaranteed-pub / disjoint-audience.** Full current state: `results_compilation_2026-06-13.md`.
+
 ## Main claim (post-pivot)
 
 ECoMD is a differentiable MD-style market simulator with mechanism-decomposable dynamics. (1) Systematic ablation reveals an empirical Pareto frontier in hand-crafted Markov mechanism families, with no cell exceeding 5.5/11 stylized facts on 5 assets at n=30. (2) Four architectural extensions — non-Markov memory kernels, scheduled-sampling depth-3 training, Hopfield regime-attractor dynamics, and (with failure-aware safeguards) learned MACE-lite v2 potentials — are individually evaluated; the winning combination lifts the frontier to ≥6.5 on ≥3 assets. (3) Gradient-based posterior inference calibrates ECoMD ~100× faster than ABIDES+SBI at matched coverage.
