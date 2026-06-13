@@ -51,14 +51,12 @@ run_asset() {
   echo "── $asset ── cfg=$cfg" | tee -a "$LOG"
   if [[ ! -f "$cfg" ]]; then echo "  [SKIP] config missing: $cfg" | tee -a "$LOG"; return 0; fi
 
-  if [[ "$FORCE_RETRAIN" != "1" && ! -f "$ckpt" ]]; then
-    echo "  checkpoint absent locally → best-effort R2 restore" | tee -a "$LOG"
-    conda run --no-capture-output -n "$ENV" python -m ecomd.data.checkpoint_sync restore "$ckdir" \
-      >>"$LOG" 2>&1 || echo "  [warn] R2 restore unavailable/failed (will retrain)" | tee -a "$LOG"
-  fi
-
+  # checkpoint_sync has no programmatic 'restore' (only scan/sync/cleanup) — the δ-grid checkpoints
+  # were synced to R2 + deleted locally. To reuse the EXACT trained model, manually place its
+  # checkpoint.pt at "$ckpt" first (scp from the training box / R2). Otherwise retrain 1 seed — fine
+  # for ζ_ED (a seed-robust model property); it just isn't the identical δ-grid seed.
   if [[ "$FORCE_RETRAIN" == "1" || ! -f "$ckpt" ]]; then
-    echo "  retraining 1 seed (concave_d050) into $out" | tee -a "$LOG"
+    echo "  no local checkpoint at $ckpt → retraining 1 seed (concave_d050) into $out" | tee -a "$LOG"
     conda run --no-capture-output -n "$ENV" torchrun --nproc_per_node="$NPROC" --standalone \
       -m ecomd.training.train_distributed --config "$cfg" --out-dir "$out" >>"$LOG" 2>&1 \
       || { echo "  [ERR] retrain failed for $asset" | tee -a "$LOG"; return 1; }
