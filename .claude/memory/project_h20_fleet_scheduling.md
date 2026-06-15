@@ -34,3 +34,25 @@ about up front.
 **How to apply:** before designing any H20 batch, (1) state the window length and EVAL reserve,
 (2) compute configs = (window − eval) × cards / 62min, (3) assign dependency-free work to
 H20-2/3, (4) if unattended, put all conditionals into the driver script.
+
+**howard-pc as an ABIDES CPU node (2026-06-13, provisioned this session):**
+- `100.105.21.7` = **howard-pc**, the user's personal desktop (16 cores), NOT a pre-configured
+  fleet node. **SSH from Mac works as `howardwang@` (key auth)** — contradicts the old "remote not
+  reachable from this session" note for THIS box (Tailscale 100.x). conda at `~/anaconda3`.
+- Provisioned: **partial+sparse clone** `~/ecophys` (`git clone --depth 1 --filter=blob:none
+  --no-checkout … && git sparse-checkout set scripts ecomd`) — avoids the **multi-GB committed
+  result-JSON tree / 81k-object history** (a full clone was 2.3G+ and climbing; sparse = 14M).
+  **The repo bloat will bite any fresh clone — always sparse/shallow on new boxes.**
+- abides env: `conda create -n abides python=3.10` + `pip install numpy pandas scipy tqdm matplotlib
+  seaborn jsons joblib psutil pprofile` (runbook's "only numpy/pandas" is WRONG); `PYTHONPATH=
+  ~/abides`; **patch vanilla abides for pandas 2.x**: `from pandas.io.json import json_normalize`
+  → `from pandas import json_normalize` (3 files). ecophys env: py3.11 + `pip install -e .` (scoring).
+- **ABIDES RMSC03 daily cost (MEASURED): ~41 min/sim concurrent (14-way on 16 cores)** because
+  `book_freq="S"` logs per-second OB (23,401 rows/sim) — pure waste for a close-to-close daily
+  return. Full daily 250 seeds × 5 cells (1250 sims) ≈ **58h**, +sbi serial ~8h ≈ **66h / 2.75d**.
+  **Coarsening book_freq → ~1–3h with identical daily returns** (user chose to run as-is anyway).
+- **Resume:** `~/abides_resume.sh` (idempotent — calibrate skips done CSVs) wired as an **@reboot
+  cron** (`@reboot sleep 60 && bash ~/abides_resume.sh`); pgrep+flock guards prevent double-launch;
+  self-removes the cron when daily(1250)+`sbi_cost_report.json` are both done. Bootstrap +
+  resume scripts live at `~/abides_bootstrap.sh` / `~/abides_resume.sh` on the box.
+- Reusable scripts on branch `feature/abides-cpu-paperA`: `scripts/cpu_paperA_abides.sh {daily|sbi|all}`.
