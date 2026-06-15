@@ -5,12 +5,11 @@
 # The δ-grid INFERS ζ_ED≈1.5 via Hill·δ; this measures it DIRECTLY (Hill on the |ED| series) so the
 # chain ED-tail → transfer → return-tail is verified end-to-end. Prediction: ζ_ED≈1.50 (ndx≈1.60).
 #
-# Per asset: locate the concave_d050 checkpoint (reuse if present, else restore from R2, else retrain
-# 1 seed), then run run_large.py --save-trajectory (dumps excess_demand) into a FRESH dir under
+# Per asset: locate the concave_d050 checkpoint (reuse if present on disk, else retrain 1 seed),
+# then run run_large.py --save-trajectory (dumps excess_demand) into a FRESH dir under
 # experiments/122_zeta_ed/ (never clobbers the δ-grid results), then Hill-estimate |ED|.
 #
-# Usage (on the 2-card box, branch feature/zeta-ed-gpu):
-#   ssh <2card> && cd ecophys
+# Run on the 2-card box, in the repo (branch feature/zeta-ed-gpu):
 #   git fetch --all && git checkout feature/zeta-ed-gpu && git pull
 #   bash scripts/h20_pull_from_r2.sh                 # ensure the 5 assets' parquet are present
 #   bash scripts/gpu_zeta_ed_2card.sh --probe        # spx only: locate/retrain + traj + ζ_ED smoke
@@ -18,6 +17,9 @@
 #   tail -f experiments/_zeta_ed_*.log
 #
 # Cost: reuse path ≈ minutes/asset (inference only); retrain fallback ≈ ~62 min/asset on 2 cards.
+# Note: δ-grid checkpoints were synced to R2 + deleted locally (checkpoint_sync has no programmatic
+# restore). To reuse the EXACT trained model, scp its checkpoint.pt into the ckpt dir first;
+# otherwise the script retrains 1 seed — fine for ζ_ED (a seed-robust model property).
 
 set -uo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
