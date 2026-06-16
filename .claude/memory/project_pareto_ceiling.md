@@ -1,7 +1,10 @@
 ---
-name: Pareto ceiling — 11-fact frontier in v3 mechanism family
-description: 089-099 evidence (3000+ runs, 5 assets, 23 pair combinations) shows no single mechanism nor any depth-2 composition reaches mean ≥ 5.5/11; new SOTA Gold zumdn 5.96. Central Paper A §4 claim.
-type: project
+name: pareto-ceiling-11-fact-frontier-in-v3-mechanism-family
+description: "089-099 evidence (3000+ runs, 5 assets, 23 pair combinations) shows no single mechanism nor any depth-2 composition reaches mean ≥ 5.5/11; new SOTA Gold zumdn 5.96. Central Paper A §4 claim."
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: 32d573d8-fe44-4e40-9577-f55d59632fcb
 ---
 
 > **2026-05-28 update:** exp 102/103 (Batch 1) did NOT break the ceiling (0 cells past the
@@ -19,6 +22,14 @@ type: project
 > **paradigm-level, not ECoMD-specific** (a Paper A *upgrade* to "paradigm-SOTA"), but this is
 > PENDING a timescale-fair re-run (ABIDES scored intraday-on-daily-bands; volume_vol_corr=1.0
 > is an extraction artifact). Don't put the ABIDES comparison in the paper until re-run fairly.
+>
+> **2026-06-16 update — timescale-fair re-run DONE, ABIDES comparison now paper-usable.** Daily
+> mode (each sim-day -> 1 close-to-close return -> 250-pt daily series/cell, 250 seeds x 5 cells,
+> scored on the same 10 daily facts dropping volume_volatility_corr): **best cell = morevalue
+> 4/10** (others 2/2/3/3). Passes only autocorr/cond_kurt/dfa; **fails every clustering+fat-tail
+> fact** (acf2~0, Fano~1, agg~0), and its tails are too THIN (hill 5-7) -- opposite of EcoMD's
+> too-fat overshoot. Confirms the ceiling is **paradigm-level**. Section-7 SBI-cost leg also done:
+> T_sim~844s => 1k/5k/10k sims = 235/1173/2345 CPU-h. See [[neural-sde-tournament-beyond-framework]].
 
 **The 089-099 3-day batch (~3000 cfg) settled the central Paper A question**:
 *can the v3 ECoMD mechanism family produce a "hero" cell that satisfies all 11

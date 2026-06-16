@@ -85,7 +85,7 @@ committed record (state doc / attribution_matrix.md / memory) and should be re-s
 |---|---|---|---|
 | 093 (100) | traditional: GARCH-t / GBM / AR1-SV / LM | GARCH-t fakes Hill+acf² (the surrogate-kill caveat) | [doc] |
 | 095 / 095b (300) | neural-generative: WGAN-LP, TrajCast-lite | Hill✓ but acf²≈0.1 ✗ (no clustering) | [v] in frontier |
-| 105 abides_ceiling (5) | agent-based: ABIDES RMSC03 | **2–3/11**; but n=1, **intraday-scored-on-daily → fair daily re-run OWED** | ⚠ provisional |
+| **105 abides_ceiling (5×250, daily re-run)** | agent-based: ABIDES RMSC03 | **best 4/10** (morevalue; base/morenoise 2, fewnoise/fewvalue 3) on 10 daily facts; passes only autocorr/cond_kurt/dfa; **fails every clustering+tail fact** (acf²≈0, Fano≈1, agg≈0); tails too THIN (Hill 5–7, opposite of EcoMD's too-fat) | **[v] DONE 06-16** |
 
 ### Cluster E — The solve (concave √-impact + δ≈0.5)  (→ §6 solve)
 | exp | what | result | status |
@@ -102,7 +102,8 @@ committed record (state doc / attribution_matrix.md / memory) and should be re-s
 ### Cluster F — Utility / downstream  (→ §7)
 | exp | what | result | status |
 |---|---|---|---|
-| 091 calibration (30) | ECoMD wall-clock leg | ~100× ABIDES+SBI claim; **ABIDES+SBI leg OWED** | ⚠ half |
+| 091 calibration (30) | ECoMD wall-clock leg | ~100× ABIDES+SBI claim | [doc] |
+| **105 sbi cost (20 timed sims)** | ABIDES+SBI comparand | T_sim≈844s ⇒ SBI 1k/5k/10k sims = **235/1173/2345 CPU-h** vs ECoMD gradient calib ~minutes | **[v] DONE 06-16** |
 | 094 var_holdout (96) | clean train/test VaR | no-leakage VaR backtest | [doc] |
 | 015 crash_oos / 121 | OOS crash windows | pending | ⚠ |
 
@@ -143,16 +144,19 @@ rendering). Old fig3/4/5 (scoreboard/overfit/phase) are reusable supporting mate
    AND independently verified* end-to-end — no longer a fit. No retraining; realizations don't store
    ED, so needs a short rollout w/ ED logging (Mac N≤500 smoke per asset, or 1 H20 cell).
    → owed: small patch to the rollout dumper + `score_transfer_law.py --measure-zeta`.
-2. **ABIDES daily fair re-run** (105) — agent-based frontier leg is n=1, intraday-scored-on-daily.
-   Run `h20_abides_baseline.sh MODE=daily` (H20 handback) **or demote ABIDES to a supporting point**
-   (the EcoMD-vs-neural two-paradigm contrast stands without it).
+2. ✅ **ABIDES daily fair re-run** (105) — **DONE 2026-06-16** (CPU box, 5 cells × 250 seed-days,
+   daily mode on 10 facts). Best 4/10 (morevalue); fails every clustering+tail fact; tails too
+   THIN (Hill 5–7). Agent-based now a *solid* third frontier corner: reproduces neither, undershoots
+   tails — distinct from EcoMD (overshoots tails) and neural (kills clustering). Results fetched to
+   `experiments/105_abides_ceiling/results_rmsc03_*_daily/inference_merged.json`.
 3. **Frontier on >1 asset** — neural baselines (WGAN/TrajCast/diffusion) are SPX-only in the frontier
    table. Score them on NDX (+1 more) so "neural passes Hill but fails acf²" is multi-asset, or scope
    the claim to SPX explicitly. (Baselines exist in 095b — may just need re-scoring, not re-running.)
 
 **P1 — strengthens / referee will ask:**
-4. **ABIDES+SBI calibration leg** (091) — §7's "~100× faster" claim is currently ECoMD-leg only;
-   needs the ABIDES+SBI comparand. (H20 + ABIDES install.)
+4. ✅ **ABIDES+SBI calibration leg** (091) — **DONE 2026-06-16**. T_sim≈844 s/sim ⇒ SBI 1k/5k/10k
+   sims = 235/1173/2345 CPU-h; comparand for §7's gradient-calibration claim (`sbi_cost_report.json`).
+   Note the gap is ≫100× at sim-count budgets (sim-bound); state honestly as CPU-core-hours.
 5. **Per-step vs series tail check** — confirm the marginal-tail caveat empirically: Hill on per-step
    |Δp| vs on the aggregated return series should give the same exponent. Cheap, defends the lemma's
    transfer-to-series step against a referee. (Same ED-logging rollout as #1.)

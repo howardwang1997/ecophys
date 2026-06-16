@@ -1,8 +1,10 @@
 ---
 name: neural-sde-tournament-beyond-framework
 description: "2026-05-29 program pivot: after Path A falsified + ABIDES 2-3/11 (paradigm-level ceiling), go BEYOND the Langevin framework via a tournament of new architectures, seeded by a scout. Hero = learned stochastic-vol / Neural-SDE diffusion."
-metadata:
+metadata: 
+  node_type: memory
   type: project
+  originSessionId: 32d573d8-fe44-4e40-9577-f55d59632fcb
 ---
 
 **Why (2026-05-29):** Path A (per-fact surrogates, exp 107) was falsified (p=0.81) and
@@ -86,6 +88,28 @@ is now strong + mechanistically grounded**:
 
 Bracket 2 ceiling map: 111 + existing 080/095b SPX baselines + **ABIDES timescale-fair re-run**
 (still owed; scripts exist, adjust to multi-sim-day→daily).
+
+**2026-06-16 — ABIDES timescale-fair daily re-run DONE (the owed agent-based frontier point;
+exp 105, JPMC RMSC03 on howard-pc CPU box, 5 cells × 250 seed-days each, full per-second OB
+logging).** Each sim-day → one gross close-to-close daily return → a 250-pt daily series per cell
+(n_total_rollouts=1 BY DESIGN, daily mode), scored on the SAME 10 daily facts as EcoMD (drop
+volume_volatility_corr, no ABIDES volume). **Best cell = rmsc03_morevalue 4/10**; others base
+2/10, morenoise 2/10, fewnoise 3/10, fewvalue 3/10. **Passes only the "easy" daily facts**
+(autocorr_returns 5/5, conditional_kurtosis 5/5, dfa_hurst 3/5, zumbach 1/5); **FAILS every
+volatility-clustering + fat-tail fact** — acf2≈0, Fano≈0.98 (Poisson, no intermittency),
+agg_gaussianity≈0, leverage≈0, gain_loss≈0. **KEY nuance for the frontier figure: ABIDES daily
+tails are too THIN (hill 5.0-6.9, band [2,4]) — the OPPOSITE sign of EcoMD's too-FAT overshoot
+(hill~1.3-1.5).** So "tails XOR dynamics" sharpens to: agent-based(ABIDES) reproduces NEITHER and
+under-shoots tails; physics-sim(EcoMD) reproduces dynamics but over-shoots tails; deep-generative
+reproduces tails but kills clustering — three distinct failure corners, error-sign flips between
+them (consistent w/ exp 109/111). Confirms the ceiling is **paradigm-level** even for the
+field-standard agent-based simulator. Results: experiments/105_abides_ceiling/results_rmsc03_*_daily/
+inference_merged.json (fetched to Mac). NOTE: score_summary.py rejects daily cells as "unstable"
+because is_unstable() requires the dropped volume_volatility_corr → compute n_pass over the 10
+present facts directly (harness mismatch, not a data problem). **§7 calibration-cost leg also DONE
+(sbi_cost_report.json):** ABIDES T_sim≈844s/sim (per-second-logging full mode), SBI budget
+1k/5k/10k sims → 235/1173/2345 CPU-h — the comparand for "ECoMD gradient calibration ~10² steps,
+minutes". Both CPU legs complete; @reboot resume cron retired.
 
 **2026-06-01 — exp 112 tail-clamp probe (the one untested lever; BUILT + smoked, awaiting H20):**
 soft differentiable clamp `r=scale·tanh(r/scale)` in `price_formation.py` (`tail_clamp_c`/`_mode`,
