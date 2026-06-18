@@ -92,11 +92,21 @@ def _asset_of(results_dir: Path) -> str | None:
 
 
 def measure_zeta_mode(root: Path) -> None:
-    """Directly Hill-estimate ζ_ED = α(|ED|) from saved trajectories, per asset."""
+    """Directly measure ζ_ED = α(|ED|) AND the |return| tail (cube-law sanity) from trajectories.
+
+    A single-point Hill number is unreliable for heavy tails (it swings wildly with k). So we
+    report (i) Hill α at a representative k with 95% bootstrap CI, and (ii) the α-vs-k curve
+    (Hill plot, Cont 2001) for BOTH |ED| and |log_returns|. Three independent verdicts per asset:
+      - ζ_ED: does its CI include the theory value 1.5?  (tail-transfer δ*=ζ_ED/3)
+      - |ret|: does its CI include the cube-law value 3?
+      - transfer: α_ret ≈ ζ_ED/δ = 2·ζ_ED  (ratio α_ret/ζ_ED should be ≈2 at δ=0.5)
+    If CIs are wide or no α(k) plateau exists, the rollout is too short → need more steps (C).
+    """
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from ecomd.eval.stylized_facts import hill_tail_index  # canonical estimator
 
-    by_asset: dict[str, list[np.ndarray]] = defaultdict(list)
+    ed_of: dict[str, list[np.ndarray]] = defaultdict(list)
+    ret_of: dict[str, list[np.ndarray]] = defaultdict(list)
     npz_files = sorted(root.glob("results_*/trajectory_*.npz"))
     if not npz_files:
         print(f"no trajectory_*.npz under {root}/results_*/ — run run_large.py --save-trajectory first")
@@ -111,33 +121,99 @@ def measure_zeta_mode(root: Path) -> None:
             print(f"  [warn] {f.name} has no 'excess_demand' (re-run with --save-trajectory) — skip")
             continue
         ed = np.asarray(z["excess_demand"], dtype=float)
-        by_asset[asset].append(ed[np.isfinite(ed)])
+        ed_of[asset].append(ed[np.isfinite(ed)])
+        if "log_returns" in z:  # sanity series (cube law: Hill α≈3)
+            rt = np.asarray(z["log_returns"], dtype=float)
+            ret_of[asset].append(rt[np.isfinite(rt)])
 
-    print(f"# ζ_ED measured directly (Hill on |ED|, k_frac=0.05) vs predicted via Hill·δ. "
-          f"theory: δ*=ζ_ED/3.\n")
-    print(f"{'asset':8}{'n_ED':>10}{'ζ_ED(meas)':>12}{'ζ_ED(pred)':>12}{'Δ':>8}{'δ*=ζ/3':>9}{'covers 1.5?':>12}")
+    k_grid = [0.005, 0.01, 0.02, 0.05, 0.1]   # Hill-plot sample points
+    k_point = 0.02                              # representative k for CI
+    n_boot = 200
+
+    print(f"# ζ_ED direct measurement: Hill α on |ED| (theory ζ_ED≈1.5) + |log_returns| sanity (cube law α≈3).")
+    print(f"# point k_frac={k_point} with {n_boot}-bootstrap 95% CI; curve sampled at k_frac∈{k_grid}.\n")
+
     rows = []
     for a in ASSETS:
-        chunks = by_asset.get(a, [])
-        if not chunks:
-            print(f"{a:8}{'(no ED)':>10}")
+        ed_chunks = ed_of.get(a, [])
+        if not ed_chunks:
+            print(f"{a:8}  (no ED)")
             continue
-        ed = np.concatenate(chunks)
+        ed = np.concatenate(ed_chunks)
+        rt = np.concatenate(ret_of[a]) if ret_of.get(a) else None
+
+        def curve(x: np.ndarray) -> list[float]:
+            out: list[float] = []
+            for kf in k_grid:
+                try:
+                    out.append(float(hill_tail_index(x, k_frac=kf, n_bootstrap=0).estimate))
+                except ValueError:
+                    out.append(float("nan"))
+            return out
+
         try:
-            res = hill_tail_index(ed, k_frac=0.05, side="both", n_bootstrap=0)
-            zmeas = float(res.estimate)
-        except Exception as e:  # too few points / degenerate
-            print(f"{a:8}{ed.size:>10}  hill failed: {e}")
+            ed_res = hill_tail_index(ed, k_frac=k_point, n_bootstrap=n_boot)
+        except ValueError as e:
+            print(f"{a:8}  ED hill failed (n={ed.size}): {e}\n")
             continue
+        ed_ci = (ed_res.ci_low, ed_res.ci_high)
+        ed_curve = curve(ed)
+
+        ret_res = ret_ci = ret_curve = None
+        if rt is not None and rt.size >= 50:
+            try:
+                ret_res = hill_tail_index(rt, k_frac=k_point, n_bootstrap=n_boot)
+                ret_ci = (ret_res.ci_low, ret_res.ci_high)
+                ret_curve = curve(rt)
+            except ValueError:
+                pass
+
+        def fmt_ci(ci: tuple) -> str:
+            return f"[{ci[0]:.2f},{ci[1]:.2f}]" if ci and ci[0] is not None else "[—]"
+
+        def fmt_curve(cs: list[float]) -> str:
+            return "  ".join(f"{int(kf*1000)}‰:{v:.2f}" for kf, v in zip(k_grid, cs))
+
         zpred = ZETA_PREDICTED.get(a, float("nan"))
-        near = "✓" if abs(zmeas - 1.5) <= 0.2 else "✗"
-        print(f"{a:8}{ed.size:>10}{zmeas:>12.3f}{zpred:>12.3f}{zmeas-zpred:>+8.3f}"
-              f"{zmeas/3:>9.3f}{near:>12}")
-        rows.append({"asset": a, "n_ED": int(ed.size), "zeta_ED_measured": zmeas,
-                     "zeta_ED_predicted_via_hilldelta": zpred, "delta_star_from_measured": zmeas / 3})
+        ed_has15 = ed_ci[0] is not None and (ed_ci[0] <= 1.5 <= ed_ci[1])
+        ret_has3 = bool(ret_ci and ret_ci[0] is not None and (ret_ci[0] <= 3.0 <= ret_ci[1]))
+        transfer_ratio = (ret_res.estimate / ed_res.estimate) if ret_res else float("nan")
+
+        print(f"{a:8}  n_ED={ed.size:>6}  n_ret={rt.size if rt is not None else 0:>6}")
+        print(f"          ζ_ED    = {ed_res.estimate:>6.3f}  {fmt_ci(ed_ci)}   "
+              f"(pred {zpred:.3f})   1.5∈CI? {'✓' if ed_has15 else '✗'}   δ*={ed_res.estimate/3:.3f}")
+        if ret_res:
+            print(f"          |ret| α = {ret_res.estimate:>6.3f}  {fmt_ci(ret_ci)}   "
+                  f"3∈CI? {'✓' if ret_has3 else '✗'}   α_ret/ζ_ED={transfer_ratio:.2f} (theory 2.0)")
+        print(f"          |ED|  α(k): {fmt_curve(ed_curve)}")
+        if ret_curve:
+            print(f"          |ret| α(k): {fmt_curve(ret_curve)}")
+        print()
+
+        rows.append({
+            "asset": a, "n_ED": int(ed.size), "n_ret": int(rt.size) if rt is not None else 0,
+            "zeta_ED_measured": float(ed_res.estimate),
+            "zeta_ED_ci": [float(c) for c in ed_ci] if ed_ci[0] is not None else None,
+            "zeta_ED_predicted": float(zpred), "zeta_ED_includes_1p5": bool(ed_has15),
+            "ret_hill": float(ret_res.estimate) if ret_res else None,
+            "ret_ci": [float(c) for c in ret_ci] if ret_ci and ret_ci[0] is not None else None,
+            "ret_includes_3": bool(ret_has3),
+            "transfer_ratio_alpha_ret_over_zeta_ed": float(transfer_ratio) if ret_res else None,
+            "ed_alpha_of_k": {f"k{kf}": v for kf, v in zip(k_grid, ed_curve)},
+            "ret_alpha_of_k": {f"k{kf}": v for kf, v in zip(k_grid, ret_curve)} if ret_curve else None,
+            "k_point": k_point, "k_grid": k_grid, "n_bootstrap": n_boot,
+        })
+
     out = root / "zeta_ed_report.json"
-    out.write_text(json.dumps({"rows": rows, "prediction": "ζ_ED≈1.50 (ndx≈1.60); δ*=ζ_ED/3"}, indent=2))
-    print(f"\n  VERDICT: derivation closes end-to-end iff measured ζ_ED ≈ predicted (≈1.5, ndx≈1.6).")
+    out.write_text(json.dumps({
+        "rows": rows,
+        "prediction": "ζ_ED≈1.50 (ndx≈1.60); δ*=ζ_ED/3; cube law |ret| Hill≈3; transfer α_ret=ζ_ED/δ=2·ζ_ED",
+        "note": "single-point Hill is unreliable for heavy tails; judge via CI tightness + α(k) plateau.",
+    }, indent=2))
+    closes = sum(1 for r in rows if r["zeta_ED_includes_1p5"])
+    sane = sum(1 for r in rows if r["ret_includes_3"])
+    print(f"  VERDICT: ζ_ED CI∋1.5 for {closes}/{len(rows)}; |ret| CI∋3 for {sane}/{len(rows)}.")
+    print(f"  Derivation closes iff CIs are tight AND both hold AND α_ret/ζ_ED≈2 (transfer law).")
     print(f"  wrote {out}")
 
 
