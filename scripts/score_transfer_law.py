@@ -306,6 +306,76 @@ def windows_mode(root: Path, window: int, stride: int, k_frac: float,
     print(f"\n  wrote {out}")
 
 
+def r1_warmup_mode(root: Path, drops: tuple[int, ...] = (0, 20, 50, 200)) -> None:
+    """R1 magnitude: reproduce the STANDARD `hill_tail_index` (k_frac=0.05, side='both' — exactly
+    `compute_all`'s call) on each R1 cell's RETURN series WITH vs WITHOUT a warmup discard. Answers
+    Phase 0's open magnitude question: does the concave 'in-band' hill flip to TOO-THIN once burn-in
+    is dropped, and does baseline leave the TOO-FAT regime? Cells = `r1_*` dirs from
+    `gpu_exp123_stage1.sh r1` (114/113 baseline + concave_d050, --save-trajectory).
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from ecomd.eval.stylized_facts import hill_tail_index  # canonical standard estimator
+
+    BAND = (2.0, 4.0)
+    cell_dirs = sorted(d for d in root.glob("r1_*") if d.is_dir())
+    if not cell_dirs:
+        print(f"no r1_* cell dirs under {root} — run `gpu_exp123_stage1.sh r1` first")
+        sys.exit(2)
+
+    def verdict(h: float) -> str:
+        return "IN-BAND" if BAND[0] <= h <= BAND[1] else ("TOO-FAT" if h < BAND[0] else "TOO-THIN")
+
+    rows = []
+    print(f"# R1 standard-hill (k_frac=0.05, side=both — as compute_all) vs warmup discard. band {BAND}.")
+    print(f"# heavy⇒low hill. drops={list(drops)} steps.\n")
+    hdr = "cell".ljust(22) + "".join(f"drop{d:>4}".rjust(14) for d in drops) + "   Δ(50-0)  flip?"
+    print(hdr)
+    for d in cell_dirs:
+        npz = sorted(d.glob("**/trajectory_*.npz"))
+        if not npz:
+            continue
+        per_drop: dict[int, tuple[float, float, int]] = {}
+        for drop in drops:
+            hills = []
+            for f in npz:
+                z = np.load(f)
+                if "log_returns" not in z:
+                    continue
+                r = np.asarray(z["log_returns"], dtype=float)[drop:]
+                r = r[np.isfinite(r)]
+                if r.size < 50:
+                    continue
+                try:
+                    hills.append(float(hill_tail_index(r, k_frac=0.05, side="both").estimate))
+                except Exception:
+                    pass
+            if hills:
+                per_drop[drop] = (float(np.mean(hills)), float(np.std(hills)), len(hills))
+        if not per_drop:
+            continue
+        cells = "".join(
+            (f"{per_drop[d][0]:6.2f}±{per_drop[d][1]:.2f}" if d in per_drop else "    —    ").rjust(14)
+            for d in drops)
+        h0 = per_drop.get(0, (float("nan"),))[0]
+        h50 = per_drop.get(50, (float("nan"),))[0]
+        delta = h50 - h0
+        flip = f"{verdict(h0)}→{verdict(h50)}" if np.isfinite(delta) else "—"
+        print(f"{d.name.ljust(22)}{cells}   {delta:+7.2f}  {flip}")
+        rows.append({"cell": d.name, "n_rollouts": len(npz),
+                     "hill_by_drop": {str(k): {"mean": v[0], "std": v[1], "n": v[2]}
+                                      for k, v in per_drop.items()},
+                     "delta_50_minus_0": float(delta) if np.isfinite(delta) else None,
+                     "verdict_drop0": verdict(h0) if np.isfinite(h0) else None,
+                     "verdict_drop50": verdict(h50) if np.isfinite(h50) else None})
+
+    out = root / "r1_warmup_report.json"
+    out.write_text(json.dumps({"band": list(BAND), "drops": list(drops),
+                               "estimator": "hill_tail_index(k_frac=0.05, side=both)", "rows": rows}, indent=2))
+    print("\n  R1 verdict: contamination is real iff dropping warmup moves hill UP (Δ>0) and the")
+    print("  concave cell flips IN-BAND→TOO-THIN. Then the 5-asset concave 'solve' is burn-in-held.")
+    print(f"  wrote {out}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("exp_dir", nargs="?", default="experiments",
@@ -318,8 +388,12 @@ def main() -> None:
     ap.add_argument("--stride", type=int, default=100, help="window stride (steps)")
     ap.add_argument("--k-frac", type=float, default=0.1, help="Hill k fraction per window")
     ap.add_argument("--shock-step", type=int, default=None, help="step where a shock was injected (marker)")
+    ap.add_argument("--r1-warmup", metavar="DIR", default=None,
+                    help="dir with r1_*/trajectory_*.npz → standard hill with/without warmup discard (R1 magnitude)")
     args = ap.parse_args()
-    if args.windows:
+    if args.r1_warmup:
+        r1_warmup_mode(Path(args.r1_warmup))
+    elif args.windows:
         windows_mode(Path(args.windows), args.window, args.stride, args.k_frac, args.shock_step)
     elif args.measure_zeta:
         measure_zeta_mode(Path(args.measure_zeta))

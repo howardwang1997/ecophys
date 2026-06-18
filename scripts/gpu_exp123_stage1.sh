@@ -128,6 +128,11 @@ eval_stage1() {  # windowed Hill α(t) per arm + the H1–H4 verdict scaffold
   say "  H1 control α_ED ≥4 in [500,3000)?  H2 kick* α_ED ≤2 post-shock, deepening with dose?"
   say "  H3 recovers to ≥4 by step ~7000?   H4 post-shock min α matches the t<500 burn-in template?"
   say "  H1∧H2∧H3∧H4 ⇒ PHYSICS (paper earned).  H2 fails ⇒ artifact (fallback)."
+  # R1 magnitude — standard hill with/without warmup discard (only if r1_* trajectories exist)
+  if ls "$EXP"/r1_*/**/trajectory_*.npz "$EXP"/r1_*/trajectory_*.npz >/dev/null 2>&1; then
+    say "── R1 magnitude (standard hill vs warmup discard) ──"
+    run conda run --no-capture-output -n "$ENV" python scripts/score_transfer_law.py --r1-warmup "$EXP"
+  fi
 }
 
 fanout() {  # on h20_1: local spx (8) + SSH ndx (2) + SSH R1 (2)
