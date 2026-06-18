@@ -128,14 +128,24 @@ gives 3 transients/cfg ⇒ n=30 seeds × 1 dose still yields 90 transients from 
 
 ## 5. Prerequisites checklist (before any GPU)
 
-- [ ] P1: `excess_demand_raw` logged pre-impact (`price_formation.py`), threaded to npz.
-- [ ] Shock-injection hook in `EcoMDSimulator.step()` — a scheduled `{step: shock_spec}` map or a
-      callback; must be a no-op when unset (zero behaviour change to all existing runs).
-- [ ] `--windows` mode in `score_transfer_law.py` (sliding-window Hill + CI + transfer ratio).
-- [ ] Mac smoke (N≤500): burn-in template + one injected shock renders a Hill-vs-time dip-and-recover.
-- [ ] Config family `experiments/123_driven_transient/config_*` generated (asset × arm × dose × seed).
+- [x] **P1**: raw pre-impact ED logged via `ExcessDemandParams.log_raw_excess_demand`
+      (default False = bit-exact); meta `ed_is_raw` stamped through `run()` + the run_large npz.
+      `price_formation.py` captures `excess_demand_raw` before `_concave_impact`. (2026-06-18)
+- [x] **Shock hook**: `EcoMDSimulator._shock_schedule` (default `None` = no-op) dispatched at the
+      top of `step()`; `_apply_shock` supports `state_kick` (primary, universal) + `news`. (2026-06-18)
+- [x] **`--windows` mode** in `score_transfer_law.py`: sliding-window Hill α(t) over npz, reads
+      `ed_is_raw`, marks the shock step. (2026-06-18)
+- [x] **Mac smoke** (`scripts/smoke_exp123_plumbing.py`, all pass): P1 logging-only (returns
+      bit-identical), shock no-op-by-default + no backward leak, estimator renders the burn-in dip
+      live (α_ED 1.06→4.8 on an untrained sim). 66 price/sim/observable tests pass. (2026-06-18)
+- [ ] Config family `experiments/123_driven_transient/config_*` generated (asset × arm × dose × seed)
+      + a `run_large` `--shock` CLI arg to set `_shock_schedule` from config (Stage-1 entry).
 - [ ] Pre-register this DESIGN.md (commit SHA) before the GPU run — arXiv-style timestamp per
       `feedback_preregistration`.
+
+**Stage-0 status (2026-06-18): DONE.** Plumbing landed + validated (commit on
+`feature/exp113-gabaix-solve`). Remaining before Stage-1 GPU: the config-family generator + the
+`run_large --shock` wiring, then pre-register.
 
 ---
 
