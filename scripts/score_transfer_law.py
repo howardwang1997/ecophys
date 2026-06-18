@@ -217,14 +217,111 @@ def measure_zeta_mode(root: Path) -> None:
     print(f"  wrote {out}")
 
 
+def windows_mode(root: Path, window: int, stride: int, k_frac: float,
+                 shock_step: int | None) -> None:
+    """Sliding-window Hill α(t) over trajectory npz — the exp 123 driven-transient
+    estimator. Renders the tail-heaviness time profile: a burn-in dip at t≈0 (heavy,
+    low α), a light steady-state plateau (high α), and — if a shock was injected —
+    a post-shock dip-and-recover. Aggregates across rollouts (npz files). Heavy tail
+    ⇒ LOW α; light ⇒ HIGH α. Cube law α≈3.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from ecomd.eval.stylized_facts import hill_tail_index
+
+    npz_files = sorted(root.glob("**/trajectory_*.npz"))
+    if not npz_files:
+        print(f"no trajectory_*.npz under {root} — run run_large.py --save-trajectory first")
+        sys.exit(2)
+
+    def windowed_hill(x: np.ndarray) -> tuple[list[int], list[float]]:
+        centers: list[int] = []
+        alphas: list[float] = []
+        start = 0
+        while start + window <= x.size:
+            seg = x[start:start + window]
+            seg = seg[np.isfinite(seg)]
+            try:
+                a = float(hill_tail_index(seg, k_frac=k_frac, side="both", n_bootstrap=0).estimate)
+            except Exception:
+                a = float("nan")
+            centers.append(start + window // 2)
+            alphas.append(a)
+            start += stride
+        return centers, alphas
+
+    ed_curves: list[list[float]] = []
+    ret_curves: list[list[float]] = []
+    centers_ref: list[int] = []
+    ed_is_raw: int | None = None
+    for f in npz_files:
+        z = np.load(f)
+        if ed_is_raw is None and "ed_is_raw" in z:
+            ed_is_raw = int(z["ed_is_raw"])
+        if "excess_demand" in z:
+            c, a = windowed_hill(np.asarray(z["excess_demand"], dtype=float))
+            centers_ref = c
+            ed_curves.append(a)
+        if "log_returns" in z:
+            c, a = windowed_hill(np.asarray(z["log_returns"], dtype=float))
+            centers_ref = c or centers_ref
+            ret_curves.append(a)
+
+    def agg(curves: list[list[float]]) -> tuple[list, list]:
+        if not curves:
+            return [], []
+        width = min(len(c) for c in curves)
+        M = np.array([c[:width] for c in curves], dtype=float)
+        with np.errstate(all="ignore"):
+            return list(np.nanmean(M, axis=0)), list(np.nanstd(M, axis=0))
+
+    ed_mean, ed_std = agg(ed_curves)
+    ret_mean, ret_std = agg(ret_curves)
+    centers = centers_ref[:len(ed_mean or ret_mean)]
+
+    ed_lbl = {1: "RAW pre-impact (ζ_ED)", 0: "POST-impact (=return tail)"}.get(
+        ed_is_raw, "unknown (re-run with log_raw_excess_demand)")
+    print(f"# windowed Hill α(t): window={window} stride={stride} k_frac={k_frac}  "
+          f"({len(npz_files)} rollouts)")
+    print(f"# excess_demand logged as: {ed_lbl}.  heavy tail⇒low α, light⇒high α, cube law α≈3.")
+    if shock_step is not None:
+        print(f"# shock injected at step {shock_step} (marked ▼).")
+    print(f"\n{'center':>8} {'α_ED':>7} {'±':>5} {'α_ret':>7} {'±':>5}")
+    for i, c in enumerate(centers):
+        mark = " ▼shock" if (shock_step is not None and abs(c - shock_step) <= stride // 2) else ""
+        em = ed_mean[i] if i < len(ed_mean) else float("nan")
+        es = ed_std[i] if i < len(ed_std) else float("nan")
+        rm = ret_mean[i] if i < len(ret_mean) else float("nan")
+        rs = ret_std[i] if i < len(ret_std) else float("nan")
+        print(f"{c:>8} {em:>7.2f} {es:>5.2f} {rm:>7.2f} {rs:>5.2f}{mark}")
+
+    out = root / "windowed_hill_report.json"
+    out.write_text(json.dumps({
+        "window": window, "stride": stride, "k_frac": k_frac, "shock_step": shock_step,
+        "n_rollouts": len(npz_files), "ed_is_raw": ed_is_raw,
+        "centers": [int(c) for c in centers],
+        "alpha_ED_mean": [float(v) for v in ed_mean], "alpha_ED_std": [float(v) for v in ed_std],
+        "alpha_ret_mean": [float(v) for v in ret_mean], "alpha_ret_std": [float(v) for v in ret_std],
+        "note": "exp 123 driven-transient: burn-in dip + steady plateau + (if shocked) dip-and-recover.",
+    }, indent=2))
+    print(f"\n  wrote {out}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("exp_dir", nargs="?", default="experiments",
                     help="experiments root for fit mode (default: experiments)")
     ap.add_argument("--measure-zeta", metavar="DIR", default=None,
                     help="directory with results_<asset>/trajectory_*.npz → measure ζ_ED directly")
+    ap.add_argument("--windows", metavar="DIR", default=None,
+                    help="dir with trajectory_*.npz → sliding-window Hill α(t) (exp 123 driven-transient)")
+    ap.add_argument("--window", type=int, default=500, help="window length (steps)")
+    ap.add_argument("--stride", type=int, default=100, help="window stride (steps)")
+    ap.add_argument("--k-frac", type=float, default=0.1, help="Hill k fraction per window")
+    ap.add_argument("--shock-step", type=int, default=None, help="step where a shock was injected (marker)")
     args = ap.parse_args()
-    if args.measure_zeta:
+    if args.windows:
+        windows_mode(Path(args.windows), args.window, args.stride, args.k_frac, args.shock_step)
+    elif args.measure_zeta:
         measure_zeta_mode(Path(args.measure_zeta))
     else:
         fit_mode(Path(args.exp_dir))

@@ -625,6 +625,10 @@ class EcoMDSimulator(nn.Module):
         else:
             self.is_informed = None
         self._fundamental: float = 0.0  # F_t, detached running state
+        # exp 123 driven-transient: optional {step_idx: shock_spec} schedule.
+        # None (default) → no-op, zero behaviour change. Set externally before a
+        # rollout to drive the system out of steady state. See _apply_shock.
+        self._shock_schedule: dict[int, dict[str, Any]] | None = None
 
     # ── Properties ─────────────────────────────────────────────────────────
 
@@ -686,6 +690,43 @@ class EcoMDSimulator(nn.Module):
                 if (self.cfg.info_asym_enabled and self.is_informed is not None) else None)
         return self.moe_router.load_balance(s, ctx, info)
 
+    def _apply_shock(
+        self,
+        spec: dict[str, Any],
+        s: Tensor,
+        *,
+        generator: torch.Generator | None = None,
+    ) -> Tensor:
+        """Drive the system out of steady state (exp 123 driven-transient).
+
+        Shock channels (``spec["type"]``):
+        - ``"state_kick"``: displace a fraction ``frac`` of agents' positions by
+          ``mag`` × the cross-sectional position std. Universal (works on any
+          checkpoint) and the closest analogue of the t=0 burn-in displacement,
+          so it is the primary probe for H4 (same-mechanism-as-burn-in).
+        - ``"news"``: add ``delta_f`` to the detached fundamental F_t. Only
+          propagates when ``cfg.info_asym_enabled`` (informed agents react to F_t).
+
+        Returns a possibly-perturbed ``s`` (state_kick); other channels mutate
+        attributes in place and return ``s`` unchanged. Inference-only (the
+        in-place kick is not meant to be differentiated through).
+        """
+        kind = spec.get("type", "state_kick")
+        if kind == "news":
+            self._fundamental = float(self._fundamental) + float(spec["delta_f"])
+            return s
+        if kind == "state_kick":
+            frac = float(spec.get("frac", 0.1))
+            mag = float(spec.get("mag", 3.0))
+            n = s.shape[0]
+            k = max(1, int(round(frac * n)))
+            idx = torch.randperm(n, generator=generator, device=s.device)[:k]
+            scale = s[:, 0].std().detach()
+            s = s.clone()
+            s[idx, 0] = s[idx, 0] + mag * scale
+            return s
+        raise ValueError(f"unknown shock type: {kind!r}")
+
     def step(
         self,
         s: Tensor,
@@ -725,6 +766,11 @@ class EcoMDSimulator(nn.Module):
           return is the sum of ``inner_steps`` independent agent walks,
           producing a much more random-walk-like return series.
         """
+        # exp 123 driven-transient: apply a scheduled shock at this step (no-op
+        # unless a schedule was set externally). May return a perturbed s.
+        if self._shock_schedule is not None and step_idx in self._shock_schedule:
+            s = self._apply_shock(self._shock_schedule[step_idx], s, generator=generator)
+
         # Tier 1.1: update per-agent memory before computing forces so the
         # current step's potential sees this step's memory readout.
         h_agent_next = h_agent
@@ -1286,7 +1332,11 @@ class EcoMDSimulator(nn.Module):
         recorder = TrajectoryRecorder(
             dt=self.cfg.dt,
             meta={"n_steps": n_steps, "seed": seed if seed is not None else -1,
-                  "n_agents": self.cfg.n_agents, "d_state": self.cfg.d_state},
+                  "n_agents": self.cfg.n_agents, "d_state": self.cfg.d_state,
+                  # exp 123 (P1): records whether the logged excess_demand is the
+                  # raw pre-impact tail (ζ_ED) or the post-impact (= return) tail.
+                  "ed_is_raw": int(getattr(getattr(self.price_formation, "params", None),
+                                           "log_raw_excess_demand", False))},
             lightweight=lightweight,
         )
         for k in range(n_steps):

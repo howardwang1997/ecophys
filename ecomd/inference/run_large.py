@@ -113,6 +113,8 @@ def main() -> None:
                 "volumes": volumes,
                 "log_prices": traj.log_prices.detach().cpu().numpy(),
                 "excess_demand": traj.excess_demand.detach().cpu().numpy(),
+                # exp 123 (P1): 1 if excess_demand is the raw pre-impact tail (ζ_ED).
+                "ed_is_raw": int(getattr(traj, "meta", {}).get("ed_is_raw", 0)),
             }
         del traj
         facts = compute_all(returns, volume=volumes)

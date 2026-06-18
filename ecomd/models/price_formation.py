@@ -209,6 +209,10 @@ class ExcessDemandParams:
     impact_delta_init: float = 0.7
     impact_delta_learnable: bool = True
     impact_scale: float = 0.5
+    # exp 123 (P1): log the PRE-impact (raw) excess demand instead of the
+    # post-concave-impact value. The theory's ζ_ED is the raw tail; the default
+    # logs post-impact (= return tail by construction). OFF = bit-exact legacy.
+    log_raw_excess_demand: bool = False
 
 
 class ExcessDemandPrice(nn.Module):
@@ -353,6 +357,9 @@ class ExcessDemandPrice(nn.Module):
             ed_flow = (w * t_innov).sum() / n
             excess_demand = excess_demand + torch.exp(self.mass_log_flow_gain) * ed_flow
         # exp 113 (2): concave (sqrt) price impact compresses large aggregate flow.
+        # exp 123 (P1): capture the raw pre-impact ED (theory's ζ_ED quantity) before
+        # the concave map overwrites it. When concave is off, raw == post.
+        excess_demand_raw = excess_demand
         if p.impact_concave_enabled:
             excess_demand = self._concave_impact(excess_demand)
         volume = dpos.abs().sum()
@@ -451,7 +458,8 @@ class ExcessDemandPrice(nn.Module):
         )
         context = torch.stack([log_price_next, vol_next, log_ret])
         aux: dict[str, Tensor] = {
-            "excess_demand": excess_demand.detach(),
+            "excess_demand": (excess_demand_raw if p.log_raw_excess_demand
+                              else excess_demand).detach(),
             "volume": volume.detach(),
             "log_return": log_ret.detach(),
             "beta_eff": beta_eff.detach(),
