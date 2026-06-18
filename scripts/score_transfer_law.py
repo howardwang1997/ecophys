@@ -376,6 +376,86 @@ def r1_warmup_mode(root: Path, drops: tuple[int, ...] = (0, 20, 50, 200)) -> Non
     print(f"  wrote {out}")
 
 
+def verdict_mode(exp_dir: Path, asset: str = "spx") -> None:
+    """Apply the frozen PREREG H1–H4 gate to the per-arm windowed_hill_report.json files.
+
+    Reads results_<asset>_{control,kick3,kick6,kick12}/windowed_hill_report.json and prints a
+    PASS/FAIL scorecard + the P / A / ambiguous decision. α low = heavy, α≥4 = light, cube ≈ 1.5.
+    """
+    LIGHT, HEAVY = 4.0, 2.0
+
+    def load(arm: str):
+        p = exp_dir / f"results_{asset}_{arm}" / "windowed_hill_report.json"
+        if not p.exists():
+            return None
+        d = json.loads(p.read_text())
+        c = np.array(d["centers"], dtype=float)
+        a = np.array(d["alpha_ED_mean"], dtype=float)
+        s = np.array(d.get("alpha_ED_std", [0] * len(c)), dtype=float)
+        return {"shock": d.get("shock_step"), "c": c, "a": a, "s": s}
+
+    ctrl = load("control")
+    if ctrl is None:
+        print(f"no results_{asset}_control/windowed_hill_report.json — run eval first")
+        sys.exit(2)
+    kicks = {k: load(k) for k in ("kick3", "kick6", "kick12")}
+    kicks = {k: v for k, v in kicks.items() if v is not None}
+    shock = next((v["shock"] for v in kicks.values() if v["shock"]), 3000)
+
+    def win(o, lo, hi, reduce):
+        m = (o["c"] >= lo) & (o["c"] < hi)
+        return float(reduce(o["a"][m])) if m.any() else float("nan")
+
+    burnin = win(ctrl, 0, 500, np.nanmin)                 # the t=0 template (heavy)
+    h1_mean = win(ctrl, 500, shock, np.nanmean)           # control steady state
+    h1_lo = h1_mean - win(ctrl, 500, shock, np.nanmean) * 0 - win(ctrl, 500, shock, np.nanstd)
+    H1 = (h1_mean >= LIGHT) and (h1_lo > HEAVY)
+
+    print(f"=== exp 123 verdict ({asset}) — shock@{shock}, band light≥{LIGHT} heavy≤{HEAVY}, cube≈1.5 ===")
+    print(f"burn-in template (t<500) min α_ED = {burnin:.2f}")
+    print(f"H1 control steady [500,{shock}) mean α_ED = {h1_mean:.2f} (lo {h1_lo:.2f})  →  {'PASS' if H1 else 'FAIL'}")
+    print(f"\n{'arm':8}{'post-shock min':>15}{'recovery mean':>15}{'H2 revive':>11}{'H3 transient':>13}{'H4=burnin':>11}")
+    post_mins = {}
+    rows = {"H2": [], "H3": [], "H4": []}
+    for k in ("kick3", "kick6", "kick12"):
+        o = kicks.get(k)
+        if o is None:
+            continue
+        pmin = win(o, shock, shock + 1500, np.nanmin)
+        rec = win(o, shock + 4000, 10 ** 9, np.nanmean)
+        post_mins[k] = pmin
+        h2 = pmin <= HEAVY
+        h3 = rec >= LIGHT
+        h4 = abs(pmin - burnin) <= 1.0 and pmin <= HEAVY
+        rows["H2"].append(h2); rows["H3"].append(h3); rows["H4"].append(h4)
+        print(f"{k:8}{pmin:>15.2f}{rec:>15.2f}{('YES' if h2 else 'no'):>11}{('YES' if h3 else 'no'):>13}{('YES' if h4 else 'no'):>11}")
+
+    order = [post_mins[k] for k in ("kick3", "kick6", "kick12") if k in post_mins]
+    monotone = all(x > y for x, y in zip(order, order[1:])) if len(order) >= 2 else True  # N/A for 1 dose
+    H2 = any(rows["H2"]) and monotone
+    H3 = all(rows["H3"]) if rows["H3"] else False
+    H4 = any(rows["H4"])
+    print(f"\nH2 shock revives + dose-monotone deepening: {'PASS' if H2 else 'FAIL'} "
+          f"(post-shock min by dose: {[f'{x:.2f}' for x in order]}, monotone={monotone})")
+    print(f"H3 transient (all kicks recover to ≥{LIGHT}): {'PASS' if H3 else 'FAIL'}")
+    print(f"H4 post-shock min matches burn-in template:  {'PASS' if H4 else 'FAIL'}")
+
+    if H1 and H2 and H3 and H4:
+        decision = "P — PHYSICS: heavy tail is a driven non-equilibrium transient. Paper EARNED → Stage-2."
+    elif H2 and not H3:
+        decision = "H2 but not H3 — shock flips into a (semi-)permanent fat-tailed regime, not a transient. Reframe."
+    elif not H2:
+        decision = "A — ARTIFACT: no dose-dependent revival. Fall back to diagnose-centered frontier."
+    else:
+        decision = "AMBIGUOUS — revival present but H4 (same-as-burn-in) fails. Mechanism study owed; do NOT publish unification."
+    print(f"\nDECISION: {decision}")
+    (exp_dir / f"verdict_{asset}.json").write_text(json.dumps(
+        {"asset": asset, "shock": shock, "burnin_template": burnin, "H1": bool(H1), "H2": bool(H2),
+         "H3": bool(H3), "H4": bool(H4), "post_shock_min_by_dose": order, "monotone": bool(monotone),
+         "decision": decision}, indent=2))
+    print(f"wrote {exp_dir / f'verdict_{asset}.json'}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("exp_dir", nargs="?", default="experiments",
@@ -390,8 +470,13 @@ def main() -> None:
     ap.add_argument("--shock-step", type=int, default=None, help="step where a shock was injected (marker)")
     ap.add_argument("--r1-warmup", metavar="DIR", default=None,
                     help="dir with r1_*/trajectory_*.npz → standard hill with/without warmup discard (R1 magnitude)")
+    ap.add_argument("--verdict", metavar="EXP_DIR", default=None,
+                    help="apply the PREREG H1–H4 gate to results_<asset>_*/windowed_hill_report.json")
+    ap.add_argument("--asset", default="spx", help="asset for --verdict (default spx)")
     args = ap.parse_args()
-    if args.r1_warmup:
+    if args.verdict:
+        verdict_mode(Path(args.verdict), args.asset)
+    elif args.r1_warmup:
         r1_warmup_mode(Path(args.r1_warmup))
     elif args.windows:
         windows_mode(Path(args.windows), args.window, args.stride, args.k_frac, args.shock_step)
