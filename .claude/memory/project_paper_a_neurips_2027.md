@@ -331,6 +331,34 @@ mechanism-decomposability + attribution + calibration) + this findings paper. I 
 (value is in the method↔finding loop; each half weaker alone) but it's reasonable if driven by
 land-grab / guaranteed-pub / disjoint-audience.** Full current state: `results_compilation_2026-06-13.md`.
 
+### 2026-06-18 — TAIL-TRANSFER VALIDATION REFUTED (burn-in artifact); pivot to non-equilibrium-transient frontier
+
+**The 06-13 "δ≈0.5 is DERIVED" headline is down.** The owed P0 (direct ζ_ED measurement) ran on H20
+and **refuted** the validation: the ζ_ED≈1.5 / cube-law-3 is a **~20-step burn-in transient**, not a
+stationary property (`run_large.py` has no warmup discard). Steady-state ED + return tails are **light**
+(Hill α≈4–12). The lemma α=ζ/δ survives (correct identity); its empirical support does not. Full:
+[[burnin-artifact-zeta-ed-2026-06-18]] + `papers/paper_a_methods/burnin_artifact_finding_2026-06-18.md`.
+
+**Phase 0 (Mac, 2026-06-18) — blast radius is PROJECT-WIDE, not just tail-transfer.** Standard 11-fact
+scoring is also burn-in-inclusive (`run_large.py:107` `traj.log_returns_np()[1:]`, no discard). The
+concave "solve" (113/114) is in the blast zone: standard Hill baseline 1.3→concave 3.0–3.4 in-band, but
+D1 shows dropping warmup pushes in-band concave Hill (3.42)→11.5 (too-thin, FAIL). So **the 06-09→06-12
+honest spine's pillar 2 (concave solve) and pillar 3 (δ*≈0.5) are both contaminated.** Survives: lemma;
+ceiling *structure* (only strengthened); ABIDES daily. Verdict doc:
+`papers/paper_a_methods/phase0_burnin_blastradius_2026-06-18.md`.
+
+**New framing decision (user 2026-06-18): NOT a methods-warning paper — a positive frontier method+results
+paper.** Thesis: *"market fat tails are a non-equilibrium / driven transient; the stationary model is
+light-tailed; α=ζ/δ decomposes the transient tail."* Aligns C1 (diff MD) + C2 (non-eq tail genesis) + C3
+(crash = the driving), fits Paper B's Nature-Physics non-equilibrium thread better than the stationary
+framing. **EARNS-OR-KILLS experiment (pre-registered):** `experiments/123_driven_transient/DESIGN.md` —
+shock a steady-state system, test whether the cube-law tail revives + relaxes with the SAME ζ_ED signature
+as the t=0 burn-in (H1 control-light, H2 shock-revives, H3 transient, H4 same-as-burn-in, H5 transfer-law;
+binding gate). Pass H1∧H2∧H3∧H4 → physics story EARNED; H2 fails → t=0 startup artifact → diagnose-centered
+fallback. Stage-1 ≈31h/8-card (spx, news shock, 3 doses + control, n=30). **R2 (rebuild stationary heavy-tail
+source) DEPRIORITIZED** — transient framing needs none, and fitting one undercuts "derived not fitted."
+Next GPU: Stage-0 plumbing (raw pre-impact ED log + `step()` shock hook + `--windows` estimator) → Stage-1.
+
 ## Main claim (post-pivot)
 
 ECoMD is a differentiable MD-style market simulator with mechanism-decomposable dynamics. (1) Systematic ablation reveals an empirical Pareto frontier in hand-crafted Markov mechanism families, with no cell exceeding 5.5/11 stylized facts on 5 assets at n=30. (2) Four architectural extensions — non-Markov memory kernels, scheduled-sampling depth-3 training, Hopfield regime-attractor dynamics, and (with failure-aware safeguards) learned MACE-lite v2 potentials — are individually evaluated; the winning combination lifts the frontier to ≥6.5 on ≥3 assets. (3) Gradient-based posterior inference calibrates ECoMD ~100× faster than ABIDES+SBI at matched coverage.

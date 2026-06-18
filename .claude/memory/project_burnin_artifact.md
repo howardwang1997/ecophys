@@ -1,3 +1,11 @@
+---
+name: burnin-artifact-zeta-ed-2026-06-18
+description: "The ζ_ED≈1.5/cube-law tail-transfer validation is a ~20-step burn-in transient artifact; Phase 0 shows the standard hill scoring is burn-in-inclusive project-wide. Pivot to non-equilibrium-transient frontier (exp 123)."
+metadata:
+  node_type: memory
+  type: project
+---
+
 # Memory — ζ_ED burn-in artifact (2026-06-18, threatens Paper A tail-transfer claim)
 
 **One line.** The "ζ_ED≈1.5 / cube-law-3" evidence for the tail-transfer derivation
@@ -31,3 +39,26 @@ report burn-in sensitivity**, never a single-point Hill.
 
 **Do NOT** re-claim ζ_ED≈1.5 / cube-law-reproduced without (a) warmup discard and (b) a stationary
 heavy-tail source in the model.
+
+**2026-06-18 Phase 0 (Mac, no GPU) — blast radius = PROJECT-WIDE, not confined to tail-transfer.**
+Verdict + evidence: `papers/paper_a_methods/phase0_burnin_blastradius_2026-06-18.md`. The standard
+11-fact scoring is **also** burn-in-inclusive: `run_large.py:107` `returns = traj.log_returns_np()[1:]`
+(full series, no warmup discard) → `compute_all` → `hill_tail_index`. So EVERY standard Hill in the
+project shares the contamination. The **concave-impact "solve" sits in the blast zone**: standard
+Hill at N=10⁴ n=30 5-asset = baseline 1.23–1.38 (too-fat) → concave 2.9–3.4 (in-band), but finding
+D1 shows dropping warmup pushes the in-band concave Hill (3.42) to 11.5 (too-thin, FAIL). So the
+5-asset "solve" (and this `feature/exp113-gabaix-solve` branch) is very likely a burn-in artifact;
+steady-state concave is too THIN. **Contaminated:** hill≈1.3 overshoot (exp 109/112), concave solve
+(113/114), δ-grid Hill·δ, δ*≈0.5 (where Hill-criterion-based). **Survives:** lemma α=ζ/δ; ceiling
+*structure* (only strengthened — removing wrong Hill passes lowers scores); ABIDES daily (close-to-close,
+burn-in washed). Magnitude per-cell unmeasured → R1 (GPU re-run 114 + `--save-trajectory` + warmup discard).
+
+**Reframe decided (positive frontier, not a warning):** *"market fat tails are a non-equilibrium /
+driven transient; the stationary model is light-tailed."* Earns-or-kills experiment pre-registered:
+`experiments/123_driven_transient/DESIGN.md` — shock a steady-state system, test whether the cube-law
+tail revives + relaxes with the SAME ζ_ED signature as the t=0 burn-in (H1–H5 + binding gate). If the
+revival reproduces the burn-in template ⇒ genuine non-equilibrium physics (publishable, C2+C3); if no
+revival at any dose ⇒ t=0 startup artifact ⇒ fall back to diagnose-centered frontier. **R2 (rebuild a
+stationary heavy-tail source) is now DEPRIORITIZED** — the transient framing needs no stationary source,
+and fitting one would undercut "derived not fitted." See [[paper-a-target-neurips-2027-problem-diagnose-solve-framing]],
+[[pareto-ceiling-11-fact-frontier-in-v3-mechanism-family]].

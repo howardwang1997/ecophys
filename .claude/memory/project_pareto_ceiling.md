@@ -31,6 +31,17 @@ metadata:
 > too-fat overshoot. Confirms the ceiling is **paradigm-level**. Section-7 SBI-cost leg also done:
 > T_sim~844s => 1k/5k/10k sims = 235/1173/2345 CPU-h. See [[neural-sde-tournament-beyond-framework]].
 
+> **2026-06-18 caveat — the `hill_tail_index` fact is burn-in-contaminated PROJECT-WIDE.** Standard
+> scoring computes Hill on a warmup-inclusive per-step series (`run_large.py:107`
+> `traj.log_returns_np()[1:]`, no discard). So the "fat-tail overshoot hill≈1.3" and the concave
+> in-band "solve" (113/114, hill 1.3→3.0–3.4) are very likely burn-in artifacts — dropping ≥50 warmup
+> steps pushes the in-band concave Hill (3.42)→11.5 (too-thin, FAIL). **What this does NOT change: the
+> ceiling STRUCTURE is robust / strengthened** — removing wrongly-credited Hill passes only LOWERS
+> cell scores, so "no cell reaches 11/11, Pareto-bounded" holds more firmly, not less. But the specific
+> SOTA number (gold zumdn 5.96) and any cell leaning on a Hill pass would shed ~1 fact under warmup
+> discard (needs R1 to quantify). ABIDES daily (close-to-close) is unaffected. Full:
+> [[burnin-artifact-zeta-ed-2026-06-18]], `papers/paper_a_methods/phase0_burnin_blastradius_2026-06-18.md`.
+
 **The 089-099 3-day batch (~3000 cfg) settled the central Paper A question**:
 *can the v3 ECoMD mechanism family produce a "hero" cell that satisfies all 11
 Cont 2001 facts?* Answer: **no**, and the failure pattern is Pareto-bounded, not

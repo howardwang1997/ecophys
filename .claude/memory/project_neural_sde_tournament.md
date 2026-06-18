@@ -7,6 +7,13 @@ metadata:
   originSessionId: 32d573d8-fe44-4e40-9577-f55d59632fcb
 ---
 
+> **🔴 2026-06-18 caveat — "fat-tail overshoot hill=1.30" is BURN-IN-CONTAMINATED.** The "overshoot
+> is DYNAMICAL not distributional (hill=1.30)" claim below is computed on a warmup-inclusive per-step
+> series (`run_large.py:107`). Steady-state (drop ≥50 steps) tails are LIGHT (Hill α≈4–12), the opposite
+> sign. So "dynamical" should be read as **non-equilibrium/transient**, not stationary. Refines (does not
+> erase) the finding; the diffusion-vs-physics error-sign contrast still holds qualitatively but its Hill
+> numbers need warmup discard. See [[burnin-artifact-zeta-ed-2026-06-18]].
+
 **Why (2026-05-29):** Path A (per-fact surrogates, exp 107) was falsified (p=0.81) and
 ABIDES — a different paradigm — scores only 2-3/11, so the ~5.1 ceiling is **paradigm-level,
 not architecture-level**. The failing facts are ALL volatility-structure facts (fat tails #2,
