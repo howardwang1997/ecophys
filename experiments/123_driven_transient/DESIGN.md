@@ -138,14 +138,18 @@ gives 3 transients/cfg ⇒ n=30 seeds × 1 dose still yields 90 transients from 
 - [x] **Mac smoke** (`scripts/smoke_exp123_plumbing.py`, all pass): P1 logging-only (returns
       bit-identical), shock no-op-by-default + no backward leak, estimator renders the burn-in dip
       live (α_ED 1.06→4.8 on an untrained sim). 66 price/sim/observable tests pass. (2026-06-18)
-- [ ] Config family `experiments/123_driven_transient/config_*` generated (asset × arm × dose × seed)
-      + a `run_large` `--shock` CLI arg to set `_shock_schedule` from config (Stage-1 entry).
-- [ ] Pre-register this DESIGN.md (commit SHA) before the GPU run — arXiv-style timestamp per
-      `feedback_preregistration`.
+- [x] **Config family**: `generate_configs.py` → `config_{spx,ndx,gold,eurusd,btcusdt}.yaml`
+      (concave_d050 + `log_raw_excess_demand: true`). Arms/doses/control are `run_large --shock-*`
+      CLI variations, not separate configs. (2026-06-18)
+- [x] **`run_large --shock`**: `--shock-step/-type/-mag/-frac/-every` build `_shock_schedule`
+      (no-op when `--shock-step` unset = control). (2026-06-18)
+- [x] **Pre-registration**: `PREREG_2026-06-18.md` (frozen H1–H5 + binding gate + run spec). Record
+      the commit SHA before launch. (2026-06-18)
+- [x] **Fleet driver**: `scripts/gpu_exp123_stage1.sh` (`fanout`/`worker`/`r1`/`eval`, DRY_RUN).
+      (2026-06-18)
 
-**Stage-0 status (2026-06-18): DONE.** Plumbing landed + validated (commit on
-`feature/exp113-gabaix-solve`). Remaining before Stage-1 GPU: the config-family generator + the
-`run_large --shock` wiring, then pre-register.
+**Stage-0 + Stage-1 setup (2026-06-18): DONE.** All plumbing + configs + pre-reg + fleet driver
+landed and dry-run-validated. Stage-1 is launch-ready on the 12-card fleet (8+2+2).
 
 ---
 
