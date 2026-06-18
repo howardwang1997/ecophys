@@ -71,9 +71,24 @@ kick6, n=30); verdict `experiments/123_driven_transient/verdict_{spx,ndx}.json`:
   burn-in). **Confirms the concave "solve" is burn-in-held** — too-thin in steady state; the 4000-step
   "in-band solve" was burn-in inflation.
 
+**2026-06-19 Stage-1.5 + Stage-2a (overnight, 8-card .14):**
+- **spx dose-response MAPPED** (sub-threshold sweep mag 0.05–12): post-shock α_ED falls **monotonically
+  1.45→1.08→0.77→0.58 across mag 0.3→2**, then **saturates at the ~0.5 floor for mag≥3**. A genuine
+  graded dose-response + relaxation floor (resolves the Stage-1 "saturated" P\*). Onset threshold is
+  *below* mag=0.3 (even smallest kick revives) → owed: micro-sweep mag {0.05,0.1,0.2} (running).
+- **Multi-asset generalization: 4/5 assets show the clean revival** (control flat-light ~4.7 → kick3
+  at-shock ≈0.5 → recover ~4.7): spx, ndx, gold(0.54), btcusdt(0.57). **eurusd is the exception** —
+  kick3 does NOT revive (at-shock 4.16, stays light), AND its burn-in template is lighter (1.04 vs
+  0.43–0.66). Low-vol FX = intrinsically more stable → mag=3 likely **sub-threshold for eurusd, not
+  absent** (test: eurusd mag 6/12, running). Asset-dependent threshold = a feature, not a bug.
+- Verdicts `verdict_{spx,gold,eurusd,btcusdt,ndx}.json`; claim+roadmap `papers/paper_a_methods/claim_and_roadmap_2026-06-19.md`.
+
 **Reframe decided (positive frontier, not a warning):** *"market fat tails are a non-equilibrium /
-driven transient; the stationary model is light-tailed."* **NOW EVIDENCED (P/P*, 2026-06-19).** Earns-or-kills
-experiment pre-registered: `experiments/123_driven_transient/DESIGN.md` — shock a steady-state system, test whether the cube-law
+driven transient; the stationary model is light-tailed."* **NOW EVIDENCED (P, 4/5 assets, 2026-06-19);
+graded dose-response + relaxation floor.** Earns-or-kills experiment: `experiments/123_driven_transient/DESIGN.md`.
+**Owed before bulletproof:** spx onset micro-sweep + eurusd threshold (running); a market-realistic shock
+channel (price-jump/liquidity, Stage 2b, vs the "state_kick is mechanical" skeptic); **REAL-DATA crash
+validation (Stage 3 — decides NeurIPS vs Nature-Physics)**. — shock a steady-state system, test whether the cube-law
 tail revives + relaxes with the SAME ζ_ED signature as the t=0 burn-in (H1–H5 + binding gate). If the
 revival reproduces the burn-in template ⇒ genuine non-equilibrium physics (publishable, C2+C3); if no
 revival at any dose ⇒ t=0 startup artifact ⇒ fall back to diagnose-centered frontier. **R2 (rebuild a
