@@ -403,7 +403,16 @@ def verdict_mode(exp_dir: Path, asset: str = "spx") -> None:
     if ctrl is None:
         print(f"no results_{asset}_control/windowed_hill_report.json — run eval first")
         sys.exit(2)
-    kicks = {k: load(k) for k in ("kick3", "kick6", "kick12")}
+    # auto-discover all kick* dose arms (Stage-1 kick3/6/12 + Stage-1.5 sub-threshold kick0.3/0.5/1/2),
+    # sorted by dose magnitude.
+    def mag_of(arm: str) -> float:
+        try:
+            return float(arm.replace("kick", ""))
+        except ValueError:
+            return float("inf")
+    arms = sorted((d.name.replace(f"results_{asset}_", "") for d in exp_dir.glob(f"results_{asset}_kick*")
+                   if (d / "windowed_hill_report.json").exists()), key=mag_of)
+    kicks = {k: load(k) for k in arms}
     kicks = {k: v for k, v in kicks.items() if v is not None}
     shock = next((v["shock"] for v in kicks.values() if v["shock"]), 3000)
 
@@ -422,7 +431,7 @@ def verdict_mode(exp_dir: Path, asset: str = "spx") -> None:
     print(f"\n{'arm':8}{'post-shock min':>15}{'recovery mean':>15}{'H2 revive':>11}{'H3 transient':>13}{'H4=burnin':>11}")
     post_mins = {}
     rows = {"H2": [], "H3": [], "H4": []}
-    for k in ("kick3", "kick6", "kick12"):
+    for k in kicks:                       # already sorted by dose magnitude
         o = kicks.get(k)
         if o is None:
             continue
@@ -435,7 +444,7 @@ def verdict_mode(exp_dir: Path, asset: str = "spx") -> None:
         rows["H2"].append(h2); rows["H3"].append(h3); rows["H4"].append(h4)
         print(f"{k:8}{pmin:>15.2f}{rec:>15.2f}{('YES' if h2 else 'no'):>11}{('YES' if h3 else 'no'):>13}{('YES' if h4 else 'no'):>11}")
 
-    order = [post_mins[k] for k in ("kick3", "kick6", "kick12") if k in post_mins]
+    order = [post_mins[k] for k in kicks if k in post_mins]   # in ascending-dose order
     monotone = all(x > y for x, y in zip(order, order[1:])) if len(order) >= 2 else True  # N/A for 1 dose
     revived = any(rows["H2"])                 # any kick drives α_ED ≤ HEAVY (the tail comes back)
     H3 = all(rows["H3"]) if rows["H3"] else False
