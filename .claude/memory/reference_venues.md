@@ -15,6 +15,19 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 | **ICLR** | ~22% | Sept–Oct | Same | Good fit; openreview can help. |
 | **ICAIF** (ACM) | ~30–40% | Aug | C1 + finance-flavored C3 task | Lower bar; useful fallback / community building. |
 | **NeurIPS-W ML4Fin / TS workshops** | higher | Summer | Early arXiv + workshop visibility before main submission | Consider for arxiv announcement around M3. |
+| **ML & the Physical Sciences (ML4PS)** | workshop | NeurIPS (Dec) | Non-equilibrium / driven-transient physics angle | **Non-archival** (historically). |
+| **Generative AI in Finance** | workshop | NeurIPS (Dec) | Generative market-simulator / scenario-generation angle | **Non-archival** (2025 CFP explicit; welcomes work under review/published). |
+| **TMLR** | soundness-based | rolling | The honest model-reality-gap framing fits *better* than hype confs | Strong archival floor; promote to co-primary. |
+
+### Paper A submission ladder (DECIDED 2026-06-19, plan of record)
+
+Post Stage-3 (real return tails stationary → no real-market discovery), the researcher's chosen ladder:
+**(1)** split into 2 **non-archival** NeurIPS workshops — ML4PS (physics angle) + GenAI-in-Finance
+(simulator angle), kept genuinely distinct; **(2)** recombine + add experiments → **NCS** (~12–20%,
+must be comp-science-method-centric); **(3)** ICLR (~25–35%) → **(4)** TMLR (soundness floor) → **(5)**
+AI4S. Manage the journal→conference cadence (submit NCS ~1–2 mo before the ICLR deadline + redirect-by
+date). Work-list + tiers: `papers/proposal/paper_a_ncs_worklist_2026-06-19.md`. See
+[[paper-a-submission-ladder-ncs]].
 
 ## Physics Journals (Paper B — non-equilibrium thermodynamics)
 
