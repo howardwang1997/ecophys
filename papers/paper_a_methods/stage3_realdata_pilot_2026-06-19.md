@@ -46,9 +46,32 @@ Real markets have such a source, so their tail is always ≈ cube.
 
 ## Caveats on this negative (honest)
 
-- 2 episodes, crypto only. A broader test (more episodes; equity minute via the planned FirstRate
-  buy) would firm it up — but 2/2 clean crypto crashes contradict the prediction, robust to
-  vol-standardization and to raw-vs-regime estimation.
+- (Initial 2 episodes superseded by the broadened test below.)
+
+## Broadened + formally tested (5 episodes + null distribution) — negative CONFIRMED
+
+Per the "broaden before deciding" call: extended to **5 crypto crashes** (COVID-2020 −56%, China-ban
+-2021 −47%, Celsius/3AC-2022 −41%, Luna, FTX) + a **formal null-distribution test**
+(`scripts/null_test_crash_tails.py`). Statistic Δα = α(crash 2d) − α(pre 5d), vol-standardized; null
+= the same window-pair slid across a 3-month calm stretch (n=170, null Δα = +0.02 ± 0.43). The
+driven-transient predicts Δα ≪ 0 (heavier at the crash).
+
+| episode | Δα | z | verdict |
+|---|---|---|---|
+| COVID 2020 | −0.07 | −0.2 | flat |
+| China-ban 2021 | −0.91 | −2.2 | heavier (p=0.01) — the only hit |
+| Celsius 2022 | +0.83 | +1.9 | **lighter** |
+| Luna 2022 | +1.05 | +2.4 | **lighter** |
+| FTX 2022 | +0.19 | +0.4 | flat |
+
+**Pooled z = +1.03** (slightly *lighter*, opposite to the prediction). Only 1/5 supports the
+transient — within the false-positive rate for 5 tests, offset by 2 significant opposite-direction
+results. **The negative is robust and formally established.** Real return tails are stationary
+cube-law across calm and crash.
+
+## Remaining caveats (honest, narrow)
+
+- Crypto only (free-intraday limit; historical equity minute needs the unbought FirstRate data). But
+  5 episodes incl. the most violent crypto crashes, formally tested → equity is unlikely to overturn.
 - The transient could in principle live in a non-return observable (order-flow imbalance / L2 depth)
-  we don't have yet (Tardis L2). That is a *future* direction, not a pilot result, and would be a
-  different claim.
+  we don't have (Tardis L2). A *future*, different claim — not this pilot.

@@ -31,12 +31,22 @@ def _ms(y: int, m: int, d: int) -> int:
 
 # episode: (symbols, window start, window end, crash marker) — all UTC dates.
 EPISODES = {
+    # crash episodes (1m, BTC ± ETH), each centered 7 days into the window (shock_idx≈10079):
+    "covid_2020_03":  dict(syms=["BTCUSDT"], start=_ms(2020, 3, 5), end=_ms(2020, 3, 23),
+                           crash=_ms(2020, 3, 12), note="COVID crash — BTC −50% Mar 12-13"),
+    "china_2021_05":  dict(syms=["BTCUSDT"], start=_ms(2021, 5, 12), end=_ms(2021, 5, 30),
+                           crash=_ms(2021, 5, 19), note="China mining ban — BTC −30% May 19"),
+    "celsius_2022_06": dict(syms=["BTCUSDT"], start=_ms(2022, 6, 6), end=_ms(2022, 6, 24),
+                           crash=_ms(2022, 6, 13), note="Celsius/3AC — BTC 28k→17.6k Jun 13-18"),
     "luna_2022_05": dict(syms=["BTCUSDT", "ETHUSDT"], start=_ms(2022, 5, 2), end=_ms(2022, 5, 20),
                          crash=_ms(2022, 5, 9), note="UST depeg → LUNA collapse (May 9-13)"),
     "ftx_2022_11":  dict(syms=["BTCUSDT", "ETHUSDT"], start=_ms(2022, 11, 1), end=_ms(2022, 11, 18),
                          crash=_ms(2022, 11, 8), note="FTX insolvency → BTC 20.5k→15.6k (Nov 8-9)"),
     "calm_2023_07": dict(syms=["BTCUSDT"], start=_ms(2023, 7, 1), end=_ms(2023, 7, 18),
                          crash=None, note="rangebound ~30-31k — matched calm control"),
+    # long calm stretch — the NULL source for the Δα permutation test (many non-crash window-pairs).
+    "null_2023_calm": dict(syms=["BTCUSDT"], start=_ms(2023, 5, 1), end=_ms(2023, 8, 1),
+                           crash=None, note="May-Jul 2023 rangebound 26-31k — null-distribution source"),
 }
 
 
@@ -69,6 +79,9 @@ def main() -> None:
         d.mkdir(parents=True, exist_ok=True)
         ep_info = {"note": cfg["note"], "symbols": {}}
         for sym in cfg["syms"]:
+            if (d / f"trajectory_{sym}.npz").exists():
+                print(f"  {ep}/{sym}: already on disk — skip")
+                continue
             t, px = fetch_klines(sym, cfg["start"], cfg["end"])
             if px.size < 100:
                 print(f"  [warn] {ep}/{sym}: only {px.size} bars — skip")

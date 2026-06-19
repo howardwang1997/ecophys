@@ -113,7 +113,12 @@ and fitting one would undercut "derived not fitted." See [[paper-a-target-neurip
   high-vol→lighter-Hill confound): Luna still lightens 3.42→4.47; FTX flat → NOT a vol artifact. **Real
   fat tails are ~STATIONARY cube-law (calm AND crash) = Gabaix-Plerou-Stanley universality.** The
   EcoMD driven-transient is a property of the SIMULATOR (het_mass off → no stationary heavy-tail
-  source), NOT of real markets. `scripts/{fetch_crash_windows,analyze_crash_tails}.py`,
+  source), NOT of real markets. **BROADENED + FORMALLY TESTED (user: "broaden before deciding"):**
+  5 crypto crashes (COVID-2020/China-2021/Celsius-2022/Luna/FTX) + a null-distribution test (Δα =
+  α(crash 2d)−α(pre 5d), vol-std, null slid over a 3mo calm stretch n=170). **Pooled z=+1.03**
+  (slightly LIGHTER, opposite the prediction); only 1/5 (China-ban) significant-heavier (within the
+  5-test FPR), 2/5 significant-LIGHTER (Luna/Celsius). Underpowered caveat removed → negative robust.
+  `scripts/{fetch_crash_windows,analyze_crash_tails,null_test_crash_tails}.py`,
   `papers/paper_a_methods/stage3_realdata_pilot_2026-06-19.md`, `data/real/`.
 - **Venue call (reviewer-2):** NCS Gate 2 fails → do NOT sell Paper A as a real-market discovery. The
   honest, strong paper is **NeurIPS/ICML simulator-physics + measurement correction + the model–reality
