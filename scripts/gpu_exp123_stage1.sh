@@ -72,9 +72,10 @@ run_arm() {
   local asset="$1" arm="$2" cfg="$3" ckpt="$4" nproc="$5" n_real="$6" seed_base="$7" tag="$8"
   local out="${EXP}/results_${asset}_${arm}/${tag}"; mkdir -p "$out"
   local shock=()
-  if [[ "$arm" != "control" ]]; then
-    local mag="${arm#kick}"
-    shock=(--shock-step "$T_SHOCK" --shock-type state_kick --shock-mag "$mag" --shock-frac "$FRAC")
+  if [[ "$arm" == kick* ]]; then
+    shock=(--shock-step "$T_SHOCK" --shock-type state_kick --shock-mag "${arm#kick}" --shock-frac "$FRAC")
+  elif [[ "$arm" == jump* ]]; then          # Stage 2b market-realistic price gap
+    shock=(--shock-step "$T_SHOCK" --shock-type price_jump --shock-mag "${arm#jump}")
   fi
   say "$asset/$arm: n_steps=$N_STEPS × $((nproc*n_real)) rollouts (seed_base=$seed_base) → $out"
   # "${shock[@]+...}" expands only when set → safe under set -u on bash 3.2 (macOS) with empty array.

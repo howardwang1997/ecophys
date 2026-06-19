@@ -72,11 +72,14 @@ def main() -> None:
     # exp 123 driven-transient: inject a shock mid-rollout (no-op unless --shock-step set).
     parser.add_argument("--shock-step", type=int, default=None,
                         help="step at which to inject a shock (exp 123); None = no shock (control)")
-    parser.add_argument("--shock-type", choices=["state_kick", "news"], default="state_kick")
+    parser.add_argument("--shock-type", choices=["state_kick", "price_jump", "news"],
+                        default="state_kick")
     parser.add_argument("--shock-mag", type=float, default=6.0,
-                        help="state_kick: displacement in σ-units; news: Δfundamental")
+                        help="state_kick/price_jump: magnitude in σ-units; news: Δfundamental")
     parser.add_argument("--shock-frac", type=float, default=0.1,
                         help="state_kick: fraction of agents displaced")
+    parser.add_argument("--shock-sign", type=float, default=-1.0,
+                        help="price_jump: gap direction (-1 = down/crash; tail index is sign-blind)")
     parser.add_argument("--shock-every", type=int, default=0,
                         help="if >0, repeat the shock every N steps from --shock-step to end "
                              "(multi-transient-per-rollout variant)")
@@ -109,8 +112,12 @@ def main() -> None:
 
     # exp 123: build the shock schedule once (persists across this rank's rollouts).
     if args.shock_step is not None:
-        spec = ({"type": "news", "delta_f": args.shock_mag} if args.shock_type == "news"
-                else {"type": "state_kick", "frac": args.shock_frac, "mag": args.shock_mag})
+        if args.shock_type == "news":
+            spec = {"type": "news", "delta_f": args.shock_mag}
+        elif args.shock_type == "price_jump":
+            spec = {"type": "price_jump", "mag": args.shock_mag, "sign": args.shock_sign}
+        else:
+            spec = {"type": "state_kick", "frac": args.shock_frac, "mag": args.shock_mag}
         steps = (range(args.shock_step, args.n_steps, args.shock_every)
                  if args.shock_every > 0 else [args.shock_step])
         sim._shock_schedule = {int(k): spec for k in steps}

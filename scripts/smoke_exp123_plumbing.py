@@ -78,6 +78,19 @@ def main() -> None:
     assert diff[0] >= K - 1, f"T3 FAIL: shock leaked backward (first diff at {diff[0]} < {K})"
     print(f"T3 shock OK: identical before step {K}, perturbed after (first diff @ {diff[0]})")
 
+    # ── T5: price_jump (Stage 2b) injects an exogenous gap, no backward leak ──
+    pj = run(build(log_raw=False), shock={K: {"type": "price_jump", "mag": 8.0, "sign": -1.0}})
+    rpj = pj.log_returns_np()
+    djdiff = np.where(rb != rpj)[0]
+    assert djdiff.size > 0, "T5 FAIL: price_jump had no effect on the series"
+    assert djdiff[0] >= K - 1, f"T5 FAIL: price_jump leaked backward (first diff @ {djdiff[0]} < {K})"
+    sl = slice(K - 2, K + 3)
+    gap_amp, base_amp = np.abs(rpj[sl]).max(), np.abs(rb[sl]).max()
+    assert gap_amp > 5.0 * base_amp + 1e-9, \
+        f"T5 FAIL: no visible gap at K (shocked |r|max {gap_amp:.3g} vs baseline {base_amp:.3g})"
+    print(f"T5 price_jump OK: exogenous gap at step {K} "
+          f"(|r|max {gap_amp:.3g} ≫ baseline {base_amp:.3g}), no backward leak")
+
     # ── T4: write shocked npz (raw-ED) for the --windows estimator ───────────
     out = ROOT / "experiments/123_driven_transient/_smoke/results_spx"
     out.mkdir(parents=True, exist_ok=True)

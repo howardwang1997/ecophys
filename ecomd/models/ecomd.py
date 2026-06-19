@@ -18,7 +18,7 @@ no-grad inference entry point used by evaluation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 import torch
@@ -629,6 +629,9 @@ class EcoMDSimulator(nn.Module):
         # None (default) → no-op, zero behaviour change. Set externally before a
         # rollout to drive the system out of steady state. See _apply_shock.
         self._shock_schedule: dict[int, dict[str, Any]] | None = None
+        # exp 123 Stage 2b: a price_jump stashes its exogenous return here; step()
+        # folds it into the realized return right after price formation, then clears.
+        self._pending_exo_return: Tensor | None = None
 
     # ── Properties ─────────────────────────────────────────────────────────
 
@@ -694,27 +697,43 @@ class EcoMDSimulator(nn.Module):
         self,
         spec: dict[str, Any],
         s: Tensor,
+        price_state: PriceState,
         *,
         generator: torch.Generator | None = None,
-    ) -> Tensor:
+    ) -> tuple[Tensor, PriceState]:
         """Drive the system out of steady state (exp 123 driven-transient).
 
         Shock channels (``spec["type"]``):
         - ``"state_kick"``: displace a fraction ``frac`` of agents' positions by
           ``mag`` × the cross-sectional position std. Universal (works on any
           checkpoint) and the closest analogue of the t=0 burn-in displacement,
-          so it is the primary probe for H4 (same-mechanism-as-burn-in).
+          so it is the primary probe for H4 (same-mechanism-as-burn-in). A
+          skeptic calls it a *mechanical latent perturbation*.
+        - ``"price_jump"`` (Stage 2b, market-realistic): inject an exogenous
+          return ``r = sign · mag · σ`` (σ = the running volatility EWMA) into the
+          **realized return** — stashed here, folded in by ``step()`` right after
+          price formation so it (a) enters the recorded return series, (b) shifts
+          the observable log-price level, and (c) drives the volatility EWMA →
+          clustering. This is a price gap (a news/trigger event), not a
+          hidden-latent displacement, so it rebuts the "state_kick is mechanical"
+          objection; the heavy-tail relaxation that follows is endogenous.
         - ``"news"``: add ``delta_f`` to the detached fundamental F_t. Only
           propagates when ``cfg.info_asym_enabled`` (informed agents react to F_t).
 
-        Returns a possibly-perturbed ``s`` (state_kick); other channels mutate
-        attributes in place and return ``s`` unchanged. Inference-only (the
-        in-place kick is not meant to be differentiated through).
+        Returns ``(s, price_state)`` — both possibly perturbed (state_kick edits
+        ``s``; price_jump edits ``price_state``; news mutates an attribute and
+        returns both unchanged). Inference-only (not meant to be differentiated).
         """
         kind = spec.get("type", "state_kick")
         if kind == "news":
             self._fundamental = float(self._fundamental) + float(spec["delta_f"])
-            return s
+            return s, price_state
+        if kind == "price_jump":
+            mag = float(spec.get("mag", 3.0))
+            sign = float(spec.get("sign", -1.0))  # default: down-gap (crash)
+            scale = price_state.volatility.detach()
+            self._pending_exo_return = (sign * mag * scale).to(price_state.last_log_return.dtype)
+            return s, price_state
         if kind == "state_kick":
             frac = float(spec.get("frac", 0.1))
             mag = float(spec.get("mag", 3.0))
@@ -724,7 +743,7 @@ class EcoMDSimulator(nn.Module):
             scale = s[:, 0].std().detach()
             s = s.clone()
             s[idx, 0] = s[idx, 0] + mag * scale
-            return s
+            return s, price_state
         raise ValueError(f"unknown shock type: {kind!r}")
 
     def step(
@@ -769,7 +788,8 @@ class EcoMDSimulator(nn.Module):
         # exp 123 driven-transient: apply a scheduled shock at this step (no-op
         # unless a schedule was set externally). May return a perturbed s.
         if self._shock_schedule is not None and step_idx in self._shock_schedule:
-            s = self._apply_shock(self._shock_schedule[step_idx], s, generator=generator)
+            s, price_state = self._apply_shock(
+                self._shock_schedule[step_idx], s, price_state, generator=generator)
 
         # Tier 1.1: update per-agent memory before computing forces so the
         # current step's potential sees this step's memory readout.
@@ -942,6 +962,21 @@ class EcoMDSimulator(nn.Module):
             generator=generator,
             excitation_mul=excitation_mul,
         )
+
+        # exp 123 Stage 2b price_jump: fold the stashed exogenous return into the
+        # realized return so it enters the return series, shifts the price level,
+        # and re-drives the volatility EWMA with the total move (→ clustering).
+        # One-shot; no-op unless a price_jump fired this step.
+        if self._pending_exo_return is not None:
+            r_exo = self._pending_exo_return
+            self._pending_exo_return = None
+            ps = price_step.state
+            a = float(getattr(getattr(self.price_formation, "params", None), "ewma_alpha", 0.0))
+            r_total = ps.last_log_return + r_exo
+            vol_tot = ((1.0 - a) * price_state.volatility + a * r_total.abs()
+                       if a > 0.0 else ps.volatility)
+            price_step.state = replace(
+                ps, log_price=ps.log_price + r_exo, last_log_return=r_total, volatility=vol_tot)
 
         # V4 mechanism 2: feed the latest log return back to the integrator so
         # the next step's γ_eff can react to the sign of the most recent

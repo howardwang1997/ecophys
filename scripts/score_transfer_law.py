@@ -380,11 +380,12 @@ def r1_warmup_mode(root: Path, drops: tuple[int, ...] = (0, 20, 50, 200)) -> Non
     print(f"  wrote {out}")
 
 
-def verdict_mode(exp_dir: Path, asset: str = "spx") -> None:
+def verdict_mode(exp_dir: Path, asset: str = "spx", channel: str = "kick") -> None:
     """Apply the frozen PREREG H1–H4 gate to the per-arm windowed_hill_report.json files.
 
-    Reads results_<asset>_{control,kick3,kick6,kick12}/windowed_hill_report.json and prints a
-    PASS/FAIL scorecard + the P / A / ambiguous decision. α low = heavy, α≥4 = light, cube ≈ 1.5.
+    Reads results_<asset>_{control,<channel>3,<channel>6,...}/windowed_hill_report.json and prints
+    a PASS/FAIL scorecard + the P / A / ambiguous decision. α low = heavy, α≥4 = light, cube ≈ 1.5.
+    ``channel`` is the dose-arm prefix: "kick" (state_kick, default) or "jump" (Stage 2b price_jump).
     """
     LIGHT, HEAVY = 4.0, 2.0
 
@@ -403,14 +404,14 @@ def verdict_mode(exp_dir: Path, asset: str = "spx") -> None:
     if ctrl is None:
         print(f"no results_{asset}_control/windowed_hill_report.json — run eval first")
         sys.exit(2)
-    # auto-discover all kick* dose arms (Stage-1 kick3/6/12 + Stage-1.5 sub-threshold kick0.3/0.5/1/2),
-    # sorted by dose magnitude.
+    # auto-discover all <channel>* dose arms (kick: Stage-1 kick3/6/12 + Stage-1.5 sub-threshold;
+    # jump: Stage-2b price_jump doses), sorted by dose magnitude.
     def mag_of(arm: str) -> float:
         try:
-            return float(arm.replace("kick", ""))
+            return float(arm.replace(channel, ""))
         except ValueError:
             return float("inf")
-    arms = sorted((d.name.replace(f"results_{asset}_", "") for d in exp_dir.glob(f"results_{asset}_kick*")
+    arms = sorted((d.name.replace(f"results_{asset}_", "") for d in exp_dir.glob(f"results_{asset}_{channel}*")
                    if (d / "windowed_hill_report.json").exists()), key=mag_of)
     kicks = {k: load(k) for k in arms}
     kicks = {k: v for k, v in kicks.items() if v is not None}
@@ -470,11 +471,13 @@ def verdict_mode(exp_dir: Path, asset: str = "spx") -> None:
         decision = "AMBIGUOUS — revival present but H4 (same-as-burn-in) fails. Mechanism study owed; do NOT publish unification."
     H2 = revived and monotone
     print(f"\nDECISION: {decision}")
-    (exp_dir / f"verdict_{asset}.json").write_text(json.dumps(
-        {"asset": asset, "shock": shock, "burnin_template": burnin, "H1": bool(H1), "H2": bool(H2),
-         "H3": bool(H3), "H4": bool(H4), "post_shock_min_by_dose": order, "monotone": bool(monotone),
+    out_name = f"verdict_{asset}.json" if channel == "kick" else f"verdict_{asset}_{channel}.json"
+    (exp_dir / out_name).write_text(json.dumps(
+        {"asset": asset, "channel": channel, "shock": shock, "burnin_template": burnin,
+         "H1": bool(H1), "H2": bool(H2), "H3": bool(H3), "H4": bool(H4),
+         "post_shock_min_by_dose": order, "monotone": bool(monotone),
          "decision": decision}, indent=2))
-    print(f"wrote {exp_dir / f'verdict_{asset}.json'}")
+    print(f"wrote {exp_dir / out_name}")
 
 
 def main() -> None:
@@ -494,9 +497,11 @@ def main() -> None:
     ap.add_argument("--verdict", metavar="EXP_DIR", default=None,
                     help="apply the PREREG H1–H4 gate to results_<asset>_*/windowed_hill_report.json")
     ap.add_argument("--asset", default="spx", help="asset for --verdict (default spx)")
+    ap.add_argument("--channel", default="kick", choices=["kick", "jump"],
+                    help="dose-arm prefix for --verdict: kick (state_kick) or jump (Stage 2b price_jump)")
     args = ap.parse_args()
     if args.verdict:
-        verdict_mode(Path(args.verdict), args.asset)
+        verdict_mode(Path(args.verdict), args.asset, args.channel)
     elif args.r1_warmup:
         r1_warmup_mode(Path(args.r1_warmup))
     elif args.windows:
