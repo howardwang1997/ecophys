@@ -32,6 +32,7 @@ class EcoMDTrajectory:
     - log_prices: (T,)
     - log_returns: (T,) — includes step 0 which is 0 by convention
     - volumes, excess_demand: (T,)
+    - ofi: (T,) — signed order-flow imbalance Σdpos/(Σ|dpos|+ε) ∈ [-1,1] (0 if not logged)
     """
 
     states: Tensor
@@ -43,6 +44,7 @@ class EcoMDTrajectory:
     log_returns: Tensor
     volumes: Tensor
     excess_demand: Tensor
+    ofi: Tensor
     dt: float
     meta: dict[str, float | int | str] = field(default_factory=dict)
 
@@ -64,6 +66,9 @@ class EcoMDTrajectory:
     def volumes_np(self) -> ArrayF:
         return self.volumes.detach().cpu().numpy().astype(np.float64)
 
+    def ofi_np(self) -> ArrayF:
+        return self.ofi.detach().cpu().numpy().astype(np.float64)
+
     def to(self, device: torch.device | str) -> EcoMDTrajectory:
         return EcoMDTrajectory(
             states=self.states.to(device),
@@ -75,6 +80,7 @@ class EcoMDTrajectory:
             log_returns=self.log_returns.to(device),
             volumes=self.volumes.to(device),
             excess_demand=self.excess_demand.to(device),
+            ofi=self.ofi.to(device),
             dt=self.dt,
             meta=dict(self.meta),
         )
@@ -90,6 +96,7 @@ class EcoMDTrajectory:
             log_returns=self.log_returns.detach(),
             volumes=self.volumes.detach(),
             excess_demand=self.excess_demand.detach(),
+            ofi=self.ofi.detach(),
             dt=self.dt,
             meta=dict(self.meta),
         )
@@ -117,6 +124,7 @@ class TrajectoryRecorder:
         self._log_returns: list[Tensor] = []
         self._volumes: list[Tensor] = []
         self._excess_demand: list[Tensor] = []
+        self._ofi: list[Tensor] = []
 
     def record(
         self,
@@ -129,6 +137,7 @@ class TrajectoryRecorder:
         log_return: Tensor,
         volume: Tensor,
         excess_demand: Tensor,
+        ofi: Tensor | None = None,
     ) -> None:
         if not self.lightweight:
             self._states.append(s)
@@ -140,6 +149,9 @@ class TrajectoryRecorder:
         self._log_returns.append(log_return)
         self._volumes.append(volume)
         self._excess_demand.append(excess_demand)
+        # ofi optional: training/chunk paths don't compute it → log a zero placeholder
+        # (same dtype/device as log_return) so the (T,) series stays well-formed.
+        self._ofi.append(ofi if ofi is not None else torch.zeros_like(log_return))
 
     def finalize(self) -> EcoMDTrajectory:
         if not self._log_returns:
@@ -164,6 +176,7 @@ class TrajectoryRecorder:
             log_returns=torch.stack(self._log_returns),
             volumes=torch.stack(self._volumes),
             excess_demand=torch.stack(self._excess_demand),
+            ofi=torch.stack(self._ofi),
             dt=self.dt,
             meta=self.meta,
             **big,

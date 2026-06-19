@@ -456,6 +456,11 @@ class ExcessDemandPrice(nn.Module):
             hawkes_memory_long=hawkes_mem_long_next,
             vol_latent=vol_latent_next,
         )
+        # exp 123 Route-A: signed order-flow imbalance ρ = Σdpos/(Σ|dpos|+ε) ∈ [-1,1], computed
+        # directly from agent flow (config-independent; distinct from the unbounded net excess_demand).
+        # The OFI tail = α of the net flow (≈ raw excess_demand); ρ carries the imbalance / memory /
+        # saturation dimension for the order-flow analyses (gross flow = volume in default mode).
+        ofi = dpos.sum() / (dpos.abs().sum() + 1e-12)
         context = torch.stack([log_price_next, vol_next, log_ret])
         aux: dict[str, Tensor] = {
             "excess_demand": (excess_demand_raw if p.log_raw_excess_demand
@@ -463,6 +468,7 @@ class ExcessDemandPrice(nn.Module):
             "volume": volume.detach(),
             "log_return": log_ret.detach(),
             "beta_eff": beta_eff.detach(),
+            "ofi": ofi.detach(),
         }
         if self.sv is not None and vol_latent_next is not None:
             aux["sigma_eff"] = (sigma_eff.detach() if isinstance(sigma_eff, Tensor)

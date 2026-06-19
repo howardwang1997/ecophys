@@ -994,6 +994,7 @@ class EcoMDSimulator(nn.Module):
             "log_return": price_step.state.last_log_return,
             "volume": price_step.aux["volume"],
             "excess_demand": price_step.aux["excess_demand"],
+            "ofi": price_step.aux.get("ofi", torch.zeros_like(price_step.state.last_log_return)),
         }
         return step_out.s_next, price_step.state, record, h_regime_next, h_agent_next, h_global_next
 
@@ -1143,6 +1144,7 @@ class EcoMDSimulator(nn.Module):
                     log_return=rec["log_return"],
                     volume=rec["volume"],
                     excess_demand=rec["excess_demand"],
+                    ofi=rec.get("ofi"),
                 )
                 s_prev = s
                 s = s_next
@@ -1394,6 +1396,7 @@ class EcoMDSimulator(nn.Module):
                 log_return=rec["log_return"].detach(),
                 volume=rec["volume"].detach(),
                 excess_demand=rec["excess_demand"].detach(),
+                ofi=rec["ofi"].detach(),
             )
             s_prev = s
             s = s_next

@@ -91,6 +91,17 @@ def main() -> None:
     print(f"T5 price_jump OK: exogenous gap at step {K} "
           f"(|r|max {gap_amp:.3g} ≫ baseline {base_amp:.3g}), no backward leak")
 
+    # ── T6: OFI logging (Route-A) — signed imbalance ρ ∈ [-1,1], well-formed ──
+    tr6 = run(build(log_raw=True))
+    ofi = tr6.ofi_np()
+    assert ofi.shape == tr6.log_returns_np().shape, \
+        f"T6 FAIL: ofi shape {ofi.shape} != returns {tr6.log_returns_np().shape}"
+    fin = ofi[np.isfinite(ofi)]
+    assert np.all(np.abs(fin) <= 1.0 + 1e-6), f"T6 FAIL: ofi out of [-1,1] (max|ofi|={np.abs(fin).max():.3f})"
+    assert np.any(ofi != 0.0), "T6 FAIL: ofi all-zero (not computed)"
+    print(f"T6 OFI OK  : ρ logged, shape {ofi.shape}, range [{fin.min():.2f},{fin.max():.2f}], "
+          f"mean|ρ|={np.abs(fin).mean():.3f}")
+
     # ── T4: write shocked npz (raw-ED) for the --windows estimator ───────────
     out = ROOT / "experiments/123_driven_transient/_smoke/results_spx"
     out.mkdir(parents=True, exist_ok=True)
@@ -106,6 +117,7 @@ def main() -> None:
             log_returns=tr.log_returns_np()[1:], volumes=tr.volumes_np()[1:],
             log_prices=tr.log_prices.detach().cpu().numpy(),
             excess_demand=ed_np(tr), ed_is_raw=int(tr.meta.get("ed_is_raw", 0)),
+            ofi=tr.ofi_np()[1:],
         )
     print(f"T4 wrote   : 3 shocked raw-ED rollouts → {out.relative_to(ROOT)}")
     print("\nALL SMOKE TESTS PASSED. Next: "

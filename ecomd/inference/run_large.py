@@ -143,6 +143,8 @@ def main() -> None:
                 "excess_demand": traj.excess_demand.detach().cpu().numpy(),
                 # exp 123 (P1): 1 if excess_demand is the raw pre-impact tail (ζ_ED).
                 "ed_is_raw": int(getattr(traj, "meta", {}).get("ed_is_raw", 0)),
+                # exp 123 Route-A: signed order-flow imbalance ρ∈[-1,1] (drop step 0).
+                "ofi": traj.ofi_np()[1:],
             }
         del traj
         facts = compute_all(returns, volume=volumes)
