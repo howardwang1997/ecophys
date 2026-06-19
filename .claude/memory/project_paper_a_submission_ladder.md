@@ -41,3 +41,14 @@ ICLR deadline + set a redirect-by date so an open NCS review doesn't eat the ICL
 buy **only when Paper B greenlights it** (Paper B needs L2 regardless; Paper A's NCS lift is then an
 opportunistic by-product, not the buy's justification). See [[target-venue-registry-ecophys]],
 [[differentiable-priorart-c1-novelty]], [[user-role]].
+
+**🔴 2026-06-19 update — NCS is a long shot now (~8–15%), Stage 2b also NEGATIVE.** The market-realistic
+price_jump channel did NOT reproduce the transient (see [[burnin-artifact-zeta-ed-2026-06-18]]) → two
+negatives (Stage 2b + Stage 3) on a not-first-of-kind tool ⇒ NCS desk-screens for a *positive* novel
+discovery, which we lack. **What would make NCS viable** (full plan: `papers/proposal/paper_a_ncs_
+viability_routes_2026-06-19.md`): **Route A** = a real **order-flow/L2** non-equilibrium transient
+(where returns failed) + EcoMD reproducing it → ~15–20% IF the signal exists (~30–45%), gated on the
+Tardis buy + a clean carve-out from Paper B (which owns the order-flow thermodynamics). **Route B** =
+EcoMD-as-differentiable-controlled-experiment-platform (~10–15%, gated on method-novelty vs Dyer 2023–25).
+Recommended: pursue Route A *only if* Tardis is bought for Paper B anyway; otherwise ship NeurIPS/TMLR
+and route order-flow to Paper B. **TMLR is the calibrated home.**
