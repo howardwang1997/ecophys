@@ -96,3 +96,31 @@ revival at any dose ⇒ t=0 startup artifact ⇒ fall back to diagnose-centered 
 stationary heavy-tail source) is now DEPRIORITIZED** — the transient framing needs no stationary source,
 and fitting one would undercut "derived not fitted." See [[paper-a-target-neurips-2027-problem-diagnose-solve-framing]],
 [[pareto-ceiling-11-fact-frontier-in-v3-mechanism-family]].
+
+**2026-06-19 PM — "push to NCS" attempt → Stage 3 real-data pilot REFUTES the market-discovery claim
+(decisive). Paper A scope = NeurIPS sim-physics + model–reality gap, NOT Nat-CS/Physics.**
+- **Stage 2b (NCS Gate 1, market-realistic channel):** added `price_jump` (exogenous return folded
+  into the realized return — a price gap, not a hidden-latent kick; the heavy tail that follows is
+  endogenous). Smoke caught that returns are recorded per-step (not diff(log_prices)); reworked +
+  validated on Mac + GPU. Running on .56 (spx jump{1,2,3,6,12}). Still useful (strengthens the SIM
+  claim) but no longer gating a venue.
+- **Stage 2d (τ):** burn-in template τ≈20 steps (matches the known ~20-step burn-in); deep/saturated
+  shocks τ≈240 (driven transient relaxes ~10× slower than cold-start; τ grows with dose). Quantifies
+  "~1k steps". `scripts/fit_relaxation_tau.py`, `tau_report_spx.json`.
+- **🔴 Stage 3 (NCS Gate 2) — ROBUST NEGATIVE.** Free 1m Binance crypto, Luna(2022-05)+FTX(2022-11)+
+  calm control. Regime-level Hill: Luna BTC pre α=2.54→crash α=**3.97** (tail LIGHTER, Δ+1.43); ETH
+  +1.76; FTX ≈flat (Δ−0.16/−0.23), inside calm null 2.63±0.17. **Vol-standardized** (removes
+  high-vol→lighter-Hill confound): Luna still lightens 3.42→4.47; FTX flat → NOT a vol artifact. **Real
+  fat tails are ~STATIONARY cube-law (calm AND crash) = Gabaix-Plerou-Stanley universality.** The
+  EcoMD driven-transient is a property of the SIMULATOR (het_mass off → no stationary heavy-tail
+  source), NOT of real markets. `scripts/{fetch_crash_windows,analyze_crash_tails}.py`,
+  `papers/paper_a_methods/stage3_realdata_pilot_2026-06-19.md`, `data/real/`.
+- **Venue call (reviewer-2):** NCS Gate 2 fails → do NOT sell Paper A as a real-market discovery. The
+  honest, strong paper is **NeurIPS/ICML simulator-physics + measurement correction + the model–reality
+  gap** ("in EcoMD heavy tails are a driven transient & the steady state is light-tailed, UNLIKE real
+  markets whose cube tail is stationary — localizing a missing stationary mechanism in this sim class").
+  This is the original "close-strong NeurIPS" path. Real-market NCS would need a DIFFERENT observable
+  (order-flow/L2 — Tardis, not yet bought); future direction, not this pilot.
+- **Infra note:** `git pull --rebase origin HEAD` against the partial-clone remote triggers a
+  full-branch rebase onto an old commit (promisor trap) — it broke the local tree once; `git rebase
+  --abort` restored it. ALWAYS push/pull with the explicit branch name, never the literal `HEAD`.
