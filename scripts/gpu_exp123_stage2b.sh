@@ -41,8 +41,10 @@ go() {
   say "── push ──"
   git add "$EXP"/results_${ASSET}_jump*/windowed_hill_report.json "$EXP"/verdict_${ASSET}_jump.json 2>/dev/null || true
   if git diff --cached --quiet; then say "(nothing to commit)"; else
+    BR="$(git rev-parse --abbrev-ref HEAD)"   # explicit branch — NEVER 'origin HEAD' (promisor-rebase trap)
     git commit -q -m "exp 123 Stage 2b: ${ASSET} price_jump dose sweep (${ARMS}) + jump-channel verdict" \
-      && { git pull --rebase -q origin HEAD 2>/dev/null; git push origin HEAD 2>&1 | tee -a "$LOG"; }
+      && { git push origin "$BR" 2>&1 | tee -a "$LOG" \
+           || { git pull --rebase -q origin "$BR" && git push origin "$BR" 2>&1 | tee -a "$LOG"; }; }
   fi
   say "═══ DONE ($(date)) ═══"
 }
