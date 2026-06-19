@@ -34,8 +34,8 @@ which per the dual-track plan should be **justified by Paper B**, not Paper A al
 
 | id | task | tier | status / effort |
 |---|---|---|---|
-| E1 | **Stage 2b** market-realistic `price_jump` channel — two-channel robustness (state_kick + price gap) | 1 | **running on .56** (~complete); fold verdict into §5 |
-| E2 | **Stage 2c** news/info-shock channel (3rd channel): retrain 1 seed with `info_asym_enabled` ON + inference | 1 | OPEN — ~1h train + ~1h inference |
+| E1 | **Stage 2b** market-realistic `price_jump` channel — two-channel robustness | 1 | **DONE → 🔴 NEGATIVE.** "A — ARTIFACT, no revival" (α_ED flat ~4.6; α_ret stays light ~6). The transient is specific to latent-state displacement; price shocks don't trigger it. *Robustness claim fails; report as a mechanistic bound.* |
+| E2 | **Stage 2c** news/info-shock channel (3rd channel): retrain 1 seed `info_asym` ON + inference | 1 | OPEN but **LOW-VALUE** — same indirect mechanism as price_jump → likely also negative. Skip unless a positive non-latent channel is needed. |
 | E3 | **Seed-count audit**: confirm every headline number at n≥30 seeds (seed-count-lottery clause); re-run any thin cells | 1 | OPEN — mostly done; verify 2b/2c |
 | E4 | **τ generalization** (Stage 2d+): fit τ across assets + the price_jump channel (is the relaxation time universal?) | 1 | OPEN — analysis only (no new sim) |
 | E5 | **EcoMD order-flow counterfactuals**: log order-flow imbalance in the sim; run the L2-matched shock protocol | 2 | OPEN — needs the order-flow observable in the recorder + GPU runs |

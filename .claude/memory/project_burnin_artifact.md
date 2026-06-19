@@ -99,11 +99,17 @@ and fitting one would undercut "derived not fitted." See [[paper-a-target-neurip
 
 **2026-06-19 PM — "push to NCS" attempt → Stage 3 real-data pilot REFUTES the market-discovery claim
 (decisive). Paper A scope = NeurIPS sim-physics + model–reality gap, NOT Nat-CS/Physics.**
-- **Stage 2b (NCS Gate 1, market-realistic channel):** added `price_jump` (exogenous return folded
-  into the realized return — a price gap, not a hidden-latent kick; the heavy tail that follows is
-  endogenous). Smoke caught that returns are recorded per-step (not diff(log_prices)); reworked +
-  validated on Mac + GPU. Running on .56 (spx jump{1,2,3,6,12}). Still useful (strengthens the SIM
-  claim) but no longer gating a venue.
+- **🔴 Stage 2b (market-realistic channel) — NEGATIVE (validated).** `price_jump` (exogenous price gap
+  folded into the realized return) finished on .56 (5 doses, 300 rollouts). Verdict **"A — ARTIFACT,
+  no revival"**: post-shock min α_ED flat ~4.5–4.6 (vs state_kick 4.7→0.5). NOT an invalid test —
+  checked α_ret too (price_jump perturbs the return): α_ret pre≈7.7→min 6.0 at mag12, a weak nudge
+  that STAYS LIGHT (~100× weaker than state_kick). ⇒ **the transient is specific to displacing agent
+  LATENT states** (state_kick = the burn-in mechanism); exogenous price shocks don't trigger it. So
+  the driven transient is a **model latent-equilibration phenomenon, not a market-shock response.**
+  Compounds Stage 3 (absent in real markets) ⇒ NOT a robust market-physics discovery. **What survives:
+  the burn-in MEASUREMENT CORRECTION** + the mechanistic localization. NCS positive-discovery framing
+  further weakened (→ ~8–15%); leans TMLR/PRE/measurement-methods. Stage 2c news channel now low-value
+  (same indirect mechanism, likely also negative).
 - **Stage 2d (τ):** burn-in template τ≈20 steps (matches the known ~20-step burn-in); deep/saturated
   shocks τ≈240 (driven transient relaxes ~10× slower than cold-start; τ grows with dose). Quantifies
   "~1k steps". `scripts/fit_relaxation_tau.py`, `tau_report_spx.json`.
