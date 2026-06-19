@@ -1,7 +1,13 @@
 # Paper A / Paper B venue strategy after the driven-transient pivot
 
+> **⚠️ SUPERSEDED (2026-06-19 PM) by `paper_a_dual_track_plan_2026-06-19.md`.** This memo assumed the
+> NCS anchor would be a real-market *return-tail* driven transient (Gate 2). The Stage 3 pilot
+> (5 crypto crashes + a formal null test) **refuted** that: real return tails are stationary cube-law
+> in calm and crash. The dual-track plan re-aims NCS at a *different observable* (order-flow/L2) and
+> makes NeurIPS the primary track. Kept for history.
+
 **Date:** 2026-06-19
-**Status:** strategy memo after exp-123 Stage 1/1.5/2a
+**Status:** strategy memo after exp-123 Stage 1/1.5/2a — SUPERSEDED (see above)
 **Context:** The stationary cube-law / concave-impact solve was refuted as burn-in-contaminated.
 Exp 123 turned this into a stronger and more honest claim: in EcoMD, heavy tails are not stationary
 properties, but driven non-equilibrium transients that recur under shock and relax back to a
