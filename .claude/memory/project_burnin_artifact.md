@@ -110,6 +110,16 @@ and fitting one would undercut "derived not fitted." See [[paper-a-target-neurip
   the burn-in MEASUREMENT CORRECTION** + the mechanistic localization. NCS positive-discovery framing
   further weakened (→ ~8–15%); leans TMLR/PRE/measurement-methods. Stage 2c news channel now low-value
   (same indirect mechanism, likely also negative).
+- **OFI logging + sim-side OFI transient (2026-06-20, Route-A prerequisite).** Added per-step order-flow
+  imbalance ρ∈[-1,1] to the recorder (commit e19d868b5). Fresh spx control/kick6/jump6 (n=30, OFI logged)
+  → `ofi_transient_spx.json`: **kick6 drives a strong OFI transient on all 4 measures** (|ρ|, std,
+  **lag-1 memory 0.018→0.995→−0.03**, saturation — burst-then-relax); **jump6 = control bit-for-bit (NO
+  OFI transient).** ⇒ **OFI does NOT rescue price_jump** (inert on tail AND order flow); two-channel
+  robustness definitively dead. **Reframe:** a crash = *coordinated agent liquidation* (=state_kick),
+  not a price gap (=price_jump) → state_kick is the better crash analogue, and its OFI coherence/memory
+  burst-and-relax is a **concrete falsifiable prediction for real crash order-flow** (Route-A L2 test,
+  distinct from the stationary return tail). OFI substrate validated (sensitive). Work-list E5
+  recorder-half DONE.
 - **Stage 2d (τ):** burn-in template τ≈20 steps (matches the known ~20-step burn-in); deep/saturated
   shocks τ≈240 (driven transient relaxes ~10× slower than cold-start; τ grows with dose). Quantifies
   "~1k steps". `scripts/fit_relaxation_tau.py`, `tau_report_spx.json`.
