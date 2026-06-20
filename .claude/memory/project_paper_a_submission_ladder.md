@@ -52,3 +52,12 @@ Tardis buy + a clean carve-out from Paper B (which owns the order-flow thermodyn
 EcoMD-as-differentiable-controlled-experiment-platform (~10–15%, gated on method-novelty vs Dyer 2023–25).
 Recommended: pursue Route A *only if* Tardis is bought for Paper B anyway; otherwise ship NeurIPS/TMLR
 and route order-flow to Paper B. **TMLR is the calibrated home.**
+
+**Concrete experiment plan: `experiments/124_order_flow_transient/DESIGN.md` (2026-06-20).** Phase 1
+(sim, runnable NOW, no buy, no-regret): E-S1 OFI dose-response, E-S2 cross-asset OFI, E-S3
+time-asymmetry/entropy-production proxy, E-S4 τ_OFI → freezes a quantitative prediction. Phase 2
+(decisive, gated on Tardis L2 $4–5k): reconstruct real OFI, pre-registered null test (generalize
+`null_test_crash_tails.py` returns→OFI) on OFI memory/tail/saturation/EP; G-main = ≥1 observable
+bursts-and-relaxes on ≥2 crashes where returns didn't ⇒ NCS-credible; G-null ⇒ folds into honest
+paper. Paper-B carve-out: lead with OFI memory/coherence (computational), entropy-production supporting
+(full thermo program stays in Paper B). Joint NCS odds ~10–18%.
