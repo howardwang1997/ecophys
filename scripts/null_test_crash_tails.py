@@ -10,6 +10,7 @@ whether the crash Δα sits in the heavy-tail (negative) tail of the null.
   conda run -n ecophys python scripts/null_test_crash_tails.py
 """
 from __future__ import annotations
+import json
 import sys
 from pathlib import Path
 
@@ -55,6 +56,7 @@ def main() -> None:
 
     print(f"{'episode':16}{'Δα crash':>10}{'z':>8}{'p(null≤Δα)':>12}  driven-transient?")
     crash_ds = []
+    episodes = []
     for ep, ss in CRASHES.items():
         f = ROOT / f"data/real/{ep}/trajectory_BTCUSDT.npz"
         if not f.exists():
@@ -66,6 +68,7 @@ def main() -> None:
         p = float((null <= d).mean())   # one-sided: how often the null is at least this heavy
         sig = "YES (sig. heavier)" if p <= 0.05 else ("no — flat" if abs(z) < 1.64 else "no — LIGHTER")
         print(f"{ep:16}{d:>+10.3f}{z:>8.2f}{p:>12.2f}  {sig}")
+        episodes.append({"episode": ep, "dalpha": float(d), "z": float(z), "p": p, "sig": sig})
 
     cd = np.array(crash_ds)
     # pooled: is the mean crash Δα below the null mean-of-n distribution?
@@ -77,6 +80,16 @@ def main() -> None:
                "NEGATIVE CONFIRMED: real crashes do NOT drive a heavier-than-baseline tail "
                "(Δα ≥ 0, not in the null's heavy tail). The transient is sim-only.")
     print(f"\nVERDICT: {verdict}")
+
+    out = ROOT / "experiments/123_driven_transient/null_test_report.json"
+    out.write_text(json.dumps({
+        "statistic": "dalpha = alpha(crash 2d) - alpha(pre 5d), vol-standardized",
+        "null": {"mean": mu, "std": sd, "n": int(null.size),
+                 "q05": float(np.quantile(null, 0.05)), "q95": float(np.quantile(null, 0.95))},
+        "episodes": episodes, "pooled_mean": float(cd.mean()), "pooled_z": float(pooled_z),
+        "verdict": verdict,
+    }, indent=2))
+    print(f"wrote {out}")
 
 
 if __name__ == "__main__":

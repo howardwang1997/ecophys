@@ -14,18 +14,21 @@ workshop CFP / NeurIPS site — into this directory; `main.tex` auto-detects and
 to the `\usepackage{neurips_2024}` line for the camera-ready (de-anonymized) version.
 
 ## Figures
-`main.tex` shows captioned placeholder boxes until the real PDFs exist. Generate them into `figures/`:
-- `figures/fig1_pitfall.pdf` — (left) sample paths + stylized-fact panel + shock-interface schematic;
-  (right) Hill index vs. warm-up discard length (the inflation curve). Data: `r1_warmup_report.json`.
-- `figures/fig2_control_fidelity.pdf` — (left) OFI memory/|ρ|/saturation burst-and-relax (coherent
-  liquidation) vs. flat (price gap), from `ofi_transient_spx.json`; (right) per-episode + pooled Δα
-  vs. the calm null, from `null_test_crash_tails.py` / `data/real/`.
-
-Extend `../generate_figures.py` to emit these two PDFs from the committed JSON reports.
+Regenerate (fully from committed JSON — no gitignored data needed):
+```bash
+conda run -n ecophys python make_figures.py
+```
+- `figures/fig1_pitfall.pdf` — Hill index vs. warm-up discard (the inflation curve, both cells rising
+  out of the cube-law band). Data: `r1_warmup_report.json`.
+- `figures/fig2_control_fidelity.pdf` — (left) OFI memory burst-and-relax (coherent liquidation) vs.
+  flat (price gap), from `ofi_transient_spx.json`; (right) per-episode + pooled Δα vs. the calm null,
+  from `null_test_report.json`.
 
 ## Status / TODO
 - [x] Full 4-page draft prose (abstract → discussion), every empirical claim tied to an exp-123 artifact.
-- [ ] Real figures (2) from the JSON reports.
-- [ ] Drop in official `neurips_2024.sty` + page-fit pass to ≤4pp.
+- [x] **Real figures (2)** generated from the committed JSON reports (`make_figures.py`).
+- [ ] Compile end-to-end (no TeX on the dev Mac — use Overleaf) + page-fit pass to ≤4pp.
+- [ ] Drop in official `neurips_2024.sty` for the submission format.
 - [ ] Author/affiliation for camera-ready (currently anonymized).
 - [ ] Tighten references (verify Tóth et al. entry; the exact venue for the persistence/impact cite).
+- [ ] Optional: Fig 1 left panel (sample paths + shock-interface schematic) if space allows.
