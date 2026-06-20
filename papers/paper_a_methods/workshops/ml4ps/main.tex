@@ -1,0 +1,181 @@
+% EcoMD @ NeurIPS Workshop on Machine Learning and the Physical Sciences (ML4PS; non-archival, 4pp).
+% Build: latexmk -pdf main.tex   (compiles with a NeurIPS-approximating fallback if neurips_2024.sty absent).
+\documentclass{article}
+
+\IfFileExists{neurips_2024.sty}{%
+  \usepackage{neurips_2024}            % submission; add [final] for camera-ready
+}{%
+  \usepackage[letterpaper,margin=1in]{geometry}
+  \usepackage{times}
+  \usepackage{titlesec}
+  \titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.6em}{}
+  \titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.6em}{}
+  \setlength{\parskip}{2pt}
+}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\newcommand{\figbox}[2]{%
+  \IfFileExists{#1}{\includegraphics[width=\linewidth]{#1}}{%
+  \fbox{\parbox[c][3.0cm][c]{0.96\linewidth}{\centering\small\itshape #2}}}}
+
+\title{Heavy Tails as a Non-Equilibrium Transient\\ in a Differentiable Particle Market Simulator}
+\author{Anonymous Submission}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Fat-tailed returns are usually treated as a \emph{stationary} property---the inverse-cubic tail
+\citep{gabaix2003,plerou1999}. Using \textbf{EcoMD}, a differentiable Langevin particle simulator of a
+market, we find the opposite. The \textbf{steady state is light-tailed} (Hill index $\alpha\!\approx\!4.7$),
+and heavy, cube-law-and-beyond tails ($\alpha\!\to\!0.5$) appear \emph{only} when the system is driven
+out of equilibrium---at initialization or by a controlled shock---and \textbf{relax on a finite
+timescale} ($\tau\!\approx\!240$ steps). This makes warm-up-inclusive rollout scoring \emph{misread the
+equilibration transient as a stationary law}. The transient requires \emph{coherent displacement of
+agent latent states}: it is inert to an exogenous price shock (in both the return tail and order-flow
+imbalance), and it leaves a sharp non-equilibrium order-flow signature (flow memory $0.02\!\to\!0.99$
+at the shock, then relaxing). On real one-minute crypto crashes, by contrast, the return tail is
+\emph{stationary} across calm and crash (a pre-registered null test over five episodes). The
+simulator's heavy tail is thus a non-equilibrium phenomenon \emph{of the model}---localizing a missing
+stationary heavy-tail mechanism in this class of simulators---rather than a stationary market law.
+\end{abstract}
+
+\section{Introduction}
+The heavy tail of financial returns---the inverse-cubic law, $P(|r|\!>\!x)\!\sim\!x^{-\alpha}$ with
+$\alpha\!\approx\!3$---is one of the most robust ``stylized facts'' in quantitative finance
+\citep{cont2001,gabaix2003,plerou1999}, and is almost universally treated as a \emph{stationary}
+property of the return distribution. Mechanistic, particle-based simulators offer a way to ask a
+sharper, physics-style question: in a driven many-body system whose macroscopic observable is the
+price, is the heavy tail a stationary equilibrium property, or a \emph{non-equilibrium transient}---and
+does the standard way of measuring it tell the two apart?
+
+We study this in \textbf{EcoMD}, a differentiable simulator in which agents are particles evolving
+under overdamped Langevin dynamics with learned interaction potentials, and the price forms from
+aggregate excess demand. Langevin and differentiable agent-based market models are not new
+\citep{bouchaud1998,dyer2024,chopra2023}; our contribution is a non-equilibrium characterization and a
+measurement correction:
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item Heavy tails are a \textbf{driven non-equilibrium transient} (light steady state; shock drives
+    $\alpha\!\to\!0.5$; relaxation $\tau\!\approx\!240$), with a sigmoid dose-response over five assets
+    (\S\ref{sec:transient}).
+  \item A \textbf{non-equilibrium measurement pitfall}: warm-up-inclusive scoring confounds the
+    equilibration transient with a stationary tail (\S\ref{sec:measurement}).
+  \item \textbf{Mechanistic specificity and an order-flow signature}: only coherent latent displacement
+    drives the transient (price shocks are inert), with a clean non-equilibrium order-flow signature
+    (\S\ref{sec:mechanism}); and real return tails are \emph{stationary} (\S\ref{sec:boundary}).
+\end{itemize}
+
+\section{EcoMD: a Langevin particle market}\label{sec:ecomd}
+Agents $s_i\!\in\!\mathbb{R}^d$ follow overdamped Langevin dynamics
+$\dot s_i = -\nabla_{s_i}U(\{s\}) + \sqrt{2T}\,\xi_i$, with a learned equivariant interaction potential
+$U$ (a message-passing form in the spirit of MACE \citep{batatia2022}) and temperature $T$. The
+log-price increment is $\Delta p_t = \beta\,\mathrm{ED}_t + \sigma\eta_t$, where the (pre-impact)
+excess demand $\mathrm{ED}_t=\kappa\sum_i\Delta s_{i,0}$ is the net signed agent flow; its Hill tail
+index $\alpha_{\mathrm{ED}}$ \citep{hill1975} is the order-flow tail and, through the impact map,
+controls the return tail.
+The model is trained to reproduce a panel of stylized facts. Crucially, it is fully differentiable and
+supports \emph{controlled interventions}---a scheduled shock that drives the system out of its steady
+state---which we use as the non-equilibrium probe.
+
+\section{Heavy tails are a driven transient}\label{sec:transient}
+In the unperturbed steady state the order-flow tail is \emph{light}: $\alpha_{\mathrm{ED}}\!\approx\!4.7$,
+flat across the rollout (Fig.~\ref{fig:transient}, left, grey). We then apply a controlled
+\emph{coherent displacement} (a \texttt{state\_kick}: a fraction of agents are displaced together) at
+$t\!=\!3000$. The tail \textbf{craters to $\alpha_{\mathrm{ED}}\!\approx\!0.5$}---heavier than the cube
+law---and then \textbf{relaxes back to $\approx\!4.7$ within $\sim\!10^3$ steps}. The depth matches the
+$t\!=\!0$ equilibration template, i.e. the initial burn-in \emph{is} this same transient. An
+exponential fit of the recovery limb gives a relaxation time $\tau\!\approx\!240$ steps for the
+saturated regime (vs.\ $\tau\!\approx\!20$ for the faster cold-start). The effect generalizes across
+five assets (equities, gold, crypto, FX) with a \textbf{sigmoid dose-response} in the shock magnitude
+(onset $\sim\!0.1$--$0.2\sigma$, saturating at a floor $\alpha\!\approx\!0.5$; Fig.~\ref{fig:transient},
+right). The heavy tail is therefore a property of the \emph{driven}, not the steady, state.
+
+\begin{figure}[t]
+\centering
+\figbox{figures/fig1_transient.pdf}{Fig.~1 placeholder --- (left) order-flow tail $\alpha_{\mathrm{ED}}(t)$:
+control stays light ($\approx\!4.7$); a coherent shock at $t\!=\!3000$ craters it to $\approx\!0.5$
+and it relaxes back ($\tau\!\approx\!240$). (right) sigmoid dose-response: post-shock minimum
+$\alpha_{\mathrm{ED}}$ vs.\ shock magnitude.}
+\caption{Heavy tails are a driven non-equilibrium transient: light steady state, shock-driven heavy
+tail, finite-time relaxation, with a sigmoid dose-response.}
+\label{fig:transient}
+\end{figure}
+
+\section{A non-equilibrium measurement pitfall}\label{sec:measurement}
+Because a fresh rollout is out of equilibrium, it carries this heavy transient during its initial
+relaxation. Standard stylized-fact scoring computes the Hill index on the \emph{full} rollout, with no
+warm-up discard---so it reads the equilibration transient as a stationary heavy tail. Discarding the
+first $\sim\!50$ steps moves the estimate sharply toward the light steady state: the baseline Hill
+index rises $3.87\!\to\!6.55$, and a concave-impact variant previously reported to ``match'' the cube
+law rises $5.05\!\to\!9.26$ (Fig.~\ref{fig:mech}a). The low cross-seed variance makes the artifact look
+like a robust law. The correction is to score after a warm-up discard and report a warm-up-sensitivity
+curve; under it, the earlier ``cube-law reproduction'' is withdrawn. This is a stationarity-hygiene
+point for measuring tails in any driven simulator.
+
+\section{Mechanism and order-flow signature}\label{sec:mechanism}
+What drives the transient? Only \emph{coherent latent displacement}. An exogenous price shock (injecting
+a return into the price---a news-shock analogue) is \textbf{inert}: across magnitudes up to $12\sigma$
+the order-flow tail stays light ($\alpha_{\mathrm{ED}}\!\approx\!4.6$), the return tail only nudges
+($\approx\!7.7\!\to\!6.0$, still far from heavy), and the order-flow imbalance is statistically
+identical to the unshocked control. Under the coherent shock, order flow shows a clean non-equilibrium
+signature: the lag-1 autocorrelation of order-flow imbalance jumps from $0.02$ to $\mathbf{0.99}$ at
+the shock---flow becomes transiently coherent and persistent---and relaxes back, with the imbalance
+magnitude and its extreme-coordination saturation bursting and decaying in step
+(Fig.~\ref{fig:mech}b). This relaxing coherence burst is the order-flow fingerprint of the transient,
+and connects to fluctuation-theorem descriptions of market cascades \citep{maskawa2025} and to
+non-equilibrium stochastic thermodynamics more broadly \citep{seifert2012}.
+
+\begin{figure}[t]
+\centering
+\figbox{figures/fig2_mech_boundary.pdf}{Fig.~2 placeholder --- (a) Hill index vs.\ warm-up discard:
+warm-up-inclusive scoring reads a ``cube-law'' tail that vanishes once the transient is dropped.
+(b) order-flow-imbalance memory bursts ($0.02\!\to\!0.99$) and relaxes under coherent shock, but is
+flat under an exogenous price gap. (c) real-crash $\Delta\alpha$ against the calm null --- real return
+tails do not heavy-up at crashes.}
+\caption{(a) the measurement pitfall; (b) the non-equilibrium order-flow signature and its
+mechanism-specificity; (c) the real-data stationarity boundary.}
+\label{fig:mech}
+\end{figure}
+
+\section{The real-data boundary}\label{sec:boundary}
+Is the same transient present in \emph{real} markets? We test it directly. On five real one-minute
+crypto crash episodes (COVID-2020, the May-2021 selloff, the June-2022 deleveraging, Terra/Luna, FTX),
+we pre-registered the statistic $\Delta\alpha = \alpha(\text{crash})-\alpha(\text{pre})$ on
+volatility-standardized returns and compared it to a null distribution from a long calm window. The
+driven-transient hypothesis predicts $\Delta\alpha\!\ll\!0$ (a heavier tail at the crash). Instead the
+pooled effect is $z\!=\!+1.03$ (slightly \emph{lighter}); only one of five episodes is a significant
+heavier-tail hit, within the false-positive rate for five tests (Fig.~\ref{fig:mech}c). Real return
+tails are \textbf{stationary}---approximately cube-law in calm and crash alike, consistent with the
+inverse-cubic universality \citep{gabaix2003,toth2018}. The simulator's transient heavy tail is
+therefore a non-equilibrium property \emph{of the model}: because EcoMD has no stationary heavy-tail
+source, it can produce heavy tails only transiently. This localizes the missing ingredient---a
+stationary heavy-tail mechanism (e.g.\ a heterogeneous, heavy order-flow source)---for this class of
+simulators.
+
+\section{Discussion}
+We have shown, in a differentiable Langevin market simulator, that heavy tails are a \emph{driven
+non-equilibrium transient} rather than a stationary law: a light steady state, a shock-driven heavy
+tail that relaxes with a finite $\tau$, a sigmoid dose-response, and a relaxing order-flow coherence
+signature---together with the measurement caveat that warm-up-inclusive scoring confounds this
+transient with stationarity. The honest boundary is that \emph{real} return tails are stationary, so
+the phenomenon is a property of this model class and pinpoints what it lacks. The relaxing order-flow
+signature is a concrete, falsifiable prediction for real crash order-flow, a natural next test on
+limit-order-book data.
+
+{\small
+\bibliographystyle{plainnat}
+\bibliography{references}
+}
+
+\end{document}
