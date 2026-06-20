@@ -58,20 +58,21 @@ realism must be validated against real stationarity before use.
 \end{abstract}
 
 \section{Introduction}
-Generative models of markets---agent-based simulators, neural stochastic differential equations, and
-GANs over price paths---are increasingly used for scenario generation, stress testing, and data
-augmentation. Their quality is judged almost universally by \emph{stylized-fact matching}: a rollout
-is scored on whether its returns reproduce empirical regularities such as the heavy (inverse-cubic)
-tail and volatility clustering \citep{cont2001,gabaix2003}. Two practical questions receive far less
-attention than the models themselves. First, is this evaluation \emph{rigorous}---does a high stylized-fact
-score actually certify a stationary match? Second, how \emph{controllable} are the generated
-scenarios---which interventions produce which market regimes?
+Generative models of markets---agent-based simulators \citep{byrd2020abides}, neural stochastic
+differential equations, and GANs over price paths---are increasingly used for scenario generation,
+stress testing, and data augmentation. Their quality is judged almost universally by
+\emph{stylized-fact matching}: a rollout is scored on whether its returns reproduce empirical
+regularities such as the heavy (inverse-cubic) tail and volatility clustering \citep{cont2001,gabaix2003}.
+The \emph{scoring procedure itself}, however, is rarely audited: whether a high stylized-fact score
+certifies a \emph{stationary} property of the generator or an artifact of how the rollout is measured
+is seldom checked. This motivates two practical questions: is the evaluation rigorous, and how
+\emph{controllable} are the generated scenarios---which interventions produce which market regimes?
 
-We study both through \textbf{EcoMD}, a differentiable particle simulator in which agents are
-particles evolving under overdamped Langevin dynamics with learned pairwise potentials, and prices
-form from aggregate excess demand. Differentiable agent-based models are not new
-\citep{bouchaud1998,dyer2024,chopra2023}; our contributions are not the simulator's existence but three findings
-about \emph{generating} and \emph{evaluating} market scenarios:
+We study both through \textbf{EcoMD}, a differentiable particle simulator in which agents evolve under
+overdamped Langevin dynamics with learned pairwise potentials, and prices form from aggregate excess
+demand. Differentiable agent-based models are not new \citep{bouchaud1998,dyer2024,chopra2023}; we use
+EcoMD's differentiability for a controllable shock interface and report three findings about generating
+and evaluating market scenarios, the first of which is largely model-agnostic:
 \begin{itemize}\setlength{\itemsep}{1pt}
   \item \textbf{An evaluation pitfall and its fix} (\S\ref{sec:pitfall}): warm-up-inclusive rollout
     scoring inflates fat-tail fidelity by reading an equilibration transient as a stationary law.
@@ -91,8 +92,8 @@ i.e. the net signed agent flow. The model is trained to match a panel of stylize
 differentiable, which buys two things a non-differentiable agent-based simulator
 \citep{byrd2020abides} does not have: gradient-based calibration, and a clean \emph{shock interface}
 for controllable interventions (\S\ref{sec:control}). Figure~\ref{fig:pitfall} (left) shows sample
-paths and the stylized facts EcoMD reproduces. As a \emph{generator}, then, EcoMD is a controllable,
-trainable producer of market scenarios; the rest of the paper concerns how to evaluate and steer it.
+paths and the stylized facts EcoMD reproduces. The rest of the paper concerns how to evaluate and
+steer this generator.
 
 \section{The evaluation pitfall}\label{sec:pitfall}
 \textbf{Setup.} Rollout-based generators are scored by computing stylized facts on a generated series
@@ -107,8 +108,11 @@ to the empirical cube law. But it is a startup artifact. Discarding the first $\
 the estimate sharply toward the light steady state: on EcoMD, the baseline Hill index rises from
 $3.87$ to $6.55$, and a concave-impact variant tuned to ``match'' the cube law rises from $5.05$ to
 $9.26$ (Table~\ref{tab:warmup}; Fig.~\ref{fig:pitfall}, right). The steady state is \emph{light}-tailed
-($\alpha\!\approx\!4.7$ for excess demand); the apparent fat-tail match was burn-in inflation. The
-effect has low cross-seed variance, so it masquerades as a robust law rather than an artifact.
+($\alpha\!\approx\!4.7$ for excess demand); the apparent fat-tail match was burn-in inflation.
+Crucially the artifact is \emph{rewarded}, not caught: the warm-up-inclusive (heavier) reading sits
+closer to the empirical cube-law target than the true light steady state, so a stylized-fact scorer
+registers a \emph{better} match---the practitioner sees success, not a bug. Its low cross-seed
+variance reinforces the illusion of a robust law, which is why the pitfall survives standard practice.
 
 \begin{table}[t]
 \centering
@@ -127,11 +131,13 @@ concave-impact (tuned to ``solve'') & 5.05 & 9.26 & $+4.21$ \\
 \end{tabular}
 \end{table}
 
-\textbf{The fix.} Score rollouts \emph{after} a warm-up discard, and report a warm-up-sensitivity
-curve ($\alpha$ vs.\ discard length) rather than a single number. This is a one-line change to any
-rollout-scoring pipeline and it changes qualitative conclusions: under it, EcoMD's earlier ``cube-law
-reproduction'' is withdrawn. We recommend it as default hygiene for evaluating any rollout-based
-market generator.
+\textbf{The fix.} We recommend a simple protocol: (i) compute each stylized fact over a sliding window
+and plot it against warm-up-discard length $W$; (ii) discard up to the plateau $W^\star$ where the
+estimate stabilizes; (iii) report the score at $W^\star$ \emph{with} the sensitivity curve, and flag
+any fact that shifts by more than a set tolerance over $[0,W^\star]$ as transient-contaminated. This is
+a few-line change to any rollout-scoring pipeline, yet it changes qualitative conclusions: under it,
+EcoMD's earlier ``cube-law reproduction'' is withdrawn. We recommend it as default hygiene for
+rollout-based market generators.
 
 \begin{figure}[t]
 \centering
@@ -163,11 +169,13 @@ by contrast, \emph{inert}: across magnitudes up to $12\sigma$ the excess-demand 
 heavy), and the order-flow imbalance is statistically identical to the unshocked control. A price
 gap does not propagate into a coordinated order-flow response in this model.
 
-The practical takeaway for scenario generation is that \emph{controllability is intervention-specific}:
-the lever that produces realistic stress here is coordinated participant behavior, not an exogenous
-price move. The coherent-liquidation order-flow signature is also a concrete, falsifiable prediction
-to test against real crash order-flow data, complementing fluctuation-theorem analyses of market
-cascades \citep{maskawa2025}.
+The initial coherence is partly imposed by the intervention; the non-trivial, emergent content is its
+\emph{finite-time relaxation} and the sharp contrast with the inert price gap---an exogenous price
+move, the obvious ``stress'' lever, does nothing here. The practical takeaway is that
+\emph{controllability is intervention-specific}: the lever that produces realistic stress is
+coordinated participant behavior, not a price shock. The coherent-liquidation order-flow signature is
+also a concrete, falsifiable prediction to test against real crash order-flow data, complementing
+fluctuation-theorem analyses of market cascades \citep{maskawa2025}.
 
 \section{Honest fidelity bounds}\label{sec:fidelity}
 A generator is only as useful as its fidelity is understood. EcoMD's heavy tails are a \emph{driven
@@ -180,6 +188,9 @@ strongly negative. Instead the pooled effect is $z=+1.03$ (slightly \emph{lighte
 prediction); only one of five episodes shows a significant heavier tail, within the false-positive
 rate for five tests. Real return tails are \emph{stationary}---approximately cube-law in calm and
 crash alike, consistent with the inverse-cubic universality \citep{gabaix2003,plerou1999,toth2018}.
+This uses the five episodes available with free intraday data (crypto); a broader equity test awaits
+paid high-frequency data, but the result is robust to volatility standardization and already matches
+the established stationarity of the return tail.
 
 Hence EcoMD generates a heavy tail that is a \emph{non-equilibrium} response, not the real
 \emph{stationary} heavy tail. For scenario generation this is a sharp caveat: the simulator reproduces
@@ -205,7 +216,11 @@ sensitivity. (ii) \emph{Controllability is intervention-specific}: coordinated p
 not exogenous price moves, drives realistic stress in this generator. (iii) \emph{Tail fidelity is
 transient}: validate generated tails against real stationarity before relying on them. EcoMD is a
 useful, controllable, differentiable scenario generator; these results are the conditions under which
-its output can be trusted, and a measurement caveat that applies well beyond it.
+its output can be trusted. \textbf{Limitations.} We demonstrate the pitfall in EcoMD; we conjecture it
+affects any rollout-scored generator initialized away from its stationary distribution---neural SDEs
+and agent-based models alike---and recommend the warm-up audit whenever rollouts are scored, but
+verifying its prevalence across model families is future work. The fidelity test is likewise limited
+to free intraday (crypto) data.
 
 {\small
 \bibliographystyle{plainnat}
