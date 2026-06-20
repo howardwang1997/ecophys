@@ -86,7 +86,10 @@ index $\alpha_{\mathrm{ED}}$ \citep{hill1975} is the order-flow tail and, throug
 controls the return tail.
 The model is trained to reproduce a panel of stylized facts. Crucially, it is fully differentiable and
 supports \emph{controlled interventions}---a scheduled shock that drives the system out of its steady
-state---which we use as the non-equilibrium probe.
+state---which we use as the non-equilibrium probe. We stress that because EcoMD \emph{is} a driven
+overdamped Langevin many-body system, the terms ``steady state,'' ``relaxation time,'' and ``driven
+transient'' below are precise statements about this dynamical system, not analogies for real markets;
+the real-market question is treated separately and honestly in \S\ref{sec:boundary}.
 
 \section{Heavy tails are a driven transient}\label{sec:transient}
 In the unperturbed steady state the order-flow tail is \emph{light}: $\alpha_{\mathrm{ED}}\!\approx\!4.7$,
@@ -99,7 +102,10 @@ exponential fit of the recovery limb gives a relaxation time $\tau\!\approx\!240
 saturated regime (vs.\ $\tau\!\approx\!20$ for the faster cold-start). The effect generalizes across
 five assets (equities, gold, crypto, FX) with a \textbf{sigmoid dose-response} in the shock magnitude
 (onset $\sim\!0.1$--$0.2\sigma$, saturating at a floor $\alpha\!\approx\!0.5$; Fig.~\ref{fig:transient},
-right). The heavy tail is therefore a property of the \emph{driven}, not the steady, state.
+right). The heavy tail is therefore a property of the \emph{driven}, not the steady, state. Little of
+this is imposed by the perturbation: the steady state being \emph{light} (the opposite of real
+markets, and not built in), the finite relaxation time, the graded sigmoid dose-response, and the
+mechanism-specificity of \S\ref{sec:mechanism} are all emergent properties of the trained dynamics.
 
 \begin{figure}[t]
 \centering
@@ -132,9 +138,11 @@ identical to the unshocked control. Under the coherent shock, order flow shows a
 signature: the lag-1 autocorrelation of order-flow imbalance jumps from $0.02$ to $\mathbf{0.99}$ at
 the shock---flow becomes transiently coherent and persistent---and relaxes back, with the imbalance
 magnitude and its extreme-coordination saturation bursting and decaying in step
-(Fig.~\ref{fig:mech}b). This relaxing coherence burst is the order-flow fingerprint of the transient,
-and connects to fluctuation-theorem descriptions of market cascades \citep{maskawa2025} and to
-non-equilibrium stochastic thermodynamics more broadly \citep{seifert2012}.
+(Fig.~\ref{fig:mech}b). This relaxing coherence burst is the order-flow fingerprint of the transient.
+A driven, relaxing, time-asymmetric signal is exactly the regime where stochastic thermodynamics
+\citep{seifert2012} predicts non-zero entropy production; quantifying the time-asymmetry and entropy
+production of this signal---and comparing to fluctuation-theorem studies of market cascades
+\citep{maskawa2025}---is a concrete next step that we do not claim to have established here.
 
 \begin{figure}[t]
 \centering
@@ -159,9 +167,10 @@ heavier-tail hit, within the false-positive rate for five tests (Fig.~\ref{fig:m
 tails are \textbf{stationary}---approximately cube-law in calm and crash alike, consistent with the
 inverse-cubic universality \citep{gabaix2003,toth2018}. The simulator's transient heavy tail is
 therefore a non-equilibrium property \emph{of the model}: because EcoMD has no stationary heavy-tail
-source, it can produce heavy tails only transiently. This localizes the missing ingredient---a
-stationary heavy-tail mechanism (e.g.\ a heterogeneous, heavy order-flow source)---for this class of
-simulators.
+source---a structural property, not a training shortfall---it can produce heavy tails only
+transiently, and the light steady state is itself the finding. This localizes the missing
+ingredient---a stationary heavy-tail mechanism (e.g.\ a heterogeneous, heavy order-flow source)---for
+this class of simulators.
 
 \section{Discussion}
 We have shown, in a differentiable Langevin market simulator, that heavy tails are a \emph{driven
@@ -171,7 +180,11 @@ signature---together with the measurement caveat that warm-up-inclusive scoring 
 transient with stationarity. The honest boundary is that \emph{real} return tails are stationary, so
 the phenomenon is a property of this model class and pinpoints what it lacks. The relaxing order-flow
 signature is a concrete, falsifiable prediction for real crash order-flow, a natural next test on
-limit-order-book data.
+limit-order-book data. \textbf{Limitations.} The dynamical results are from a single simulator; we
+conjecture the warm-up measurement pitfall affects any driven market simulator initialized off its
+steady state, but verifying this across model families is future work. The real-data test is limited
+to free intraday (crypto) data; the decisive follow-up is an order-flow-level test on paid
+limit-order-book data, where the coherence signature above is the quantity to look for.
 
 {\small
 \bibliographystyle{plainnat}
