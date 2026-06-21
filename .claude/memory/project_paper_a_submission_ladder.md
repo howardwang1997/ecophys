@@ -61,3 +61,10 @@ time-asymmetry/entropy-production proxy, E-S4 τ_OFI → freezes a quantitative 
 bursts-and-relaxes on ≥2 crashes where returns didn't ⇒ NCS-credible; G-null ⇒ folds into honest
 paper. Paper-B carve-out: lead with OFI memory/coherence (computational), entropy-production supporting
 (full thermo program stays in Paper B). Joint NCS odds ~10–18%.
+**Phase 1 DONE 2026-06-21 (.56, ~12h):** E-S1 spx OFI-memory dose-response = clean MONOTONIC SIGMOID
+(0.05→0.05 … 1→0.97 … 12→1.00; onset ~0.1–0.2, saturates ~1.0 — cleaner than the tail). E-S2: OFI
+transient generalizes — spx/ndx/gold/btc all burst mem→~1.0 (all 4 measures); eurusd weak at kick6
+(sub-threshold, consistent w/ its vol-threshold). Sharpened prediction for Phase-2 real L2: crash
+order-flow memory bursts toward perfect persistence, sigmoid in severity, vol-dependent threshold,
+where returns are stationary. Owed: E-S3 (entropy/time-asymmetry) + E-S4 (τ_OFI). See
+`logs/2026-06-21.md`, `experiments/123_driven_transient/ofi_transient_*.json`.
