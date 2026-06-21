@@ -66,5 +66,9 @@ paper. Paper-B carve-out: lead with OFI memory/coherence (computational), entrop
 transient generalizes — spx/ndx/gold/btc all burst mem→~1.0 (all 4 measures); eurusd weak at kick6
 (sub-threshold, consistent w/ its vol-threshold). Sharpened prediction for Phase-2 real L2: crash
 order-flow memory bursts toward perfect persistence, sigmoid in severity, vol-dependent threshold,
-where returns are stationary. Owed: E-S3 (entropy/time-asymmetry) + E-S4 (τ_OFI). See
-`logs/2026-06-21.md`, `experiments/123_driven_transient/ofi_transient_*.json`.
+where returns are stationary. **E-S4:** τ_OFI≈22 steps (4 assets, R²=1.0) vs tail τ_ED≈236 → OFI-memory
+burst is a SHARP impulse (~10× faster than the tail). **E-S3 FLAT:** sign-level (Δp,OFI) entropy-
+production proxy does NOT burst → the transient is persistence/coherence, NOT sign-level irreversibility
+⇒ **lead the NCS real-data test with OFI MEMORY, not entropy production** (tightens Paper-A/Paper-B
+split: memory=A, real EP=B). Phase 1 COMPLETE. See `logs/2026-06-21.md`,
+`experiments/124_order_flow_transient/DESIGN.md`, `ofi_{transient,entropy}_*.json`, `ofi_tau_report.json`.

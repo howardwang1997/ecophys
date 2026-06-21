@@ -42,6 +42,21 @@ burst-and-relax that the return tail does not.** Phases 1–2 sharpen this into 
 Phase-1 deliverable: a frozen, quantitative prediction (which observable, what shape, what
 dose-scaling, what timescale) — the pre-registration target for Phase 2.
 
+### Phase 1 RESULTS (2026-06-21, COMPLETE — `ofi_{transient,entropy}_*.json`, `ofi_tau_report.json`)
+- **E-S1 ✓** spx OFI-memory dose-response = clean **monotonic sigmoid** (onset ~0.1–0.2 → ~1.0 by
+  dose ~1; cleaner than the tail).
+- **E-S2 ✓** generalizes: spx/ndx/gold/btc strong (mem→~1.0, all 4 measures); eurusd weak at kick6
+  (sub-threshold, vol-dependent — consistent).
+- **E-S4 ✓** $\tau_{\text{OFI}}\!\approx\!22$ steps (4 assets, R²=1.0) vs tail $\tau_{\text{ED}}\!\approx\!236$
+  → the OFI-memory burst is a **sharp impulse, ~10× faster than the tail** (at the resolution floor).
+- **E-S3 ⚠ FLAT** — the sign-level (Δp,OFI) entropy-production proxy does **not** burst (kick6 ≈ control).
+  The transient is **persistence/coherence, not sign-level irreversibility**. ⇒ **headline observable
+  = OFI MEMORY, not entropy production** (a finer EP estimator is future work). This *tightens* the
+  Paper-A/Paper-B split: memory/coherence = Paper A; real entropy production stays Paper B.
+
+**Frozen Phase-2 prediction:** crashes drive a **sharp OFI-memory spike toward perfect persistence**,
+sigmoid in severity, 4/5-asset general (vol-dependent threshold), where the return tail is stationary.
+
 ---
 
 ## Phase 2 — the decisive real-data test (gated on Tardis L2 buy; CPU-heavy)
@@ -58,7 +73,7 @@ Provenance file; crash/calm windows frozen before analysis.
 | OFI memory (lag-1 autocorr of signed OFI) | from reconstructed OFI | $\Delta\text{mem}\gg 0$ at crash (the headline) |
 | OFI tail (Hill of \|OFI\| increments) | | $\Delta\alpha_{\text{OFI}} < 0$ (heavier) |
 | OFI saturation (frac \|normalized OFI\|>θ) | | $\Delta\text{sat} > 0$ |
-| time-asymmetry / EP proxy (E-S3 statistic) | | burst $>0$ (supporting) |
+| ~~time-asymmetry / EP proxy~~ | | **de-prioritized** — flat in the sim at sign level (E-S3); revisit only with a finer EP estimator (Paper B's lane) |
 
 ### Test (E-R2) — pre-registered, mirrors `null_test_crash_tails.py`
 For each observable, statistic $\Delta = \text{obs(crash 2d)} - \text{obs(pre 5d)}$, vs a null
