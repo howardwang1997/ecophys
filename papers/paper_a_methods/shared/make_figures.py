@@ -170,32 +170,29 @@ def fig_transient():
     axA.legend(fontsize=6.6, loc="lower right")
     axA.set_ylim(0, 6)
 
-    # (b) dose-response: SPX full sweep + other assets (sparse points)
+    # (b) dose-response per asset: a connected sweep where >=4 doses exist, else markers.
+    # Auto-upgrades to five curves once the ndx/gold/btc/eurusd full sweeps land (exp 123 dose-sweep).
     def post_min(asset, arm):
         c, a = _wr(asset, arm)
         m = (c >= SHOCK) & (c < SHOCK + 1500)
         return float(np.nanmin(a[m])) if m.any() else np.nan
-    spx = []
-    for p in sorted(EXP.glob("results_spx_kick*/windowed_hill_report.json")):
-        name = p.parent.name.replace("results_spx_kick", "")
-        try:
-            dose = float(name)
-        except ValueError:
-            continue
-        spx.append((dose, post_min("spx", f"kick{name}")))
-    spx.sort()
     axB.axhspan(2, 4, color=BAND, zorder=0)
-    axB.semilogx([d for d, _ in spx], [m for _, m in spx], "-o", ms=5, color=RED, label="S&P 500 (sweep)")
-    for asset in ["ndx", "gold", "btcusdt", "eurusd"]:
-        xs, ys = [], []
+    for asset in ["spx", "ndx", "gold", "btcusdt", "eurusd"]:
+        pts = []
         for p in sorted(EXP.glob(f"results_{asset}_kick*/windowed_hill_report.json")):
             name = p.parent.name.replace(f"results_{asset}_kick", "")
             try:
                 dose = float(name)
             except ValueError:
                 continue
-            xs.append(dose); ys.append(post_min(asset, f"kick{name}"))
-        if xs:
+            pts.append((dose, post_min(asset, f"kick{name}")))
+        if not pts:
+            continue
+        pts.sort()
+        xs = [d for d, _ in pts]; ys = [m for _, m in pts]
+        if len(pts) >= 4:
+            axB.semilogx(xs, ys, "-o", ms=4.5, color=ASSET_COLOR[asset], label=ASSET_LABEL[asset])
+        else:
             axB.semilogx(xs, ys, "D", ms=5, color=ASSET_COLOR[asset], label=ASSET_LABEL[asset])
     axB.axhline(4.7, color=GREY, ls=":", lw=1)
     axB.text(0.06, 4.85, "steady state", fontsize=6.6, color="0.5")
