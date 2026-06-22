@@ -78,8 +78,8 @@ $50k approved. **Committed up-front $8-12k**:
 Remaining reserve $38-42k for Phase 4/5 contingencies. Purchases stage at Wk 16-18 once v1 converges on SPX daily. Full details: `ecomd/data/buy_order_v2_{en,zh}.md`.
 
 ## Key literature
-1. Tóth, Lux & Sornette, PRL 120, 138301 (2018) — Boltzmann equation from HFT. Closest prior work.
-2. Chopra et al., arXiv:2207.09714 — differentiable ABM methodology template.
+1. ⚠️ CORRECTED 2026-06-22 (verified): "Tóth, Lux & Sornette PRL 120 138301 (2018)" is **NOT a real paper** — do not cite. Use **Tóth, Lempérière, Deremble, de Lataillade, Kockelkoren & Bouchaud, Phys. Rev. X 1, 021006 (2011)** ("Anomalous price impact and the critical nature of liquidity") for the order-flow/criticality prior art. (If a kinetic/Boltzmann-from-HFT paper was actually meant for Paper B, re-identify the real one before citing.)
+2. Chopra et al., AAMAS 2023 (arXiv:2207.09714), "Differentiable Agent-Based Epidemiology" — differentiable ABM methodology template. (Nearest finance-ABM prior art: **Dyer et al., ICAIF 2023**, gradient-assisted calibration.)
 3. Batatia et al. (MACE, NeurIPS 2022) — equivariant GNN architecture template.
 4. Cont (2001), Quant Finance 1 — canonical 11 stylized facts.
 5. Maskawa, J. (Entropy 2025, 27(4), 435, doi: 10.3390/e27040435) — "Empirical Study on Fluctuation Theorem for Volatility Cascade Processes in Stock Markets"; we extend by embedding IFT as in-simulator measurement target.
