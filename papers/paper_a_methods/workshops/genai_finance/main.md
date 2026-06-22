@@ -1,7 +1,8 @@
 # EcoMD: A Differentiable Generative Market Simulator, and a Burn-In Pitfall in Scoring It
 
-*NeurIPS Workshop on Generative AI in Finance (non-archival, ≤4pp). Markdown working draft — the
-submission artifact is `main.tex`; figures in `figures/`.*
+*NeurIPS Workshop on Generative AI in Finance (non-archival, ≤4pp). **This Markdown is the source
+draft**; `main.tex` is generated from it at submission (regenerate via pandoc — do not hand-edit the
+stale `.tex`). Figures in `figures/`.*
 
 ## Abstract
 
@@ -117,8 +118,8 @@ order-flow signature**, which we characterize quantitatively (Figure 3):
   shock — order flow becomes transiently coherent and persistent — and relaxes back, with the imbalance
   magnitude and its extreme-coordination saturation bursting and decaying in step.
 - *Dose-response.* The OFI-memory burst is a **monotonic sigmoid** in shock magnitude (onset
-  ~0.1–0.2σ, saturating to perfect persistence ~1.0 by ~1σ) — a *more sensitive and cleaner* control
-  knob than the return tail.
+  ~0.1–0.2σ, saturating to perfect persistence ~1.0 by ~1σ) — a more sensitive control knob than the
+  return tail.
 - *Generality.* The signature reproduces across **four of five assets** (equities, NASDAQ, gold,
   crypto); the low-volatility FX pair requires a larger shock, its onset tracking the asset's intrinsic
   volatility.

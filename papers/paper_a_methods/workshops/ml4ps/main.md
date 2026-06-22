@@ -1,7 +1,8 @@
 # Heavy Tails as a Non-Equilibrium Transient in a Differentiable Particle Market Simulator
 
-*NeurIPS Workshop on Machine Learning and the Physical Sciences (ML4PS, non-archival, ≤4pp). Markdown
-working draft — the submission artifact is `main.tex`; figures in `figures/`.*
+*NeurIPS Workshop on Machine Learning and the Physical Sciences (ML4PS, non-archival, ≤4pp). **This
+Markdown is the source draft**; `main.tex` is generated from it at submission (regenerate via pandoc —
+do not hand-edit the stale `.tex`). Figures in `figures/`.*
 
 ## Abstract
 
@@ -114,8 +115,8 @@ light-tailed.
 
 ## 5. Mechanism and order-flow signature
 
-What drives the transient? Only *coherent latent displacement*. An exogenous price shock (injecting a
-return into the price — a news-shock analogue) is **inert**: across magnitudes up to 12σ the order-flow
+The transient is driven only by coherent latent displacement. An exogenous price shock (injecting a
+return into the price, a news-shock analogue) is inert: across magnitudes up to 12σ the order-flow
 tail stays light (*α_ED ≈ 4.6*), the return tail only nudges (~7.7 → 6.0, still far from heavy), and the
 order-flow imbalance is statistically identical to the unshocked control.
 

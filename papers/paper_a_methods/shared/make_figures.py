@@ -110,7 +110,7 @@ def fig_hero():
     dip = np.where(t < ts, base, 0.78 - 0.46 * np.exp(-(t - ts) / 0.12) * (t >= ts))
     dip = np.where(t < ts, base, 0.32 + 0.46 * (1 - np.exp(-(t - ts) / 0.16)))
     axB.plot(t, dip, color=RED, lw=2.0, zorder=3)
-    axB.axvline(ts, color="0.4", ls=":", lw=1.1)
+    axB.axvline(ts, ymin=0.30, color="0.4", ls=":", lw=1.1)
     arrow(axB, ts, 0.96, ts, 0.80, lw=1.4, color=RED)
     axB.text(ts, 0.99, "scheduled shock $t^*$", ha="center", fontsize=7.4, color=RED)
     axB.text(0.18, 0.86, "steady state", fontsize=7.2, color="0.3")
@@ -122,7 +122,7 @@ def fig_hero():
     for i, (lab, col) in enumerate([(r"tail index $\alpha_{\mathrm{ED}}$", RED),
                                     ("order-flow memory", GREEN),
                                     ("price / return", "#444")]):
-        box(axB, 0.04 + i * 0.33, 0.04, 0.30, 0.14, lab, "white", ec=col, fs=6.9, lw=1.3)
+        box(axB, 0.04 + i * 0.33, 0.02, 0.30, 0.125, lab, "white", ec=col, fs=6.9, lw=1.3)
     axB.text(0.5, 0.205, "exact internal observables (read, not inferred)", ha="center",
              fontsize=6.6, color="0.45")
 
@@ -163,7 +163,7 @@ def fig_transient():
     axA.plot(tt, f["a_inf"] - f["amp"] * np.exp(-(tt - f["t_min"]) / f["tau"]),
              color="black", ls="--", lw=1.1, label=fr"relax fit ($\tau\approx{f['tau']:.0f}$)")
     # burn-in marker
-    axA.annotate("burn-in dip\n(same depth, fast)", xy=(250, 0.66), xytext=(900, 1.7),
+    axA.annotate("burn-in dip\n(same depth, fast)", xy=(250, 0.66), xytext=(430, 1.25),
                  fontsize=6.4, color="0.35", arrowprops=dict(arrowstyle="-|>", color="0.5", lw=0.8))
     axA.set_xlabel("step $t$"); axA.set_ylabel(r"order-flow tail $\alpha_{\mathrm{ED}}(t)$")
     axA.set_title("a  Driven transient: dip-and-recover")
@@ -278,8 +278,8 @@ def fig_mechanism():
         b = oti[arm]["measures"]["mem"]["base"]
         axA.plot([-400, 450], [b, b], color=col, lw=1.3, label=lab)
     axA.axvline(0, color="0.5", ls=":", lw=1)
-    axA.annotate(fr"sharp relax $\tau_{{\mathrm{{OFI}}}}\approx{sp['tau_ofi']:.0f}$",
-                 xy=(sp["t_peak"] - SHOCK + 40, 0.5), xytext=(150, 0.72), fontsize=7,
+    axA.annotate(fr"$\tau_{{\mathrm{{OFI}}}}\approx{sp['tau_ofi']:.0f}$",
+                 xy=(sp["t_peak"] - SHOCK + 30, 0.42), xytext=(330, 0.74), fontsize=7.5,
                  color=RED, arrowprops=dict(arrowstyle="-|>", color=RED, lw=0.8))
     axA.set_xlabel("step relative to shock"); axA.set_ylabel("OFI memory (lag-1 autocorr.)")
     axA.set_title("a  Order-flow memory burst")
@@ -347,8 +347,8 @@ def fig_boundary():
     ax.set_xticklabels([e["episode"].split("_")[0] for e in eps], rotation=30, ha="right", fontsize=7.4)
     ax.set_ylabel(r"$\Delta\alpha$  (crash $-$ pre)")
     ax.set_title(f"Real return tails are stationary  (pooled $z={nt['pooled_z']:+.2f}$)")
-    ax.legend(fontsize=6.8, loc="lower left")
-    ax.set_ylim(-1.15, 1.35)
+    ax.legend(fontsize=6.8, loc="upper left")
+    ax.set_ylim(-1.15, 1.45)
     _saveboth(fig, "fig_boundary")
 
 
