@@ -225,40 +225,105 @@ signature is deferred. Finally, the central market claim rests on Results §6, w
 
 ## Methods
 
-**Simulator.** EcoMD evolves *N* agents *sᵢ ∈ ℝᵈ* by overdamped Langevin dynamics
-*ṡᵢ = −∇\_{sᵢ} U({s}) + √(2T) ξᵢ*, integrated with a fixed step *dt*; *ξᵢ* is unit Gaussian noise and
-*T* a learned temperature. The interaction potential *U* is a learned equivariant message-passing
-function over a neighbour graph, following machine-learned interatomic potentials (Behler and Parrinello
-2007; Batzner et al. 2022; Batatia et al. 2022). Price formation: the log-price increment is
-*Δpₜ = β·EDₜ − ½σ² + σηₜ*, with pre-impact excess demand *EDₜ = κ Σᵢ Δsᵢ,₀* (the net signed agent
-flow) and an optional concave impact map; *β*, *κ*, *σ* are learned/calibrated. The model is trained by
-gradient descent against a panel of stylized facts (Cont 2001; Vyetrenko et al. 2020); full
-architecture, hyperparameters, seeds and configs are in the repository.
+**Particle dynamics and integrator.** EcoMD represents the market by $N$ agents with latent states
+$s_i\in\mathbb{R}^d$, $i=1,\dots,N$, evolving by overdamped (inertia-free) Langevin dynamics in a learned
+potential landscape conditioned on the price context $c_t$:
 
-**Observables.** The Hill tail index (Hill 1975) is computed on a series with a fixed tail fraction;
-we report it *both* with and without a warm-up discard and as a function of discard length. The
-order-flow imbalance is logged per step directly from agent flow as the signed-to-gross flow ratio
-*ρₜ = Σᵢ Δsᵢ,₀ / (Σᵢ |Δsᵢ,₀| + ε) ∈ [−1, 1]*; OFI memory is its windowed lag-1 autocorrelation, OFI
-saturation the windowed fraction with |ρ| above a threshold. Relaxation times are exponential fits to
-the recovery limb of the windowed observable.
+$$\gamma\,\dot{s}_i \;=\; -\,\nabla_{s_i} U(\{s\};c_t)\;+\;f^{\mathrm{diss}}_i\;+\;\sqrt{2\gamma T}\;\xi_i(t),$$
 
-**Shock interface.** Two channels: a *coordinated displacement* (`state_kick`: displace a fraction of
-agents' positions by mag × cross-sectional s.d.) and an *exogenous price gap* (`price_jump`: inject a
-realized return mag × σ into the price), each applied at a scheduled step. Dose–response sweeps vary
-*mag*; cross-asset runs use the five calibrated asset checkpoints.
+with friction $\gamma$, temperature $T$, and $\langle\xi_i(t)\xi_j(t')\rangle=\delta_{ij}\delta(t-t')$.
+We integrate by Euler–Maruyama with fixed step $\Delta t$,
 
-**Entropy-production proxy.** On the joint symbol sequence *(sign Δpₜ, sign ρₜ) ∈ {0,1,2,3}* we estimate
-the per-window Kullback–Leibler divergence between the forward and time-reversed pair-transition
-distributions, a standard discrete entropy-production estimator (Seifert 2012); it is zero under
-detailed balance.
+$$s_i^{t+1} \;=\; s_i^{t} \;+\; \frac{f^{\mathrm{cons},t}_i + f^{\mathrm{diss},t}_i}{\gamma}\,\Delta t \;+\; \sqrt{\tfrac{2T\,\Delta t}{\gamma}}\;\varepsilon^{t}_i ,$$
 
-**Real-data test.** Real return series are one-minute Binance close-to-close log-returns for five crash
-episodes plus a long calm window. The statistic *Δα = α(crash 2 d) − α(pre 5 d)* on volatility-
-standardized returns is compared to a null distribution formed by sliding the same window-pair across
-the calm period (a windowed tail-index-stationarity test in the spirit of Quintos et al. 2001), giving
-per-episode and pooled *z*. The order-flow test (Results §6) generalizes this to limit-order-book OFI
-under the binding gates and four controls (volatility confound, reversibility surrogate, placebo onsets,
-return cross-check) frozen in the pre-registration `experiments/124_order_flow_transient/PREREG_phase2.md`.
+where $\varepsilon^t_i$ is a unit-variance innovation — Gaussian by default, with Student-$t$ or
+symmetric-$\alpha$-stable (Lévy) options for heavier microscopic noise. The first state coordinate
+$s_{i,0}$ is the price-coupled "position".
+
+**Forces and interaction potential.** The conservative force is the negative gradient of a learned
+potential, $f^{\mathrm{cons}}_i=-\nabla_{s_i}U$, evaluated by automatic differentiation with the graph
+retained (`create_graph=True`) so that forces — and hence whole trajectories — are differentiable in the
+parameters, which is what enables gradient calibration and attribution. The potential decomposes as
+$U=U_{\mathrm{pair}}+U_{\mathrm{ext}}$: $U_{\mathrm{pair}}$ is a higher-body-order $E(n)$-equivariant
+message-passing potential over a $k$-nearest-neighbour graph in the spirit of machine-learned
+interatomic potentials (Behler and Parrinello 2007; Batzner et al. 2022; Batatia et al. 2022), and
+$U_{\mathrm{ext}}$ is a per-agent external potential conditioned on $c_t=(\log p_t,\,v_t,\,r_{t-1})$.
+Dissipation derives from $D(\{s\},\{s^{\mathrm{prev}}\})=\lambda\sum_i\lVert s_i-s_i^{\mathrm{prev}}\rVert^2$,
+giving a frictional force opposing per-step displacement,
+$f^{\mathrm{diss}}_i=-\nabla_{s_i}D=-2\lambda\,(s_i-s_i^{\mathrm{prev}})$.
+
+**Price formation.** The pre-impact excess demand is the net signed agent flow along the price-coupled
+coordinate,
+
+$$\mathrm{ED}_t \;=\; \kappa\sum_{i=1}^{N}\Delta s_{i,0}^{t},\qquad \Delta s_{i,0}^{t}=s_{i,0}^{t}-s_{i,0}^{t-1},$$
+
+optionally normalized by $\sqrt{N}$ and passed through a concave impact map. The realized log-return is
+
+$$r_t \;=\; \beta_t\,\mathrm{ED}_t \;-\; \tfrac{1}{2}\sigma^2 \;+\; \sigma\,\eta_t \;+\; \chi_t,\qquad \eta_t\sim\mathcal{N}(0,1),$$
+
+where $\beta_t$ is an effective impact coefficient, $\chi_t$ an optional Hawkes self-excitation term
+(a sign-coupled EWMA of $|r|$), and the running volatility follows an EWMA
+$v_{t+1}=(1-a)\,v_t+a\,|r_t|$; the log-price accumulates as $\log p_{t+1}=\log p_t+r_t$. The parameters
+$\{\gamma,T,\lambda,\kappa,\beta,\sigma,a,\dots\}$ together with the potential weights are calibrated.
+
+**Order-flow imbalance.** We log per step the signed-to-gross agent-flow ratio,
+
+$$\rho_t \;=\; \frac{\sum_{i}\Delta s_{i,0}^{t}}{\sum_{i}\lvert \Delta s_{i,0}^{t}\rvert+\epsilon}\;\in[-1,1],$$
+
+computed directly from agent flow (config-independent; the unbounded net flow is $\propto\mathrm{ED}_t$,
+while $\rho_t$ isolates directional coordination).
+
+**Shock interface.** A scheduled intervention is applied at step $t^{\*}$. (i) *Coordinated displacement*
+(`state_kick`): for a uniformly random subset $\mathcal{S}$ of $\lceil\phi N\rceil$ agents,
+$s_{i,0}\!\leftarrow\! s_{i,0}+m\cdot\mathrm{sd}(s_{\cdot,0})$ for $i\in\mathcal{S}$. (ii) *Exogenous price
+gap* (`price_jump`): inject $r^{\mathrm{exo}}=\mathrm{sgn}\cdot m\,v_{t^{\*}}$ into the realized return,
+$r_{t^{\*}}\!\leftarrow\! r_{t^{\*}}+r^{\mathrm{exo}}$, updating $\log p$ and the volatility EWMA with the
+total move. The dimensionless dose is $m$ (in cross-sectional-s.d. or $\sigma$ units, respectively);
+dose–response sweeps vary $m$, cross-asset runs use the five calibrated asset checkpoints.
+
+**Calibration.** Parameters are fit by stochastic gradient descent on a stylized-fact objective evaluated
+on *warm-up-discarded* returns $r_{>w}$,
+
+$$\mathcal{L} \;=\; \sum_{k} w_k\,\big(g_k(r_{>w})-g_k^{\*}\big)^2 ,$$
+
+where each $g_k$ is a differentiable estimator of a stylized fact — the first three moments, the
+squared-return autocorrelation $\overline{\mathrm{ACF}}(r^2)$ (volatility clustering), a soft Hill
+exponent, the leverage correlation, and eight further differentiable fact surrogates (gain–loss
+asymmetry, aggregational Gaussianity, Fano intermittency, DFA Hurst, etc.) — and $g_k^{\*}$ are empirical
+targets (Cont 2001; Vyetrenko et al. 2020). Note that training already discards a warm-up; the pitfall of
+Results §1 concerns the separate, conventional *scoring/evaluation* step, which does not.
+
+**Tail-index and order-flow estimators.** For a sample with upper order statistics
+$x_{(1)}\ge x_{(2)}\ge\cdots$ and tail fraction $k/n$, the (two-sided) Hill estimator (Hill 1975) is
+
+$$\hat{\alpha} \;=\; \Big(\tfrac{1}{k}\sum_{i=1}^{k}\log\tfrac{x_{(i)}}{x_{(k+1)}}\Big)^{-1}.$$
+
+Time-resolved $\alpha(t)$, OFI memory $\mathrm{mem}(t)=\widehat{\mathrm{corr}}\!\big(\rho_{u},\rho_{u+1}\big)$
+over $u$ in a window of width $W$ and stride $h$ (the lag-1 autocorrelation of signed OFI), and OFI
+saturation (the window fraction with $|\rho|>\theta$) are computed on sliding windows. Relaxation times
+are nonlinear-least-squares fits of $O(t)=O_\infty-A\exp[-(t-t_0)/\tau]$ to the recovery limb of a
+windowed observable.
+
+**Entropy-production proxy.** On the joint symbol sequence
+$a_t=2\,\mathbf{1}[r_t>0]+\mathbf{1}[\rho_t>0]\in\{0,1,2,3\}$, with Laplace-smoothed windowed
+pair-transition probabilities $P(a\!\to\!b)$, we estimate the per-window irreversibility
+
+$$\dot{S} \;\approx\; \sum_{a,b} P(a\!\to\!b)\,\log\frac{P(a\!\to\!b)}{P(b\!\to\!a)},$$
+
+the Kullback–Leibler divergence between forward and time-reversed transition statistics — a standard
+discrete entropy-production estimator that vanishes under detailed balance (Seifert 2012).
+
+**Real-data test and pre-registration.** Real returns are one-minute Binance close-to-close log-returns
+for five crash episodes plus a long calm window. Writing $\alpha(\cdot)$ for the Hill index of
+volatility-standardized returns on a window, the statistic $\Delta\alpha=\alpha(\text{crash }2\,\mathrm{d})-\alpha(\text{pre }5\,\mathrm{d})$
+is compared to a null distribution $\{\Delta\alpha^{(j)}\}$ obtained by sliding the same $(5\,\mathrm{d},2\,\mathrm{d})$
+window-pair across the calm period — a windowed tail-index-stationarity test (Quintos et al. 2001) —
+yielding per-episode $z=(\Delta\alpha-\mu_0)/\sigma_0$ and a pooled
+$z=(\overline{\Delta\alpha}-\mu_0)/(\sigma_0/\sqrt{n})$ with $(\mu_0,\sigma_0)$ the null mean and s.d. The
+order-flow test (Results §6) generalizes this to limit-order-book OFI memory under binding decision gates
+and four controls (volatility confound, reversibility surrogate, placebo onsets, return cross-check)
+frozen before data access in the pre-registration
+(`experiments/124_order_flow_transient/PREREG_phase2.md`).
 
 ## Data availability
 
