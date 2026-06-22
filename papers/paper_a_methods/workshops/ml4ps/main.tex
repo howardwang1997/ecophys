@@ -54,11 +54,15 @@ stationary heavy-tail mechanism in this class of simulators---rather than a stat
 \section{Introduction}
 The heavy tail of financial returns---the inverse-cubic law, $P(|r|\!>\!x)\!\sim\!x^{-\alpha}$ with
 $\alpha\!\approx\!3$---is one of the most robust ``stylized facts'' in quantitative finance
-\citep{cont2001,gabaix2003,plerou1999}, and is almost universally treated as a \emph{stationary}
-property of the return distribution. Mechanistic, particle-based simulators offer a way to ask a
-sharper, physics-style question: in a driven many-body system whose macroscopic observable is the
-price, is the heavy tail a stationary equilibrium property, or a \emph{non-equilibrium transient}---and
-does the standard way of measuring it tell the two apart?
+\citep{cont2001,gabaix2003,plerou1999}, and is usually treated as a \emph{stationary} property of the
+return distribution to be explained by an equilibrium mechanism \citep{gabaix2003}. A dissenting
+tradition instead reads it as \emph{dynamics-generated}: a finite-variance process under a fluctuating
+volatility clock \citep{clark1973}, or apparent power-law behaviour produced by multi-timescale
+stochastic volatility \citep{lebaron2001}. Separating these views observationally is hard, because one
+cannot intervene on a real market and watch its tail relax. Mechanistic, particle-based simulators can:
+in a driven many-body system whose macroscopic observable is the price, ``steady state'' and
+``relaxation'' are precise, and we can ask whether the heavy tail is a stationary equilibrium property
+or a \emph{non-equilibrium transient}---and whether the standard way of measuring it tells the two apart.
 
 We study this in \textbf{EcoMD}, a differentiable simulator in which agents are particles evolving
 under overdamped Langevin dynamics with learned interaction potentials, and the price forms from
@@ -171,7 +175,7 @@ driven-transient hypothesis predicts $\Delta\alpha\!\ll\!0$ (a heavier tail at t
 pooled effect is $z\!=\!+1.03$ (slightly \emph{lighter}); only one of five episodes is a significant
 heavier-tail hit, within the false-positive rate for five tests (Fig.~\ref{fig:mech}c). Real return
 tails are \textbf{stationary}---approximately cube-law in calm and crash alike, consistent with the
-inverse-cubic universality \citep{gabaix2003,toth2018}. The simulator's transient heavy tail is
+inverse-cubic universality \citep{gabaix2003,toth2011}. The simulator's transient heavy tail is
 therefore a non-equilibrium property \emph{of the model}: because EcoMD has no stationary heavy-tail
 source---a structural property, not a training shortfall---it can produce heavy tails only
 transiently, and the light steady state is itself the finding. This localizes the missing

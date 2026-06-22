@@ -23,10 +23,14 @@ heavy-tail mechanism in this class of simulators — rather than a stationary ma
 
 The heavy tail of financial returns — the inverse-cubic law, *P(|r|>x) ~ x⁻ᵅ* with *α ≈ 3* — is one of
 the most robust "stylized facts" in quantitative finance [Cont 2001; Gabaix et al. 2003; Plerou et al.
-1999], almost universally treated as a *stationary* property of the return distribution. Mechanistic,
-particle-based simulators let us ask a sharper, physics-style question: in a driven many-body system
-whose macroscopic observable is the price, is the heavy tail a stationary equilibrium property, or a
-*non-equilibrium transient* — and does the standard way of measuring it tell the two apart?
+1999], usually treated as a *stationary* property to be explained by an equilibrium mechanism [Gabaix
+et al. 2003]. A dissenting tradition reads it instead as *dynamics-generated* — a finite-variance
+process under a fluctuating volatility clock [Clark 1973], or apparent power laws from multi-timescale
+stochastic volatility [LeBaron 2001]. Separating these views observationally is hard, because one
+cannot intervene on a real market and watch its tail relax. Mechanistic, particle-based simulators can:
+in a driven many-body system whose observable is the price, "steady state" and "relaxation" are
+precise, and we can ask whether the heavy tail is a stationary equilibrium property or a
+*non-equilibrium transient* — and whether the standard way of measuring it tells the two apart.
 
 We study this in **EcoMD**, a differentiable simulator in which agents are particles evolving under
 overdamped Langevin dynamics with learned interaction potentials, and the price forms from aggregate

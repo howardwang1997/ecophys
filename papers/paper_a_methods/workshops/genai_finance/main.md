@@ -136,7 +136,9 @@ order-flow response in this model.
 The practical takeaway is that *controllability is intervention-specific*: the lever that produces
 realistic stress is coordinated participant behavior, not a price shock. The coherent-liquidation
 order-flow signature — a sharp, dose-responsive memory burst — is also a concrete, falsifiable
-prediction to test against real crash order-flow data.
+prediction to test against real crash order-flow data, a natural place to look since the non-trivial
+dynamical structure of markets resides in order flow, which carries long memory while returns stay
+near-efficient [Lillo & Farmer 2004; Cont, Kukanov & Stoikov 2014; Tóth et al. 2011].
 
 ## 5. Honest fidelity bounds
 

@@ -47,7 +47,7 @@ See `memory/feedback_workflow.md` for full details.
 - English, LaTeX. Drafts live in `papers/paper_{a,b,c}_*/`.
 - No overclaiming. Every empirical claim has a section reference to its experiment; every theoretical claim has a proof sketch or clearly labeled "conjecture".
 - Keep a `papers/shared/` folder for figures/style files reused across papers.
-- Cite Tóth-Lux-Sornette (PRL 2018), Chopra 2022, MACE (Batatia 2022), Cont 2001, Maskawa 2025 (Entropy, "Empirical Study on Fluctuation Theorem for Volatility Cascade Processes in Stock Markets") in every relevant paper.
+- Cite (verified refs; the old "Tóth-Lux-Sornette PRL 2018" was BOGUS — does not exist): **Tóth et al., Phys. Rev. X 1, 021006 (2011)** ("Anomalous Price Impact and the Critical Nature of Liquidity", square-root impact / liquidity criticality); **Chopra et al., AAMAS 2023** (GradABM, differentiable ABM); MACE (Batatia et al. 2022); Cont (2001); Maskawa (Entropy 2025, "Empirical Study on Fluctuation Theorem for Volatility Cascade Processes in Stock Markets") — in every relevant paper. For Paper A also: Gabaix et al. (Nature 2003) + Gopikrishnan/Plerou et al. (PRE 1999) (stationary cube-law); Lillo & Farmer (2004) (long-memory order flow); LeBaron (2001) + Warusawitharana (2018) (fat tails as a volatility/transient effect — our camp); Quintos-Fan-Phillips (2001) (tail-index stationarity test); Cont-Kukanov-Stoikov (2014) (OFI); Dyer et al. (ICAIF 2023) + Bouchaud & Cont (EPJ B 1998) (differentiable/Langevin market prior art).
 
 ## Data discipline
 
