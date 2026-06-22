@@ -51,7 +51,7 @@ def fig1_pitfall() -> None:
     ax.set_ylabel("Hill tail index  $\\alpha$  (higher = lighter)")
     ax.set_title("The evaluation pitfall: warm-up inflates tail fidelity", fontsize=9)
     ax.legend(fontsize=7, loc="center right")
-    fig.savefig(OUT / "fig1_pitfall.pdf")
+    fig.savefig(OUT / "fig1_pitfall.pdf"); fig.savefig(OUT / "fig1_pitfall.png", dpi=150)
     plt.close(fig)
     print(f"wrote {OUT/'fig1_pitfall.pdf'}")
 
@@ -95,7 +95,7 @@ def fig2_control_fidelity() -> None:
     axR.set_ylabel("$\\Delta\\alpha$  (crash $-$ pre)")
     axR.set_title(f"Fidelity: real tails stationary (pooled z={nt['pooled_z']:+.2f})", fontsize=9)
     axR.legend(fontsize=6.5, loc="upper left")
-    fig.savefig(OUT / "fig2_control_fidelity.pdf")
+    fig.savefig(OUT / "fig2_control_fidelity.pdf"); fig.savefig(OUT / "fig2_control_fidelity.png", dpi=150)
     plt.close(fig)
     print(f"wrote {OUT/'fig2_control_fidelity.pdf'}")
 

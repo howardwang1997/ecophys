@@ -91,7 +91,9 @@ by more than a set tolerance over [0,*W\**] as transient-contaminated. This is a
 rollout-scoring pipeline, yet it changes qualitative conclusions: under it, EcoMD's earlier "cube-law
 reproduction" is withdrawn. We recommend it as default hygiene for rollout-based market generators.
 
-**Figure 1.** *(figures/fig1_pitfall.pdf)* EcoMD as a generator, and the warm-up-scoring pitfall: Hill
+![Figure 1: Hill index vs. warm-up discard](figures/fig1_pitfall.png)
+
+**Figure 1.** EcoMD as a generator, and the warm-up-scoring pitfall: Hill
 tail index vs. warm-up-discard length — the heavy "cube-law" match at the left edge vanishes once the
 equilibration transient is dropped.
 
@@ -157,7 +159,9 @@ transiently and under coordinated driving, so its generated tails should not be 
 stationary risk without external validation. It also localizes what the model class is missing — a
 stationary heavy-tail mechanism — which we leave to future work.
 
-**Figure 2.** *(figures/fig2_control_fidelity.pdf)* (left) controllable stress scenario: OFI
+![Figure 2: controllability + fidelity](figures/fig2_control_fidelity.png)
+
+**Figure 2.** (left) controllable stress scenario: OFI
 memory/|imbalance|/saturation burst-and-relax under coherent liquidation vs. flat under an exogenous
 price gap; (right) the real-data fidelity test: per-episode and pooled *Δα* against the calm null — real
 crash tails do not heavy-up.

@@ -138,6 +138,12 @@ steady state being *light* (the opposite of real markets), the finite relaxation
 dose-response, and the mechanism-specificity of §5 are emergent properties of the trained dynamics. In
 EcoMD, the heavy tail is a property of the *driven*, not the steady, state.
 
+![Driven transient + sigmoid dose-response](figures/fig1_transient.png)
+
+**Figure 2.** (left) order-flow tail *α_ED(t)*: control stays light (≈4.7); a coherent shock at *t=3000*
+craters it to ≈0.5 and it relaxes back (*τ≈240*); the *t=0* burn-in dip is the same transient. (right)
+the sigmoid dose-response — post-shock minimum *α_ED* vs. shock magnitude.
+
 ## 5. Mechanism and channels: what drives the transient
 
 **Only coherent latent displacement.** An exogenous price shock (injecting a return into the price — a
@@ -181,6 +187,14 @@ training shortfall), it can produce heavy tails only transiently. The light stea
 finding, and it localizes the missing ingredient — a stationary heavy-tail mechanism — for this class of
 simulators. It also sharpens the next question: *if the non-equilibrium driving is real but absent from
 the return tail, where is it?*
+
+![Measurement pitfall, OFI signature, and real-data boundary](figures/fig2_mech_boundary.png)
+
+**Figures 1 & 3.** (a) **[Fig 1]** Hill index vs. warm-up discard — the measurement pitfall of §3
+(both cells rise out of the cube-law band once the transient is dropped). (b) **[Fig 3a]** OFI memory
+bursts (0.02 → ~1.0) and relaxes under the coherent shock, flat under a price gap (§5). (c) **[Fig 3b]**
+real-crash *Δα* against the calm null — real return tails do not heavy-up (§6). *(Panels currently
+combined from the shared figure set; split + renumber at LaTeX conversion.)*
 
 ## 7. The order-flow test: from simulator prediction to real data
 

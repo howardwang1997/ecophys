@@ -71,7 +71,9 @@ of this is imposed by the perturbation: the steady state being *light* (the oppo
 and not built in), the finite relaxation time, the graded sigmoid dose-response, and the
 mechanism-specificity of §5 are all emergent properties of the trained dynamics.
 
-**Figure 1.** *(figures/fig1_transient.pdf)* (left) order-flow tail *α_ED(t)*: control stays light
+![Figure 1: driven transient + dose-response](figures/fig1_transient.png)
+
+**Figure 1.** (left) order-flow tail *α_ED(t)*: control stays light
 (≈4.7); a coherent shock at *t=3000* craters it to ≈0.5 and it relaxes back (*τ≈240*); the *t=0*
 burn-in dip is the same transient. (right) sigmoid dose-response: post-shock minimum *α_ED* vs. shock
 magnitude.
@@ -132,7 +134,9 @@ source — a structural property, not a training shortfall — it can produce he
 and the light steady state is itself the finding. This localizes the missing ingredient — a stationary
 heavy-tail mechanism (e.g. a heterogeneous, heavy order-flow source) — for this class of simulators.
 
-**Figure 2.** *(figures/fig2_mech_boundary.pdf)* (a) Hill index vs. warm-up discard (the measurement
+![Figure 2: measurement pitfall, OFI signature, real-data boundary](figures/fig2_mech_boundary.png)
+
+**Figure 2.** (a) Hill index vs. warm-up discard (the measurement
 pitfall); (b) OFI memory bursts (0.02 → ~1.0) and relaxes under coherent shock, flat under a price gap;
 (c) real-crash *Δα* against the calm null — real return tails do not heavy-up.
 

@@ -74,7 +74,7 @@ def fig1_transient() -> None:
     axR.set_ylabel("post-shock min $\\alpha_{\\mathrm{ED}}$")
     axR.set_title("Sigmoid dose-response (5 assets)", fontsize=9)
     axR.legend(fontsize=7, loc="upper right")
-    fig.savefig(OUT / "fig1_transient.pdf")
+    fig.savefig(OUT / "fig1_transient.pdf"); fig.savefig(OUT / "fig1_transient.png", dpi=150)
     plt.close(fig)
     print(f"wrote {OUT/'fig1_transient.pdf'}")
 
@@ -121,7 +121,7 @@ def fig2_mech_boundary() -> None:
     axC.set_ylabel("$\\Delta\\alpha$")
     axC.set_title(f"(c) real: stationary (z={nt['pooled_z']:+.2f})", fontsize=8.5)
     axC.legend(fontsize=6.0, loc="lower left")
-    fig.savefig(OUT / "fig2_mech_boundary.pdf")
+    fig.savefig(OUT / "fig2_mech_boundary.pdf"); fig.savefig(OUT / "fig2_mech_boundary.png", dpi=150)
     plt.close(fig)
     print(f"wrote {OUT/'fig2_mech_boundary.pdf'}")
 
