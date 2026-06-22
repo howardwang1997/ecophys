@@ -18,21 +18,18 @@ inline, no "Related Work" section — modeled on Nat. Comput. Sci. Articles). St
 
 ## Abstract
 
-Heavy-tailed returns and clustered volatility — the canonical "stylized facts" of markets — are almost
-always studied passively and treated as stationary statistical laws, because real markets cannot be
-experimentally perturbed under controlled conditions. We introduce EcoMD, a calibrated differentiable
-particle simulator of a market in which agents are particles under Langevin dynamics with learned
-interactions, and use its differentiability — gradient calibration, scheduled interventions, and exact
-internal observables — as a controlled-experiment platform. Four results follow. First, scoring
-simulator rollouts without discarding a warm-up confounds a startup equilibration transient with a
-stationary fat tail, a measurement artifact we quantify and correct. Second, by controlled
-intervention, heavy tails in EcoMD are a driven non-equilibrium transient: a light steady state, a
-shock-driven heavy tail, finite-time relaxation, and a sigmoid dose–response across five assets. Third,
-the transient is mechanistically specific — only coordinated agent displacement drives it, exogenous
-price shocks are inert — and it leaves a sharp, dose-responsive order-flow-coherence signature. Fourth,
-real return tails are stationary across calm and crash, placing the transient in the simulator and
-converting it into a falsifiable prediction about real order flow, which we pre-register and test on
-limit-order-book data.
+The heavy tails and clustered volatility of asset returns are usually studied observationally and
+modelled as stationary statistical laws, since a real market cannot be perturbed under controlled
+conditions. We instead treat a calibrated differentiable particle simulator, EcoMD, in which agents move
+by Langevin dynamics with learned interactions, as a substitute laboratory; its differentiability
+supplies gradient calibration, scheduled shocks, and direct readout of the internal state. In the
+simulator the heavy tail is not a stationary property but a transient response to driving. The steady
+state is light-tailed, and a heavy tail appears only when the agents are coherently displaced; it then
+decays over a relaxation time that grows with the drive and traces a sigmoid dose–response across five
+assets. What produces it is coordinated order flow rather than a price move, and it is accompanied by a
+burst of order-flow memory. Real return tails, by contrast, do not become heavier between calm and
+crash, so the transient is a property of the model. We recast it as a pre-registered prediction about
+real order flow, to be tested on limit-order-book data.
 
 ## Main
 
@@ -64,22 +61,22 @@ Cont's (1998) low-dimensional analytic one — but a *methodology*: pose a causa
 dynamics, answer it by controlled intervention in the simulator, and convert the answer into a
 falsifiable prediction for real data.
 
-We report four results. (1) A transferable **measurement correction**: warm-up-inclusive rollout
-scoring reads a startup equilibration transient as a stationary tail. (2) A **controlled discovery**:
-in EcoMD heavy tails are a driven non-equilibrium transient, with an explicit dose–response and
-relaxation time across five assets. (3) **Mechanism attribution**: only coordinated agent displacement
-drives the transient; exogenous price shocks are inert; the transient leaves a sharp order-flow-
-coherence signature. (4) A **real-market boundary and prediction**: real *return* tails are stationary
-(the transient is model-specific), which — because the dynamical structure of markets is known to live
-in *order flow* rather than the return marginal (Lillo and Farmer 2004; Bouchaud et al. 2004; Tóth
-et al. 2011; Cont et al. 2014) — yields a falsifiable, pre-registered prediction about real order flow.
+The paper makes four points. Scoring a rollout without discarding its warm-up reads the startup
+equilibration transient as a stationary tail, an artefact we quantify and correct. Intervention then
+shows that the heavy tail in EcoMD is a driven non-equilibrium transient, with a dose–response and a
+relaxation time measured across five assets. The transient is produced by coordinated displacement of
+the agents and not by exogenous price shocks, and it leaves a distinctive order-flow signature. Real
+return tails, finally, do not become heavier between calm and crash, so the transient is specific to the
+model; since the dynamical structure of markets lives in order flow rather than in the return marginal
+(Lillo and Farmer 2004; Bouchaud et al. 2004; Tóth et al. 2011; Cont et al. 2014), this becomes a
+pre-registered prediction for real order flow.
 
 ### EcoMD as a controlled-experiment platform
 
 EcoMD (Methods) evolves *N* agents *sᵢ ∈ ℝᵈ* by overdamped Langevin dynamics with a learned
 equivariant interaction potential in the spirit of machine-learned molecular-dynamics force fields
 (Behler and Parrinello 2007; Batzner et al. 2022; Batatia et al. 2022); the log-price increment is
-driven by the aggregate excess demand *EDₜ = κ Σᵢ Δsᵢ,₀*, the net signed agent flow. Three
+driven by the aggregate excess demand *EDₜ = κ Σᵢ Δsᵢ,₀*, the net signed agent flow (Fig. 1). Three
 capabilities make the experiments below possible and distinguish EcoMD from observational study and
 from non-differentiable simulators (Byrd et al. 2020): *scheduled interventions* (a shock interface
 that drives the system out of steady state on demand and lets us watch it relax); *exact internal
@@ -92,59 +89,76 @@ attribution). We use these as the experimental knobs that real markets lack.
 A fresh rollout is out of equilibrium and relaxes to its steady state over an initial transient during
 which the aggregate flow is heavy-tailed. Standard stylized-fact scoring estimates the Hill tail index
 (Hill 1975) on the *entire* rollout, and therefore reads this startup transient as a stationary heavy
-tail. Discarding the first ≈50 steps moves the estimate sharply toward the light steady state
-(Fig. 1a; Table 1): the baseline Hill index rises from 3.87 to 6.55, and a concave-impact variant
-previously tuned to "match" the cube law rises from 5.05 to 9.26. The steady state is *light*-tailed
-(*α ≈ 4.7* for excess demand); the apparent match was burn-in inflation. The artifact is *rewarded,
-not caught* — the warm-up-inclusive (heavier) reading sits closer to the empirical cube-law target than
-the true light steady state, so a stylized-fact scorer registers a *better* match — and its low
-cross-seed variance lends it the appearance of a robust law. We recommend a corrected protocol (compute
-each fact over a sliding window against warm-up-discard length, discard to the plateau, and report the
-sensitivity curve, flagging facts that shift over the warm-up as transient-contaminated) as default
-hygiene for rollout-scored market models (Vyetrenko et al. 2020).
+tail. Discarding the first ≈50 steps moves the estimate toward the light steady state
+(Fig. 3; Table 1): the baseline Hill index rises from 3.87 to 6.55, and a concave-impact variant
+previously tuned to "match" the cube law rises from 5.05 to 9.26. The steady state is light-tailed
+(*α ≈ 4.7* for excess demand), so the apparent match was an artefact of burn-in. The artefact tends to
+be rewarded rather than caught: being heavier, the warm-up-inclusive reading sits closer to the
+empirical cube-law target than the light steady state does, so a stylized-fact scorer records a better
+match, and the low cross-seed variance of that estimate lends it the appearance of a law. A corrected
+protocol is to compute each fact over a sliding window against warm-up-discard length, discard to the
+plateau, and report the sensitivity curve, flagging any fact that shifts over the warm-up as
+transient-contaminated; we recommend it as routine for rollout-scored market models (Vyetrenko et al.
+2020).
+
+**Table 1.** Hill tail index of the excess-demand series with versus without a warm-up discard (EcoMD,
+*T* = 8,000; higher = lighter; 16 seeds). The warm-up-inclusive read sits in the cube-law band; the
+steady state is light.
+
+| model | no discard | discard 50 | Δ |
+|---|---|---|---|
+| baseline | 3.87 | 6.55 | +2.68 |
+| concave-impact (tuned to "solve") | 5.05 | 9.26 | +4.21 |
 
 ### Heavy tails are a driven non-equilibrium transient
 
-We use the intervention knob. In the unperturbed steady state the order-flow tail is light
-(*α_ED ≈ 4.7*, flat; Fig. 1b). A controlled coordinated displacement of a fraction of agents at *t* =
-3,000 drives the tail down to *α_ED ≈ 0.5* — heavier than the cube law — and it then relaxes back to
-≈4.7 within ≈10³ steps; an exponential fit gives a relaxation time *τ ≈ 240* steps. The depth matches
-the *t* = 0 equilibration template, i.e. the burn-in of the previous section *is* this same transient.
-The effect is systematic: across five assets (equities, NASDAQ, gold, crypto, FX) the post-shock tail
-follows a monotonic sigmoid dose–response in shock magnitude (onset ≈0.1–0.2σ, saturating at a floor
-*α ≈ 0.5*; Fig. 1c), with an asset-dependent threshold that tracks intrinsic volatility. None of this
-is imposed by the perturbation: the steady state being *light* (the opposite of real markets), the
-finite relaxation time, the graded dose–response, and the mechanism specificity below are emergent
-properties of the trained dynamics. In EcoMD, the heavy tail is a property of the *driven*, not the
-steady, state — an explicit, controlled instance of the dynamics-generated view of fat tails (Clark
-1973; LeBaron 2001; Warusawitharana 2018).
+In the unperturbed steady state the order-flow tail is light (*α_ED ≈ 4.7*, flat; Fig. 2a). Displacing a
+fraction of the agents in a common direction at *t* = 3,000 drives the order-flow tail index down to
+*α_ED ≈ 0.5*. A value below one has no finite mean and is far heavier than the cube law; we take it as
+the mark of a strongly driven state rather than a realistic stationary tail (≈0.5 is the Hill
+estimator's saturation floor on this sample). The tail then relaxes back to ≈4.7. The relaxation is *dose-dependent*: near onset it
+is fast (*τ ≈ 20* steps, at the fit-resolution floor) and lengthens to *τ ≈ 236* steps under saturating
+shocks (Fig. 2c; mean 134 ± 95 steps across revived doses, CV ≈ 71% — there is no single relaxation
+time, *τ* growing with how hard the system is driven). The *t* = 0 cold-start transient has the same
+depth (it craters to the same *≈0.5* floor) but relaxes fast, so the startup burn-in of the previous
+section is the same *kind* of transient, sitting at the fast, low-dose end. The effect is systematic:
+across five assets (equities, NASDAQ, gold, crypto, FX) the post-shock tail follows a monotonic sigmoid
+dose–response in shock magnitude (onset ≈0.1–0.2σ, saturating at the *α ≈ 0.5* floor; Fig. 2b), with an
+asset-dependent threshold that tracks intrinsic volatility (the low-volatility FX pair requires the
+largest shock). None of this is imposed by the perturbation: the steady state being *light* (the
+opposite of real markets), the finite, dose-dependent relaxation, the graded dose–response, and the
+mechanism specificity below are emergent properties of the trained dynamics. In EcoMD the heavy tail is
+thus a property of the driven state, not the steady one, and gives a controlled realization of the
+dynamics-generated view of fat tails (Clark 1973; LeBaron 2001; Warusawitharana 2018).
 
 ### Mechanism: coordinated displacement, not price shocks; an order-flow signature
 
-What drives the transient? Only coordinated displacement of the *agents*. An exogenous price shock
-(injecting a return into the price — a news-shock analogue) is inert: across magnitudes up to 12σ the
-excess-demand tail stays light (*α_ED ≈ 4.6*), the return tail only nudges (≈7.7 → 6.0, still far from
-heavy), and the order-flow imbalance is statistically identical to control (Fig. 2b). A price gap does
-not propagate into a coordinated order-flow response; the transient is specific to perturbing the
-agents' coordination, not the observable price — consistent with reading a crash as coordinated
-liquidation rather than an exogenous price move.
+What produces the transient is the coordinated displacement of the agents, and only that. An exogenous
+price shock, injecting a return directly into the price as a news event would, leaves it untouched:
+across magnitudes up to 12σ the excess-demand tail stays light (*α_ED ≈ 4.6*), the return tail only
+nudges (≈7.7 → 6.0, still far from heavy), and the order-flow imbalance is indistinguishable from
+control (Fig. 4a). A price gap does not propagate into a coordinated order-flow response, so the
+transient is tied to the agents' coordination rather than to the observable price, consistent with
+reading a crash as coordinated liquidation rather than as an exogenous price move.
 
-Under the coordinated shock, order flow shows a sharp, quantitatively characterized signature (Fig. 2a;
-Methods). The lag-1 autocorrelation of order-flow imbalance jumps from ≈0.02 to ≈1.0 at the shock —
-flow becomes transiently coherent and persistent — and relaxes back. It has a clean monotonic sigmoid
-dose–response (onset ≈0.1–0.2σ → ≈1.0 by ≈1σ; a sharper observable than the tail), generalizes across
-four of five assets (the low-volatility FX pair sub-threshold at the tested magnitude, its onset
-tracking volatility), and relaxes on a sharp timescale *τ_OFI ≈ 22* steps — roughly ten times faster
-than the return-tail relaxation *τ_ED ≈ 236*. The system thus exhibits two non-equilibrium timescales:
-a near-instantaneous order-flow-coherence impulse and a slower tail relaxation. We also computed a
-sign-level entropy-production proxy on the joint *(Δp, OFI)* process (the Kullback–Leibler divergence
-between forward and time-reversed pair-transition statistics, in the sense of stochastic thermodynamics;
-Seifert 2012); it was flat. The signature is therefore order-flow *persistence/coherence*, not
-sign-level *irreversibility* — a strongly persistent, AR-like process can be time-reversible, and
-entropy production need not accompany the memory burst. A finer-grained entropy-production treatment,
-connecting to fluctuation-theorem analyses of market cascades (Maskawa 2025) and to model-free
-irreversibility estimators that rise in crisis regimes (Zumbach 2009; Flanagan and Lacasa 2016), is
-deferred to a companion physics study.
+Under the coordinated shock the order flow carries a well-defined signature (Fig. 4a; Methods). The
+lag-1 autocorrelation of order-flow imbalance jumps from ≈0.02 to ≈1.0 at the shock, the flow becoming
+transiently coherent and persistent, and then relaxes back. Since the kick displaces a fraction of
+agents in a common direction, the coherence at the instant of the shock is in part imposed by
+construction; what is not imposed is its finite-time relaxation, its graded dose–response, and the
+contrast with the inert price gap. The dose–response is a monotonic sigmoid (onset ≈0.1–0.2σ, reaching
+≈1.0 by ≈1σ; Fig. 4b), holds across four of the five assets (the low-volatility FX pair stays
+sub-threshold at the tested magnitude, its onset tracking volatility), and relaxes on a timescale
+*τ_OFI ≈ 22* steps, about ten times faster than the saturated tail relaxation (*τ ≈ 236*; Fig. 4c). Two
+non-equilibrium timescales therefore coexist: a near-instantaneous coherence impulse in the order flow
+and a slower relaxation of the tail. A sign-level entropy-production proxy on the joint *(Δp, OFI)*
+process — the Kullback–Leibler divergence between forward and time-reversed pair-transition statistics,
+in the sense of stochastic thermodynamics (Seifert 2012) — was, by contrast, flat across all five assets
+(Fig. 4d). The signature is thus one of order-flow persistence, not of sign-level irreversibility: a
+strongly persistent, AR-like process can be time-reversible, and entropy production need not accompany
+the memory burst. A finer-grained treatment, connecting to fluctuation-theorem analyses of market
+cascades (Maskawa 2025) and to model-free irreversibility estimators that rise in crisis regimes
+(Zumbach 2009; Flanagan and Lacasa 2016), is left to a companion physics study.
 
 ### The real-market boundary
 
@@ -155,29 +169,28 @@ volatility-standardized returns and compared it to a null distribution built fro
 (Methods; the time-varying-tail-index test of Quintos et al. 2001 applied to crash windows). The
 driven-transient hypothesis predicts *Δα ≪ 0*; instead the pooled effect is *z = +1.03* (slightly
 *lighter*), with one of five episodes a significant heavier-tail hit — within the false-positive rate
-for five tests (Fig. 2c). Real return tails are stationary — approximately cube-law in calm and crash
-alike, consistent with inverse-cubic universality (Gabaix et al. 2003; Gopikrishnan et al. 1999).
+for five tests (Fig. 5). We therefore find no evidence of the predicted crash-driven heavy tail; with
+five episodes the test has limited power, but the result is consistent with a stationary,
+approximately cube-law tail in calm and crash alike (Gabaix et al. 2003; Gopikrishnan et al. 1999).
 
-This is a clean, controlled result with a precise consequence. EcoMD's heavy tail is a non-equilibrium
-property *of the model*: because the model has no stationary heavy-tail source — a structural property,
-not a training shortfall — it can produce heavy tails only transiently, and the light steady state is
-itself the finding. It localizes the missing ingredient (a stationary heavy-tail mechanism, e.g. a
-heterogeneous heavy order-flow source) for this class of simulators. And it sharpens the next question:
-if the non-equilibrium driving is real but absent from the *return* tail, where is it? The microstructure
-literature gives a clear candidate — the non-trivial dynamical structure of markets resides in *order
-flow*, which carries long memory while returns remain near-efficient (Lillo and Farmer 2004; Bouchaud
-et al. 2004), and whose impact sits at a near-critical, liquidity-limited point (Tóth et al. 2011; Cont
-et al. 2014; Bouchaud et al. 2018).
+The consequence is specific. EcoMD's heavy tail is a non-equilibrium property of the model: the model
+has no stationary heavy-tail source, a structural feature rather than a training shortfall, so it can
+produce heavy tails only transiently, and the light steady state is itself the result. This identifies
+what the model class lacks, namely a stationary heavy-tail mechanism such as a heterogeneous heavy
+order-flow source. It also raises the next question: if the non-equilibrium driving is real but absent
+from the return tail, where does it sit? The microstructure literature points to order flow, which
+carries long memory while returns remain near-efficient (Lillo and Farmer 2004; Bouchaud et al. 2004),
+and whose impact sits at a near-critical, liquidity-limited point (Tóth et al. 2011; Cont et al. 2014;
+Bouchaud et al. 2018).
 
 ### A pre-registered real order-flow test
 
-The mechanism above turns this into a sharp prediction: at real crash onsets — which are coordinated
-liquidation events, not exogenous price gaps — *order-flow memory* should burst toward perfect
-persistence, with a monotonic dependence on crash severity, generalization across asset classes with a
-volatility-dependent threshold, and a sharp relaxation, *precisely where the return tail is stationary*.
-The full quantitative prediction, the data, the statistic, the calm-window null, and the binding decision
-gates are frozen in a pre-registration (`PREREG_phase2`; Methods) to be posted before the real data are
-touched.
+The mechanism turns this into a concrete prediction. At real crash onsets, which are coordinated
+liquidation events rather than exogenous price gaps, order-flow memory should burst toward perfect
+persistence, depend monotonically on crash severity, generalize across asset classes with a
+volatility-dependent threshold, and relax quickly — and it should do so where the return tail is
+stationary. The prediction, the data, the statistic, the calm-window null, and the decision gates are
+frozen in a pre-registration (`PREREG_phase2`; Methods), to be posted before the real data are touched.
 
 > **[Results §6 — BLANK, pending Tardis L2 limit-order-book data.]**
 > *To fill on completion (against the frozen gates):*
@@ -192,29 +205,27 @@ touched.
 
 ## Discussion
 
-We have used a differentiable particle simulator as an experimental apparatus for market dynamics:
-posing causal questions that observational study cannot answer, resolving them by controlled
-intervention, and converting the results into falsifiable predictions for real data. The methodology
-yields a transferable measurement correction (warm-up hygiene for rollout-scored generators, including
-the GAN and neural-SDE market models now evaluated on stylized facts; Wiese et al. 2020; Coletta et al.
-2022; Vyetrenko et al. 2020), a controlled characterization of heavy tails as a driven transient with an
-explicit mechanism and order-flow signature, and an honest boundary that itself generates the
-order-flow prediction.
+We have used a differentiable particle simulator as an experimental apparatus for market dynamics,
+posing causal questions that observational study cannot answer, resolving them by intervention, and
+turning the answers into falsifiable predictions for real data. Three things come out of this. The
+first is a measurement correction that should transfer to other rollout-scored generators, including the
+GAN and neural-SDE market models now evaluated on stylized facts (Wiese et al. 2020; Coletta et al.
+2022; Vyetrenko et al. 2020). The second is a characterization of heavy tails as a driven transient,
+with its mechanism and order-flow signature. The third is a boundary on the real-market claim that
+itself supplies the order-flow prediction.
 
-Our results take an explicit position in a long debate. The controlled transient (Results §2) is a
-clean, interventional realization of the dynamics-generated view of fat tails (Clark 1973; LeBaron
-2001; Warusawitharana 2018) — but the real-data boundary (Results §5) lands squarely in the
-stationary-law camp for *returns* (Gabaix et al. 2003), so the two are not in conflict: the simulator's
-transient is model-specific, and the real heavy tail of returns is, to our measurement, stationary. The
-unresolved and interesting question is whether the non-equilibrium driving that is manifestly present in
-markets — order flow has long memory (Lillo and Farmer 2004), impact is near-critical (Tóth et al.
-2011), and price/volatility series are demonstrably time-irreversible in crises (Zumbach 2009; Flanagan
-and Lacasa 2016) — leaves the specific, sharp order-flow-coherence signature our simulator predicts.
-That is the content of the pre-registered test (Results §6). Notably, our own sign-level
-entropy-production proxy was flat in the simulator, so we deliberately frame the predicted real-market
-observable as *coherence/memory* rather than entropy production; whether a finer irreversibility
-estimator (Flanagan and Lacasa 2016) detects the latter in real order flow is a separate, harder
-question we leave to a companion physics study.
+The results take a side in a long debate. The transient (Results §2) is an interventional realization of
+the dynamics-generated view of fat tails (Clark 1973; LeBaron 2001; Warusawitharana 2018), whereas the
+real-data boundary (Results §5) places the return tail in the stationary-law camp (Gabaix et al. 2003).
+The two do not conflict: the simulator's transient is model-specific, and the real heavy tail of returns
+is, to our measurement, stationary. What remains open is whether the non-equilibrium driving that is
+plainly present in markets — order flow has long memory (Lillo and Farmer 2004), impact is near-critical
+(Tóth et al. 2011), and price and volatility series are time-irreversible in crises (Zumbach 2009;
+Flanagan and Lacasa 2016) — leaves the particular order-flow signature the simulator predicts. That is
+what the pre-registered test (Results §6) is for. Since our own sign-level entropy-production proxy was
+flat in the simulator, we frame the predicted real-market observable as coherence rather than entropy
+production; whether a finer irreversibility estimator (Flanagan and Lacasa 2016) detects the latter in
+real order flow is a separate and harder question, left to a companion physics study.
 
 **Limitations.** The dynamical results are from a single simulator; the warm-up measurement pitfall is
 conjectured to affect any rollout-scored generator initialized away from its stationary distribution,
@@ -356,20 +367,51 @@ Warusawitharana (2018), *J. Empirical Finance*; Hill (1975), *Ann. Stat.*; Maska
 
 ---
 
-![Figure 1: the driven transient and its dose–response](figures/fig1_transient.png)
+*Display items (≤6 for NCS): Figs. 1–5 and Table 1; at LaTeX conversion, Fig. 3 may fold into Table 1
+to leave room for the Phase-2 Fig. 6 / Table 2.*
 
-**Figure 1.** **The heavy tail is a driven non-equilibrium transient.** (a, the measurement correction
-panel of Fig. 2) the Hill index rises out of the cube-law band once the warm-up transient is discarded;
-**(b)** order-flow tail *α_ED(t)*: control stays light (≈4.7); a coordinated shock at *t* = 3,000
-craters it to ≈0.5 and it relaxes back (*τ ≈ 240*); the *t* = 0 burn-in dip is the same transient;
-**(c)** monotonic sigmoid dose–response — post-shock minimum *α_ED* versus shock magnitude (five
-assets). *(Panels b–c shown; panel a is Fig. 2a.)*
+![Figure 1: EcoMD as a controlled-experiment platform](figures/fig_hero.png)
 
-![Figure 2: measurement correction, order-flow signature, real-market boundary](figures/fig2_mech_boundary.png)
+**Figure 1.** **EcoMD as a controlled-experiment platform.** **(a)** the model: *N* agents in latent
+space evolve under an overdamped Langevin force from a learned equivariant (MACE-lite) potential; the
+net signed agent flow forms the excess demand *EDₜ* and hence the log-price. **(b)** the experiment: the
+system is run to its steady state, a scheduled shock *t\** drives it out of equilibrium, and we watch it
+relax through three exactly-read internal observables (tail index *α_ED*, order-flow memory, price).
+**(c)** the four controlled results of this paper. *(Schematic.)*
 
-**Figure 2.** **Mechanism, measurement and boundary.** **(a)** Hill index versus warm-up discard — the
-measurement correction (both model variants leave the cube-law band once the transient is dropped);
-**(b)** order-flow-imbalance memory bursts (≈0.02 → ≈1.0) and relaxes under the coordinated shock but
-is flat under an exogenous price gap; **(c)** real-crash *Δα* against the calm null over five episodes —
-real return tails do not heavy-up (pooled *z* = +1.03). *(Panels combined from the shared figure set;
-split and renumber at LaTeX conversion.)*
+![Figure 2: the driven transient, dose–response, and dose-dependent relaxation](figures/fig_transient.png)
+
+**Figure 2.** **The heavy tail is a driven non-equilibrium transient.** **(a)** order-flow tail
+*α_ED(t)*: control stays light (≈4.7); a coordinated shock at *t* = 3,000 craters it to the *≈0.5*
+floor and it relaxes back; the *t* = 0 burn-in dip has the same depth but relaxes fast. **(b)**
+monotonic sigmoid dose–response — post-shock minimum *α_ED* versus shock magnitude: the S&P 500 sweep
+plus the four other assets, whose threshold tracks intrinsic volatility (FX needs the largest shock).
+**(c)** the relaxation time *τ* is dose-dependent (CV ≈ 71%): floor-limited near onset, growing to
+≈236 at saturation — there is no single *τ*.
+
+![Figure 3: the warm-up scoring pitfall](figures/fig_correction.png)
+
+**Figure 3.** **The measurement correction.** Hill tail index versus warm-up-discard length for the
+baseline and a concave-impact variant. The heavy "cube-law" match at the left edge (full-rollout
+scoring) vanishes once the equilibration transient is dropped; the steady state is light-tailed
+(cf. Table 1).
+
+![Figure 4: mechanism and the order-flow signature](figures/fig_mechanism.png)
+
+**Figure 4.** **Mechanism and order-flow signature.** **(a)** order-flow-imbalance memory bursts
+(≈0.02 → ≈1.0) and relaxes quickly (*τ_OFI ≈ 20*) under the coordinated shock, while an exogenous price
+gap and control stay flat. **(b)** the OFI-memory burst has a monotonic sigmoid dose–response.
+**(c)** two non-equilibrium timescales: OFI memory relaxes ≈10× faster than the tail. **(d)** the
+sign-level entropy-production proxy is flat at the shock across all five assets — the signature is
+coherence, not irreversibility.
+
+![Figure 5: the real-market boundary](figures/fig_boundary.png)
+
+**Figure 5.** **Real return tails are stationary.** Real-crash *Δα = α(crash) − α(pre)* on
+volatility-standardized one-minute returns for five episodes, against the calm-window null (±1σ band;
+the dashed line is the *q₅* the driven-transient hypothesis predicts). No crash-driven heavy-up; pooled
+*z* = +1.03.
+
+> **[Figure 6 / Table 2 — Results §6, BLANK, pending limit-order-book data.]** The real order-flow
+> memory burst-and-relax versus calm controls, EcoMD-predicted versus observed, and the per-episode /
+> pooled statistics against the calm null.
