@@ -15,8 +15,8 @@ practice scores the full rollout without discarding an initial warm-up; we show 
 *equilibration transient* as a stationary fat-tail match, inflating the apparent tail fidelity (the
 Hill tail index rises from 3.9 to 6.6 once warm-up is discarded; the steady state is light-tailed). We
 give the corrected protocol. Using the shock interface, EcoMD generates *coherent-liquidation* stress
-scenarios with a distinctive, controllable order-flow signature — order-flow-imbalance memory jumps from
-0.02 to ~1.0 at the shock with a monotonic dose-response, generalizing across assets and relaxing quickly, whereas exogenous price gaps are inert. Finally, we bound the fidelity: the model's heavy
+scenarios with a distinctive, controllable order-flow signature — order-flow imbalance |ρ| spikes at the
+shock (~0.006 → ~0.68, causal) with a monotonic dose-response, generalizing across assets and relaxing quickly, whereas exogenous price gaps are inert. Finally, we bound the fidelity: the model's heavy
 tails are *transient*, while real one-minute crypto crash tails do *not* heavy-up (pre-registered null
 test over five episodes; they are already heavy in calm). EcoMD is a useful controllable generator, but
 its tail realism must be validated against the real, already-heavy calm tail before use.
@@ -120,9 +120,8 @@ dip-window excess kurtosis of excess demand jumps to ≈120–150 (vs ≈1 basel
 FX pair). It also leaves a distinctive, **controllable
 order-flow signature**, which we characterize quantitatively (Figure 3):
 
-- *Magnitude.* The lag-1 autocorrelation of order-flow imbalance (OFI) jumps from ~0.02 to ~1.0 at the
-  shock — order flow becomes transiently coherent and persistent — and relaxes back, with the imbalance
-  magnitude and its extreme-coordination saturation bursting and decaying in step.
+- *Magnitude.* The order-flow imbalance |ρ| spikes at the shock (~0.006 → ~0.68; causal, no window lag)
+  and relaxes; its lag-1 autocorrelation ("memory"/persistence) is likewise elevated and decays back.
 - *Dose-response.* The OFI-memory burst is a **monotonic sigmoid** in shock magnitude (onset
   ~0.1–0.2σ, saturating to perfect persistence ~1.0 by ~1σ) — a more sensitive control knob than the
   return tail.
@@ -156,11 +155,12 @@ near-efficient [Lillo & Farmer 2004; Cont, Kukanov & Stoikov 2014; Tóth et al. 
 
 ![Figure 3: the controllable order-flow scenario](figures/fig_mechanism.png)
 
-**Figure 3.** The coherent-liquidation order-flow signature. **(a)** OFI memory bursts (≈0.02 → ≈1.0)
-and relaxes quickly (*τ_OFI ≈ 20*) under coherent liquidation, while an exogenous price gap and control
-stay flat. **(b)** a monotonic sigmoid dose-response — a controllable knob. **(c)** two timescales:
-the OFI burst relaxes ≈10× faster than the tail. **(d)** the sign-level entropy-production proxy is flat
-across assets — the controllable signature is coherence, not irreversibility.
+**Figure 3.** The coherent-liquidation order-flow signature. **(a)** the order-flow imbalance |ρ| spikes
+at the shock (≈0.006 → ≈0.68; causal) and relaxes under coherent liquidation, while an exogenous price
+gap and control stay flat. **(b)** the persistence ("memory") has a monotonic sigmoid dose-response — a
+controllable knob. **(c)** two timescales: the OFI memory relaxes ≈10× faster than the tail. **(d)** two
+irreversibility estimators (sign-level proxy + a stronger DHVG, overlay) are flat across assets — the
+controllable signature is coherence, not irreversibility.
 
 ## 5. Fidelity bounds
 

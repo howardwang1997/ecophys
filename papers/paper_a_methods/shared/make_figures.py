@@ -268,23 +268,27 @@ def fig_mechanism():
     oft = _load("ofi_tau_report.json")
     sp = oft["assets"]["spx"]
 
-    # (a) OFI memory burst-and-relax. F-a: prefer the centered-window REAL series (produced by
-    # analyze_transient_extras.py after the H20 raw-trajectory regen) — its peak aligns with the shock;
-    # else fall back to the exponential-fit reconstruction (whose peak lags the shock by ~½ window).
+    # (a) Order-flow coordination |rho_t| — the per-step OFI imbalance magnitude (F-a). Causal: it spikes
+    # AT the shock (no window lag), unlike the windowed lag-1 memory. Real series from
+    # analyze_transient_extras.py; falls back to the windowed-memory fit reconstruction if absent.
     axA.axhline(0, color="0.8", lw=0.8)
     oti = _load("ofi_transient_spx.json")["arms"]
     try:
         cm = _load("ofi_memory_centered_spx.json")["arms"]
     except FileNotFoundError:
         cm = None
-    if cm is not None:
-        axA.plot(np.array(cm["kick6"]["centers"]) - SHOCK, cm["kick6"]["mem"], color=RED, lw=2,
+    if cm is not None and "rho_abs" in cm.get("kick6", {}):
+        axA.plot(cm["kick6"]["rho_abs_centers"], cm["kick6"]["rho_abs"], color=RED, lw=2,
                  label="coherent shock")
-        if "control" in cm:
-            axA.plot(np.array(cm["control"]["centers"]) - SHOCK, cm["control"]["mem"], color=GREY,
-                     lw=1.3, label="control")
-        jb = oti["jump6"]["measures"]["mem"]["base"]
-        axA.plot([-400, 450], [jb, jb], color=BLUE, lw=1.3, label="price gap (inert)")
+        for arm, col, lab in [("control", GREY, "control"), ("jump6", BLUE, "price gap (inert)")]:
+            if arm in cm and "rho_abs" in cm[arm]:
+                axA.plot(cm[arm]["rho_abs_centers"], cm[arm]["rho_abs"], color=col, lw=1.3, label=lab)
+        axA.axvline(0, color="0.5", ls=":", lw=1)
+        axA.annotate("coordination\nspikes at shock", xy=(8, 0.62), xytext=(150, 0.46), fontsize=6.6,
+                     color=RED, arrowprops=dict(arrowstyle="-|>", color=RED, lw=0.8))
+        axA.set_xlabel("step relative to shock"); axA.set_ylabel(r"order-flow imbalance $|\rho|$")
+        axA.set_title(r"a  Order-flow coordination $|\rho_t|$")
+        axA.legend(fontsize=6.6, loc="upper right"); axA.set_ylim(-0.03, 0.78); axA.set_xlim(-400, 450)
     else:
         post = np.linspace(sp["t_peak"], sp["t_peak"] + 200, 160)
         mem_post = sp["m_inf"] + sp["amp"] * np.exp(-(post - sp["t_peak"]) / sp["tau_ofi"])
@@ -294,13 +298,13 @@ def fig_mechanism():
         for arm, col, lab in [("jump6", BLUE, "price gap (inert)"), ("control", GREY, "control")]:
             b = oti[arm]["measures"]["mem"]["base"]
             axA.plot([-400, 450], [b, b], color=col, lw=1.3, label=lab)
-    axA.axvline(0, color="0.5", ls=":", lw=1)
-    axA.annotate(fr"$\tau_{{\mathrm{{OFI}}}}\approx{sp['tau_ofi']:.0f}$",
-                 xy=(sp["t_peak"] - SHOCK + 30, 0.42), xytext=(330, 0.74), fontsize=7.5,
-                 color=RED, arrowprops=dict(arrowstyle="-|>", color=RED, lw=0.8))
-    axA.set_xlabel("step relative to shock"); axA.set_ylabel("OFI memory (lag-1 autocorr.)")
-    axA.set_title("a  Order-flow memory burst")
-    axA.legend(fontsize=6.6, loc="upper left"); axA.set_ylim(-0.2, 1.12); axA.set_xlim(-400, 450)
+        axA.axvline(0, color="0.5", ls=":", lw=1)
+        axA.annotate(fr"$\tau_{{\mathrm{{OFI}}}}\approx{sp['tau_ofi']:.0f}$",
+                     xy=(sp["t_peak"] - SHOCK + 30, 0.42), xytext=(330, 0.74), fontsize=7.5,
+                     color=RED, arrowprops=dict(arrowstyle="-|>", color=RED, lw=0.8))
+        axA.set_xlabel("step relative to shock"); axA.set_ylabel("OFI memory (lag-1 autocorr.)")
+        axA.set_title("a  Order-flow memory burst")
+        axA.legend(fontsize=6.6, loc="upper left"); axA.set_ylim(-0.2, 1.12); axA.set_xlim(-400, 450)
 
     # (b) OFI memory dose-response (SPX) — the sigmoid
     arms = _load("ofi_transient_spx.json")["arms"]

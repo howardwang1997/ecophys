@@ -79,7 +79,23 @@ def dip_stat_arm(trajs, shock: int):
     }
 
 
-# ── F-a: centered-window OFI memory series ────────────────────────────────────────────────────────
+# ── F-a: per-step |rho_t| (causal, spikes AT the shock — no window lag) ────────────────────────────
+def rho_abs_arm(trajs, shock: int, lo: int = -400, hi: int = 450, smooth: int = 9):
+    """Per-step mean |rho_t| (order-flow imbalance magnitude) around the shock, lightly smoothed.
+    Unlike a windowed autocorrelation this is causal: it jumps at the shock and relaxes, no window lag."""
+    rel = np.arange(lo, hi)
+    stack = []
+    for z in trajs:
+        rho = np.abs(np.asarray(z["ofi"], float))
+        idx = np.clip(shock + rel, 0, rho.size - 1)
+        stack.append(rho[idx])
+    m = np.nanmean(stack, axis=0)
+    if smooth > 1:
+        m = np.convolve(m, np.ones(smooth) / smooth, mode="same")
+    return rel, m
+
+
+# ── F-a (legacy): centered-window OFI memory series ─────────────────────────────────────────────────
 def centered_memory_arm(trajs, W: int, stride: int):
     half = W // 2
     centers, stack = None, []
@@ -141,15 +157,25 @@ def main() -> None:
               f"exceed_q99 base={s['base_exceed_q99']:.4f} dip={s['dip_exceed_q99']:.4f}")
     (exp / f"dip_stat_{args.asset}.json").write_text(json.dumps(dip, indent=2))
 
-    # F-a
-    print(f"=== F-a centered-window OFI memory ({args.asset}) ===")
+    # F-a: per-step |rho_t| (causal, primary) + centered-window memory (legacy, kept for reference)
+    print(f"=== F-a per-step |rho_t| (causal) + centered memory ({args.asset}) ===")
     mem = {"asset": args.asset, "shock": SS, "window": args.window, "arms": {}}
-    for arm in ("control", "kick6"):
-        if arm in loaded:
+    for arm in ("control", "kick6", "jump6"):
+        if arm not in loaded:
+            continue
+        entry = {}
+        rel, ra = rho_abs_arm(loaded[arm], SS)
+        entry["rho_abs_centers"] = rel.tolist()
+        entry["rho_abs"] = ra.tolist()
+        ppk = int(rel[int(np.nanargmax(ra))])
+        if arm in ("control", "kick6"):
             c, mm = centered_memory_arm(loaded[arm], args.window, args.stride)
-            peak = int(c[int(np.nanargmax(mm))]) if mm.size else -1
-            mem["arms"][arm] = {"centers": c.tolist(), "mem": mm.tolist(), "peak_center": peak}
-            print(f"  {arm:9} centered-memory peak at t={peak} (shock={SS}; trailing-window peaked ~+250)")
+            entry["centers"] = c.tolist()
+            entry["mem"] = mm.tolist()
+            entry["peak_center"] = int(c[int(np.nanargmax(mm))]) if mm.size else -1
+        mem["arms"][arm] = entry
+        print(f"  {arm:9} |rho| base={np.nanmean(ra[rel < -50]):.3f} peak={np.nanmax(ra):.3f} "
+              f"at t_rel={ppk:+d} (causal; spikes at the shock)")
     (exp / f"ofi_memory_centered_{args.asset}.json").write_text(json.dumps(mem, indent=2))
     print("wrote irrev_dhvg / dip_stat / ofi_memory_centered JSONs")
 

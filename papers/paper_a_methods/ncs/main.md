@@ -149,12 +149,12 @@ transient is tied to the agents' coordination rather than to the observable pric
 reading a crash as coordinated liquidation rather than as an exogenous price move.
 
 Under the coordinated shock the order flow carries a well-defined signature (Fig. 4a; Methods). Because
-the kick displaces a fraction of agents in a common direction, the momentary coherence at the instant of
-the shock — the lag-1 autocorrelation of order-flow imbalance rising from ≈0.02 toward ≈1.0 — is in part
-imposed by construction and is not itself informative; the non-trivial, emergent content, which we read
-the signature from, is its finite-time relaxation, its graded dose–response, and the contrast with the
-inert price gap. (The windowed memory rises at the shock but peaks ≈250 steps later — about half the
-500-step window — then decays; Fig. 4a.) The dose–response is a monotonic sigmoid (onset ≈0.1–0.2σ;
+the kick displaces a fraction of agents in a common direction, the order-flow imbalance *|ρ|* spikes at
+the shock — from ≈0.006 in the steady state to ≈0.68 on impact (Fig. 4a), with no window lag — and this
+at-shock coordination is in part imposed by construction and is not itself informative; the non-trivial,
+emergent content, which we read the signature from, is its finite-time relaxation, its graded
+dose–response, and the contrast with the inert price gap (*|ρ|* stays flat). The persistence of the flow
+— its lag-1 autocorrelation, or "memory" — has a monotonic sigmoid dose–response (onset ≈0.1–0.2σ;
 Fig. 4b), holds across four of the five assets (the low-volatility FX pair stays sub-threshold at the
 tested magnitude, its onset tracking volatility), and relaxes on a timescale *τ_OFI ≈ 20* steps for the
 plotted asset (22 ± 2 across the four revived assets), about ten times faster than the saturated tail
@@ -426,10 +426,10 @@ scoring) vanishes once the equilibration transient is dropped; the steady state 
 
 ![Figure 4: mechanism and the order-flow signature](figures/fig_mechanism.png)
 
-**Figure 4.** **Mechanism and order-flow signature.** **(a)** order-flow-imbalance memory (the real
-centered-window series) is elevated in a ≈500-step band straddling the shock (≈0.02 → ≈1.0; the band
-width is the smoothing window and the at-shock coherence is partly imposed by the kick), then relaxes
-(*τ_OFI ≈ 20*, plotted asset; 22 ± 2 across assets), while an exogenous price gap and control stay flat.
+**Figure 4.** **Mechanism and order-flow signature.** **(a)** the order-flow imbalance *|ρ|* spikes at
+the shock (≈0.006 → ≈0.68; causal, no window lag — the at-shock coordination partly imposed by the kick)
+and relaxes, while an exogenous price gap and control stay flat (the persistence dose–response and its
+*τ_OFI ≈ 20* timescale are panels b, c).
 **(b)** the OFI-memory burst has a monotonic sigmoid dose–response.
 **(c)** two non-equilibrium timescales: OFI memory relaxes ≈10× faster than the tail. **(d)** the
 sign-level entropy-production proxy is flat at the shock across all five assets, and a stronger model-free

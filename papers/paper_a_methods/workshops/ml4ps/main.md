@@ -14,9 +14,9 @@ initialization or by a controlled shock — and **relax on a finite, dose-depend
 to ≈236 steps). This
 makes warm-up-inclusive rollout scoring *misread the equilibration transient as a stationary law*. The
 transient requires *coherent displacement of agent latent states*: it is inert to an exogenous price
-shock (in both the return tail and order-flow imbalance), and it leaves an order-flow signature — a
-memory burst from 0.02 to ~1.0 with a monotonic dose-response, generalizing across assets and
-relaxing ~10× faster than the tail. On real one-minute crypto crashes, by contrast, the return tail does
+shock (in both the return tail and order-flow imbalance), and it leaves an order-flow signature — an
+imbalance spike (|ρ| ~0.006 → ~0.68 at the shock) and a memory/persistence burst with a monotonic
+dose-response, generalizing across assets and relaxing ~10× faster than the tail. On real one-minute crypto crashes, by contrast, the return tail does
 *not* heavy-up (a pre-registered null test over five episodes): it is already heavy in calm and is not
 driven heavier by crashes. The simulator's heavy tail is thus a non-equilibrium phenomenon *of the
 model* — localizing a missing stationary heavy-tail mechanism in this class of simulators — rather than a
@@ -129,9 +129,8 @@ Because the kick displaces a fraction of agents in a common direction, the *at-s
 part imposed by construction; the non-trivial, emergent content is the finite-time relaxation, the
 dose-response, and the contrast with the inert price gap:
 
-- the lag-1 autocorrelation of order-flow imbalance (OFI) jumps from ~0.02 to ~1.0 at the shock — flow
-  becomes transiently coherent and persistent — and relaxes back, with |imbalance| and its
-  extreme-coordination saturation bursting in step;
+- the order-flow imbalance |ρ| spikes at the shock (~0.006 → ~0.68; causal, no window lag) and relaxes;
+  its lag-1 autocorrelation ("memory"/persistence) is likewise elevated and relaxes back;
 - the OFI-memory burst has a **monotonic sigmoid dose-response** (onset ~0.1–0.2σ → ~1.0 by ~1σ),
   a more sensitive observable than the tail;
 - it **generalizes across four of five assets** (the low-vol FX pair is sub-threshold at the tested
@@ -157,10 +156,11 @@ future work.
 
 ![Figure 4: mechanism and the order-flow signature](figures/fig_mechanism.png)
 
-**Figure 4.** **(a)** OFI memory bursts (≈0.02 → ≈1.0) and relaxes quickly (*τ_OFI ≈ 20*) under the
-coherent shock, while an exogenous price gap and control stay flat. **(b)** the burst has a monotonic
-sigmoid dose-response. **(c)** two timescales: OFI memory relaxes ≈10× faster than the tail. **(d)** the
-sign-level entropy-production proxy is flat at the shock across all five assets — coherence, not
+**Figure 4.** **(a)** the order-flow imbalance |ρ| spikes at the shock (≈0.006 → ≈0.68; causal, no window
+lag) and relaxes, while an exogenous price gap and control stay flat. **(b)** the persistence ("memory")
+has a monotonic sigmoid dose-response. **(c)** two timescales: OFI memory relaxes ≈10× faster than the
+tail. **(d)** the sign-level entropy-production proxy is flat across all five assets, and a stronger
+model-free DHVG estimator (overlay, Δ≈0.01) is also flat for the coherent shock — coherence, not
 irreversibility.
 
 ## 6. The real-data boundary
