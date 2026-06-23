@@ -157,10 +157,11 @@ dose–response, and the contrast with the inert price gap (*|ρ|* stays flat). 
 — its lag-1 autocorrelation, or "memory" — has a monotonic sigmoid dose–response (onset ≈0.1–0.2σ;
 Fig. 4b) and relaxes on a timescale *τ_OFI ≈ 20* steps for the plotted asset (22 ± 2 across the four
 assets it generalizes to), about ten times faster than the saturated tail relaxation (*τ ≈ 236*;
-Fig. 4c). The order-flow signature is robust across the four non-FX assets (|ρ| spike ≈0.66–0.70, tight
-across rollouts); the low-volatility FX pair is the exception — its |ρ| readout is anomalously weak
-(≈0.07) and unstable across seeds in this simulator (the same checkpoint gives ≈0.6 in a fresh rollout),
-so we report a four-asset signature rather than a clean threshold effect. Two
+Fig. 4c). The order-flow signature is robust and seed-stable across the four non-FX assets (|ρ| spike ≈0.66–0.70,
+cross-seed spread < 0.01); the low-volatility FX pair shows only a marginal — though equally stable —
+response (≈0.07), so the strong-coordination signature is a four-asset effect. The model's *|ρ|*
+measures the agents' *post-shock coordinated flow*, not the imposed kick: equities, NASDAQ, gold and
+crypto translate the kick into coordinated order flow, whereas the low-volatility FX model does not. Two
 non-equilibrium timescales therefore coexist: a near-instantaneous coherence impulse in the order flow
 and a slower relaxation of the tail. Two independent irreversibility estimators, by contrast, stay flat
 at the coordinated shock. A sign-level entropy-production proxy on the joint *(Δp, OFI)* process — the

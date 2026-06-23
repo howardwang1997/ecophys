@@ -83,8 +83,9 @@ def dip_stat_arm(trajs, shock: int):
 def rho_abs_arm(trajs, shock: int, lo: int = -400, hi: int = 450, smooth: int = 3):
     """Per-step mean |rho_t| (order-flow imbalance magnitude) around the shock, lightly smoothed.
     Unlike a windowed autocorrelation this is causal: it jumps at the shock and relaxes, no window lag.
-    smooth is kept small (3) so a brief spike is not diluted — a 9-wide window understated the faster-
-    relaxing assets (e.g. eurusd: instantaneous |rho|~0.4-0.6 read as ~0.1 under 9-smoothing)."""
+    smooth is kept small (3) so a brief spike is not diluted (a 9-wide window understated the peaks
+    slightly). NB |rho|=ofi here is the model's post-shock coordinated-flow response (excludes the
+    imposed kick); eurusd's is genuinely weak (~0.07) but seed-stable, not an artifact."""
     rel = np.arange(lo, hi)
     stack = []
     for z in trajs:

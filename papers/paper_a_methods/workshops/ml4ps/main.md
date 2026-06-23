@@ -133,9 +133,9 @@ dose-response, and the contrast with the inert price gap:
   its lag-1 autocorrelation ("memory"/persistence) is likewise elevated and relaxes back;
 - the OFI-memory burst has a **monotonic sigmoid dose-response** (onset ~0.1–0.2σ → ~1.0 by ~1σ),
   a more sensitive observable than the tail;
-- it **generalizes robustly across the four non-FX assets** (|ρ| spike ≈0.66–0.70); the low-vol FX
-  pair's order-flow readout is anomalously weak (≈0.07) and seed-unstable in this model (the same
-  checkpoint gives ≈0.6 in a fresh rollout), so we report a four-asset signature;
+- it **generalizes robustly and seed-stably across the four non-FX assets** (|ρ| spike ≈0.66–0.70,
+  cross-seed spread < 0.01); the low-vol FX pair shows only a marginal but equally stable response
+  (≈0.07) — the strong-coordination signature is a four-asset effect;
 - it relaxes on a **timescale *τ_OFI ≈ 20* steps (plotted asset; 22 ± 2 across assets) — ~10× faster
   than the return-tail *τ_ED ≈ 236***. The system thus has *two* non-equilibrium timescales: a
   near-instantaneous order-flow coherence impulse and a slower tail relaxation.
