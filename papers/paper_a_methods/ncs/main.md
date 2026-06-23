@@ -384,8 +384,9 @@ relax through three exactly-read internal observables (tail index *α_ED*, order
 **Figure 2.** **The heavy tail is a driven non-equilibrium transient.** **(a)** order-flow tail
 *α_ED(t)*: control stays light (≈4.7); a coordinated shock at *t* = 3,000 craters it to the *≈0.5*
 floor and it relaxes back; the *t* = 0 burn-in dip has the same depth but relaxes fast. **(b)**
-monotonic sigmoid dose–response — post-shock minimum *α_ED* versus shock magnitude: the S&P 500 sweep
-plus the four other assets, whose threshold tracks intrinsic volatility (FX needs the largest shock).
+monotonic sigmoid dose–response — post-shock minimum *α_ED* versus shock magnitude across all five
+assets: equities, NASDAQ, gold and crypto collapse onto a common threshold (≈0.1–0.2σ), while the
+low-volatility FX pair is shifted to much larger shocks, so the threshold tracks intrinsic volatility.
 **(c)** the relaxation time *τ* is dose-dependent (CV ≈ 71%): floor-limited near onset, growing to
 ≈236 at saturation — there is no single *τ*.
 
