@@ -115,7 +115,9 @@ positions in a common direction. This drives a *relaxing* stress scenario: the h
 tail re-appears (*α* for excess demand drops from 4.7 far heavier, to the estimator-censored ~0.5 floor
 — below one, a driven-state pathology rather than a realistic stationary tail; we do not interpret the
 precise value — and recovers, the relaxation time growing with shock magnitude), with a graded, sigmoid
-dose-response. It also leaves a distinctive, **controllable
+dose-response. A floor-free check confirms the heaviness independent of the censored Hill α: the
+dip-window excess kurtosis of excess demand jumps to ≈120–150 (vs ≈1 baseline; ≈13 for the sub-threshold
+FX pair). It also leaves a distinctive, **controllable
 order-flow signature**, which we characterize quantitatively (Figure 3):
 
 - *Magnitude.* The lag-1 autocorrelation of order-flow imbalance (OFI) jumps from ~0.02 to ~1.0 at the
@@ -133,9 +135,11 @@ order-flow signature**, which we characterize quantitatively (Figure 3):
 
 The initial coherence is partly imposed by the intervention; the non-trivial, emergent content is its
 *finite-time relaxation*, its *graded dose-response*, and the contrast with the inert price gap.
-We also checked a sign-level entropy-production proxy on the joint (return, OFI) process: it was **flat**,
-so the signature is order-flow *persistence/coherence*, not sign-level irreversibility (a persistent
-process can be time-reversible) — the controllable knob is coherence, not entropy production.
+We also checked two irreversibility estimators on the joint (return, OFI) process — a sign-level
+entropy-production proxy and a stronger model-free DHVG time-asymmetry — and both were **flat** for the
+coherent shock (DHVG Δ≈0.01 across assets), so the signature is order-flow *persistence/coherence*, not
+sign-level irreversibility (a persistent process can be time-reversible) — the controllable knob is
+coherence, not entropy production.
 
 **Exogenous price gap.** Injecting an exogenous return into the price (a news-shock analogue) is, by
 contrast, *inert*: across magnitudes up to 12σ the excess-demand tail stays light (*α ≈ 4.6*), the

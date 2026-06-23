@@ -128,7 +128,11 @@ across five calibrated assets spanning four classes (two equity indices — S&P 
 a crypto and an FX pair) the post-shock tail follows a monotonic sigmoid dose–response in shock magnitude
 (onset ≈0.1–0.2σ, with the heavy end pinned at the estimator-censored *α ≈ 0.5* floor; Fig. 2b), with an
 asset-dependent threshold that tracks intrinsic volatility (the low-volatility FX pair requires the
-largest shock). None of this is imposed by the perturbation: the steady state being *light* (the
+largest shock). Because the *α ≈ 0.5* floor is estimator-censored, we corroborate the heaviness with a
+floor-free statistic: under the coordinated shock the order flow's dip-window excess kurtosis jumps to
+≈120–150 (from ≈1 in the steady state) and its >99th-percentile exceedance rate rises ≈5-fold across
+equities, NASDAQ, gold and crypto (the sub-threshold FX pair rises less, to ≈13), so the tail heavies
+genuinely, independent of the Hill estimator (Methods). None of this is imposed by the perturbation: the steady state being *light* (the
 opposite of real markets), the finite, dose-dependent relaxation, the graded dose–response, and the
 mechanism specificity below are emergent properties of the trained dynamics. In EcoMD the heavy tail is
 thus a property of the driven state, not the steady one, and gives a controlled realization of the
@@ -156,14 +160,17 @@ tested magnitude, its onset tracking volatility), and relaxes on a timescale *τ
 plotted asset (22 ± 2 across the four revived assets), about ten times faster than the saturated tail
 relaxation (*τ ≈ 236*; Fig. 4c). Two
 non-equilibrium timescales therefore coexist: a near-instantaneous coherence impulse in the order flow
-and a slower relaxation of the tail. A sign-level entropy-production proxy on the joint *(Δp, OFI)*
-process — the Kullback–Leibler divergence between forward and time-reversed pair-transition statistics,
-in the sense of stochastic thermodynamics (Seifert 2012) — was, by contrast, flat across all five assets
-(Fig. 4d). The signature is thus one of order-flow persistence, not of sign-level irreversibility: a
-strongly persistent, AR-like process can be time-reversible, and entropy production need not accompany
-the memory burst. A finer-grained treatment, connecting to fluctuation-theorem analyses of market
-cascades (Maskawa 2025) and to model-free irreversibility estimators that rise in crisis regimes
-(Zumbach 2009; Flanagan and Lacasa 2016), is left to a companion physics study.
+and a slower relaxation of the tail. Two independent irreversibility estimators, by contrast, stay flat
+at the coordinated shock. A sign-level entropy-production proxy on the joint *(Δp, OFI)* process — the
+Kullback–Leibler divergence between forward and time-reversed pair-transition statistics, in the sense of
+stochastic thermodynamics (Seifert 2012) — is flat across all five assets (Fig. 4d); and a stronger,
+amplitude-sensitive model-free estimator, the directed-horizontal-visibility-graph (DHVG) time asymmetry
+(Lacasa et al. 2012; Flanagan and Lacasa 2016), is likewise flat for the coherent shock (Δ ≈ 0.01 across
+all five assets, within control-window variation), only the one-sided exogenous price gap showing a small
+bump. The signature is thus one of order-flow persistence, not of sign-level irreversibility: a strongly
+persistent, AR-like process can be time-reversible, and entropy production need not accompany the memory
+burst. A finer-grained, fluctuation-theorem treatment of market cascades (Maskawa 2025; Zumbach 2009) is
+left to a companion physics study.
 
 ### The real-market boundary
 
@@ -334,6 +341,14 @@ $$\dot{S} \;\approx\; \sum_{a,b} P(a\!\to\!b)\,\log\frac{P(a\!\to\!b)}{P(b\!\to\
 the Kullback–Leibler divergence between forward and time-reversed transition statistics — a standard
 discrete entropy-production estimator that vanishes under detailed balance (Seifert 2012).
 
+**Stronger irreversibility and a floor-free heaviness check.** As an amplitude-sensitive complement to
+the sign-level proxy we compute the directed-horizontal-visibility-graph (DHVG) time asymmetry on
+$|r_t|$ (Lacasa et al. 2012; Flanagan and Lacasa 2016): the windowed Kullback–Leibler divergence between
+the out-degree and in-degree distributions of the horizontal visibility graph, zero for a time-reversible
+series. To corroborate the driven heaviness without the Hill estimator's $\alpha\!\approx\!0.5$ floor, we
+report on the excess-demand magnitude over the post-shock dip window, relative to the pre-shock baseline,
+its excess kurtosis and its exceedance rate above the baseline 99th percentile.
+
 **Real-data test and pre-registration.** Real returns are one-minute Binance close-to-close log-returns
 for five crash episodes — COVID-2020 (March 2020), China-2021 (the May-2021 mining-ban sell-off),
 Luna-2022 (the May-2022 Terra/Luna collapse), Celsius-2022 (the June-2022 Celsius/3AC deleveraging) and
@@ -369,7 +384,7 @@ Bouchaud & Cont (1998), *EPJ B*; Cont & Bouchaud (2000), *Macroecon. Dyn.*; Lux 
 Econ. Stud.*; Gabaix, Gopikrishnan, Plerou & Stanley (2003), *Nature*; Bouchaud, Gefen, Potters & Wyart
 (2004), *Quant. Finance*; Lillo & Farmer (2004), *SNDE*; Gabaix (2009), *Annu. Rev. Econ.*; Zumbach
 (2009), *Quant. Finance*; Tóth et al. (2011), *PRX*; Seifert (2012), *Rep. Prog. Phys.*; Cont, Kukanov
-& Stoikov (2014), *J. Financial Econometrics*; Flanagan & Lacasa (2016), *Phys. Lett. A*; Buehler et al.
+& Stoikov (2014), *J. Financial Econometrics*; Lacasa et al. (2012), *Eur. Phys. J. B*; Flanagan & Lacasa (2016), *Phys. Lett. A*; Buehler et al.
 (2019), *Quant. Finance*; Byrd, Hybinette & Balch (2020), *SIGSIM-PADS*; Vyetrenko et al. (2020),
 *ICAIF*; Wiese et al. (2020), *Quant. Finance*; Coletta et al. (2021, *ICAIF*; 2022, *ICAIF*); Batzner
 et al. (2022), *Nat. Commun.*; Batatia et al. (2022), *NeurIPS*; Chopra et al. (2023), *AAMAS*; Dyer
@@ -411,12 +426,14 @@ scoring) vanishes once the equilibration transient is dropped; the steady state 
 
 ![Figure 4: mechanism and the order-flow signature](figures/fig_mechanism.png)
 
-**Figure 4.** **Mechanism and order-flow signature.** **(a)** order-flow-imbalance memory bursts
-(≈0.02 → ≈1.0, peaking ≈250 steps after the shock — about half the 500-step window — the at-shock
-coherence partly imposed by the kick) and relaxes quickly (*τ_OFI ≈ 20*, plotted asset; 22 ± 2 across
-assets) under the coordinated shock, while an exogenous price gap and control stay flat. **(b)** the OFI-memory burst has a monotonic sigmoid dose–response.
+**Figure 4.** **Mechanism and order-flow signature.** **(a)** order-flow-imbalance memory (the real
+centered-window series) is elevated in a ≈500-step band straddling the shock (≈0.02 → ≈1.0; the band
+width is the smoothing window and the at-shock coherence is partly imposed by the kick), then relaxes
+(*τ_OFI ≈ 20*, plotted asset; 22 ± 2 across assets), while an exogenous price gap and control stay flat.
+**(b)** the OFI-memory burst has a monotonic sigmoid dose–response.
 **(c)** two non-equilibrium timescales: OFI memory relaxes ≈10× faster than the tail. **(d)** the
-sign-level entropy-production proxy is flat at the shock across all five assets — the signature is
+sign-level entropy-production proxy is flat at the shock across all five assets, and a stronger model-free
+estimator (DHVG time asymmetry; overlay, Δ ≈ 0.01) is also flat for the coherent shock — the signature is
 coherence, not irreversibility.
 
 ![Figure 5: the real-market boundary](figures/fig_boundary.png)

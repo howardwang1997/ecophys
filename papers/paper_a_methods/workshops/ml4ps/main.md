@@ -83,7 +83,9 @@ transient has the same depth but relaxes fast, so the initial burn-in is the sam
 the fast, low-dose end. The effect generalizes across five calibrated assets spanning four classes (two
 equity indices — S&P 500 and NASDAQ — a metal, a crypto and an FX pair) with a **sigmoid dose-response**
 in shock magnitude (onset ~0.1–0.2σ, the heavy end pinned at the estimator-censored *α ≈ 0.5* floor;
-Figure 2b), the threshold tracking intrinsic volatility. The heavy tail is therefore a property of the
+Figure 2b), the threshold tracking intrinsic volatility. A floor-free check confirms the heaviness: under
+the shock the dip-window excess kurtosis of the order flow jumps to ≈120–150 (from ≈1 in steady state;
+≈13 for the sub-threshold FX pair), independent of the Hill estimator. The heavy tail is therefore a property of the
 *driven*, not the steady, state. Little of this is imposed by the perturbation: the steady state being
 *light* (the opposite of real markets, and not built in), the finite, dose-dependent relaxation, the
 graded sigmoid dose-response, and the mechanism-specificity of §5 are all emergent properties of the
@@ -143,13 +145,15 @@ joint *(Δp, OFI)* process — the Kullback–Leibler divergence between forward
 pair-transition statistics — and it was **flat** (no burst at the shock). So the signature is order-flow
 *persistence/coherence*, not sign-level *irreversibility*: a strongly persistent (AR-like) process can
 still be time-reversible, and entropy production need not accompany the memory burst. To probe
-irreversibility beyond this sign-level proxy we additionally compute a model-free time-asymmetry
-estimator (visibility-graph irreversibility) on the same transient — **[C-a: result pending the
-raw-trajectory regeneration; inserted on completion]** — connecting to fluctuation-theorem studies of
-market cascades [Maskawa 2025] and non-equilibrium stochastic thermodynamics [Seifert 2012]. We do not
-claim a thermodynamic-irreversibility result here beyond what that estimator shows; "non-equilibrium" in
-this paper is the dynamical-systems sense (driven, transient, relaxing, light steady state) made precise
-in §2.
+irreversibility beyond this sign-level proxy we additionally computed a stronger, amplitude-sensitive
+model-free estimator — the directed-horizontal-visibility-graph (DHVG) time asymmetry [Lacasa et al.
+2012; Flanagan & Lacasa 2016] — on the same transient. It is **also flat for the coherent shock**
+(Δ_DHVG ≈ 0.01 across all five assets, within control-window variation); only the one-sided exogenous
+price gap shows a small bump. A second, independent estimator therefore corroborates that the signature
+is coherence, not sign-level irreversibility. We claim no thermodynamic-irreversibility result beyond
+this; "non-equilibrium" here is the dynamical-systems sense (driven, transient, relaxing, light steady
+state) made precise in §2. A finer-grained fluctuation-theorem treatment [Maskawa 2025; Seifert 2012] is
+future work.
 
 ![Figure 4: mechanism and the order-flow signature](figures/fig_mechanism.png)
 
@@ -200,6 +204,6 @@ coherence signature above (the OFI-memory burst, dose-responsive) is the quantit
 
 ## References
 Cont 2001; Gabaix et al. 2003; Plerou et al. 1999; Bouchaud & Cont 1998; Dyer et al. 2023; Chopra et al.
-2023; Batatia et al. 2022 (MACE); Hill 1975; Tóth et al. 2011; Clark 1973; LeBaron 2001; Maskawa 2025;
-Seifert 2012. *(full entries in
+2023; Batatia et al. 2022 (MACE); Hill 1975; Tóth et al. 2011; Clark 1973; LeBaron 2001; Lacasa et al.
+2012; Flanagan & Lacasa 2016; Maskawa 2025; Seifert 2012. *(full entries in
 `references.bib`)*

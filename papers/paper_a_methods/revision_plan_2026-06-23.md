@@ -295,7 +295,16 @@ quick data check, not just writing.)
 - [ ] Superseded banners on outline.md / draft_sections.md / stale make_figures scripts.
 - [ ] NCS Results §6 still blank (unchanged, by decision).
 
-## STATUS 2026-06-23 — Mac-now DONE, H20-gated coded+smoked
+## STATUS 2026-06-23 — Mac-now DONE; H20-gated also DONE (ran on 100.91.194.14)
+
+**UPDATE (PM-2):** H20 turned out reachable (8-card box 100.91.194.14, ecophys env + 8×H20). The original
+repo + all 2,730 exp-123 trajectories live on GPFS NFS `/AI4S/Users/howardwang/h204/ecophys/`, so C-a/F-a/
+B3 ran on the *exact* committed trajectories (no retrain). 15 result JSONs pulled back; figures + all 3
+drafts + bib updated with the real numbers. Results: B3 dip-kurtosis 120–150 (eurusd 13, sub-threshold);
+C-a DHVG flat (Δ≈0.01, 5 assets) → coherence-not-irreversibility strengthened; F-a real centered series.
+See `logs/2026-06-23.md` Session PM-2. Only NCS §6 (Tardis L2) remains.
+
+### (original pre-run status)
 
 **Done & verified (Mac):**
 - Figures: A1/A2 (titles softened), B1 (α=0.5 censored floor), E3 (chronological x-order) → regenerated +
