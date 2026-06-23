@@ -125,9 +125,9 @@ order-flow signature**, which we characterize quantitatively (Figure 3):
 - *Dose-response.* The OFI-memory burst is a **monotonic sigmoid** in shock magnitude (onset
   ~0.1–0.2σ, saturating to perfect persistence ~1.0 by ~1σ) — a more sensitive control knob than the
   return tail.
-- *Generality.* The signature reproduces across **four of five assets** (two equity indices — S&P 500
-  and NASDAQ — gold, crypto); the low-volatility FX pair requires a larger shock, its onset tracking the
-  asset's intrinsic volatility.
+- *Generality.* The signature reproduces robustly across **the four non-FX assets** (S&P 500, NASDAQ,
+  gold, crypto; |ρ| spike ≈0.66–0.70); the low-volatility FX pair's order-flow readout is anomalously
+  weak (≈0.07) and seed-unstable in this model, so we report a four-asset signature.
 - *Timescale.* The OFI-memory burst is a **short impulse** (relaxation τ ≈ 20 steps; plotted asset,
   22 ± 2 across assets), ~10× faster than the return-tail relaxation (τ ≈ 236) — order flow coordinates
   near-instantaneously while the tail relaxes slowly.

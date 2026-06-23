@@ -155,10 +155,12 @@ at-shock coordination is in part imposed by construction and is not itself infor
 emergent content, which we read the signature from, is its finite-time relaxation, its graded
 dose–response, and the contrast with the inert price gap (*|ρ|* stays flat). The persistence of the flow
 — its lag-1 autocorrelation, or "memory" — has a monotonic sigmoid dose–response (onset ≈0.1–0.2σ;
-Fig. 4b), holds across four of the five assets (the low-volatility FX pair stays sub-threshold at the
-tested magnitude, its onset tracking volatility), and relaxes on a timescale *τ_OFI ≈ 20* steps for the
-plotted asset (22 ± 2 across the four revived assets), about ten times faster than the saturated tail
-relaxation (*τ ≈ 236*; Fig. 4c). Two
+Fig. 4b) and relaxes on a timescale *τ_OFI ≈ 20* steps for the plotted asset (22 ± 2 across the four
+assets it generalizes to), about ten times faster than the saturated tail relaxation (*τ ≈ 236*;
+Fig. 4c). The order-flow signature is robust across the four non-FX assets (|ρ| spike ≈0.66–0.70, tight
+across rollouts); the low-volatility FX pair is the exception — its |ρ| readout is anomalously weak
+(≈0.07) and unstable across seeds in this simulator (the same checkpoint gives ≈0.6 in a fresh rollout),
+so we report a four-asset signature rather than a clean threshold effect. Two
 non-equilibrium timescales therefore coexist: a near-instantaneous coherence impulse in the order flow
 and a slower relaxation of the tail. Two independent irreversibility estimators, by contrast, stay flat
 at the coordinated shock. A sign-level entropy-production proxy on the joint *(Δp, OFI)* process — the
