@@ -113,17 +113,20 @@ steady state is light.
 ### Heavy tails are a driven non-equilibrium transient
 
 In the unperturbed steady state the order-flow tail is light (*α_ED ≈ 4.7*, flat; Fig. 2a). Displacing a
-fraction of the agents in a common direction at *t* = 3,000 drives the order-flow tail index down to
-*α_ED ≈ 0.5*. A value below one has no finite mean and is far heavier than the cube law; we take it as
-the mark of a strongly driven state rather than a realistic stationary tail (≈0.5 is the Hill
-estimator's saturation floor on this sample). The tail then relaxes back to ≈4.7. The relaxation is *dose-dependent*: near onset it
+fraction of the agents in a common direction at *t* = 3,000 drives the order-flow tail far heavier than
+the cube law, down to the windowed-Hill resolution floor (*α_ED ≈ 0.5* on this sample, below which the
+estimator saturates). We read this as "much heavier than cube-law", not as a literal *α = 0.5* fixed
+point — the value is estimator-censored, and on a short windowed transient an estimated *α < 1* is in any
+case partly small-sample, so we do not interpret the precise floor. The tail then relaxes back to ≈4.7.
+The relaxation is *dose-dependent*: near onset it
 is fast (*τ ≈ 20* steps, at the fit-resolution floor) and lengthens to *τ ≈ 236* steps under saturating
 shocks (Fig. 2c; mean 134 ± 95 steps across revived doses, CV ≈ 71% — there is no single relaxation
 time, *τ* growing with how hard the system is driven). The *t* = 0 cold-start transient has the same
 depth (it craters to the same *≈0.5* floor) but relaxes fast, so the startup burn-in of the previous
 section is the same *kind* of transient, sitting at the fast, low-dose end. The effect is systematic:
-across five assets (equities, NASDAQ, gold, crypto, FX) the post-shock tail follows a monotonic sigmoid
-dose–response in shock magnitude (onset ≈0.1–0.2σ, saturating at the *α ≈ 0.5* floor; Fig. 2b), with an
+across five calibrated assets spanning four classes (two equity indices — S&P 500 and NASDAQ — a metal,
+a crypto and an FX pair) the post-shock tail follows a monotonic sigmoid dose–response in shock magnitude
+(onset ≈0.1–0.2σ, with the heavy end pinned at the estimator-censored *α ≈ 0.5* floor; Fig. 2b), with an
 asset-dependent threshold that tracks intrinsic volatility (the low-volatility FX pair requires the
 largest shock). None of this is imposed by the perturbation: the steady state being *light* (the
 opposite of real markets), the finite, dose-dependent relaxation, the graded dose–response, and the
@@ -141,15 +144,17 @@ control (Fig. 4a). A price gap does not propagate into a coordinated order-flow 
 transient is tied to the agents' coordination rather than to the observable price, consistent with
 reading a crash as coordinated liquidation rather than as an exogenous price move.
 
-Under the coordinated shock the order flow carries a well-defined signature (Fig. 4a; Methods). The
-lag-1 autocorrelation of order-flow imbalance jumps from ≈0.02 to ≈1.0 at the shock, the flow becoming
-transiently coherent and persistent, and then relaxes back. Since the kick displaces a fraction of
-agents in a common direction, the coherence at the instant of the shock is in part imposed by
-construction; what is not imposed is its finite-time relaxation, its graded dose–response, and the
-contrast with the inert price gap. The dose–response is a monotonic sigmoid (onset ≈0.1–0.2σ, reaching
-≈1.0 by ≈1σ; Fig. 4b), holds across four of the five assets (the low-volatility FX pair stays
-sub-threshold at the tested magnitude, its onset tracking volatility), and relaxes on a timescale
-*τ_OFI ≈ 22* steps, about ten times faster than the saturated tail relaxation (*τ ≈ 236*; Fig. 4c). Two
+Under the coordinated shock the order flow carries a well-defined signature (Fig. 4a; Methods). Because
+the kick displaces a fraction of agents in a common direction, the momentary coherence at the instant of
+the shock — the lag-1 autocorrelation of order-flow imbalance rising from ≈0.02 toward ≈1.0 — is in part
+imposed by construction and is not itself informative; the non-trivial, emergent content, which we read
+the signature from, is its finite-time relaxation, its graded dose–response, and the contrast with the
+inert price gap. (The windowed memory rises at the shock but peaks ≈250 steps later — about half the
+500-step window — then decays; Fig. 4a.) The dose–response is a monotonic sigmoid (onset ≈0.1–0.2σ;
+Fig. 4b), holds across four of the five assets (the low-volatility FX pair stays sub-threshold at the
+tested magnitude, its onset tracking volatility), and relaxes on a timescale *τ_OFI ≈ 20* steps for the
+plotted asset (22 ± 2 across the four revived assets), about ten times faster than the saturated tail
+relaxation (*τ ≈ 236*; Fig. 4c). Two
 non-equilibrium timescales therefore coexist: a near-instantaneous coherence impulse in the order flow
 and a slower relaxation of the tail. A sign-level entropy-production proxy on the joint *(Δp, OFI)*
 process — the Kullback–Leibler divergence between forward and time-reversed pair-transition statistics,
@@ -163,15 +168,18 @@ cascades (Maskawa 2025) and to model-free irreversibility estimators that rise i
 ### The real-market boundary
 
 Do real markets share the transient? We test it directly on returns. On five real one-minute crypto
-crash episodes (the March-2020 COVID crash, the May-2021 sell-off, the June-2022 deleveraging, the
-Terra/Luna collapse and the FTX failure) we pre-registered the statistic *Δα = α(crash) − α(pre)* on
+crash episodes (COVID-2020, China-2021, Luna-2022, Celsius-2022 and FTX-2022; full names in Methods) we
+pre-registered the statistic *Δα = α(crash) − α(pre)* on
 volatility-standardized returns and compared it to a null distribution built from a long calm window
 (Methods; the time-varying-tail-index test of Quintos et al. 2001 applied to crash windows). The
 driven-transient hypothesis predicts *Δα ≪ 0*; instead the pooled effect is *z = +1.03* (slightly
-*lighter*), with one of five episodes a significant heavier-tail hit — within the false-positive rate
-for five tests (Fig. 5). We therefore find no evidence of the predicted crash-driven heavy tail; with
-five episodes the test has limited power, but the result is consistent with a stationary,
-approximately cube-law tail in calm and crash alike (Gabaix et al. 2003; Gopikrishnan et al. 1999).
+*lighter*, the opposite sign). Of the five episodes, one (China-2021) is a significant heavier-tail hit
+and two (Celsius-2022, Luna-2022) are significantly *lighter* — the directions do not agree, and the net
+is no systematic heavy-up (Fig. 5). The driven-transient's prediction *Δα ≪ 0* is therefore falsified in
+real returns. With five episodes the test has limited power; what it does establish is the contrast that
+matters here — the real tail is *already* heavy in calm (Hill *α ≈ 3*, the cube-law regime) and is not
+driven heavier by crashes, so reality carries a stationary heavy-tail source that EcoMD's light steady
+state lacks (Gabaix et al. 2003; Gopikrishnan et al. 1999).
 
 The consequence is specific. EcoMD's heavy tail is a non-equilibrium property of the model: the model
 has no stationary heavy-tail source, a structural feature rather than a training shortfall, so it can
@@ -186,10 +194,11 @@ Bouchaud et al. 2018).
 ### A pre-registered real order-flow test
 
 The mechanism turns this into a concrete prediction. At real crash onsets, which are coordinated
-liquidation events rather than exogenous price gaps, order-flow memory should burst toward perfect
-persistence, depend monotonically on crash severity, generalize across asset classes with a
-volatility-dependent threshold, and relax quickly — and it should do so where the return tail is
-stationary. The prediction, the data, the statistic, the calm-window null, and the decision gates are
+liquidation events rather than exogenous price gaps, order-flow memory should rise and then relax on a
+finite timescale, with the size of the rise scaling monotonically with crash severity and a
+volatility-dependent onset across asset classes — and it should do so where the return tail itself does
+not heavy-up. Real order flow is always positively autocorrelated, so the falsifiable content is this
+severity-graded dose–response and the finite relaxation, not the peak reaching perfect persistence. The prediction, the data, the statistic, the calm-window null, and the decision gates are
 frozen in a pre-registration (`PREREG_phase2`; Methods), to be posted before the real data are touched.
 
 > **[Results §6 — BLANK, pending Tardis L2 limit-order-book data.]**
@@ -198,9 +207,9 @@ frozen in a pre-registration (`PREREG_phase2`; Methods), to be posted before the
 > - **[Fig. 3]** real crash order-flow memory burst-and-relax versus calm controls; EcoMD-predicted
 >   versus observed shape, dose-scaling and timescale.
 > - **Outcome (one of the pre-registered gates):** *G-main (positive)* — real crash order flow shows
->   the predicted memory burst where returns are stationary, matching the EcoMD prediction, a
+>   the predicted memory burst where the return tail does not heavy-up, matching the EcoMD prediction, a
 >   controlled-experiment-derived real-market finding enabled by the simulator; or *G-null (negative)* —
->   real order flow is also stationary, the EcoMD transient is simulator-specific across both returns and
+>   real order flow also shows no memory burst, the EcoMD transient is simulator-specific across both returns and
 >   order flow, and the paper stands on the measurement correction and controlled simulator physics.
 
 ## Discussion
@@ -216,9 +225,10 @@ itself supplies the order-flow prediction.
 
 The results take a side in a long debate. The transient (Results §2) is an interventional realization of
 the dynamics-generated view of fat tails (Clark 1973; LeBaron 2001; Warusawitharana 2018), whereas the
-real-data boundary (Results §5) places the return tail in the stationary-law camp (Gabaix et al. 2003).
+real-data boundary (Results §5) shows the real return tail is already heavy in calm and is not driven
+heavier by crashes — the opposite of EcoMD's light steady state and its driven transient (Gabaix et al. 2003).
 The two do not conflict: the simulator's transient is model-specific, and the real heavy tail of returns
-is, to our measurement, stationary. What remains open is whether the non-equilibrium driving that is
+is, to our measurement, already heavy in calm and not driven heavier by crashes. What remains open is whether the non-equilibrium driving that is
 plainly present in markets — order flow has long memory (Lillo and Farmer 2004), impact is near-critical
 (Tóth et al. 2011), and price and volatility series are time-irreversible in crises (Zumbach 2009;
 Flanagan and Lacasa 2016) — leaves the particular order-flow signature the simulator predicts. That is
@@ -325,7 +335,9 @@ the Kullback–Leibler divergence between forward and time-reversed transition s
 discrete entropy-production estimator that vanishes under detailed balance (Seifert 2012).
 
 **Real-data test and pre-registration.** Real returns are one-minute Binance close-to-close log-returns
-for five crash episodes plus a long calm window. Writing $\alpha(\cdot)$ for the Hill index of
+for five crash episodes — COVID-2020 (March 2020), China-2021 (the May-2021 mining-ban sell-off),
+Luna-2022 (the May-2022 Terra/Luna collapse), Celsius-2022 (the June-2022 Celsius/3AC deleveraging) and
+FTX-2022 (November 2022) — plus a long calm window. Writing $\alpha(\cdot)$ for the Hill index of
 volatility-standardized returns on a window, the statistic $\Delta\alpha=\alpha(\text{crash }2\,\mathrm{d})-\alpha(\text{pre }5\,\mathrm{d})$
 is compared to a null distribution $\{\Delta\alpha^{(j)}\}$ obtained by sliding the same $(5\,\mathrm{d},2\,\mathrm{d})$
 window-pair across the calm period — a windowed tail-index-stationarity test (Quintos et al. 2001) —
@@ -382,8 +394,8 @@ relax through three exactly-read internal observables (tail index *α_ED*, order
 ![Figure 2: the driven transient, dose–response, and dose-dependent relaxation](figures/fig_transient.png)
 
 **Figure 2.** **The heavy tail is a driven non-equilibrium transient.** **(a)** order-flow tail
-*α_ED(t)*: control stays light (≈4.7); a coordinated shock at *t* = 3,000 craters it to the *≈0.5*
-floor and it relaxes back; the *t* = 0 burn-in dip has the same depth but relaxes fast. **(b)**
+*α_ED(t)*: control stays light (≈4.7); a coordinated shock at *t* = 3,000 craters it far heavier (to the
+estimator-censored *≈0.5* floor) and it relaxes back; the *t* = 0 burn-in dip has the same depth but relaxes fast. **(b)**
 monotonic sigmoid dose–response — post-shock minimum *α_ED* versus shock magnitude across all five
 assets: equities, NASDAQ, gold and crypto collapse onto a common threshold (≈0.1–0.2σ), while the
 low-volatility FX pair is shifted to much larger shocks, so the threshold tracks intrinsic volatility.
@@ -400,18 +412,19 @@ scoring) vanishes once the equilibration transient is dropped; the steady state 
 ![Figure 4: mechanism and the order-flow signature](figures/fig_mechanism.png)
 
 **Figure 4.** **Mechanism and order-flow signature.** **(a)** order-flow-imbalance memory bursts
-(≈0.02 → ≈1.0) and relaxes quickly (*τ_OFI ≈ 20*) under the coordinated shock, while an exogenous price
-gap and control stay flat. **(b)** the OFI-memory burst has a monotonic sigmoid dose–response.
+(≈0.02 → ≈1.0, peaking ≈250 steps after the shock — about half the 500-step window — the at-shock
+coherence partly imposed by the kick) and relaxes quickly (*τ_OFI ≈ 20*, plotted asset; 22 ± 2 across
+assets) under the coordinated shock, while an exogenous price gap and control stay flat. **(b)** the OFI-memory burst has a monotonic sigmoid dose–response.
 **(c)** two non-equilibrium timescales: OFI memory relaxes ≈10× faster than the tail. **(d)** the
 sign-level entropy-production proxy is flat at the shock across all five assets — the signature is
 coherence, not irreversibility.
 
 ![Figure 5: the real-market boundary](figures/fig_boundary.png)
 
-**Figure 5.** **Real return tails are stationary.** Real-crash *Δα = α(crash) − α(pre)* on
-volatility-standardized one-minute returns for five episodes, against the calm-window null (±1σ band;
-the dashed line is the *q₅* the driven-transient hypothesis predicts). No crash-driven heavy-up; pooled
-*z* = +1.03.
+**Figure 5.** **Real crash tails do not heavy-up.** Real-crash *Δα = α(crash) − α(pre)* on
+volatility-standardized one-minute returns for five episodes (chronological order), against the
+calm-window null (±1σ band; the dashed line is the *q₀₅* the driven-transient hypothesis predicts). No
+systematic crash-driven heavy-up — one episode heavier, two lighter; pooled *z* = +1.03.
 
 > **[Figure 6 / Table 2 — Results §6, BLANK, pending limit-order-book data.]** The real order-flow
 > memory burst-and-relax versus calm controls, EcoMD-predicted versus observed, and the per-episode /

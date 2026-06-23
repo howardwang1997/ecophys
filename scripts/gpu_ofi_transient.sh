@@ -21,11 +21,15 @@ go(){
   say "── analyze OFI transient ──"
   conda run --no-capture-output -n "$ENV" python scripts/analyze_sim_ofi_transient.py \
     --exp "$EXP" --asset "$ASSET" --arms control kick6 jump6 --shock 3000 2>&1 | tee -a "$LOG" || say "[warn] analyze failed"
+  say "── revision add-ons: C-a DHVG irreversibility / B3 dip stat / F-a centered memory ──"
+  conda run --no-capture-output -n "$ENV" python scripts/analyze_transient_extras.py \
+    --exp "$EXP" --asset "$ASSET" --arms control kick6 jump6 --shock 3000 2>&1 | tee -a "$LOG" || say "[warn] extras failed"
   say "── push ──"
   BR="$(git rev-parse --abbrev-ref HEAD)"
-  git add "$EXP/ofi_transient_${ASSET}.json" 2>/dev/null || true
+  git add "$EXP/ofi_transient_${ASSET}.json" "$EXP/irrev_dhvg_${ASSET}.json" \
+          "$EXP/dip_stat_${ASSET}.json" "$EXP/ofi_memory_centered_${ASSET}.json" 2>/dev/null || true
   if git diff --cached --quiet; then say "(nothing to commit)"; else
-    git commit -q -m "exp 123 Route-A: sim-side OFI transient analysis (${ASSET} control/kick6/jump6)" \
+    git commit -q -m "exp 123 Route-A: OFI transient + revision add-ons (DHVG/dip/centered-memory) (${ASSET})" \
       && { git push origin "$BR" 2>&1 | tee -a "$LOG" \
            || { git pull --rebase -q origin "$BR" && git push origin "$BR" 2>&1 | tee -a "$LOG"; }; }
   fi

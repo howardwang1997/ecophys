@@ -23,6 +23,8 @@ stationarity vs eval hygiene), and ideally headline different figures. If submit
 organizers to confirm a related-but-distinct pair is acceptable. See each spine's "Distinctness" §.
 
 ## Note
-`../outline.md` and `../draft_sections.md` are **pre-pivot (stale)** — they encode the refuted
-"7/11 calibrated tool / stationary concave solve" spine. Do not reuse; these workshop spines + the
-`claim_and_roadmap_2026-06-19.md` are the current source of truth.
+`../archive/outline.md` and `../archive/draft_sections.md` are **pre-pivot (stale)** — they encode the
+refuted "7/11 calibrated tool / stationary concave solve" spine (archived 2026-06-23). Do not reuse;
+these workshop spines + the `claim_and_roadmap_2026-06-19.md` are the current source of truth. Live
+figures come from `../shared/make_figures.py` (the per-workshop `make_figures.py` scripts were stale and
+are in `../archive/`).

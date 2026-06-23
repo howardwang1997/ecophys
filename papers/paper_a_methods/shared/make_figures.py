@@ -132,7 +132,7 @@ def fig_hero():
         ("1  Measurement correction", "warm-up inflates the tail", "#fff3e0"),
         ("2  Driven transient", "heavy tail only out of equilibrium", "#ffebee"),
         ("3  Mechanism + OFI signature", "coordinated flow, not price shocks", "#e8f5e9"),
-        ("4  Real-market boundary", "returns stationary " + r"$\Rightarrow$" + " OF prediction", "#e3f2fd"),
+        ("4  Real-market boundary", "no crash heavy-up " + r"$\Rightarrow$" + " OF prediction", "#e3f2fd"),
     ]
     y = 0.80
     for title, sub, fc in items:
@@ -196,6 +196,8 @@ def fig_transient():
             axB.semilogx(xs, ys, "D", ms=5, color=ASSET_COLOR[asset], label=ASSET_LABEL[asset])
     axB.axhline(4.7, color=GREY, ls=":", lw=1)
     axB.text(0.06, 4.85, "steady state", fontsize=6.6, color="0.5")
+    axB.axhline(0.5, color="0.7", ls="--", lw=0.8, zorder=0)
+    axB.text(0.06, 0.66, r"$\alpha\!=\!0.5$: Hill floor (censored)", fontsize=5.8, color="0.55")
     axB.set_xlabel(r"shock magnitude ($\sigma$)")
     axB.set_ylabel(r"post-shock min $\alpha_{\mathrm{ED}}$")
     axB.set_title("b  Dose-response (5 assets)")
@@ -266,17 +268,32 @@ def fig_mechanism():
     oft = _load("ofi_tau_report.json")
     sp = oft["assets"]["spx"]
 
-    # (a) OFI memory burst-and-relax (reconstructed from the exponential fit)
-    post = np.linspace(sp["t_peak"], sp["t_peak"] + 200, 160)
-    mem_post = sp["m_inf"] + sp["amp"] * np.exp(-(post - sp["t_peak"]) / sp["tau_ofi"])
+    # (a) OFI memory burst-and-relax. F-a: prefer the centered-window REAL series (produced by
+    # analyze_transient_extras.py after the H20 raw-trajectory regen) — its peak aligns with the shock;
+    # else fall back to the exponential-fit reconstruction (whose peak lags the shock by ~½ window).
     axA.axhline(0, color="0.8", lw=0.8)
-    axA.plot([-400, 0], [sp["m_inf"], sp["m_inf"]], color=RED, lw=2)
-    axA.plot([0, sp["t_peak"] - SHOCK], [sp["m_inf"], sp["m_peak"]], color=RED, lw=2)
-    axA.plot(post - SHOCK, mem_post, color=RED, lw=2, label="coherent shock")
     oti = _load("ofi_transient_spx.json")["arms"]
-    for arm, col, lab in [("jump6", BLUE, "price gap (inert)"), ("control", GREY, "control")]:
-        b = oti[arm]["measures"]["mem"]["base"]
-        axA.plot([-400, 450], [b, b], color=col, lw=1.3, label=lab)
+    try:
+        cm = _load("ofi_memory_centered_spx.json")["arms"]
+    except FileNotFoundError:
+        cm = None
+    if cm is not None:
+        axA.plot(np.array(cm["kick6"]["centers"]) - SHOCK, cm["kick6"]["mem"], color=RED, lw=2,
+                 label="coherent shock")
+        if "control" in cm:
+            axA.plot(np.array(cm["control"]["centers"]) - SHOCK, cm["control"]["mem"], color=GREY,
+                     lw=1.3, label="control")
+        jb = oti["jump6"]["measures"]["mem"]["base"]
+        axA.plot([-400, 450], [jb, jb], color=BLUE, lw=1.3, label="price gap (inert)")
+    else:
+        post = np.linspace(sp["t_peak"], sp["t_peak"] + 200, 160)
+        mem_post = sp["m_inf"] + sp["amp"] * np.exp(-(post - sp["t_peak"]) / sp["tau_ofi"])
+        axA.plot([-400, 0], [sp["m_inf"], sp["m_inf"]], color=RED, lw=2)
+        axA.plot([0, sp["t_peak"] - SHOCK], [sp["m_inf"], sp["m_peak"]], color=RED, lw=2)
+        axA.plot(post - SHOCK, mem_post, color=RED, lw=2, label="coherent shock")
+        for arm, col, lab in [("jump6", BLUE, "price gap (inert)"), ("control", GREY, "control")]:
+            b = oti[arm]["measures"]["mem"]["base"]
+            axA.plot([-400, 450], [b, b], color=col, lw=1.3, label=lab)
     axA.axvline(0, color="0.5", ls=":", lw=1)
     axA.annotate(fr"$\tau_{{\mathrm{{OFI}}}}\approx{sp['tau_ofi']:.0f}$",
                  xy=(sp["t_peak"] - SHOCK + 30, 0.42), xytext=(330, 0.74), fontsize=7.5,
@@ -323,6 +340,13 @@ def fig_mechanism():
     axD.set_ylabel(r"entropy-production proxy $\dot S$")
     axD.set_title(r"d  Irreversibility stays flat")
     axD.legend(fontsize=6.8, loc="upper right"); axD.set_ylim(0, max(shock_v) * 1.7)
+    # C-a: overlay the stronger model-free DHVG estimator's spx verdict once it has been computed.
+    try:
+        dh = _load("irrev_dhvg_spx.json")["arms"]["kick6"]
+        axD.text(0.5, 0.92, fr"DHVG $\Delta$={dh['shock'] - dh['base']:+.3f} (spx)",
+                 transform=axD.transAxes, fontsize=6.0, color="0.4", ha="center")
+    except (FileNotFoundError, KeyError):
+        pass
     _saveboth(fig, "fig_mechanism")
 
 
@@ -333,6 +357,10 @@ def fig_boundary():
     fig, ax = plt.subplots(figsize=(5.0, 3.4))
     nt = _load("null_test_report.json")
     null, eps = nt["null"], nt["episodes"]
+    # chronological order: COVID Mar'20, China May'21, Luna May'22, Celsius Jun'22, FTX Nov'22
+    CHRONO = ["covid", "china", "luna", "celsius", "ftx"]
+    _key = lambda e: CHRONO.index(e["episode"].split("_")[0]) if e["episode"].split("_")[0] in CHRONO else 99
+    eps = sorted(eps, key=_key)
     xx = np.arange(len(eps))
     ax.axhspan(null["mean"] - null["std"], null["mean"] + null["std"], color=BAND, zorder=0,
                label=r"calm null ($\pm1\sigma$)")
@@ -346,7 +374,7 @@ def fig_boundary():
     ax.set_xticks(xx)
     ax.set_xticklabels([e["episode"].split("_")[0] for e in eps], rotation=30, ha="right", fontsize=7.4)
     ax.set_ylabel(r"$\Delta\alpha$  (crash $-$ pre)")
-    ax.set_title(f"Real return tails are stationary  (pooled $z={nt['pooled_z']:+.2f}$)")
+    ax.set_title(f"Real crash tails do not heavy-up  (pooled $z={nt['pooled_z']:+.2f}$)")
     ax.legend(fontsize=6.8, loc="upper left")
     ax.set_ylim(-1.15, 1.45)
     _saveboth(fig, "fig_boundary")

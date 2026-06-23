@@ -17,9 +17,9 @@ Hill tail index rises from 3.9 to 6.6 once warm-up is discarded; the steady stat
 give the corrected protocol. Using the shock interface, EcoMD generates *coherent-liquidation* stress
 scenarios with a distinctive, controllable order-flow signature — order-flow-imbalance memory jumps from
 0.02 to ~1.0 at the shock with a monotonic dose-response, generalizing across assets and relaxing quickly, whereas exogenous price gaps are inert. Finally, we bound the fidelity: the model's heavy
-tails are *transient*, while real one-minute crypto crash tails are *stationary* (pre-registered null
-test over five episodes). EcoMD is a useful controllable generator, but its tail realism must be
-validated against real stationarity before use.
+tails are *transient*, while real one-minute crypto crash tails do *not* heavy-up (pre-registered null
+test over five episodes; they are already heavy in calm). EcoMD is a useful controllable generator, but
+its tail realism must be validated against the real, already-heavy calm tail before use.
 
 ## 1. Introduction
 
@@ -53,8 +53,11 @@ learned interaction potential *U* (an equivariant message-passing form in the sp
 et al. 2022]) and temperature *T*. The log-price increment is driven by aggregate excess demand,
 *Δpₜ = β·EDₜ + σηₜ* with *EDₜ = κ Σᵢ Δsᵢ,₀*, i.e. the net signed agent flow. The model is trained to
 match a panel of stylized facts and is fully differentiable, which buys two things a non-differentiable
-agent-based simulator [Byrd et al. 2020, ABIDES] does not have: gradient-based calibration, and a *shock interface* for controllable interventions (§4). The rest of the paper concerns how to evaluate
-and steer this generator.
+agent-based simulator [Byrd et al. 2020, ABIDES] does not have: gradient-based calibration, and a *shock interface* for controllable interventions (§4). EcoMD is calibrated on the standard stylized-fact panel
+(the first moments, the volatility-clustering ACF, the leverage effect, and the tail); we make no
+stylized-fact-SOTA claim — post-correction its steady-state tail is *light* rather than cube-law, which
+is precisely the fidelity bound §5 establishes — and the rest of the paper concerns how to evaluate and
+steer this generator.
 
 ![Figure 1: EcoMD as a differentiable, controllable generator](figures/fig_hero.png)
 
@@ -109,9 +112,10 @@ scenario generator. We contrast two interventions.
 
 **Coherent liquidation** (a panic / forced-selling analogue) displaces a fraction of agents' latent
 positions in a common direction. This drives a *relaxing* stress scenario: the heavy transient
-tail re-appears (*α* for excess demand drops from 4.7 to ~0.5 — below one, a driven-state pathology
-rather than a realistic stationary tail — and recovers, the relaxation time growing with shock
-magnitude), with a graded, sigmoid dose-response. It also leaves a distinctive, **controllable
+tail re-appears (*α* for excess demand drops from 4.7 far heavier, to the estimator-censored ~0.5 floor
+— below one, a driven-state pathology rather than a realistic stationary tail; we do not interpret the
+precise value — and recovers, the relaxation time growing with shock magnitude), with a graded, sigmoid
+dose-response. It also leaves a distinctive, **controllable
 order-flow signature**, which we characterize quantitatively (Figure 3):
 
 - *Magnitude.* The lag-1 autocorrelation of order-flow imbalance (OFI) jumps from ~0.02 to ~1.0 at the
@@ -120,12 +124,12 @@ order-flow signature**, which we characterize quantitatively (Figure 3):
 - *Dose-response.* The OFI-memory burst is a **monotonic sigmoid** in shock magnitude (onset
   ~0.1–0.2σ, saturating to perfect persistence ~1.0 by ~1σ) — a more sensitive control knob than the
   return tail.
-- *Generality.* The signature reproduces across **four of five assets** (equities, NASDAQ, gold,
-  crypto); the low-volatility FX pair requires a larger shock, its onset tracking the asset's intrinsic
-  volatility.
-- *Timescale.* The OFI-memory burst is a **short impulse** (relaxation τ ≈ 22 steps), ~10× faster than
-  the return-tail relaxation (τ ≈ 236) — order flow coordinates near-instantaneously while the tail
-  relaxes slowly.
+- *Generality.* The signature reproduces across **four of five assets** (two equity indices — S&P 500
+  and NASDAQ — gold, crypto); the low-volatility FX pair requires a larger shock, its onset tracking the
+  asset's intrinsic volatility.
+- *Timescale.* The OFI-memory burst is a **short impulse** (relaxation τ ≈ 20 steps; plotted asset,
+  22 ± 2 across assets), ~10× faster than the return-tail relaxation (τ ≈ 236) — order flow coordinates
+  near-instantaneously while the tail relaxes slowly.
 
 The initial coherence is partly imposed by the intervention; the non-trivial, emergent content is its
 *finite-time relaxation*, its *graded dose-response*, and the contrast with the inert price gap.
@@ -158,17 +162,18 @@ across assets — the controllable signature is coherence, not irreversibility.
 
 A generator is only as useful as its fidelity is understood. EcoMD's heavy tails are a *driven
 transient*; are real market tails the same? We test this directly. On five real one-minute crypto crash
-episodes (COVID-2020, the May-2021 selloff, the June-2022 deleveraging, the Terra/Luna collapse, and
-FTX), we pre-registered a statistic *Δα = α(crash) − α(pre)* on volatility-standardized returns and
+episodes (COVID-2020, China-2021, Luna-2022, Celsius-2022, and FTX-2022), we pre-registered a statistic
+*Δα = α(crash) − α(pre)* on volatility-standardized returns and
 compared it to a null distribution built from a long calm window (Figure 4). If crashes drove a
 heavier tail, *Δα* would be strongly negative. Instead the pooled effect is *z = +1.03* (slightly
-*lighter*, opposite to the prediction); only one of five episodes shows a significant heavier tail,
-within the false-positive rate for five tests. We find no evidence of a crash-driven heavy tail; with
-five episodes the test has limited power, but the result is consistent with a *stationary*,
-approximately cube-law return tail in calm and crash alike [Gabaix et al. 2003; Plerou et al. 1999;
-Tóth et al. 2011]. This uses the five episodes available with free intraday data
-(crypto); a broader equity test awaits paid high-frequency data, but the result is robust to volatility
-standardization and already matches the established stationarity of the return tail.
+*lighter*, opposite to the prediction): one episode (China-2021) shows a significant heavier tail and two
+(Celsius-2022, Luna-2022) are significantly *lighter*, the directions disagreeing, so the net is no
+systematic heavy-up. The prediction *Δα ≪ 0* is falsified in real returns; with five episodes the test
+has limited power, but what it establishes is that the real tail is *already* heavy in calm (α ≈ 3) and
+is not driven heavier by crashes [Gabaix et al. 2003; Plerou et al. 1999; Tóth et al. 2011]. This uses
+the five episodes available with free intraday data (crypto); a broader equity test awaits paid
+high-frequency data, but the result is robust to volatility standardization and matches the established
+heaviness of the calm return tail.
 
 Hence EcoMD generates a heavy tail that is a *non-equilibrium* response, not the real *stationary* heavy
 tail. For scenario generation this is an important caveat: the simulator reproduces fat tails only
@@ -188,8 +193,8 @@ Three takeaways for generative AI in finance. (i) *Evaluate with warm-up hygiene
 fat-tail scores are inflated by startup transients; discard warm-up and report sensitivity. (ii)
 *Controllability is intervention-specific*: coordinated participant behavior, not exogenous price moves,
 drives realistic stress in this generator, via a dose-responsive order-flow-coherence burst.
-(iii) *Tail fidelity is transient*: validate generated tails against real stationarity before relying
-on them. EcoMD is a useful, controllable, differentiable scenario generator; these results are the
+(iii) *Tail fidelity is transient*: validate generated tails against the real, already-heavy calm tail
+before relying on them. EcoMD is a useful, controllable, differentiable scenario generator; these results are the
 conditions under which its output can be trusted.
 
 **Limitations.** We demonstrate the pitfall in EcoMD; we conjecture it affects any rollout-scored

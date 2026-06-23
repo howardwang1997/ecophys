@@ -16,10 +16,11 @@ makes warm-up-inclusive rollout scoring *misread the equilibration transient as 
 transient requires *coherent displacement of agent latent states*: it is inert to an exogenous price
 shock (in both the return tail and order-flow imbalance), and it leaves an order-flow signature — a
 memory burst from 0.02 to ~1.0 with a monotonic dose-response, generalizing across assets and
-relaxing ~10× faster than the tail. On real one-minute crypto crashes, by contrast, the return tail is
-*stationary* across calm and crash (a pre-registered null test over five episodes). The simulator's
-heavy tail is thus a non-equilibrium phenomenon *of the model* — localizing a missing stationary
-heavy-tail mechanism in this class of simulators — rather than a stationary market law.
+relaxing ~10× faster than the tail. On real one-minute crypto crashes, by contrast, the return tail does
+*not* heavy-up (a pre-registered null test over five episodes): it is already heavy in calm and is not
+driven heavier by crashes. The simulator's heavy tail is thus a non-equilibrium phenomenon *of the
+model* — localizing a missing stationary heavy-tail mechanism in this class of simulators — rather than a
+stationary market law.
 
 ## 1. Introduction
 
@@ -46,7 +47,7 @@ measurement correction:
   transient with a stationary tail (§4).
 - **Mechanistic specificity and an order-flow signature**: only coherent latent displacement drives the
   transient (price shocks are inert), with a dose-responsive order-flow signature (§5); and real
-  return tails are *stationary* (§6).
+  return tails do *not* heavy-up at crashes (§6).
 
 ## 2. EcoMD: a Langevin particle market
 
@@ -79,8 +80,9 @@ non-equilibrium state rather than a realistic stationary tail (≈0.5 is the est
 steps, at the fit-resolution floor) and lengthening to *τ ≈ 236* steps under saturating shocks
 (Figure 2c; mean 134 ± 95 across revived doses, CV ≈ 71% — no single *τ*). The *t = 0* cold-start
 transient has the same depth but relaxes fast, so the initial burn-in is the same *kind* of transient at
-the fast, low-dose end. The effect generalizes across five assets (equities, NASDAQ, gold, crypto, FX)
-with a **sigmoid dose-response** in shock magnitude (onset ~0.1–0.2σ, saturating at the *α ≈ 0.5* floor;
+the fast, low-dose end. The effect generalizes across five calibrated assets spanning four classes (two
+equity indices — S&P 500 and NASDAQ — a metal, a crypto and an FX pair) with a **sigmoid dose-response**
+in shock magnitude (onset ~0.1–0.2σ, the heavy end pinned at the estimator-censored *α ≈ 0.5* floor;
 Figure 2b), the threshold tracking intrinsic volatility. The heavy tail is therefore a property of the
 *driven*, not the steady, state. Little of this is imposed by the perturbation: the steady state being
 *light* (the opposite of real markets, and not built in), the finite, dose-dependent relaxation, the
@@ -132,18 +134,22 @@ dose-response, and the contrast with the inert price gap:
   a more sensitive observable than the tail;
 - it **generalizes across four of five assets** (the low-vol FX pair is sub-threshold at the tested
   shock, its onset tracking intrinsic volatility);
-- it relaxes on a **timescale *τ_OFI ≈ 22* steps — ~10× faster than the return-tail *τ_ED ≈ 236***.
-  The system thus has *two* non-equilibrium timescales: a near-instantaneous order-flow coherence
-  impulse and a slower tail relaxation.
+- it relaxes on a **timescale *τ_OFI ≈ 20* steps (plotted asset; 22 ± 2 across assets) — ~10× faster
+  than the return-tail *τ_ED ≈ 236***. The system thus has *two* non-equilibrium timescales: a
+  near-instantaneous order-flow coherence impulse and a slower tail relaxation.
 
 **On the thermodynamic reading.** We computed a sign-level entropy-production proxy on the
 joint *(Δp, OFI)* process — the Kullback–Leibler divergence between forward and time-reversed
 pair-transition statistics — and it was **flat** (no burst at the shock). So the signature is order-flow
 *persistence/coherence*, not sign-level *irreversibility*: a strongly persistent (AR-like) process can
-still be time-reversible, and entropy production need not accompany the memory burst. A finer-grained
-entropy-production estimate — connecting to fluctuation-theorem studies of market cascades [Maskawa
-2025] and non-equilibrium stochastic thermodynamics [Seifert 2012] — is a concrete next step we do not
-claim to have established here.
+still be time-reversible, and entropy production need not accompany the memory burst. To probe
+irreversibility beyond this sign-level proxy we additionally compute a model-free time-asymmetry
+estimator (visibility-graph irreversibility) on the same transient — **[C-a: result pending the
+raw-trajectory regeneration; inserted on completion]** — connecting to fluctuation-theorem studies of
+market cascades [Maskawa 2025] and non-equilibrium stochastic thermodynamics [Seifert 2012]. We do not
+claim a thermodynamic-irreversibility result here beyond what that estimator shows; "non-equilibrium" in
+this paper is the dynamical-systems sense (driven, transient, relaxing, light steady state) made precise
+in §2.
 
 ![Figure 4: mechanism and the order-flow signature](figures/fig_mechanism.png)
 
@@ -156,14 +162,15 @@ irreversibility.
 ## 6. The real-data boundary
 
 Is the same transient present in *real* markets? We test it directly. On five real one-minute crypto
-crash episodes (COVID-2020, the May-2021 selloff, the June-2022 deleveraging, Terra/Luna, FTX), we
+crash episodes (COVID-2020, China-2021, Luna-2022, Celsius-2022, FTX-2022), we
 pre-registered the statistic *Δα = α(crash) − α(pre)* on volatility-standardized returns and compared it
 to a null distribution from a long calm window. The driven-transient hypothesis predicts *Δα ≪ 0* (a
 heavier tail at the crash). Instead the pooled effect is *z = +1.03* (slightly *lighter*); only one of
-five episodes is a significant heavier-tail hit, within the false-positive rate for five tests (Figure
-5). We find no evidence of the predicted crash-driven heavy tail; with five episodes the test has
-limited power, but the result is consistent with a **stationary**, approximately cube-law tail in calm
-and crash alike [Gabaix et al. 2003; Tóth et al. 2011]. The simulator's transient heavy
+five episodes is a significant heavier-tail hit (China-2021) and two (Celsius-2022, Luna-2022) are
+significantly *lighter* — the directions disagree, so the net is no systematic heavy-up (Figure 5). The
+prediction *Δα ≪ 0* is falsified in real returns; with five episodes the test has limited power, but
+what it establishes is the contrast that matters — the real tail is *already* heavy in calm (α ≈ 3) and
+is not driven heavier by crashes [Gabaix et al. 2003; Tóth et al. 2011]. The simulator's transient heavy
 tail is therefore a non-equilibrium property *of the model*: because EcoMD has no stationary heavy-tail
 source — a structural property, not a training shortfall — it can produce heavy tails only transiently,
 and the light steady state is itself the finding. This localizes the missing ingredient — a stationary
@@ -182,8 +189,8 @@ non-equilibrium transient* rather than a stationary law: a light steady state, a
 that relaxes with a finite *τ*, a sigmoid dose-response, and a dose-responsive order-flow
 coherence signature with its own (faster) timescale — together with the measurement caveat that
 warm-up-inclusive scoring confounds this transient with stationarity. The boundary is that *real*
-return tails are stationary, so the phenomenon is a property of this model class and pinpoints what it
-lacks.
+return tails do *not* heavy-up at crashes (they are already heavy in calm), so the phenomenon is a
+property of this model class and pinpoints what it lacks.
 
 **Limitations.** The dynamical results are from a single simulator; we conjecture the warm-up
 measurement pitfall affects any driven market simulator initialized off its steady state, but verifying
