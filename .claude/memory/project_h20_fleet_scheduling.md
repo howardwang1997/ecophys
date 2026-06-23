@@ -56,3 +56,21 @@ H20-2/3, (4) if unattended, put all conditionals into the driver script.
   self-removes the cron when daily(1250)+`sbi_cost_report.json` are both done. Bootstrap +
   resume scripts live at `~/abides_bootstrap.sh` / `~/abides_resume.sh` on the box.
 - Reusable scripts on branch `feature/abides-cpu-paperA`: `scripts/cpu_paperA_abides.sh {daily|sbi|all}`.
+
+**Two H20 boxes SSH-reachable from THIS Claude session (2026-06-23, user-provided + verified):**
+- `100.80.123.104` = **2× H20**, `100.91.194.14` = **8× H20**, user **root**, **key auth works directly
+  from the Mac Claude session** (`ssh -o BatchMode=yes root@…`) — so the CLAUDE.md "H20 NOT accessible
+  from this Claude session" is NOT absolute; these specific Tailscale-100.x boxes ARE reachable. (Don't
+  assume; verify per box — reachability is network/session-dependent.)
+- 8-card box: `ecophys` conda env at `/root/miniconda3/envs/ecophys` (torch 2.4.0+cu124, 8 H20), internet
+  OK, 192 cores / 2 TB RAM. `which conda` is empty in non-login shell — call `/root/miniconda3/...` paths
+  or `bash -lc`. Both boxes mount the **GPFS NFS `/AI4S`**.
+- **CANONICAL working tree + data on GPFS: `/AI4S/Users/howardwang/h204/ecophys/`** — the full repo (.git
+  at an older commit), **`raw/` data, and the saved exp-123 trajectory npz** (`experiments/123_driven_
+  transient/results_{asset}_{control,kick6,jump6,…}/ofi/trajectory_*.npz`, ~2,730 files, all 5 assets).
+  Fresh boxes have NO local repo/checkpoints — use this NFS path. (NB `/AI4S/Users/howardwang/ecophys/`
+  WITHOUT `h204/` only has `raw/` — wrong path.)
+- **To run analysis on existing trajectories (no retrain):** `scp` the new script(s) into the NFS repo,
+  `cd /AI4S/Users/howardwang/h204/ecophys && /root/miniconda3/envs/ecophys/bin/python scripts/<x>.py …`,
+  `scp` the small result JSONs back to the Mac. Checkpoints are NOT on R2 by default (`INCLUDE_CKPT=0`);
+  the exp-123 calibrated `concave_d050` ckpts were on the original box's disk, not these fresh nodes.
