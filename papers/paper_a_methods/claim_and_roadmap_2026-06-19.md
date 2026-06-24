@@ -1,5 +1,27 @@
 # Paper A — the claim (post exp-123) + experiment roadmap (2026-06-19)
 
+> **UPDATE 2026-06-24 — mechanism + real-data + drafts done (roadmap Stages 2b/2d/3 closed).** The
+> order-flow mechanism and the real-data boundary are now characterized and written into the three drafts
+> (NCS + ML4PS + GenAI; branch `feature/paper-a-figures-voice`). New results (all on the real exp-123
+> trajectories, GPFS `/AI4S/Users/howardwang/h204/ecophys/`; logs `2026-06-23.md`, `2026-06-24.md`):
+> - **Mechanism / channel (Stage 2b):** the transient needs *coordinated displacement*; an exogenous
+>   **price-jump is inert** (ED tail stays light α≈4.6, |ρ| flat) — `verdict_spx_jump.json`.
+> - **Order-flow signature (F-a):** per-step |ρ| (model `ofi`, post-kick coordinated-flow response)
+>   **spikes AT the shock** — spx 0.006→**0.70**, ndx 0.66, gold 0.68, btc 0.68; **seed-stable** (spread
+>   <0.01, 4 seeds). **eurusd genuinely weak (~0.07) but equally stable** (NOT unstable; an earlier
+>   "instability" read was a Σstate-diff diagnostic bug — see [[project-eurusd-weak-ofi]]). → robust
+>   **four-asset** signature.
+> - **Stronger irreversibility (C-a):** DHVG time-asymmetry (Lacasa 2012 / Flanagan-Lacasa 2016) is
+>   **flat for the coherent shock across all 5 assets** (Δ≈0.01) — corroborates "coherence, not
+>   irreversibility"; only the one-sided price-gap bumps (+0.02). `irrev_dhvg_*.json`.
+> - **Censoring-free heaviness (B3):** post-shock |ED| dip excess-kurtosis **120–150** (vs ~1 baseline),
+>   >q99 exceedance ~5× — confirms the heavy tail independent of the Hill α≈0.5 floor. `dip_stat_*.json`.
+> - **Real-data boundary (Stage 3):** robust negative — real crash return tails do **not** heavy-up
+>   (pooled z=+1.03); already in `stage3_realdata_pilot_2026-06-19.md`.
+> - **τ relaxation (Stage 2d):** no single τ; τ_ED ~20 (onset) → ~236 (saturation), CV≈71%; τ_OFI≈20–22.
+>
+> **Open:** NCS Results §6 (real LOB order-flow test) stays **blank** pending Tardis L2.
+
 ## The claim
 
 **Title-level.** *Fat tails in a differentiable agent-based market simulator are a non-equilibrium
