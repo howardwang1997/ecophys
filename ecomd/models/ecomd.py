@@ -632,6 +632,11 @@ class EcoMDSimulator(nn.Module):
         # exp 123 Stage 2b: a price_jump stashes its exogenous return here; step()
         # folds it into the realized return right after price formation, then clears.
         self._pending_exo_return: Tensor | None = None
+        # exp 125 controllability atlas: a dynamics-level shock (temperature_spike /
+        # liquidity_drop) stores a transient multiplier on T_eff or gamma_eff here.
+        # {"param": "T"|"gamma", "mult": float, "until": step_idx} — active while
+        # step_idx < until, then auto-clears so the system relaxes endogenously.
+        self._shock_dyn: dict[str, Any] | None = None
 
     # ── Properties ─────────────────────────────────────────────────────────
 
@@ -700,6 +705,7 @@ class EcoMDSimulator(nn.Module):
         price_state: PriceState,
         *,
         generator: torch.Generator | None = None,
+        step_idx: int = 0,
     ) -> tuple[Tensor, PriceState]:
         """Drive the system out of steady state (exp 123 driven-transient).
 
@@ -719,14 +725,30 @@ class EcoMDSimulator(nn.Module):
           objection; the heavy-tail relaxation that follows is endogenous.
         - ``"news"``: add ``delta_f`` to the detached fundamental F_t. Only
           propagates when ``cfg.info_asym_enabled`` (informed agents react to F_t).
+        - ``"temperature_spike"`` / ``"liquidity_drop"`` (exp 125, dynamics-level):
+          a transient multiplier on the effective temperature ``T_eff`` (a
+          volatility/agitation shock) or the effective friction ``gamma_eff`` (a
+          liquidity withdrawal — lower friction ⇒ larger per-step displacement ⇒
+          thinner market) applied for ``dur`` steps from ``t*``, after which the
+          multiplier auto-clears and the system relaxes endogenously. Neither
+          touches ``s`` or the price directly, so they are *non-mechanical* drivers
+          that test whether the driven transient is mechanism-robust (vs. the
+          ``state_kick``'s direct latent displacement).
 
         Returns ``(s, price_state)`` — both possibly perturbed (state_kick edits
-        ``s``; price_jump edits ``price_state``; news mutates an attribute and
-        returns both unchanged). Inference-only (not meant to be differentiated).
+        ``s``; price_jump edits ``price_state``; news / temperature_spike /
+        liquidity_drop mutate an attribute and return both unchanged).
+        Inference-only (not meant to be differentiated).
         """
         kind = spec.get("type", "state_kick")
         if kind == "news":
             self._fundamental = float(self._fundamental) + float(spec["delta_f"])
+            return s, price_state
+        if kind in ("temperature_spike", "liquidity_drop"):
+            param = "T" if kind == "temperature_spike" else "gamma"
+            dur = max(1, int(spec.get("dur", 1)))
+            self._shock_dyn = {"param": param, "mult": float(spec["mult"]),
+                               "until": step_idx + dur}
             return s, price_state
         if kind == "price_jump":
             mag = float(spec.get("mag", 3.0))
@@ -789,7 +811,8 @@ class EcoMDSimulator(nn.Module):
         # unless a schedule was set externally). May return a perturbed s.
         if self._shock_schedule is not None and step_idx in self._shock_schedule:
             s, price_state = self._apply_shock(
-                self._shock_schedule[step_idx], s, price_state, generator=generator)
+                self._shock_schedule[step_idx], s, price_state,
+                generator=generator, step_idx=step_idx)
 
         # Tier 1.1: update per-agent memory before computing forces so the
         # current step's potential sees this step's memory readout.
@@ -890,6 +913,20 @@ class EcoMDSimulator(nn.Module):
                 z = torch.randn((), generator=generator, device=s.device, dtype=s.dtype)
                 innov = float(self.cfg.info_asym_noise) * float(self.cfg.dt) ** 0.5 * float(z)
                 self._fundamental = float(self.cfg.info_asym_tau) * self._fundamental + innov
+
+        # exp 125 controllability atlas: a dynamics-level shock applies a transient
+        # multiplier to T_eff (temperature_spike) or gamma_eff (liquidity_drop) for
+        # a short window after t*, then auto-clears so the system relaxes
+        # endogenously. Scalar mult broadcasts over scalar- or per-agent-(N,1) T/γ.
+        if self._shock_dyn is not None:
+            if step_idx < self._shock_dyn["until"]:
+                _m = self._shock_dyn["mult"]
+                if self._shock_dyn["param"] == "T":
+                    T_eff = T_eff * _m
+                else:
+                    gamma_eff = gamma_eff * _m
+            else:
+                self._shock_dyn = None
 
         # Tier 2.2: build update_mask if multi-timescale enabled.
         update_mask: Tensor | None = None
@@ -1362,6 +1399,7 @@ class EcoMDSimulator(nn.Module):
         h_agent = self.init_agent_memory()
         h_global = self.init_global_state()
         self._fundamental = 0.0  # reset info-asymmetry fundamental per rollout
+        self._shock_dyn = None   # exp 125: clear any dynamics-shock multiplier per rollout
 
         self._reset_potential_cache()
         if hasattr(self.integrator, "reset_state"):

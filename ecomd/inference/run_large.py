@@ -72,10 +72,17 @@ def main() -> None:
     # exp 123 driven-transient: inject a shock mid-rollout (no-op unless --shock-step set).
     parser.add_argument("--shock-step", type=int, default=None,
                         help="step at which to inject a shock (exp 123); None = no shock (control)")
-    parser.add_argument("--shock-type", choices=["state_kick", "price_jump", "news"],
+    parser.add_argument("--shock-type",
+                        choices=["state_kick", "price_jump", "news",
+                                 "temperature_spike", "liquidity_drop"],
                         default="state_kick")
     parser.add_argument("--shock-mag", type=float, default=6.0,
-                        help="state_kick/price_jump: magnitude in σ-units; news: Δfundamental")
+                        help="state_kick/price_jump: magnitude in σ-units; news: Δfundamental; "
+                             "temperature_spike: T multiplier (>1); liquidity_drop: friction-drop "
+                             "dose d (γ multiplied by 1/d, so larger d = stronger drop)")
+    parser.add_argument("--shock-dur", type=int, default=1,
+                        help="temperature_spike/liquidity_drop: number of steps the transient "
+                             "multiplier stays on before auto-clearing (system then relaxes)")
     parser.add_argument("--shock-frac", type=float, default=0.1,
                         help="state_kick: fraction of agents displaced")
     parser.add_argument("--shock-sign", type=float, default=-1.0,
@@ -83,6 +90,17 @@ def main() -> None:
     parser.add_argument("--shock-every", type=int, default=0,
                         help="if >0, repeat the shock every N steps from --shock-step to end "
                              "(multi-transient-per-rollout variant)")
+    # exp 125 root-cause ablations: inference-time config overrides on a trained
+    # checkpoint (fixed learned dynamics). --noise-* probes whether a heavy
+    # microscopic bath fattens the *steady-state* aggregate tail (Route A);
+    # --n-agents probes CLT self-averaging at fixed dynamics (steady α_ED vs N).
+    parser.add_argument("--noise-dist", choices=["normal", "t", "levy"], default=None,
+                        help="override the bath noise distribution at inference")
+    parser.add_argument("--noise-df", type=int, default=None, help="Student-t df (with --noise-dist t)")
+    parser.add_argument("--noise-levy-alpha", type=float, default=None,
+                        help="α-stable index in (0,2] (with --noise-dist levy)")
+    parser.add_argument("--n-agents", type=int, default=None,
+                        help="override the number of agents N (CLT self-averaging probe)")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -94,7 +112,22 @@ def main() -> None:
     ckpt_path = Path(args.ckpt).resolve()
     cfg = yaml.safe_load(Path(args.config).read_text())
     sim_cfg_dict = dict(cfg["simulator"])
+    # exp 125 inference-time overrides (fixed trained dynamics; see CLI help).
+    if args.noise_dist is not None:
+        sim_cfg_dict["noise_dist"] = args.noise_dist
+    if args.noise_df is not None:
+        sim_cfg_dict["noise_df"] = args.noise_df
+    if args.noise_levy_alpha is not None:
+        sim_cfg_dict["noise_levy_alpha"] = args.noise_levy_alpha
+    if args.n_agents is not None:
+        sim_cfg_dict["n_agents"] = args.n_agents
     simulator_config = EcoMDConfig(**sim_cfg_dict)
+    if rank == 0 and any(v is not None for v in
+                         (args.noise_dist, args.noise_df, args.noise_levy_alpha, args.n_agents)):
+        log.info(f"[exp125] overrides: noise_dist={sim_cfg_dict.get('noise_dist')} "
+                 f"noise_df={sim_cfg_dict.get('noise_df')} "
+                 f"levy_alpha={sim_cfg_dict.get('noise_levy_alpha')} "
+                 f"n_agents={sim_cfg_dict.get('n_agents')}")
 
     out_dir = Path(args.out_dir) if args.out_dir else ckpt_path.parent
     if rank == 0:
@@ -116,6 +149,11 @@ def main() -> None:
             spec = {"type": "news", "delta_f": args.shock_mag}
         elif args.shock_type == "price_jump":
             spec = {"type": "price_jump", "mag": args.shock_mag, "sign": args.shock_sign}
+        elif args.shock_type == "temperature_spike":
+            spec = {"type": "temperature_spike", "mult": args.shock_mag, "dur": args.shock_dur}
+        elif args.shock_type == "liquidity_drop":
+            # dose d → friction multiplied by 1/d (larger d = stronger liquidity drop)
+            spec = {"type": "liquidity_drop", "mult": 1.0 / args.shock_mag, "dur": args.shock_dur}
         else:
             spec = {"type": "state_kick", "frac": args.shock_frac, "mag": args.shock_mag}
         steps = (range(args.shock_step, args.n_steps, args.shock_every)
