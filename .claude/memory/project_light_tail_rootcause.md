@@ -1,15 +1,45 @@
 ---
 name: project_light_tail_rootcause
-description: Root cause of EcoMD's light steady-state tail (CLT self-averaging) is FUNDAMENTAL, not a bug — reframe it as the positive mechanism; exp 125 ablations
+description: Root cause of EcoMD's light steady-state tail — exp 125 verdict: CLT self-averaging acts on the RETURN tail (α_ret rises with N) but NOT on excess demand (α_ED FLAT); two-stage mechanism, self-correction
 metadata:
   type: project
 ---
 
-**2026-06-29 root-cause verdict (user asked: why the negatives? fixable? fundamental?).** EcoMD's
+**🔴 2026-06-30 exp 125 RESULTS — self-correction (supersedes the 06-29 "CLT-on-ED" headline below).**
+The pre-registered PRIMARY mechanism test **G-D2 (steady α_ED vs N at fixed trained dynamics) came back
+FLAT**: α_ED ≈ 4.65–4.77 across N ∈ {100…30000} (spx & btc), inside window-std ≈0.7. So **CLT self-
+averaging of *excess demand* is REFUTED** — the ED tail index is **dynamics-set (single-agent confining
+potential, P1), not aggregation (P2)**. BUT the *return* tail **α_ret rises cleanly/monotonically with N**
+(spx 5.49→8.65, btc 5.47→8.54, ≈1.3/decade): self-averaging is real but acts at the **price-formation /
+√N-normalized return stage**, not the raw ED stage ⇒ **two-stage mechanism**, not the single "CLT on ED"
+story. (α_ret is a *secondary* observable → re-pre-register + rule out a return-scaling-with-N artifact
+before headlining; anti-gate-shopping.) **G-D1a** (heavy bath noise at inference, normal→Lévy α1.5,
+infinite variance): α_ED **flat ~4.75** — a TRUE negative (override is live: α_ret moves 7.60→8.97), the
+learned dissipative dynamics launder even infinite-variance shocks; Route A's cheap version FAILS, and
+**G-D1b (trained-Lévy) + G-E (2nd-generator) did NOT run** (no dirs; optional jobs skipped). **G-D1a
+clustering cost (computed 06-30): NO tails-vs-clustering tradeoff** — heavier Lévy makes BOTH worse (spx
+hill_fact 5.04→6.79 lighter AND ACF² 0.264→0.237 less clustering; btc same) ⇒ the "heavy noise→heavier
+tail at a clustering cost" Pareto is NOT supported by G-D1a; tails-XOR-dynamics must lean on
+[[project_neural_sde_tournament]], not exp125. Positive contrast: coherent kick6 raises BOTH heaviness
+(hill 5.0→2.7) AND clustering (ACF² 0.27→0.48), incoherent noise neither. **G-B atlas:** `liquidity_drop`
+revives the transient (post-shock α_ED dip 3.15–3.40 ≥2 on spx/ndx/btc, 3/3) but `temperature_spike`
+does NOT (dip 0.17–0.85) ⇒ sharper mechanism: **coherent-displacement / liquidity-withdrawal phenomenon,
+NOT generic thermal agitation** (consistent w/ heavy-noise negative). **G-C dose law:** clean monotone
+saturating sigmoid, onset 0.1–0.2σ, dip saturates ~3.9 (dose≥2), postmin floors ~0.5 (Hill floor → use
+dip-kurtosis in saturation). **G-A rigor:** control α_ED 4.75–4.84 (n=32–56) tight; kick6 strong on
+spx/ndx/btc/gold (postmin 0.47–0.57), eurusd weak (postmin 2.98, consistent [[project_eurusd_weak_ofi]]).
+(Mac clone is partial `blob:none`; an intermittent fetch flake — not the Mac — caused the earlier hangs;
+now fast-forwarded to `5929ce9ce`, all 544 files local, gaps above resolved.) See `logs/2026-06-30.md`.
+
+---
+
+**2026-06-29 root-cause verdict (user asked: why the negatives? fixable? fundamental?) — P2 now
+REFUTED for ED, see 06-30 above.** EcoMD's
 **light steady-state tail (Hill α_ED≈4.7, not cube-law) is FUNDAMENTAL**, from three first-principles
 reasons: (P1) Boltzmann light tail of a smooth confining learned potential (power law needs U∼log|s|);
 (P2) **CLT self-averaging** — ED=κΣΔs over N≈10⁴ finite-variance, short-correlation agents → Gaussian
-aggregate → light, *stronger pull as N grows* (the dominant effect); (P3) sub-critical coupling (exp
+aggregate → light, *stronger pull as N grows* (the dominant effect) — **⚠️ REFUTED 06-30: α_ED flat in
+N; CLT acts on α_ret (returns), not ED**; (P3) sub-critical coupling (exp
 116/120 smooth crossover, no N_c). Heavy tail is a **driven transient** because a shock imposes
 system-spanning coordination transiently; CLT reasserts on relaxation. **This is the mechanism, not a
 failure** — the central reframe: lead with *EcoMD-the-laboratory + the interventional mechanism of fat
