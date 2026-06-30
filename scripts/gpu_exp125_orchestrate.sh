@@ -34,9 +34,9 @@ do_(){ if [[ "$DRY" == "1" ]]; then say "DRY: $*"; else eval "$*" 2>&1 | tee -a 
 # ── per-node job batches (each prints a ';'-joined command line that runs the atlas driver) ──
 batch_8card(){ cat <<EOF
 set -e; export PATH=/root/miniconda3/bin:\$PATH; cd "$1";
-git pull -q origin $BR; bash scripts/h20_pull_from_r2.sh || true;
-for A in spx ndx btc; do ASSET=\$A ARMS="control kick6 temp3 temp5 liq3 liq5" NPROC=8 N_REAL=3 DUR=20 SEED_BASE=50000 OUT_TAG=atlas ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh worker; done;
-for A in spx ndx gold btc eurusd; do ASSET=\$A ARMS="control kick6" NPROC=8 N_REAL=4 SEED_BASE=51000 OUT_TAG=rigor ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh worker; done;
+git pull -q origin $BR || true; bash scripts/h20_pull_from_r2.sh || true;
+for A in spx ndx btcusdt; do ASSET=\$A ARMS="control kick6 temp3 temp5 liq3 liq5" NPROC=8 N_REAL=3 DUR=20 SEED_BASE=50000 OUT_TAG=atlas ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh worker; done;
+for A in spx ndx gold btcusdt eurusd; do ASSET=\$A ARMS="control kick6" NPROC=8 N_REAL=4 SEED_BASE=51000 OUT_TAG=rigor ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh worker; done;
 ASSET=spx ARMS="kick0.05 kick0.1 kick0.2 kick0.5 kick1 kick2 kick6 kick12" NPROC=8 N_REAL=3 SEED_BASE=52000 OUT_TAG=dose ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh worker;
 ASSET=spx ABLATE="normal t5 t3 levy19 levy17 levy15 nscan100 nscan300 nscan1000 nscan3000 nscan10000 nscan30000" NPROC=8 N_REAL=3 SEED_BASE=53000 OUT_TAG=root ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh ablate;
 echo EXP125_8CARD_DONE
@@ -44,14 +44,14 @@ EOF
 }
 batch_2card_b(){ cat <<EOF
 set -e; export PATH=/root/miniconda3/bin:\$PATH; cd "$1";
-git pull -q origin $BR; bash scripts/h20_pull_from_r2.sh || true;
-ASSET=btc ABLATE="normal t5 t3 levy19 levy17 levy15 nscan100 nscan300 nscan1000 nscan3000 nscan10000 nscan30000" NPROC=2 N_REAL=10 SEED_BASE=54000 OUT_TAG=root ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh ablate;
+git pull -q origin $BR || true; bash scripts/h20_pull_from_r2.sh || true;
+ASSET=btcusdt ABLATE="normal t5 t3 levy19 levy17 levy15 nscan100 nscan300 nscan1000 nscan3000 nscan10000 nscan30000" NPROC=2 N_REAL=10 SEED_BASE=54000 OUT_TAG=root ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh ablate;
 echo EXP125_2CARDB_DONE
 EOF
 }
 # the orchestrator's OWN 2 cards: ndx+btc dose law (runs locally)
 batch_local(){
-  for A in ndx btc; do
+  for A in ndx btcusdt; do
     do_ "ASSET=$A ARMS='kick0.05 kick0.1 kick0.2 kick0.5 kick1 kick2 kick6 kick12' NPROC=2 N_REAL=10 SEED_BASE=55000 OUT_TAG=dose ECOPHYS_ENV=$ENV bash scripts/gpu_exp125_atlas.sh worker"
   done
 }
@@ -73,7 +73,7 @@ launch(){
   [[ -f "$MACH_FILE" || "$DRY" == "1" ]] || { say "ERROR: $MACH_FILE missing on the orchestrator"; exit 1; }
   say "═══ exp125 LAUNCH (branch $BR) — 8card=$NODE_8CARD  2card-b=$NODE_2CARD  local=2card-orch ═══"
   say "1) sync orchestrator code/data"
-  do_ "git pull -q origin $BR; bash scripts/h20_pull_from_r2.sh || true"
+  do_ "git pull -q origin $BR || true; bash scripts/h20_pull_from_r2.sh || true"
   say "2) launch 8-card batch (G-B atlas + migrated G-A rigor + spx G-C/G-D) — detached"
   batch_8card "$(mach "$NODE_8CARD" root)" | ssh_to "$NODE_8CARD"
   say "3) launch other-2-card batch (btc G-D root cause) — detached"
