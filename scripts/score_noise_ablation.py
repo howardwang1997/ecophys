@@ -18,7 +18,6 @@ from collections import defaultdict
 
 ASSETS = ("spx", "ndx", "btcusdt", "gold", "eurusd")
 NOISE_ORDER = ("normal", "t5", "t3", "levy19", "levy17", "levy15")
-TRAINED = ("baseline_tdf5", "levy17_spx_seed0", "levy17_spx_seed1", "levy15_spx_seed0")
 FACTS_OF_INTEREST = ("hill_tail_index", "acf_squared_returns", "conditional_kurtosis",
                      "leverage_effect", "zumbach_asymmetry")
 
@@ -96,11 +95,28 @@ def main():
                for arm in rows):
             infer[a] = rows
 
-    trained = {name: row(name, WIN, FACTS) for name in TRAINED}
-    trained = {k: v for k, v in trained.items()
-               if v["steady_alphaED"] is not None or v["hill_tail_index"] is not None}
+    # G-D1b: auto-discover trained models (baseline_tdf5 + levy<aa>_spx_seed<s>), group by alpha
+    import re
+    arms = set(WIN) | set(FACTS)
+    trained = {}
+    for name in sorted(arms):
+        if name == "baseline_tdf5" or re.match(r"^levy\d+_spx_seed\d+$", name):
+            r = row(name, WIN, FACTS)
+            if r["steady_alphaED"] is not None or r["hill_tail_index"] is not None:
+                trained[name] = r
+    pareto = defaultdict(lambda: defaultdict(list))  # alpha-label -> field -> [over seeds]
+    for name, r in trained.items():
+        m = re.match(r"^levy(\d+)_spx", name)
+        lab = (f"levy_{m.group(1)[0]}.{m.group(1)[1:]}" if m else "baseline_tdf5")
+        for f in ("steady_alphaED", "hill_tail_index", "acf_squared_returns", "leverage_effect"):
+            if r.get(f) is not None:
+                pareto[lab][f].append(r[f])
+    pareto_curve = {lab: {f: round(sum(v) / len(v), 4) for f, v in fields.items()}
+                    | {"n_seeds": len(fields.get("hill_tail_index", []))}
+                    for lab, fields in pareto.items()}
 
-    out = {"G-D1a_inference_noise": infer, "G-D1b_trained_noise": trained,
+    out = {"G-D1a_inference_noise": infer, "G-D1b_trained_models": trained,
+           "G-D1b_pareto_curve_by_alpha": pareto_curve,
            "note": ("hill_tail_index is the full-rollout fact (lower=heavier). G-D1a: heavier inference "
                     "noise did NOT heavy the tail in exp125 (hill rose) and ACF2 fell (no Pareto trade). "
                     "G-D1b is the decisive end-to-end test: a heavy stationary tail (hill DOWN, ~3) with "
@@ -112,9 +128,9 @@ def main():
         print(f"  [G-D1a] {a}: " + "  ".join(
             f"{k}(aED={rows[k]['steady_alphaED']},hill={rows[k]['hill_tail_index']},acf2={rows[k]['acf_squared_returns']})"
             for k in ("normal", "levy15") if rows.get(k)))
-    for name, r in trained.items():
-        print(f"  [G-D1b] {name}: steady_aED={r['steady_alphaED']} hill={r['hill_tail_index']} "
-              f"acf2={r['acf_squared_returns']} lev={r['leverage_effect']} (n={r['n_seeds']})")
+    for lab, r in sorted(pareto_curve.items()):
+        print(f"  [G-D1b] {lab}: steady_aED={r.get('steady_alphaED')} hill={r.get('hill_tail_index')} "
+              f"acf2={r.get('acf_squared_returns')} lev={r.get('leverage_effect')} (n_seeds={r.get('n_seeds')})")
 
 
 if __name__ == "__main__":

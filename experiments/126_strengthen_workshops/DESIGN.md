@@ -1,59 +1,66 @@
-# exp 126 — workshop-strengthening suite (ML4PS + GenAI-in-Finance)
+# exp 126 — workshop-strengthening suite, FULL scope (ML4PS + GenAI-in-Finance)
 
 **Date:** 2026-06-30. **Branch:** `feature/paper-a-figures-voice`. **No data buy.** Reuses the
-`concave_d050` checkpoints (5 assets) for all inference arms; trains only G-D1b. Operationalizes the
-post-exp-125 analysis (`logs/2026-06-30.md`): exp 125 came back with the primary CLT-on-ED test FLAT,
-the heavy-noise Route-A only tested at inference (no Pareto trade), and G-D1b/G-E unrun; the atlas/dose
-law covered 3 assets. This suite closes those gaps so each workshop has a complete, honest core.
+`concave_d050` + `baseline` checkpoints (5 assets) for all inference; trains only the G-D1b Lévy Pareto.
+Sized for **~a week on 4 cards (two 2-card boxes; one is the orchestrator, SSHing to the other)** — no
+compute/time saving; run everything worth running. Operationalizes `logs/2026-06-30.md`: exp 125's
+primary CLT-on-ED test was FLAT, heavy-noise Route A was only tested at inference, G-D1b/G-E unrun, and
+the atlas/dose law covered 3 assets at one duration.
 
 All rollouts: `N_STEPS=8000`, `T_SHOCK=3000`, windowed Hill `W=500 stride=100 k_frac=0.1`, warm-up
 discard `[0,500)` for any steady-state number. Estimators frozen as in exp 125 PREREG.
 
-## G-D1b — TRAINED heavy-noise Route A (ML4PS core; the decisive test exp 125 skipped)
+## G-D1b — TRAINED heavy-noise Route-A PARETO (ML4PS core; the decisive test exp 125 skipped)
 **Why:** exp 125 G-D1a showed *inference-time* Lévy noise does NOT heavy the steady tail (and reduces
-clustering — no Pareto trade). The decisive question is whether **end-to-end training** with a heavy
-bath reaches a heavy *stationary* tail, and at what cost to volatility clustering / leverage.
-- **Train** spx with `noise_dist=levy`, `noise_levy_alpha ∈ {1.7 (×2 seeds), 1.5 (×1)}` — configs
-  `config_levy{17,15}_spx_seed*.yaml`, **byte-identical to `config_concave_d050_seed0.yaml` except the
-  bath-noise fields + seed** (clean attribution). 1 card/train, ~4 h each (8-card box).
-- **Score** each trained ckpt + the as-shipped `concave_d050` (Student-t df5) baseline: NO shock,
-  steady α_ED + all 11 facts. **Outputs** the tails-XOR-dynamics Pareto point: (hill_tail vs ACF²(r²)
-  vs leverage) for {t-df5 baseline, Lévy1.7, Lévy1.5}.
+clustering — no Pareto trade). The decisive question: does **end-to-end training** with a heavy bath
+reach a heavy *stationary* tail, and at what cost to clustering/leverage?
+- **Train** spx with `noise_dist=levy`, **α ∈ {1.9, 1.7, 1.5, 1.3} × 3 seeds = 12 models**
+  (`config_levy{19,17,15,13}_spx_seed{0,1,2}.yaml`, byte-identical to `config_concave_d050_seed0.yaml`
+  except the bath-noise field + seed — clean attribution). Smoke-validated on Mac (α=1.7 & 1.5 train
+  with finite loss / no NaN, `logs/2026-06-30.md`).
+- **Score** each trained ckpt + the shipped t(df5) baseline (NO shock): steady α_ED + all 11 facts,
+  n≥30. **Output:** a **Pareto curve** hill_tail vs ACF²(r²) vs leverage as a function of α — the
+  tails-XOR-dynamics frontier inside one architecture.
 
-## G-B′ — controllability atlas completion (GenAI core)
-**Why:** exp 125 ran temp/liq on spx/ndx/btc only (gold/eurusd kick6-only), DUR=20 only.
-- `temp{3,5}`, `liq{3,5}` on **gold + eurusd** at DUR=20 (atlas_dur20), and **DUR=1** on all 5 assets
-  (atlas_dur1) — the duration contrast (one-step vs sustained drive). n≈24.
-- Gives the full **5-asset × {state_kick, temperature, liquidity} × {dur 1,20}** control surface, and
-  reconfirms the exp-125 finding (liquidity revives, temperature does not).
+## G-B′ — controllability atlas, FULL surface (GenAI core)
+**Why:** exp 125 ran temp/liq on 3 assets, DUR=20 only. Map the whole control surface.
+- **5 assets × {temp3,temp5,temp8, liq3,liq5,liq10} × {DUR 1, 20, 50}** + `jump6` (price-jump-inert
+  contrast, B2) + `control`. Each arm dir is `results_<asset>_<temp|liq><mag>_d<DUR>` so every
+  magnitude×duration cell gets its own clean windowed report. n≈24.
+- **Output:** the driver × magnitude × duration × asset control surface; reconfirms (liquidity revives,
+  temperature does not), now with a magnitude axis (= the non-mechanical dose-response) and a duration
+  axis (one-step vs sustained drive).
 
-## G-C′ — relaxation/dose law completion (ML4PS core)
-**Why:** dose law was spx/ndx/btc only; physics referees want it across markets.
-- Dense `state_kick` dose `{0.05,0.1,0.2,0.5,1,2,6,12}` on **gold + eurusd**; n≈20.
-- `fit_tau_dose_law.py` fits dip(dose) to saturating / power-law / log forms (R²) on all 5 assets.
+## G-C′ — relaxation/dose law, ALL 5 assets dense (ML4PS core)
+- Dense `state_kick` dose `{0.05,0.1,0.2,0.5,1,2,6,12}` on **all 5 assets**, n≈24.
+- `fit_tau_dose_law.py` fits dip(dose) to saturating / power-law / log forms (R²) per asset + onset.
 
-## H-D2′ — return-tail self-averaging, re-pre-registered + artifact control (ML4PS refinement)
-**Why:** exp 125 found α_ED flat but α_ret rising with N (≈1.3/decade). α_ret rising is the candidate
-headline mechanism but was a *secondary* observable → must be re-pre-registered AND controlled for a
-trivial return-scaling-with-N artifact.
-- Re-run spx + btc `nscan{100…30000}`, **save trajectory**; `analyze_return_self_averaging.py` computes
-  α_ED(N), α_ret(N), and the decisive **EWMA-vol-standardized α_ret(N)**. If the standardized return
-  tail still lightens with N ⇒ genuine CLT shape change; if flat ⇒ scaling artifact and α_ED-flat stands.
+## G-D2 + H-D2′ — α_ED-flat-in-N (5 assets) + return self-averaging w/ artifact control (ML4PS)
+**Why:** confirm the refuted CLT-on-ED (α_ED flat) across all 5 assets at higher N, and decide whether
+the return-tail self-averaging (α_ret rising) is genuine or a return-scaling artifact.
+- **5 assets × N ∈ {100,300,1000,3000,10000,30000,60000,100000}**, save-trajectory, n≈32.
+- `analyze_return_self_averaging.py`: α_ED(N), α_ret(N), and the decisive **EWMA-vol-standardized
+  α_ret(N)** (re-pre-registered, see PREREG H-D2′).
 
-## G-E (optional, lowest priority) — 2nd-generator warm-up pitfall (both papers)
-Reuse `experiments/108_neural_sde_scout` / `scripts/h20_108_neural_sde_scout.sh`: score the neural-SDE
-baseline's Hill no-discard vs discard-50. Validates the warm-up audit as a *transferable* protocol.
-Run on the early-finishing 2-card box only if time remains (needs a neural-SDE ckpt or 1 train).
+## G-A — warm-up audit table (GenAI protocol core)
+- Per-model no-discard-vs-discard Hill, computed from each model's own trajectory: the `control`
+  (no-shock concave_d050) arms (5 assets, the dose block's control) + a **baseline-family** contrast
+  (`spx`, `btcusdt` baseline checkpoints, no-shock) → `results_<asset>_warmup_baseline`. n≥40 on control.
 
-## Fleet (8 + 2 + 2 = 12 cards; 4-card still down) — see WORKPLAN.md
-| node | jobs | est. |
-|---|---|---|
-| **8-card** | G-D1b train (3 cfgs) + score (4 models) + G-B′ atlas dur completion | ~5–7 h (train = long pole) |
-| **2-card (other)** | G-C′ dose gold+eurusd + H-D2′ btc nscan | ~5–6 h |
-| **2-card (orchestrator)** | H-D2′ spx nscan + drives the other two by SSH | ~3–4 h |
+## G-E — 2nd-generator warm-up pitfall (both papers) — SEPARATE block (see WORKPLAN.md)
+Validate the warm-up audit on the neural-SDE generator family (`experiments/108_neural_sde_scout`).
+**Not auto-wired** into the week-long detached run (different model class; can't smoke it here without
+GPU) — a documented, ready-to-run block to fire after the core lands.
 
-## Launch / analysis
-`scripts/gpu_exp126_orchestrate.sh launch` (run ON the 2-card orchestrator; `DRY=1` to preview).
-Per-node driver `scripts/gpu_exp126_strengthen.sh {train|score|worker|ablate|eval}`.
-Analysis (also runs on Mac now): `aggregate_atlas_cis.py`, `fit_tau_dose_law.py`,
-`score_noise_ablation.py`, `analyze_return_self_averaging.py` (all take `--exp <dirs…>`).
+## NOT run
+- **G-D3 coupling sweep:** `run_large` has no `--pair-gain`/coupling override → needs a code change;
+  out of scope here. Noted as future work.
+- **btc-Lévy training:** no verified btc `concave_d050` *training* config in-repo → the trained Pareto
+  stays spx-only (the pre-registered asset); cross-asset light-tail evidence comes from the inference
+  arms (G-D2 5-asset, G-D1a noise).
+
+## Fleet & launch (4 cards; see WORKPLAN.md)
+`scripts/gpu_exp126_orchestrate_2x2.sh launch` (run ON one 2-card box; `DRY=1` to preview). Per-node
+driver `scripts/gpu_exp126_strengthen.sh {train|score|worker|ablate|noshock|eval}`. Analysis (also runs
+on Mac): `aggregate_atlas_cis.py`, `fit_tau_dose_law.py`, `score_noise_ablation.py`,
+`analyze_return_self_averaging.py`.

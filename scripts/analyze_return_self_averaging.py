@@ -20,8 +20,8 @@ import argparse, glob, json, os, math
 from collections import defaultdict
 import numpy as np
 
-ASSETS = ("spx", "btcusdt")
-N_GRID = (100, 300, 1000, 3000, 10000, 30000)
+ASSETS = ("spx", "ndx", "btcusdt", "gold", "eurusd")
+N_GRID = (100, 300, 1000, 3000, 10000, 30000, 60000, 100000)
 EWMA_LAMBDA = 0.05
 WARMUP = 500
 K_FRAC = 0.1

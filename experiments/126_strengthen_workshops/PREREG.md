@@ -12,10 +12,11 @@ pre-registered primary in exp 125 (which was α_ED, and which stays the primary 
 
 ---
 
-## H-D1b (trained heavy noise — the Route-A Pareto point).
-*Prediction:* a **trained** Lévy model (α=1.7, and heavier α=1.5) reaches a heavier *stationary* return
-tail than the t(df5) baseline (hill_tail_index DECREASES toward ~3), **at a measurable cost** —
-ACF²(r²) and/or leverage degrade as the tail fattens.
+## H-D1b (trained heavy noise — the Route-A Pareto CURVE).
+*Prediction:* across **trained** Lévy models at **α ∈ {1.9, 1.7, 1.5, 1.3} × 3 seeds**, the *stationary*
+return tail gets heavier as α decreases (hill_tail_index DECREASES, monotone in α, toward ~3 vs the
+t(df5) baseline), **at a measurable cost** — ACF²(r²) and/or leverage degrade monotonically as the tail
+fattens, tracing a tails-XOR-dynamics Pareto frontier parameterized by α.
 - **Decision / pre-committed framing (positive either way):**
   - If trained Lévy installs a heavier stationary tail with a clustering/leverage cost → **"we identify
     the exact missing ingredient (a stationary heavy source) and quantify the tails-XOR-dynamics Pareto
@@ -24,20 +25,28 @@ ACF²(r²) and/or leverage degrade as the tail fattens.
     end-to-end-trained infinite-variance bath self-averages away; the light tail is a structural
     property of the learned dissipative dynamics, not the noise source"** (still positive; the strongest
     form of the fundamental claim). Report the (hill, ACF², leverage) triple for every trained model.
-  - **Stability note (not an outcome gate):** if Lévy α=1.5 training diverges (NaN/grad blowup), that is
-    reported as a finding ("heavy-tailed BPTT is unstable at α≤1.5"), and α=1.7 carries the claim.
+  - **Stability note (not an outcome gate):** if a Lévy config diverges (NaN/grad blowup; smoke covered
+    α=1.7 & 1.5, both clean), that is reported as a finding ("heavy-tailed BPTT is unstable at α≤X"); the
+    surviving α points carry the curve. Lévy training is per-config non-fatal (no ckpt ⇒ score skips it).
 
-## H-B′ (atlas completion). *Prediction (carried from exp 125 H-B, now on 5 assets × dur∈{1,20}):*
-`liquidity_drop` revives the heavy-tail-and-relax transient (post-shock α_ED dip ≥2 below control) on
-≥3/5 assets at DUR=20; `temperature_spike` does not (dip < 2). DUR=1 is weaker than DUR=20 for both.
-*Framing:* either way report the full 5-asset × 3-driver × 2-dur control surface; the coherent (kick) vs
-incoherent (temperature) vs liquidity contrast is the GenAI mechanism statement, not a pass/fail gate.
+## H-B′ (atlas — full surface). *Prediction (carried from exp 125 H-B, now on 5 assets × 3 magnitudes ×
+dur∈{1,20,50}):* `liquidity_drop` revives the heavy-tail-and-relax transient (post-shock α_ED dip ≥2
+below control) on ≥3/5 assets at sufficient magnitude/duration; `temperature_spike` does not (dip < 2);
+`price_jump` stays inert (B2). Dip increases monotonically with magnitude and (weakly) with duration.
+*Framing:* either way report the full asset × driver × magnitude × duration control surface; the
+coherent (kick) vs incoherent (temperature) vs liquidity contrast is the GenAI mechanism statement, not a
+pass/fail gate.
 
-## H-C′ (dose law completion). *Prediction:* dip(dose) on gold + eurusd is monotone increasing and
+## H-C′ (dose law — 5 assets). *Prediction:* dip(dose) on all 5 assets is monotone increasing and
 well-fit (R² ≥ 0.9) by ≥1 pre-specified form (saturating / power-law / logarithmic), with onset
 0.1–0.3σ (eurusd onset may be higher per its known vol-threshold, `project_eurusd_weak_ofi`).
 *Framing:* report best-fit form + params + R² per asset; the law (and any per-asset onset shift) is the
 result.
+
+## H-D2 (α_ED flat in N — 5-asset confirmation). *Prediction (carried, confirmatory):* steady α_ED is
+**flat in N** across all 5 assets out to N=100k (no positive log-N trend beyond noise), confirming the
+exp-125 spx/btc result that the excess-demand tail index is dynamics-set, not aggregation-set. *Framing:*
+report α_ED(N) per asset with its log-N slope + CI; a flat slope is the (pre-committed) confirmation.
 
 ## H-D2′ (return-tail self-averaging — re-pre-registered, WITH artifact control). The **primary
 observable is the EWMA-vol-standardized return-tail index α_ret_std(N)**; α_ret(N) and α_ED(N) are
