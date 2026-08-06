@@ -29,7 +29,7 @@
     \fbox{\parbox[c][3.0cm][c]{0.94\linewidth}{\centering\small #3}}}}
 
 \title{Is Simulator Fidelity an Initialization Transient?\\
-A Pre-Registered Audit of a Learned Market Model}
+A Pre-Specified Audit of a Learned Market Model}
 \author{Anonymous Author(s)}
 
 \begin{document}
@@ -39,7 +39,7 @@ A Pre-Registered Audit of a Learned Market Model}
 Scientific simulators with persistent internal state are often evaluated from fresh, finite rollouts.
 If initialization is not stationary, a fidelity score can mix startup relaxation with the regime it
 purports to measure. We audit this failure mode in \method, a differentiable Langevin particle market
-simulator whose return-tail score motivated a claim of stylized-fact fidelity. We pre-register a
+simulator whose return-tail score motivated a claim of stylized-fact fidelity. We pre-specify a
 split-sample protocol: calibration trajectories set an energy-distance tolerance and the earliest
 persistent plateau without using the Hill score or empirical target band; independent trajectories
 are then scored on equal-length windows before and after that frozen point. Seven analytic conditions
@@ -73,7 +73,7 @@ time-varying apparent tails \citep{lebaron2001,warusawitharana2018,quintos2001} 
 scientifically material.
 
 This paper makes three deliberately narrow contributions. First, it identifies and reproduces the
-initialization-contamination failure in a learned Langevin simulator. Second, it pre-registers a
+initialization-contamination failure in a learned Langevin simulator. Second, it pre-specifies a
 split-sample audit that chooses a warm-up endpoint without using the Hill score or empirical target
 band and preserves the scoring sample length. Third, it stress-tests that audit on analytic
 stochastic processes, frozen learned checkpoints, and a within-family stochastic-volatility variant.
@@ -152,12 +152,12 @@ medians. A 2,000-replicate hierarchical bootstrap first resamples checkpoints an
 Eleven other stylized facts and target distances are secondary. Ranking changes are descriptive,
 never a pass condition.
 
-\paragraph{Pre-registration and baselines.}
+\paragraph{Frozen specification and baselines.}
 All windows, seeds, thresholds, controls, confidence intervals, and claim tiers were committed before
 new learned rollouts or analytic outputs were inspected. Baselines are no discard, fixed $W=500$,
 fixed $W=1000$, and a block rule combining ADF and KPSS tests on returns and absolute returns
 \citep{dickey1979,kpss1992}. A literature audit after the primary analytic result was frozen added
-MSER-5 as an explicitly exploratory comparator; it cannot change the registered claim tier.
+MSER-5 as an explicitly exploratory comparator; it cannot change the frozen claim tier.
 
 \section{Experiments}
 
@@ -182,7 +182,7 @@ prevents old aggregate results from being silently paired with new models.
 \paragraph{Specificity passes; sensitivity is narrow.}
 Figure~\ref{fig:controls} and Table~\ref{tab:controls} give the pre-specified specificity and cold-start
 conditions. The energy gate flags 1/62 stationary pseudo-checkpoints, a 1.61\% false-positive rate
-whose Wilson 95\% upper bound is 8.59\%, below the pre-registered 15\% criterion. Cold-start detection is only
+whose Wilson 95\% upper bound is 8.59\%, below the pre-specified 15\% criterion. Cold-start detection is only
 28/124 (22.58\%, 95\% CI [16.11, 30.70]). Most power comes from high-variance GARCH initialization;
 the gate has little power for the two AR(1)-SV starts or low-variance GARCH. This is evidence for a
 conservative audit, not a universal transient detector.
