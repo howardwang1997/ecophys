@@ -138,8 +138,9 @@ $0,500,\ldots,4000$, and reference starts are $6000,6500,7000,7500$.
 \paragraph{Energy gate.}
 For trajectory $i$, $D_i(w)$ is the median energy distance
 \citep{szekely2013} from candidate block $w$ to its four late blocks. The tolerance is the one-sided
-95th percentile of 2,000 trajectory-level bootstrap replicates of calibration late-versus-late
-distances. The checkpoint statistic is $\operatorname{median}_iD_i(w)$. We define $\wstar$ as the
+95th percentile of 2,000 null replicates; each resamples calibration trajectories and one of the six
+late-block pairs per draw, then takes the replicate median. The checkpoint statistic is
+$\operatorname{median}_iD_i(w)$. We define $\wstar$ as the
 earliest $w\leq3000$ for which $w,w+500,w+1000$ all fall within tolerance. No such run is reported as
 ``not verifiably stationary within the horizon,'' not assigned an invented score. On held-out data we
 also report whether the same three blocks pass; this transfer check does not refit $\wstar$.
