@@ -1,7 +1,8 @@
 # Experiment 127 — pre-held-out robustness amendment
 
-**Frozen:** 2026-08-07 06:57 NZST, while both V100 training services were active. A read-only audit at
-freeze time found zero calibration or held-out trajectory files on either node.
+**Declared:** 2026-08-07 06:57 NZST and committed at 07:02 NZST, while both V100 training services
+were active. Read-only audits at declaration and after commit found zero calibration or held-out
+trajectory files on either node.
 
 ## Motivation
 
