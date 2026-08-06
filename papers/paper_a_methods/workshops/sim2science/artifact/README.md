@@ -55,7 +55,8 @@ directories by the frozen seed manifest. The order is binding:
 1. Fit calibration-only gates with `fit_learned_calibration.py`.
 2. Verify the resulting gate-file SHA-256 against the artifact manifest.
 3. Analyze held-out trajectories with `analyze_learned_results.py`.
-4. Regenerate figures with
+4. Synchronize the five manuscript result macros with `apply_learned_results.py`.
+5. Regenerate figures with
    `papers/paper_a_methods/workshops/sim2science/make_figures.py`.
 
 Exact commands and expected hashes are recorded in the final `RESULTS.md`. A missing gate is an

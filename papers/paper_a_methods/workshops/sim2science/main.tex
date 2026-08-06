@@ -13,6 +13,7 @@
 \usepackage{url}
 \usepackage{hyperref}
 \hypersetup{hidelinks}
+\raggedbottom
 
 \newcommand{\method}{\textsc{EcoMD}}
 \newcommand{\wstar}{\ensuremath{W^{\star}}}
@@ -39,11 +40,12 @@ Scientific simulators with persistent internal state are often evaluated from fr
 If initialization is not stationary, a fidelity score can mix startup relaxation with the regime it
 purports to measure. We audit this failure mode in \method, a differentiable Langevin particle market
 simulator whose return-tail score motivated a claim of stylized-fact fidelity. We pre-register a
-split-sample protocol: calibration trajectories set a target-independent energy-distance tolerance
-and the earliest persistent plateau; independent trajectories are then scored on equal-length windows
-before and after that frozen point. Seven analytic conditions (7,000 trajectories) yield 1/62
+split-sample protocol: calibration trajectories set an energy-distance tolerance and the earliest
+persistent plateau without using the Hill score or empirical target band; independent trajectories
+are then scored on equal-length windows before and after that frozen point. Seven analytic conditions
+(7,000 trajectories) yield 1/62
 stationary false positives (Wilson 95\% upper bound 8.6\%) but only 28/124 cold-start detections,
-showing high specificity and limited sensitivity. Across ten retrained learned checkpoints,
+showing high specificity and limited sensitivity. Across seven primary learned checkpoints,
 \learnedScorable{} are scorable and \learnedConfirmed{} transfer the frozen gate; the paired Hill-index
 effect is \learnedDelta{} (95\% interval \learnedCI{}). The finding is a simulator discrepancy, not
 market physics, and the proposed audit is conservative rather than a universal stationarity test.
@@ -58,8 +60,8 @@ discrepancy between simulator and reality \citep{kennedy2001}. A more basic disc
 \emph{before} calibration is judged. Stateful simulators are commonly launched from convenient
 initial conditions, and finite-rollout statistics then mix an initial transient with the intended
 long-run regime. Initialization bias is classical in discrete-event simulation
-\citep{heidelberger1983,welch1983,white1997}, but it is easy to miss when a learned simulator is evaluated by a nonlinear
-distributional summary rather than a sample mean.
+\citep{heidelberger1983,welch1983,white1997}, but it is easy to miss when a learned simulator is
+evaluated by a nonlinear distributional summary rather than a sample mean.
 
 We encountered this problem while evaluating \method, a differentiable market simulator with
 persistent agent states. Financial return tails provide a sharp test: empirical returns are heavy
@@ -72,8 +74,8 @@ material.
 
 This paper makes three deliberately narrow contributions. First, it identifies and reproduces the
 initialization-contamination failure in a learned Langevin simulator. Second, it pre-registers a
-target-independent, split-sample audit that chooses a warm-up endpoint without using the financial
-tail target and preserves the scoring sample length. Third, it stress-tests that audit on analytic
+split-sample audit that chooses a warm-up endpoint without using the Hill score or empirical target
+band and preserves the scoring sample length. Third, it stress-tests that audit on analytic
 stochastic processes, frozen learned checkpoints, and a within-family stochastic-volatility variant.
 The outcome is an audit of an imperfect simulator: we neither infer a real-market mechanism from the
 transient nor claim a universal convergence diagnostic.
@@ -84,12 +86,16 @@ transient nor claim a universal convergence diagnostic.
 \method{} evolves $N=10{,}000$ agents with latent states $s_i\in\mathbb{R}^{32}$ under overdamped
 Langevin dynamics,
 \begin{equation}
-  s_{i,t+1}=s_{i,t}-\Delta t\,\nabla_{s_i}U_{\theta}(s_t)
-  +\sqrt{2T\Delta t}\,\epsilon_{i,t},
+  s_{i,t+1}=s_{i,t}+\frac{\Delta t}{\gamma_i}
+  \left(F^{\mathrm{cons}}_{i,\theta}+F^{\mathrm{diss}}_i\right)
+  +\sqrt{\frac{2T_i\Delta t}{\gamma_i}}\,\epsilon_{i,t}+J_{i,t},
 \end{equation}
-where $U_{\theta}$ is a permutation-symmetrized stochastic pair-interaction network. Aggregate state
-motion forms excess demand and hence the price increment. This connects to Langevin market models
-\citep{bouchaud1998} and differentiable agent-based calibration
+where $F^{\mathrm{cons}}_{i,\theta}=-\nabla_{s_i}U_{\theta}$. The learned scalar potential combines an
+external term with an unbiased random-pair estimate of a symmetric pair sum; $F^{\mathrm{diss}}$ is
+quadratic drag. In the frozen configurations, $\epsilon$ is unit-variance Student-$t_5$, $J$ is a small
+compound-Poisson displacement, and fixed agent types scale $T_i$ and $\gamma_i$. Aggregate state
+motion forms excess demand, followed by linear or concave price impact and additive price noise. This
+connects to Langevin market models \citep{bouchaud1998} and differentiable agent-based calibration
 \citep{chopra2023,dyer2023}, but the present contribution is evaluation, not a first-of-kind model
 claim. Models are trained against real-data stylized facts from two equity indices, gold, EUR/USD,
 and BTC/USDT.
@@ -116,8 +122,8 @@ serialized and hashed.
 \begin{figure}[t]
   \centering
   \figureorbox{figures/fig_protocol.pdf}{1.0}{Protocol figure pending.}
-  \caption{Calibration-only stationarity audit. Late blocks define a target-independent distance
-  tolerance; the earliest three-block plateau gives $\wstar$. The frozen point is transferred to
+  \caption{Calibration-only stationarity audit. Late blocks define a distance tolerance without the
+  Hill score or empirical target band; the earliest three-block plateau gives $\wstar$. It transfers to
   independent trajectories, and both tail scores use the same 4,000 returns.}
   \label{fig:protocol}
 \end{figure}
@@ -174,9 +180,9 @@ prevents old aggregate results from being silently paired with new models.
 \section{Results}
 
 \paragraph{Specificity passes; sensitivity is narrow.}
-Figure~\ref{fig:controls} and Table~\ref{tab:controls} give every confirmatory analytic condition. The
-energy gate flags 1/62 stationary pseudo-checkpoints, a 1.61\% false-positive rate whose Wilson 95\%
-upper bound is 8.59\%, below the pre-registered 15\% criterion. Cold-start detection is only
+Figure~\ref{fig:controls} and Table~\ref{tab:controls} give the pre-specified specificity and cold-start
+conditions. The energy gate flags 1/62 stationary pseudo-checkpoints, a 1.61\% false-positive rate
+whose Wilson 95\% upper bound is 8.59\%, below the pre-registered 15\% criterion. Cold-start detection is only
 28/124 (22.58\%, 95\% CI [16.11, 30.70]). Most power comes from high-variance GARCH initialization;
 the gate has little power for the two AR(1)-SV starts or low-variance GARCH. This is evidence for a
 conservative audit, not a universal transient detector.
@@ -225,8 +231,8 @@ distinction is conservative selection, not uniformly lower tail-score error.
 Of seven primary checkpoints, \learnedScorable{} yield a calibration $\wstar$ and
 \learnedConfirmed{} also pass held-out transfer. Across scorable checkpoints, the equal-weight paired
 effect is $\Delta\alpha=\learnedDelta{}$ with hierarchical-bootstrap 95\% interval
-\learnedCI{}. The three within-family stochastic-volatility checkpoints have same-sign effects in
-\variantSigns{} cases. Figure~\ref{fig:learned} reports checkpoint-level effects, missing gates, and
+\learnedCI{}. The three within-family stochastic-volatility checkpoints have the expected positive
+sign in \variantSigns{} cases. Figure~\ref{fig:learned} reports checkpoint-level effects, missing gates, and
 all transfer failures; none is removed from the denominator.
 
 \begin{figure}[t]
@@ -253,16 +259,18 @@ new scoring convention.
 The limits are consequential. Evidence comes from one simulator family, and the analytic sensitivity
 is weak except for a strong GARCH variance mismatch. Late blocks provide an operational internal
 reference; they do not prove stationarity, mixing, or ergodicity. Energy distance depends on the chosen
-delay embedding and finite block length. The Wilson intervals quantify trajectory replication
-conditional on two fixed analytic parameterizations, not variation across process families. The
+delay embedding and finite block length. The Wilson intervals quantify pseudo-checkpoint replication
+from disjoint trajectories conditional on two fixed analytic parameterizations, not variation across
+process families. Only seven primary checkpoints constrain hierarchical-interval precision. The
 learned checkpoints share training code and data sources, and daily financial calibration data plus
 one crypto minute dataset do not establish cross-domain generality. Finally, a failed gate says ``not
 verified within 8,000 returns,'' not ``nonstationary forever.''
 
 Within those boundaries, the practical recommendation is simple: fit any warm-up decision without
-the target metric, freeze it before held-out evaluation, keep the scored length fixed, and report both
-false positives and missed transients. For \method, that protocol determines whether an apparent
-heavy-tail success is a late-time model property or initialization contamination. This can reduce the
+the downstream score or target band, freeze it before held-out evaluation, keep the scored length
+fixed, and report both false positives and missed transients. For \method, that protocol determines
+whether an apparent heavy-tail success is a late-time model property or initialization contamination.
+This can reduce the
 risk of drawing scientific or financial conclusions from a simulator artifact; conversely, the
 method's missed transients mean that passing it is not a deployment, convergence, or risk-certification
 guarantee.
