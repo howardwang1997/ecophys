@@ -1,7 +1,8 @@
 # Experiment 127 — pre-held-out Hill-fraction sensitivity amendment
 
-**Declared:** 2026-08-07 07:12 NZST, while both V100 training services were active. A read-only audit
-found zero calibration or held-out trajectory files on either node.
+**Declared:** 2026-08-07 07:12 NZST and implemented in commit `33975c7c6` at 07:19 NZST, while both
+V100 training services were active. Read-only audits at declaration and immediately after commit found
+zero calibration or held-out trajectory files on either node.
 
 The binding primary Hill estimator remains `k_frac=0.05`. Because Hill estimates can depend materially
 on the tail fraction, the learned audit will also report `k_frac={0.025, 0.05, 0.10}` on the same
