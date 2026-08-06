@@ -26,9 +26,8 @@ universal stationarity test, or that EcoMD's steady-state tail is realistic.
 
 ## Build
 
-```bash
-latexmk -pdf main.tex
-```
+See `BUILD.md` for the verified Tectonic command, deterministic figure generation, automated PDF
+checks, and render-based visual QA.
 
 The release candidate must be built from this directory. Before submission, verify five content
 pages, double-blind metadata, the completed checklist, embedded fonts, and the PDF SHA-256.

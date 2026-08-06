@@ -39,6 +39,7 @@ TEST_PATHS = (
     "tests/test_garch.py",
     "tests/test_seed_manifest.py",
     "tests/test_sim2science_figures.py",
+    "tests/test_sim2science_submission_check.py",
     "tests/test_stationarity_baselines.py",
     "tests/test_stationarity_gate.py",
 )
@@ -140,8 +141,10 @@ def source_paths() -> list[Path]:
     paths.extend(
         [
             PAPER_DIR / "main.tex",
+            PAPER_DIR / "BUILD.md",
             PAPER_DIR / "references.bib",
             PAPER_DIR / "checklist.tex",
+            PAPER_DIR / "check_submission.py",
             PAPER_DIR / "make_figures.py",
             PAPER_DIR / "neurips_2026.sty",
             PAPER_DIR / "figures/fig_protocol.pdf",
