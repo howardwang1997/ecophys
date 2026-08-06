@@ -37,7 +37,9 @@ probe metadata. Production retraining began as two resumable systemd services af
 
 ## E1 learned-model held-out scoring
 
-Pending.
+Pending. Before either rollout split existed, a secondary common-seed bootstrap and market-balanced
+leave-one-out diagnostic were frozen in `PREHELDOUT_ROBUSTNESS_AMENDMENT_2026-08-07.md`. They cannot
+upgrade the binding tier and must disclose disagreement with the original hierarchical interval.
 
 ## E2 analytic controls
 

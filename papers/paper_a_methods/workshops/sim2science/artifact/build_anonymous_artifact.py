@@ -35,6 +35,7 @@ TEST_PATHS = (
     "tests/test_exp127_analytic_controls.py",
     "tests/test_exp127_analyze_learned.py",
     "tests/test_exp127_fit_learned_calibration.py",
+    "tests/test_exp127_learned_robustness.py",
     "tests/test_exp127_exploratory_mser5.py",
     "tests/test_garch.py",
     "tests/test_seed_manifest.py",
@@ -51,7 +52,11 @@ ANALYTIC_SOURCE_PATHS = (
 )
 
 TEXT_SUFFIXES = {".json", ".md", ".py", ".tex", ".bib", ".toml", ".txt", ".yaml", ".yml"}
-FINAL_RESULT_FILES = ("LEARNED_GATE_FITS.json", "LEARNED_RESULTS.json")
+FINAL_RESULT_FILES = (
+    "LEARNED_GATE_FITS.json",
+    "LEARNED_RESULTS.json",
+    "LEARNED_ROBUSTNESS.json",
+)
 GIT_SHA_PATTERN = re.compile(r"(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])", re.IGNORECASE)
 GPU_UUID_PATTERN = re.compile(r"GPU-[0-9a-f-]{20,}", re.IGNORECASE)
 USER_HOME_PATTERN = re.compile(r"/Users/[^/\s]+")
