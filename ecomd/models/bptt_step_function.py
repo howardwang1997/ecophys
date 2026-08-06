@@ -7,7 +7,7 @@ The standard ``rollout_chunk`` calls ``sim.step()`` chunk_steps times with
 through the resulting f_cons.grad_fn chain, which propagates forward
 through s_next → next-step's input → next-step's f_cons → ...
 
-Net effect: peak memory ≈ chunk_steps × per_step_V_graph regardless of
+Net effect: peak memory is approximately chunk_steps x per_step_V_graph regardless of
 whether ``torch.utils.checkpoint`` is used at the chunk level — because
 the standard checkpoint API can't release V-graphs that escape via output
 tensors' grad_fn chains under ``create_graph=True``.
@@ -34,7 +34,7 @@ autograd.Function that:
 
 4. **Compute**: forward uses no_grad, so it's actually faster than the
    default path (no graph construction). Backward runs forward once more
-   per step to build the local graph — net compute is ~2× the original
+   per step to build the local graph — net compute is about 2x the original
    forward (similar to per-step gradient checkpointing). When chunk_steps
    is large, this is a worthwhile trade for the memory savings.
 
@@ -50,11 +50,10 @@ Constraints
 
 from __future__ import annotations
 
-from typing import Any
-
 import torch
 from torch import Tensor
 
+from .amp_compat import cuda_custom_bwd, cuda_custom_fwd
 from .price_formation import PriceState
 
 
@@ -81,7 +80,7 @@ class EcoMDStepFunction(torch.autograd.Function):
     """
 
     @staticmethod
-    @torch.amp.custom_fwd(device_type="cuda")
+    @cuda_custom_fwd
     def forward(
         ctx,
         sim,
@@ -187,7 +186,7 @@ class EcoMDStepFunction(torch.autograd.Function):
         )
 
     @staticmethod
-    @torch.amp.custom_bwd(device_type="cuda")
+    @cuda_custom_bwd
     def backward(ctx, *grad_outputs):
         # Unpack grads matching forward output order
         (g_s_next, g_s_prev_next, g_lp, g_llr, g_vol, g_hk, g_hkl,
@@ -275,7 +274,7 @@ class EcoMDStepFunction(torch.autograd.Function):
             # is a non-grad placeholder (zero h_reg when has_regime=False, etc.)
             valid_outputs = []
             valid_grads = []
-            for o, g in zip(outputs, grads):
+            for o, g in zip(outputs, grads, strict=True):
                 if g is None:
                     continue
                 if not (isinstance(o, Tensor) and o.requires_grad):
@@ -316,7 +315,7 @@ class EcoMDStepFunction(torch.autograd.Function):
                     create_graph=False,
                     allow_unused=True,
                 )
-                grad_by_key = dict(zip(req_grad_keys, grads_subset))
+                grad_by_key = dict(zip(req_grad_keys, grads_subset, strict=True))
             else:
                 grad_by_key = {}
 
