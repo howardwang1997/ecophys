@@ -21,8 +21,8 @@ conda run -n ecophys python \
   experiments/127_workshop_claim_gates/analyze_learned_robustness.py
 ```
 
-Synchronize the five learned-result macros from that frozen JSON, then verify idempotence without
-`--write`:
+Synchronize the seven learned-result macros from the frozen primary and robustness JSON files, then
+verify idempotence without `--write`:
 
 ```bash
 conda run -n ecophys python papers/paper_a_methods/workshops/sim2science/apply_learned_results.py \

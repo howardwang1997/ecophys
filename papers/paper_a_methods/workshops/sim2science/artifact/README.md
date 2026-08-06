@@ -57,7 +57,7 @@ directories by the frozen seed manifest. The order is binding:
 3. Analyze held-out trajectories with `analyze_learned_results.py`.
 4. Run the pre-held-out-declared common-seed and leave-one-market-out checks with
    `analyze_learned_robustness.py`.
-5. Synchronize the five manuscript result macros with `apply_learned_results.py`.
+5. Synchronize the seven manuscript result macros with `apply_learned_results.py`.
 6. Regenerate figures with
    `papers/paper_a_methods/workshops/sim2science/make_figures.py`.
 
