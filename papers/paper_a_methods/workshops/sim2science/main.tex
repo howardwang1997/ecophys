@@ -53,8 +53,8 @@ showing high specificity and limited sensitivity. Across seven primary learned c
 \learnedScorable{} are scorable and \learnedConfirmed{} transfer the frozen gate; the paired Hill-index
 effect is \learnedDelta{} (95\% interval \learnedCI{}). The finding is a simulator discrepancy, not
 market physics, and the proposed audit is conservative rather than a universal stationarity test.
-It converts an apparently favorable tail score into a falsifiable statement about when this simulator
-is ready to evaluate.
+It converts an apparently favorable tail score into a falsifiable statement about whether its scored
+window is consistent with a frozen late-time reference.
 \end{abstract}
 
 \section{Introduction}
@@ -277,15 +277,15 @@ from disjoint trajectories conditional on two fixed analytic parameterizations, 
 process families. Learned intervals are conditional on one frozen calibration split and omit gate-
 selection uncertainty. Only seven primary checkpoints constrain hierarchical-interval precision, and
 most asset/configuration cells have one training seed. The suite was chosen from prior model-
-development runs; its checkpoints share training code and data
-sources, and daily financial calibration data plus
-one crypto minute dataset do not establish cross-domain generality. Finally, a failed gate says ``not
+development runs; its checkpoints share training code and data sources. Daily financial calibration
+data plus one crypto minute dataset do not establish cross-domain generality. Finally, a failed gate
+says ``not
 verified within 8,000 returns,'' not ``nonstationary forever.''
 
 Within those boundaries, the practical recommendation is simple: fit any warm-up decision without
 the downstream score or target band, freeze it before held-out evaluation, keep the scored length
-fixed, and report both false positives and missed transients. For \method, that protocol determines
-whether an apparent heavy-tail success is a late-time model property or initialization contamination.
+fixed, and report both false positives and missed transients. For \method, the protocol tests whether
+an apparent heavy-tail success survives a frozen late-time criterion; it does not certify stationarity.
 This can reduce the
 risk of drawing scientific or financial conclusions from a simulator artifact; conversely, the
 method's missed transients mean that passing it is not a deployment, convergence, or risk-certification
