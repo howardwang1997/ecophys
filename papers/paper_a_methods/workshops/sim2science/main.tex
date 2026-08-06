@@ -37,9 +37,10 @@ A Pre-Specified Audit of a Learned Market Model}
 
 \begin{abstract}
 Scientific simulators with persistent internal state are often evaluated from fresh, finite rollouts.
-If initialization is not stationary, a fidelity score can mix startup relaxation with the regime it
-purports to measure. We audit this failure mode in \method, a differentiable Langevin particle market
-simulator whose return-tail score motivated a claim of stylized-fact fidelity. We pre-specify a
+If the initialized state distribution is not stationary, a fidelity score can mix startup relaxation
+with the regime it purports to measure. We audit this failure mode in \method, a differentiable
+Langevin particle market simulator whose return-tail score motivated a claim of stylized-fact fidelity.
+We pre-specify a
 split-sample protocol: calibration trajectories set an energy-distance tolerance and the earliest
 persistent plateau without using the Hill score or empirical target band; independent trajectories
 are then scored on equal-length windows before and after that frozen point. Seven analytic conditions
@@ -251,8 +252,8 @@ all transfer failures; none is removed from the denominator.
 \section{Scope, limitations, and conclusion}
 
 This audit separates two questions that a single fidelity score had conflated: what the simulator does
-while relaxing, and what it does after a reproducible late-time criterion. The transient is a physical
-property of the learned simulator's dynamics, but it is not evidence for real-market physics. This is
+while relaxing, and what it does after a reproducible late-time criterion. The transient is an internal
+dynamical property of the learned simulator, but it is not evidence for real-market physics. This is
 distinct from empirical stochastic-thermodynamic analyses of market data \citep{maskawa2025}. Indeed,
 a light late-time tail is a model discrepancy when real returns are already heavy tailed. The paper's
 value is therefore diagnostic: it withdraws a favorable interpretation instead of rescuing it with a
