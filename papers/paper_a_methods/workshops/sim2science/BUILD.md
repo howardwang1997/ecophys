@@ -14,6 +14,13 @@ conda run -n ecophys python papers/paper_a_methods/workshops/sim2science/make_fi
 Figure generation is deterministic: PDF and PNG metadata use fixed anonymous values. The learned
 figure is emitted only after `experiments/127_workshop_claim_gates/LEARNED_RESULTS.json` exists.
 
+Generate the pre-held-out-declared dependence checks from that frozen result:
+
+```bash
+conda run -n ecophys python \
+  experiments/127_workshop_claim_gates/analyze_learned_robustness.py
+```
+
 Synchronize the five learned-result macros from that frozen JSON, then verify idempotence without
 `--write`:
 

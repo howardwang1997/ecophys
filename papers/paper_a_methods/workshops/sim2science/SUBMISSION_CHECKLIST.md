@@ -10,6 +10,8 @@ Target: 5-page Workshop Paper, deadline 2026-08-29 23:59 AoE. Internal upload de
 - [ ] Ten learned checkpoints and 320 trajectories are complete and hash-verified.
 - [ ] Calibration gate file was serialized and hashed before any held-out trajectory existed.
 - [ ] `LEARNED_RESULTS.json`, result tier, manuscript numbers, and learned figure agree exactly.
+- [ ] `LEARNED_ROBUSTNESS.json` is frozen and any primary/common-seed or leave-one-market-out
+  disagreement is disclosed.
 - [ ] Null, missing gate, and failed transfer outcomes remain in the denominator and prose.
 - [ ] STODY rescue decision is recorded only after Paper E freezes.
 
