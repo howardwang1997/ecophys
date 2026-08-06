@@ -12,12 +12,20 @@ from typing import Any, TypeAlias, cast
 import numpy as np
 import numpy.typing as npt
 
+from ecomd.eval.stylized_facts import hill_tail_index
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 EXPERIMENT_DIR = Path(__file__).resolve().parent
 DEFAULT_INPUT = EXPERIMENT_DIR / "LEARNED_RESULTS.json"
 DEFAULT_OUTPUT = EXPERIMENT_DIR / "LEARNED_ROBUSTNESS.json"
+DEFAULT_ARTIFACT_ROOT = REPO_ROOT / "outputs/exp127_remote_artifacts"
 AMENDMENT_PATH = EXPERIMENT_DIR / "PREHELDOUT_ROBUSTNESS_AMENDMENT_2026-08-07.md"
+HILL_AMENDMENT_PATH = EXPERIMENT_DIR / "PREHELDOUT_HILL_FRACTION_AMENDMENT_2026-08-07.md"
 BOOTSTRAP_SEED = 127902
 BOOTSTRAP_REPLICATES = 2000
+HILL_K_FRACTIONS = (0.025, 0.05, 0.10)
+HILL_BOOTSTRAP_SEEDS = (127903, 127904, 127905)
+FIXED_LENGTH = 4000
 MARKET_ORDER = ("spx", "ndx", "gold", "eurusd", "btc")
 MARKET_BY_JOB = {
     "e1_spx_concave": "spx",
@@ -58,7 +66,7 @@ def extract_scorable_matrix(payload: Mapping[str, Any]) -> tuple[list[str], tupl
             raise ValueError(f"invalid paired differences for {checkpoint['job_id']}")
         provenance = cast(list[Mapping[str, Any]], checkpoint["heldout_provenance"])
         seeds = tuple(int(record["seed"]) for record in provenance)
-        if len(seeds) != differences.size or len(set(seeds)) != len(seeds):
+        if len(seeds) != 16 or len(seeds) != differences.size or len(set(seeds)) != len(seeds):
             raise ValueError(f"held-out seed provenance mismatch for {checkpoint['job_id']}")
         if common_seeds is None:
             common_seeds = seeds
@@ -134,7 +142,106 @@ def market_leave_one_out(job_ids: Sequence[str], matrix: ArrayF) -> dict[str, An
     }
 
 
-def analyze(payload: Mapping[str, Any], source_sha256: str) -> dict[str, Any]:
+def _fraction_key(value: float) -> str:
+    return f"{value:.3f}".rstrip("0").rstrip(".")
+
+
+def compute_hill_fraction_matrices(
+    payload: Mapping[str, Any],
+    artifact_root: Path,
+) -> tuple[list[str], dict[str, ArrayF]]:
+    scorable_ids, common_seeds, primary_matrix = extract_scorable_matrix(payload)
+    if not scorable_ids:
+        return [], {}
+    checkpoints = {
+        str(row["job_id"]): row
+        for row in cast(list[Mapping[str, Any]], payload["checkpoints"])
+        if str(row["job_id"]) in scorable_ids
+    }
+    matrices: dict[str, ArrayF] = {
+        _fraction_key(fraction): np.empty(
+            (len(scorable_ids), len(common_seeds)), dtype=np.float64
+        )
+        for fraction in HILL_K_FRACTIONS
+    }
+    for checkpoint_index, job_id in enumerate(scorable_ids):
+        checkpoint = checkpoints[job_id]
+        w_star = checkpoint["calibration_w_star"]
+        if w_star is None:
+            raise ValueError(f"scorable checkpoint {job_id} lacks calibration_w_star")
+        start = int(w_star)
+        provenance = cast(list[Mapping[str, Any]], checkpoint["heldout_provenance"])
+        for seed_index, record in enumerate(provenance):
+            seed = int(record["seed"])
+            node = str(record["node"])
+            path = (
+                artifact_root
+                / "rollouts/heldout"
+                / job_id
+                / node
+                / f"trajectory_seed{seed}.npz"
+            )
+            with np.load(path, allow_pickle=False) as stored:
+                recorded_seed = int(stored["seed"])
+                returns = np.asarray(stored["log_returns"], dtype=np.float64)
+            if recorded_seed != seed or returns.shape != (8000,) or not np.all(np.isfinite(returns)):
+                raise ValueError(f"invalid held-out trajectory {path}")
+            for fraction in HILL_K_FRACTIONS:
+                early = hill_tail_index(
+                    returns[:FIXED_LENGTH], k_frac=fraction, n_bootstrap=0
+                ).estimate
+                post = hill_tail_index(
+                    returns[start:start + FIXED_LENGTH],
+                    k_frac=fraction,
+                    n_bootstrap=0,
+                ).estimate
+                matrices[_fraction_key(fraction)][checkpoint_index, seed_index] = post - early
+    primary_key = _fraction_key(0.05)
+    if not np.allclose(matrices[primary_key], primary_matrix, rtol=0.0, atol=1e-12):
+        raise ValueError("recomputed 5% Hill differences disagree with frozen learned results")
+    return scorable_ids, matrices
+
+
+def summarize_hill_fraction_sensitivity(
+    job_ids: Sequence[str],
+    matrices: Mapping[str, ArrayF],
+) -> dict[str, Any]:
+    expected_keys = {_fraction_key(value) for value in HILL_K_FRACTIONS}
+    if set(matrices) != expected_keys:
+        raise ValueError("Hill-fraction matrix grid is incomplete")
+    by_fraction: dict[str, Any] = {}
+    for fraction, seed in zip(HILL_K_FRACTIONS, HILL_BOOTSTRAP_SEEDS, strict=True):
+        key = _fraction_key(fraction)
+        by_fraction[key] = {
+            "crossed_checkpoint_seed_bootstrap": crossed_bootstrap(
+                matrices[key], seed=seed, replicates=BOOTSTRAP_REPLICATES
+            ),
+            "market_balanced_sensitivity": market_leave_one_out(job_ids, matrices[key]),
+        }
+    point_positive = sum(
+        float(row["crossed_checkpoint_seed_bootstrap"]["effect"]) > 0.0
+        for row in by_fraction.values()
+    )
+    interval_positive = sum(
+        bool(row["crossed_checkpoint_seed_bootstrap"]["positive_direction_passes"])
+        for row in by_fraction.values()
+    )
+    return {
+        "primary_fraction": 0.05,
+        "fractions": list(HILL_K_FRACTIONS),
+        "by_fraction": by_fraction,
+        "positive_point_effect_count": point_positive,
+        "positive_common_seed_interval_count": interval_positive,
+        "all_point_effects_positive": point_positive == len(HILL_K_FRACTIONS),
+        "all_common_seed_intervals_positive": interval_positive == len(HILL_K_FRACTIONS),
+    }
+
+
+def analyze(
+    payload: Mapping[str, Any],
+    source_sha256: str,
+    hill_fraction_sensitivity: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
     job_ids, heldout_seeds, matrix = extract_scorable_matrix(payload)
     primary = cast(Mapping[str, Any], payload["primary"])
     if int(primary["e1_scorable"]) != len(job_ids):
@@ -144,10 +251,12 @@ def analyze(payload: Mapping[str, Any], source_sha256: str) -> dict[str, Any]:
             "schema_version": 1,
             "source_result_sha256": source_sha256,
             "amendment_sha256": sha256_file(AMENDMENT_PATH),
+            "hill_fraction_amendment_sha256": sha256_file(HILL_AMENDMENT_PATH),
             "scorable_job_ids": [],
             "common_heldout_seeds": [],
             "crossed_checkpoint_seed_bootstrap": None,
             "market_balanced_sensitivity": None,
+            "hill_fraction_sensitivity": hill_fraction_sensitivity,
         }
     crossed = crossed_bootstrap(
         matrix,
@@ -161,10 +270,12 @@ def analyze(payload: Mapping[str, Any], source_sha256: str) -> dict[str, Any]:
         "schema_version": 1,
         "source_result_sha256": source_sha256,
         "amendment_sha256": sha256_file(AMENDMENT_PATH),
+        "hill_fraction_amendment_sha256": sha256_file(HILL_AMENDMENT_PATH),
         "scorable_job_ids": job_ids,
         "common_heldout_seeds": list(heldout_seeds),
         "crossed_checkpoint_seed_bootstrap": crossed,
         "market_balanced_sensitivity": market_leave_one_out(job_ids, matrix),
+        "hill_fraction_sensitivity": hill_fraction_sensitivity,
     }
 
 
@@ -172,13 +283,18 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--artifact-root", type=Path, default=DEFAULT_ARTIFACT_ROOT)
     return parser.parse_args(argv)
 
 
 def main() -> None:
     args = parse_args()
     payload = cast(dict[str, Any], json.loads(args.input.read_text()))
-    result = analyze(payload, sha256_file(args.input))
+    job_ids, matrices = compute_hill_fraction_matrices(payload, args.artifact_root)
+    hill_sensitivity = (
+        summarize_hill_fraction_sensitivity(job_ids, matrices) if job_ids else None
+    )
+    result = analyze(payload, sha256_file(args.input), hill_sensitivity)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.output.with_suffix(args.output.suffix + ".tmp")
     temporary.write_text(json.dumps(result, indent=2) + "\n")

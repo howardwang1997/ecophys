@@ -40,6 +40,8 @@ probe metadata. Production retraining began as two resumable systemd services af
 Pending. Before either rollout split existed, a secondary common-seed bootstrap and market-balanced
 leave-one-out diagnostic were frozen in `PREHELDOUT_ROBUSTNESS_AMENDMENT_2026-08-07.md`. They cannot
 upgrade the binding tier and must disclose disagreement with the original hierarchical interval.
+The 2.5%, 5%, and 10% Hill-fraction sensitivity grid was likewise frozen before any rollout in
+`PREHELDOUT_HILL_FRACTION_AMENDMENT_2026-08-07.md`; 5% remains the sole primary fraction.
 
 ## E2 analytic controls
 

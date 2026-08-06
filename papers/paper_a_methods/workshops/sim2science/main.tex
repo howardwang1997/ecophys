@@ -25,6 +25,7 @@
 \newcommand{\variantSigns}{\pending}
 \newcommand{\learnedRobustCI}{\pending}
 \newcommand{\learnedLooRange}{\pending}
+\newcommand{\hillFractionPasses}{\pending}
 
 \newcommand{\figureorbox}[3]{%
   \IfFileExists{#1}{\includegraphics[width=#2\linewidth]{#1}}{%
@@ -156,6 +157,7 @@ medians. A 2,000-replicate hierarchical bootstrap first resamples checkpoints an
 Because rollout seeds are shared across checkpoints, a pre-held-out secondary bootstrap applies one
 common seed resample to every selected checkpoint and reports market-balanced leave-one-out effects;
 it cannot upgrade the frozen claim tier.
+We also freeze Hill tail fractions 0.025, 0.05, and 0.10; only 0.05 is primary.
 Eleven other stylized facts and target distances are secondary. Ranking changes are descriptive,
 never a pass condition.
 
@@ -243,7 +245,8 @@ effect is $\Delta\alpha=\learnedDelta{}$ with hierarchical-bootstrap 95\% interv
 sign in \variantSigns{} cases. Figure~\ref{fig:learned} reports checkpoint-level effects, missing gates, and
 all transfer failures; none is removed from the denominator.
 The common-seed interval is \learnedRobustCI{}, and market-balanced leave-one-out effects span
-\learnedLooRange{}.
+\learnedLooRange{}. Positive common-seed intervals persist for \hillFractionPasses{} of the frozen
+Hill-fraction grid.
 
 \begin{figure}[t]
   \centering
@@ -272,8 +275,9 @@ reference; they do not prove stationarity, mixing, or ergodicity. Energy distanc
 delay embedding and finite block length. The Wilson intervals quantify pseudo-checkpoint replication
 from disjoint trajectories conditional on two fixed analytic parameterizations, not variation across
 process families. Learned intervals are conditional on one frozen calibration split and omit gate-
-selection uncertainty. Only seven primary checkpoints constrain hierarchical-interval precision. The
-suite was chosen from prior model-development runs; its checkpoints share training code and data
+selection uncertainty. Only seven primary checkpoints constrain hierarchical-interval precision, and
+most asset/configuration cells have one training seed. The suite was chosen from prior model-
+development runs; its checkpoints share training code and data
 sources, and daily financial calibration data plus
 one crypto minute dataset do not establish cross-domain generality. Finally, a failed gate says ``not
 verified within 8,000 returns,'' not ``nonstationary forever.''

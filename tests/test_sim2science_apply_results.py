@@ -38,6 +38,7 @@ def _robustness() -> dict[str, Any]:
     return {
         "crossed_checkpoint_seed_bootstrap": {"ci_95": [0.051, 0.811]},
         "market_balanced_sensitivity": {"leave_one_out_range": [0.221, 0.611]},
+        "hill_fraction_sensitivity": {"positive_common_seed_interval_count": 2},
     }
 
 
@@ -51,6 +52,7 @@ def test_macro_values_use_paper_precision_and_fixed_denominator() -> None:
         "variantSigns": r"\ensuremath{2/3}",
         "learnedRobustCI": r"\ensuremath{[+0.05,\,+0.81]}",
         "learnedLooRange": r"\ensuremath{[+0.22,\,+0.61]}",
+        "hillFractionPasses": r"\ensuremath{2/3}",
     }
 
 

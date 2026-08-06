@@ -56,8 +56,9 @@ directories by the frozen seed manifest. The order is binding:
 2. Verify the resulting gate-file SHA-256 against the artifact manifest.
 3. Analyze held-out trajectories with `analyze_learned_results.py`.
 4. Run the pre-held-out-declared common-seed and leave-one-market-out checks with
-   `analyze_learned_robustness.py`.
-5. Synchronize the seven manuscript result macros with `apply_learned_results.py`.
+   `analyze_learned_robustness.py`; this also recomputes the frozen Hill-fraction grid from the
+   bundled held-out trajectories.
+5. Synchronize the eight manuscript result macros with `apply_learned_results.py`.
 6. Regenerate figures with
    `papers/paper_a_methods/workshops/sim2science/make_figures.py`.
 

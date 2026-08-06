@@ -22,6 +22,7 @@ MACRO_NAMES = (
     "variantSigns",
     "learnedRobustCI",
     "learnedLooRange",
+    "hillFractionPasses",
 )
 
 
@@ -65,7 +66,8 @@ def macro_values(
         raise ValueError("ci_95 endpoints are reversed")
     crossed = cast(Mapping[str, Any] | None, robustness["crossed_checkpoint_seed_bootstrap"])
     market = cast(Mapping[str, Any] | None, robustness["market_balanced_sensitivity"])
-    if crossed is None or market is None:
+    hill_sensitivity = cast(Mapping[str, Any] | None, robustness["hill_fraction_sensitivity"])
+    if crossed is None or market is None or hill_sensitivity is None:
         raise ValueError("robustness summaries are required before manuscript synchronization")
     robust_interval = crossed["ci_95"]
     leave_one_out_range = market["leave_one_out_range"]
@@ -77,6 +79,9 @@ def macro_values(
     loo_low, loo_high = float(leave_one_out_range[0]), float(leave_one_out_range[1])
     if robust_low > robust_high or loo_low > loo_high:
         raise ValueError("robustness interval endpoints are reversed")
+    hill_fraction_passes = int(hill_sensitivity["positive_common_seed_interval_count"])
+    if not 0 <= hill_fraction_passes <= 3:
+        raise ValueError("invalid Hill-fraction positive-interval count")
     return {
         "learnedScorable": str(scorable),
         "learnedConfirmed": str(confirmed),
@@ -87,6 +92,7 @@ def macro_values(
             rf"\ensuremath{{[{_signed(robust_low)},\,{_signed(robust_high)}]}}"
         ),
         "learnedLooRange": rf"\ensuremath{{[{_signed(loo_low)},\,{_signed(loo_high)}]}}",
+        "hillFractionPasses": rf"\ensuremath{{{hill_fraction_passes}/3}}",
     }
 
 
