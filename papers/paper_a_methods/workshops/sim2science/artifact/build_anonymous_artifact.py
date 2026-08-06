@@ -36,7 +36,6 @@ TEST_PATHS = (
     "tests/test_exp127_analyze_learned.py",
     "tests/test_exp127_fit_learned_calibration.py",
     "tests/test_exp127_exploratory_mser5.py",
-    "tests/test_exp127_v100_worker.py",
     "tests/test_garch.py",
     "tests/test_seed_manifest.py",
     "tests/test_sim2science_figures.py",

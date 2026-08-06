@@ -75,6 +75,17 @@ pseudo-checkpoints. The energy gate's pooled median cold-condition Hill error wa
 0.0910 and 0.0846). Both summaries will be reported; the median-only advantage is insufficient by
 itself for a broad methods claim.
 
+A literature audit after the primary analytic result was frozen identified MSER-5 as a missing
+classical warm-up comparator. The method and reporting rule were declared in
+`EXPLORATORY_AMENDMENT_2026-08-07.md` before its output was inspected; this analysis is post-primary
+and cannot change the registered Paper E tier. MSER-5 selected a nonzero discard in 16/62 (25.81%)
+stationary pseudo-checkpoints and 76/124 (61.29%) cold-start pseudo-checkpoints. Its pooled cold-start
+Hill absolute error was 0.0491 by median and 0.0847 by mean. Thus it was more sensitive than the
+energy gate but paid a substantially higher stationary unnecessary-discard rate; the energy gate does
+not have uniformly lower tail-score error. The full 217-row record is frozen in
+`EXPLORATORY_MSER5_RESULTS.json` (SHA-256
+`4940621cb88518438d2e4340a4f8af29257bd310deb39e5a4aa21eec0c74c566`).
+
 ## Paper E tier decision
 
 Pending: E-A / E-B / E-C.

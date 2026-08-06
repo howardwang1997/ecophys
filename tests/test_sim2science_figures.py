@@ -59,3 +59,11 @@ def test_bootstrap_median_interval_is_deterministic() -> None:
     assert figures._bootstrap_median_interval(values, 128000) == figures._bootstrap_median_interval(
         values, 128000
     )
+
+
+def test_wilson_interval_contains_observed_rate() -> None:
+    figures = _load_figures()
+    low, high = figures._wilson_interval(16, 62)
+    assert low < 16 / 62 < high
+    assert np.isclose(low, 0.1655, atol=1e-4)
+    assert np.isclose(high, 0.3788, atol=1e-4)

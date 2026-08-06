@@ -44,7 +44,8 @@ conda run -n sim2science-cpu python experiments/127_workshop_claim_gates/run_ana
 
 The archived `ANALYTIC_RESULTS.json` can be checked immediately. Regenerating all seven analytic
 conditions requires 7,000 trajectories of 8,000 returns and is intentionally separate from this
-fast verification.
+fast verification. The full-source `test_exp127_v100_worker.py` also validates the frozen raw-data
+hashes, so it is intentionally not bundled with this no-raw-data review artifact.
 
 ## Learned-model audit
 

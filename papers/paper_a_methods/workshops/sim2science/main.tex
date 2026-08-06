@@ -58,7 +58,7 @@ discrepancy between simulator and reality \citep{kennedy2001}. A more basic disc
 \emph{before} calibration is judged. Stateful simulators are commonly launched from convenient
 initial conditions, and finite-rollout statistics then mix an initial transient with the intended
 long-run regime. Initialization bias is classical in discrete-event simulation
-\citep{welch1983}, but it is easy to miss when a learned simulator is evaluated by a nonlinear
+\citep{heidelberger1983,welch1983,white1997}, but it is easy to miss when a learned simulator is evaluated by a nonlinear
 distributional summary rather than a sample mean.
 
 We encountered this problem while evaluating \method, a differentiable market simulator with
@@ -150,7 +150,8 @@ never a pass condition.
 All windows, seeds, thresholds, controls, confidence intervals, and claim tiers were committed before
 new learned rollouts or analytic outputs were inspected. Baselines are no discard, fixed $W=500$,
 fixed $W=1000$, and a block rule combining ADF and KPSS tests on returns and absolute returns
-\citep{dickey1979,kpss1992}.
+\citep{dickey1979,kpss1992}. A literature audit after the primary analytic result was frozen added
+MSER-5 as an explicitly exploratory comparator; it cannot change the registered claim tier.
 
 \section{Experiments}
 
@@ -203,9 +204,9 @@ AR(1)-SV, cold $10\times$ & 3/31 & 9.68\% & [3.35, 24.90] \\
 \begin{figure}[t]
   \centering
   \figureorbox{figures/fig_analytic_controls.pdf}{1.0}{Analytic-control figure pending.}
-  \caption{Analytic stress test. The energy gate meets the frozen stationary false-positive bound
-  (left) but detects only strong GARCH initialization (middle). Its pooled median Hill error is below
-  either fixed discard, while its mean error is worse (right); both summaries are reported.}
+  \caption{Analytic stress test. ED (teal) meets the frozen false-positive bound (left) but is less
+  sensitive than MSER-5 (gray, middle). MSER-5 was added post-primary; it discards more stationary
+  data and has comparable cold-condition score error (right).}
   \label{fig:controls}
 \end{figure}
 
@@ -214,6 +215,11 @@ pseudo-checkpoints. Fixed discards unnecessarily delete data in every stationary
 The energy gate's pooled median cold-condition Hill error is 0.0507, versus 0.0594 for $W=500$ and
 0.0533 for $W=1000$, but its mean error is worse (0.0966 versus 0.0910 and 0.0846). Reporting only the
 median would overstate the method advantage.
+
+The post-primary MSER-5 comparison selects a nonzero discard in 16/62 stationary cases (25.81\%) and
+76/124 cold starts (61.29\%). Its pooled cold-condition Hill error is 0.0491 by median and 0.0847 by
+mean. It is therefore more sensitive than the energy gate but less specific; the energy method's
+distinction is conservative selection, not uniformly lower tail-score error.
 
 \paragraph{Learned-model audit.}
 Of seven primary checkpoints, \learnedScorable{} yield a calibration $\wstar$ and

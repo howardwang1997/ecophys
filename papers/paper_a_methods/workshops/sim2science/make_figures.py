@@ -16,6 +16,9 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[3]
 RESULTS_PATH = REPO_ROOT / "experiments/127_workshop_claim_gates/ANALYTIC_RESULTS.json"
+EXPLORATORY_RESULTS_PATH = (
+    REPO_ROOT / "experiments/127_workshop_claim_gates/EXPLORATORY_MSER5_RESULTS.json"
+)
 LEARNED_RESULTS_PATH = REPO_ROOT / "experiments/127_workshop_claim_gates/LEARNED_RESULTS.json"
 FIGURE_DIR = HERE / "figures"
 
@@ -144,6 +147,8 @@ def _arrow(ax: Axes, x0: float, y0: float, x1: float, y1: float) -> None:
 
 def make_analytic_controls() -> None:
     payload = cast(dict[str, Any], json.loads(RESULTS_PATH.read_text()))
+    exploratory_payload = cast(dict[str, Any], json.loads(EXPLORATORY_RESULTS_PATH.read_text()))
+    exploratory_summary = cast(dict[str, Any], exploratory_payload["summary"])
     summary = cast(dict[str, Any], payload["summary"])
     condition_rows = cast(list[dict[str, Any]], summary["by_condition_method"])
     stationary = cast(dict[str, dict[str, Any]], summary["pooled_stationary_false_positive"])
@@ -153,26 +158,41 @@ def make_analytic_controls() -> None:
     }
 
     fig, axes = plt.subplots(1, 3, figsize=(7.15, 2.38), gridspec_kw={"wspace": 0.42})
-    _stationary_panel(axes[0], stationary)
-    _sensitivity_panel(axes[1], rows_by_key)
-    _error_panel(axes[2], payload)
+    _stationary_panel(axes[0], stationary, exploratory_summary)
+    _sensitivity_panel(axes[1], rows_by_key, exploratory_summary)
+    _error_panel(axes[2], payload, exploratory_summary)
     for label, ax in zip(("a", "b", "c"), axes, strict=True):
         ax.text(-0.20, 1.08, label, transform=ax.transAxes, fontweight="bold", fontsize=9)
     _save(fig, "fig_analytic_controls")
 
 
-def _stationary_panel(ax: Axes, stationary: dict[str, dict[str, Any]]) -> None:
-    methods = ["no_discard", "fixed_500", "fixed_1000", "adf_kpss", "energy"]
-    labels = ["None", "Fixed\n500", "Fixed\n1000", "ADF/\nKPSS", "Energy"]
-    rates = np.array([float(stationary[name]["rate"]) for name in methods])
-    intervals = np.array([stationary[name]["wilson_95"] for name in methods], dtype=float)
+def _stationary_panel(
+    ax: Axes,
+    stationary: dict[str, dict[str, Any]],
+    exploratory: dict[str, Any],
+) -> None:
+    methods = ["fixed_500", "fixed_1000", "adf_kpss", "energy"]
+    labels = ["500", "1000", "ADF+\nKPSS", "ED", "MSER-\n5"]
+    mser_count = int(exploratory["stationary_unnecessary_discard_count"])
+    mser_n = int(exploratory["stationary_n"])
+    rates = np.array(
+        [*[float(stationary[name]["rate"]) for name in methods], mser_count / mser_n]
+    )
+    intervals = np.array(
+        [
+            *[stationary[name]["wilson_95"] for name in methods],
+            _wilson_interval(mser_count, mser_n),
+        ],
+        dtype=float,
+    )
     errors = np.clip(np.vstack((rates - intervals[:, 0], intervals[:, 1] - rates)), 0.0, None)
-    colors = [GREY, ORANGE, ORANGE, RED, TEAL]
-    x = np.arange(len(methods))
+    colors = [ORANGE, ORANGE, RED, TEAL, GREY]
+    x = np.arange(len(labels))
     ax.bar(x, rates, color=colors, width=0.72, edgecolor="white", linewidth=0.5)
     ax.errorbar(x, rates, yerr=errors, fmt="none", ecolor=NAVY, capsize=2.2, linewidth=0.8)
     ax.axhline(0.15, color=NAVY, linestyle="--", linewidth=0.9, label="frozen bound")
     ax.set_xticks(x, labels)
+    ax.tick_params(axis="x", labelsize=6)
     ax.set_ylim(0, 1.08)
     ax.set_ylabel("unnecessary-discard rate")
     ax.set_title("Stationary controls (n=62)", pad=5)
@@ -180,7 +200,11 @@ def _stationary_panel(ax: Axes, stationary: dict[str, dict[str, Any]]) -> None:
     ax.grid(axis="y", color="#D1D5DB", linewidth=0.5, alpha=0.7)
 
 
-def _sensitivity_panel(ax: Axes, rows: dict[tuple[str, str, str], dict[str, Any]]) -> None:
+def _sensitivity_panel(
+    ax: Axes,
+    rows: dict[tuple[str, str, str], dict[str, Any]],
+    exploratory: dict[str, Any],
+) -> None:
     keys = [
         ("garch_t", "cold_low", "energy"),
         ("garch_t", "cold_high", "energy"),
@@ -188,23 +212,68 @@ def _sensitivity_panel(ax: Axes, rows: dict[tuple[str, str, str], dict[str, Any]
         ("ar1_sv", "cold_high", "energy"),
     ]
     labels = ["GARCH\n0.1x", "GARCH\n10x", "SV\n0.1x", "SV\n10x"]
-    rates = np.array([float(rows[key]["detection_rate"]) for key in keys])
-    intervals = np.array([rows[key]["detection_wilson_95"] for key in keys], dtype=float)
-    errors = np.clip(np.vstack((rates - intervals[:, 0], intervals[:, 1] - rates)), 0.0, None)
+    energy_rates = np.array([float(rows[key]["detection_rate"]) for key in keys])
+    energy_intervals = np.array(
+        [rows[key]["detection_wilson_95"] for key in keys], dtype=float
+    )
+    energy_errors = np.clip(
+        np.vstack(
+            (energy_rates - energy_intervals[:, 0], energy_intervals[:, 1] - energy_rates)
+        ),
+        0.0,
+        None,
+    )
+    exploratory_rows = {
+        (str(row["model"]), str(row["condition"])): row
+        for row in cast(list[dict[str, Any]], exploratory["by_condition"])
+    }
+    mser_counts = np.array(
+        [
+            round(float(exploratory_rows[(model, condition)]["selection_rate"]) * 31)
+            for model, condition, _ in keys
+        ]
+    )
+    mser_rates = mser_counts / 31
+    mser_intervals = np.array([_wilson_interval(int(count), 31) for count in mser_counts])
+    mser_errors = np.clip(
+        np.vstack((mser_rates - mser_intervals[:, 0], mser_intervals[:, 1] - mser_rates)),
+        0.0,
+        None,
+    )
     x = np.arange(len(keys))
-    ax.bar(x, rates, color=[TEAL, TEAL, TEAL, TEAL], width=0.68)
-    ax.errorbar(x, rates, yerr=errors, fmt="none", ecolor=NAVY, capsize=2.2, linewidth=0.8)
+    width = 0.34
+    ax.bar(x - width / 2, energy_rates, color=TEAL, width=width)
+    ax.bar(x + width / 2, mser_rates, color=GREY, width=width)
+    ax.errorbar(
+        x - width / 2,
+        energy_rates,
+        yerr=energy_errors,
+        fmt="none",
+        ecolor=NAVY,
+        capsize=1.8,
+        linewidth=0.7,
+    )
+    ax.errorbar(
+        x + width / 2,
+        mser_rates,
+        yerr=mser_errors,
+        fmt="none",
+        ecolor=NAVY,
+        capsize=1.8,
+        linewidth=0.7,
+    )
     ax.set_xticks(x, labels)
-    ax.set_ylim(0, 0.86)
+    ax.tick_params(axis="x", labelsize=6)
+    ax.set_ylim(0, 1.08)
     ax.set_ylabel("transient-detection rate")
     ax.set_title("Cold-start sensitivity (n=31 each)", pad=5)
     ax.grid(axis="y", color="#D1D5DB", linewidth=0.5, alpha=0.7)
 
 
-def _error_panel(ax: Axes, payload: dict[str, Any]) -> None:
+def _error_panel(ax: Axes, payload: dict[str, Any], exploratory: dict[str, Any]) -> None:
     rows = cast(list[dict[str, Any]], payload["pseudo_checkpoint_rows"])
     methods = ["no_discard", "fixed_500", "fixed_1000", "energy"]
-    labels = ["None", "Fixed\n500", "Fixed\n1000", "Energy"]
+    labels = ["None", "500", "1000", "ED", "MSER-\n5"]
     means: list[float] = []
     medians: list[float] = []
     for method in methods:
@@ -220,16 +289,28 @@ def _error_panel(ax: Axes, payload: dict[str, Any]) -> None:
         )
         means.append(float(np.mean(values)))
         medians.append(float(np.median(values)))
-    x = np.arange(len(methods))
+    means.append(float(exploratory["cold_mean_hill_abs_error"]))
+    medians.append(float(exploratory["cold_median_hill_abs_error"]))
+    x = np.arange(len(labels))
     width = 0.34
     ax.bar(x - width / 2, medians, width, color=TEAL, label="median")
     ax.bar(x + width / 2, means, width, color=ORANGE, label="mean")
     ax.set_xticks(x, labels)
+    ax.tick_params(axis="x", labelsize=6)
     ax.set_ylim(0, 0.13)
     ax.set_ylabel("absolute Hill error")
     ax.set_title("Cold-condition score error", pad=5)
     ax.legend(frameon=False, ncol=2, loc="upper left", columnspacing=0.8, handlelength=1.2)
     ax.grid(axis="y", color="#D1D5DB", linewidth=0.5, alpha=0.7)
+
+
+def _wilson_interval(count: int, n: int) -> tuple[float, float]:
+    z = 1.959963984540054
+    rate = count / n
+    denominator = 1.0 + z**2 / n
+    center = (rate + z**2 / (2.0 * n)) / denominator
+    half_width = z * np.sqrt(rate * (1.0 - rate) / n + z**2 / (4.0 * n**2)) / denominator
+    return float(center - half_width), float(center + half_width)
 
 
 def make_learned_results() -> None:
