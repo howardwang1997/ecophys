@@ -25,7 +25,7 @@ class TestParams:
 
     def test_unconditional_variance(self) -> None:
         p = GARCH11Params(omega=1e-4, alpha=0.05, beta=0.90)
-        # ω / (1 - α - β) = 1e-4 / 0.05 = 2e-3
+        # omega / (1 - alpha - beta) = 1e-4 / 0.05 = 2e-3
         assert np.isclose(p.unconditional_variance(), 2e-3)
 
 
@@ -41,6 +41,29 @@ class TestSimulate:
         r1 = sim.simulate(1000, seed=42)
         r2 = sim.simulate(1000, seed=42)
         assert np.allclose(r1, r2)
+
+    def test_initial_variance_multiplier_controls_first_step(self) -> None:
+        sim = GARCH11(omega=1e-6, alpha=0.08, beta=0.90)
+        low = sim.simulate(1, seed=42, burn_in=0, initial_variance_multiplier=0.1)
+        high = sim.simulate(1, seed=42, burn_in=0, initial_variance_multiplier=10.0)
+        assert np.isclose(abs(high[0]) / abs(low[0]), 10.0)
+
+    @pytest.mark.parametrize(
+        ("kwargs", "message"),
+        [
+            ({"n_steps": 0}, "n_steps"),
+            ({"n_steps": 1, "burn_in": -1}, "burn_in"),
+            ({"n_steps": 1, "initial_variance_multiplier": 0.0}, "multiplier"),
+        ],
+    )
+    def test_invalid_simulation_controls_rejected(
+        self,
+        kwargs: dict[str, int | float],
+        message: str,
+    ) -> None:
+        sim = GARCH11(omega=1e-6, alpha=0.08, beta=0.90)
+        with pytest.raises(ValueError, match=message):
+            sim.simulate(**kwargs)
 
     def test_student_t_produces_fatter_tails(self) -> None:
         from scipy.stats import kurtosis
@@ -58,8 +81,8 @@ class TestSimulate:
         r2 = r ** 2
         x = r2 - r2.mean()
         acf1 = float(np.dot(x[:-1], x[1:]) / np.dot(x, x))
-        # GARCH(1,1) at α+β=0.98 should show strong ACF in r²
-        assert acf1 > 0.05, f"ACF(r²) lag-1 = {acf1}"
+        # GARCH(1,1) at alpha+beta=0.98 should show strong ACF in squared returns.
+        assert acf1 > 0.05, f"ACF(squared returns) lag-1 = {acf1}"
 
 
 class TestFit:
@@ -70,8 +93,8 @@ class TestFit:
         # Fit with Normal innovations (matches what we generated)
         fitted = GARCH11.fit(true_r, dist="normal")
         # Fitted params should be in the ballpark (not exact — finite sample)
-        assert 0.02 < fitted.params.alpha < 0.15, f"α̂={fitted.params.alpha}"
-        assert 0.80 < fitted.params.beta < 0.98, f"β̂={fitted.params.beta}"
+        assert 0.02 < fitted.params.alpha < 0.15, f"alpha_hat={fitted.params.alpha}"
+        assert 0.80 < fitted.params.beta < 0.98, f"beta_hat={fitted.params.beta}"
         assert fitted.params.alpha + fitted.params.beta > 0.9
         # Simulating from fit should still be stationary and well-behaved
         r_sim = fitted.simulate(5000, seed=7)

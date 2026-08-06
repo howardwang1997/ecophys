@@ -1,8 +1,8 @@
 """GARCH(1,1) simulator — classical econometric baseline.
 
 Bollerslev (1986) GARCH(1,1):
-    r_t     = σ_t · z_t,        z_t ~ iid (Normal or Student-t)
-    σ_t²    = ω + α · r_{t-1}² + β · σ_{t-1}²
+    r_t       = sigma_t * z_t,  z_t ~ iid (Normal or Student-t)
+    sigma_t^2 = omega + alpha * r_{t-1}^2 + beta * sigma_{t-1}^2
 
 Two usage modes:
 
@@ -21,12 +21,12 @@ if you need a price path.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, TypeAlias
 
 import numpy as np
 import numpy.typing as npt
 
-ArrayF = npt.NDArray[np.float64]
+ArrayF: TypeAlias = npt.NDArray[np.float64]
 
 
 @dataclass
@@ -37,7 +37,7 @@ class GARCH11Params:
     dist: Literal["normal", "t"] = "normal"
     nu: float | None = None   # degrees of freedom for Student-t; required if dist='t'
     mean: float = 0.0         # constant mean (usually 0 for demeaned returns)
-    scale: float = 1.0        # multiplier if data was rescaled before fit (e.g. 100×)
+    scale: float = 1.0        # multiplier if data was rescaled before fit (e.g. 100x)
 
     def __post_init__(self) -> None:
         if self.omega <= 0:
@@ -68,7 +68,7 @@ class GARCH11:
 
     @classmethod
     def fit(cls, returns: ArrayF, dist: Literal["normal", "t"] = "t",
-            rescale_to_percent: bool = True) -> "GARCH11":
+            rescale_to_percent: bool = True) -> GARCH11:
         """Fit GARCH(1,1) with the `arch` package. Returns a simulator loaded
         with the fitted parameters.
 
@@ -97,18 +97,33 @@ class GARCH11:
 
     # ── Simulate ───────────────────────────────────────────────────────
 
-    def simulate(self, n_steps: int, seed: int | None = None,
-                 burn_in: int = 500) -> ArrayF:
-        """Generate `n_steps` log returns. `burn_in` discarded upfront."""
+    def simulate(
+        self,
+        n_steps: int,
+        seed: int | None = None,
+        burn_in: int = 500,
+        initial_variance_multiplier: float = 1.0,
+    ) -> ArrayF:
+        """Generate returns after an optional burn-in.
+
+        ``initial_variance_multiplier`` scales the unconditional variance at
+        the first simulated step. It is useful for controlled initialization
+        transients and defaults to the historical stationary initialization.
+        """
+        if n_steps < 1:
+            raise ValueError("n_steps must be positive")
+        if burn_in < 0:
+            raise ValueError("burn_in must be nonnegative")
+        if not np.isfinite(initial_variance_multiplier) or initial_variance_multiplier <= 0.0:
+            raise ValueError("initial_variance_multiplier must be finite and positive")
         p = self.params
         rng = np.random.default_rng(seed)
 
         n_total = n_steps + burn_in
-        sigma2 = np.empty(n_total, dtype=np.float64)
-        r_scaled = np.empty(n_total, dtype=np.float64)
+        sigma2: ArrayF = np.empty(n_total, dtype=np.float64)
+        r_scaled: ArrayF = np.empty(n_total, dtype=np.float64)
 
-        # Initial variance = unconditional
-        sigma2[0] = p.unconditional_variance()
+        sigma2[0] = p.unconditional_variance() * initial_variance_multiplier
         r_scaled[0] = np.sqrt(sigma2[0]) * self._sample_innov(rng, 1)[0]
 
         for t in range(1, n_total):
@@ -134,7 +149,7 @@ class GARCH11:
 
     def __repr__(self) -> str:
         p = self.params
-        base = f"GARCH11(ω={p.omega:.3e}, α={p.alpha:.3f}, β={p.beta:.3f}, dist={p.dist}"
+        base = f"GARCH11(omega={p.omega:.3e}, alpha={p.alpha:.3f}, beta={p.beta:.3f}, dist={p.dist}"
         if p.dist == "t":
-            base += f", ν={p.nu:.2f}"
-        return base + f", μ={p.mean:.2e}, scale={p.scale}, α+β={p.alpha + p.beta:.3f})"
+            base += f", nu={p.nu:.2f}"
+        return base + f", mean={p.mean:.2e}, scale={p.scale}, alpha+beta={p.alpha + p.beta:.3f})"

@@ -7,16 +7,15 @@ merges them.
 Stylized-facts computation stays CPU-only (numpy-based compute_all), so
 after rollout we detach, move to CPU, and compute per-realization.
 
-Usage (H20):
-    torchrun --nproc_per_node=${NPROC:-4} --standalone \\
+Usage (one or more GPUs):
+    torchrun --nproc_per_node=${NPROC:-1} --standalone \\
         -m ecomd.inference.run_large \\
         --ckpt experiments/006_ecomd_v1/results/checkpoint.pt \\
         --config experiments/006_ecomd_v1/config_h20.yaml \\
         --n-steps 4000 \\
         --n-realizations-per-rank 2
 
-On 4 cards × 2 per-rank realizations = 8 total rollouts.
-On 8 cards × 2 per-rank = 16 rollouts.
+The explicit seed manifest controls the total rollout sample.
 """
 
 from __future__ import annotations
@@ -35,6 +34,7 @@ import yaml
 
 from ..eval.stylized_facts import compute_all
 from ..models.ecomd import EcoMDConfig, EcoMDSimulator
+from .seed_manifest import load_seed_file, seeds_for_rank
 
 log = logging.getLogger("inference_run_large")
 
@@ -66,6 +66,10 @@ def main() -> None:
     parser.add_argument("--n-realizations-per-rank", type=int, default=2)
     parser.add_argument("--out-dir", default=None)
     parser.add_argument("--seed-base", type=int, default=10_000)
+    parser.add_argument("--seeds-file", default=None,
+                        help="JSON list/object with explicit seeds; sample set is invariant to rank count")
+    parser.add_argument("--expected-recorded-returns", type=int, default=None,
+                        help="fail if the post-initialization return array does not have this length")
     parser.add_argument("--save-trajectory", action="store_true",
                         help="save (returns, volumes, log_prices) of each "
                              "realization as compressed npz for offline analysis")
@@ -77,9 +81,9 @@ def main() -> None:
                                  "temperature_spike", "liquidity_drop"],
                         default="state_kick")
     parser.add_argument("--shock-mag", type=float, default=6.0,
-                        help="state_kick/price_jump: magnitude in σ-units; news: Δfundamental; "
+                        help="state_kick/price_jump: magnitude in sigma-units; news: delta fundamental; "
                              "temperature_spike: T multiplier (>1); liquidity_drop: friction-drop "
-                             "dose d (γ multiplied by 1/d, so larger d = stronger drop)")
+                             "dose d (gamma multiplied by 1/d, so larger d = stronger drop)")
     parser.add_argument("--shock-dur", type=int, default=1,
                         help="temperature_spike/liquidity_drop: number of steps the transient "
                              "multiplier stays on before auto-clearing (system then relaxes)")
@@ -93,12 +97,12 @@ def main() -> None:
     # exp 125 root-cause ablations: inference-time config overrides on a trained
     # checkpoint (fixed learned dynamics). --noise-* probes whether a heavy
     # microscopic bath fattens the *steady-state* aggregate tail (Route A);
-    # --n-agents probes CLT self-averaging at fixed dynamics (steady α_ED vs N).
+    # --n-agents probes CLT self-averaging at fixed dynamics (steady alpha_ED vs N).
     parser.add_argument("--noise-dist", choices=["normal", "t", "levy"], default=None,
                         help="override the bath noise distribution at inference")
     parser.add_argument("--noise-df", type=int, default=None, help="Student-t df (with --noise-dist t)")
     parser.add_argument("--noise-levy-alpha", type=float, default=None,
-                        help="α-stable index in (0,2] (with --noise-dist levy)")
+                        help="alpha-stable index in (0,2] (with --noise-dist levy)")
     parser.add_argument("--n-agents", type=int, default=None,
                         help="override the number of agents N (CLT self-averaging probe)")
     args = parser.parse_args()
@@ -108,6 +112,15 @@ def main() -> None:
     rank, world_size, local_rank = setup_dist()
     if rank == 0:
         log.info(f"[dist] world_size={world_size} cuda={torch.cuda.is_available()}")
+
+    if args.seeds_file is not None:
+        all_seeds = load_seed_file(args.seeds_file)
+        rank_seeds = seeds_for_rank(all_seeds, rank=rank, world_size=world_size)
+        if rank == 0:
+            log.info(f"[seeds] loaded {len(all_seeds)} explicit seeds from {args.seeds_file}")
+    else:
+        rank_seeds = [args.seed_base + rank * 1000 + idx
+                      for idx in range(args.n_realizations_per_rank)]
 
     ckpt_path = Path(args.ckpt).resolve()
     cfg = yaml.safe_load(Path(args.config).read_text())
@@ -163,15 +176,28 @@ def main() -> None:
             log.info(f"[exp123] shock {spec} at steps {list(sim._shock_schedule)}")
 
     rank_results = []
-    for r_idx in range(args.n_realizations_per_rank):
-        seed = args.seed_base + rank * 1000 + r_idx
+    for r_idx, seed in enumerate(rank_seeds):
+        if torch.cuda.is_available():
+            torch.cuda.reset_peak_memory_stats(local_rank)
         t0 = time.time()
         # lightweight: run_large only consumes the (T,) scalar series (returns/volumes/
         # log_prices/excess_demand); dropping the (T,N,d) tensors avoids OOM at N=10⁴.
         traj = sim.run(n_steps=args.n_steps, seed=seed, lightweight=True)
+        if torch.cuda.is_available():
+            torch.cuda.synchronize(local_rank)
         dt = time.time() - t0
         returns = traj.log_returns_np()[1:]
         volumes = traj.volumes_np()[1:]
+        if args.expected_recorded_returns is not None and returns.size != args.expected_recorded_returns:
+            raise RuntimeError(
+                f"expected {args.expected_recorded_returns} recorded returns, got {returns.size}; "
+                "check --n-steps and initialization-drop semantics"
+            )
+        n_recorded_returns = int(returns.size)
+        peak_allocated = (int(torch.cuda.max_memory_allocated(local_rank))
+                          if torch.cuda.is_available() else 0)
+        peak_reserved = (int(torch.cuda.max_memory_reserved(local_rank))
+                         if torch.cuda.is_available() else 0)
         traj_np = None
         if args.save_trajectory:
             traj_np = {
@@ -179,9 +205,9 @@ def main() -> None:
                 "volumes": volumes,
                 "log_prices": traj.log_prices.detach().cpu().numpy(),
                 "excess_demand": traj.excess_demand.detach().cpu().numpy(),
-                # exp 123 (P1): 1 if excess_demand is the raw pre-impact tail (ζ_ED).
+                # exp 123 (P1): 1 if excess_demand is the raw pre-impact tail (zeta_ED).
                 "ed_is_raw": int(getattr(traj, "meta", {}).get("ed_is_raw", 0)),
-                # exp 123 Route-A: signed order-flow imbalance ρ∈[-1,1] (drop step 0).
+                # exp 123 Route-A: signed order-flow imbalance rho in [-1,1] (drop step 0).
                 "ofi": traj.ofi_np()[1:],
             }
         del traj
@@ -190,20 +216,23 @@ def main() -> None:
             "rank": rank,
             "seed": seed,
             "n_steps": args.n_steps,
+            "n_recorded_returns": n_recorded_returns,
             "rollout_time_s": dt,
+            "peak_memory_allocated_bytes": peak_allocated,
+            "peak_memory_reserved_bytes": peak_reserved,
             "facts": {k: v.to_dict() for k, v in facts.items()},
         })
         del returns, volumes, facts
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-        log.info(f"[rank {rank}] rollout {r_idx+1}/{args.n_realizations_per_rank} "
-                 f"seed={seed} took {dt:.1f}s")
+        log.info(f"[rank {rank}] rollout {r_idx+1}/{len(rank_seeds)} seed={seed} took {dt:.1f}s "
+                 f"peak_reserved={peak_reserved / (1024 ** 3):.2f}GiB")
 
         if args.save_trajectory and traj_np is not None:
-            traj_path = out_dir / f"trajectory_rank{rank}_r{r_idx}.npz"
+            traj_path = out_dir / f"trajectory_seed{seed}.npz"
             np.savez_compressed(
-                traj_path,
-                seed=seed, n_steps=args.n_steps, rank=rank,
+                traj_path, seed=seed, n_steps=args.n_steps,
+                n_recorded_returns=n_recorded_returns, rank=rank,
                 **traj_np,
             )
             log.info(f"[rank {rank}] saved trajectory → {traj_path.name}")
@@ -223,6 +252,8 @@ def main() -> None:
             p = out_dir / f"inference_rank_{r}.json"
             if p.exists():
                 all_results.extend(json.loads(p.read_text()))
+        if not all_results:
+            raise RuntimeError("no inference results were produced")
         keys = list(all_results[0]["facts"].keys())
         aggregated: dict[str, dict[str, float]] = {}
         for k in keys:

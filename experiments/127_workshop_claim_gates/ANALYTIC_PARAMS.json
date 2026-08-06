@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "frozen_at": "2026-08-07T03:50:00+12:00",
+  "garch_t": {
+    "source": "experiments/080_baselines_30seed/results_garch_seed0/inference_merged.json",
+    "source_sha256": "695c139cb6733ec08c6db4053c7b547d2b3045227c2a37cf44098d8516bcf45e",
+    "params": {
+      "omega": 0.02134762451750217,
+      "alpha": 0.1667536955787781,
+      "beta": 0.8284834123906886,
+      "dist": "t",
+      "nu": 5.417908115811268,
+      "mean": 0.09252336088672605,
+      "scale": 100.0
+    },
+    "conditions": {
+      "long_burn": {"initial_variance_multiplier": 1.0, "burn_in": 5000, "seed_start": 227000},
+      "nominal": {"initial_variance_multiplier": 1.0, "burn_in": 0, "seed_start": 228000},
+      "cold_low": {"initial_variance_multiplier": 0.1, "burn_in": 0, "seed_start": 229000},
+      "cold_high": {"initial_variance_multiplier": 10.0, "burn_in": 0, "seed_start": 230000}
+    }
+  },
+  "ar1_sv": {
+    "source": "experiments/080_baselines_30seed/results_ar1_sv_seed0/inference_merged.json",
+    "source_sha256": "fa992174cde05ae0476d2cab99a7166a7b4c15733718d9e5523df93862950154",
+    "params": {
+      "mu": 0.00043772855018156797,
+      "rho": -0.1295110998036497,
+      "alpha": -9.305613476683313,
+      "phi": 0.1560823050487133,
+      "nu": 2.4508761791391125
+    },
+    "conditions": {
+      "stationary": {"initial_variance_multiplier": 1.0, "burn_in": 0, "seed_start": 231000},
+      "cold_low": {"initial_variance_multiplier": 0.1, "burn_in": 0, "seed_start": 232000},
+      "cold_high": {"initial_variance_multiplier": 10.0, "burn_in": 0, "seed_start": 233000}
+    }
+  },
+  "trajectories_per_condition": 1000,
+  "trajectory_length": 8000,
+  "pseudo_checkpoint_size": 32,
+  "calibration_per_pseudo_checkpoint": 16,
+  "heldout_per_pseudo_checkpoint": 16,
+  "pseudo_checkpoints_per_condition": 31,
+  "reserved_format_checks_per_condition": 8
+}
