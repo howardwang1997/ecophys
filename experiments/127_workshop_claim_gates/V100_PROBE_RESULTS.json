@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "completed_at": "2026-08-07T05:22:00+12:00",
+  "execution_commit": "22a6e41628d7cca7688ecdf5513e5a5bb014e462",
+  "software": {
+    "python": "3.11.15",
+    "torch": "2.3.1+cu121",
+    "torch_cuda": "12.1",
+    "required_architecture": "sm_70"
+  },
+  "training_probe": {
+    "config": "experiments/113_gabaix_solve/config_concave_d050_seed0.yaml",
+    "config_sha256": "a2627289ab26a984425e2da2a560f81af5b961439e75dc6097c04daf2e324906",
+    "iterations": 10,
+    "n_agents": 10000,
+    "precision": "fp32",
+    "chunk_steps": 24,
+    "checkpoint_sha256": "f9b84705f013f14b9125ec80509b6bb194aee2b51c8f604183c3fd1ea0d7b8bc",
+    "nodes": [
+      {
+        "node": "v100_a",
+        "gpu_name": "Tesla PG503-216",
+        "gpu_uuid": "GPU-91ba8f02-b2d7-7aad-1ce7-71b9680029ab",
+        "compute_capability": [7, 0],
+        "total_memory_bytes": 34072559616,
+        "train_time_seconds": 480.32259225845337,
+        "peak_allocated_gib": 14.140993595123291,
+        "peak_reserved_gib": 15.03125,
+        "source_result_sha256": "69f7814006352b5e51e5dc577e21acfdd44c89a8dd4ad254863d70712d562f8d"
+      },
+      {
+        "node": "v100_b",
+        "gpu_name": "Tesla PG503-216",
+        "gpu_uuid": "GPU-159be1c9-3dcd-b386-087b-ef85ac894f13",
+        "compute_capability": [7, 0],
+        "total_memory_bytes": 34072559616,
+        "train_time_seconds": 478.674702167511,
+        "peak_allocated_gib": 14.140993595123291,
+        "peak_reserved_gib": 15.03125,
+        "source_result_sha256": "6c290ff57d9a3e0876b01db7e7e9bc589f4483a27a6aded06104710c222a5bbf"
+      }
+    ],
+    "bitwise_checkpoint_match": true
+  },
+  "full_rollout_probe": {
+    "seed": 127000,
+    "simulator_steps": 8001,
+    "usable_returns": 8000,
+    "trajectory_sha256": "b8d7ac6f733a0db33c3a07c954ce11cb05df33217d1a04a21dee6cbcc28d7a4d",
+    "canonical_result_sha256_excluding_wall_time": "a81347ffcdfc5e9cf7bc5cd4e74f696fb4abf3d877df051cc6d7b8eb3da398a4",
+    "canonical_results_equal": true,
+    "nodes": [
+      {
+        "node": "v100_a",
+        "rollout_time_seconds": 388.30900049209595,
+        "peak_allocated_bytes": 3671030784,
+        "peak_reserved_bytes": 4095737856,
+        "source_result_sha256": "45a4a4759460614831dffcdcffce7fc2106636136049253c645f224a9c6e5b84"
+      },
+      {
+        "node": "v100_b",
+        "rollout_time_seconds": 383.87873339653015,
+        "peak_allocated_bytes": 3671030784,
+        "peak_reserved_bytes": 4095737856,
+        "source_result_sha256": "3fd58e2e64e42c9b8988b8137f1e4800c246d38f2210f28ccad9c2d4e52c9887"
+      }
+    ],
+    "bitwise_trajectory_match": true
+  },
+  "decision": "pass_production_training"
+}

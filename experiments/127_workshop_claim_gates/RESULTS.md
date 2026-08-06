@@ -29,7 +29,11 @@ V100s. The two nodes produced the same checkpoint SHA-256
 | `v100_a` | 480.323 s | 14.141 GiB | 15.031 GiB | pass |
 | `v100_b` | 478.675 s | 14.141 GiB | 15.031 GiB | pass |
 
-The identical-seed, 8000-return inference probe is running and must pass before production training.
+The identical-seed, 8000-return inference probe also passed. It took 388.309 s on `v100_a` and
+383.879 s on `v100_b`, with 3.419 GiB allocated and 3.814 GiB reserved. Both nodes produced the same
+trajectory SHA-256 `b8d7ac6f733a0db33c3a07c954ce11cb05df33217d1a04a21dee6cbcc28d7a4d`;
+all inference fields other than wall time were identical. `V100_PROBE_RESULTS.json` freezes the full
+probe metadata. Production retraining began as two resumable systemd services after this pass.
 
 ## E1 learned-model held-out scoring
 

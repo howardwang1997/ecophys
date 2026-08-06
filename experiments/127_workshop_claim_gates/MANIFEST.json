@@ -1,14 +1,96 @@
 {
   "schema_version": 1,
-  "status": "scaffold_frozen_before_execution",
+  "status": "production_training_running",
   "experiment": "127_workshop_claim_gates",
-  "git_sha": null,
-  "execution_commit_clean": false,
-  "hardware": {},
-  "software": {},
-  "data_assets": [],
+  "scientific_execution_git_sha": "22a6e41628d7cca7688ecdf5513e5a5bb014e462",
+  "execution_commit_clean": true,
+  "frozen_inputs": {
+    "data_snapshot": {
+      "path": "experiments/127_workshop_claim_gates/DATA_SNAPSHOT.json",
+      "sha256": "cd23c8daae9bb6ce93370166f6a068338fd4e74e5f32a0b9d5ce156429d50407"
+    },
+    "seed_manifest": {
+      "path": "experiments/127_workshop_claim_gates/SEEDS.json",
+      "sha256": "a2bacccc5dcf9f1bd3954dc4314f06f36c86f11fd331327c04ee45014de802ed"
+    },
+    "node_assignments": {
+      "path": "experiments/127_workshop_claim_gates/NODE_ASSIGNMENTS.json",
+      "sha256": "b866aade6388862b97b903dbc7cb4cb59a4bc6022a211ffbd1b0cfb2ae369f45"
+    },
+    "estimators": [
+      {
+        "path": "ecomd/eval/stationarity_gate.py",
+        "sha256": "0c1c3606060391deefd38c546e785200d53bc0ac46be7e31be250e1a27de2347"
+      },
+      {
+        "path": "ecomd/eval/stationarity_baselines.py",
+        "sha256": "a6c8006194f8f766baad6dfdbaf61dc5bb46904ae5c330f4669e001d54b8d5e2"
+      },
+      {
+        "path": "ecomd/eval/stylized_facts.py",
+        "sha256": "e1802c9fcf87a8d1944d0211d3684448b92212f7c1680384e44af852dd7a807e"
+      }
+    ]
+  },
+  "hardware": [
+    {
+      "node": "v100_a",
+      "gpu_name": "Tesla PG503-216",
+      "gpu_uuid": "GPU-91ba8f02-b2d7-7aad-1ce7-71b9680029ab",
+      "compute_capability": [7, 0],
+      "total_memory_bytes": 34072559616
+    },
+    {
+      "node": "v100_b",
+      "gpu_name": "Tesla PG503-216",
+      "gpu_uuid": "GPU-159be1c9-3dcd-b386-087b-ef85ac894f13",
+      "compute_capability": [7, 0],
+      "total_memory_bytes": 34072559616
+    }
+  ],
+  "software": {
+    "python": "3.11.15",
+    "torch": "2.3.1+cu121",
+    "torch_cuda": "12.1",
+    "driver": "550.127.05",
+    "required_cuda_architecture": "sm_70"
+  },
+  "data_assets": [
+    "spx/2015-2026_daily",
+    "ndx/2015-2026_daily",
+    "gold/2015-2026_daily",
+    "eurusd/2015-2026_daily",
+    "btcusdt/2024Q1_1m"
+  ],
+  "probe_artifact": {
+    "path": "experiments/127_workshop_claim_gates/V100_PROBE_RESULTS.json",
+    "sha256": "4642a79f978d6b7f83ab291f25e36be10f99fbd8acea29546675fb1adbe33bbb",
+    "decision": "pass_production_training"
+  },
   "checkpoints": [],
   "rollout_shards": [],
-  "analysis_artifacts": [],
-  "deviations": []
+  "analysis_artifacts": [
+    {
+      "path": "experiments/127_workshop_claim_gates/ANALYTIC_GENERATION_MANIFEST.json",
+      "sha256": "40a2d20da66003b6ac8c0161c0708c37cd019f407558f4f031bb6ed5ba23f439"
+    },
+    {
+      "path": "experiments/127_workshop_claim_gates/ANALYTIC_RESULTS.json",
+      "sha256": "7dc0f7db254da01e666ffa8616b1a1b9f1d2bd44b3beb1fae38caa0f26e202ce"
+    }
+  ],
+  "deviations": [
+    {
+      "stage": "first_v100_probe",
+      "status": "failed_before_iteration_zero",
+      "reason": "PyTorch 2.3 lacks torch.amp.custom_fwd/custom_bwd",
+      "resolution": "version-compatible AMP decorator shim at scientific execution commit; configs and seeds unchanged"
+    },
+    {
+      "stage": "local_full_test_suite",
+      "status": "incomplete",
+      "reason": "host resource termination with exit 137 after approximately 65 tests",
+      "resolution": "changed-scope tests, Ruff, and strict mypy passed; no full-suite pass claimed"
+    }
+  ]
 }
