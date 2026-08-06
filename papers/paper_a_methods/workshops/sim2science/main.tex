@@ -226,9 +226,11 @@ all transfer failures; none is removed from the denominator.
 \begin{figure}[t]
   \centering
   \figureorbox{figures/fig_learned_results.pdf}{1.0}{Learned-checkpoint result pending V100 execution.}
-  \caption{Held-out learned-model audit. Each point is a checkpoint-level median paired Hill change;
-  intervals resample trajectories. Filled markers pass frozen-W transfer, open markers fail it, and
-  missing $\wstar$ outcomes remain explicit. The diamond is the hierarchical aggregate.}
+  \caption{Held-out learned-model audit. Left: checkpoint-level median paired Hill changes, with
+  trajectory-bootstrap intervals and the hierarchical aggregate (diamond). Filled markers pass
+  frozen-$W$ transfer, open markers fail it, and missing $\wstar$ outcomes remain explicit; teal
+  points are within-family variants. Right: absolute early and post-gate scores for scorable primary
+  checkpoints.}
   \label{fig:learned}
 \end{figure}
 
@@ -245,10 +247,11 @@ new scoring convention.
 The limits are consequential. Evidence comes from one simulator family, and the analytic sensitivity
 is weak except for a strong GARCH variance mismatch. Late blocks provide an operational internal
 reference; they do not prove stationarity, mixing, or ergodicity. Energy distance depends on the chosen
-delay embedding and finite block length. The learned checkpoints share training code and data sources,
-and daily financial calibration data plus one crypto minute dataset do not establish cross-domain
-generality. Finally, a failed gate says ``not verified within 8,000 returns,'' not ``nonstationary
-forever.''
+delay embedding and finite block length. The Wilson intervals quantify trajectory replication
+conditional on two fixed analytic parameterizations, not variation across process families. The
+learned checkpoints share training code and data sources, and daily financial calibration data plus
+one crypto minute dataset do not establish cross-domain generality. Finally, a failed gate says ``not
+verified within 8,000 returns,'' not ``nonstationary forever.''
 
 Within those boundaries, the practical recommendation is simple: fit any warm-up decision without
 the target metric, freeze it before held-out evaluation, keep the scored length fixed, and report both
