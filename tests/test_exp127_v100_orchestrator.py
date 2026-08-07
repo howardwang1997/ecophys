@@ -60,3 +60,23 @@ def test_write_json_is_atomic_and_hashable(tmp_path: Path) -> None:
     module.write_json(path, {"complete": True})
     assert json.loads(path.read_text()) == {"complete": True}
     assert len(module.sha256_file(path)) == 64
+
+
+def test_wait_tolerates_collected_service_before_final_status_visibility(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_module()
+    node = module.Node(name="v100_a", host="node-a", user="root")
+    observations = iter([None, {"complete": True, "jobs": []}])
+    monkeypatch.setattr(module, "remote_json", lambda _node, _path: next(observations))
+    monkeypatch.setattr(module, "service_state", lambda _node, _service: "unknown")
+    monkeypatch.setattr(module.time, "sleep", lambda _seconds: None)
+
+    result = module.wait_for_stage(
+        {"v100_a": node},
+        {"v100_a": Path("/tmp/status.json")},
+        {"v100_a": "collected.service"},
+        poll_seconds=60,
+    )
+
+    assert result["v100_a"]["complete"] is True

@@ -26,6 +26,9 @@ TRAINING_SERVICES = {
     "v100_a": "ecophys-exp127-train-a.service",
     "v100_b": "ecophys-exp127-train-b.service",
 }
+ACTIVE_SERVICE_STATES = frozenset({"active", "activating", "reloading"})
+TERMINAL_STATUS_GRACE_ATTEMPTS = 5
+TERMINAL_STATUS_GRACE_SECONDS = 2.0
 
 
 @dataclass(frozen=True)
@@ -104,6 +107,28 @@ def log(message: str) -> None:
     print(f"[{timestamp}] {message}", flush=True)
 
 
+def observe_stage(
+    node: Node,
+    status_path: Path,
+    service: str,
+) -> tuple[dict[str, Any] | None, str]:
+    payload = remote_json(node, status_path)
+    if payload is not None and payload.get("complete") is True:
+        return payload, "complete"
+    state = service_state(node, service)
+    if state in ACTIVE_SERVICE_STATES:
+        return None, state
+    for _ in range(TERMINAL_STATUS_GRACE_ATTEMPTS):
+        time.sleep(TERMINAL_STATUS_GRACE_SECONDS)
+        payload = remote_json(node, status_path)
+        if payload is not None and payload.get("complete") is True:
+            return payload, "complete"
+        state = service_state(node, service)
+        if state in ACTIVE_SERVICE_STATES:
+            return None, state
+    return payload, state
+
+
 def wait_for_stage(
     nodes: dict[str, Node],
     status_paths: dict[str, Path],
@@ -114,14 +139,13 @@ def wait_for_stage(
         records: dict[str, dict[str, Any]] = {}
         states: list[str] = []
         for name, node in nodes.items():
-            payload = remote_json(node, status_paths[name])
+            payload, state = observe_stage(node, status_paths[name], services[name])
             if payload is not None and payload.get("complete") is True:
                 records[name] = payload
                 states.append(f"{name}=complete")
                 continue
-            state = service_state(node, services[name])
             states.append(f"{name}={state}")
-            if state not in {"active", "activating", "reloading"}:
+            if state not in ACTIVE_SERVICE_STATES:
                 raise RuntimeError(
                     f"{name} service {services[name]} is {state} before a complete status was written"
                 )
