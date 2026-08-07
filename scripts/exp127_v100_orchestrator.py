@@ -27,6 +27,7 @@ TRAINING_SERVICES = {
     "v100_b": "ecophys-exp127-train-b.service",
 }
 ACTIVE_SERVICE_STATES = frozenset({"active", "activating", "reloading"})
+WAITABLE_SERVICE_STATES = ACTIVE_SERVICE_STATES | {"unreachable"}
 TERMINAL_STATUS_GRACE_ATTEMPTS = 5
 TERMINAL_STATUS_GRACE_SECONDS = 2.0
 
@@ -99,6 +100,8 @@ def remote_json(node: Node, path: Path) -> dict[str, Any] | None:
 def service_state(node: Node, service: str) -> str:
     completed = ssh(node, ["systemctl", "is-active", service], check=False)
     state = completed.stdout.strip()
+    if completed.returncode == 255 and not state:
+        return "unreachable"
     return state or "unknown"
 
 
@@ -116,7 +119,7 @@ def observe_stage(
     if payload is not None and payload.get("complete") is True:
         return payload, "complete"
     state = service_state(node, service)
-    if state in ACTIVE_SERVICE_STATES:
+    if state in WAITABLE_SERVICE_STATES:
         return None, state
     for _ in range(TERMINAL_STATUS_GRACE_ATTEMPTS):
         time.sleep(TERMINAL_STATUS_GRACE_SECONDS)
@@ -124,7 +127,7 @@ def observe_stage(
         if payload is not None and payload.get("complete") is True:
             return payload, "complete"
         state = service_state(node, service)
-        if state in ACTIVE_SERVICE_STATES:
+        if state in WAITABLE_SERVICE_STATES:
             return None, state
     return payload, state
 
@@ -145,7 +148,7 @@ def wait_for_stage(
                 states.append(f"{name}=complete")
                 continue
             states.append(f"{name}={state}")
-            if state not in ACTIVE_SERVICE_STATES:
+            if state not in WAITABLE_SERVICE_STATES:
                 raise RuntimeError(
                     f"{name} service {services[name]} is {state} before a complete status was written"
                 )

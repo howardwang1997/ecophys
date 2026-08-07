@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -76,6 +77,42 @@ def test_wait_tolerates_collected_service_before_final_status_visibility(
         {"v100_a": node},
         {"v100_a": Path("/tmp/status.json")},
         {"v100_a": "collected.service"},
+        poll_seconds=60,
+    )
+
+    assert result["v100_a"]["complete"] is True
+
+
+def test_service_state_distinguishes_ssh_transport_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_module()
+    node = module.Node(name="v100_a", host="node-a", user="root")
+    completed = subprocess.CompletedProcess(
+        args=["ssh"],
+        returncode=255,
+        stdout="",
+        stderr="ssh: connect to host node-a: Operation timed out\n",
+    )
+    monkeypatch.setattr(module, "ssh", lambda _node, _command, check=False: completed)
+
+    assert module.service_state(node, "worker.service") == "unreachable"
+
+
+def test_wait_keeps_polling_while_node_is_unreachable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_module()
+    node = module.Node(name="v100_a", host="node-a", user="root")
+    observations = iter([None, {"complete": True, "jobs": []}])
+    monkeypatch.setattr(module, "remote_json", lambda _node, _path: next(observations))
+    monkeypatch.setattr(module, "service_state", lambda _node, _service: "unreachable")
+    monkeypatch.setattr(module.time, "sleep", lambda _seconds: None)
+
+    result = module.wait_for_stage(
+        {"v100_a": node},
+        {"v100_a": Path("/tmp/status.json")},
+        {"v100_a": "worker.service"},
         poll_seconds=60,
     )
 
