@@ -17,15 +17,14 @@
 
 \newcommand{\method}{\textsc{EcoMD}}
 \newcommand{\wstar}{\ensuremath{W^{\star}}}
-\newcommand{\pending}{\mbox{\textsc{pending}}}
-\newcommand{\learnedScorable}{\pending}
-\newcommand{\learnedConfirmed}{\pending}
-\newcommand{\learnedDelta}{\pending}
-\newcommand{\learnedCI}{\pending}
-\newcommand{\variantSigns}{\pending}
-\newcommand{\learnedRobustCI}{\pending}
-\newcommand{\learnedLooRange}{\pending}
-\newcommand{\hillFractionPasses}{\pending}
+\newcommand{\learnedScorable}{7}
+\newcommand{\learnedConfirmed}{6}
+\newcommand{\learnedDelta}{\ensuremath{+6.12}}
+\newcommand{\learnedCI}{\ensuremath{[+5.43,\,+6.99]}}
+\newcommand{\variantSigns}{\ensuremath{2/3}}
+\newcommand{\learnedRobustCI}{\ensuremath{[+5.44,\,+7.06]}}
+\newcommand{\learnedLooRange}{\ensuremath{[+5.84,\,+6.67]}}
+\newcommand{\hillFractionPasses}{\ensuremath{3/3}}
 
 \newcommand{\figureorbox}[3]{%
   \IfFileExists{#1}{\includegraphics[width=#2\linewidth]{#1}}{%
@@ -51,8 +50,9 @@ are then scored on equal-length windows before and after that frozen point. Seve
 stationary false positives (Wilson 95\% upper bound 8.6\%) but only 28/124 cold-start detections,
 showing high specificity and limited sensitivity. Across seven primary learned checkpoints,
 \learnedScorable{} are scorable and \learnedConfirmed{} transfer the frozen gate; the paired Hill-index
-effect is \learnedDelta{} (95\% interval \learnedCI{}). The finding is a simulator discrepancy, not
-market physics, and the proposed audit is conservative rather than a universal stationarity test.
+effect is \learnedDelta{} (95\% interval \learnedCI{}). One primary transfer failure and one unresolved
+variant limit the result to a simulator-specific case study. The finding is a simulator discrepancy,
+not market physics, and the proposed audit is conservative rather than a universal stationarity test.
 It converts an apparently favorable tail score into a falsifiable statement about whether its scored
 window is consistent with a frozen late-time reference.
 \end{abstract}
@@ -125,7 +125,7 @@ serialized and hashed.
 
 \begin{figure}[t]
   \centering
-  \figureorbox{figures/fig_protocol.pdf}{1.0}{Protocol figure pending.}
+  \figureorbox{figures/fig_protocol.pdf}{1.0}{Protocol figure unavailable.}
   \caption{Calibration-only stationarity audit. Late blocks define a distance tolerance without the
   Hill score or empirical target band; the earliest three-block plateau gives $\wstar$. It transfers to
   independent trajectories, and both tail scores use the same 4,000 returns.}
@@ -219,7 +219,7 @@ AR(1)-SV, cold $10\times$ & 3/31 & 9.68\% & [3.35, 24.90] \\
 
 \begin{figure}[t]
   \centering
-  \figureorbox{figures/fig_analytic_controls.pdf}{1.0}{Analytic-control figure pending.}
+  \figureorbox{figures/fig_analytic_controls.pdf}{1.0}{Analytic-control figure unavailable.}
   \caption{Analytic stress test. ED (teal) meets the frozen false-positive bound (left) but is less
   sensitive than MSER-5 (gray, middle). MSER-5 was added post-primary; it discards more stationary
   data and has comparable cold-condition score error (right).}
@@ -239,18 +239,20 @@ distinction is conservative selection, not uniformly lower tail-score error.
 
 \paragraph{Learned-model audit.}
 Of seven primary checkpoints, \learnedScorable{} yield a calibration $\wstar$ and
-\learnedConfirmed{} also pass held-out transfer. Across scorable checkpoints, the equal-weight paired
+\learnedConfirmed{} also pass held-out transfer; the gold checkpoint is the sole transfer failure.
+Across scorable checkpoints, the equal-weight paired
 effect is $\Delta\alpha=\learnedDelta{}$ with hierarchical-bootstrap 95\% interval
-\learnedCI{}. The three within-family stochastic-volatility checkpoints have the expected positive
-sign in \variantSigns{} cases. Figure~\ref{fig:learned} reports checkpoint-level effects, missing gates, and
-all transfer failures; none is removed from the denominator.
+\learnedCI{}. The expected sign occurs in \variantSigns{} within-family variants, but one of the two
+scorable variants fails transfer and the third has no $\wstar$; the frozen E3 replication rule therefore
+fails. Figure~\ref{fig:learned} reports every missing gate and transfer failure; none is removed from
+the denominator.
 The common-seed interval is \learnedRobustCI{}, and market-balanced leave-one-out effects span
 \learnedLooRange{}. Positive common-seed intervals persist for \hillFractionPasses{} of the frozen
 Hill-fraction grid.
 
 \begin{figure}[t]
   \centering
-  \figureorbox{figures/fig_learned_results.pdf}{1.0}{Learned-checkpoint result pending V100 execution.}
+  \figureorbox{figures/fig_learned_results.pdf}{1.0}{Learned-checkpoint figure unavailable.}
   \caption{Held-out learned-model audit. Left: checkpoint-level median paired Hill changes, with
   trajectory-bootstrap intervals and the hierarchical aggregate (diamond). Filled markers pass
   frozen-$W$ transfer, open markers fail it, and missing $\wstar$ outcomes remain explicit; teal
@@ -266,8 +268,8 @@ while relaxing, and what it does after a reproducible late-time criterion. The t
 dynamical property of the learned simulator, but it is not evidence for real-market physics. This is
 distinct from empirical stochastic-thermodynamic analyses of market data \citep{maskawa2025}. Indeed,
 a light late-time tail is a model discrepancy when real returns are already heavy tailed. The paper's
-value is therefore diagnostic: it withdraws a favorable interpretation instead of rescuing it with a
-new scoring convention.
+value is therefore diagnostic: the E-B outcome supports a simulator-specific audit, not broad method
+transfer, and withdraws a favorable interpretation instead of rescuing it with a new scoring convention.
 
 The limits are consequential. Evidence comes from one simulator family, and the analytic sensitivity
 is weak except for a strong GARCH variance mismatch. Late blocks provide an operational internal

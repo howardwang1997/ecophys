@@ -1,7 +1,7 @@
 # Experiment 127 — Results and decision record
 
-**Status:** active (analytic controls complete; learned-model execution in progress). This file includes
-positive, null, failed, missing, and deviated outcomes.
+**Status:** complete; frozen tier **E-B**. This file includes positive, null, failed, missing, and
+deviated outcomes.
 
 ## Integrity and provenance
 
@@ -17,6 +17,15 @@ positive, null, failed, missing, and deviated outcomes.
   generation manifest.
 - V100 execution uses compatibility commit `22a6e41628d7cca7688ecdf5513e5a5bb014e462` with
   PyTorch `2.3.1+cu121`, CUDA runtime 12.1, and an `sm_70`-capable wheel.
+- All 160 calibration trajectories were retrieved and hash-verified before gate fitting. The gate was
+  frozen at `2026-08-07T16:42:36.931108+00:00` with zero held-out trajectories; the first held-out
+  trajectory was written at `2026-08-07T16:49:13+00:00`.
+- Raw controller gate/result SHA-256 values are
+  `8c3ac123c999dc1bffee03b7bc31083312ffc13f60294879ff7aaa693e02f074` and
+  `2c3d3c5e266b7327482867146edccf3799cd681d88ce1c334e9fd6622aae1b8e`.
+  The committed review copies replace only the absolute repository prefix in provenance paths; their
+  SHA-256 values are `6ec6a372348efa49fc23cbc7d8152682a86cff55e49d32b9f79061d7da5a4b57`
+  and `0af68915b481b7fbc75f8285b9189b0e85065a19d42a65dcf737ba9033ddc8e1`.
 
 ## V100 probes
 
@@ -37,11 +46,19 @@ probe metadata. Production retraining began as two resumable systemd services af
 
 ## E1 learned-model held-out scoring
 
-Pending. Before either rollout split existed, a secondary common-seed bootstrap and market-balanced
-leave-one-out diagnostic were frozen in `PREHELDOUT_ROBUSTNESS_AMENDMENT_2026-08-07.md`. They cannot
-upgrade the binding tier and must disclose disagreement with the original hierarchical interval.
-The 2.5%, 5%, and 10% Hill-fraction sensitivity grid was likewise frozen before any rollout in
-`PREHELDOUT_HILL_FRACTION_AMENDMENT_2026-08-07.md`; 5% remains the sole primary fraction.
+All seven primary checkpoints produced a calibration W-star. Six of seven passed the held-out
+three-block transfer rule; the gold concave checkpoint failed transfer and remains in the denominator
+and effect estimate. The equal-weight mean of checkpoint median paired Hill differences was `+6.1192`
+with primary hierarchical-bootstrap 95% interval `[+5.4287, +6.9879]`. Every primary checkpoint had a
+positive median difference. This passes the frozen direction/effect test but not the seven-of-seven
+transfer requirement for E-A.
+
+The pre-held-out common-seed bootstrap gave `[+5.4437, +7.0558]`. The market-balanced effect was
+`+6.3720`; leave-one-market-out effects ranged from `[+5.8417, +6.6672]` and were all positive. The
+Hill-fraction grid was also consistent: crossed-bootstrap intervals were `[+7.8180, +9.9631]` at
+2.5%, `[+5.4270, +7.0038]` at 5%, and `[+3.0414, +4.2420]` at 10%. These secondary analyses support
+robust direction but cannot upgrade the binding tier. `LEARNED_ROBUSTNESS.json` has SHA-256
+`155a663a2eae4dc28a9c6115e0a101a063cf405d95cd98d58cc7e62324bc5e7e`.
 
 ## E2 analytic controls
 
@@ -68,7 +85,11 @@ The fixed-500 and fixed-1000 rows mechanically count every case as a discard/det
 
 ## E3 within-EcoMD architecture variant
 
-Pending.
+Two variants were scorable and both had positive median Hill differences (`+5.2130`, `+5.4759`).
+Variant 0 failed held-out gate transfer, variant 1 passed, and variant 2 produced no calibration
+W-star within the frozen horizon. Because the frozen E3 rule requires all three to be scorable before
+counting a two-of-three sign replication, `e3_same_positive_sign_2_of_3` is false. This blocks broad
+within-family transfer wording.
 
 ## E4 method baselines
 
@@ -92,11 +113,17 @@ not have uniformly lower tail-score error. The full 217-row record is frozen in
 
 ## Paper E tier decision
 
-Pending: E-A / E-B / E-C.
+**E-B: simulator-specific case study/protocol audit.** E1's positive held-out effect, analytic
+specificity, common-seed robustness, market leave-one-out checks, and Hill-fraction sensitivity pass.
+E-A is blocked by one of seven primary held-out transfer failures, one unresolved E3 gate, one E3
+transfer failure, and mixed rather than uniformly superior baseline performance. E-C is not triggered:
+the primary effect does not vanish, fixed-length scoring is maintained for all seven E1 checkpoints,
+and no target leakage or post-hoc threshold change occurred.
 
 ## Conditional Paper S rescue
 
-Not queued until Paper E is frozen.
+Paper E is now frozen at E-B. Paper S/STODY remains unqueued until the Sim2Science manuscript and
+artifact are frozen; no rescue experiment may alter the Paper E claim or thresholds.
 
 ## Deviations, failures, and missing artifacts
 
@@ -111,3 +138,8 @@ Not queued until Paper E is frozen.
 - The repository-wide local test command was terminated by the host resource limit (exit 137) after
   roughly 65 tests and before completion; no assertion failure had appeared. This is not recorded as
   a full-suite pass. The changed-scope test suite, Ruff, and strict mypy checks passed.
+- Two Mac-side controller processes exited during remote execution: the first encountered a collected
+  transient systemd unit after training, and the second misclassified an SSH transport outage as an
+  unknown terminal unit. Remote systemd workers continued and their status/artifact hashes were
+  preserved. Commits `46125b44c` and `6d21459e7` harden supervision; neither changes the frozen
+  scientific worker or execution SHA.
