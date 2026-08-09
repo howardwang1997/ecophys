@@ -1,6 +1,7 @@
 # EcoPhys / EcoMD — Plan v4：面向 Nature Computational Science 的不变测度校准路线
 
 **日期：** 2026-08-09
+**最近更新：** 2026-08-10
 
 **状态：** NCS 路线的当前执行计划
 
@@ -12,9 +13,11 @@
 
 **数据边界：** 当前数据只是 D0 起点；后续按科学问题和 gate 扩展市场、交易所、时间跨度与数据模态
 
-**2026-08-09 执行状态：** G0 为 AMBER（广义 novelty claim 已被先行工作否决）；WP1 的 CPU 六项
-语义测试与版本化单 V100 v2 probe 已通过（v1 失败结果保留），distributed exact-resume 尚未完成；
-exp128--130 已完成零采购 preflight，结果不构成 confirmatory evidence。
+**2026-08-10 执行状态：** G0 仍为 AMBER（广义 novelty claim 已被先行工作否决）；exp131 的离散
+事件已知基线/harness 通过，但没有 candidate estimator；exp132 的双稳态 fail-visible diagnostic 按
+预注册门槛失败。WP1 的 CPU 六项语义测试、版本化单 V100 v2 mechanics probe，以及 exp133 的
+双 rank CPU/Gloo 原子 exact-resume 已通过；单 V100 exact-resume 因两张卡均被其他正式任务占用而待跑。
+exp128--133 均是零采购 preflight，不构成 confirmatory evidence。
 
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
 
@@ -89,8 +92,9 @@ exp128--130 已完成零采购 preflight，结果不构成 confirmatory evidence
   边界会丢失部分状态；局部 `step_idx` 也会重新从零开始；
 - `create_graph=True` 时 jump 使用确定性 drift proxy，推理则抽样 compound-Poisson jump，
   因而 autodiff 开关改变了科学动力学；
-- simulator 的其他 mutable buffers、shock schedule、cache、RNG 与 checkpoint 没有统一的
-  state-complete 语义；
+- 单机 mutable buffers、shock schedule、cache 与显式 RNG 已纳入统一 `SimulatorState`；双 rank
+  CPU/Gloo 也已验证原子 checkpoint 的逐 rank exact resume，但真实 data cursor、scheduler、AMP
+  scaler、W&B 和多节点 NCCL contract 仍未完成；
 - 模型内部 `ofi` 是 latent-agent alignment，真实 exp124 OFI 来自盘口深度变化和成交；两者
   之间没有经过验证的 observation operator；
 - 初始化/隐状态校准、persistent chains 和稳态灵敏度已有大量先行工作，不能先命名方法再补
@@ -568,16 +572,21 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
 1. **已完成：** G0 prior-art matrix；当前结论 AMBER，广义 claim 已否决，在 E1--E3 前不写算法名称；
 2. **已完成：** `SimulatorState`、六类 CPU parity/resume tests 和版本化单 V100 mechanics probe；
 3. **已完成：** 免费 LOBSTER 八个样本、1,381,420 条事件的流式重建 hard gates；
-4. 以 `experiments/128_state_semantics_preflight/` 为输入冻结正式 WP2 preregistration，写明五臂、
-   独立训练 seeds、post-stationarity 主指标、compute matching 和 stop rule；
-5. 将完整状态接入 `train_distributed.py` 的原子 checkpoint，并在空闲 V100 上做 kill/restart 与
-   rank-RNG/data-cursor 恢复测试；
-6. 继续免费 E1/E2：两状态 chain、compound-Poisson OU 与双稳态慢混合系统；只有相对强基线存在
-   可复现差异时才把 G0 从 AMBER 上调；
-7. 用当前 V100 重跑 canonical training/`T=8,000` rollout benchmark，记录新的 V100-eq anchor；
-8. 用 synthetic queue/emission 完成 observation bridge 的参数恢复测试；在此之前不采购 L2；
-9. 完成 G0/G1-preflight review：若 novelty 不成立，停止 WP3 方法 claim；若 distributed resume 未
-   通过，不启动正式五臂训练。
+4. **已完成：** exp131 两状态 chain/compound-Poisson OU 基线审计；已知 LR/FD controls 与前向
+   parity 通过，但没有新的 accuracy--cost Pareto 点，G0 不上调；
+5. **失败并保留：** exp132 双稳态 diagnostic 能拒绝 hard trapped chains，但 easy resolved rate
+   `78.125% < 80%`，不得修改原阈值；任何 v2 必须使用独立 tuning/validation split；
+6. **CPU 已完成、CUDA 待空闲：** exp133 双 rank Gloo 模型、optimizer、逐 rank 完整状态和 RNG
+   跨进程 bit-exact；补跑单 V100 gate，并另行纳入真实 data cursor、scheduler/scaler 与 W&B contract；
+7. 以 `experiments/128_state_semantics_preflight/` 为输入冻结正式 WP2 preregistration，写明五臂、
+   独立训练 seeds、post-stationarity 主指标、compute matching 和 stop rule；在 G0 review 前不启动
+   550--1,050 V100-eq h 的正式规模；
+8. 先写 candidate estimator 的数学式、五个最近邻非等价表和可计算 residual，再预注册独立的
+   E0--E3 candidate benchmark；没有 candidate 时不把 baseline harness 当作 G0 证据；
+9. 用 synthetic queue/emission 完成 observation bridge 的参数恢复测试；在此之前不采购 L2；
+10. 两张 V100 空闲后重跑 canonical training/`T=8,000` rollout anchor；不抢占其他正式任务；
+11. 完成 G0/G1-preflight review：若 novelty 不成立，停止 WP3 方法 claim；若 V100 exact resume 或
+    production cursor contract 未通过，不启动正式五臂训练。
 
 ---
 

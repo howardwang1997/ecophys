@@ -18,8 +18,11 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > **Zero-cost preflight (2026-08-09).** G0 is AMBER rather than passed. The broad estimator novelty claim is
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete
 > single-process API and corrected force/jump semantics now pass CPU and versioned single-V100 mechanics tests,
-> while DDP exact resume remains open. Free LOBSTER exp130 validates streaming book reconstruction only, not an
-> EcoMD observation bridge. Details: `project_ncs_zero_cost_preflight_2026-08-09.md`.
+> and a two-rank CPU/Gloo atomic exact-resume test is bit-exact. The single-V100 exact-resume and production
+> cursor contract remain open. Exp131 validates known event-gradient controls only; exp132 failed its frozen
+> diagnostic utility gate, so G0 remains AMBER. Free LOBSTER exp130 validates streaming book reconstruction
+> only, not an EcoMD observation bridge. Details: `project_ncs_zero_cost_preflight_2026-08-09.md` and
+> `project_ncs_preflight_continuation_2026-08-10.md`.
 
 ## Research goal
 Build **EcoMD**: a differentiable, equivariant, learned-potential molecular-dynamics-style simulator for financial markets. Agents = particles in latent feature space; dynamics = Langevin; interaction potentials learned end-to-end from high-frequency order flow / return data.

@@ -5,6 +5,10 @@
 **适用计划：** `papers/proposal/plan_v4_ncs.md`  
 **资源约束：** 当前阶段不采购数据、不扩容、不得使用 H20
 
+**2026-08-10 执行更新：** exp131 已通过 E1 的已知 baseline/harness 门槛，但没有 candidate
+estimator；exp132 的 v1 mixing diagnostic 因 easy resolved rate `78.125% < 80%` 按预注册判 FAIL。
+这两项均不支持 G0 升级。
+
 ## 1. Gate 结论
 
 下列说法均不能作为论文的新颖性 claim：
@@ -124,6 +128,16 @@ variance/ESS、mixing diagnostic、估计的 truncation residual，以及是否�
 所有阈值在查看 candidate 结果前冻结。E0--E2 可在 CPU 完成；E3 最多使用空闲 V100 做短 probe，
 不启动多卡生产任务。
 
+### E1/E2 baseline 执行结论（2026-08-10）
+
+- exp131 在两状态 chain 与 compound-Poisson AR/OU 上通过公式、前向/RNG parity 和已知基线门槛。
+  慢 jump cell 的 coupled finite difference 相对偏差为 `+5.64%`、90% coverage 为 `92.19%`；
+  persistent-detached LR 为 `-31.63%`。这确认问题与 controls，不是方法改进。
+- exp132 在 hard regime 将 64/64 batch 全部判为 unresolved，false-safe 为零；但 easy regime 只
+  resolve 50/64 batch，即 `78.125%`，低于冻结的 `80%`。v1 overall FAIL，阈值不后改。
+- 当前仍没有 candidate estimator，E3 的 candidate-vs-GGE Pareto benchmark 因而没有科学比较对象。
+  下一步必须先完成数学 spec 与非等价性，而不是继续累计 baseline smoke。
+
 ## 6. G0 的最终判定规则
 
 当前判定为 **AMBER / 未通过**。满足以下全部条件后才改为 PASS：
@@ -136,4 +150,3 @@ variance/ESS、mixing diagnostic、估计的 truncation residual，以及是否�
 
 若任一项失败，NCS 方法主线停止。state-complete EcoMD、免费 L2 重建和 simulator audit 仍作为
 独立且有价值的工程/科学交付继续，但不能用于掩盖方法新颖性失败。
-

@@ -1,7 +1,8 @@
 # NCS WP1：EcoMD 状态、力与随机动力学语义
 
 **日期：** 2026-08-09  
-**状态：** 单机 CPU 与版本化单卡 V100 probe 通过；DDP 生产 checkpoint 尚未接入
+**最近更新：** 2026-08-10
+**状态：** 单机语义与双 rank CPU/Gloo exact-resume 通过；单 V100 与生产 cursor contract 待完成
 **适用分支：** `ncs-invariant-calibration-v4`
 
 ## 1. 本轮解决的问题
@@ -76,16 +77,34 @@ jump 默认在训练和推理中使用完全相同的 compound-Poisson transitio
 而 RNG state 精确一致；`dt=0.005` 的版本化 v2 在误差阈值 `1e-6` 下通过全部 11 项检查，并完成有限的
 512 步 rollout。这个 post-diagnostic PASS 只支持 CUDA 可执行性，不支持生产稳定性或市场 fidelity。
 
-## 5. 尚未完成的生产集成
+## 5. 分布式 checkpoint 进展
+
+exp133 已将 state-complete 路径接入 `train_distributed.py` 的 opt-in checkpoint format v2。该格式
+原子保存 model、optimizer、world size、每个 rank 的 `SimulatorState`、主/辅助 generator、PyTorch
+CPU/CUDA RNG、NumPy/Python RNG 和 history；CPU payload 可移动回本地 device。world-size、rank list、
+format 和 state-complete mismatch 都 hard fail。
+
+实现审计还发现 manual all-reduce 路径没有执行 DDP 的初始参数广播；此前不同 rank 可能从不同
+model 参数开始。现在 optimizer 创建前由 rank 0 广播全部参数和 buffers。
+
+正式两 rank CPU/Gloo fixture 比较 uninterrupted 6 iterations 与 `3 + new processes + 3`：model、
+optimizer、两个 rank 的完整状态/RNG 全部 bit-exact，difference count 均为零，且 rank 最终 model
+digest 一致。artifact 位于 `experiments/133_distributed_exact_resume/CPU_GLOO_RESULTS.json`。
+
+## 6. 尚未完成的生产集成
 
 以下工作不能被本轮单机测试冒充为已完成：
 
-- `train_ecomd(..., state_complete=True)` 已提供单 GPU 入口，但既有配置默认仍走 legacy path；
-- `train_distributed.py` 尚未把 `SimulatorState`、optimizer、scheduler、AMP scaler 和各 rank RNG 合并为
-  一个原子 checkpoint，也未做 preemption/restart 的跨进程 bit-exact 测试；
+- `train_ecomd(..., state_complete=True)` 与 `train_distributed(..., state_complete=True)` 已提供 opt-in
+  入口，但既有配置默认仍走 legacy path；
+- exp133 已完成 tiny CPU/Gloo 的跨进程 exact resume，但单 V100 CUDA gate 尚未执行；2026-08-10
+  检查时两张卡均在运行无关的 graphene 正式任务，因此没有抢卡；
 - DDP sampler/data cursor 与 W&B resume metadata 尚未纳入状态契约；
+- 当前训练配置没有 scheduler/AMP scaler；未来一旦启用，必须一并纳入 format，而不能依赖 optimizer
+  恢复间接推断；多节点 NCCL 与实际异步 preemption 仍未验证；
 - 正式 WP2 的五臂多 seed、长时程冻结指标和 compute matching 尚未开始；
 - 这套状态修复没有解决“不变测度梯度估计器是否新颖、正确和可扩展”的 G0/G2 问题。
 
-因此，WP1 当前只能标记为“单机 CPU/V100 语义通过，生产续跑待完成”。在 distributed exact-resume 完成前，
-任何长训练都必须保留旧路径标签，不能作为状态完整方法的 confirmatory run。
+因此，WP1 当前标记为“核心状态语义与双 rank CPU restart 通过，CUDA/生产外围状态待完成”。在单
+V100 gate、所选正式 loader 的 cursor contract 和实际生产配置恢复测试通过前，不启动状态完整方法的
+confirmatory 长训练。

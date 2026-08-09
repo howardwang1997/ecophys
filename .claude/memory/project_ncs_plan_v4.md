@@ -35,8 +35,13 @@ metadata:
 - Honest planning probability: about 7–12% joint from the current state, 20–35% conditional on all
   scientific gates passing. Fallback is TMLR/appropriate ML or microstructure venue without overclaiming.
 - Zero-purchase preflight on 2026-08-09 left G0 **AMBER**: broad novelty claims are occupied by prior art.
-  WP1 now has a state-complete single-process API and CPU/V100 mechanics evidence, but atomic DDP resume
-  is still open. Exp128 uses five arms because force semantics are a third defect alongside missing state
+  WP1 now has a state-complete single-process API, CPU/V100 mechanics evidence and a two-rank CPU/Gloo atomic
+  exact-resume PASS; the single-V100 exact-resume and production data-cursor contract are still open. Exp128
+  uses five arms because force semantics are a third defect alongside missing state
   and train/inference jump mismatch. Exp129 shows persistent detached state alone remains biased in a
   slow-mixing AR(1). Exp130 validates streaming reconstruction on 1,381,420 free LOBSTER sample events,
   not an EcoMD-to-L2 observation model. See `project_ncs_zero_cost_preflight_2026-08-09.md`.
+- The 2026-08-10 continuation did not upgrade G0: exp131 passed only a known event-gradient baseline/harness
+  audit, while exp132 failed its frozen easy-resolution diagnostic gate. Exp133 found and fixed missing initial
+  rank-model broadcast and passed exact two-rank CPU continuation. See
+  `project_ncs_preflight_continuation_2026-08-10.md`.
