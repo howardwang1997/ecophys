@@ -21,7 +21,9 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > and a two-rank CPU/Gloo atomic exact-resume test is bit-exact. The single-V100 exact-resume and production
 > cursor contract remain open. Exp131 validates known event-gradient controls only; exp132 failed its frozen
 > diagnostic utility gate, so G0 remains AMBER. Free LOBSTER exp130 validates streaming book reconstruction
-> only, not an EcoMD observation bridge. Details: `project_ncs_zero_cost_preflight_2026-08-09.md` and
+> only. Exp134 adds a correctly specified minimal synthetic L2 recovery PASS but not an EcoMD/real bridge; its
+> exact latent-sign gauge requires an external sign anchor. G3 remains open and paid L2 stays locked. Details:
+> `project_ncs_zero_cost_preflight_2026-08-09.md` and
 > `project_ncs_preflight_continuation_2026-08-10.md`.
 
 ## Research goal

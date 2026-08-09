@@ -1,6 +1,6 @@
 ---
 name: ncs-preflight-continuation-2026-08-10
-description: "Exp131-133 lasting outcomes: discrete-event baseline harness passed without a new estimator, bistable diagnostic failed its frozen easy-resolution gate, and atomic two-rank CPU exact resume passed while V100 validation waits for an idle card."
+description: "Exp131-134 lasting outcomes: event baselines passed without a new estimator, bistable diagnostic failed, two-rank CPU exact resume passed, and a minimal correctly specified synthetic L2 bridge passed while exposing latent sign non-identifiability."
 metadata:
   node_type: memory
   type: project
@@ -36,6 +36,15 @@ metadata:
 ## Priority implication
 
 Do not turn additional baseline smokes into G0 evidence. Next method work is the mathematical candidate spec,
-five-nearest-method non-equivalence table and a separately preregistered candidate E0--E3 comparison. In
-parallel, the next data-free application work is synthetic queue/event emission with parameter-recovery gates.
+five-nearest-method non-equivalence table and a separately preregistered candidate E0--E3 comparison.
 
+## Synthetic observation bridge
+
+- Exp134 emitted and reconstructed 2,160,000 aggregate-L5 events across 72 independent streams. All frozen
+  correctly-specified recovery, future-split likelihood and permutation-control gates passed.
+- Nonzero flow slopes had cell-median relative errors of about 1.0--2.1%; permuting the latent reduced fitted
+  slopes and held-out gains to numerical noise. Median size-slope relative error was 1.08%.
+- Reversing the latent sign exactly reverses the fitted slope with identical likelihood. Real/EcoMD use needs a
+  fixed buy/sell sign anchor; L2 messages cannot orient an arbitrary latent coordinate.
+- G3 remains open. The operator lacks an EcoMD adapter, price/order-level dynamics, misspecification tests and
+  observation-only/Hawkes/queue-reactive comparisons. Paid L2 is still locked.

@@ -17,7 +17,9 @@
 事件已知基线/harness 通过，但没有 candidate estimator；exp132 的双稳态 fail-visible diagnostic 按
 预注册门槛失败。WP1 的 CPU 六项语义测试、版本化单 V100 v2 mechanics probe，以及 exp133 的
 双 rank CPU/Gloo 原子 exact-resume 已通过；单 V100 exact-resume 因两张卡均被其他正式任务占用而待跑。
-exp128--133 均是零采购 preflight，不构成 confirmatory evidence。
+exp134 的最小 aggregate-L2 正确设定 synthetic recovery 通过，但暴露 latent sign gauge，且尚无
+EcoMD adapter、misspecification 或 observation-only 对照。exp128--134 均是零采购 preflight，不构成
+confirmatory evidence。
 
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
 
@@ -301,6 +303,12 @@ seeds；进入 headline 的 confirmatory cells 至少二十个独立 seeds。
 6. 与 observation-only point process、Hawkes/queue-reactive 和简单 empirical resampling 比较，
    防止灵活观测层掩盖错误 latent dynamics。
 
+**2026-08-10 零成本进展。** exp130 已验证免费 LOBSTER 样本的 schema 与 visible queue reconstruction；
+exp134 在 72 条合成流、216 万事件上通过最小 aggregate-L5 emission 的严格未来切分参数恢复与 latent
+permutation control。`z -> -z` 得到完全相同 likelihood，说明没有外部 buy/sell anchor 时 latent sign
+不可识别。该结果只完成上述第 2/4 项的 correctly-specified 最小 preflight；第 1/3/5/6 项、EcoMD
+adapter、price/order-level semantics 和 misspecification stress 均未完成，G3 不升级，付费数据不解锁。
+
 **数据。** 先用生成的 event streams 和免费 LOBSTER/Tardis 样本做 schema、reconstruction 与
 recovery；G2 通过后才解锁付费 L2 的训练 split。真实测试 split 在预注册后保持封存。
 
@@ -583,7 +591,9 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
    550--1,050 V100-eq h 的正式规模；
 8. 先写 candidate estimator 的数学式、五个最近邻非等价表和可计算 residual，再预注册独立的
    E0--E3 candidate benchmark；没有 candidate 时不把 baseline harness 当作 G0 证据；
-9. 用 synthetic queue/emission 完成 observation bridge 的参数恢复测试；在此之前不采购 L2；
+9. **最小正确设定版本已完成：** exp134 synthetic aggregate-L5 emission/recovery 全 gate 通过；继续
+   `ofi -> latent_flow_alignment` migration、带固定 sign anchor 的 EcoMD adapter，以及独立预注册的
+   misspecification/observation-only stress；完成前不采购 L2；
 10. 两张 V100 空闲后重跑 canonical training/`T=8,000` rollout anchor；不抢占其他正式任务；
 11. 完成 G0/G1-preflight review：若 novelty 不成立，停止 WP3 方法 claim；若 V100 exact resume 或
     production cursor contract 未通过，不启动正式五臂训练。

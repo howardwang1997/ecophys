@@ -45,3 +45,7 @@ metadata:
   audit, while exp132 failed its frozen easy-resolution diagnostic gate. Exp133 found and fixed missing initial
   rank-model broadcast and passed exact two-rank CPU continuation. See
   `project_ncs_preflight_continuation_2026-08-10.md`.
+- Exp134 passed a minimal correctly specified aggregate-L5 recovery test on 72 streams/2.16M events, including
+  a latent-permutation kill. It also proved the expected sign gauge exactly. G3 is not passed: EcoMD adaptation,
+  sign anchoring, price/order-level semantics, misspecification and observation-only baselines remain open; paid
+  L2 stays gated.
