@@ -7,7 +7,10 @@
 
 **2026-08-10 执行更新：** exp131 已通过 E1 的已知 baseline/harness 门槛，但没有 candidate
 estimator；exp132 的 v1 mixing diagnostic 因 easy resolved rate `78.125% < 80%` 按预注册判 FAIL。
-这两项均不支持 G0 升级。
+`ncs_candidate_estimator_spec_v0.md` 已写出目标、混合梯度、随机 horizon、staleness bound 和误差账本，
+但逐项红队结论是直接组合 PCD、pathwise/LR、Rhee--Glynn 与 StochasticAD/GGE；没有新的 stochastic
+identity、coupling、residual theorem 或 variance result。v0 非等价性 FAIL，禁止命名和启动 E0--E3
+candidate benchmark，G0 仍为 AMBER。
 
 ## 1. Gate 结论
 
@@ -78,6 +81,9 @@ estimator 的直接拼装，G0 必须判失败。
 
 ## 4. Candidate estimator：允许实现的最小规格
 
+完整数学规格与非等价表见 `ncs_candidate_estimator_spec_v0.md`。该 v0 已在编码前判定为直接组合，
+因此本节保留为未来 v1 的最低接口要求，而不是当前获准实现的方法。
+
 本阶段不命名算法。实现必须拆成四个可独立消融的模块：
 
 1. **State-complete ensemble。** 每条 chain 保存完整 simulator state、绝对时钟、RNG 和参数版本；
@@ -136,7 +142,8 @@ variance/ESS、mixing diagnostic、估计的 truncation residual，以及是否�
 - exp132 在 hard regime 将 64/64 batch 全部判为 unresolved，false-safe 为零；但 easy regime 只
   resolve 50/64 batch，即 `78.125%`，低于冻结的 `80%`。v1 overall FAIL，阈值不后改。
 - 当前仍没有 candidate estimator，E3 的 candidate-vs-GGE Pareto benchmark 因而没有科学比较对象。
-  下一步必须先完成数学 spec 与非等价性，而不是继续累计 baseline smoke。
+  数学 spec 已完成但非等价性失败；下一步若继续，必须先提出可写成 theorem 或 estimator identity
+  的不可约 primitive，而不是继续累计 baseline smoke。
 
 ## 6. G0 的最终判定规则
 

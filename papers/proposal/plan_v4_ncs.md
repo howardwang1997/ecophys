@@ -306,8 +306,12 @@ seeds；进入 headline 的 confirmatory cells 至少二十个独立 seeds。
 **2026-08-10 零成本进展。** exp130 已验证免费 LOBSTER 样本的 schema 与 visible queue reconstruction；
 exp134 在 72 条合成流、216 万事件上通过最小 aggregate-L5 emission 的严格未来切分参数恢复与 latent
 permutation control。`z -> -z` 得到完全相同 likelihood，说明没有外部 buy/sell anchor 时 latent sign
-不可识别。该结果只完成上述第 2/4 项的 correctly-specified 最小 preflight；第 1/3/5/6 项、EcoMD
-adapter、price/order-level semantics 和 misspecification stress 均未完成，G3 不升级，付费数据不解锁。
+不可识别。模型变量现已正式迁移为 `latent_flow_alignment`，旧 `ofi` 属性/NPZ 键只作为显式 legacy
+alias 保留。exp135 又在 144 条流、432 万事件上通过预注册的 misspecification/observation-only stress：
+正确区分 current-latent、observed-lag、combined、lagged、even-nonlinear 与 null truth，同时在
+`rho=0.98` 的 current/lagged 高共线情形明确记录 temporal non-identifiability。上述结果仍只是合成
+preflight；EcoMD adapter、固定 sign anchor、共同 evaluator 的真实 L2 路径、price/order-level semantics
+和 Hawkes/queue-reactive baselines 未完成，G3 不升级，付费数据不解锁。
 
 **数据。** 先用生成的 event streams 和免费 LOBSTER/Tardis 样本做 schema、reconstruction 与
 recovery；G2 通过后才解锁付费 L2 的训练 split。真实测试 split 在预注册后保持封存。
@@ -584,17 +588,21 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
    parity 通过，但没有新的 accuracy--cost Pareto 点，G0 不上调；
 5. **失败并保留：** exp132 双稳态 diagnostic 能拒绝 hard trapped chains，但 easy resolved rate
    `78.125% < 80%`，不得修改原阈值；任何 v2 必须使用独立 tuning/validation split；
-6. **CPU 已完成、CUDA 待空闲：** exp133 双 rank Gloo 模型、optimizer、逐 rank 完整状态和 RNG
-   跨进程 bit-exact；补跑单 V100 gate，并另行纳入真实 data cursor、scheduler/scaler 与 W&B contract；
+6. **CPU 已完成、CUDA 已安全排队：** exp133 双 rank Gloo 模型、optimizer、逐 rank完整状态和 RNG
+   跨进程 bit-exact；单 V100 gate 已排在 V100-A 的 graphene 任务之后，须连续十次一分钟空闲检查且
+   无 graphene 优先释放标记才会启动；另行纳入真实 data cursor、scheduler/scaler 与 W&B contract；
 7. 以 `experiments/128_state_semantics_preflight/` 为输入冻结正式 WP2 preregistration，写明五臂、
    独立训练 seeds、post-stationarity 主指标、compute matching 和 stop rule；在 G0 review 前不启动
    550--1,050 V100-eq h 的正式规模；
-8. 先写 candidate estimator 的数学式、五个最近邻非等价表和可计算 residual，再预注册独立的
-   E0--E3 candidate benchmark；没有 candidate 时不把 baseline harness 当作 G0 证据；
-9. **最小正确设定版本已完成：** exp134 synthetic aggregate-L5 emission/recovery 全 gate 通过；继续
-   `ofi -> latent_flow_alignment` migration、带固定 sign anchor 的 EcoMD adapter，以及独立预注册的
-   misspecification/observation-only stress；完成前不采购 L2；
-10. 两张 V100 空闲后重跑 canonical training/`T=8,000` rollout anchor；不抢占其他正式任务；
+8. **v0 spec 已完成但非等价性失败：** 现有构造可被完整复述为 PCD + hybrid pathwise/LR +
+   Rhee--Glynn + diagnostics，禁止命名或启动 E0--E3；只有先提出可写成 theorem/identity 的新 coupling、
+   residual bound 或 variance result，才允许预注册 v1；
+9. **合成 preflight 继续通过：** `ofi -> latent_flow_alignment` 迁移和 backward-compatible artifact
+   alias 已完成；exp134 correctly-specified recovery 与 exp135 misspecification/observation-only stress
+   全 gate 通过。下一步只做带固定 sign anchor 的 state-complete EcoMD adapter，完成前不采购 L2；
+10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
+   `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后
+   再排 canonical re-benchmark，且不抢占其他正式任务；
 11. 完成 G0/G1-preflight review：若 novelty 不成立，停止 WP3 方法 claim；若 V100 exact resume 或
     production cursor contract 未通过，不启动正式五臂训练。
 
