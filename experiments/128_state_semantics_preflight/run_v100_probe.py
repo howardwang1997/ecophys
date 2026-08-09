@@ -62,9 +62,17 @@ def main() -> None:
     parser.add_argument("--parity-steps", type=int, default=32)
     parser.add_argument("--long-steps", type=int, default=512)
     parser.add_argument("--seed", type=int, default=128_500)
+    parser.add_argument(
+        "--git-sha",
+        help="source commit, required when the remote code snapshot has no .git directory",
+    )
     args = parser.parse_args()
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required for the V100 probe")
+    if args.parity_steps <= 11:
+        raise ValueError("parity-steps must exceed 11 for the frozen partition")
+    if args.long_steps <= 0:
+        raise ValueError("long-steps must be positive")
 
     device = torch.device("cuda:0")
     torch.manual_seed(args.seed)
@@ -140,7 +148,8 @@ def main() -> None:
     payload = {
         "experiment": "128_state_semantics_v100_probe",
         "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "git_sha": subprocess.check_output(
+        "git_sha": args.git_sha
+        or subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
         ).strip(),
         "platform": platform.platform(),
