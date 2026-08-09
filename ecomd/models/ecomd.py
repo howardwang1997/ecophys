@@ -71,6 +71,24 @@ def _clone_optional_tensor(value: Tensor | None, *, detach: bool) -> Tensor | No
     return _clone_tensor(value, detach=detach)
 
 
+def _move_optional_tensor(value: Tensor | None, device: torch.device | str) -> Tensor | None:
+    if value is None:
+        return None
+    return value.to(device=device)
+
+
+def _move_tensor_tree(value: Any, device: torch.device | str) -> Any:
+    if isinstance(value, Tensor):
+        return value.to(device=device)
+    if isinstance(value, dict):
+        return {key: _move_tensor_tree(item, device) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_move_tensor_tree(item, device) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_move_tensor_tree(item, device) for item in value)
+    return copy.deepcopy(value)
+
+
 def _clone_price_state(value: PriceState, *, detach: bool) -> PriceState:
     return PriceState(
         log_price=_clone_tensor(value.log_price, detach=detach),
@@ -164,6 +182,53 @@ class SimulatorState:
     def detached(self) -> SimulatorState:
         """Detach the BPTT graph while preserving every dynamic value."""
         return self.clone(detach=True)
+
+    def to(self, device: torch.device | str) -> SimulatorState:
+        """Move dynamic tensors to ``device`` while keeping RNG state on CPU."""
+        return SimulatorState(
+            s=self.s.to(device=device),
+            s_prev=self.s_prev.to(device=device),
+            price_state=PriceState(
+                log_price=self.price_state.log_price.to(device=device),
+                last_log_return=self.price_state.last_log_return.to(device=device),
+                volatility=self.price_state.volatility.to(device=device),
+                step=self.price_state.step,
+                hawkes_memory=_move_optional_tensor(
+                    self.price_state.hawkes_memory, device
+                ),
+                hawkes_memory_long=_move_optional_tensor(
+                    self.price_state.hawkes_memory_long, device
+                ),
+                vol_latent=_move_optional_tensor(self.price_state.vol_latent, device),
+            ),
+            h_regime=_move_optional_tensor(self.h_regime, device),
+            h_agent=_move_optional_tensor(self.h_agent, device),
+            h_global=_move_optional_tensor(self.h_global, device),
+            step_idx=int(self.step_idx),
+            fundamental=float(self.fundamental),
+            pending_exo_return=_move_optional_tensor(
+                self.pending_exo_return, device
+            ),
+            shock_schedule=_move_tensor_tree(self.shock_schedule, device),
+            shock_dyn=_move_tensor_tree(self.shock_dyn, device),
+            integrator=IntegratorPathState(
+                mem_ema=_move_optional_tensor(self.integrator.mem_ema, device),
+                last_price_delta=float(self.integrator.last_price_delta),
+                prev_eps=_move_optional_tensor(self.integrator.prev_eps, device),
+                drift_ema=_move_optional_tensor(self.integrator.drift_ema, device),
+                zumbach_ema=float(self.integrator.zumbach_ema),
+            ),
+            pairwise_cache=PairwiseCacheState(
+                kind=self.pairwise_cache.kind,
+                edges=_move_optional_tensor(self.pairwise_cache.edges, device),
+                steps_since_refresh=int(self.pairwise_cache.steps_since_refresh),
+            ),
+            rng_state=(
+                self.rng_state.detach().cpu().clone()
+                if self.rng_state is not None
+                else None
+            ),
+        )
 
     def to_checkpoint(self) -> dict[str, Any]:
         """Return a plain, versioned payload accepted by ``torch.save``."""
