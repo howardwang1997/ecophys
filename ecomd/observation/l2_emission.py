@@ -288,6 +288,71 @@ def bernoulli_log_likelihood(
     return float(np.sum(target * -np.logaddexp(0.0, -logits) + (1.0 - target) * -np.logaddexp(0.0, logits)))
 
 
+def fit_logistic_features(
+    features: FloatArray,
+    signed_flow: IntArray,
+    *,
+    add_intercept: bool = True,
+) -> ParameterFit:
+    """Fit a Bernoulli logistic model to arbitrary fixed features."""
+    x = np.asarray(features, dtype=np.float64)
+    q = np.asarray(signed_flow, dtype=np.int64)
+    if x.ndim != 2 or q.ndim != 1 or x.shape[0] != q.size or q.size < 2:
+        raise ValueError("features and signed_flow must have aligned rows")
+    if np.any(~np.isin(q, (-1, 1))) or not np.isfinite(x).all():
+        raise ValueError("invalid logistic regression data")
+    design = np.column_stack((np.ones(q.size), x)) if add_intercept else x
+    if design.shape[1] < 1:
+        raise ValueError("logistic model has no coefficients")
+    target = (q.astype(np.float64) + 1.0) / 2.0
+    values = np.zeros(design.shape[1], dtype=np.float64)
+    for iteration in range(1, 101):
+        logits = np.clip(design @ values, -40.0, 40.0)
+        probability = 1.0 / (1.0 + np.exp(-logits))
+        score = design.T @ (target - probability)
+        information = design.T @ (
+            (probability * (1.0 - probability))[:, None] * design
+        )
+        try:
+            step = np.linalg.solve(information, score)
+        except np.linalg.LinAlgError:
+            return ParameterFit(values, False, iteration)
+        values = values + step
+        if float(np.max(np.abs(step))) <= 1e-11 * (
+            1.0 + float(np.max(np.abs(values)))
+        ):
+            return ParameterFit(values, True, iteration)
+    return ParameterFit(values, False, 100)
+
+
+def logistic_feature_log_likelihood(
+    coefficients: FloatArray,
+    features: FloatArray,
+    signed_flow: IntArray,
+    *,
+    add_intercept: bool = True,
+) -> float:
+    """Score a fixed-feature Bernoulli logistic model."""
+    values = np.asarray(coefficients, dtype=np.float64)
+    x = np.asarray(features, dtype=np.float64)
+    q = np.asarray(signed_flow, dtype=np.int64)
+    if x.ndim != 2 or q.ndim != 1 or x.shape[0] != q.size:
+        raise ValueError("features and signed_flow must have aligned rows")
+    design = np.column_stack((np.ones(q.size), x)) if add_intercept else x
+    if values.shape != (design.shape[1],):
+        raise ValueError("coefficient and feature dimensions differ")
+    if np.any(~np.isin(q, (-1, 1))) or not np.isfinite(design).all():
+        raise ValueError("invalid logistic regression data")
+    target = (q.astype(np.float64) + 1.0) / 2.0
+    logits = design @ values
+    return float(
+        np.sum(
+            target * -np.logaddexp(0.0, -logits)
+            + (1.0 - target) * -np.logaddexp(0.0, logits)
+        )
+    )
+
+
 def fit_level_decay(levels: IntArray, n_levels: int) -> ParameterFit:
     """Fit the truncated level law proportional to ``exp(-eta level)``."""
     observed = np.asarray(levels, dtype=np.int64)

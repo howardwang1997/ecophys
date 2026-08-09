@@ -12,7 +12,9 @@ from ecomd.observation.l2_emission import (
     emit_aggregate_l2,
     fit_flow_slope,
     fit_level_decay,
+    fit_logistic_features,
     fit_size_model,
+    logistic_feature_log_likelihood,
     reconstruct_aggregate_book,
     simulate_latent_ar1,
 )
@@ -78,6 +80,32 @@ def test_latent_sign_flip_is_an_exact_parameter_gauge() -> None:
     )
 
 
+def test_fixed_feature_logistic_fit_recovers_coefficients() -> None:
+    generator = np.random.default_rng(135)
+    features = generator.standard_normal((60_000, 2))
+    truth = np.asarray((-0.2, 0.7, -0.4))
+    logits = truth[0] + features @ truth[1:]
+    probability = 1.0 / (1.0 + np.exp(-logits))
+    signed_flow = np.where(generator.random(features.shape[0]) < probability, 1, -1)
+    fit = fit_logistic_features(features, signed_flow)
+    assert fit.converged
+    assert fit.values == pytest.approx(truth, abs=0.025)
+    assert logistic_feature_log_likelihood(
+        fit.values, features, signed_flow
+    ) > logistic_feature_log_likelihood(
+        np.zeros(3), features, signed_flow
+    )
+
+
+def test_fixed_feature_logistic_validation() -> None:
+    with pytest.raises(ValueError, match="aligned"):
+        fit_logistic_features(np.zeros((3, 1)), np.ones(2, dtype=np.int64))
+    with pytest.raises(ValueError, match="dimensions"):
+        logistic_feature_log_likelihood(
+            np.zeros(3), np.zeros((4, 1)), np.ones(4, dtype=np.int64)
+        )
+
+
 def test_nonpositive_queue_and_unknown_event_type_hard_fail() -> None:
     generator = np.random.default_rng(42)
     config = AggregateL2EmissionConfig(initial_queue=1, p_add=0.01, log_mu=4.0)
@@ -96,4 +124,3 @@ def test_nonpositive_queue_and_unknown_event_type_hard_fail() -> None:
     assert isinstance(invalid, SyntheticL2Stream)
     with pytest.raises(ValueError, match="unknown event type"):
         reconstruct_aggregate_book(invalid)
-
