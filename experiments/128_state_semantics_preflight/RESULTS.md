@@ -1,8 +1,9 @@
-# Experiment 128 results — CPU mechanics preflight
+# Experiment 128 results — CPU and V100 mechanics preflight
 
 **Run date:** 2026-08-09  
-**Artifact:** `CPU_PREFLIGHT_RESULTS.json`  
-**Decision:** CPU preflight PASS; scientific/confirmatory gate not evaluated
+**Artifacts:** `CPU_PREFLIGHT_RESULTS.json`, `V100_PROBE_V1_FAILED.json`,
+`V100_DIAGNOSTIC_RESULTS.json`, `V100_PROBE_V2_RESULTS.json`
+**Decision:** CPU and versioned V100 mechanics preflight PASS; scientific/confirmatory gate not evaluated
 
 ## Outcome
 
@@ -52,13 +53,44 @@ semantics for control arms; corrected semantics are the defaults.
 
 ## Resource observation
 
-The ten CPU cells used about 7.87 seconds inside their training loops on this Mac; total command time was about
-16 seconds including imports, data targets and 10 evaluation rollouts. This timing is only a harness smoke and
-must not be extrapolated to `N=10,000`.
+The committed artifact records about 7.92 seconds across the ten CPU training loops on this Mac. Import, target
+construction and evaluation overhead are excluded. This timing is only a harness smoke and must not be
+extrapolated to `N=10,000`.
+
+## V100 negative result, diagnosis and versioned rerun
+
+The first V100 run is retained as a failure rather than overwritten. At `N=500`, `dt=0.02`, 32 parity steps
+and a 512-step untrained rollout:
+
+- arbitrary chunks and serialized resume were bit-exact;
+- `create_graph=True/False` differed by at most `2.38e-7`, so the original bit-exact CUDA rule failed;
+- the 512-step random-model rollout produced non-finite values.
+
+The follow-up diagnostic separated these effects. The terminal RNG states were exactly equal in both autograd
+modes. A no-jump control showed the same `1.19e-7`--`2.38e-7` discrepancy, so the residual is a generic fp32
+CUDA graph-construction floor rather than evidence of a different jump draw. In the stability sweep, the full
+`dt=0.02` configuration first became non-finite at step 362 for the diagnostic seed; disabling feedback or
+reducing `dt` to 0.005 remained finite for 512 steps. Other architecture-changing ablations were not stable,
+so the diagnostic does not identify one mechanism as the unique cause.
+
+Probe v2 was declared post-diagnostic and used `dt=0.005` plus a CUDA parity rule of exactly equal RNG state
+and state/return error no greater than `1e-6`. It passed all 11 checks:
+
+- chunk and checkpoint-resume trajectory/final-state differences: exactly zero;
+- jump RNG state: exactly equal; maximum return/state discrepancies: `1.79e-7` / `1.19e-7`;
+- gradients: present and finite;
+- 512-step rollout and absolute clock: finite and correct;
+- wall time: 4.78 seconds;
+- peak CUDA memory: 496,798,720 allocated and 526,385,152 reserved bytes.
+
+The device reported by PyTorch was `Tesla PG503-216` under PyTorch 2.3.1 + CUDA 12.1. V2 demonstrates that
+the API works on the available V100 under a diagnosed stable integration setting. It does not erase v1, prove
+production-scale stability or establish market fidelity.
 
 ## Decision
 
-- PASS: mechanics, factor activation, state/jump/checkpoint correctness on CPU.
-- PENDING: V100 parity/VRAM probe.
+- PASS: mechanics, factor activation and state/jump/checkpoint correctness on CPU.
+- PASS: versioned single-V100 state/resume/parity mechanics at `N=500`, with v1 failure retained.
+- PENDING: atomic distributed checkpoint/resume, production scale and preemption tests.
 - NOT RUN: multi-seed WP2 screen, frozen long-horizon primary metric, `T=8,000` evaluation.
 - PROHIBITED CLAIM: the current result does not show improved market fidelity or validate EcoMD.

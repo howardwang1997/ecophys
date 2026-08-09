@@ -1,7 +1,7 @@
 # NCS WP1：EcoMD 状态、力与随机动力学语义
 
 **日期：** 2026-08-09  
-**状态：** 单机 CPU 实现与回归测试通过；单卡 V100 probe 待记录；DDP 生产 checkpoint 尚未接入  
+**状态：** 单机 CPU 与版本化单卡 V100 probe 通过；DDP 生产 checkpoint 尚未接入
 **适用分支：** `ncs-invariant-calibration-v4`
 
 ## 1. 本轮解决的问题
@@ -71,6 +71,11 @@ jump 默认在训练和推理中使用完全相同的 compound-Poisson transitio
 是数值活跃的，并能在现有 SPX/BTC 数据目标上完成端到端训练。该实验只验证 mechanics，不评价哪一臂
 更接近真实市场。
 
+单卡 V100 的首轮 `dt=0.02` probe 因 CUDA fp32 的逐位差异和未训练随机模型的 512 步非有限值失败，
+该 artifact 已保留。诊断表明开/关 jump 时都有同量级（至多约 `4.77e-7`）的 autograd-mode 数值底噪，
+而 RNG state 精确一致；`dt=0.005` 的版本化 v2 在误差阈值 `1e-6` 下通过全部 11 项检查，并完成有限的
+512 步 rollout。这个 post-diagnostic PASS 只支持 CUDA 可执行性，不支持生产稳定性或市场 fidelity。
+
 ## 5. 尚未完成的生产集成
 
 以下工作不能被本轮单机测试冒充为已完成：
@@ -82,5 +87,5 @@ jump 默认在训练和推理中使用完全相同的 compound-Poisson transitio
 - 正式 WP2 的五臂多 seed、长时程冻结指标和 compute matching 尚未开始；
 - 这套状态修复没有解决“不变测度梯度估计器是否新颖、正确和可扩展”的 G0/G2 问题。
 
-因此，WP1 当前只能标记为“单机语义通过，生产续跑待完成”。在 distributed exact-resume 完成前，
+因此，WP1 当前只能标记为“单机 CPU/V100 语义通过，生产续跑待完成”。在 distributed exact-resume 完成前，
 任何长训练都必须保留旧路径标签，不能作为状态完整方法的 confirmatory run。

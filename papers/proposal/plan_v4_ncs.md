@@ -12,8 +12,8 @@
 
 **数据边界：** 当前数据只是 D0 起点；后续按科学问题和 gate 扩展市场、交易所、时间跨度与数据模态
 
-**2026-08-09 执行状态：** G0 为 AMBER（广义 novelty claim 已被先行工作否决）；WP1 的 CPU
-state/chunk/detach/jump/checkpoint 测试已通过，V100 probe 与 distributed exact-resume 尚未完成；
+**2026-08-09 执行状态：** G0 为 AMBER（广义 novelty claim 已被先行工作否决）；WP1 的 CPU 六项
+语义测试与版本化单 V100 v2 probe 已通过（v1 失败结果保留），distributed exact-resume 尚未完成；
 exp128--130 已完成零采购 preflight，结果不构成 confirmatory evidence。
 
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
@@ -565,16 +565,19 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
 
 ## 11. 接下来 14 天的具体动作
 
-1. 完成 G0 prior-art matrix，决定是否存在真正的新 estimator；在此之前不写算法名称和摘要；
-2. 以 `experiments/128_state_semantics_preflight/` 的 CPU 结果为输入，建立正式 WP2 preregistration，
-   写明五臂、seeds、主指标和 stop rule；
-3. 先写 `SimulatorState` schema 与六类 parity/resume tests，再改训练逻辑；
-4. 用当前两张 V100 重跑 canonical training/rollout benchmark，记录新的 V100-eq anchor；
-5. 从免费 LOBSTER/Tardis 样本跑一个交易日的重建，测 CPU、RAM、压缩比和完整性；
-6. 向 D1–D3 供应商索取当前 academic/research quote、coverage matrix、license 和 sample，不采购
-   confirmatory 数据；
-7. 第 14 天召开 G0/G1-preflight review：若 novelty 不成立，停止 WP3；若 state API 设计无法保证
-   chunk/monolithic parity，先修设计而不启动训练。
+1. **已完成：** G0 prior-art matrix；当前结论 AMBER，广义 claim 已否决，在 E1--E3 前不写算法名称；
+2. **已完成：** `SimulatorState`、六类 CPU parity/resume tests 和版本化单 V100 mechanics probe；
+3. **已完成：** 免费 LOBSTER 八个样本、1,381,420 条事件的流式重建 hard gates；
+4. 以 `experiments/128_state_semantics_preflight/` 为输入冻结正式 WP2 preregistration，写明五臂、
+   独立训练 seeds、post-stationarity 主指标、compute matching 和 stop rule；
+5. 将完整状态接入 `train_distributed.py` 的原子 checkpoint，并在空闲 V100 上做 kill/restart 与
+   rank-RNG/data-cursor 恢复测试；
+6. 继续免费 E1/E2：两状态 chain、compound-Poisson OU 与双稳态慢混合系统；只有相对强基线存在
+   可复现差异时才把 G0 从 AMBER 上调；
+7. 用当前 V100 重跑 canonical training/`T=8,000` rollout benchmark，记录新的 V100-eq anchor；
+8. 用 synthetic queue/emission 完成 observation bridge 的参数恢复测试；在此之前不采购 L2；
+9. 完成 G0/G1-preflight review：若 novelty 不成立，停止 WP3 方法 claim；若 distributed resume 未
+   通过，不启动正式五臂训练。
 
 ---
 

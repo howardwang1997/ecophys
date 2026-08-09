@@ -10,7 +10,7 @@
 - 1,381,420 message/book rows were streamed; files shorter than 200,000 rows were consumed fully, others hit
   the preregistered cap.
 - Symbols/depths: AAPL L10/L50, AMZN L10, GOOG L10, MSFT L1/L10/L50, SPY L50.
-- Wall time was about 24.9 seconds. Peak RSS reported by macOS was about 1.21 GB; the script never materialized
+- Wall time was about 25.1 seconds. Peak RSS reported by macOS was about 1.18 GB; the script never materialized
   an entire L50 CSV.
 
 ## Frozen hard gates
@@ -47,4 +47,3 @@ smokes and basic event-emission schema tests.
 
 The next free step is a synthetic queue-emission/recovery benchmark. Paid multi-day L2 remains gated until that
 benchmark identifies which fields and sampling frequency are actually necessary.
-
