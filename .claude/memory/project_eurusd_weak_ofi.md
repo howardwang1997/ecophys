@@ -5,6 +5,13 @@ metadata:
   type: project
 ---
 
+**Critical interpretation correction (2026-08-09).** EcoMD's logged `ofi` is the latent-agent
+coordination ratio `sum(dpos) / sum(abs(dpos))`. It is **not** Cont--Kukanov--Stoikov limit-order-book
+OFI, which is constructed from best-quote depth changes and trades. The stable response documented
+below remains a valid model-internal quantity, but it must not be described as empirical OFI or directly
+matched to the real-L2 observable in exp124 without a specified and validated observation operator.
+Consequently, a positive real-L2 memory result alone would not validate an EcoMD prediction.
+
 **Resolved 2026-06-24 (8-card H20, exp-123 `concave_d050_seed0` checkpoints, measuring the model's own
 `ofi` = `traj.ofi_np()`, the quantity production logs).**
 

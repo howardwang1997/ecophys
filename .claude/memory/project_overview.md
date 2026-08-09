@@ -1,11 +1,19 @@
 ---
 name: EcoPhys project overview
-description: Research program "EcoPhys / EcoMD" — differentiable physics-inspired simulator for financial markets. Three contribution pillars (C1 methods / C2 physics / C3 applications). As of plan v3 + Path C (2026-04-24 evening), Paper B targets Nature Physics flagship with 15–22% joint probability, supported by $8-12k high-frequency data commitment (Tardis L2 6mo + FirstRate minute 3y + LOBSTER 3y); Paper A + companion PRL + QF are guaranteed retreat papers. Total timeline 58 weeks to M6. Full plan at papers/proposal/plan_v3.md mirror at ~/.claude/plans/4-h20-claude-ai-playful-bubble.md.
+description: EcoPhys/EcoMD research overview. Plan v4 (2026-08-09) is authoritative for the next NCS archival project: novel invariant-measure calibration beyond EcoMD, corrected long-horizon semantics, a validated L2 observation bridge, and a frozen real-data application. Compute starts at 2×V100 32 GB, may expand, and excludes H20; data may expand behind gates. Plan v3 is historical/parallel physics context.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 
 # EcoPhys — Project Overview
+
+> **Plan-of-record update (2026-08-09).** For the next archival project, use
+> `papers/proposal/plan_v4_ncs.md`, not the hardware/data assumptions below. The NCS route is gated on a
+> genuinely novel invariant-measure/long-horizon calibration method, validation on at least two model
+> families beyond EcoMD, state-complete and train/inference-consistent EcoMD dynamics, a validated L2
+> observation operator, and a frozen method-dependent real-data result. Current compute is 2×V100
+> 32 GB and can expand to more non-H20 GPU/CPU nodes; H20 is excluded from future plans. Current data
+> are a starting tier, not a ceiling. Plan v3 remains historical/parallel physics context.
 
 ## Research goal
 Build **EcoMD**: a differentiable, equivariant, learned-potential molecular-dynamics-style simulator for financial markets. Agents = particles in latent feature space; dynamics = Langevin; interaction potentials learned end-to-end from high-frequency order flow / return data.
@@ -63,8 +71,11 @@ Three binding rigor conditions documented in `feedback_preregistration.md`:
 - **Honest MD-analogy critique**: single traders not observable → agent defined in latent space; non-stationarity → time-varying potential + regime; utility ≠ energy minimum → conservative/dissipative split.
 - **Pluggable price formation** (v3 added): `ExcessDemandPrice` (default, designated-position) + `ReadoutPrice` (ablation). Designated-position mechanism gives stylized fact #10 (volume/vol correlation) **when β is fixed** — learnable β breaks #10 by injecting state-dependent amplification. v0.6 (β_learn) vs v0.8 (β_fixed) are two Pareto points.
 
-## Hardware (v3)
-**8×H20 NVLink, single node, long-term access** (upgraded from 4×H20 in v2). Enables:
+## Historical hardware assumption (Plan v3; superseded for future work)
+
+Plan v3 assumed **8×H20 NVLink**. This is historical provenance only; Plan v4 starts from 2×V100
+32 GB, may expand to more non-H20 workers, and must not use the following capacity assumptions for
+new scheduling. The old plan expected H20 to enable:
 - Single tensor-parallel EcoMD at N=5×10⁵ (vs N=10⁵ without NVLink)
 - Shared-θ joint training across 8 markets simultaneously (required for universality claim)
 - Jarzynski at 10⁴ trajectory × 8 market = 8×10⁴ trajectories in ~2 weeks

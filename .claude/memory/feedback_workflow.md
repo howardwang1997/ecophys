@@ -1,35 +1,34 @@
 ---
 name: Dev-to-training workflow (EcoPhys)
-description: Mac local development → AWS S3 for data → GitHub for code → H20 remote machine pulls both and trains. User chose this split on 2026-04-23.
+description: Mac local development + GitHub code + Cloudflare R2 canonical data + scalable non-H20 compute pools. Current production floor is 2×V100 32 GB; future GPU/CPU capacity may expand, but H20 is excluded as of 2026-08-09.
 type: feedback
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 # Workflow
 
-**Rule** (v2 — revised for H20 network constraint 2026-04-23):
+**Rule** (v3 — revised for scalable non-H20 compute 2026-08-09):
 - **Mac**: code editing, data ingestion + preprocessing (raw → Parquet+zstd), small smoke tests (≤10⁴ agents, <1h), paper writing.
 - **Cloud storage**: canonical processed data store. **Cloudflare R2 preferred** (zero egress, S3-API compatible, $0.015/GB-mo); AWS S3 as fallback if R2 is blocked by company firewall.
 - **GitHub**: canonical code store. Main always runnable. Experiments on feature branches.
-- **H20 (remote, inside company network with whitelist outbound — R2/S3/GitHub OK)**:
-  - Code at `/root/ecophys/` (separate code drive)
-  - Hot cache at `/root/data/ecophys/` (separate data drive; target budget **500 GB**)
-  - NFS canonical store at `/AI4S/Users/howardwang/ecophys/` (company shared)
-  - Flow: R2 → NFS via `scripts/h20_pull_from_r2.sh`, then NFS → hot cache via rsync before training
-  - Subsequent training reads exclusively from hot cache — no cloud/NFS round-trips per step
-  - Mac cannot mount NFS directly; all Mac→H20 data transit goes via R2
+- **Compute workers**:
+  - Current production pool: two independent V100 32 GB nodes.
+  - Future pools may add more compatible CUDA GPUs and separate CPU/RAM data nodes; **do not plan around H20**.
+  - Flow: GitHub → worker-local code; R2 → worker-local immutable input shards; local run → R2 manifests/results.
+  - Training and reconstruction read local hot data only; no cloud round-trips in the hot path.
+  - Keep different GPU types in separate worker pools and calibrate throughput using canonical V100 jobs.
 
-**Why**: User chose Mac+cloud+GitHub+H20 split on 2026-04-23, then revised same day after flagging H20 is inside company network with poor connectivity. Rationale: avoids file-sync weirdness; keeps Mac productive when H20 network is down; minimizes slow-network data movement.
+**Why**: The original 2026-04-23 H20-specific workflow became unavailable. On 2026-08-09 the user explicitly chose a hardware-agnostic plan starting from 2×V100, expandable to more non-H20 resources. R2/GitHub separation still avoids file-sync ambiguity and makes workers replaceable.
 
-**Network gotcha (2026-04-23)**: H20 is inside company network. Assume H20's external connectivity is unreliable / bandwidth-constrained. Design experiments to NOT require mid-training cloud fetches. Every experiment must be runnable entirely from H20 local disk (`/data/ecophys/`) after a single pre-experiment bulk sync. Do NOT set up workflows where H20 hits `wandb.ai`, arXiv, pip mirrors, or S3 during the hot path of a training run — queue these outside the training loop or batch them.
+**Network rule**: Treat every compute worker as replaceable and potentially bandwidth-constrained. After one bulk sync, an experiment must run from local disk and write a local canonical manifest. W&B is optional; no worker may require W&B, package mirrors, or R2/S3 access inside the training hot path.
 
 **How to apply**:
-- When writing training scripts, assume they run on H20. Make them parameterized (CLI args or Hydra config), not hardcoded for Mac paths.
-- Data paths: always reference via `s3://` URIs or env-var-driven local cache (`$ECOPHYS_DATA_DIR`). Never hardcode `/Users/howardwang/...` in repo code.
-- Before starting a long training, verify: (a) code is committed + pushed, (b) data shards are uploaded to S3, (c) the H20 machine has latest git + S3 sync.
-- Long experiments run under `tmux` + `wandb` with `resume` enabled; checkpoint every 1h or 1000 steps, whichever first.
-- When user says "开始训练" / "start training", default to preparing the H20 remote run (unless the experiment is explicitly tiny).
+- When writing training scripts, assume they run on a generic CUDA worker. Make them parameterized (CLI args or Hydra config), not hardcoded for Mac or a particular remote path.
+- Data paths: reference canonical R2/S3-compatible object keys or an env-var-driven local cache (`$ECOPHYS_DATA_DIR`). Never hardcode `/Users/howardwang/...` in repo code.
+- Before starting a long training, verify: (a) code is committed + pushed, (b) immutable data shards and hashes are on R2, (c) the assigned worker has the exact git SHA and complete local shards.
+- Long experiments run under `tmux` or a supervised service with exact resume; checkpoint at least every 30 minutes for the NCS program. Local manifests are canonical and W&B is optional.
+- When user says "开始训练" / "start training", use the available V100/non-H20 worker pool after a resource probe; do not infer H20 availability.
 - Mac-side dev tooling: PyTorch with MPS backend for smoke tests (not production); conda env `ecophys`.
-- **H20 is remote** — not accessible from this Claude session. All instructions to run on H20 must be produced as runnable scripts user can SSH and execute, or handed back as suggested commands.
+- Remote accessibility is checked per worker. Do not encode addresses or credentials in tracked files; inventory belongs in a gitignored machine manifest.
 
 ## Framework choice (decided 2026-04-23 revisit)
 

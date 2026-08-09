@@ -1,8 +1,13 @@
 ---
 name: H20 edits configs in-place during runs — don't revert
-description: Every H20 training run may edit YAML configs (chunk_steps, grad_clip, etc.) to fit the actual hardware. When pulling H20-side commits back to Mac, treat those edits as ground truth and don't overwrite them.
+description: Historical H20 config-edit record, superseded for future hardware on 2026-08-09. Generalize it by recording hardware-specific execution overrides separately from scientific configs; H20 is no longer planned.
 type: feedback
 ---
+
+> **SUPERSEDED FOR HARDWARE (2026-08-09).** Future plans exclude H20. Historical edits below remain
+> provenance for old runs. For new V100 or future non-H20 workers, do not silently overwrite the shared
+> scientific config: record device-specific execution overrides and the measured memory probe in the run
+> manifest, and preserve invariant scientific settings such as horizon, chunk semantics and seeds.
 
 # H20 in-place config edits
 

@@ -1,11 +1,17 @@
 ---
 name: project-h20-fleet-scheduling
-description: "H20 fleet inventory (8+2+2 GPU + 1 CPU node) and GPU scheduling calibration: 62 min/cfg/card measured (exp 114), reserve 6-8h EVAL at window end, plan from measured rates not estimates"
+description: "Historical H20 fleet record, superseded for future planning on 2026-08-09. Current compute starts at 2×V100 32 GB and may expand only through non-H20 GPU/CPU pools. Historical throughput remains provenance, not a scheduling assumption."
 metadata: 
   node_type: memory
   type: project
   originSessionId: f3a85399-5c6f-453a-9576-26ce31fbcae4
 ---
+
+> **SUPERSEDED FOR SCHEDULING (2026-08-09).** The user explicitly removed H20 from all future
+> compute plans. Current production capacity is two independent V100 32 GB nodes and may expand to
+> more non-H20 GPU/CPU workers. The inventory and paths below are retained only to interpret historical
+> experiments. Do not schedule, budget, or write new runbooks against these H20 machines. Use measured
+> V100-equivalent GPU-hours and re-benchmark every new device type.
 
 **Fleet (2026-06-06, user-stated):**
 - **H20-1**: 8 cards — main queue (anything with sequential dependencies)

@@ -6,6 +6,13 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 # Target Venue Registry — EcoPhys
 
+> **Route update (2026-08-09).** The next archival target is a conditional NCS Article under
+> `papers/proposal/plan_v4_ncs.md`, not the June workshop ladder below. Sim2Science is the only surviving
+> workshop submission and STODY is cancelled. NCS submission requires G0–G5: method novelty beyond
+> EcoMD, state/dynamics repair, cross-system validation, a validated L2 observation bridge, a frozen
+> method-dependent real-data result, and a reproducible EcoMD v1 release. TMLR is the main archival
+> fallback. Current compute starts at 2×V100 and excludes H20; data and compute may expand behind gates.
+
 ## ML Conferences (Paper A — methods)
 
 | Venue | Acceptance | Typical deadline | Fit for EcoPhys | Notes |
@@ -19,7 +26,7 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 | **Generative AI in Finance** | workshop | NeurIPS (Dec) | Generative market-simulator / scenario-generation angle | **Non-archival** (2025 CFP explicit; welcomes work under review/published). |
 | **TMLR** | soundness-based | rolling | The honest model-reality-gap framing fits *better* than hype confs | Strong archival floor; promote to co-primary. |
 
-### Paper A submission ladder (DECIDED 2026-06-19, plan of record)
+### Historical Paper A submission ladder (decided 2026-06-19; superseded 2026-08-09)
 
 Post Stage-3 (real return tails stationary → no real-market discovery), the researcher's chosen ladder:
 **(1)** split into 2 **non-archival** NeurIPS workshops — ML4PS (physics angle) + GenAI-in-Finance

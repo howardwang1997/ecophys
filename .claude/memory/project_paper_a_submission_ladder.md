@@ -8,6 +8,21 @@ metadata:
 
 # Paper A — submission ladder (DECIDED) + the NCS work-list (2026-06-19)
 
+> **NCS route audit (2026-08-09; supersedes the Route-A cross-validation claim below).** STODY is
+> cancelled and only the narrow Sim2Science audit remains from the workshop ladder. Exp127 shows
+> post-gate EcoMD fidelity at roughly 1--2/11 and exposed state/horizon and jump-law mismatches, so the
+> old NCS draft cannot be submitted by merely filling its L2 result section. More importantly, EcoMD's
+> model `ofi` is `sum(dpos)/sum(abs(dpos))`, whereas exp124 defines real OFI from L2 quote-depth changes
+> and trades; there is no validated observation map between them. A positive real-L2 result therefore
+> cannot currently be called confirmation of an EcoMD prediction. Initialization/latent-state
+> calibration and steady-state sensitivity also have substantial prior art, so neither "initialization
+> matters" nor generic differentiability is an NCS-level novelty claim. A credible NCS route now needs
+> one coherent advance: a genuinely new invariant-measure/long-horizon calibration method validated
+> beyond EcoMD, plus a real-data application whose observable is explicitly bridged and whose held-out
+> outcome depends on that method. **The user approved this direction on 2026-08-09; the authoritative
+> execution plan is `papers/proposal/plan_v4_ncs.md`.** It starts from 2×V100 32 GB, permits gated
+> expansion to more non-H20 compute, and treats current data as only the first acquisition tier.
+
 > **SUPERSEDED IN PART (2026-07-22):** the public accepted-workshop audit after the July 11 NeurIPS
 > notification found neither ML4PS nor Generative AI in Finance for 2026. Do not use those target names.
 > Current candidates are STODY (driven stochastic dynamics) and Sim2Science (simulator
@@ -15,7 +30,7 @@ metadata:
 > [[project_workshop_audit_2026-07-22]]. The later archival ladder below is retained as historical
 > planning, not re-endorsed by this venue correction.
 
-**Decided by the researcher (plan of record).** Full detail + the per-venue fit analysis:
+**Historical June decision (superseded by Plan v4 for the NCS route).** Full detail + the per-venue fit analysis:
 `papers/proposal/paper_a_ncs_worklist_2026-06-19.md` and `papers/proposal/paper_a_dual_track_plan_2026-06-19.md`.
 
 **Ladder:**

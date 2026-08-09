@@ -8,7 +8,7 @@ You are an **AI academic research partner + independent reviewer-2** for a solo 
 
 ## Research program (one-paragraph version)
 
-EcoMD — a differentiable, equivariant, large-scale molecular-dynamics-style simulator for financial markets. Agents are particles in latent feature space; dynamics are Langevin with learned interaction potentials (MACE-lite). Three contribution pillars: **C1** methods (first differentiable MD market simulator), **C2** physics (non-equilibrium thermodynamics, entropy production, effective temperature as universal crash precursor), **C3** applications (crash early warning, optimal execution). **Plan v3 + Path C (2026-04-24)**: Paper B targets **Nature Physics flagship** with **15–22% joint probability**, backed by $8–12k high-frequency data commitment (Tardis L2 6mo + FirstRate minute 3y + LOBSTER 3y) so the three main NP reviewer attacks (Jarzynski work protocol, TUR stationarity, T_eff novelty) have physics-defensible responses. Four pre-registered "one-line laws" (A1 T_eff critical scaling **on ≥3 timescales**, A2 hyperscaling, B2 Jarzynski with FOMC/earnings intraday protocol, B3 TUR saturation on L2) and three binding rigor clauses (surrogate kill, sanity-check cascade, arXiv pre-registration). Paper A (NeurIPS/ICML), companion PRL, and QF retreat papers guaranteed — the $8–12k high-freq purchase is not wasted in any retreat scenario. Full plan: `papers/proposal/plan_v3.md`. Core decisions in `memory/project_overview.md` and `memory/feedback_preregistration.md`. Data buy order: `ecomd/data/buy_order_v2_{en,zh}.md`. Total timeline 58 weeks to M6.
+EcoMD — a differentiable, stateful, molecular-dynamics-style simulator for financial markets. Agents are particles in latent feature space and evolve under stochastic interaction dynamics. Broad “first differentiable/Langevin market simulator” claims are ruled out by prior art. **Plan v4 (2026-08-09)** makes the next archival target a conditional *Nature Computational Science* Article: develop a genuinely new invariant-measure/long-horizon calibration method, validate it beyond EcoMD, repair EcoMD's state and train/inference semantics, build a validated model-to-L2 observation bridge, and demonstrate a frozen method-dependent real-data prediction. Current compute is 2×V100 32 GB and may expand to more GPU/CPU nodes; future planning explicitly excludes H20. Current data are only the starting tier and may expand across vendors, markets, exchanges, periods, and modalities behind pre-registered gates. Full plan: `papers/proposal/plan_v4_ncs.md`. The earlier Nature Physics hypotheses and Plan v3 remain historical/parallel research context, not the compute or data plan of record for this NCS project.
 
 ## Work log discipline (non-negotiable)
 
@@ -22,15 +22,15 @@ After every work session, append or create `logs/YYYY-MM-DD.md` with:
 
 Also update long-term memory in `.Codex/memory/` (in-repo; see `.Codex/README.md` for symlink story) when lasting facts change. See `memory/feedback_long_memory_and_logs.md`.
 
-## Workflow (Mac + R2 + GitHub + 8×H20 NVLink)
+## Workflow (Mac + R2 + GitHub + scalable non-H20 compute)
 
 - **Mac**: code editing, tests, small smoke training (N ≤ 500). Conda env `ecophys` (Python 3.11, per global AGENTS.md). Always use `conda run -n ecophys python …` not bare `python`.
-- **Cloudflare R2**: transit + canonical bulk data store. Mac cannot mount company NFS directly, so Mac↔H20 data goes via `r2://ecophys/`.
+- **Cloudflare R2**: transit + canonical bulk data store. Compute nodes stage immutable input shards from `r2://ecophys/` before a run and upload manifests/results afterward.
 - **GitHub**: canonical code store. `main` stays runnable; experiments on feature branches.
-- **8×H20 NVLink (remote)**: all production training + inference. Pulls code via git, data via R2 (`bash scripts/h20_pull_from_r2.sh`). **The H20 machine is NOT accessible from this Codex session** — for H20 tasks, produce runnable scripts + hand back commands for the user to execute via SSH. See `scripts/README.md` for the full launch sequence.
-- Distributed training via `ecomd/training/train_distributed.py` (torchrun DDP, 4-card default, 8-card via `NPROC=8`). Checkpoints saved every 30 min; W&B `resume="allow"` for interruption safety.
+- **GPU workers**: current production floor is two independent V100 32 GB nodes. Future capacity may add more compatible CUDA workers, but no active plan may assume H20 access. Keep heterogeneous GPU types in separate worker pools and benchmark each against canonical V100 jobs.
+- Prefer independent config/seed/market job arrays. Use `ecomd/training/train_distributed.py` only when a scientific experiment truly requires multi-GPU training. Checkpoints save every 30 min; local manifests are canonical and W&B is optional with `resume="allow"`.
 
-See `memory/feedback_workflow.md` for full details.
+See `papers/proposal/plan_v4_ncs.md` and `memory/feedback_workflow.md` for full details.
 
 ## Code & experiment standards
 
@@ -66,5 +66,6 @@ Actively push back if:
 
 ## Directory map
 
-See `README.md` for the current layout. `papers/proposal/plan_v3.md` is the authoritative
-plan document; `plan_v1.md` and `plan_v2.md` are kept for history but **superseded** by v3.
+See `README.md` for the current layout. `papers/proposal/plan_v4_ncs.md` is authoritative for the
+next NCS archival project. `plan_v1.md`, `plan_v2.md`, and `plan_v3.md` are kept for historical or
+parallel-physics context and must not override Plan v4's compute/data assumptions.

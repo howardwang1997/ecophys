@@ -1,9 +1,14 @@
 ---
 name: feedback-h20-day-budget
-description: "When an H20 run-day is available, use it — do quick Mac experiments first, then push to H20; don't defer to 'design only'"
+description: "Historical H20 run-day preference, superseded on 2026-08-09 because future compute excludes H20. General lesson retained: preflight quickly, then use an approved non-H20 compute window rather than stopping at design."
 metadata:
   type: feedback
 ---
+
+> **SUPERSEDED FOR HARDWARE (2026-08-09).** Future EcoPhys plans explicitly exclude H20. Keep only
+> the general scheduling lesson: when the user has approved a scarce compute window on the current
+> non-H20 pool, run a fast Mac/small-GPU preflight and then use the window. Never infer that an old H20
+> machine or run-day remains available.
 
 When the user says an H20 run-day is available, the expectation is that the day's H20 capacity gets **used**, not left idle while we only write designs. The cadence the user wants: **(1) run the relatively-quick experiments on Mac first** (smoke / pre-flight / pipeline checks), **(2) then push to H20** for the heavy overnight run. A plan that says "produce generators + design docs, don't run on H20 today" is too conservative when a run-day is on the table.
 
