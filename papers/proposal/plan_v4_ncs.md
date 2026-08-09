@@ -12,6 +12,10 @@
 
 **数据边界：** 当前数据只是 D0 起点；后续按科学问题和 gate 扩展市场、交易所、时间跨度与数据模态
 
+**2026-08-09 执行状态：** G0 为 AMBER（广义 novelty claim 已被先行工作否决）；WP1 的 CPU
+state/chunk/detach/jump/checkpoint 测试已通过，V100 probe 与 distributed exact-resume 尚未完成；
+exp128--130 已完成零采购 preflight，结果不构成 confirmatory evidence。
+
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
 
 - `paper_a_ncs_worklist_2026-06-19.md`；
@@ -123,14 +127,14 @@ benchmark 得到换算系数，不能按厂商峰值算力直接折算。后续�
 |---|---|---|---:|---|---|
 | WP0 | 新颖性、定义、预注册框架 | 论文、现有日志与代码 | 0–10 h | 200–400 core-h | prior-art matrix、claim ledger、G0 报告 |
 | WP1 | state-complete EcoMD 与动力学 parity | synthetic fixtures、现有 checkpoints | 20–50 h | 200–500 core-h | state API、回归测试、可恢复 checkpoint |
-| WP2 | 四臂因果实验与确认 | 当前 SPX/BTC 目标 | 450–850 h | 500–1,200 core-h | 语义缺陷归因、G1 决策报告 |
+| WP2 | 五臂语义因果实验与确认 | 当前 SPX/BTC 目标 | 550–1,050 h | 600–1,500 core-h | 语义缺陷归因、G1 决策报告 |
 | WP3 | 不变测度目标与长时程梯度方法 | 可解/受控 synthetic systems | 300–800 h | 500–1,500 core-h | 通用 estimator、理论或误差刻画 |
 | WP4 | 跨模型族 benchmark | synthetic + 独立公开 benchmark | 600–1,600 h | 1,000–3,000 core-h | baseline-fair benchmark suite、G2 报告 |
 | WP5 | L2 observation bridge | 免费样本、synthetic L2、训练期 L2 | 500–1,500 h | 2,000–8,000 core-h；128–256 GB RAM | event/queue emission、synthetic recovery、G3 报告 |
 | WP6 | 多市场冻结样本外应用 | crypto L2、equity L2、minute panel、事件元数据 | 1,000–2,500 h | 3,000–10,000 core-h | 预注册真实实验、G4 报告 |
 | WP7 | 鲁棒性、规模化、消融、不确定性 | WP4–WP6 全部冻结数据 | 800–2,500 h | 1,000–4,000 core-h | confirmatory tables、scaling、failure map |
 | WP8 | 论文、软件、checkpoint 与复现 | 可公开/可替代数据 | 100–300 h | 500–1,500 core-h | NCS 稿件、supplement、EcoMD v1 release |
-| **总计（全部 gate 通过）** |  |  | **约 3,800–10,100 h** | **约 8,900–30,100 core-h** | 完整投稿包 |
+| **总计（全部 gate 通过）** |  |  | **约 3,900–10,300 h** | **约 9,000–30,400 core-h** | 完整投稿包 |
 
 上限覆盖 confirmatory rerun 和正常失败重跑，不覆盖无止境调参。每个 WP 在执行前先用 1–3 个
 canonical jobs 更新实测预算。
@@ -190,22 +194,23 @@ spec。若无法指出至少一个“算法上实质不同且 benchmark 可检�
 **交付与 gate。** 完整状态 API、migration loader、测试和行为变更表。这里验证“正确”，不把正确性
 修复本身写成 NCS novelty。
 
-### WP2 — 四臂因果 gate：缺陷是否造成长时程失败（W5–W10）
+### WP2 — 五臂语义因果 gate：缺陷是否造成长时程失败（W5–W10）
 
 **实验设计。**
 
-| Arm | 状态/绝对时钟连续 | 训练/推理 jump parity | 目的 |
-|---|---|---|---|
-| A Legacy | 否 | 否 | 冻结历史基线 |
-| B State | 是 | 否 | 隔离状态与 clock mismatch |
-| C Jump | 否 | 是 | 隔离 jump-law mismatch |
-| D Combined | 是 | 是 | 完整修复 |
+| Arm | 状态/绝对时钟连续 | force 为固定 context 的偏导 | 训练/推理 jump parity | 目的 |
+|---|---|---|---|---|
+| A Historical | 否 | 否 | 否 | 冻结历史基线 |
+| A' Force | 否 | 是 | 否 | 隔离 autograd-history 改变数值力的缺陷 |
+| B State+Force | 是 | 是 | 否 | 在 A' 上隔离状态与 clock mismatch |
+| C Jump+Force | 否 | 是 | 是 | 在 A' 上隔离 jump-law mismatch |
+| D Combined | 是 | 是 | 是 | 完整修复 |
 
-Screening 使用 4 arms × 3 training seeds × 2 markets（SPX、BTC），每个 checkpoint 16 个固定
-rollout seeds、固定 `T=8,000` post-gate 窗口。根据 exp127 实测并留 margin，约 **96 V100-eq h**；
-当前 2×V100 在 70% 有效利用率下约 3 天。只有 screening 方向一致才追加正式确认：保留必要 arms，
-扩到至少 20 training seeds、每 checkpoint 32 rollouts。若只保留 A/D，预计再用约 350–450
-V100-eq h；若 B/C 也必须进入归因确认，上限约 750 h。WP2 总预算因此为约 450–850 h。
+Screening 使用 5 arms × 3 training seeds × 2 markets（SPX、BTC），每个 checkpoint 16 个固定
+rollout seeds、固定 `T=8,000` post-gate 窗口。根据 exp127 实测并留 margin，约 **120 V100-eq h**；
+当前 2×V100 在 70% 有效利用率下约 4 天。只有 screening 方向一致才追加正式确认：保留必要 arms，
+扩到至少 20 training seeds、每 checkpoint 32 rollouts。若只保留 A/D，预计再用约 400–500
+V100-eq h；若 A'/B/C 也必须进入归因确认，上限约 930 h。WP2 总预算因此为约 550–1,050 h。
 
 **主指标。** 在确认数据前冻结一个连续 invariant/path-distribution distance；11-fact count、Hill、
 ACF、Zumbach、early/post-gate/late-reference 作为解释性分量。不能用某个分量改善替代主指标失败。
@@ -361,7 +366,7 @@ L2 域和一个 US-equity L2 域；每个域需要多个资产和足够的市场
 1. 短时程校准问题、state-complete simulator 与方法总图；
 2. 可解/慢混合系统上的梯度正确性和误差刻画；
 3. 两个独立模型族的等预算 benchmark；
-4. EcoMD 四臂因果实验与 post-stationarity 改善；
+4. EcoMD 五臂语义因果实验与 post-stationarity 改善；
 5. L2 observation bridge 和 synthetic recovery；
 6. 冻结真实样本外预测、关键 ablation 与 compute scaling。
 
@@ -451,7 +456,7 @@ US equity message/order-book 数据。产品能力只用于选型，最终 schem
 数值偏差。换算系数以完成同一 canonical job 的 wall time 为准，不用峰值 TFLOPS。
 
 exp127 给出的当前锚点是：十次训练合计 19.90 V100 GPU-h，320 条 rollout 合计 34.51 GPU-h。
-WP2 screening 采用更保守的约 96 V100-eq h 预算，包括调度和失败重跑 margin。
+WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败重跑 margin。
 
 ### 7.3 扩容触发与推荐规模
 
@@ -467,7 +472,7 @@ WP2 screening 采用更保守的约 96 V100-eq h 预算，包括调度和失败�
 
 ### 7.4 理想 GPU wall-time 场景
 
-按全部 gate 通过后的 3,800–10,100 V100-eq h、平均 70% 有效利用率估算：
+按全部 gate 通过后的 3,900–10,300 V100-eq h、平均 70% 有效利用率估算：
 
 | 同时可用 GPU workers | 理想计算 wall-time | 解释 |
 |---:|---:|---|
@@ -527,7 +532,7 @@ WP2 screening 采用更保守的约 96 V100-eq h 预算，包括调度和失败�
 |---|---|---|---|
 | W0–W2 | WP0 novelty audit、claim ledger、toy spec | 数据供应商样本/许可证询问 | G0 |
 | W2–W6 | WP1 complete-state API、jump parity、resume tests | canonical V100 benchmark | state freeze |
-| W5–W10 | WP2 四臂 screening + confirmatory extension | 论文方法 skeleton | G1 |
+| W5–W10 | WP2 五臂 screening + confirmatory extension | 论文方法 skeleton | G1 |
 | W8–W18 | WP3 estimator、理论/误差刻画 | WP4 benchmark adapters | G2 method freeze |
 | W12–W22 | WP4 两个独立模型族的正式 benchmark | D1–D4 样本重建、quote | G2 |
 | W16–W24 | WP5 event/queue observation bridge、synthetic recovery | 真实协议草案 | G3 |
@@ -561,8 +566,8 @@ WP2 screening 采用更保守的约 96 V100-eq h 预算，包括调度和失败�
 ## 11. 接下来 14 天的具体动作
 
 1. 完成 G0 prior-art matrix，决定是否存在真正的新 estimator；在此之前不写算法名称和摘要；
-2. 建立 `experiments/128_long_horizon_state_parity/` 的冻结 `DESIGN.md`，写明四臂、seeds、主指标和
-   stop rule；
+2. 以 `experiments/128_state_semantics_preflight/` 的 CPU 结果为输入，建立正式 WP2 preregistration，
+   写明五臂、seeds、主指标和 stop rule；
 3. 先写 `SimulatorState` schema 与六类 parity/resume tests，再改训练逻辑；
 4. 用当前两张 V100 重跑 canonical training/rollout benchmark，记录新的 V100-eq anchor；
 5. 从免费 LOBSTER/Tardis 样本跑一个交易日的重建，测 CPU、RAM、压缩比和完整性；

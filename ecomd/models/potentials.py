@@ -595,6 +595,7 @@ def conservative_forces(
     *,
     create_graph: bool = True,
     u_global: Tensor | None = None,
+    isolate_state: bool = True,
 ) -> Tensor:
     """F_cons = -∇_s V_cons(s, context, u_global). Shape (N, d).
 
@@ -602,10 +603,17 @@ def conservative_forces(
     the pairwise potential receives no global vector (back-compat).
     """
     with torch.enable_grad():
-        if not s.requires_grad:
-            s = s.detach().requires_grad_(True)
-        u = potential(s, context, u_global=u_global)
-        (grad_s,) = torch.autograd.grad(u, s, create_graph=create_graph)
+        # Different state components can share a history graph (for example,
+        # price/context at t is computed from s_t).  Force is the *partial*
+        # derivative with context held fixed, not the total derivative through
+        # that shared history.  A clone creates a distinct differentiation node
+        # while retaining the path from the force back to the original s when
+        # create_graph=True.
+        s_force = s.clone() if isolate_state else s
+        if not s_force.requires_grad:
+            s_force.requires_grad_(True)
+        u = potential(s_force, context, u_global=u_global)
+        (grad_s,) = torch.autograd.grad(u, s_force, create_graph=create_graph)
     return -grad_s
 
 
@@ -615,11 +623,13 @@ def dissipative_forces(
     s_prev: Tensor,
     *,
     create_graph: bool = True,
+    isolate_state: bool = True,
 ) -> Tensor:
     """F_diss = -∇_s V_diss(s, s_prev). Shape (N, d)."""
     with torch.enable_grad():
-        if not s.requires_grad:
-            s = s.detach().requires_grad_(True)
-        u = dissipation(s, s_prev)
-        (grad_s,) = torch.autograd.grad(u, s, create_graph=create_graph)
+        s_force = s.clone() if isolate_state else s
+        if not s_force.requires_grad:
+            s_force.requires_grad_(True)
+        u = dissipation(s_force, s_prev)
+        (grad_s,) = torch.autograd.grad(u, s_force, create_graph=create_graph)
     return -grad_s

@@ -219,13 +219,19 @@ def load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray:
             year_lo, year_hi = _parse_period(period)
             return load_yfinance_daily_any_rank(repo_root, symbol,
                                                  year_lo=year_lo, year_hi=year_hi)
+        raise ValueError(
+            f"unsupported period {period!r} for daily dataset {dataset!r}; "
+            "expected '*_daily', 'daily', or 'all'"
+        )
     # Crypto 1m dispatch (existing)
     if dataset == "btcusdt" and period == "2024Q1_1m":
         return load_btc_1m_returns_any_rank(repo_root)
     if dataset == "ethusdt" and period == "2024Q1_1m":
         return load_eth_1m_returns_any_rank(repo_root)
-    # Fallback: default to SPX 2015-2026 daily
-    return load_spx_returns_any_rank(repo_root)
+    raise ValueError(
+        f"unsupported target dataset/period combination: dataset={dataset!r}, "
+        f"period={period!r}"
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

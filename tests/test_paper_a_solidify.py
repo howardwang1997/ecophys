@@ -5,15 +5,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 import torch
 
+from ecomd.models.price_formation import ExcessDemandParams, ExcessDemandPrice
 from ecomd.training.train_distributed import (
-    _parse_period,
     _YFINANCE_DAILY_SYMBOL,
+    _parse_period,
     load_real_returns,
 )
-from ecomd.models.price_formation import ExcessDemandParams, ExcessDemandPrice
-
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -52,6 +52,16 @@ def test_load_real_returns_spx_subrange_smaller():
     r_full = load_real_returns(REPO, "spx", "2015-2026_daily")
     r_sub = load_real_returns(REPO, "spx", "2015-2019_daily")
     assert len(r_sub) < len(r_full)
+
+
+def test_load_real_returns_unknown_dataset_hard_fails():
+    with pytest.raises(ValueError, match="unsupported target dataset"):
+        load_real_returns(REPO, "typo_market", "2015-2026_daily")
+
+
+def test_load_real_returns_invalid_period_hard_fails():
+    with pytest.raises(ValueError, match="unsupported period"):
+        load_real_returns(REPO, "spx", "typo_period")
 
 
 # ─── Hawkes sign_mode ──────────────────────────────────────────────────

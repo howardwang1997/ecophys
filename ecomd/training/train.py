@@ -25,8 +25,7 @@ from typing import Any
 
 import torch
 
-from ..models.ecomd import EcoMDSimulator
-from ..physics.observables import EcoMDTrajectory
+from ..models.ecomd import EcoMDSimulator, SimulatorState
 from .losses import LossWeights, MomentTargets, moment_matching_loss
 
 log = logging.getLogger(__name__)
@@ -52,6 +51,7 @@ def train_ecomd(
     weights: LossWeights,
     seed: int,
     persistent_state: bool = False,
+    state_complete: bool = False,
     warmup_steps: int = 0,
     lr_warmup_iters: int = 0,
 ) -> list[dict[str, Any]]:
@@ -73,6 +73,9 @@ def train_ecomd(
     s_prev = s.detach().clone()
     price_state = sim.init_price()
     h_regime = sim.init_regime()
+    simulator_state: SimulatorState | None = None
+    if state_complete:
+        simulator_state = sim.init_simulator_state(generator=gen, s_init=s)
 
     for it in range(n_iters):
         # LR schedule
@@ -82,31 +85,43 @@ def train_ecomd(
 
         optim.zero_grad()
 
-        if not persistent_state:
-            s = sim.init_state(generator=gen)
-            s_prev = s.detach().clone()
-            price_state = sim.init_price()
-            h_regime = sim.init_regime()
+        if state_complete:
+            if not persistent_state or simulator_state is None:
+                simulator_state = sim.init_simulator_state(generator=gen)
+            else:
+                simulator_state = simulator_state.detached()
+            simulator_state, traj = sim.rollout_state(
+                simulator_state,
+                n_steps=chunk_steps,
+                generator=gen,
+                create_graph=True,
+            )
         else:
-            # detach gradient across iter boundary; keep values so simulation is continuous
-            s = s.detach()
-            s_prev = s_prev.detach()
-            price_state = _detach_price(price_state)
-            if h_regime is not None:
-                h_regime = h_regime.detach()
+            if not persistent_state:
+                s = sim.init_state(generator=gen)
+                s_prev = s.detach().clone()
+                price_state = sim.init_price()
+                h_regime = sim.init_regime()
+            else:
+                # detach gradient across iter boundary; keep values so simulation is continuous
+                s = s.detach()
+                s_prev = s_prev.detach()
+                price_state = _detach_price(price_state)
+                if h_regime is not None:
+                    h_regime = h_regime.detach()
 
-        s, price_state, traj, h_regime = sim.rollout_chunk(
-            s, s_prev, price_state,
-            n_steps=chunk_steps,
-            generator=gen,
-            create_graph=True,
-            h_regime=h_regime,
-        )
-        # update s_prev for next iter to be traj.states[-2] (the step before final)
-        if chunk_steps >= 2:
-            s_prev = traj.states[-2].detach()
-        else:
-            s_prev = s.detach()
+            s, price_state, traj, h_regime = sim.rollout_chunk(
+                s, s_prev, price_state,
+                n_steps=chunk_steps,
+                generator=gen,
+                create_graph=True,
+                h_regime=h_regime,
+            )
+            # update s_prev for next iter to be traj.states[-2] (the step before final)
+            if chunk_steps >= 2:
+                s_prev = traj.states[-2].detach()
+            else:
+                s_prev = s.detach()
 
         # Compute loss on returns AFTER warmup; log_returns has length chunk_steps,
         # first is a fresh step (possibly with zero history). Drop `warmup_steps`.

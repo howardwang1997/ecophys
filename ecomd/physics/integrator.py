@@ -155,15 +155,12 @@ class OverdampedLangevin:
     (Gaussian or Student-t), preserving the fluctuation-dissipation relation.
 
     Optional Tier 2.1 compound-Poisson jumps (when ``jump_lambda > 0`` and
-    ``jump_scale > 0``):
-      - Training mode (``create_graph=True`` upstream): a deterministic
-        drift correction ``-λ · jump_scale_drift · dt`` is subtracted from
-        the position update. This is consistent with E[J]=0 jumps but
-        keeps a shape-coupling that the trainer can backprop through
-        (otherwise an additive constant adds nothing learnable).
-      - Inference mode: sample ``K ~ Poisson(λ·dt)`` per agent per step,
-        each ``J_k ~ N(0, jump_scale²)``, add to position. The same
-        ``generator`` is used so replay is deterministic.
+    ``jump_scale > 0``): sample ``K ~ Poisson(λ·dt)`` per agent per step and
+    add the sum of ``K`` iid ``N(0, jump_scale²)`` jumps.  This scientific
+    transition law is identical whether autograd graph construction is on or
+    off.  The configured jump rate and scale are not learned through a
+    pathwise derivative; estimating their gradients requires a score-function,
+    stochastic-AD, or generator estimator.
 
     Optional Tier 2.2 per-agent update mask (``update_mask``): boolean
     vector of shape (N,) controlling which agents move on this step. All
@@ -180,6 +177,7 @@ class OverdampedLangevin:
         levy_clip: float = 50.0,
         jump_lambda: float = 0.0,
         jump_scale: float = 0.0,
+        jump_legacy_train_proxy: bool = False,
         asym_drag_alpha: float = 0.0,
         memory_kernel_lambda: float = 0.0,
         memory_kernel_strength: float = 0.0,
@@ -223,6 +221,7 @@ class OverdampedLangevin:
         self.levy_clip = float(levy_clip)
         self.jump_lambda = float(jump_lambda)
         self.jump_scale = float(jump_scale)
+        self.jump_legacy_train_proxy = bool(jump_legacy_train_proxy)
         self.asym_drag_alpha = float(asym_drag_alpha)
         self.memory_kernel_lambda = float(memory_kernel_lambda)
         self.memory_kernel_strength = float(memory_kernel_strength)
@@ -420,19 +419,17 @@ class OverdampedLangevin:
         else:
             drift = drift_pre
 
-        # Tier 2.1: compound-Poisson jumps.
+        # Tier 2.1: compound-Poisson jumps.  Autograd graph construction must
+        # not select a different scientific transition kernel.  Since lambda
+        # and scale are configuration scalars, the sampled additive term need
+        # not carry a pathwise gradient; gradients through s/drift remain live.
         jump_disp = None
         if self.jump_lambda > 0.0 and self.jump_scale > 0.0:
-            if create_graph:
-                # Training mode: deterministic drift correction. We multiply by
-                # |s| element-wise so the correction is shape-coupled and
-                # backprop through state actually has a learnable gradient
-                # path (not a pure constant). Magnitude controlled by
-                # λ·jump_scale·dt.
-                drift_correct = -(self.jump_lambda * self.jump_scale * dt) * torch.tanh(s)
-                drift = drift + drift_correct
+            if self.jump_legacy_train_proxy and create_graph:
+                drift = drift - (
+                    self.jump_lambda * self.jump_scale * dt
+                ) * torch.tanh(s)
             else:
-                # Inference: sample compound-Poisson jumps per agent per dim.
                 k = torch.poisson(
                     torch.full(tuple(s.shape), self.jump_lambda * dt,
                                device=s.device, dtype=s.dtype),

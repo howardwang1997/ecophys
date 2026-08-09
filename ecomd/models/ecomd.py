@@ -18,6 +18,7 @@ no-grad inference entry point used by evaluation.
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, field, replace
 from typing import Any
 
@@ -30,25 +31,18 @@ from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
 from .agent_memory import AgentMemoryConfig, AgentMemoryGRU
 from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
 from .global_state import GlobalStateConfig, GlobalStateGRU
+from .hopfield_regime import HopfieldRegime, HopfieldRegimeConfig
 from .isab_pairwise import ISABPairwisePotential
 from .mace_lite import MACELitePotential, build_mace_lite
-from .hopfield_regime import HopfieldRegime, HopfieldRegimeConfig
 from .moe_router import AgentExpertRouter
-from .regime_latent import (
-    DiscreteRegimeGRU,
-    DiscreteRegimeGRUConfig,
-    RegimeGRU,
-    RegimeGRUConfig,
-    RegimeReadHead,
-)
 from .potentials import (
-    StochasticPairwisePotential,
     ConservativePotential,
     DissipationParams,
     DissipationPotential,
     ExternalPotential,
-    PowerLawExternalPotential,
     PairwisePotential,
+    PowerLawExternalPotential,
+    StochasticPairwisePotential,
     conservative_forces,
     dissipative_forces,
 )
@@ -57,6 +51,202 @@ from .price_formation import (
     PriceState,
     build_price_formation,
 )
+from .regime_latent import (
+    DiscreteRegimeGRU,
+    DiscreteRegimeGRUConfig,
+    RegimeGRU,
+    RegimeGRUConfig,
+    RegimeReadHead,
+)
+
+
+def _clone_tensor(value: Tensor, *, detach: bool) -> Tensor:
+    value = value.detach() if detach else value
+    return value.clone()
+
+
+def _clone_optional_tensor(value: Tensor | None, *, detach: bool) -> Tensor | None:
+    if value is None:
+        return None
+    return _clone_tensor(value, detach=detach)
+
+
+def _clone_price_state(value: PriceState, *, detach: bool) -> PriceState:
+    return PriceState(
+        log_price=_clone_tensor(value.log_price, detach=detach),
+        last_log_return=_clone_tensor(value.last_log_return, detach=detach),
+        volatility=_clone_tensor(value.volatility, detach=detach),
+        step=value.step,
+        hawkes_memory=_clone_optional_tensor(value.hawkes_memory, detach=detach),
+        hawkes_memory_long=_clone_optional_tensor(value.hawkes_memory_long, detach=detach),
+        vol_latent=_clone_optional_tensor(value.vol_latent, detach=detach),
+    )
+
+
+@dataclass
+class IntegratorPathState:
+    """Path-dependent buffers required for an exact rollout continuation."""
+
+    mem_ema: Tensor | None = None
+    last_price_delta: float = 0.0
+    prev_eps: Tensor | None = None
+    drift_ema: Tensor | None = None
+    zumbach_ema: float = 0.0
+
+    def clone(self, *, detach: bool = True) -> IntegratorPathState:
+        return IntegratorPathState(
+            mem_ema=_clone_optional_tensor(self.mem_ema, detach=detach),
+            last_price_delta=float(self.last_price_delta),
+            prev_eps=_clone_optional_tensor(self.prev_eps, detach=detach),
+            drift_ema=_clone_optional_tensor(self.drift_ema, detach=detach),
+            zumbach_ema=float(self.zumbach_ema),
+        )
+
+
+@dataclass
+class PairwiseCacheState:
+    """Mutable neighbour/edge cache that changes a simulator trajectory."""
+
+    kind: str = "none"
+    edges: Tensor | None = None
+    steps_since_refresh: int = 0
+
+    def clone(self) -> PairwiseCacheState:
+        return PairwiseCacheState(
+            kind=self.kind,
+            edges=_clone_optional_tensor(self.edges, detach=True),
+            steps_since_refresh=int(self.steps_since_refresh),
+        )
+
+
+@dataclass
+class SimulatorState:
+    """Complete dynamic state for exact chunking and checkpoint continuation.
+
+    Model parameters are intentionally excluded: a checkpoint must store the
+    module ``state_dict`` alongside :meth:`to_checkpoint`.  ``rng_state`` is
+    the state of the explicit rollout generator *after* producing ``s``.
+    """
+
+    s: Tensor
+    s_prev: Tensor
+    price_state: PriceState
+    h_regime: Tensor | None
+    h_agent: Tensor | None
+    h_global: Tensor | None
+    step_idx: int
+    fundamental: float
+    pending_exo_return: Tensor | None
+    shock_schedule: dict[int, dict[str, Any]] | None
+    shock_dyn: dict[str, Any] | None
+    integrator: IntegratorPathState
+    pairwise_cache: PairwiseCacheState
+    rng_state: Tensor | None
+
+    def clone(self, *, detach: bool = False) -> SimulatorState:
+        return SimulatorState(
+            s=_clone_tensor(self.s, detach=detach),
+            s_prev=_clone_tensor(self.s_prev, detach=detach),
+            price_state=_clone_price_state(self.price_state, detach=detach),
+            h_regime=_clone_optional_tensor(self.h_regime, detach=detach),
+            h_agent=_clone_optional_tensor(self.h_agent, detach=detach),
+            h_global=_clone_optional_tensor(self.h_global, detach=detach),
+            step_idx=int(self.step_idx),
+            fundamental=float(self.fundamental),
+            pending_exo_return=_clone_optional_tensor(self.pending_exo_return, detach=detach),
+            shock_schedule=copy.deepcopy(self.shock_schedule),
+            shock_dyn=copy.deepcopy(self.shock_dyn),
+            integrator=self.integrator.clone(detach=detach),
+            pairwise_cache=self.pairwise_cache.clone(),
+            rng_state=_clone_optional_tensor(self.rng_state, detach=True),
+        )
+
+    def detached(self) -> SimulatorState:
+        """Detach the BPTT graph while preserving every dynamic value."""
+        return self.clone(detach=True)
+
+    def to_checkpoint(self) -> dict[str, Any]:
+        """Return a plain, versioned payload accepted by ``torch.save``."""
+        state = self.detached()
+        return {
+            "format_version": 1,
+            "s": state.s,
+            "s_prev": state.s_prev,
+            "price_state": {
+                "log_price": state.price_state.log_price,
+                "last_log_return": state.price_state.last_log_return,
+                "volatility": state.price_state.volatility,
+                "step": state.price_state.step,
+                "hawkes_memory": state.price_state.hawkes_memory,
+                "hawkes_memory_long": state.price_state.hawkes_memory_long,
+                "vol_latent": state.price_state.vol_latent,
+            },
+            "h_regime": state.h_regime,
+            "h_agent": state.h_agent,
+            "h_global": state.h_global,
+            "step_idx": state.step_idx,
+            "fundamental": state.fundamental,
+            "pending_exo_return": state.pending_exo_return,
+            "shock_schedule": state.shock_schedule,
+            "shock_dyn": state.shock_dyn,
+            "integrator": {
+                "mem_ema": state.integrator.mem_ema,
+                "last_price_delta": state.integrator.last_price_delta,
+                "prev_eps": state.integrator.prev_eps,
+                "drift_ema": state.integrator.drift_ema,
+                "zumbach_ema": state.integrator.zumbach_ema,
+            },
+            "pairwise_cache": {
+                "kind": state.pairwise_cache.kind,
+                "edges": state.pairwise_cache.edges,
+                "steps_since_refresh": state.pairwise_cache.steps_since_refresh,
+            },
+            "rng_state": state.rng_state,
+        }
+
+    @classmethod
+    def from_checkpoint(cls, payload: dict[str, Any]) -> SimulatorState:
+        """Reconstruct a complete state, rejecting unknown future formats."""
+        version = int(payload.get("format_version", -1))
+        if version != 1:
+            raise ValueError(f"unsupported SimulatorState format_version={version}")
+        ps = payload["price_state"]
+        integ = payload["integrator"]
+        cache = payload["pairwise_cache"]
+        return cls(
+            s=payload["s"],
+            s_prev=payload["s_prev"],
+            price_state=PriceState(
+                log_price=ps["log_price"],
+                last_log_return=ps["last_log_return"],
+                volatility=ps["volatility"],
+                step=int(ps["step"]),
+                hawkes_memory=ps.get("hawkes_memory"),
+                hawkes_memory_long=ps.get("hawkes_memory_long"),
+                vol_latent=ps.get("vol_latent"),
+            ),
+            h_regime=payload.get("h_regime"),
+            h_agent=payload.get("h_agent"),
+            h_global=payload.get("h_global"),
+            step_idx=int(payload["step_idx"]),
+            fundamental=float(payload["fundamental"]),
+            pending_exo_return=payload.get("pending_exo_return"),
+            shock_schedule=copy.deepcopy(payload.get("shock_schedule")),
+            shock_dyn=copy.deepcopy(payload.get("shock_dyn")),
+            integrator=IntegratorPathState(
+                mem_ema=integ.get("mem_ema"),
+                last_price_delta=float(integ["last_price_delta"]),
+                prev_eps=integ.get("prev_eps"),
+                drift_ema=integ.get("drift_ema"),
+                zumbach_ema=float(integ["zumbach_ema"]),
+            ),
+            pairwise_cache=PairwiseCacheState(
+                kind=str(cache["kind"]),
+                edges=cache.get("edges"),
+                steps_since_refresh=int(cache["steps_since_refresh"]),
+            ),
+            rng_state=payload.get("rng_state"),
+        )
 
 
 @dataclass(frozen=True)
@@ -246,11 +436,21 @@ class EcoMDConfig:
     # regime → forces explode → NaN. Default OFF preserves baseline
     # equivalence; tier_1_3_features_all should set this True.
     pair_input_layernorm: bool = False
-    # Tier 2.1 — Compound-Poisson jumps. Training mode uses a tanh-coupled
-    #   drift correction; inference mode samples discrete jumps. Both
-    #   zero ⇒ no-op. Hypothesis: helps hill, gain_loss, autocorr.
+    # Tier 2.1 — Compound-Poisson jumps. Training and inference sample the
+    #   same transition law. These config scalars do not receive pathwise
+    #   gradients; use a discrete-event gradient estimator to learn them.
+    #   Both zero ⇒ no-op. Hypothesis: helps hill, gain_loss, autocorr.
     jump_lambda: float = 0.0
     jump_scale: float = 0.0
+    # Reproduction-only switch for WP2 Arms A/B. When true, create_graph=True
+    # uses the historical deterministic tanh drift proxy instead of sampling
+    # jumps. Never enable for a scientific production model.
+    jump_legacy_train_proxy: bool = False
+    # Reproduction-only switch for the pre-WP1 force semantics. Historical
+    # rollouts differentiated V through context nodes sharing the state history,
+    # so detach/checkpoint boundaries changed the numerical force. False gives
+    # the physical partial derivative with context held fixed.
+    legacy_total_derivative_force: bool = False
     # Tier 2.2 — Multi-timescale per-agent mask. A `timescale_fast_frac`
     #   fraction of agents always update; the rest update every
     #   `timescale_slow_freq` steps. All agents always contribute to forces.
@@ -477,6 +677,7 @@ class EcoMDSimulator(nn.Module):
             levy_clip=self.cfg.noise_levy_clip,
             jump_lambda=self.cfg.jump_lambda,
             jump_scale=self.cfg.jump_scale,
+            jump_legacy_train_proxy=self.cfg.jump_legacy_train_proxy,
             asym_drag_alpha=self.cfg.asym_drag_alpha,
             memory_kernel_lambda=self.cfg.memory_kernel_lambda,
             memory_kernel_strength=self.cfg.memory_kernel_strength,
@@ -972,9 +1173,11 @@ class EcoMDSimulator(nn.Module):
             f_cons = conservative_forces(
                 self.potential, s_running, context,
                 create_graph=create_graph, u_global=u_for_pair,
+                isolate_state=not self.cfg.legacy_total_derivative_force,
             )
             f_diss = dissipative_forces(
                 self.dissipation, s_running, s_prev_running, create_graph=create_graph,
+                isolate_state=not self.cfg.legacy_total_derivative_force,
             )
             last_step_out = self.integrator.step(
                 s=s_running,
@@ -1046,6 +1249,218 @@ class EcoMDSimulator(nn.Module):
             pairwise.reset_edge_cache()
         elif isinstance(pairwise, ISABPairwisePotential):
             pairwise.reset_edge_cache()
+
+    def _capture_integrator_state(self) -> IntegratorPathState:
+        integrator = self.integrator
+        return IntegratorPathState(
+            mem_ema=_clone_optional_tensor(getattr(integrator, "_mem_ema", None), detach=True),
+            last_price_delta=float(getattr(integrator, "_last_price_delta", 0.0)),
+            prev_eps=_clone_optional_tensor(getattr(integrator, "_prev_eps", None), detach=True),
+            drift_ema=_clone_optional_tensor(getattr(integrator, "_drift_ema", None), detach=True),
+            zumbach_ema=float(getattr(integrator, "_zumbach_ema", 0.0)),
+        )
+
+    def _restore_integrator_state(self, state: IntegratorPathState) -> None:
+        integrator = self.integrator
+        for name, value in (
+            ("_mem_ema", state.mem_ema),
+            ("_prev_eps", state.prev_eps),
+            ("_drift_ema", state.drift_ema),
+        ):
+            if hasattr(integrator, name):
+                setattr(integrator, name, _clone_optional_tensor(value, detach=True))
+        if hasattr(integrator, "_last_price_delta"):
+            integrator._last_price_delta = float(state.last_price_delta)
+        if hasattr(integrator, "_zumbach_ema"):
+            integrator._zumbach_ema = float(state.zumbach_ema)
+
+    def _capture_pairwise_cache(self) -> PairwiseCacheState:
+        pairwise = getattr(self.potential, "pairwise", None)
+        if isinstance(pairwise, MACELitePotential):
+            return PairwiseCacheState(
+                kind="mace_lite",
+                edges=_clone_optional_tensor(pairwise._cached_edge_index, detach=True),
+                steps_since_refresh=int(pairwise._step_since_refresh),
+            )
+        if isinstance(pairwise, StochasticPairwisePotential):
+            return PairwiseCacheState(
+                kind="stochastic_mlp",
+                edges=_clone_optional_tensor(pairwise._cached_edges, detach=True),
+            )
+        return PairwiseCacheState()
+
+    def _restore_pairwise_cache(self, state: PairwiseCacheState) -> None:
+        pairwise = getattr(self.potential, "pairwise", None)
+        expected = (
+            "mace_lite" if isinstance(pairwise, MACELitePotential)
+            else "stochastic_mlp" if isinstance(pairwise, StochasticPairwisePotential)
+            else "none"
+        )
+        if state.kind != expected:
+            raise ValueError(
+                f"pairwise cache kind {state.kind!r} is incompatible with model kind {expected!r}"
+            )
+        if isinstance(pairwise, MACELitePotential):
+            pairwise._cached_edge_index = _clone_optional_tensor(state.edges, detach=True)
+            pairwise._step_since_refresh = int(state.steps_since_refresh)
+        elif isinstance(pairwise, StochasticPairwisePotential):
+            pairwise._cached_edges = _clone_optional_tensor(state.edges, detach=True)
+
+    def init_simulator_state(
+        self,
+        *,
+        generator: torch.Generator | None = None,
+        seed: int | None = None,
+        s_init: Tensor | None = None,
+    ) -> SimulatorState:
+        """Create a fresh, state-complete rollout state.
+
+        Exact replay requires either ``seed`` or an explicit ``generator``.
+        The generator state is captured after sampling the initial agent state.
+        """
+        if seed is not None and generator is not None:
+            raise ValueError("pass either seed or generator, not both")
+        if seed is not None:
+            generator = torch.Generator(device=self.device)
+            generator.manual_seed(seed)
+
+        self._fundamental = 0.0
+        self._pending_exo_return = None
+        self._shock_dyn = None
+        self._reset_potential_cache()
+        if hasattr(self.integrator, "reset_state"):
+            self.integrator.reset_state()
+
+        s = s_init if s_init is not None else self.init_state(generator=generator)
+        price_state = self.init_price()
+        return SimulatorState(
+            s=s,
+            s_prev=s.detach().clone(),
+            price_state=price_state,
+            h_regime=self.init_regime(),
+            h_agent=self.init_agent_memory(),
+            h_global=self.init_global_state(),
+            step_idx=price_state.step,
+            fundamental=self._fundamental,
+            pending_exo_return=None,
+            shock_schedule=copy.deepcopy(self._shock_schedule),
+            shock_dyn=None,
+            integrator=self._capture_integrator_state(),
+            pairwise_cache=self._capture_pairwise_cache(),
+            rng_state=(generator.get_state().clone() if generator is not None else None),
+        )
+
+    def rollout_state(
+        self,
+        state: SimulatorState,
+        n_steps: int,
+        *,
+        generator: torch.Generator | None = None,
+        create_graph: bool = True,
+        lightweight: bool = False,
+        ss_prob: float = 0.0,
+        ss_sigma_mult: float = 1.0,
+    ) -> tuple[SimulatorState, EcoMDTrajectory]:
+        """Roll out from and return a complete state without chunk resets.
+
+        ``state`` is authoritative: its RNG and mutable caches are restored
+        before stepping.  Calling this method repeatedly with any partition of
+        a fixed horizon therefore has the same forward path as one call.
+        Call :meth:`SimulatorState.detached` explicitly at a BPTT boundary.
+        """
+        if n_steps <= 0:
+            raise ValueError(f"n_steps must be positive, got {n_steps}")
+        if state.step_idx != state.price_state.step:
+            raise ValueError(
+                "absolute clock mismatch: "
+                f"SimulatorState.step_idx={state.step_idx}, PriceState.step={state.price_state.step}"
+            )
+        if not 0.0 <= ss_prob <= 1.0:
+            raise ValueError(f"ss_prob must be in [0, 1], got {ss_prob}")
+        if ss_prob > 0.0 and ss_sigma_mult <= 1.0:
+            raise ValueError("ss_sigma_mult must exceed 1 when scheduled sampling is active")
+
+        if state.rng_state is not None:
+            if generator is None:
+                generator = torch.Generator(device=state.s.device)
+            generator.set_state(state.rng_state)
+
+        self._fundamental = float(state.fundamental)
+        self._pending_exo_return = _clone_optional_tensor(
+            state.pending_exo_return, detach=False
+        )
+        self._shock_schedule = copy.deepcopy(state.shock_schedule)
+        self._shock_dyn = copy.deepcopy(state.shock_dyn)
+        self._restore_integrator_state(state.integrator)
+        self._restore_pairwise_cache(state.pairwise_cache)
+
+        s = state.s
+        s_prev = state.s_prev
+        price_state = state.price_state
+        h_regime = state.h_regime
+        h_agent = state.h_agent
+        h_global = state.h_global
+        recorder = TrajectoryRecorder(
+            dt=self.cfg.dt,
+            meta={
+                "n_steps": n_steps,
+                "start_step": state.step_idx,
+                "state_complete": 1,
+            },
+            lightweight=lightweight,
+        )
+
+        ss_active = ss_prob > 0.0 and ss_sigma_mult > 1.0
+        for local_idx in range(n_steps):
+            step_noise_mult = 1.0
+            if ss_active:
+                draw = torch.rand((), generator=generator, device=s.device, dtype=s.dtype)
+                if float(draw) < ss_prob:
+                    step_noise_mult = ss_sigma_mult
+            s_next, price_state, rec, h_regime, h_agent, h_global = self.step(
+                s,
+                s_prev,
+                price_state,
+                generator=generator,
+                create_graph=create_graph,
+                h_regime=h_regime,
+                h_agent=h_agent,
+                h_global=h_global,
+                step_idx=state.step_idx + local_idx,
+                noise_scale_mult=step_noise_mult,
+            )
+            recorder.record(
+                s=rec["s"],
+                f_cons=rec["f_cons"],
+                f_diss=rec["f_diss"],
+                f_stoch=rec["f_stoch"],
+                velocity=rec["velocity"],
+                log_price=rec["log_price"],
+                log_return=rec["log_return"],
+                volume=rec["volume"],
+                excess_demand=rec["excess_demand"],
+                ofi=rec.get("ofi"),
+            )
+            s_prev = s
+            s = s_next
+
+        next_state = SimulatorState(
+            s=s,
+            s_prev=s_prev,
+            price_state=price_state,
+            h_regime=h_regime,
+            h_agent=h_agent,
+            h_global=h_global,
+            step_idx=state.step_idx + n_steps,
+            fundamental=float(self._fundamental),
+            pending_exo_return=_clone_optional_tensor(self._pending_exo_return, detach=False),
+            shock_schedule=copy.deepcopy(self._shock_schedule),
+            shock_dyn=copy.deepcopy(self._shock_dyn),
+            integrator=self._capture_integrator_state(),
+            pairwise_cache=self._capture_pairwise_cache(),
+            rng_state=(generator.get_state().clone() if generator is not None else None),
+        )
+        return next_state, recorder.finalize()
 
     def rollout_chunk(
         self,
