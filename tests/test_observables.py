@@ -63,12 +63,57 @@ def test_properties():
 def test_numpy_conversions():
     rec = TrajectoryRecorder(dt=0.01)
     for i in range(4):
-        rec.record(**_fake_step(2, 3, i))
+        rec.record(
+            **_fake_step(2, 3, i),
+            latent_flow_alignment=torch.tensor(0.1 * i),
+        )
     traj = rec.finalize()
     arr = traj.log_returns_np()
     assert arr.shape == (4,)
     vol = traj.volumes_np()
     assert vol.shape == (4,)
+    expected = torch.tensor([0.0, 0.1, 0.2, 0.3]).numpy()
+    assert traj.latent_flow_alignment_np() == pytest.approx(expected)
+    assert traj.ofi_np() == pytest.approx(expected)
+    assert traj.ofi is traj.latent_flow_alignment
+
+
+def test_recorder_accepts_legacy_ofi_keyword():
+    rec = TrajectoryRecorder(dt=0.01)
+    rec.record(**_fake_step(2, 3, 0), ofi=torch.tensor(0.25))
+    traj = rec.finalize()
+    assert traj.latent_flow_alignment.item() == pytest.approx(0.25)
+
+
+def test_trajectory_constructor_accepts_legacy_ofi_keyword():
+    rec = TrajectoryRecorder(dt=0.01)
+    rec.record(**_fake_step(2, 3, 0), latent_flow_alignment=torch.tensor(0.25))
+    traj = rec.finalize()
+    legacy = EcoMDTrajectory(
+        states=traj.states,
+        f_cons=traj.f_cons,
+        f_diss=traj.f_diss,
+        f_stoch=traj.f_stoch,
+        velocities=traj.velocities,
+        log_prices=traj.log_prices,
+        log_returns=traj.log_returns,
+        volumes=traj.volumes,
+        excess_demand=traj.excess_demand,
+        ofi=traj.latent_flow_alignment,
+        dt=traj.dt,
+        meta=traj.meta,
+    )
+    assert legacy.latent_flow_alignment is traj.latent_flow_alignment
+
+
+def test_recorder_rejects_ambiguous_alignment_aliases():
+    rec = TrajectoryRecorder(dt=0.01)
+    with pytest.raises(ValueError, match="not both"):
+        rec.record(
+            **_fake_step(2, 3, 0),
+            latent_flow_alignment=torch.tensor(0.25),
+            ofi=torch.tensor(0.25),
+        )
 
 
 def test_detach_preserves_shape():

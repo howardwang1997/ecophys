@@ -1289,6 +1289,10 @@ class EcoMDSimulator(nn.Module):
         if hasattr(self.integrator, "update_price_signal"):
             self.integrator.update_price_signal(price_step.state.last_log_return)
 
+        latent_flow_alignment = price_step.aux.get(
+            "latent_flow_alignment",
+            price_step.aux.get("ofi", torch.zeros_like(price_step.state.last_log_return)),
+        )
         record = {
             "s": step_out.s_next,
             "f_cons": step_out.f_cons,
@@ -1299,7 +1303,8 @@ class EcoMDSimulator(nn.Module):
             "log_return": price_step.state.last_log_return,
             "volume": price_step.aux["volume"],
             "excess_demand": price_step.aux["excess_demand"],
-            "ofi": price_step.aux.get("ofi", torch.zeros_like(price_step.state.last_log_return)),
+            "latent_flow_alignment": latent_flow_alignment,
+            "ofi": latent_flow_alignment,
         }
         return step_out.s_next, price_step.state, record, h_regime_next, h_agent_next, h_global_next
 
@@ -1504,7 +1509,7 @@ class EcoMDSimulator(nn.Module):
                 log_return=rec["log_return"],
                 volume=rec["volume"],
                 excess_demand=rec["excess_demand"],
-                ofi=rec.get("ofi"),
+                latent_flow_alignment=rec.get("latent_flow_alignment", rec.get("ofi")),
             )
             s_prev = s
             s = s_next
@@ -1661,7 +1666,7 @@ class EcoMDSimulator(nn.Module):
                     log_return=rec["log_return"],
                     volume=rec["volume"],
                     excess_demand=rec["excess_demand"],
-                    ofi=rec.get("ofi"),
+                    latent_flow_alignment=rec.get("latent_flow_alignment", rec.get("ofi")),
                 )
                 s_prev = s
                 s = s_next
@@ -1914,7 +1919,7 @@ class EcoMDSimulator(nn.Module):
                 log_return=rec["log_return"].detach(),
                 volume=rec["volume"].detach(),
                 excess_demand=rec["excess_demand"].detach(),
-                ofi=rec["ofi"].detach(),
+                latent_flow_alignment=rec["latent_flow_alignment"].detach(),
             )
             s_prev = s
             s = s_next

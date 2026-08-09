@@ -23,7 +23,7 @@ from torch import Tensor
 ArrayF = npt.NDArray[np.float64]
 
 
-@dataclass
+@dataclass(init=False)
 class EcoMDTrajectory:
     """Immutable snapshot of a simulation run.
 
@@ -32,7 +32,8 @@ class EcoMDTrajectory:
     - log_prices: (T,)
     - log_returns: (T,) — includes step 0 which is 0 by convention
     - volumes, excess_demand: (T,)
-    - ofi: (T,) — signed order-flow imbalance Σdpos/(Σ|dpos|+ε) ∈ [-1,1] (0 if not logged)
+    - latent_flow_alignment: (T,) — latent-agent directional alignment
+      Σdpos/(Σ|dpos|+ε) ∈ [-1,1] (0 if not logged)
     """
 
     states: Tensor
@@ -44,9 +45,46 @@ class EcoMDTrajectory:
     log_returns: Tensor
     volumes: Tensor
     excess_demand: Tensor
-    ofi: Tensor
+    latent_flow_alignment: Tensor
     dt: float
     meta: dict[str, float | int | str] = field(default_factory=dict)
+
+    def __init__(
+        self,
+        states: Tensor,
+        f_cons: Tensor,
+        f_diss: Tensor,
+        f_stoch: Tensor,
+        velocities: Tensor,
+        log_prices: Tensor,
+        log_returns: Tensor,
+        volumes: Tensor,
+        excess_demand: Tensor,
+        latent_flow_alignment: Tensor | None = None,
+        dt: float | None = None,
+        meta: dict[str, float | int | str] | None = None,
+        *,
+        ofi: Tensor | None = None,
+    ) -> None:
+        if latent_flow_alignment is not None and ofi is not None:
+            raise ValueError("pass latent_flow_alignment or legacy ofi, not both")
+        alignment = latent_flow_alignment if latent_flow_alignment is not None else ofi
+        if alignment is None:
+            raise TypeError("latent_flow_alignment is required")
+        if dt is None:
+            raise TypeError("dt is required")
+        self.states = states
+        self.f_cons = f_cons
+        self.f_diss = f_diss
+        self.f_stoch = f_stoch
+        self.velocities = velocities
+        self.log_prices = log_prices
+        self.log_returns = log_returns
+        self.volumes = volumes
+        self.excess_demand = excess_demand
+        self.latent_flow_alignment = alignment
+        self.dt = dt
+        self.meta = {} if meta is None else meta
 
     @property
     def n_steps(self) -> int:
@@ -66,8 +104,17 @@ class EcoMDTrajectory:
     def volumes_np(self) -> ArrayF:
         return self.volumes.detach().cpu().numpy().astype(np.float64)
 
+    @property
+    def ofi(self) -> Tensor:
+        """Legacy alias; this latent quantity is not empirical order-flow imbalance."""
+        return self.latent_flow_alignment
+
+    def latent_flow_alignment_np(self) -> ArrayF:
+        return self.latent_flow_alignment.detach().cpu().numpy().astype(np.float64)
+
     def ofi_np(self) -> ArrayF:
-        return self.ofi.detach().cpu().numpy().astype(np.float64)
+        """Legacy alias for :meth:`latent_flow_alignment_np`."""
+        return self.latent_flow_alignment_np()
 
     def to(self, device: torch.device | str) -> EcoMDTrajectory:
         return EcoMDTrajectory(
@@ -80,7 +127,7 @@ class EcoMDTrajectory:
             log_returns=self.log_returns.to(device),
             volumes=self.volumes.to(device),
             excess_demand=self.excess_demand.to(device),
-            ofi=self.ofi.to(device),
+            latent_flow_alignment=self.latent_flow_alignment.to(device),
             dt=self.dt,
             meta=dict(self.meta),
         )
@@ -96,7 +143,7 @@ class EcoMDTrajectory:
             log_returns=self.log_returns.detach(),
             volumes=self.volumes.detach(),
             excess_demand=self.excess_demand.detach(),
-            ofi=self.ofi.detach(),
+            latent_flow_alignment=self.latent_flow_alignment.detach(),
             dt=self.dt,
             meta=dict(self.meta),
         )
@@ -124,7 +171,7 @@ class TrajectoryRecorder:
         self._log_returns: list[Tensor] = []
         self._volumes: list[Tensor] = []
         self._excess_demand: list[Tensor] = []
-        self._ofi: list[Tensor] = []
+        self._latent_flow_alignment: list[Tensor] = []
 
     def record(
         self,
@@ -137,8 +184,12 @@ class TrajectoryRecorder:
         log_return: Tensor,
         volume: Tensor,
         excess_demand: Tensor,
+        latent_flow_alignment: Tensor | None = None,
+        *,
         ofi: Tensor | None = None,
     ) -> None:
+        if latent_flow_alignment is not None and ofi is not None:
+            raise ValueError("pass latent_flow_alignment or legacy ofi, not both")
         if not self.lightweight:
             self._states.append(s)
             self._f_cons.append(f_cons)
@@ -149,9 +200,10 @@ class TrajectoryRecorder:
         self._log_returns.append(log_return)
         self._volumes.append(volume)
         self._excess_demand.append(excess_demand)
-        # ofi optional: training/chunk paths don't compute it → log a zero placeholder
-        # (same dtype/device as log_return) so the (T,) series stays well-formed.
-        self._ofi.append(ofi if ofi is not None else torch.zeros_like(log_return))
+        alignment = latent_flow_alignment if latent_flow_alignment is not None else ofi
+        self._latent_flow_alignment.append(
+            alignment if alignment is not None else torch.zeros_like(log_return)
+        )
 
     def finalize(self) -> EcoMDTrajectory:
         if not self._log_returns:
@@ -176,7 +228,7 @@ class TrajectoryRecorder:
             log_returns=torch.stack(self._log_returns),
             volumes=torch.stack(self._volumes),
             excess_demand=torch.stack(self._excess_demand),
-            ofi=torch.stack(self._ofi),
+            latent_flow_alignment=torch.stack(self._latent_flow_alignment),
             dt=self.dt,
             meta=self.meta,
             **big,
