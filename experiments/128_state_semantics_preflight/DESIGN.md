@@ -68,6 +68,23 @@ conda run -n ecophys python experiments/128_state_semantics_preflight/run_cpu_pr
 conda run -n ecophys pytest -q tests/test_simulator_state.py
 ```
 
+## V100 probe versioning
+
+The first CUDA run (`V100_PROBE_V1_FAILED.json`) used `dt=0.02` and demanded bit-exact equality between
+`create_graph=True/False`. It is retained as a failed probe: checkpoint/chunk continuation was exact, but the
+two autograd modes differed by at most `2.38e-7`, and the untrained random model became non-finite before the
+512-step stability horizon.
+
+The follow-up diagnostic was specified after observing that failure and therefore is not an independent
+confirmatory test. It freezes two justified mechanics-only changes for probe v2:
+
+- jump-law parity requires an exactly equal post-rollout RNG state and return/state discrepancies no larger
+  than `1e-6`; the diagnostic no-jump control exhibits the same fp32 CUDA floor;
+- `dt=0.005`, which is the diagnostic stability setting, while retaining `N=500`, 32 parity steps and the
+  512-step horizon.
+
+Both v1 and the diagnostic must remain beside v2. V2 can establish that the repaired API runs under a stable
+CUDA integration setting; it cannot erase the v1 stability failure or justify market-fidelity claims.
+
 The production WP2 run is not authorized by a CPU smoke result alone. Its configs, seeds, main metric and
 training budget must be frozen in a separate preregistration after this experiment closes.
-

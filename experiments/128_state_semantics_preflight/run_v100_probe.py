@@ -17,12 +17,12 @@ from ecomd.models.ecomd import EcoMDConfig, EcoMDSimulator, SimulatorState
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _config(n_agents: int) -> EcoMDConfig:
+def _config(n_agents: int, *, dt: float = 0.02) -> EcoMDConfig:
     return EcoMDConfig(
         n_agents=n_agents,
         d_state=16,
         hidden=32,
-        dt=0.02,
+        dt=dt,
         pairwise_kind="stochastic_mlp",
         sps_k_random=16,
         sps_resample_per_step=False,
@@ -62,6 +62,8 @@ def main() -> None:
     parser.add_argument("--parity-steps", type=int, default=32)
     parser.add_argument("--long-steps", type=int, default=512)
     parser.add_argument("--seed", type=int, default=128_500)
+    parser.add_argument("--dt", type=float, default=0.005)
+    parser.add_argument("--parity-atol", type=float, default=1e-6)
     parser.add_argument(
         "--git-sha",
         help="source commit, required when the remote code snapshot has no .git directory",
@@ -73,11 +75,15 @@ def main() -> None:
         raise ValueError("parity-steps must exceed 11 for the frozen partition")
     if args.long_steps <= 0:
         raise ValueError("long-steps must be positive")
+    if args.dt <= 0.0:
+        raise ValueError("dt must be positive")
+    if args.parity_atol < 0.0:
+        raise ValueError("parity-atol must be nonnegative")
 
     device = torch.device("cuda:0")
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
-    sim = EcoMDSimulator(_config(args.n_agents)).to(device)
+    sim = EcoMDSimulator(_config(args.n_agents, dt=args.dt)).to(device)
     initial = sim.init_simulator_state(seed=args.seed)
     torch.cuda.reset_peak_memory_stats(device)
     torch.cuda.synchronize(device)
@@ -122,9 +128,13 @@ def main() -> None:
     jump_return_diff = _max_diff(inference_traj.log_returns, training_traj.log_returns)
     jump_state_diff = _max_diff(inference_state.s, training_state.s)
     training_traj.log_returns.square().mean().backward()
+    live_gradients = any(parameter.grad is not None for parameter in sim.parameters())
     finite_gradients = all(
         parameter.grad is None or bool(torch.isfinite(parameter.grad).all())
         for parameter in sim.parameters()
+    )
+    jump_rng_exact = bool(
+        torch.equal(inference_state.rng_state, training_state.rng_state)
     )
 
     long_initial = sim.init_simulator_state(seed=args.seed + 1)
@@ -139,14 +149,24 @@ def main() -> None:
         "chunk_final_state_exact": _max_diff(full_state.s, chunk_state.s) == 0.0,
         "resume_returns_exact": _max_diff(full_traj.log_returns, resumed_returns) == 0.0,
         "resume_final_state_exact": _max_diff(full_state.s, resumed.s) == 0.0,
-        "jump_create_graph_returns_exact": jump_return_diff == 0.0,
-        "jump_create_graph_state_exact": jump_state_diff == 0.0,
+        "jump_rng_state_exact": jump_rng_exact,
+        "jump_create_graph_returns_within_cuda_tolerance": (
+            jump_return_diff <= args.parity_atol
+        ),
+        "jump_create_graph_state_within_cuda_tolerance": (
+            jump_state_diff <= args.parity_atol
+        ),
+        "live_gradients": live_gradients,
         "finite_gradients": finite_gradients,
         "long_rollout_finite": bool(torch.isfinite(long_traj.log_returns).all()),
         "long_clock_exact": long_state.step_idx == args.long_steps,
     }
     payload = {
         "experiment": "128_state_semantics_v100_probe",
+        "probe_version": 2,
+        "interpretation": (
+            "post-diagnostic mechanics probe; v1 failure is retained separately"
+        ),
         "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "git_sha": args.git_sha
         or subprocess.check_output(
