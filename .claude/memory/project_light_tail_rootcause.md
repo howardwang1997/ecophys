@@ -5,6 +5,25 @@ metadata:
   type: project
 ---
 
+**🔴 2026-08-09 EcoMD audit-spec finding.** The audited training API processes 24-step chunks but does
+not return the recurrent global state $u$, so $u$ is reset between training chunks; formal inference
+persists $u$ for 8,000 steps. Training also uses a drift proxy where inference uses compound-Poisson
+jumps. These are concrete training/inference mismatches and plausible contributors to late-time
+fidelity failure, but exp127 does **not** identify either as the causal explanation for the light tail.
+Both must be repaired and ablated before a positive EcoMD model-paper claim. They are disclosed in the
+Sim2Science technical appendix and promoted to the EcoMD v1 M0 release gate.
+
+**🔴 2026-07-22 exp 126 audit update.** The five-asset extension confirms nearly flat raw-ED Hill vs N
+and strongly rising raw/EWMA-standardized return Hill, but this is not yet a clean CLT mechanism proof:
+the fixed additive price noise and nonlinear concave-impact/SNR mixture must be decomposed with
+`sigma_price=0` and fixed-SNR controls. The full atlas confirms that coherent kick and the
+reduced-friction (`liquidity_drop`) proxy fatten tails while `temperature_spike` is essentially control;
+the market-liquidity interpretation remains an unvalidated mapping assumption. The dense dose result
+supports a saturating **dip-amplitude** law, but its recovery estimator gives SPX tau=350 for all eight
+doses and therefore contradicts the old tau(dose) headline. All 12 G-D1b Lévy models trained, but the
+local Pareto JSON still has no trained-model point; fix raw-vs-post-impact ED logging before running the
+H20 score/emit rescue. G-E remains unrun. See [[project_workshop_audit_2026-07-22]].
+
 **🔴 2026-06-30 exp 125 RESULTS — self-correction (supersedes the 06-29 "CLT-on-ED" headline below).**
 The pre-registered PRIMARY mechanism test **G-D2 (steady α_ED vs N at fixed trained dynamics) came back
 FLAT**: α_ED ≈ 4.65–4.77 across N ∈ {100…30000} (spx & btc), inside window-std ≈0.7. So **CLT self-

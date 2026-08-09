@@ -40,8 +40,10 @@ A Pre-Specified Audit of a Learned Market Model}
 \begin{abstract}
 Scientific simulators with persistent internal state are often evaluated from fresh, finite rollouts.
 If the initialized state distribution is not stationary, a fidelity score can mix startup relaxation
-with the regime it purports to measure. We audit this failure mode in \method, a differentiable
-Langevin particle market simulator whose return-tail score motivated a claim of stylized-fact fidelity.
+with the regime it purports to measure. We audit this failure mode in a frozen snapshot of \method,
+a previously unpublished differentiable Langevin particle market simulator whose return-tail score
+motivated a claim of stylized-fact fidelity. We specify that snapshot as the audit object rather than
+treating its name as prior validation.
 We pre-specify a
 split-sample protocol: calibration trajectories set an energy-distance tolerance and the earliest
 persistent plateau without using the Hill score or empirical target band; independent trajectories
@@ -84,25 +86,33 @@ stochastic processes, frozen learned checkpoints, and a within-family stochastic
 The outcome is an audit of an imperfect simulator: we neither infer a real-market mechanism from the
 transient nor claim a universal convergence diagnostic.
 
-\section{Simulator and failure mode}
+\section{Audit object and failure mode}
+
+\paragraph{Unpublished audit object.}
+\method{} has no prior paper or public release. We use the name only to identify the frozen simulator
+snapshot evaluated here; it is neither an external baseline nor an established market model.
+Appendix~A gives the complete data flow and specifies the state, networks, price map, initialization,
+training objective, and evaluated variants. The audit result does not depend on claiming this
+architecture as a contribution.
 
 \paragraph{Learned dynamics.}
-\method{} evolves $N=10{,}000$ agents with latent states $s_i\in\mathbb{R}^{32}$ under overdamped
-Langevin dynamics,
+The snapshot evolves $N=10{,}000$ agents with latent states $s_i\in\mathbb{R}^{32}$ under overdamped
+Langevin dynamics ($\Delta t=0.01$),
 \begin{equation}
   s_{i,t+1}=s_{i,t}+\frac{\Delta t}{\gamma_i}
   \left(F^{\mathrm{cons}}_{i,\theta}+F^{\mathrm{diss}}_i\right)
   +\sqrt{\frac{2T_i\Delta t}{\gamma_i}}\,\epsilon_{i,t}+J_{i,t},
 \end{equation}
-where $F^{\mathrm{cons}}_{i,\theta}=-\nabla_{s_i}U_{\theta}$. The learned scalar potential combines an
-external term with an unbiased random-pair estimate of a symmetric pair sum; $F^{\mathrm{diss}}$ is
-quadratic drag. In the frozen configurations, $\epsilon$ is unit-variance Student-$t_5$, $J$ is a small
-compound-Poisson displacement, and fixed agent types scale $T_i$ and $\gamma_i$. Aggregate state
-motion forms excess demand, followed by linear or concave price impact and additive price noise. This
-connects to Langevin market models \citep{bouchaud1998} and differentiable agent-based calibration
-\citep{chopra2023,dyer2023}, but the present contribution is evaluation, not a first-of-kind model
-claim. Models are trained against real-data stylized facts from two equity indices, gold, EUR/USD,
-and BTC/USDT.
+where $F^{\mathrm{cons}}_{i,\theta}=-\nabla_{s_i}U_{\theta}$. A 16-dimensional recurrent global state
+conditions a symmetrized random-pair kernel with a learned gate and a per-agent external potential;
+$F^{\mathrm{diss}}$ is explicit quadratic drag. The frozen initial law is
+$s_{i,0}\sim\mathcal{N}(0,0.1^2I)$, with zero global and return memories. Unit-variance
+Student-$t_5$ noise, small compound-Poisson inference jumps, and four fixed agent types complete the
+state update. Changes in coordinate one form excess demand, followed by either linear or fixed
+square-root-like impact and additive price noise. This connects to Langevin market models
+\citep{bouchaud1998} and differentiable agent-based calibration \citep{chopra2023,dyer2023}, but the
+present contribution is evaluation, not a first-of-kind model claim. Models are trained against
+real-data return statistics from two equity indices, gold, EUR/USD, and BTC/USDT.
 
 \paragraph{Contamination.}
 Let $S(r_{0:T})$ be a fidelity statistic computed from a freshly initialized rollout. If the initial
@@ -299,18 +309,160 @@ guarantee.
 \input{checklist.tex}
 
 \appendix
-\section{Frozen execution details}
+\section{EcoMD v0-audit specification}
+\label{app:ecomd}
+
+This appendix defines the previously unpublished simulator snapshot used to generate the learned
+trajectories. ``v0-audit'' is a version label for this paper, not a claim that the broader research
+codebase is a stable public API.
+
+\begin{figure}[h]
+  \centering
+  \figureorbox{figures/fig_ecomd_object.pdf}{1.0}{EcoMD audit-object figure unavailable.}
+  \caption{Frozen simulator snapshot being audited. Agent states update a recurrent global state,
+  which conditions learned pair and external potentials; their gradients drive a Langevin step.
+  Aggregate position changes produce returns that feed back into the next step.}
+  \label{fig:ecomd}
+\end{figure}
+
+\subsection{State, initial law, and Langevin update}
+
+There are $N=10{,}000$ agents, each with $s_{i,t}\in\mathbb{R}^{32}$; coordinate one is interpreted
+as a signed position only by the price map. At rollout start,
+\begin{equation}
+s_{i,0}\overset{\mathrm{iid}}{\sim}\mathcal{N}(0,0.1^2I_{32}),\quad
+s_{i,-1}=s_{i,0},\quad u_0=0,\quad
+(p_0,r_{-1},v_0,h_0)=(0,0,0.005,0).
+\end{equation}
+Four type labels are drawn once from a seeded uniform categorical law and then held fixed. With base
+friction $\gamma=10$ and temperature $T=0.05$, their respective multipliers are
+$(0.7,1.5,1.0,0.5)$ and $(0.5,2.0,1.0,0.3)$ (type seed 42). The Euler--Maruyama update in Section~2
+uses $\Delta t=0.01$ and iid Student-$t_5$ innovations rescaled to unit variance.
+
+At inference, each component of $J_{i,t}$ is
+$0.01\sqrt{K_{i,t}}Z_{i,t}$, where $K_{i,t}\sim\mathrm{Poisson}(0.5\Delta t)$ and
+$Z_{i,t}\sim\mathcal{N}(0,1)$. During gradient-based training, the discrete jump is replaced by the
+deterministic differentiable drift proxy
+$-(0.5)(0.01)\Delta t\tanh(s_{i,t})$. This training--inference mismatch is part of the audited
+implementation; the audit does not interpret it as market physics.
+
+\subsection{Learned potential and global state}
+
+Let $\mathcal{E}_{i,t}$ contain $k=50$ distinct partners sampled uniformly for agent $i$ at every
+step. Define $z_{ij,t}=[s_{i,t},s_{j,t},|s_{i,t}-s_{j,t}|,u_t]$ and
+\begin{align}
+\bar\phi_\theta(z_{ij,t})
+  &=\tfrac12\{\phi_\theta(\operatorname{LN}z_{ij,t})
+                 +\phi_\theta(\operatorname{LN}z_{ji,t})\},\\
+U_{\mathrm{pair},\theta}
+  &=\frac{N-1}{2k}\sum_i\sum_{j\in\mathcal{E}_{i,t}}
+    \frac{\sigma(G_\theta(\operatorname{LN}z_{ij,t}))}{0.7}
+    \bar\phi_\theta(z_{ij,t}),\\
+U_{\mathrm{ext},\theta}
+  &=\sum_i\psi_\theta([s_{i,t},p_t,v_t,r_{t-1},u_t]),\qquad
+U_\theta=U_{\mathrm{pair},\theta}+U_{\mathrm{ext},\theta}.
+\end{align}
+The prefactor makes the ordered random-edge sum an unbiased estimator of the corresponding full-pair
+sum; the kernel is explicitly symmetrized, while the directed gate is averaged only in expectation
+over ordered sampling. Both $\phi_\theta$ and $\psi_\theta$ are two-hidden-layer MLPs with widths $(96,96)$ and SiLU
+activations; $G_\theta$ has one width-96 SiLU hidden layer. The gate is initialized to probability
+0.7 and divided by 0.7 to preserve the initial potential scale. The explicit dissipative potential is
+\begin{equation}
+U_{\mathrm{diss}}=0.01\sum_i\lVert s_{i,t}-s_{i,t-1}\rVert_2^2,\qquad
+F^{\mathrm{diss}}_{i,t}=-\nabla_{s_{i,t}}U_{\mathrm{diss}}.
+\end{equation}
+
+Before forces are evaluated, a learned projection $P:\mathbb{R}^{32}\to\mathbb{R}^{8}$ and a
+GRUCell update the global state at every step,
+\begin{equation}
+u_t=\operatorname{GRUCell}\!\left(
+ [P(N^{-1}\textstyle\sum_i s_{i,t}),v_t,|r_{t-1}|,r_{t-1}],u_{t-1}\right),
+ \qquad u_t\in\mathbb{R}^{16}.
+\end{equation}
+The same $u_t$ enters both potential terms. No MACE, geometric equivariance, learned agent memory,
+or learned regime-switching module is active in these checkpoints.
+
+\subsection{Price formation}
+
+For $\Delta s_{i,t}=s_{i,t+1}-s_{i,t}$, raw excess demand and the two frozen impact maps are
+\begin{equation}
+q_t=0.5\sum_i\Delta s^{(1)}_{i,t},\qquad
+I_{\mathrm{lin}}(q)=q,\qquad
+I_{1/2}(q)=\operatorname{sign}(q)\,0.5
+ \left(\frac{|q|}{0.5}+10^{-8}\right)^{1/2}.
+\end{equation}
+The concave map is motivated only as a frozen price-impact variant
+\citep{toth2011}; this paper does not test an empirical impact law. With $\xi_t\sim\mathcal{N}(0,1)$,
+\begin{align}
+r_t^{\mathrm{core}}&=0.02I(q_t)-\tfrac12(0.005)^2+0.005\xi_t,\\
+r_t&=r_t^{\mathrm{core}}+0.3h_t\operatorname{sign}(r_t^{\mathrm{core}}),
+&p_{t+1}&=p_t+r_t,\\
+h_{t+1}&=0.9h_t+0.1|r_t^{\mathrm{core}}|,
+&v_{t+1}&=0.95v_t+0.05|r_t|.
+\end{align}
+The context $(p_{t+1},v_{t+1},r_t)$ is fed back at the next simulator step. Reported volume is
+$\sum_i|\Delta s^{(1)}_{i,t}|$.
+
+\subsection{Training objective and evaluated variants}
+
+All checkpoints use FP32 Adam for 200 outer iterations, learning rate $10^{-3}$ with a ten-iteration
+linear warm-up, gradient-norm clipping at 100, 24-step truncated-BPTT chunks, and 16 discarded
+startup steps per chunk. Agent and price states persist across outer iterations but are detached at
+every chunk boundary. In the frozen training implementation, $u$ is reinitialized to zero at each
+24-step chunk because it is not returned by the chunk API; in 8,000-step inference it persists for
+the whole rollout. Every fourth iteration (every eighth for the stochastic-volatility variant), a
+fresh 512-step rollout adds a long-horizon regularizer, with state gradients detached and $u$ reset
+every 24 steps. This is a second disclosed training--inference mismatch.
+
+The structural loss is an L1-weighted combination of squared-return ACF mismatch (weight 1.0, lags
+1--8), leverage mismatch (0.2), a differentiable Hill mismatch at tail fraction 0.05 (0.1), raw-return
+lag-one autocorrelation magnitude (0.5), and a hinge penalty above Hill index 10 (0.3). A
+multi-bandwidth Gaussian MMD to the real return sample has weight 50 and is evaluated only on the
+512-step long rollouts; the short-chunk call has no target-return array and therefore contains only
+the structural terms. Long-rollout regularizer weight is 1.0. These details matter because the
+audited 8,000-step inference horizon is much longer than either training horizon.
+
+Seven primary checkpoints comprise SPX and BTC linear/concave pairs plus concave NDX, gold, and
+EUR/USD models. Daily targets for SPX, NDX, gold, and EUR/USD cover 2015--2026; BTC/USDT uses 2024-Q1
+one-minute returns. Three SPX checkpoints add a three-dimensional learned stochastic-volatility
+latent to both the price-noise scale and Langevin-noise scale. They retain the same potential and are
+therefore a within-family variant, not an independent neural-SDE simulator. For component $a$,
+\begin{align}
+m_{a,t}&=(1-\kappa_a)v_{a,t}
++\kappa_a[\mu_a+w^{|r|}_a|r_t|+w^-_a\max(-r_t,0)]+\xi_a z_{a,t},\\
+v_{a,t+1}&=3\tanh(m_{a,t}/3),\qquad
+\bar v_t=\sum_a\operatorname{softmax}(\theta)_a v_{a,t}.
+\end{align}
+Here $z_{a,t}\sim\mathcal{N}(0,1)$; all displayed coefficients and mixing logits are learned.
+Initial values are $\kappa=(0.5,0.1,0.02)$, $\mu=0$, $w^{|r|}=w^-=0.1$, $\xi=0.1$, and equal
+mixing weights. Price noise is multiplied by $\exp(g\bar v_{t+1})$ with learned $g$ initialized at
+0.5, while the agent-state noise at step $t$ is multiplied by $\exp(\bar v_t)$. Configuration files
+in the supplement are the binding machine-readable specification.
+
+\section{Execution and reproduction boundary}
 
 The formal analytic run used 7,000 trajectories of 8,000 returns and a clean committed source tree.
+Vectorized trajectory generation took 82.7 CPU-seconds and the frozen gate/baseline analysis took
+564.3 CPU-seconds on the local execution environment.
 Learned training uses ten 200-iteration configurations at $N=10{,}000$, FP32, and 24-step truncated
-BPTT chunks. The exact data, configuration, seed, checkpoint, code, and result hashes are included in
-the anonymized artifact. A ten-iteration compatibility probe on each V100 used 14.14 GiB peak allocated
+BPTT chunks. The supplement records exact data, configuration, seed, checkpoint, code, trajectory,
+and result hashes. A ten-iteration compatibility probe on each V100 used 14.14 GiB peak allocated
 and 15.03 GiB peak reserved memory; the two nodes produced bitwise-identical checkpoint hashes. An
 8,000-return inference probe took 388.3 and 383.9 seconds, reserved 3.81 GiB, and produced
-bitwise-identical trajectory files.
+bitwise-identical trajectory files. The ten training runs consumed 19.90 V100 GPU-hours and the 320
+formal learned rollouts consumed 34.51, for 54.40 V100 GPU-hours in total.
 
 Daily SPX, NDX, GLD, and EUR/USD observations were accessed through Yahoo Finance; BTC/USDT one-minute
-klines came from Binance's public data portal. The artifact includes ingestion code, dates, schemas,
-and aggregate hashes, but does not redistribute raw files beyond their source terms.
+klines came from Binance's public data portal. Dates, schemas, provenance, and aggregate hashes are
+included, but raw files are not redistributed beyond their source terms.
+
+The anonymous review artifact is deliberately an \emph{audit artifact}: it contains the frozen
+synthetic trajectories, gate and result records, analytic controls, estimators, analysis and figure
+code, exact configurations, and tests needed to recompute every number in this paper. It excludes
+the broader simulator/training implementation and learned checkpoint binaries, so it does not
+support checkpoint retraining or trajectory regeneration. The full EcoMD method and software require
+a separate model paper and release after stationary-fidelity defects are addressed. This boundary
+prevents the present evaluation paper from silently functioning as the model's first software
+release, while the equations above keep the object under review scientifically inspectable.
 
 \end{document}

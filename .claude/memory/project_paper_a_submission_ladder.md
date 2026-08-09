@@ -8,6 +8,13 @@ metadata:
 
 # Paper A — submission ladder (DECIDED) + the NCS work-list (2026-06-19)
 
+> **SUPERSEDED IN PART (2026-07-22):** the public accepted-workshop audit after the July 11 NeurIPS
+> notification found neither ML4PS nor Generative AI in Finance for 2026. Do not use those target names.
+> Current candidates are STODY (driven stochastic dynamics) and Sim2Science (simulator
+> misspecification/stationarity audit), both with an August 29 AoE deadline. See
+> [[project_workshop_audit_2026-07-22]]. The later archival ladder below is retained as historical
+> planning, not re-endorsed by this venue correction.
+
 **Decided by the researcher (plan of record).** Full detail + the per-venue fit analysis:
 `papers/proposal/paper_a_ncs_worklist_2026-06-19.md` and `papers/proposal/paper_a_dual_track_plan_2026-06-19.md`.
 

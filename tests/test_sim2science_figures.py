@@ -67,3 +67,20 @@ def test_wilson_interval_contains_observed_rate() -> None:
     assert low < 16 / 62 < high
     assert np.isclose(low, 0.1655, atol=1e-4)
     assert np.isclose(high, 0.3788, atol=1e-4)
+
+
+def test_ecomd_object_figure_exposes_model_and_feedback(monkeypatch: Any) -> None:
+    figures = _load_figures()
+    captured: dict[str, Any] = {}
+
+    def capture(fig: Any, stem: str) -> None:
+        captured["stem"] = stem
+        captured["labels"] = [text.get_text() for axis in fig.axes for text in axis.texts]
+        plt.close(fig)
+
+    monkeypatch.setattr(figures, "_save", capture)
+    figures.make_ecomd_object()
+    assert captured["stem"] == "fig_ecomd_object"
+    joined = " ".join(captured["labels"])
+    assert "not a previously published model" in joined
+    assert "feeds the global" in joined

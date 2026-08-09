@@ -1,72 +1,75 @@
-# Anonymous reproducibility artifact
+# Anonymous audit artifact
 
-This artifact accompanies the double-blind Sim2Science submission "Is Simulator Fidelity an
-Initialization Transient?" It contains the frozen protocol, estimator code, analytic controls,
-learned-model analysis, exact configurations and seeds, paper figure code, and tests. It contains no
-raw market data and no author-identifying repository history.
+This artifact accompanies the double-blind Sim2Science submission “Is Simulator Fidelity an
+Initialization Transient?” It is scoped to reproducing the paper’s audit, not to releasing the
+broader EcoMD simulator.
 
-The public-data inputs are described by `experiments/127_workshop_claim_gates/DATA_SNAPSHOT.json`.
-Daily SPX, NDX, GLD, and EUR/USD observations come from Yahoo Finance; BTC/USDT one-minute klines
-come from Binance Data Vision. The snapshot records date ranges, schemas, byte counts, and aggregate
-SHA-256 values. Reviewers can verify the analysis from the bundled synthetic trajectories without
-redistributing those source files; retraining additionally requires recreating the hashed inputs.
+It contains:
+
+- the frozen synthetic calibration and held-out trajectories used in every learned-model result;
+- analytic-control, stationarity-gate, stylized-fact, bootstrap, and figure code;
+- frozen protocol records, seed manifests, exact simulator configurations, provenance, and hashes;
+- the manuscript’s complete mathematical specification of the EcoMD snapshot; and
+- tests for the bundled audit code.
+
+It intentionally does **not** contain EcoMD’s core simulator/training implementation, raw market
+files, learned checkpoint binaries, or repository history. Consequently, reviewers can recompute
+every table, effect, interval, and figure reported in the paper from the frozen trajectories, but
+cannot retrain a checkpoint or regenerate those trajectories from this bundle. This boundary is
+stated in Appendix B of the paper; a separate model paper and software release are required for the
+full EcoMD method.
+
+The market-data inputs are documented in
+`experiments/127_workshop_claim_gates/DATA_SNAPSHOT.json`. Daily SPX, NDX, GLD, and EUR/USD
+observations came from Yahoo Finance; BTC/USDT one-minute klines came from Binance Data Vision. The
+snapshot records date ranges, schemas, byte counts, and aggregate SHA-256 values.
 
 ## Integrity
 
-`ARTIFACT_MANIFEST.json` lists the SHA-256 and byte count of every packaged file. Source Git commit
-identifiers and machine identifiers are replaced in the review copy to preserve double blindness.
-This does not change executable code, numerical arrays, configurations, seeds, checkpoints, or
-reported estimates. The manifest cryptographically covers the exact review snapshot.
+`ARTIFACT_MANIFEST.json` lists the SHA-256 and byte count of every packaged file and declares the
+release scope in machine-readable fields. Source Git and machine identifiers are replaced in text
+files to preserve double blindness. Numerical arrays, configurations, seeds, and estimates are not
+altered.
 
 ## Environment
-
-For the CPU analytic controls:
 
 ```bash
 conda env create -f environment_cpu.yml
 conda run -n sim2science-cpu pip install -e .
 ```
 
-For V100 reproduction, use `environment_v100.yml`. The original execution used Python 3.11.15,
-PyTorch 2.3.1+cu121, CUDA 12.1, FP32, and one 32 GiB V100 per worker. The two workers are independent;
-this is not a multi-node distributed job.
+The original learned-model execution used Python 3.11.15, PyTorch 2.3.1+cu121, FP32, and one 32 GiB
+V100 per independent worker: 19.90 GPU-hours for ten training runs and 34.51 GPU-hours for 320
+formal learned rollouts. No GPU dependency is needed to rerun the bundled audit.
 
 ## Fast verification
 
 ```bash
-conda run -n sim2science-cpu pytest -q tests/test_stationarity_gate.py \
-  tests/test_stationarity_baselines.py tests/test_exp127_analytic_controls.py \
-  tests/test_exp127_fit_learned_calibration.py tests/test_exp127_analyze_learned.py \
-  tests/test_sim2science_figures.py
-conda run -n sim2science-cpu python experiments/127_workshop_claim_gates/run_analytic_controls.py \
-  --help
+conda run -n sim2science-cpu pytest -q
+conda run -n sim2science-cpu python \
+  experiments/127_workshop_claim_gates/analyze_learned_results.py \
+  --artifact-root derived \
+  --gate-fits experiments/127_workshop_claim_gates/LEARNED_GATE_FITS.json \
+  --output /tmp/learned_results_recomputed.json \
+  --workers 4 --allow-dirty
+conda run -n sim2science-cpu python \
+  experiments/127_workshop_claim_gates/analyze_learned_robustness.py \
+  --input /tmp/learned_results_recomputed.json \
+  --artifact-root derived \
+  --output /tmp/learned_robustness_recomputed.json
 ```
 
-The archived `ANALYTIC_RESULTS.json` can be checked immediately. Regenerating all seven analytic
-conditions requires 7,000 trajectories of 8,000 returns and is intentionally separate from this
-fast verification. The full-source `test_exp127_v100_worker.py` also validates the frozen raw-data
-hashes, so it is intentionally not bundled with this no-raw-data review artifact.
+Compare numerical payloads with `LEARNED_RESULTS.json` and `LEARNED_ROBUSTNESS.json`. Provenance
+fields referring to the review snapshot may differ from the original source-tree record. A missing
+gate is an outcome, not an excluded checkpoint, and both Hill estimates use 4,000 returns.
 
-## Learned-model audit
-
-The bundled learned trajectories are synthetic simulator outputs, split into calibration and held-out
-directories by the frozen seed manifest. The order is binding:
-
-1. Fit calibration-only gates with `fit_learned_calibration.py`.
-2. Verify the resulting gate-file SHA-256 against the artifact manifest.
-3. Analyze held-out trajectories with `analyze_learned_results.py`.
-4. Run the pre-held-out-declared common-seed and leave-one-market-out checks with
-   `analyze_learned_robustness.py`; this also recomputes the frozen Hill-fraction grid from the
-   bundled held-out trajectories.
-5. Synchronize the eight manuscript result macros with `apply_learned_results.py`.
-6. Regenerate figures with
-   `papers/paper_a_methods/workshops/sim2science/make_figures.py`.
-
-Exact commands and expected hashes are recorded in the final `RESULTS.md`. A missing gate is an
-outcome, not an excluded checkpoint. Both Hill estimates always use 4,000 returns.
+To refit the gates without violating the staged protocol, first create a temporary artifact root
+containing only `derived/rollouts/calibration`; run `fit_learned_calibration.py` there before exposing
+the held-out directory. The archived gate file’s timestamp and hash show that this was the order used
+for the formal run.
 
 ## Scope
 
-This artifact supports a model-audit claim. It does not establish real-market physics, universal
-stationarity detection, mixing, or ergodicity. Passing the gate is not a deployment or financial-risk
-certificate.
+This artifact supports a simulator-audit claim. It does not establish real-market physics,
+universal stationarity detection, mixing, ergodicity, model validity, deployment safety, or financial
+risk certification.

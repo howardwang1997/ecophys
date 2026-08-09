@@ -28,3 +28,11 @@ def test_reference_page_uses_first_standalone_heading() -> None:
     pages = ["A sentence mentions references.\n", "  133   References  \nEntry\n"]
     assert checker.reference_page(pages) == 2
     assert checker.reference_page(["No heading\n"]) is None
+
+
+def test_main_text_limit_rejects_content_before_page_six_references() -> None:
+    checker = _load_checker()
+    clean = ["main\n"] * 5 + ["  163   References  \nEntry\n"]
+    overflow = ["main\n"] * 5 + ["Conclusion overflow\n  163   References  \nEntry\n"]
+    assert checker.main_text_within_five_pages(clean)
+    assert not checker.main_text_within_five_pages(overflow)

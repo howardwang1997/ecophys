@@ -1,30 +1,30 @@
-# Paper A — two-workshop spine drafts (2026-06-20)
+# Paper A workshop status
 
-Per the decided submission ladder (`papers/proposal/paper_a_ncs_worklist_2026-06-19.md`): Paper A is
-first split into **two non-archival NeurIPS workshop papers**, then recombined + extended for the
-NCS→ICLR→TMLR ladder. These spines are the working skeletons (abstract + section-by-section content +
-figure plan + claims-discipline checklist) for each.
+Current decision (2026-08-09): **one workshop submission only**.
 
-| spine | venue | headline contribution | lead sections |
-|---|---|---|---|
-| `ml4ps_spine.md` | ML & the Physical Sciences | the **physics**: heavy tails = a non-equilibrium driven transient + relaxation + the real-data stationarity boundary + the order-flow non-eq signature | §3 transient, §5–6 mechanism + boundary |
-| `genai_finance_spine.md` | Generative AI in Finance | the **generative-modeling methodology**: differentiable controllable scenario generator + the warmup-scoring **evaluation pitfall** + honest fidelity bounds | §3 evaluation pitfall, §4 controllable scenarios |
+| route | status | role |
+|---|---|---|
+| `sim2science/` | active; E-B release candidate | simulator-specific stationarity/fidelity audit |
+| STODY | cancelled; no manuscript directory | failed the independent-paper survival gate |
+| `genai_finance/`, `ml4ps/` | superseded historical drafts | source material only; not submission-ready |
 
-## Shared evidence (exp 123) — both papers draw from this, framed differently
-- burn-in measurement correction (R1): `r1_warmup_report.json`, `burnin_artifact_finding_2026-06-18.md`
-- in-sim driven transient (5 assets, dose-response, τ): exp 123 Stage 1/1.5/2a/2d verdicts, `tau_report_spx.json`
-- channel specificity (price_jump inert, tail + OFI): `verdict_spx_jump.json`, `ofi_transient_spx.json`
-- real-data stationarity boundary (5 crashes + null test): `stage3_realdata_pilot_2026-06-19.md`, `null_test_crash_tails.py`
+The active paper audits a previously unpublished EcoMD snapshot. It therefore defines that snapshot
+inside the main paper and technical appendix instead of relying on the EcoMD name as prior art. The
+paper’s claim remains evaluation: initialization relaxation contaminated an apparent tail-fidelity
+score, and a frozen split-sample gate diagnoses that discrepancy. It does not present the transient
+as market physics and does not claim that EcoMD is a validated market model.
 
-## Distinctness guard (same-conference dedupe risk)
-Both target NeurIPS workshops. They must lead with **different headline contributions** (physics vs
-generative-eval methodology), frame the shared burn-in finding through different lenses (non-eq
-stationarity vs eval hygiene), and ideally headline different figures. If submitting both, email the
-organizers to confirm a related-but-distinct pair is acceptable. See each spine's "Distinctness" §.
+The anonymous Sim2Science artifact is intentionally audit-only. It packages frozen synthetic
+trajectories, exact configurations, estimators, analysis, results, and tests, but excludes the core
+EcoMD simulator/training source and learned checkpoint binaries. A dedicated EcoMD model paper and
+software release are deferred until stationary-fidelity defects are repaired and the model has a
+credible positive validation story.
 
-## Note
-`../archive/outline.md` and `../archive/draft_sections.md` are **pre-pivot (stale)** — they encode the
-refuted "7/11 calibrated tool / stationary concave solve" spine (archived 2026-06-23). Do not reuse;
-these workshop spines + the `claim_and_roadmap_2026-06-19.md` are the current source of truth. Live
-figures come from `../shared/make_figures.py` (the per-workshop `make_figures.py` scripts were stale and
-are in `../archive/`).
+Binding records:
+
+- `papers/proposal/workshop_submission_plan_2026-08-07.md` — venue and submission execution, with
+  the 2026-08-09 single-paper override;
+- `papers/proposal/workshop_claim_gates_and_merge_plan_2026-08-07.md` — frozen gates and the formal
+  STODY cancellation;
+- `papers/paper_a_methods/workshops/sim2science/RELEASE_RECORD.md` — current PDF and artifact hashes;
+- `experiments/127_workshop_claim_gates/RESULTS.md` — frozen experimental result record.

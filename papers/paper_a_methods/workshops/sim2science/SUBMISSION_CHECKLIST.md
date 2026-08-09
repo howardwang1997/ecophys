@@ -13,7 +13,8 @@ Target: 5-page Workshop Paper, deadline 2026-08-29 23:59 AoE. Internal upload de
 - [x] `LEARNED_ROBUSTNESS.json` is frozen and any primary/common-seed or leave-one-market-out
   disagreement is disclosed.
 - [x] Null, missing gate, and failed transfer outcomes remain in the denominator and prose.
-- [x] STODY rescue decision is recorded only after Paper E freezes.
+- [x] STODY is formally cancelled after Paper E froze at E-B; no second workshop manuscript remains
+  on the execution path.
 
 ## Manuscript
 
@@ -23,13 +24,19 @@ Target: 5-page Workshop Paper, deadline 2026-08-29 23:59 AoE. Internal upload de
 - [x] No `PENDING`, `TODO`, `TBD`, placeholder box, or provisional claim remains.
 - [x] Main scientific content ends by page 5; references and appendix are excluded from that count.
 - [x] Every quantitative sentence maps to a frozen JSON field or manifest hash.
+- [x] The previously unpublished EcoMD snapshot is defined in the main text and Appendix A: initial
+  law, potential, global state, price map, training loss/horizons, variants, and training/inference
+  jump mismatch are explicit.
 - [ ] Final title, abstract, TL;DR, and keywords match OpenReview fields.
 
 ## Artifact and anonymity
 
 - [x] Anonymous artifact builder refuses incomplete final results unless explicitly in test mode.
 - [x] Artifact identity scan, deterministic ZIP test, and unpacked core tests pass.
-- [x] Final artifact includes synthetic rollout shards, checkpoints, gate/result JSON, and manifest.
+- [x] Final artifact includes synthetic rollout shards, gate/result JSON, audit code, exact configs,
+  and manifest; it explicitly excludes EcoMD core simulator/training source and checkpoint binaries.
+- [x] Appendix B and the artifact README state that all reported audit estimates are reproducible,
+  while checkpoint retraining and trajectory regeneration are outside this release.
 - [x] Artifact ZIP and manifest SHA-256 are inserted into the release record.
 - [x] PDF and artifact contain no author name, affiliation, email, personal URL, username, host, IP,
   W&B entity, R2 URI, acknowledgments, grant, or identifying Git history.

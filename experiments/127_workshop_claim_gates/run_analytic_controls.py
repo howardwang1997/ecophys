@@ -39,20 +39,29 @@ def sha256_file(path: Path) -> str:
 
 
 def repository_state() -> dict[str, Any]:
-    sha = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=REPO_ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    status = subprocess.run(
-        ["git", "status", "--porcelain"],
-        cwd=REPO_ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.splitlines()
+    try:
+        sha = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        if (REPO_ROOT / "ARTIFACT_MANIFEST.json").is_file():
+            return {
+                "git_sha": "anonymous-artifact-snapshot",
+                "clean": True,
+                "status_entries": [],
+            }
+        raise
     return {"git_sha": sha, "clean": not status, "status_entries": status}
 
 

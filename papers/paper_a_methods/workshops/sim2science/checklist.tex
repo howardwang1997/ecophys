@@ -20,17 +20,17 @@
 \item {\bf Experimental result reproducibility}
     \item[] Question: Does the paper fully disclose all the information needed to reproduce the main experimental results of the paper to the extent that it affects the main claims and/or conclusions of the paper (regardless of whether the code and data are provided or not)?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Sections 3--4 and Appendix A specify splits, windows, estimators, bootstrap, baselines, hardware, and provenance; the supplement contains frozen configurations, seeds, hashes, and entry points.
+    \item[] Justification: Sections 2--4 and Appendices A--B specify the previously unpublished audit object, splits, windows, estimators, bootstrap, baselines, hardware, and provenance. The supplement contains frozen configurations, trajectories, seeds, hashes, and audit entry points.
 
 \item {\bf Open access to data and code}
     \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
     \item[] Answer: \answerYes{}
-    \item[] Justification: An anonymized code and result artifact accompanies the submission. It contains exact commands and public-data ingestion instructions; non-redistributed raw market files are identified by source and hashes.
+    \item[] Justification: An anonymized audit-code and result artifact accompanies the submission. It reproduces every reported estimate from frozen synthetic trajectories and identifies non-redistributed market inputs by source and hash. Appendix B explicitly discloses that simulator retraining and trajectory regeneration are outside this artifact because the broader model source and checkpoint binaries are not released with this audit paper.
 
 \item {\bf Experimental setting/details}
     \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer) necessary to understand the results?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Sections 2--4 give the model, frozen gate, sample splits, controls, checkpoint set, baselines, and inference rule; complete configurations are in the supplement.
+    \item[] Justification: Sections 2--4 and Appendix A give the model equations, initial law, network widths, price map, training loss and horizons, frozen gate, sample splits, controls, checkpoint set, baselines, and inference rule; binding configurations are in the supplement.
 
 \item {\bf Experiment statistical significance}
     \item[] Question: Does the paper report error bars suitably and correctly defined or other appropriate information about the statistical significance of the experiments?
@@ -40,7 +40,7 @@
 \item {\bf Experiments compute resources}
     \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Appendix A reports the V100 model and memory, precision, agent count, training protocol, compatibility-probe timing, and analytic workload; final total GPU-hours are included in the release candidate.
+    \item[] Justification: Appendix B reports the V100 model and memory, precision, agent count, training protocol, compatibility-probe timing, and analytic workload; final total GPU-hours are included in the release candidate.
 
 \item {\bf Code of ethics}
     \item[] Question: Does the research conducted in the paper conform, in every respect, with the NeurIPS Code of Ethics \url{https://neurips.cc/public/EthicsGuidelines}?
@@ -60,12 +60,12 @@
 \item {\bf Licenses for existing assets}
     \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Appendix A identifies the public Yahoo Finance and Binance sources and their access terms; the supplement records provenance and does not redistribute raw files whose terms prohibit redistribution.
+    \item[] Justification: Appendix B identifies the public Yahoo Finance and Binance sources; the supplement records provenance and does not redistribute raw files beyond their source terms.
 
 \item {\bf New assets}
     \item[] Question: Are new assets introduced in the paper well documented and is the documentation provided alongside the assets?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The new audit code, frozen specification, seed manifests, derived results, and figure scripts are documented in the anonymized artifact with hashes and reproduction commands.
+    \item[] Justification: The new audit code, frozen trajectories, model specification, seed manifests, derived results, and figure scripts are documented in the anonymized artifact with hashes, reproduction commands, and an explicit release boundary.
 
 \item {\bf Crowdsourcing and research with human subjects}
     \item[] Question: For crowdsourcing experiments and research with human subjects, does the paper include the full text of instructions given to participants and screenshots, if applicable, as well as details about compensation (if any)?

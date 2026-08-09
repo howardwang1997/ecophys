@@ -53,8 +53,8 @@ conda run -n ecophys python papers/paper_a_methods/workshops/sim2science/check_s
 ```
 
 The checker verifies the 50 MB ceiling, letter page size, absence of draft placeholders and local
-paths, references beginning no later than page 5, anonymous metadata, and embedded fonts. It does not
-replace visual inspection.
+paths, references beginning no later than page 6 (after at most five main-text pages), anonymous
+metadata, and embedded fonts. It does not replace visual inspection.
 
 Render every final page and inspect at 100% zoom:
 
@@ -65,3 +65,20 @@ pdftoppm -png -r 150 output/pdf/sim2science_ecomd_2026_submission.pdf \
 
 Record the final hash with `shasum -a 256`. After OpenReview upload, download the platform copy and
 repeat the same automated and visual checks.
+
+## Build the audit-only review artifact
+
+The bundle intentionally contains frozen synthetic trajectories and audit/analysis code, but no
+EcoMD simulator/training source or checkpoint binaries:
+
+```bash
+conda run -n ecophys python \
+  papers/paper_a_methods/workshops/sim2science/artifact/build_anonymous_artifact.py \
+  --output-dir tmp/artifacts/sim2science_audit_build \
+  --derived-root outputs/exp127_remote_artifacts
+```
+
+Build twice at distinct paths and compare both ZIP and manifest SHA-256 values. Unpack one build,
+run its complete test suite, rerun the learned audit from `derived/`, and inspect
+`ARTIFACT_MANIFEST.json` to confirm `simulator_training_source_included` and
+`learned_checkpoint_binaries_included` are both false.

@@ -46,6 +46,20 @@ def reference_page(pages: Sequence[str]) -> int | None:
     return None
 
 
+def main_text_within_five_pages(pages: Sequence[str]) -> bool:
+    marker = re.compile(r"(?m)^\s*(?:\d+\s+)?References\s*$")
+    for index, page in enumerate(pages, start=1):
+        match = marker.search(page)
+        if match is None:
+            continue
+        if index <= 5:
+            return True
+        if index == 6:
+            return not re.search(r"[A-Za-z0-9]", page[: match.start()])
+        return False
+    return False
+
+
 def inspect(pdf: Path, allow_placeholders: bool = False) -> list[Check]:
     if not pdf.is_file():
         return [Check("file exists", False, str(pdf))]
@@ -66,7 +80,16 @@ def inspect(pdf: Path, allow_placeholders: bool = False) -> list[Check]:
         Check("letter page", info.get("Page size", "").startswith("612 x 792 pts"), info.get("Page size", "missing")),
         Check("not encrypted", info.get("Encrypted") == "no", info.get("Encrypted", "missing")),
         Check("anonymous Author metadata", metadata_anonymous, author or "absent"),
-        Check("references by page 5", references is not None and references <= 5, str(references)),
+        Check(
+            "references by page 6 (five-page main-text limit)",
+            references is not None and references <= 6,
+            str(references),
+        ),
+        Check(
+            "main text ends by page 5",
+            main_text_within_five_pages(pages),
+            f"references page {references}",
+        ),
         Check(
             "no draft placeholders",
             allow_placeholders or not placeholders,

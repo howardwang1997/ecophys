@@ -29,6 +29,28 @@ CONFIG_PATHS = (
     "experiments/108_neural_sde_scout/config_sv_d3_both_seed2.yaml",
 )
 
+ECOMD_AUDIT_PATHS = (
+    "ecomd/__init__.py",
+    "ecomd/baselines/__init__.py",
+    "ecomd/baselines/ar1_sv.py",
+    "ecomd/baselines/garch.py",
+    "ecomd/eval/__init__.py",
+    "ecomd/eval/canonical_bands.py",
+    "ecomd/eval/stationarity_baselines.py",
+    "ecomd/eval/stationarity_gate.py",
+    "ecomd/eval/stylized_facts.py",
+    "ecomd/inference/__init__.py",
+    "ecomd/inference/seed_manifest.py",
+)
+
+EXPERIMENT_SOURCE_PATHS = (
+    "experiments/127_workshop_claim_gates/run_analytic_controls.py",
+    "experiments/127_workshop_claim_gates/fit_learned_calibration.py",
+    "experiments/127_workshop_claim_gates/analyze_learned_results.py",
+    "experiments/127_workshop_claim_gates/analyze_learned_robustness.py",
+    "experiments/127_workshop_claim_gates/run_exploratory_mser5.py",
+)
+
 TEST_PATHS = (
     "tests/test_ar1_sv.py",
     "tests/test_canonical_bands.py",
@@ -59,10 +81,10 @@ FINAL_RESULT_FILES = (
 )
 GIT_SHA_PATTERN = re.compile(r"(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])", re.IGNORECASE)
 GPU_UUID_PATTERN = re.compile(r"GPU-[0-9a-f-]{20,}", re.IGNORECASE)
-USER_HOME_PATTERN = re.compile(r"/Users/[^/\s]+")
+USER_HOME_PATTERN = re.compile(r"/Users/[^/\s\"']+")
 FORBIDDEN_PATTERNS = {
     "author name": re.compile(r"howard(?:wang)?", re.IGNORECASE),
-    "macOS user path": re.compile(r"/Users/[^/\s]+"),
+    "macOS user path": re.compile(r"/Users/[^/\s\"']+"),
     "first compute address": re.compile(r"100\.80\.236\.112"),
     "second compute address": re.compile(r"100\.123\.220\.57"),
 }
@@ -101,11 +123,8 @@ description = \"Anonymous reproducibility artifact for a simulator transient aud
 requires-python = \">=3.11\"
 license = { file = \"LICENSE\" }
 dependencies = [
-  \"numpy>=1.26\", \"scipy>=1.11\", \"pandas>=2.2\", \"pyarrow>=15.0\",
-  \"matplotlib>=3.8\",
-  \"torch>=2.3\", \"PyYAML>=6.0\", \"statsmodels>=0.14\", \"arch>=7.0\",
-  \"POT>=0.9\", \"hydra-core>=1.3\", \"omegaconf>=2.3\", \"tqdm>=4.66\",
-  \"rich>=13.7\", \"torchsde>=0.2.6\"
+  \"numpy>=1.26\", \"scipy>=1.11\", \"matplotlib>=3.8\",
+  \"statsmodels>=0.14\", \"pytest>=8.0\"
 ]
 
 [tool.setuptools.packages.find]
@@ -133,15 +152,16 @@ def sanitize_text(text: str) -> str:
 
 
 def source_paths() -> list[Path]:
-    paths = sorted(path for path in (REPO_ROOT / "ecomd").rglob("*.py") if path.is_file())
+    paths = [REPO_ROOT / path for path in ECOMD_AUDIT_PATHS]
     paths.extend(REPO_ROOT / path for path in CONFIG_PATHS)
+    paths.extend(REPO_ROOT / path for path in EXPERIMENT_SOURCE_PATHS)
     paths.extend(REPO_ROOT / path for path in TEST_PATHS)
     paths.extend(REPO_ROOT / path for path in ANALYTIC_SOURCE_PATHS)
     paths.extend(
         sorted(
             path
             for path in EXPERIMENT_DIR.iterdir()
-            if path.is_file() and path.suffix in {".json", ".md", ".py"}
+            if path.is_file() and path.suffix in {".json", ".md"}
         )
     )
     paths.extend(
@@ -154,11 +174,11 @@ def source_paths() -> list[Path]:
             PAPER_DIR / "apply_learned_results.py",
             PAPER_DIR / "make_figures.py",
             PAPER_DIR / "neurips_2026.sty",
+            PAPER_DIR / "figures/fig_ecomd_object.pdf",
             PAPER_DIR / "figures/fig_protocol.pdf",
             PAPER_DIR / "figures/fig_analytic_controls.pdf",
             ARTIFACT_SOURCE_DIR / "README.md",
             ARTIFACT_SOURCE_DIR / "environment_cpu.yml",
-            ARTIFACT_SOURCE_DIR / "environment_v100.yml",
         ]
     )
     learned_figure = PAPER_DIR / "figures/fig_learned_results.pdf"
@@ -171,7 +191,7 @@ def source_paths() -> list[Path]:
 
 
 def destination_relative(path: Path) -> Path:
-    if path.parent == ARTIFACT_SOURCE_DIR:
+    if path.parent == ARTIFACT_SOURCE_DIR and path.name in {"README.md", "environment_cpu.yml"}:
         return Path(path.name)
     return path.relative_to(REPO_ROOT)
 
@@ -185,7 +205,7 @@ def copy_sanitized(source: Path, destination: Path) -> None:
 
 
 def copy_derived(derived_root: Path, destination_root: Path) -> None:
-    allowed_suffixes = {".json", ".npz", ".pt"}
+    allowed_suffixes = {".json", ".npz"}
     for source in sorted(path for path in derived_root.rglob("*") if path.is_file()):
         if source.suffix not in allowed_suffixes:
             continue
@@ -255,6 +275,10 @@ def build(output_dir: Path, derived_root: Path | None, allow_incomplete: bool) -
         "schema_version": 1,
         "double_blind": True,
         "complete": not missing_final and derived_root is not None,
+        "reproduction_scope": "audit-analysis-from-frozen-trajectories",
+        "simulator_training_source_included": False,
+        "learned_checkpoint_binaries_included": False,
+        "frozen_trajectory_outputs_included": derived_root is not None,
         "missing_final_files": missing_final,
         "derived_outputs_included": derived_root is not None,
         "files": manifest_rows(output_dir),

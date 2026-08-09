@@ -145,6 +145,62 @@ def _arrow(ax: Axes, x0: float, y0: float, x1: float, y1: float) -> None:
     )
 
 
+def make_ecomd_object() -> None:
+    """Draw the complete data flow of the frozen simulator audit object."""
+    fig, ax = plt.subplots(figsize=(7.15, 1.72))
+    ax.set_xlim(0, 14)
+    ax.set_ylim(0, 3.25)
+    ax.axis("off")
+
+    _box(ax, 0.10, 1.55, 2.15, 1.00, LIGHT_BLUE, "Agent state $s_t$\n$N=10^4$, $d=32$")
+    _box(ax, 2.75, 1.55, 1.75, 1.00, "#E8E5F4", "Global $u_t$\nGRU, $d_u=16$")
+    _box(
+        ax,
+        5.00,
+        1.55,
+        2.35,
+        1.00,
+        LIGHT_TEAL,
+        "Pair kernel + gate\nExternal potential",
+    )
+    _box(ax, 7.85, 1.55, 2.10, 1.00, LIGHT_ORANGE, "Langevin step\n$t_5$ noise + jumps")
+    _box(ax, 10.45, 1.55, 1.55, 1.00, "#F3E4E4", "Excess\ndemand")
+    _box(ax, 12.50, 1.55, 1.40, 1.00, "#EFEFEF", "Impact\n+ return")
+
+    for start, stop in ((2.25, 2.75), (4.50, 5.00), (7.35, 7.85), (9.95, 10.45), (12.00, 12.50)):
+        _arrow(ax, start, 2.05, stop, 2.05)
+
+    ax.add_patch(
+        FancyArrowPatch(
+            (13.20, 1.55),
+            (3.62, 1.55),
+            connectionstyle="arc3,rad=-0.24",
+            arrowstyle="-|>",
+            mutation_scale=10,
+            linewidth=1.0,
+            color=NAVY,
+        )
+    )
+    ax.text(
+        8.55,
+        0.38,
+        "return context feeds the global and external states",
+        ha="center",
+        va="center",
+        color=NAVY,
+        fontsize=7,
+    )
+    ax.text(
+        0.10,
+        2.92,
+        "Frozen EcoMD audit object (not a previously published model)",
+        color=NAVY,
+        fontweight="bold",
+        fontsize=8.5,
+    )
+    _save(fig, "fig_ecomd_object")
+
+
 def make_analytic_controls() -> None:
     payload = cast(dict[str, Any], json.loads(RESULTS_PATH.read_text()))
     exploratory_payload = cast(dict[str, Any], json.loads(EXPLORATORY_RESULTS_PATH.read_text()))
@@ -447,6 +503,7 @@ def _bootstrap_median_interval(values: np.ndarray, seed: int) -> tuple[float, fl
 
 def main() -> None:
     _style()
+    make_ecomd_object()
     make_protocol()
     make_analytic_controls()
     if LEARNED_RESULTS_PATH.is_file():
