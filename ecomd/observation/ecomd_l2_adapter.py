@@ -3,21 +3,22 @@
 from __future__ import annotations
 
 import copy
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, TypeAlias, cast
 
 import numpy as np
 from numpy.typing import NDArray
 
 from .l2_emission import AggregateL2EmissionConfig, SyntheticL2Stream
 
-FloatArray = NDArray[np.float64]
-IntArray = NDArray[np.int64]
+FloatArray: TypeAlias = NDArray[np.float64]
+IntArray: TypeAlias = NDArray[np.int64]
 
 
 def _initial_book(config: AggregateL2EmissionConfig) -> IntArray:
-    levels = np.arange(config.n_levels, dtype=np.int64)
-    book = np.empty(4 * config.n_levels, dtype=np.int64)
+    levels: IntArray = np.arange(config.n_levels, dtype=np.int64)
+    book: IntArray = np.empty(4 * config.n_levels, dtype=np.int64)
     book[0::4] = config.best_ask + levels
     book[1::4] = config.initial_queue
     book[2::4] = config.best_bid - levels
@@ -28,7 +29,11 @@ def _initial_book(config: AggregateL2EmissionConfig) -> IntArray:
 def _level_probabilities(config: AggregateL2EmissionConfig) -> FloatArray:
     logits = -config.eta * np.arange(config.n_levels, dtype=np.float64)
     weights = np.exp(logits - float(logits.max()))
-    return weights / weights.sum()
+    return cast(FloatArray, weights / weights.sum())
+
+
+def _copy_rng_state(state: Mapping[str, Any]) -> dict[str, Any]:
+    return copy.deepcopy(dict(state))
 
 
 @dataclass(frozen=True)
@@ -63,7 +68,7 @@ class EcoMDL2AdapterState:
             current_book=self.current_book.copy(),
             next_step=int(self.next_step),
             next_order_id=int(self.next_order_id),
-            rng_state=copy.deepcopy(self.rng_state),
+            rng_state=_copy_rng_state(self.rng_state),
         )
 
     def to_checkpoint(self) -> dict[str, Any]:
@@ -72,7 +77,7 @@ class EcoMDL2AdapterState:
             "current_book": self.current_book.copy(),
             "next_step": int(self.next_step),
             "next_order_id": int(self.next_order_id),
-            "rng_state": copy.deepcopy(self.rng_state),
+            "rng_state": _copy_rng_state(self.rng_state),
         }
 
     @classmethod
@@ -84,7 +89,7 @@ class EcoMDL2AdapterState:
             current_book=np.asarray(payload["current_book"], dtype=np.int64).copy(),
             next_step=int(payload["next_step"]),
             next_order_id=int(payload["next_order_id"]),
-            rng_state=copy.deepcopy(payload["rng_state"]),
+            rng_state=_copy_rng_state(payload["rng_state"]),
         )
 
 
@@ -110,7 +115,7 @@ class EcoMDL2Adapter:
             current_book=_initial_book(self.config.l2),
             next_step=start_step,
             next_order_id=start_order_id,
-            rng_state=copy.deepcopy(generator.bit_generator.state),
+            rng_state=_copy_rng_state(generator.bit_generator.state),
         )
 
     def emit(
@@ -132,7 +137,7 @@ class EcoMDL2Adapter:
             raise ValueError("adapter book shape is incompatible with its configuration")
 
         generator = np.random.default_rng()
-        generator.bit_generator.state = copy.deepcopy(state.rng_state)
+        generator.bit_generator.state = _copy_rng_state(state.rng_state)
         levels_probability = _level_probabilities(l2)
         removal_types = np.asarray((2, 3, 4), dtype=np.int64)
         removal_probability = np.asarray(l2.removal_probabilities, dtype=np.float64)
@@ -187,7 +192,7 @@ class EcoMDL2Adapter:
             state.next_order_id + n_events,
             dtype=np.int64,
         )
-        absolute_steps = start_step + np.arange(n_events, dtype=np.int64)
+        absolute_steps: IntArray = start_step + np.arange(n_events, dtype=np.int64)
         stream = SyntheticL2Stream(
             latent=z.copy(),
             time=(absolute_steps.astype(np.float64) + 1.0) * self.config.dt,
@@ -203,6 +208,6 @@ class EcoMDL2Adapter:
             current_book=current,
             next_step=start_step + n_events,
             next_order_id=state.next_order_id + n_events,
-            rng_state=copy.deepcopy(generator.bit_generator.state),
+            rng_state=_copy_rng_state(generator.bit_generator.state),
         )
         return next_state, stream

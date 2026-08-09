@@ -30,6 +30,17 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 - Mac-side dev tooling: PyTorch with MPS backend for smoke tests (not production); conda env `ecophys`.
 - Remote accessibility is checked per worker. Do not encode addresses or credentials in tracked files; inventory belongs in a gitignored machine manifest.
 
+## Mac workspace durability
+
+- On 2026-08-10, a memory-heavy broad pytest run was killed and macOS File Provider subsequently exposed about
+  15,000 tracked worktree/Git-object files as `dataless` placeholders. Reads could return zero bytes and Git
+  could exit with `SIGBUS`.
+- Before another broad local test, mark the repository **Keep Downloaded** in Finder or use a clone outside a
+  cloud-backed Desktop. Do not overwrite a zero-byte `dataless` placeholder as if it were the real file.
+- GitHub is the recovery source. If the working clone is partially evicted, use a fresh sparse clone, recover
+  only known changed blobs, verify commit/tree hashes, and push from that clone; do not mutate the damaged
+  worktree until it has been rehydrated or replaced.
+
 ## Framework choice (decided 2026-04-23 revisit)
 
 - **Default: PyTorch 2.3+ end-to-end**. Use `torchsde` for stochastic differential equation solving in Phase 4 (Jarzynski / Crooks fluctuation-theorem analysis), not JAX/diffrax.

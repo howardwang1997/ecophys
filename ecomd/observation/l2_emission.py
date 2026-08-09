@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TypeAlias
 
 import numpy as np
 from numpy.typing import NDArray
 
-FloatArray = NDArray[np.float64]
-IntArray = NDArray[np.int64]
+FloatArray: TypeAlias = NDArray[np.float64]
+IntArray: TypeAlias = NDArray[np.int64]
 
 
 @dataclass(frozen=True)
@@ -83,7 +84,7 @@ def simulate_latent_ar1(
     if abs(rho) >= 1.0:
         raise ValueError("rho must have absolute value below one")
     innovations = generator.standard_normal(n_events)
-    latent = np.empty(n_events, dtype=np.float64)
+    latent: FloatArray = np.empty(n_events, dtype=np.float64)
     latent[0] = innovations[0]
     innovation_scale = float(np.sqrt(1.0 - rho * rho))
     for index in range(1, n_events):
@@ -92,8 +93,8 @@ def simulate_latent_ar1(
 
 
 def _initial_book(config: AggregateL2EmissionConfig) -> IntArray:
-    book = np.empty(4 * config.n_levels, dtype=np.int64)
-    levels = np.arange(config.n_levels, dtype=np.int64)
+    book: IntArray = np.empty(4 * config.n_levels, dtype=np.int64)
+    levels: IntArray = np.arange(config.n_levels, dtype=np.int64)
     book[0::4] = config.best_ask + levels
     book[1::4] = config.initial_queue
     book[2::4] = config.best_bid - levels
@@ -167,7 +168,7 @@ def emit_aggregate_l2(
     poisson_mean = np.exp(
         np.clip(config.log_mu + config.gamma * np.abs(z), -20.0, 20.0)
     )
-    size = (1 + generator.poisson(poisson_mean)).astype(np.int64)
+    size: IntArray = np.asarray(1 + generator.poisson(poisson_mean), dtype=np.int64)
     price = np.where(
         direction == 1,
         config.best_bid - levels,
@@ -361,7 +362,7 @@ def fit_level_decay(levels: IntArray, n_levels: int) -> ParameterFit:
     if np.any((observed < 0) | (observed >= n_levels)):
         raise ValueError("level observation outside support")
     target_mean = float(observed.mean())
-    support = np.arange(n_levels, dtype=np.float64)
+    support: FloatArray = np.arange(n_levels, dtype=np.float64)
     low, high = -10.0, 10.0
     for iteration in range(1, 101):
         eta = (low + high) / 2.0

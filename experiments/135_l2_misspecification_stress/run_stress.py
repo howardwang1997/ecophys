@@ -8,7 +8,7 @@ import platform
 import subprocess
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeAlias, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -19,8 +19,8 @@ from ecomd.observation.l2_emission import (
     simulate_latent_ar1,
 )
 
-FloatArray = NDArray[np.float64]
-IntArray = NDArray[np.int64]
+FloatArray: TypeAlias = NDArray[np.float64]
+IntArray: TypeAlias = NDArray[np.int64]
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUT = Path(__file__).with_name("MISSPECIFICATION_RESULTS.json")
@@ -234,7 +234,7 @@ def _summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _cell(summary: dict[str, Any], truth: str, rho: float) -> dict[str, Any]:
-    return summary[f"truth={truth},rho={rho:.2f}"]
+    return cast(dict[str, Any], summary[f"truth={truth},rho={rho:.2f}"])
 
 
 def _relative_error(value: float, truth: float) -> float:

@@ -7,12 +7,14 @@ import json
 import platform
 import subprocess
 import time
+from collections.abc import Sequence
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeAlias, cast
 
 import numpy as np
 import torch
+from numpy.typing import NDArray
 
 from ecomd.models.ecomd import EcoMDConfig, EcoMDSimulator
 from ecomd.observation.ecomd_l2_adapter import (
@@ -21,10 +23,16 @@ from ecomd.observation.ecomd_l2_adapter import (
     EcoMDL2AdapterState,
 )
 from ecomd.observation.l2_emission import (
+    SyntheticL2Stream,
     fit_logistic_features,
     logistic_feature_log_likelihood,
     reconstruct_aggregate_book,
 )
+from ecomd.physics.observables import EcoMDTrajectory
+
+FloatArray: TypeAlias = NDArray[np.float64]
+IntArray: TypeAlias = NDArray[np.int64]
+Array: TypeAlias = NDArray[Any]
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUT = Path(__file__).with_name("ECOMD_L2_ADAPTER_RESULTS.json")
@@ -105,15 +113,26 @@ def _tree_equal(left: Any, right: Any) -> bool:
     return bool(left == right)
 
 
-def _concatenate_trajectory_parts(parts, field: str) -> torch.Tensor:
-    return torch.cat([getattr(part, field) for part in parts])
+def _concatenate_trajectory_parts(
+    parts: Sequence[EcoMDTrajectory], field: str
+) -> torch.Tensor:
+    return torch.cat([cast(torch.Tensor, getattr(part, field)) for part in parts])
 
 
-def _concatenate_stream_parts(parts, field: str) -> np.ndarray:
-    return np.concatenate([getattr(part, field) for part in parts], axis=0)
+def _concatenate_stream_parts(
+    parts: Sequence[SyntheticL2Stream], field: str
+) -> Array:
+    return cast(
+        Array,
+        np.concatenate(
+            [cast(Array, getattr(part, field)) for part in parts], axis=0
+        ),
+    )
 
 
-def _visible_regression_arrays(stream) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _visible_regression_arrays(
+    stream: SyntheticL2Stream,
+) -> tuple[IntArray, FloatArray, IntArray]:
     visible_indices = np.flatnonzero(stream.event_type != 5)
     visible_types = stream.event_type[visible_indices]
     action = np.where(visible_types == 1, 1, -1)
@@ -124,7 +143,7 @@ def _visible_regression_arrays(stream) -> tuple[np.ndarray, np.ndarray, np.ndarr
     ).astype(np.int64)
 
 
-def _fit_models(stream, permutation_seed: int) -> dict[str, Any]:
+def _fit_models(stream: SyntheticL2Stream, permutation_seed: int) -> dict[str, Any]:
     absolute_index, latent, flow_pair = _visible_regression_arrays(stream)
     signed_flow = flow_pair[:, 0]
     previous_visible = flow_pair[:, 1].astype(np.float64)
@@ -193,12 +212,12 @@ def _run_stream(
         initial.clone(), N_STEPS, create_graph=False, lightweight=True
     )
     chunk_state = initial.clone()
-    trajectory_parts = []
+    trajectory_parts: list[EcoMDTrajectory] = []
     for length in SIMULATOR_CHUNKS:
-        chunk_state, part = simulator.rollout_state(
+        chunk_state, trajectory_part = simulator.rollout_state(
             chunk_state, length, create_graph=False, lightweight=True
         )
-        trajectory_parts.append(part)
+        trajectory_parts.append(trajectory_part)
 
     simulator_fields_exact = {
         field: bool(
@@ -234,15 +253,15 @@ def _run_stream(
         initial_adapter.clone(), emitted_latent, start_step=BURN_IN
     )
     adapter_state = initial_adapter.clone()
-    stream_parts = []
+    stream_parts: list[SyntheticL2Stream] = []
     offset = 0
     for length in ADAPTER_CHUNKS:
-        adapter_state, part = adapter.emit(
+        adapter_state, stream_part = adapter.emit(
             adapter_state,
             emitted_latent[offset : offset + length],
             start_step=BURN_IN + offset,
         )
-        stream_parts.append(part)
+        stream_parts.append(stream_part)
         offset += length
         if offset == 731:
             adapter_state = EcoMDL2AdapterState.from_checkpoint(

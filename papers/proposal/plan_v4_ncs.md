@@ -16,10 +16,11 @@
 **2026-08-10 执行状态：** G0 仍为 AMBER（广义 novelty claim 已被先行工作否决）；exp131 的离散
 事件已知基线/harness 通过，但没有 candidate estimator；exp132 的双稳态 fail-visible diagnostic 按
 预注册门槛失败。WP1 的 CPU 六项语义测试、版本化单 V100 v2 mechanics probe，以及 exp133 的
-双 rank CPU/Gloo 原子 exact-resume 已通过；单 V100 exact-resume 因两张卡均被其他正式任务占用而待跑。
-exp134 的最小 aggregate-L2 正确设定 synthetic recovery 通过，但暴露 latent sign gauge，且尚无
-EcoMD adapter、misspecification 或 observation-only 对照。exp128--134 均是零采购 preflight，不构成
-confirmatory evidence。
+双 rank CPU/Gloo 原子 exact-resume 已通过；单 V100 exact-resume 已安全排在 V100-A 的既有 graphene
+任务之后。exp134--136 依次通过最小 aggregate-L2 recovery、misspecification/observation-only stress
+和 state-complete EcoMD adapter plumbing；变量已迁移为 `latent_flow_alignment`。这些仍未覆盖动态
+price/queue、强 point-process baselines 或真实 L2，exp128--136 均是零采购 preflight，不构成
+confirmatory evidence，G3 不升级。
 
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
 
@@ -309,9 +310,13 @@ permutation control。`z -> -z` 得到完全相同 likelihood，说明没有外�
 不可识别。模型变量现已正式迁移为 `latent_flow_alignment`，旧 `ofi` 属性/NPZ 键只作为显式 legacy
 alias 保留。exp135 又在 144 条流、432 万事件上通过预注册的 misspecification/observation-only stress：
 正确区分 current-latent、observed-lag、combined、lagged、even-nonlinear 与 null truth，同时在
-`rho=0.98` 的 current/lagged 高共线情形明确记录 temporal non-identifiability。上述结果仍只是合成
-preflight；EcoMD adapter、固定 sign anchor、共同 evaluator 的真实 L2 路径、price/order-level semantics
-和 Hawkes/queue-reactive baselines 未完成，G3 不升级，付费数据不解锁。
+`rho=0.98` 的 current/lagged 高共线情形明确记录 temporal non-identifiability。exp136 随后完成
+checkpointable absolute-clock EcoMD adapter：8 条 `N=64,T=3000` 路径及其 message chunks/resume
+bit-exact，结构 sign convention 严格成立；正确设定下 latent 比 observation-only 高 `0.0543`
+nats/visible event，置换增益仅 `1.15e-4`。这只是从随机 EcoMD 权重生成、再用同 family 恢复的合成
+plumbing；结构 convention 也不是经过真实市场验证的外部 sign anchor。共同 evaluator 的真实 L2
+路径、price/order-level semantics 和 Hawkes/queue-reactive baselines 仍未完成，G3 不升级，付费数据
+不解锁。
 
 **数据。** 先用生成的 event streams 和免费 LOBSTER/Tardis 样本做 schema、reconstruction 与
 recovery；G2 通过后才解锁付费 L2 的训练 split。真实测试 split 在预注册后保持封存。
@@ -588,7 +593,7 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
    parity 通过，但没有新的 accuracy--cost Pareto 点，G0 不上调；
 5. **失败并保留：** exp132 双稳态 diagnostic 能拒绝 hard trapped chains，但 easy resolved rate
    `78.125% < 80%`，不得修改原阈值；任何 v2 必须使用独立 tuning/validation split；
-6. **CPU 已完成、CUDA 已安全排队：** exp133 双 rank Gloo 模型、optimizer、逐 rank完整状态和 RNG
+6. **CPU 已完成、CUDA 已安全排队：** exp133 双 rank Gloo 模型、optimizer、逐 rank 完整状态和 RNG
    跨进程 bit-exact；单 V100 gate 已排在 V100-A 的 graphene 任务之后，须连续十次一分钟空闲检查且
    无 graphene 优先释放标记才会启动；另行纳入真实 data cursor、scheduler/scaler 与 W&B contract；
 7. 以 `experiments/128_state_semantics_preflight/` 为输入冻结正式 WP2 preregistration，写明五臂、
@@ -597,9 +602,10 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
 8. **v0 spec 已完成但非等价性失败：** 现有构造可被完整复述为 PCD + hybrid pathwise/LR +
    Rhee--Glynn + diagnostics，禁止命名或启动 E0--E3；只有先提出可写成 theorem/identity 的新 coupling、
    residual bound 或 variance result，才允许预注册 v1；
-9. **合成 preflight 继续通过：** `ofi -> latent_flow_alignment` 迁移和 backward-compatible artifact
-   alias 已完成；exp134 correctly-specified recovery 与 exp135 misspecification/observation-only stress
-   全 gate 通过。下一步只做带固定 sign anchor 的 state-complete EcoMD adapter，完成前不采购 L2；
+9. **合成 adapter preflight 已完成：** `ofi -> latent_flow_alignment` 迁移和 backward-compatible
+   artifact alias 已完成；exp134 recovery、exp135 misspecification/observation-only stress 与 exp136
+   state-complete EcoMD adapter 全 gate 通过。下一步必须另行冻结 dynamic price/queue 与 Hawkes/
+   queue-reactive baseline 协议；完成前不采购 L2，也不把结构 sign convention 写成外部验证；
 10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
    `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后
    再排 canonical re-benchmark，且不抢占其他正式任务；

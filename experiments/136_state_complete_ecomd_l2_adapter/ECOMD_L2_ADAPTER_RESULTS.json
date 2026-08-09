@@ -1,0 +1,916 @@
+{
+  "all_hard_gates_pass": true,
+  "elapsed_seconds": 32.75442195800133,
+  "environment": {
+    "device": "cpu",
+    "git_dirty": false,
+    "git_sha": "bcb025bd909473c677de1f03ecaf8bc686d5fe20",
+    "numpy": "2.4.4",
+    "python": "3.11.15",
+    "torch": "2.11.0",
+    "torch_threads": 1
+  },
+  "experiment": 136,
+  "hard_gates": {
+    "adapter_resume_and_schema_exact": true,
+    "all_fits_converged_and_finite": true,
+    "anchored_sign_beats_flip": true,
+    "latent_beats_observation_only": true,
+    "latent_parameter_recovery": true,
+    "permuted_control": true,
+    "simulator_finite_and_bit_exact": true,
+    "structural_sign_anchor_exact": true
+  },
+  "protocol": {
+    "adapter_chunks": [
+      211,
+      17,
+      503,
+      769,
+      1000
+    ],
+    "burn_in": 500,
+    "emission_beta": 2.0,
+    "emitted_events_per_stream": 2500,
+    "n_steps": 3000,
+    "n_streams": 8,
+    "parameter_seed": 136000,
+    "root_seed": 136202608,
+    "simulator_chunks": [
+      137,
+      499,
+      61,
+      803,
+      1500
+    ],
+    "simulator_config": {
+      "agent_memory_d": 8,
+      "agent_memory_enabled": true,
+      "agent_memory_update_every": 2,
+      "ar1_whiten_clip": 0.0,
+      "ar1_whiten_lambda": 0.9,
+      "ar1_whiten_strength": 0.05,
+      "asym_drag_alpha": 0.0,
+      "bptt_checkpoint_every": 0,
+      "bptt_custom_function": false,
+      "d_state": 8,
+      "dt": 0.005,
+      "edge_gating_enabled": false,
+      "edge_gating_init_p": 0.7,
+      "edge_gating_input_u": true,
+      "gamma_init": 10.0,
+      "global_state_d": 8,
+      "global_state_enabled": true,
+      "global_state_into_pair": true,
+      "global_state_update_every": 3,
+      "hidden": 16,
+      "hopfield_beta": 8.0,
+      "hopfield_collapse_reg": 0.0,
+      "hopfield_n_prototypes": 4,
+      "hopfield_query_hidden": 16,
+      "info_asym_enabled": false,
+      "info_asym_frac": 0.3,
+      "info_asym_noise": 0.5,
+      "info_asym_tau": 0.99,
+      "init_state_scale": 0.1,
+      "inner_steps_per_price": 1,
+      "isab_m_inducing": 64,
+      "isab_n_heads": 4,
+      "jump_lambda": 2.0,
+      "jump_legacy_train_proxy": false,
+      "jump_scale": 0.01,
+      "lam_dissipation": 0.01,
+      "learn_gamma": false,
+      "learn_temperature": false,
+      "legacy_total_derivative_force": false,
+      "mace_body_order": 2,
+      "mace_k": 16,
+      "mace_knn_refresh": 10,
+      "mace_n_classes": 4,
+      "mace_n_rbf": 8,
+      "mace_readout_init_gain": 0.5,
+      "mace_readout_mode": "per_node",
+      "mace_readout_multiplier": 1.0,
+      "mace_use_layernorm": true,
+      "memory_kernel_lambda": 0.9,
+      "memory_kernel_strength": 0.05,
+      "microstructure_rho": 0.05,
+      "moe_enabled": false,
+      "moe_hidden": 32,
+      "moe_load_balance_w": 0.01,
+      "moe_log_scale_clip": 1.5,
+      "moe_n_experts": 4,
+      "multi_timescale_enabled": true,
+      "n_agents": 64,
+      "noise_df": 5,
+      "noise_dist": "normal",
+      "noise_levy_alpha": 1.7,
+      "noise_levy_clip": 50.0,
+      "pair_features_extra": "none",
+      "pair_heterogeneous_heads": false,
+      "pair_input_layernorm": false,
+      "pairwise_kind": "stochastic_mlp",
+      "power_law_alpha": 1.5,
+      "power_law_external": false,
+      "power_law_w_mlp": 1.0,
+      "power_law_w_pow": 0.5,
+      "price_formation": "excess_demand",
+      "price_formation_kwargs": {
+        "beta": 0.02,
+        "kappa": 0.5,
+        "log_raw_excess_demand": true,
+        "sigma_price": 0.005
+      },
+      "regime_d": 8,
+      "regime_discrete_enabled": false,
+      "regime_enabled": true,
+      "regime_gumbel_tau": 1.0,
+      "regime_init_gain": 0.1,
+      "regime_kind": "auto",
+      "regime_modulate_gamma": true,
+      "regime_modulate_kappa": true,
+      "regime_modulate_temp": true,
+      "regime_n_states": 3,
+      "regime_update_every": 3,
+      "scheduled_sampling_enabled": false,
+      "sps_k_random": 6,
+      "sps_resample_per_step": true,
+      "ss_max_prob": 0.2,
+      "ss_ramp_schedule": "linear",
+      "ss_sigma_mult": 1.5,
+      "ss_warmup_iters": 32,
+      "sv_integrator_enabled": false,
+      "sv_integrator_gain": 1.0,
+      "temperature_init": 0.05,
+      "timescale_fast_frac": 0.75,
+      "timescale_slow_freq": 4,
+      "twopop_enabled": false,
+      "twopop_gamma_scale": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "twopop_temp_scale": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "v2_T_init_mode": "eye_plus_noise",
+      "v2_T_offdiag_init": 0.1,
+      "v2_d_pi": 4,
+      "v2_d_type_emb": 8,
+      "v2_gauge_axis": 0,
+      "v2_gauge_enforce": false,
+      "v2_k_random": 50,
+      "v2_k_types": 4,
+      "v2_kyle_enabled": true,
+      "v2_kyle_lambda_init": 0.01,
+      "v2_kyle_lambda_learnable": true,
+      "v2_phi_init_gain": 0.5,
+      "v2_pi_init_gain": 0.5,
+      "v2_type_seed": 42,
+      "zumbach_feedback_lambda": 0.9,
+      "zumbach_feedback_mode": "abs",
+      "zumbach_feedback_strength": 0.05
+    },
+    "train_fraction": 0.6
+  },
+  "records": [
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.13848339432834764,
+      "emission_seed": 5195421868233453373,
+      "finite": true,
+      "minimum_queue": 99823,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.23958996084395456,
+        "models": {
+          "combined": {
+            "coefficients": [
+              0.04098147209878679,
+              2.1907005039435177,
+              0.03307771456258949
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.06200327848414444,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6317971584573046,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              0.039528705254942745,
+              2.1914533918790813
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.06195233563105851,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6318481013103905,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              -0.049572831682436605
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.693800436941449,
+            "iterations": 3
+          },
+          "observation_only": {
+            "coefficients": [
+              -0.04792397939506344,
+              0.03442574975050983
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.0007338806834029654,
+            "heldout_log_likelihood_nats_per_visible_event": -0.694534317624852,
+            "iterations": 4
+          },
+          "permuted": {
+            "coefficients": [
+              -0.048829227124788176,
+              0.01738814558605629
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 3.416360807872998e-05,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6937662733333703,
+            "iterations": 3
+          }
+        },
+        "n_visible_regression": 2303,
+        "n_visible_test": 931,
+        "n_visible_train": 1372
+      },
+      "rollout_seed": 1519909456292771072,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    },
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.1420083483612456,
+      "emission_seed": 4470024566185659017,
+      "finite": true,
+      "minimum_queue": 99710,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.20614728384603043,
+        "models": {
+          "combined": {
+            "coefficients": [
+              -0.04895125570921292,
+              1.9043239150637103,
+              -0.01850540842104644
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.04406867717929919,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6471115602978225,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              -0.04717319874758644,
+              1.9050245060323447
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0446588561869391,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6465213812901826,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              -0.09806121317621483
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6911802374771217,
+            "iterations": 4
+          },
+          "observation_only": {
+            "coefficients": [
+              -0.10003913919160622,
+              -0.01979058507724645
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.000745069124950648,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6919253066020723,
+            "iterations": 4
+          },
+          "permuted": {
+            "coefficients": [
+              -0.09751517877730846,
+              0.017426429193002274
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.00010049285070257152,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6912807303278242,
+            "iterations": 4
+          }
+        },
+        "n_visible_regression": 2301,
+        "n_visible_test": 913,
+        "n_visible_train": 1388
+      },
+      "rollout_seed": 516114849473583008,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    },
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.14369153590267433,
+      "emission_seed": 9354970944714043105,
+      "finite": true,
+      "minimum_queue": 99769,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.24163640480484982,
+        "models": {
+          "combined": {
+            "coefficients": [
+              0.06956436110582845,
+              1.8123303779958067,
+              0.007315380703036921
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.057335162435367404,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6358120181245779,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              0.06952122061115475,
+              1.8107074626793103
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0571671777828916,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6359800027770537,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              0.0
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6931471805599453,
+            "iterations": 1
+          },
+          "observation_only": {
+            "coefficients": [
+              -2.0301387018799003e-17,
+              -0.0028571506317194677
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.00010004228808135895,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6932472228480266,
+            "iterations": 3
+          },
+          "permuted": {
+            "coefficients": [
+              -0.0012290743835499422,
+              -0.03286004576106332
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0001288532597807368,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6930183273001645,
+            "iterations": 3
+          }
+        },
+        "n_visible_regression": 2323,
+        "n_visible_test": 923,
+        "n_visible_train": 1400
+      },
+      "rollout_seed": 10814105986146574234,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    },
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.14136157051561168,
+      "emission_seed": 9446490585782506756,
+      "finite": true,
+      "minimum_queue": 99665,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.2136958729256795,
+        "models": {
+          "combined": {
+            "coefficients": [
+              -0.049230153733208964,
+              1.803622793376775,
+              -0.05102319563185148
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.04369071499482868,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6471508711748041,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              -0.04324745310077541,
+              1.810940664804151
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.047475573594861875,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6433660125747709,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              -0.10993718268523782
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6908415861696328,
+            "iterations": 4
+          },
+          "observation_only": {
+            "coefficients": [
+              -0.11673533273502996,
+              -0.058367666367514774
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.0038227820755677433,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6946643682452005,
+            "iterations": 4
+          },
+          "permuted": {
+            "coefficients": [
+              -0.11172890450593322,
+              -0.04210718294459917
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0003476735782288465,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6904939125914039,
+            "iterations": 4
+          }
+        },
+        "n_visible_regression": 2306,
+        "n_visible_test": 922,
+        "n_visible_train": 1384
+      },
+      "rollout_seed": 15618472466559394542,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    },
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.1392921054747203,
+      "emission_seed": 18375288719873394150,
+      "finite": true,
+      "minimum_queue": 99588,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.22987833814076086,
+        "models": {
+          "combined": {
+            "coefficients": [
+              0.0018539812407330452,
+              2.129431873093289,
+              0.038649606547336
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.056257700624975704,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6355142744481836,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              -0.00044347222438961977,
+              2.133313013848328
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.055388968782709935,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6363830062904494,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              -0.07443259478276996
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6917719750731594,
+            "iterations": 4
+          },
+          "observation_only": {
+            "coefficients": [
+              -0.07147296834354623,
+              0.04330092496992351
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -3.567899431433652e-05,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6918076540674737,
+            "iterations": 4
+          },
+          "permuted": {
+            "coefficients": [
+              -0.07817064601134935,
+              -0.09604228117566121
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 4.68910327611205e-06,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6917672859698832,
+            "iterations": 4
+          }
+        },
+        "n_visible_regression": 2307,
+        "n_visible_test": 936,
+        "n_visible_train": 1371
+      },
+      "rollout_seed": 3602948748963515140,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    },
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.1414443429247458,
+      "emission_seed": 16096419818360974324,
+      "finite": true,
+      "minimum_queue": 99867,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.21394644958829723,
+        "models": {
+          "combined": {
+            "coefficients": [
+              -0.0478718508427528,
+              1.8731328620595546,
+              0.040903167479176314
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.047289217123140714,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6466530659689897,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              -0.052859227202369956,
+              1.8569588702954347
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.049878971726707855,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6440633113654226,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              -0.1073771144952667
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6939422830921305,
+            "iterations": 4
+          },
+          "observation_only": {
+            "coefficients": [
+              -0.10542482020424676,
+              0.018537621201518386
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.0008541460656773525,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6947964291578078,
+            "iterations": 4
+          },
+          "permuted": {
+            "coefficients": [
+              -0.11032047321974678,
+              -0.08419886477752571
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.00019600135399100438,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6941382844461215,
+            "iterations": 4
+          }
+        },
+        "n_visible_regression": 2276,
+        "n_visible_test": 915,
+        "n_visible_train": 1361
+      },
+      "rollout_seed": 14179937687291829209,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    },
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.14183876295356304,
+      "emission_seed": 5728869736310006144,
+      "finite": true,
+      "minimum_queue": 99460,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.24656937320913064,
+        "models": {
+          "combined": {
+            "coefficients": [
+              -0.053429187690267985,
+              2.1164659756787523,
+              -0.030856451795532088
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0631823896830569,
+            "heldout_log_likelihood_nats_per_visible_event": -0.627811602797249,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              -0.050136809032324675,
+              2.1155006243496803
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.06362275228426695,
+            "heldout_log_likelihood_nats_per_visible_event": -0.627371240196039,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              -0.1071936967394873
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6909939924803059,
+            "iterations": 4
+          },
+          "observation_only": {
+            "coefficients": [
+              -0.11056742312656477,
+              -0.030553396479082
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.0009049542036130287,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6918989466839189,
+            "iterations": 4
+          },
+          "permuted": {
+            "coefficients": [
+              -0.10961116832776614,
+              -0.07025854709610872
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 7.282496442939657e-05,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6909211675158765,
+            "iterations": 4
+          }
+        },
+        "n_visible_regression": 2293,
+        "n_visible_test": 911,
+        "n_visible_train": 1382
+      },
+      "rollout_seed": 4374325847440208932,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    },
+    {
+      "adapter_fields_exact": {
+        "direction": true,
+        "event_type": true,
+        "latent": true,
+        "order_id": true,
+        "price": true,
+        "size": true,
+        "snapshots": true,
+        "time": true
+      },
+      "adapter_terminal_state_exact": true,
+      "alignment_mean_absolute": 0.13765796427189633,
+      "emission_seed": 7964532701261384756,
+      "finite": true,
+      "minimum_queue": 99686,
+      "nonzero_alignment_steps": 3000,
+      "regression": {
+        "frozen_positive_anchor_minus_flipped_nats_per_visible_event": 0.23488404254335793,
+        "models": {
+          "combined": {
+            "coefficients": [
+              -0.06714026355478044,
+              2.1687776951925777,
+              -0.039718676948227435
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.058604919572730396,
+            "heldout_log_likelihood_nats_per_visible_event": -0.634160045403151,
+            "iterations": 5
+          },
+          "latent": {
+            "coefficients": [
+              -0.061054176286240984,
+              2.1734614898732594
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.05621196915095994,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6365529958249214,
+            "iterations": 5
+          },
+          "null": {
+            "coefficients": [
+              -0.12907099543023498
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6927649649758814,
+            "iterations": 4
+          },
+          "observation_only": {
+            "coefficients": [
+              -0.13583145940951732,
+              -0.04889169588599378
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": 0.0030547356857609786,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6897102292901204,
+            "iterations": 4
+          },
+          "permuted": {
+            "coefficients": [
+              -0.1390016195661818,
+              -0.2564503631033129
+            ],
+            "converged": true,
+            "heldout_gain_over_null_nats_per_visible_event": -0.0020997058485148212,
+            "heldout_log_likelihood_nats_per_visible_event": -0.6948646708243962,
+            "iterations": 4
+          }
+        },
+        "n_visible_regression": 2298,
+        "n_visible_test": 917,
+        "n_visible_train": 1381
+      },
+      "rollout_seed": 9234775892471081838,
+      "schema_checks": {
+        "order_ids_contiguous": true,
+        "queues_positive": true,
+        "reconstruction_exact": true,
+        "timestamps_exact": true
+      },
+      "sign_anchor_exact": true,
+      "simulator_fields_exact": {
+        "excess_demand": true,
+        "latent_flow_alignment": true,
+        "log_returns": true
+      },
+      "simulator_terminal_state_exact": true
+    }
+  ],
+  "summary": {
+    "median_absolute_alignment": 0.14140295672017875,
+    "median_absolute_combined_observed_coefficient": 0.03586366055496275,
+    "median_absolute_permuted_coefficient": 0.056182865020353946,
+    "median_absolute_permuted_gain_over_null_nats": 0.00011467305524165416,
+    "median_anchor_minus_flipped_nats": 0.2323811903420594,
+    "median_combined_minus_latent_nats": -0.00019470987406206008,
+    "median_latent_coefficient": 2.0102625651910127,
+    "median_latent_minus_observation_nats": 0.054290940621111616,
+    "median_latent_relative_error": 0.07912565489445617,
+    "minimum_queue": 99460,
+    "positive_latent_slopes": 8
+  },
+  "title": "state-complete EcoMD-to-L2 adapter"
+}
