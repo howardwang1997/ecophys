@@ -65,3 +65,10 @@ metadata:
 - G3 is not passed. The observation work still lacks a frozen EcoMD-to-external-message mapping, converged
   combined real fits, independent days/markets, an unseen real confirmation set and individual-order or
   explicitly limited aggregate semantics. Paid L2 stays gated.
+- Exp139 freezes the numerical repair rather than rewriting exp138: unchanged likelihood/features/splits/two
+  starts, correct lower-bound projected KKT, deterministic staged refinement, generated equivalence anchors and
+  real burn/training-prefix-only fits. Preregistration commits are `338e0165` and `732e1e7b`; implementation is
+  `e6a7eaaf`. Local smokes reached all numerical thresholds but are non-formal. Formal shard1 completed in
+  819.84 s with hash `4e4879d8...9aed35`; shard0 was still healthy at the last read before both Tailscale nodes
+  became unreachable. There is no merged exp139 PASS/FAIL yet. On reconnection, inspect the existing shard0
+  service/artifact before any rerun.

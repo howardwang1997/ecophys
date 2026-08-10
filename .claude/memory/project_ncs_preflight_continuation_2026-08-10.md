@@ -98,3 +98,20 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
 - Exp138 development added eight focused continuous-time tests; 21 focused observation tests, Ruff and the
   bounded strict-mypy target passed before formal execution. Its formal shard hashes are `3c28a680...172f5e`
   and `624ffd91...43c6d`; the merged hash is `0e25df8c...2fecf2` and a temporary re-merge was byte-identical.
+
+## Exp139 numerical repair — formal result pending
+
+- A read-only training-objective audit showed that exp138's raw gradients overstate boundary violations, but
+  the correct cell-level projected residuals were still `1.318e-4--1.092e-2`, above `1e-5`; exp138 remains FAIL.
+- Exp139 was preregistered at `338e0165`, with finite-difference tolerances frozen at `732e1e7b`, before any
+  candidate optimization. The clean implementation `e6a7eaaf` adds bound-aware KKT diagnostics, two-start
+  deterministic refinement, generated direct-Hawkes equivalence and a loader that materializes real data only
+  through the 60% training boundary (plus timestamp-only tie sentinel).
+- Thirty-one focused observation tests, Ruff and bounded strict mypy passed. Two dirty 20k-row smokes completed
+  all 120 target fits: maximum selected KKT `4.21e-7`, 120 dual-qualified starts, maximum start gap `3.69e-8`,
+  generated objective gap `1.11e-15` and matching anchor hashes. These are execution diagnostics only.
+- Both clean formal CPU-only shards were launched with one BLAS thread and CUDA hidden. Shard1 completed in
+  819.84 seconds and wrote a 1,703,829-byte artifact with SHA-256 `4e4879d823c5672dd5ca0428efee3058996c14c751d7e679e6362844dd9aed35`.
+  Shard0 was last observed active and healthy after about 16.8 CPU minutes, with no partial artifact. Both
+  Tailscale nodes then became unreachable simultaneously while the local tunnel remained up. Do not duplicate
+  shard0; on restored access, inspect its service and artifact first. Exp139 has no merged decision yet.
