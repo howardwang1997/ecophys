@@ -1,0 +1,177 @@
+contract:
+  name: evaluator_v2_synthetic_sample_complexity
+  version: 1
+  status: frozen_after_feasibility_v1_before_any_synthetic_metric_outputs
+  purpose: qualify_measurement_instruments_not_market_or_model_claims
+  source_feasibility_result_canonical_sha256: 057946d365686cc4e63c13e8db3d547e83601560d701e3ac52e39f572438d25f
+  source_feasibility_result_file_sha256: 52814472321ae9dbc89b74b4eb73a0b5eac170b3d9fdb157d70699c506b1df02
+  feasibility_v1_threshold_repair: forbidden
+  real_market_confirmation_from_current_four_markets: forbidden
+
+monte_carlo:
+  lengths: [120, 180, 240, 500, 1000, 2000, 4000]
+  replications_per_length: 64
+  surrogate_replicates_per_path: 8
+  root_seed: 812100
+  burn_in: 2000
+  sequential_cpu_execution: true
+
+dgp:
+  gaussian_iid:
+    innovations: gaussian
+    unit_population_variance: true
+    volume: independent_half_normal
+  student_t3_iid:
+    innovations: student_t
+    degrees_of_freedom: 3
+    unit_population_variance: true
+    volume: independent_half_normal
+  student_t5_iid:
+    innovations: student_t
+    degrees_of_freedom: 5
+    unit_population_variance: true
+    volume: independent_half_normal
+  negative_jump_iid:
+    innovations: gaussian_plus_centered_bernoulli_jump
+    jump_probability: 0.03
+    jump_amplitude: -6.0
+    unit_population_variance: true
+    volume: independent_half_normal
+  garch_gaussian:
+    innovations: gaussian
+    omega: 0.02
+    alpha: 0.08
+    beta: 0.90
+    initial_variance: 1.0
+    volume: independent_half_normal
+  garch_student_t5:
+    innovations: student_t
+    degrees_of_freedom: 5
+    omega: 0.02
+    alpha: 0.08
+    beta: 0.90
+    initial_variance: 1.0
+    volume: independent_half_normal
+  multiscale_logvol:
+    innovations: gaussian
+    ar_coefficients: [0.90, 0.97, 0.99, 0.997]
+    component_weights: [0.10, 0.20, 0.30, 0.40]
+    logvol_scale: 0.50
+    volume: independent_half_normal
+  gjr_garch:
+    innovations: gaussian
+    omega: 0.02
+    alpha: 0.05
+    gamma_negative: 0.10
+    beta: 0.88
+    initial_variance: 1.0
+    volume: independent_half_normal
+  garch_volume_coupled:
+    returns: garch_gaussian
+    volume: abs_return_plus_half_normal_noise
+    volume_noise_scale: 0.50
+  garch_volume_independent:
+    returns: garch_gaussian
+    volume: independent_half_normal
+
+metric_tests:
+  autocorr_returns:
+    analytic_min_length: 120
+    signal_dgp: gaussian_iid
+    primary_surrogate: temporal_joint_permutation
+    signal_relation: equivalent
+    null_dgp: gaussian_iid
+  hill_tail_index:
+    analytic_min_length: 500
+    analytic_reason: at_least_25_order_statistics_at_k_frac_0_05
+    signal_dgp: student_t3_iid
+    primary_surrogate: gaussian_iid
+    signal_relation: real_lower
+    null_dgp: gaussian_iid
+  gain_loss_asymmetry:
+    analytic_min_length: 240
+    signal_dgp: negative_jump_iid
+    primary_surrogate: sign_randomization
+    signal_relation: real_lower
+    null_dgp: student_t5_iid
+  aggregational_gaussianity:
+    analytic_min_length: 180
+    analytic_reason: scales_1_and_5_each_have_at_least_30_aggregates
+    signal_dgp: student_t3_iid
+    primary_surrogate: gaussian_iid
+    signal_relation: real_higher
+    null_dgp: gaussian_iid
+  intermittency_fano:
+    analytic_min_length: 2000
+    analytic_reason: expected_99pct_extreme_count_at_least_20
+    signal_dgp: garch_gaussian
+    primary_surrogate: temporal_joint_permutation
+    signal_relation: real_higher
+    null_dgp: student_t3_iid
+  acf_squared_returns:
+    analytic_min_length: 120
+    signal_dgp: garch_gaussian
+    primary_surrogate: temporal_joint_permutation
+    signal_relation: real_higher
+    null_dgp: student_t3_iid
+  conditional_kurtosis:
+    analytic_min_length: 240
+    signal_dgp: garch_student_t5
+    primary_surrogate: gaussian_iid
+    signal_relation: real_higher
+    null_dgp: garch_gaussian
+  dfa_hurst_abs_r:
+    analytic_min_length: 240
+    analytic_reason: at_least_four_valid_dfa_scales_under_current_defaults
+    signal_dgp: multiscale_logvol
+    primary_surrogate: temporal_joint_permutation
+    signal_relation: real_higher
+    null_dgp: student_t3_iid
+  leverage_effect:
+    analytic_min_length: 120
+    signal_dgp: gjr_garch
+    primary_surrogate: sign_randomization
+    signal_relation: real_lower
+    null_dgp: garch_gaussian
+  volume_volatility_corr:
+    analytic_min_length: 120
+    signal_dgp: garch_volume_coupled
+    primary_surrogate: volume_alignment_break
+    signal_relation: real_higher
+    null_dgp: garch_volume_independent
+  zumbach_asymmetry:
+    analytic_min_length: 180
+    signal_dgp: multiscale_logvol
+    primary_surrogate: temporal_joint_permutation
+    signal_relation: report_no_eligibility_decision
+    null_dgp: student_t3_iid
+    diagnostic_only: true
+
+gates:
+  applies_only_at_or_above_analytic_min_length: true
+  complete_real_and_all_surrogate_fraction: 1.0
+  signal_direction_minimum_paired_path_fraction: 0.80
+  signal_minimum_abs_median_effect_in_pooled_iqr_units: 0.50
+  equivalence_maximum_abs_median_effect_in_pooled_iqr_units: 0.50
+  null_relation: equivalent
+  null_maximum_abs_median_effect_in_pooled_iqr_units: 0.50
+  pairing: path_estimate_minus_within_path_surrogate_median
+  pooled_iqr_population: all_path_estimates_and_all_surrogate_replicate_estimates
+  pooled_iqr_quantile_method: numpy_linear
+  nonpositive_pooled_iqr: fail_closed
+  direction_ties_count_as_pass: false
+
+decision:
+  admissible_minimum_length: smallest_grid_length_at_or_above_analytic_floor_whose_signal_and_null_gates_pass_at_that_and_every_longer_grid_length
+  any_later_grid_failure_invalidates_earlier_minimum: true
+  diagnostic_metric_has_no_admissibility_decision: true
+  pass_allows_only_fresh_market_protocol_design: true
+  pass_is_not_real_market_or_model_evidence: true
+  no_post_result_dgp_parameter_threshold_or_grid_changes: true
+  failed_metric_action: revise_or_drop_before_fresh_market_confirmation
+
+compute:
+  cpu_only: true
+  gpu_forbidden: true
+  paid_data_forbidden: true
+  h20_forbidden: true
