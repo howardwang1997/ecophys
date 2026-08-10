@@ -158,3 +158,7 @@ metadata:
   `18149f87...a90c`. The frozen energy tolerance is `0.019507027186009607`; W=0 fails narrowly and W=500/1000/
   1500 pass, selecting W-star 500. ADF/KPSS selects W-star 0. Gate artifact SHA is `17ad4f26...ae55`, with zero
   held-out trajectories at fit time. This only authorizes held-out transfer; no fidelity/physics claim follows.
+- The pre-heldout binding, launcher and complete fixed-window analysis are implemented result-blind after gate
+  commit `3f1303b04`. They pin W-star 500, the exact gate/checkpoint/source/seed hashes, require the binding blob
+  to equal its sole first-add commit and encode every frozen decision tier. Full regression is 132 tests and
+  strict mypy covers 75 modules. Commit/deploy/preflight this freeze next; no held-out output exists yet.

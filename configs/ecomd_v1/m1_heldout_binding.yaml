@@ -1,0 +1,64 @@
+contract:
+  name: ecomd_v1_m1_heldout
+  version: 1
+  status: frozen_after_calibration_gate_before_heldout
+  freeze_commit_rule: first_git_commit_containing_this_file
+  gate_committed_before_heldout: true
+  result_selection_forbidden: true
+
+training:
+  git_sha: 7b2cd40fe0f387893d8de7511a38217e5bd16b34
+  config_path: configs/ecomd_v1/m0_reference.yaml
+  config_sha256: 8e161bee28a4712e9a152539894ad6a9193d2311498fa066d24e16427e9ffa33
+  protocol_path: configs/ecomd_v1/m1_stationarity_screen.yaml
+  protocol_sha256: 449b169267e7f97b0ddb60485aa02f078b83c4b99e4cb8a0c2e15718d1bd9096
+  checkpoint_sha256: 7822c030b44aa8e18110d807d7a4bfc15dea5ebd0175c5bd0fa2d2a10f96f34a
+  checkpoint_iter: 600
+  parameter_count: 36541
+  data_manifest_sha256: 0836ddd279a16db5010907120e65da87db58a2f2634c25f0e732334a98ffff7c
+  train_return_float64_le_sha256: 5b295cf9d11b0796f69547e6251ae2ba3462589b735223932bbf53aaf34e5713
+  train_return_rows: 1005
+
+gate:
+  path: configs/ecomd_v1/m1_frozen_gate.json
+  sha256: 17ad4f26c5f5ce5040aba028e70bda711de0306620070be96d22c63bbb14ae55
+  commit_sha: 3f1303b0421411f25ccc9f44dab61c71cf552bdb
+  fit_repository_git_sha: 179da420a65b69d6a677aff850f2fb37a827c4d7
+  calibration_execution_git_sha: a18d70c1c78e7072b2780c776b12de71570aacf1
+  calibration_input_float64_le_sha256: 18149f878817932152cd1d0faa32de1148647dd22bdd223c25ecf16d4094a90c
+  calibration_binding_sha256: 0a492eba95882fa454c1208095a5529266e73e14815da18ecc05d2e2f478c245
+  frozen_w_star: 500
+  heldout_trajectory_count_at_fit: 0
+
+implementation:
+  model_tree_git_oid: 7277ec08e55619450243a924cdeac3929e1341a8
+  physics_tree_git_oid: 2156e56b94baa688c0c72820fe5d520c94a58b50
+  stylized_facts_sha256: 8d8f7e9887af9a32b9f5133cacb9e3874934fa1a9999df3cbf8ca0719a3e7e9b
+  canonical_bands_sha256: d46413106c5c9d742d3d655489202ebb96cdb08b826f2cd86ab138bfecef2632
+  stationarity_gate_sha256: 0c1c3606060391deefd38c546e785200d53bc0ac46be7e31be250e1a27de2347
+  run_large_sha256: be8be529bea4265902377bb13f8314f6b54c12b3c5b743d3e92028194f8f695d
+  seed_manifest_sha256: 2e38f8a8ef4f27fab8cbf52ade2ade04da8913c14d782ae15d43cedf46ccd7a8
+  heldout_analysis_sha256: a93849df795d5d481a140a3f9373aa4336ca4d84fc83a25e4d5cbc64ed1956de
+
+rollout:
+  simulator_steps: 8001
+  expected_recorded_returns: 8000
+  save_trajectory: true
+  shocks_or_overrides: forbidden
+  heldout:
+    v100_a:
+      seeds_path: configs/ecomd_v1/m1_heldout_v100a_seeds.json
+      seeds_sha256: a85ec8bbf58b45ceebb0f08e68bdda83fc189697fcda4195f1da523423fe2fb1
+    v100_b:
+      seeds_path: configs/ecomd_v1/m1_heldout_v100b_seeds.json
+      seeds_sha256: e8ad5a98bc277bd2cf7d7166f28a6d5d9588eac2587e5c03dada655daced3774
+
+analysis:
+  scoring_starts: [0, 50, 100, 200, 500, 1000, 1500, 2000, 3000, 4000]
+  fixed_length: 4000
+  aggregate: per_fact_median_then_canonical_band_score
+  report_all_starts: true
+  primary_windows:
+    early: 0
+    post: 500
+    late: 4000
