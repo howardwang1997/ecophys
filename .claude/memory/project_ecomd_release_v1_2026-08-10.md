@@ -104,3 +104,9 @@ metadata:
   literal `V100` product string. The pilot hardware check explicitly accepts this deployed name plus standard
   V100 names, and rejects 16 GB cards and H20. At the 2026-08-11 preflight it was idle with no compute process;
   the separate Graphene 375 K queue was validation-locked with no release marker.
+- V100-A formal pilot on `f1e3cd4fb312cdf484aa65564953e17e8125f00b` passed every gate. Ten uninterrupted
+  iterations took 17.02 seconds; the full 10-vs-5+5 process took 32.05 seconds. Peak allocated/reserved HBM was
+  11.475/11.994 GiB and the 600-iteration linear projection is 0.284 hours. Model, optimizer, dynamic state/RNG,
+  history and eight-step continuation are bit-exact; 18 gradient tensors are finite/nonzero. Remote/local report
+  SHA is `c99df8708de58119769a24069ff53da3049b6ea6da0c56d6048d15990b1410d7`; archived at
+  `release/verification/f1e3cd4fb312-v100a.json`. V100-B is now authorized for the same-SHA host repeat.
