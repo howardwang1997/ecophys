@@ -42,7 +42,9 @@ metadata:
   raw hashes when permissible, deterministic preprocessing, split manifests and derived hashes—not vendor bytes.
 - An allow-listed source-preview builder rejects checkpoint/data archive suffixes, result/output directories,
   credential names, prefix escapes and archives over 10 MiB. It emits the commit, manifest hash, artifact hash,
-  byte count and file count.
+  byte count and file count. The first `git archive` implementation stalled on missing partial-clone objects;
+  the builder now requires a clean allow-list against `HEAD`, enumerates only tracked/materialized files and
+  writes a deterministic normalized tar without implicit network access.
 
 ## Current verification
 
