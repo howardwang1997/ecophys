@@ -1,0 +1,137 @@
+contract:
+  name: entropy_tur_observability_t0
+  version: 1
+  status: frozen_after_scoping_search_before_full_claim_matrix_or_numerical_implementation
+  purpose: decide_whether_partial_market_observations_support_a_novel_non_tautological_entropy_or_tur_claim
+  evidence_class: theory_prior_art_and_synthetic_observability_gate_only
+  source_decision_path: papers/proposal/real_physics_zero_cost_decision_2026-08-11.md
+  source_decision_git_sha: bf9e5c56b04d16ea3b787a44a910b1f4a4c08d8e
+  source_decision_file_sha256: ce1baf012e26c3c48abcc58377db46ed1a4e14f6b2ced27c266dcc49c58661f2
+  real_market_values_examined_after_freeze: forbidden
+  numerical_implementation_before_g0: forbidden
+  paper_claim_or_model_training_authorization: forbidden
+
+gate_order:
+  sequence:
+    - g0_prior_art_and_irreducible_claim
+    - g1_observability_and_hidden_state_no_go
+    - g2_analytic_and_synthetic_truth_recovery
+    - g3_fresh_l2_protocol_design
+  stop_at_first_failure: true
+
+g0_prior_art:
+  cutoff_utc: 2026-08-11T00:00:00Z
+  source_policy: primary_papers_official_journal_pages_or_author_manuscripts
+  reviews_for_graph_expansion_only: true
+  backward_and_forward_search_required: true
+  required_clusters:
+    - path_probability_entropy_and_fluctuation_theorems
+    - hidden_and_coarse_grained_entropy_production
+    - waiting_time_and_partial_observation_bounds
+    - steady_state_finite_time_and_semi_markov_tur
+    - optimal_current_and_learned_entropy_estimators
+    - financial_time_irreversibility_and_crisis_detection
+    - financial_tur_and_market_temperature
+    - order_book_thermodynamic_observables
+  required_anchors:
+    - doi:10.1103/PhysRevE.60.2721
+    - doi:10.1103/PhysRevLett.95.040602
+    - doi:10.1103/PhysRevE.88.022147
+    - doi:10.1103/PhysRevLett.127.198101
+    - doi:10.1103/PhysRevE.105.044113
+    - doi:10.1103/PhysRevResearch.5.013039
+    - arxiv:1601.01980
+    - doi:10.3390/e26010024
+    - doi:10.3390/e27040435
+    - arxiv:2604.14962
+    - doi:10.1038/s42254-026-00954-5
+  candidate_exits:
+    total_entropy_from_partial_l2:
+      required_difference: theorem_level_identifiability_under_explicit_market_observation_assumptions
+    partial_entropy_lower_bound:
+      required_difference: strictly_tighter_or_weaker_assumption_bound_than_existing_hidden_or_semi_markov_methods
+    market_tur:
+      required_difference: new_inequality_or_new_independent_market_law_not_a_direct_application
+    ecomd_observation_bridge:
+      required_difference: cross_model_or_real_market_claim_beyond_a_single_unvalidated_simulator
+  pass_rule: at_least_one_exit_has_an_irreducible_statement_and_a_falsifiable_benchmark
+  application_of_known_estimator_counts_as_pass: false
+  first_financial_application_counts_as_pass: false
+  fail_action: stop_stochastic_thermodynamics_line_before_numerical_implementation_or_l2_acquisition
+
+g1_observability:
+  microstate_must_include: [visible_book_state, event_mark, event_time]
+  time_reversal_involution_required: true
+  current_must_be_antisymmetric: true
+  forward_and_reverse_path_measures_required: true
+  stationarity_or_named_finite_time_tur_required: true
+  hidden_state_boundary_required: true
+  total_entropy_language_without_identifiability: forbidden
+  efficiency_limit_language_from_lower_bound_saturation: forbidden
+  analytic_counterexample:
+    observed_process: homogeneous_three_state_ring
+    observed_clockwise_rate: 2.0
+    observed_counterclockwise_rate: 1.0
+    completion_a_hidden_clockwise_rate: 1.0
+    completion_a_hidden_counterclockwise_rate: 1.0
+    completion_b_hidden_clockwise_rate: 4.0
+    completion_b_hidden_counterclockwise_rate: 1.0
+    observed_paths_coupled_identically_across_completions: true
+    true_observed_entropy_rate: log_2
+    completion_a_total_entropy_rate: log_2
+    completion_b_total_entropy_rate: log_2_plus_3_log_4
+    observed_current_mean_rate: 1.0
+    observed_current_variance_rate: 3.0
+    apparent_tur_ratio: 3_log_2_over_2
+    completion_b_total_tur_ratio: 3_times_log_2_plus_3_log_4_over_2
+  pass_rule: output_is_explicitly_labeled_partial_or_lower_bound_and_total_nonidentifiability_is_detected
+  fail_action: prohibit_total_market_entropy_and_tur_saturation_claims
+
+conditional_g2_synthetic:
+  enabled_only_if_g0_passes: true
+  simulator: exact_gillespie_homogeneous_continuous_time_ring
+  dtype: float64
+  root_seed: 814200
+  batches: 100
+  trajectories_per_batch: 64
+  fit_horizon: 250.0
+  evaluation_horizon: 250.0
+  initial_distribution: exact_stationary_uniform
+  pseudocounts: forbidden
+  zero_bidirectional_fit_count: unresolved
+  estimator: fit_path_flux_log_ratio_then_evaluate_on_future_disjoint_path_segment
+  interval:
+    driven_truth_confidence_level: 0.90
+    equilibrium_null_confidence_level: 0.975
+  controls:
+    equilibrium_ring: {clockwise_rate: 1.0, counterclockwise_rate: 1.0}
+    driven_ring: {clockwise_rate: 4.0, counterclockwise_rate: 1.0}
+    hidden_completion_pair: use_g1_analytic_counterexample
+  gates:
+    equilibrium_false_positive_rate_maximum: 0.05
+    driven_entropy_grand_relative_error_maximum: 0.10
+    driven_90pct_batch_interval_coverage_range: [0.85, 0.95]
+    double_reversal_exact: true
+    current_and_path_entropy_sign_flip_under_reversal: true
+    unresolved_fraction_maximum: 0.0
+    apparent_and_total_tur_relative_error_maximum: 0.10
+    hidden_pair_observed_paths_exactly_equal: true
+    hidden_pair_total_entropy_rates_strictly_different: true
+    lower_bound_or_refusal_semantics_required: true
+
+decision:
+  g0_pass: permit_g1_derivation_and_conditional_g2_implementation_only
+  g0_fail: close_entropy_tur_route_without_code_data_or_compute
+  g1_bound_only: prohibit_total_entropy_or_efficiency_limit_but_allow_novel_bound_only_if_g0_passed
+  all_t0_pass: permit_fresh_multiday_l2_pilot_protocol_only
+  all_t0_pass_is_not_a_market_law_or_publication_claim: true
+  no_post_result_tur_version_current_state_reversal_or_threshold_changes: true
+
+compute:
+  g0_and_g1_cpu_only: true
+  g2_cpu_core_hour_cap: 100
+  temporary_storage_gb_cap: 20
+  gpu_forbidden: true
+  paid_data_forbidden: true
+  bulk_aggtrades_forbidden: true
+  h20_forbidden: true
