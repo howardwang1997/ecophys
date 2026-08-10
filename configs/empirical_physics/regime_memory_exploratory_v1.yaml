@@ -1,0 +1,137 @@
+contract:
+  name: real_market_lagged_regime_memory_exploratory
+  version: 1
+  status: frozen_after_evaluator_v2_failures_before_any_regime_target_outputs
+  purpose: test_whether_previsible_volatility_regime_predicts_future_volatility_memory
+  evidence_class: exploratory_hypothesis_selection_only
+  source_fresh_result_canonical_sha256: 8a946a32e6c77d784063e1f044f3bd2253b4bbf2cac9bf811cfd09cbda2654ac
+  source_fresh_result_file_sha256: 20871116e69dcce9249891658a0d4c70561fa9fdfeff9df3a8b99b328390d7be
+  all_available_markets_are_spent_for_final_confirmation: true
+  paper_claim_or_model_training_authorization: forbidden
+
+data:
+  provider: Yahoo Finance via yfinance
+  interval: 1d
+  first_manifest:
+    path: data/manifests/evaluator_v2_free_daily_2005_2024.json
+    canonical_payload_sha256: 28560c599e9c63418732d34cee0ade29665e24eb75b5b5fc123435d0bc005666
+    file_sha256: a6d46c595041cb37d587296dac841b20b8257edd36c0c5ae65bec112bf243eba
+  second_manifest:
+    path: data/manifests/evaluator_v2_fresh_markets_daily_2005_2024.json
+    canonical_payload_sha256: e738e53e7ae74205f5d85fe16c070188bfa7d809df8420d2bf95391b8cd0ce0d
+    file_sha256: 1e0393f8f803c104e0326225ebdee7c9443bcdf38132a2a0ff23ba1d82314cf0
+  all_spent_symbols: [^GSPC, ^NDX, GLD, EURUSD=X, ^DJI, ^RUT, ^N225, ^FTSE, ^GDAXI, ^HSI, SPY, EEM, TLT, EWJ]
+  balanced_symbols: [^GSPC, ^NDX, GLD, ^DJI, ^RUT, ^FTSE, ^GDAXI, SPY, EEM, TLT, EWJ]
+  volume_symbols: [GLD, SPY, EEM, TLT, EWJ]
+  coverage_excluded_symbols:
+    EURUSD=X: at_least_one_nonsealed_half_year_has_fewer_than_120_returns
+    ^HSI: at_least_one_nonsealed_half_year_has_fewer_than_120_returns
+    ^N225: at_least_one_nonsealed_half_year_has_fewer_than_120_returns
+  balanced_selection_used_only_timestamp_counts_before_target_computation: true
+  raw_redistribution: forbidden
+  price_column: adjusted_close
+  volume_alignment: volume_on_second_through_121st_selected_price_rows
+  sealed_year: 2020
+  sealed_year_parsing_forbidden: true
+
+periods:
+  unit: calendar_half_year
+  first_half_months: [1, 2, 3, 4, 5, 6]
+  second_half_months: [7, 8, 9, 10, 11, 12]
+  return_length: 120
+  construction: first_121_timestamp_ordered_prices_within_each_half_year_then_log_difference
+  remainder: ignored
+  no_cross_period_returns: true
+  regime_predecessor: immediately_previous_calendar_half_year
+  predecessor_must_be_nonsealed_and_observed: true
+  fit_target_period: [2005H2, 2014H2]
+  first_evaluation_period: [2015H1, 2019H2]
+  second_evaluation_period: [2021H2, 2024H2]
+  excluded_due_to_sealed_predecessor: [2021H1]
+  expected_fit_calendar_clusters: 19
+  expected_first_evaluation_calendar_clusters: 10
+  expected_second_evaluation_calendar_clusters: 7
+
+regime:
+  predictor: log_sqrt_mean_squared_return_of_immediately_previous_half_year_block
+  previsible_relative_to_target: true
+  normalization: per_symbol_fit_period_median_and_iqr
+  nonpositive_or_nonfinite_fit_iqr: fail_closed
+  evaluation_normalization_reuses_fit_statistics: true
+  contemporaneous_regime_not_used: true
+
+targets:
+  acf_squared_returns:
+    role: primary
+    symbols: balanced_symbols
+    estimator: ecomd.eval.stylized_facts.acf_squared_returns_default_scalar
+    expected_slope: positive
+  volume_volatility_corr:
+    role: secondary
+    symbols: volume_symbols
+    estimator: ecomd.eval.stylized_facts.volume_volatility_corr_default_scalar
+    expected_slope: positive
+    cannot_rescue_primary_failure: true
+  autocorr_returns:
+    role: specificity_diagnostic
+    symbols: balanced_symbols
+    estimator: ecomd.eval.stylized_facts.autocorr_returns_default_scalar
+    no_gate_or_direction_claim: true
+
+models:
+  baseline: ordinary_least_squares_target_on_symbol_fixed_effects
+  regime: ordinary_least_squares_target_on_symbol_fixed_effects_plus_one_common_regime_slope
+  fit_data: fit_target_period_only
+  evaluation_refit: forbidden
+  cell_weighting: equal_symbol_by_calendar_period
+  primary_loss: mean_squared_error
+  robustness_loss: mean_absolute_error
+  inference_unit: calendar_half_year_cluster_not_symbol_cell
+
+surrogate_test:
+  replicates: 999
+  root_seed: 812700
+  operation: independently_permute_regime_calendar_labels_within_fit_and_each_evaluation_era
+  same_calendar_permutation_for_every_symbol: true
+  refit_regime_model_per_replicate: true
+  identity_permutation: forbidden
+  statistic: pooled_evaluation_relative_mse_reduction
+  p_value: one_plus_surrogates_ge_real_divided_by_replicates_plus_one
+  one_sided_maximum_p: 0.05
+
+cluster_bootstrap:
+  replicates: 5000
+  root_seed: 812701
+  resampling_unit: evaluation_calendar_half_year_with_all_symbols_preserved
+  statistic: pooled_evaluation_relative_mse_reduction
+  confidence_level: 0.90
+  lower_bound_must_exceed: 0.0
+
+primary_nomination_gate:
+  training_common_slope_strictly_positive: true
+  pooled_relative_mse_reduction_minimum: 0.05
+  pooled_mae_reduction_strictly_positive: true
+  first_evaluation_mse_reduction_strictly_positive: true
+  second_evaluation_mse_reduction_strictly_positive: true
+  calendar_cluster_win_fraction_minimum: 0.5882352941176471
+  calendar_cluster_wins_minimum_of_17: 10
+  symbol_win_fraction_minimum: 0.6363636363636364
+  symbol_wins_minimum_of_11: 7
+  permutation_p_maximum: 0.05
+  cluster_bootstrap_90pct_lower_relative_mse_reduction_strictly_positive: true
+  every_clause_required: true
+
+decision:
+  pass: nominate_lagged_state_dependent_volatility_memory_for_new_independent_confirmation
+  fail: stop_daily_free_regime_memory_claim_and_do_not_train_ecomd
+  secondary_or_diagnostic_cannot_rescue_primary_failure: true
+  no_post_result_symbol_period_target_model_threshold_or_surrogate_changes: true
+  pass_is_not_a_physical_law_or_publication_claim: true
+  new_macro_time_or_independent_data_confirmation_required: true
+  model_scoring_or_training_authorization: forbidden
+
+compute:
+  cpu_only: true
+  gpu_forbidden: true
+  paid_data_forbidden: true
+  h20_forbidden: true
