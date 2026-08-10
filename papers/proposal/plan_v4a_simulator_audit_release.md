@@ -1,25 +1,27 @@
 # EcoPhys / EcoMD — Plan v4a：可证伪的模拟器审计与首次正式发布
 
 **日期：** 2026-08-10
-**状态：** G0 FAIL 后的当前执行路线；先做零采购、低算力验证
-**首选投稿：** TMLR；若跨系统证据不足，则缩为软件/模拟方法 venue
+**状态：** **F0 FAIL（2026-08-10）；通用 simulator-audit/TMLR 路线停止，转 EcoMD-specific
+透明修复与正式发布**
+**投稿定位：** EcoMD software/model paper；在出现新的定理、算法或非平凡跨系统证据前不恢复 TMLR
 **资源边界：** 当前 2×V100 32 GB；未来可扩展 GPU/CPU，但不使用 H20
 **数据边界：** 先用仓库现有数据、公开免费样本和 synthetic；任何付费数据由后续 gate 决定
 
-## 1. 论文主线
+## 1. 被 F0 否决的候选主线与当前路线
 
-这篇工作不再声称发明新的不变测度梯度估计器，也不把 EcoMD 的模拟误差写成市场物理。候选主线
-改为一个可证伪的计算科学问题：
+F0 前曾考虑以下可证伪的计算科学问题：
 
 > 在有隐状态、随机事件和长时程反馈的可微模拟器中，部分状态续接、梯度开关改变随机动力学、
 > 以及把 latent proxy 当成外部可观测量，会不会系统性地产生错误的校准与科学结论？建立一个带
 > defect injection、exact-resume、observation-semantic 和 held-out controls 的审计协议，量化这些
 > 失败何时发生、现有诊断何时抓不住，并以 EcoMD 及至少两个非金融系统验证。
 
-EcoMD 是主要复杂案例和首次正式软件发布，不是普适性证据的唯一来源。若缺少两个独立系统，论文
-不得声称通用 simulator audit。
+先验工作审计已否决把这个问题写成新的通用 audit 方法或 benchmark。当前路线仅是 **EcoMD v1
+透明 software/model release**：公开模型、状态与 transition law，修复训练/推理不一致，机器约束
+observation support，提供失败披露和可复现 smoke。它不声称普适性，也不把 EcoMD 当前输出当作
+已验证的市场物理。
 
-## 2. 暂定贡献与禁止 claim
+## 2. 被审计的候选贡献与当前保留项
 
 | 贡献 | 投稿前必须成立 |
 |---|---|
@@ -28,6 +30,8 @@ EcoMD 是主要复杂案例和首次正式软件发布，不是普适性证据�
 | A3：跨系统边界 | 至少两个非 EcoMD 的公开 stateful stochastic simulators；报告哪些缺陷普遍、哪些仅 EcoMD 出现 |
 | A4：观测桥审计 | 明确 latent、aggregate observable 与 individual-order data 的层级；错误映射必须被 negative control 拒绝 |
 | A5：EcoMD v1 release | 核心模型、训练、配置、checkpoint、审计器、synthetic replacement data 和复现实验首次公开 |
+
+F0 后 A1--A4 只作为 A5 的质量控制，不再作为论文新颖性；当前唯一保留的交付项是 A5。
 
 禁止声称：
 
@@ -49,6 +53,19 @@ EcoMD 是主要复杂案例和首次正式软件发布，不是普适性证据�
 | F5 release | 第三方能否从干净环境重现？ | 一键 CPU smoke、V100 reference、公开 checkpoint/替代数据、hash manifest 全通过 | 延迟投稿/发布 |
 
 所有 gate 失败都保留，不放宽阈值追求正结果。
+
+### 3.0 F0 先验工作决定（2026-08-10）
+
+`papers/proposal/simulator_audit_f0_prior_art_2026-08-10.md` 的 claim matrix 判定 **F0 FAIL**。
+ODD/TRACE/Troost/TDSM 已覆盖 simulator 描述与验证协议；ABM mutation、Monte Carlo metamorphic
+testing 和 ProbFuzz 已覆盖 defect injection/test adequacy；Zhong/Suh/Mosaic 已覆盖可微 simulator
+gradient 与跨 solver benchmark；model-discrepancy、observation-operator 和 OASIS 已覆盖 latent-to-
+observed mismatch；Donkin 和 2026 silent-PINN 工作已直接展示实现/参数缺陷可在正常诊断下改变趋势、
+解或结论。因此 A1--A4 的简单组合不够构成 TMLR 方法新颖性。
+
+停止 E-B production、外部 simulator adapter 和为该论文开展的 V100/数据扩展。exp128--143 作为
+EcoMD v1 的 QA、failure disclosure 和 release evidence 保留。只有出现新定理/指标/算法，或两个
+系统上预注册且非调参得到的 composite-defect 非加性规律时，才允许重新审计该路线。
 
 ### 3.1 F1 静态审计决定（2026-08-10）
 
@@ -76,9 +93,10 @@ FAIL，真实外部预测完全留给 F4，未因 synthetic recovery 获得任�
 | A5 | unseen real aggregate validation | 未使用的免费样本；当前 real test 不再算 confirmatory | crypto/equity L2、多日期、多交易所；是否购买由 F1--F3 决定 | 500--2,000 CPU core-h | 200--800 V100-eq h（如需联合训练） |
 | A6 | paper、artifact、EcoMD v1 release | 全部冻结结果 | license-safe replacement data | 200--500 CPU core-h，10--50 V100 h | 无 |
 
-当前阶段上限是约 **10 V100 h + 1,150 CPU core-h**，两台现有 V100 机器足够，且 CPU 任务可在
-其主机上运行。F0--F2 通过前不扩容；F1--F3 通过前不买数据。后续 GPU 数按 V100-equivalent
-记录，不按卡名折算，也不以减少 seeds/horizon/baselines 来适配资源。
+F0 已失败，因此上述 A2--A5 research budget **不再授权**。当前只保留 EcoMD release 的本地/CPU
+smoke 和必要的单卡 V100 reference；具体预算需在 release scope 冻结后重新估算。两台 V100 当前
+不启动本路线实验，不买数据、不扩容。未来如重开，GPU 数按 V100-equivalent 记录，不按卡名折算，
+也不以减少 seeds/horizon/baselines 来适配资源。
 
 ## 5. 数据需求
 
@@ -90,7 +108,8 @@ FAIL，真实外部预测完全留给 F4，未因 synthetic recovery 获得任�
 - synthetic aggregate/dynamic L2、two-state、jump-OU、bistable fixtures；
 - 当前 EcoMD checkpoints 和 exact-resume artifacts。
 
-这些数据足以做 F0、F1 的结构审计和 F2 screening，不足以做新的真实 confirmatory claim。
+这些数据已足以完成 F0、F1 的结构审计，也可用于 release regression tests；F0 失败后不再据此启动
+F2 screening。它们仍不足以做新的真实 confirmatory claim。
 
 ### D1：免费扩展
 
@@ -110,6 +129,9 @@ FAIL，真实外部预测完全留给 F4，未因 synthetic recovery 获得任�
 F0/F1 的方法或语义失败。
 
 ## 6. 核心实验矩阵
+
+以下 E-A--E-E 是 F0 前的候选 research matrix，现已停止。已有最小 fixtures 可作为 release tests
+复用，但不得以完成该矩阵为由启动新的 production sweep。
 
 ### E-A：observation semantic falsification
 
@@ -149,10 +171,11 @@ queue-reactive、permutation、time-shift 和 surrogate。单位是独立日期/
 3. **已完成：**预注册 exp142 的纯 synthetic validator gate；实现与正式运行必须使用后续独立提交；
 4. **已完成：**exp143 `aggregate_bin` + P3 measurement object 正式 10/10 PASS；104,160 条生成行
    重构 4,096 bins，integer aggregates exact，train-only corruption firewall exact；
-5. 完成 A0 的 simulator-audit prior-art matrix，决定 F0；
-6. 只有 F0/F1 仍可行时，才预注册低成本 E-B screening；否则直接整理 EcoMD v1 software release。
+5. **已完成：**A0 prior-art matrix 判定 F0 FAIL；通用 audit/TMLR claim 停止；
+6. **当前：**不运行 E-B screening，直接冻结 EcoMD v1 software/model release scope、公开能力边界、
+   state/law 修复清单和一键复现 contract。
 
-## 8. 已有证据如何进入论文
+## 8. 已有证据如何进入 release / 后续论文
 
 - exp128/133：state completeness、law parity 与 exact resume 的正/负 fixtures；
 - exp129/131/132：persistent bias、event-gradient baseline 与 diagnostic false-safe 边界；
@@ -160,11 +183,14 @@ queue-reactive、permutation、time-shift 和 surrogate。单位是独立日期/
 - exp138--140：外部 continuous-time baseline、优化收敛失败和阈值不后改的完整负结果；
 - exp123/127：simulator-only transient 与真实市场不一致，作为“错误科学解释”的核心案例。
 
-这些结果目前是 development/preflight evidence。论文级因果结论需要新的 fallback preregistration 和
-独立 seeds；已查看的真实 test split 永远不能恢复为未见确认集。
+这些结果目前是 development/preflight evidence，只进入 known-limitations、regression tests 和
+reproducibility appendix。若未来另写科学论文，因果结论仍需新的 preregistration 和独立 seeds；
+已查看的真实 test split 永远不能恢复为未见确认集。
 
 ## 9. 完成定义
 
-工作完成不是“EcoMD 能跑”或“找到一个正向 likelihood gain”。投稿包必须包含：冻结 claim ledger、
-跨系统 preregistered artifacts、全部失败结果、字段级 observation contract、20-seed headline、独立
-真实 panel 或明确 null、干净环境 reproduction，以及没有把 simulator artifact 写成市场物理的稿件。
+当前工作完成不是“EcoMD 能跑”或“找到一个正向 likelihood gain”。EcoMD v1 包必须包含：冻结的
+能力/claim ledger、模型与 transition-law 规范、state-complete checkpoint、字段级 observation
+contract、aggregate-bin P3、全部关键失败披露、许可与 provenance、干净环境 CPU smoke、单卡 V100
+reference（若模型运行需要）及 hash manifest。任何 market-physics 论文另行立项，并以新的真实
+held-out panel 和预注册实验为准。

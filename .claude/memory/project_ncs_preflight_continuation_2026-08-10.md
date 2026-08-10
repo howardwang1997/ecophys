@@ -169,3 +169,7 @@ requires a new branch and a theorem/identity that first survives a new citation 
   formal release. TMLR remains conditional on a separate audit-novelty gate and replication on two non-EcoMD
   systems. See `papers/proposal/ncs_g0_forward_audit_2026-08-10.md` and
   `papers/proposal/plan_v4a_simulator_audit_release.md`.
+- Later 2026-08-10 update: that separate F0 prior-art gate failed. The general audit/TMLR route and external-
+  simulator production are stopped; the reusable evidence now supports only EcoMD-specific transparent release
+  QA and failure disclosure unless a genuinely new theorem, algorithm, metric or non-additive phenomenon is
+  established.

@@ -12,8 +12,8 @@ metadata:
 - The proposed paper studies whether incomplete state continuation, gradient-dependent transition laws and
   invalid latent-to-observation substitutions can change calibration/scientific conclusions. It does not claim
   a new invariant-gradient estimator or real-market physics.
-- TMLR is conditional on F0 audit novelty, causal defect effects and replication in two public non-financial
-  stateful stochastic simulators. If those fail, retreat to an EcoMD software/model venue without generality.
+- TMLR was conditional on F0 audit novelty. F0 failed on 2026-08-10, so the active route is now an EcoMD
+  software/model release without a general simulator-audit claim.
 - F1 requires a field-level observation map with units, clock, sign, price and identity semantics. Current
   synthetic aggregate emitters do not support individual-order or price-time-priority claims, and current real
   test data cannot be reused as unseen confirmation.
@@ -41,10 +41,22 @@ metadata:
   `f1c34143...f1bf0`). It reconstructed 4,096 bins from 104,160 generated rows with exact integer aggregates
   and `1.70e-16` maximum return error. Held-out corruption left the fit exact; training corruption changed it.
 - F1 is therefore PASS only for synthetic implementation/semantics of aggregate-bin P3. Event/order support
-  remains FAIL and real predictive evidence remains F4. The self-generated RMSE/likelihood gains are plumbing,
-  not market evidence. Next gate is F0 prior-art closure before E-B or any resource expansion.
-- Immediate resource cap before F0--F2: about 10 V100-equivalent hours and 1,150 CPU core-hours. The current
-  two V100 32 GB hosts are sufficient and may also run CPU jobs. H20 is excluded. No purchase or expansion is
-  unlocked before the corresponding gates.
+  remains FAIL and the self-generated RMSE/likelihood gains are plumbing, not market evidence. F0 subsequently
+  failed, so no E-B or external-validation expansion follows from F1.
+- The former pre-F0 cap of about 10 V100-equivalent hours and 1,150 CPU core-hours is void. Release work uses
+  local/CPU smoke and only a necessary single-V100 reference after its scope is frozen. H20 remains excluded;
+  no data purchase or capacity expansion is authorized by this route.
 - Existing exp128--140 artifacts are preflight/development evidence. Paper-level claims require new fallback
   preregistrations and independent seeds; all archived FAIL decisions remain unchanged.
+- F0 prior-art closure is `papers/proposal/simulator_audit_f0_prior_art_2026-08-10.md` and is **FAIL**. ODD,
+  TRACE, context-adequate validation, TDSM, ABM/scientific-software mutation testing, ProbFuzz,
+  differentiable-gradient audits/Mosaic, observation-operator/model-discrepancy work, and 2026 silent-PINN
+  experiments collectively occupy A1--A4 and their key causal endpoints. The fact that no one paper uses the
+  exact same checklist is insufficient novelty.
+- Consequently the general simulator-audit/TMLR route, E-B production, external-simulator adapters, and its
+  V100/data expansion are stopped. Exp128--143 remain EcoMD release QA and failure disclosure. The active
+  fallback is an EcoMD-specific transparent software/model release; it must not claim validated market-digital-
+  twin status before stationary fidelity and real held-out aggregate evidence are repaired.
+- A general audit route may be re-audited only after a new theorem/algorithm/metric, or preregistered evidence
+  in two systems of a non-tuned composite state/law/observation defect that survives standard diagnostics and
+  reverses a predefined scientific conclusion. No exploratory E-B run is authorized merely to search for it.
