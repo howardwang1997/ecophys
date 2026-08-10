@@ -149,3 +149,8 @@ metadata:
   was rejected, and one prelaunch shell substitution warning was bounded by independent idle checks immediately
   before/after. Neither rejected tree ran the experiment. Calibration is now separately bound to the final
   checkpoint and fresh node seed files; held-out is still locked and no stationarity/fidelity result exists.
+- The 16 frozen calibration trajectories completed from clean evaluation commit `a18d70c1c78e` on the two
+  V100s (eight interleaved seeds each). Both services exited successfully and returned their GPUs idle. A/B
+  no-value shard-manifest hashes are `959c4047...51d9` and `44c2e944...6e8`. The result-blind gate fitter is
+  implemented and requires global seed ordering plus exact file/manifest/source bindings. Calibration values
+  have not yet been fitted at this point; held-out remains absent and locked until the gate artifact is committed.
