@@ -26,3 +26,20 @@ Implementation: `ecomd/eval/fresh_market_confirmation.py` plus
 declared metric-specific lengths/scopes, keeps report-only errors outside gates, verifies all bound raw/derived
 hashes and requires clean HEAD=upstream. Pre-output validation: 150 tests pass, strict mypy passes 78 package
 modules, and Ruff passes. Formal output always records model scoring/training authorization as false.
+
+Formal result: `results/evaluator_v2/fresh_market_confirmation_v1.json`, run from clean/pushed `31cddbfbeb9a`.
+Canonical SHA `8a946a32e6c77d784063e1f044f3bd2253b4bbf2cac9bf811cfd09cbda2654ac`; file SHA
+`20871116e69dcce9249891658a0d4c70561fa9fdfeff9df3a8b99b328390d7be`; 8.18 s internal runtime, CPU/no GPU,
+and sealed 2020 was never loaded. Every symbol/length passed the four-block gate and all primary original/control
+estimates were finite.
+
+Core suite FAIL: only `acf_squared_returns` qualifies, exactly at 6/10 instruments (DJI, RUT, N225, GDAXI, SPY,
+EWJ). `autocorr_returns` qualifies 1/10 (RUT), aggregation 1/10 (HSI), and ETF volume coupling 2/4 (EEM, EWJ;
+minimum three). Conditional kurtosis is 2/10 and index gain/loss skew is 1/6; both remain secondary failures.
+Failure cells decompose into temporal/conformal instability and surrogate indistinguishability, not missing blocks
+or non-finiteness. Same calendar exposure further reduces effective independence.
+
+Binding decision: static short-block universal-band evaluator work stops; no EcoMD-v2 scoring/training and V100s
+remain idle. Do not relax gates or reuse these instruments as confirmation. The next no-cost line is a separately
+frozen, exploratory regime-dependence decomposition of real-market dynamics, led by acf-squared and volume
+coupling. A publishable physical claim still needs a new macro-time or independent-data confirmation.
