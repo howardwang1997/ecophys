@@ -4,6 +4,7 @@ import numpy as np
 
 from ecomd.eval.evaluator_v2 import (
     SeriesBlock,
+    assess_declared_relation,
     assess_relation,
     build_nonoverlapping_blocks,
     deterministic_seed,
@@ -122,6 +123,21 @@ def test_relation_assessment_uses_paired_medians_and_pooled_iqr() -> None:
     )
     assert equivalent.median_effect_pooled_iqr_units == 0.0
     assert equivalent.passed
+
+
+def test_report_only_relation_never_enters_eligibility_algebra() -> None:
+    diagnostic = assess_declared_relation(
+        real=[0.1, 0.2],
+        controls=[[0.0, 0.1], [0.1, 0.2]],
+        declared_relation="report_no_eligibility_decision",
+        diagnostic_only=True,
+        minimum_direction_fraction=0.75,
+        minimum_abs_effect_iqr=0.5,
+        maximum_abs_equivalence_effect_iqr=0.5,
+    )
+    assert diagnostic["status"] == "diagnostic_only_no_eligibility_relation"
+    assert diagnostic["passed"] is None
+    assert diagnostic["replicates_per_block"] == 2
 
 
 def test_frozen_short_block_estimators_fail_closed_instead_of_adapting() -> None:

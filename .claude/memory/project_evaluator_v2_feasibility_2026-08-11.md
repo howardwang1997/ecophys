@@ -51,3 +51,8 @@ The runner requires clean HEAD equal to upstream, verifies all 80 raw file hashe
 and never parses sealed-2020 values. Synthetic tests deliberately confirm that unchanged L=120 aggregational
 Gaussianity and DFA can fail finite-sample requirements rather than being silently adapted. Pre-output validation:
 140 tests pass, Ruff passes, and strict mypy passes all 76 package modules.
+
+The first formal invocation from `71ed5a9b6` produced no artifact: diagnostic-only Zumbach's
+`report_no_eligibility_decision` string reached the eligibility relation parser. No values were printed or
+inspected. The execution-only fix keeps diagnostic real/control estimates, sets `passed: null`, and excludes them
+from eligibility as the original protocol requires; it has a direct regression test. No scientific rule changed.

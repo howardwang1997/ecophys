@@ -346,6 +346,46 @@ def assess_relation(
     )
 
 
+def assess_declared_relation(
+    real: Sequence[float],
+    controls: Sequence[Sequence[float]],
+    *,
+    declared_relation: str,
+    diagnostic_only: bool,
+    minimum_direction_fraction: float,
+    minimum_abs_effect_iqr: float,
+    maximum_abs_equivalence_effect_iqr: float,
+) -> dict[str, Any]:
+    """Keep report-only relations outside the eligibility relation algebra."""
+    if diagnostic_only:
+        if declared_relation != "report_no_eligibility_decision":
+            raise ValueError("diagnostic metric must declare report-only relation semantics")
+        real_values = _finite_sequence(real, "real")
+        control_values = [_finite_sequence(values, "controls") for values in controls]
+        if len(real_values) != len(control_values) or not real_values:
+            raise ValueError("diagnostic real/control block count mismatch")
+        replicate_counts = {len(values) for values in control_values}
+        if len(replicate_counts) != 1 or 0 in replicate_counts:
+            raise ValueError("diagnostic controls need equal positive replicate counts")
+        return {
+            "status": "diagnostic_only_no_eligibility_relation",
+            "declared_relation": declared_relation,
+            "paired_blocks": len(real_values),
+            "replicates_per_block": replicate_counts.pop(),
+            "passed": None,
+        }
+    if declared_relation not in {"real_higher", "real_lower", "equivalent"}:
+        raise ValueError(f"unknown eligibility relation: {declared_relation}")
+    return assess_relation(
+        real,
+        controls,
+        relation=cast(Relation, declared_relation),
+        minimum_direction_fraction=minimum_direction_fraction,
+        minimum_abs_effect_iqr=minimum_abs_effect_iqr,
+        maximum_abs_equivalence_effect_iqr=maximum_abs_equivalence_effect_iqr,
+    ).to_dict()
+
+
 def estimate_metric(name: str, block: SeriesBlock) -> float:
     """Compute one scalar under the unchanged legacy estimator semantics."""
     r = block.returns
@@ -545,11 +585,13 @@ def evaluate_feasibility(
                     for block_values in surrogate_values
                     for value in block_values
                 )
+                diagnostic_only = scope == "diagnostic_only_at_daily_frequency"
                 if surrogate_finite:
-                    relation_result = assess_relation(
+                    relation_result = assess_declared_relation(
                         _present(surrogate_real),
                         [_present(values) for values in surrogate_values],
-                        relation=cast(Relation, str(spec["relation"])),
+                        declared_relation=str(spec["relation"]),
+                        diagnostic_only=diagnostic_only,
                         minimum_direction_fraction=float(
                             eligibility["directional_relation_minimum_paired_block_fraction"]
                         ),
@@ -563,13 +605,12 @@ def evaluate_feasibility(
                                 "equivalence_maximum_abs_median_effect_in_pooled_iqr_units"
                             ]
                         ),
-                    ).to_dict()
+                    )
                 else:
                     relation_result = {
                         "status": "nonfinite_or_missing_original_or_surrogate_estimate",
-                        "passed": False,
+                        "passed": None if diagnostic_only else False,
                     }
-                diagnostic_only = scope == "diagnostic_only_at_daily_frequency"
                 primary_gate_used = length in primary_lengths and not diagnostic_only
                 gate_pass = bool(
                     primary_gate_used
@@ -701,6 +742,7 @@ __all__ = [
     "RelationResult",
     "SeriesBlock",
     "SplitSeries",
+    "assess_declared_relation",
     "assess_relation",
     "build_nonoverlapping_blocks",
     "deterministic_seed",
