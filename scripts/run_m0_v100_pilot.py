@@ -146,6 +146,12 @@ def _host_id() -> str:
     return hashlib.sha256(socket.gethostname().encode("utf-8")).hexdigest()[:16]
 
 
+def _is_v100_32gb(gpu: dict[str, Any]) -> bool:
+    name = str(gpu["name"]).upper()
+    supported_name = "V100" in name or "PG503-216" in name
+    return supported_name and float(gpu["total_memory_gib"]) >= 30.0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
@@ -185,11 +191,10 @@ def main() -> None:
     device = torch.device("cuda", args.device_index)
     torch.cuda.set_device(device)
     gpu = _gpu_metadata(device)
-    if "V100" not in str(gpu["name"]).upper():
-        raise RuntimeError(f"M0 pilot requires V100, got {gpu['name']!r}")
-    if float(gpu["total_memory_gib"]) < 30.0:
+    if not _is_v100_32gb(gpu):
         raise RuntimeError(
-            f"M0 pilot requires a 32 GB V100, got {gpu['total_memory_gib']:.2f} GiB"
+            "M0 pilot requires a 32 GB V100; got "
+            f"{gpu['name']!r} with {gpu['total_memory_gib']:.2f} GiB"
         )
 
     torch.use_deterministic_algorithms(True)

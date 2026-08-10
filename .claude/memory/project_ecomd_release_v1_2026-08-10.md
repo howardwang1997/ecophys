@@ -100,3 +100,7 @@ metadata:
   `0adb0ef6a5a3e9693e9b91fe301ab1ada19360a2b58de3bc0ec2173580937a88`). It compares 10 continuous iterations
   with exact 5+5 resume and hard-fails above 26 GiB reserved HBM or a 12-hour projected 600-iteration runtime.
   The first host must pass before the second host runs.
+- V100-A exposes the 32 GB GV100 card under the board string `Tesla PG503-216` (PCI device `10de:1df2`), not a
+  literal `V100` product string. The pilot hardware check explicitly accepts this deployed name plus standard
+  V100 names, and rejects 16 GB cards and H20. At the 2026-08-11 preflight it was idle with no compute process;
+  the separate Graphene 375 K queue was validation-locked with no release marker.

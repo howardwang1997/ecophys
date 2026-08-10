@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 from scripts.run_m0_cpu_feasibility import DEFAULT_CONFIG, _load_config
-from scripts.run_m0_v100_pilot import _pilot_config
+from scripts.run_m0_v100_pilot import _is_v100_32gb, _pilot_config
 
 PILOT_CONFIG_SHA256 = "0adb0ef6a5a3e9693e9b91fe301ab1ada19360a2b58de3bc0ec2173580937a88"
 
@@ -48,3 +48,13 @@ def test_v100_pilot_rejects_protocol_mutations(
     reference[section][key] = value
     with pytest.raises(ValueError, match=message):
         _pilot_config(reference)
+
+
+@pytest.mark.parametrize("name", ["Tesla V100-SXM2-32GB", "Tesla PG503-216"])
+def test_v100_pilot_accepts_deployed_v100_names(name: str) -> None:
+    assert _is_v100_32gb({"name": name, "total_memory_gib": 32.0})
+
+
+def test_v100_pilot_rejects_wrong_model_or_capacity() -> None:
+    assert not _is_v100_32gb({"name": "Tesla V100-SXM2-16GB", "total_memory_gib": 16.0})
+    assert not _is_v100_32gb({"name": "NVIDIA H20", "total_memory_gib": 96.0})
