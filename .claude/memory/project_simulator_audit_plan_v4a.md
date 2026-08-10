@@ -24,6 +24,9 @@ metadata:
 - The only immediately recoverable observation route is `aggregate_bin` with price choice P3. It remains
   AMBER until a preregistered machine-readable semantic contract accepts the scoped declaration and rejects
   dual-price, clock, unit, identity, latent/OFI and test-conditioned-latent defects before fitting.
+- Exp142 is the frozen CPU-only contract firewall protocol. It has three valid declarations, twelve isolated
+  semantic mutations, a no-fit-before-validation callback guard and a direct probe of the current adapter.
+  Passing enforces vocabulary only; it does not establish empirical mapping, identifiability or novelty.
 - Immediate resource cap before F0--F2: about 10 V100-equivalent hours and 1,150 CPU core-hours. The current
   two V100 32 GB hosts are sufficient and may also run CPU jobs. H20 is excluded. No purchase or expansion is
   unlocked before the corresponding gates.

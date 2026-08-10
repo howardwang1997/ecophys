@@ -143,7 +143,7 @@ queue-reactive、permutation、time-shift 和 surrogate。单位是独立日期/
 1. **已完成：**冻结 `ecomd_observation_map_spec_v0.md`，并完成现有 adapter 的静态字段审计；
 2. 写 machine-readable contract；重点拦截双 price、one-step/one-message clock、错误 volume/size
    单位、伪 order-ID、latent/OFI 混同和 test-conditioned latent；
-3. 预注册 E-A 的纯 synthetic validator gate；先写失败阈值，再实现；
+3. **已完成：**预注册 exp142 的纯 synthetic validator gate；实现与正式运行必须使用后续独立提交；
 4. 完成 A0 的 simulator-audit prior-art matrix，决定 F0；
 5. 只有 F0/F1 仍可行时，才预注册低成本 E-B screening；否则直接整理 EcoMD v1 software release。
 
