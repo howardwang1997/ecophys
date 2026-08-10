@@ -29,6 +29,13 @@ The two V100s remain idle. Formal acquisition must run from the exact clean/push
 directory. It fails closed if the expected annual shards or schema are missing, and its no-values manifest must
 be committed and bound before metric computation.
 
+Formal acquisition completed result-blind from clean/pushed commit `0de183067568d9201377e91bfb41992990e43bfd`.
+All 80 expected annual shards passed schema/provenance audit with no duplicate timestamps. The committed no-values
+manifest is `data/manifests/evaluator_v2_free_daily_2005_2024.json`; canonical payload SHA is
+`28560c599e9c63418732d34cee0ade29665e24eb75b5b5fc123435d0bc005666` and file SHA is
+`a6d46c595041cb37d587296dac841b20b8257edd36c0c5ae65bec112bf243eba`. Raw data are internal-only under
+`/private/tmp/ecophys-evaluator-v2-data-viDtFu`; no prices, returns or metric outputs were inspected before binding.
+
 ## Decision gate
 
 Do not design a new EcoMD score from this study unless real-data self-coverage and surrogate falsification both
