@@ -129,3 +129,8 @@ metadata:
   early/post/late reporting. No W-star or failed held-out transfer fails. Either post or late <=2/11 stops the
   positive-paper route; 3--4 is diagnostic-only; both >=5 plus <=10% late distance degradation merely authorizes
   multiseed/baseline/cross-market production. No checkpoint/rollout or new outcome was seen before this freeze.
+- The formal free `^GSPC` acquisition ran from clean `4a2332d62616` and produced ten audited 2015--2024 shards.
+  All annual byte hashes, row counts and timestamp ranges exactly match the historical cache, ruling out detected
+  revision/normalization drift. The committed no-value manifest SHA is `0836ddd279a16db5010907120e65da87db58a2f2634c25f0e732334a98ffff7c`;
+  train has 1,005 returns. Vendor bytes remain internal/untracked. Training must fail closed on manifest, physical
+  shard and derived train-return hashes before V100 allocation.
