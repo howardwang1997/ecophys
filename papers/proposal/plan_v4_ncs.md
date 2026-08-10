@@ -362,8 +362,8 @@ KKT/complementarity gate、解析 Hessian、无 fallback 的 active-set Newton�
 rate_zero)` 与 `(8,1,positive)` 在 `2.99e-10`/`2.45e-10` 停滞，故 convergence 及依赖 32/32 双起点
 合格的 robustness gate 失败，正式为 **7/9、整体 FAIL**。两点均因 Armijo 缩步后 candidate 参数
 bit-identical 而零位移重复 8 次，并非 Hessian 病态。完整结果见
-`experiments/140_hawkes_active_set_newton/RESULTS.md`；只修 software stagnation guard，不重跑或追加
-exp141，把工作重心转回 G0/G3。
+`experiments/140_hawkes_active_set_newton/RESULTS.md`；post-result software guard 已使 bit-identical
+candidate 立即以 stagnation 退出，未重跑 exp140，也不追加 exp141，工作重心转回 G0/G3。
 
 **数据。** 先用生成的 event streams 和免费 LOBSTER/Tardis 样本做 schema、reconstruction 与
 recovery；G2 通过后才解锁付费 L2 的训练 split。真实测试 split 在预注册后保持封存。
@@ -658,8 +658,8 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
    门槛。exp139 training-only/generated optimizer/KKT repair 已完成，真实 120/120 targets 收敛，但
    两个 direct-reference generated fits 未过更严格的 `1e-8`，因此按冻结规则仍为 8/9、整体 FAIL。
    exp140 已按该协议完成但正式为 7/9、整体 FAIL：62/64 endpoints 合格，两个 float64 零位移停滞点
-   未过 `1e-10`，不得放宽或重写结论。修复 software stagnation reporting 后停止 solver chase，下一步
-   回到 frozen EcoMD-to-message map 与独立未见日期/市场。此前不采购 L2，也不把当前正向
+   未过 `1e-10`，不得放宽或重写结论。software stagnation reporting 已加回归 guard，且未重跑；停止
+   solver chase，下一步回到 frozen EcoMD-to-message map 与独立未见日期/市场。此前不采购 L2，也不把当前正向
    queue-control 信号写成外部确认；
 10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
    `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后

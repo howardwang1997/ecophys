@@ -109,7 +109,7 @@ contains no real data, EcoMD latent or market-physics evidence. The practical di
 `1e-10`, far below exp139's already passed `1e-5` real-fit requirement, so another formal optimizer chase would
 have negligible scientific value and would distract from the load-bearing NCS blockers.
 
-The immediate software action is a tested zero-displacement/stagnation guard, recorded after this immutable
+The post-result software now has a tested zero-displacement/stagnation guard, recorded after this immutable
 formal artifact without rerunning exp140. The research program then returns to G0 method novelty and G3's
 frozen EcoMD-to-message semantics plus genuinely unseen dates/markets. Paid L2 remains locked, and exp138's
 exposed test split remains ineligible for confirmation.

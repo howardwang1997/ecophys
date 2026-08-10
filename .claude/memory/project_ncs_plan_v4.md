@@ -82,5 +82,5 @@ metadata:
   and the derived 32/32 dual-start gate. Both are float64 Armijo stagnation: after 23--25 backtracks the candidate
   parameters were bit-identical, yet the frozen implementation accepted eight zero-displacement steps. Median
   KKT was `3.17e-15`, maximum start gap `2.22e-16`, algebraic objective error `3.33e-16`, and Hessian condition
-  numbers were below 8. Preserve the FAIL, add a software stagnation guard without rerunning, and stop formal
-  solver chasing; G0/G3 are higher-value blockers.
+  numbers were below 8. Preserve the FAIL. A post-result regression guard now rejects bit-identical candidates
+  immediately without rerunning exp140; formal solver chasing stops because G0/G3 are higher-value blockers.

@@ -248,6 +248,32 @@ def test_active_set_newton_reaches_bound_constrained_kkt() -> None:
     assert all(iteration.armijo_satisfied for iteration in accepted)
 
 
+def test_active_set_newton_rejects_bit_identical_candidate() -> None:
+    def objective(values: FloatArray) -> tuple[float, FloatArray, FloatArray]:
+        return (
+            1.0,
+            np.full_like(values, 1e-20),
+            np.eye(values.size, dtype=np.float64),
+        )
+
+    result = run_active_set_newton(
+        objective,
+        np.asarray((1.0,), dtype=np.float64),
+        np.asarray((0.0,), dtype=np.float64),
+        maxiter=8,
+        stop_kkt=1e-25,
+        active_tolerance=1e-12,
+        armijo_constant=1e-4,
+        backtrack_factor=0.5,
+        max_line_search_trials=60,
+    )
+    assert not result.success
+    assert result.message == "Newton candidate is bit-identical at float precision"
+    assert len(result.trace) == 1
+    assert result.trace[0].armijo_satisfied is False
+    assert result.trace[0].line_search_trials == 1
+
+
 def test_lbfgsb_stage_recomputes_projected_kkt() -> None:
     def objective(values: FloatArray) -> tuple[float, FloatArray]:
         difference = values - np.asarray((2.0, -1.0), dtype=np.float64)

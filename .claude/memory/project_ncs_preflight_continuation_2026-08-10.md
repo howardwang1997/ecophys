@@ -148,5 +148,6 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
   were `2.22e-16`/`0`; algebraic objective and gradient errors were `3.33e-16` and `4.37e-16`.
 - The two failures are a diagnosed float64 line-search stagnation, not ill conditioning: condition numbers were
   about 6.7--7.0, but backtracking reached bit-identical candidates and recorded eight zero-displacement steps.
-  Preserve the formal FAIL. Add a tested stagnation guard for honest software behavior, do not rerun exp140 or
-  start exp141, and redirect effort to G0 novelty and G3 semantics/unseen data.
+  Preserve the formal FAIL. A post-result regression guard now rejects bit-identical candidates immediately for
+  honest software behavior; exp140 was not rerun, exp141 will not be started, and effort returns to G0 novelty
+  and G3 semantics/unseen data.

@@ -760,11 +760,15 @@ def run_active_set_newton(
             return finish("Newton direction has no positive feasible step", False)
 
         accepted = False
+        stagnated = False
         trials = 0
         candidate = values.copy()
         for trial in range(1, max_line_search_trials + 1):
             trials = trial
             candidate = np.maximum(values + step * direction, lower)
+            if np.array_equal(candidate, values):
+                stagnated = True
+                break
             candidate_value, candidate_gradient, candidate_hessian, _ = evaluate(candidate)
             if (
                 np.isfinite(candidate_value)
@@ -786,6 +790,8 @@ def run_active_set_newton(
             directional_derivative=directional,
             armijo_satisfied=accepted,
         )
+        if stagnated:
+            return finish("Newton candidate is bit-identical at float precision", False)
         if not accepted:
             return finish("Armijo line search failed", False)
         values = candidate
