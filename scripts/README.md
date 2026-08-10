@@ -38,6 +38,18 @@ The M0 feasibility command uses the frozen reference architecture with only the
 pre-registered CPU overrides (`n_agents=64`, `n_iters=2`). It compares continuous
 training against exact interrupt/resume and does not measure market fidelity.
 
+After that clean CPU report passes, validate and run the fixed first-host V100 pilot:
+
+```bash
+conda run -n ecophys python scripts/run_m0_v100_pilot.py --validate-only
+conda run -n ecophys python scripts/run_m0_v100_pilot.py \
+  --require-clean --output /tmp/ecomd-m0-v100.json
+```
+
+The pilot uses the full `N=256` reference model and compares 10 uninterrupted
+iterations with an exact 5+5 interrupt/resume. It is a capacity/reproducibility
+gate, not a fidelity experiment.
+
 Production training configurations intended for a future checkpoint release must include
 `training.release_contract_version: 1`. The loader then hard-fails unless complete and
 persistent state is enabled and legacy training/inference-law shortcuts are disabled.

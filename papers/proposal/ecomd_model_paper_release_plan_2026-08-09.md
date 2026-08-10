@@ -7,6 +7,8 @@ simulator-audit F0 均未通过后，本计划成为当前主线。详细发布�
 M0 的唯一模型与 implementation-before-results 合同已预先固定在
 `ecomd_v1_m0_freeze_2026-08-11.md`。其中新增的 Kac normalization 与 aggregate-demand scale
 contract 是进入 V100 前的硬门，不是可按结果开关的 ablation。
+`8951208ffd2f` 的 clean CPU gate 已通过全状态/RNG/optimizer/trajectory exact-resume 检查；
+当前下一门是第一台 V100 的固定 10-iteration FP32 pilot，而不是直接开始多 seed sweep。
 
 ## 1. 为什么不能现在直接发布
 

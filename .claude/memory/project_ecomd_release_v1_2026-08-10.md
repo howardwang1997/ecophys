@@ -91,5 +91,12 @@ metadata:
   fixed square-root impact. The model has 36,541 parameters. Long-rollout regularization is disabled.
 - Kac/full-neighbour tests now lock dense-vs-stochastic energy and force equality. The stochastic estimator also
   scales by the actual sampled partner count when N is smaller than configured k, removing a small-N bias.
-- A dirty-worktree debug run of the production trainer passed the data-free CPU exact-resume gate in about 5.8
-  seconds. It is diagnostic only. A clean committed-SHA report remains required before either V100 starts.
+- A formal clean-worktree run on implementation commit `8951208ffd2f83e044a1094b5b98b206c9e839bb` passed
+  the production-trainer CPU gate in 6.85 seconds. Model, optimizer, complete dynamic state/RNG, history and an
+  eight-step continuation are bit-exact; 18 parameter tensors have finite nonzero gradients. Report:
+  `release/verification/8951208ffd2f-m0-cpu.json`. This authorizes only the fixed 10-iteration V100 pilot, not
+  market-fidelity or physics claims.
+- The V100 runner fixes the effective pilot to N=256, 10 iterations, chunk 64 and FP32 (effective config SHA
+  `0adb0ef6a5a3e9693e9b91fe301ab1ada19360a2b58de3bc0ec2173580937a88`). It compares 10 continuous iterations
+  with exact 5+5 resume and hard-fails above 26 GiB reserved HBM or a 12-hour projected 600-iteration runtime.
+  The first host must pass before the second host runs.

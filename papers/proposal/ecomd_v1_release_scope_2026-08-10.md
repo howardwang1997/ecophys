@@ -39,18 +39,18 @@ post-stationarity 结果、基线与消融结果。旧 checkpoint 不得重命�
 | R1 状态/定律 | 主训练、regularizer、inference 使用同一 forward law 和完整状态；exact resume 测试 | **代码 PASS，checkpoint FAIL**：仓库 76 tests、artifact 27 tests 均通过；旧 checkpoint 不合格 | 冻结新配置后从零重训 |
 | R2 包安装 | committed tree 构建 wheel；隔离路径安装和 import/run 成功；core strict mypy | **PASS**：两个独立源码目录生成同一 wheel；隔离 import/smoke 通过；strict mypy 对 66 个模块为 0 errors | 保持回归；342 条全包 Ruff 历史债务单列，不伪装成新错误 |
 | R3 数据无关 smoke | CPU 生成有限 trajectory、梯度、任意 chunk、checkpoint round trip | **PASS**：35 个 finite nonzero gradient params；chunk/resume bit-exact；报告已归档 | 保持回归测试 |
-| R4 V100 reference | 冻结 config 在一张 V100 32 GB 训练/恢复/rollout；第二台独立复现 | **未启动**；旧 exp127 只证明容量足够 | R0--R3 与配置冻结后才排队 |
+| R4 V100 reference | 冻结 config 在一张 V100 32 GB 训练/恢复/rollout；第二台独立复现 | **CPU gate PASS / V100 待启动**：clean `8951208ffd2f` 的完整状态恢复与后续轨迹 bit-exact | 先跑第一台固定 10-iteration pilot，通过后再用第二台 |
 | R5 stationary fidelity | 预注册 gate 后固定窗口，early/post-gate/late 全报告，多 seed | **FAIL**：旧 exp127 late-time 约 1--2/11 | 若新模型仍失败，停止正面 model-paper claim |
 | R6 论文证据 | 强基线、关键消融、时间外/市场外/频率外、梯度效用、规模曲线 | **未开始** | R5 通过后扩展数据和算力 |
 
 ## 4. M0：要冻结的模型规格
 
-2026-08-11 的 implementation 前冻结见 `ecomd_v1_m0_freeze_2026-08-11.md`；它先固定 Kac/需求
-尺度归一化、唯一 active modules、数据切分、CPU/V100 gates 和停止规则，再允许实现或运行。
+2026-08-11 的 implementation 前冻结见 `ecomd_v1_m0_freeze_2026-08-11.md`，可执行唯一配置为
+`configs/ecomd_v1/m0_reference.yaml`。它固定 Kac/需求尺度归一化、唯一 active modules、数据切分、
+CPU/V100 gates 和停止规则。clean implementation commit `8951208ffd2f` 的 data-free CPU gate 已通过；
+报告为 `release/verification/8951208ffd2f-m0-cpu.json`。这只是机械可行性证据，不是市场 fidelity。
 
-冻结前不再把历史配置中的模块并列写成“EcoMD v1”。候选方向是 exp127 使用的
-`stochastic_mlp` 交互、两类 agent、global state 和 excess-demand price path，但它只是候选，不是
-最终 canonical architecture。冻结配置必须：
+历史配置中未启用的模块不再并列写成“EcoMD v1”。冻结配置：
 
 1. 显式写 `release_contract_version: 1`、`state_complete: true`、
    `persistent_state: true`；
@@ -100,9 +100,9 @@ post-stationarity 结果、基线与消融结果。旧 checkpoint 不得重命�
 
 1. **E-R0（完成）**：构建 allow-listed source preview，扫描 forbidden suffix/path，记录 SHA-256；
 2. **E-R2（完成）**：从 wheel 隔离安装，运行 data-free CPU trajectory 与完整状态 checkpoint round trip；
-3. **E-M0（当前）**：比较候选 canonical modules，产出唯一冻结 config，不做真实数据调参；
-4. **E-M1-pilot**：CPU/tiny-N 只验证新训练路径、loss/gradient/stationarity 程序能跑通；
-5. **E-M1-V100**：冻结后在一张 V100 做短 pilot，预算通过后再训练；第二张做独立复现；
+3. **E-M0（完成）**：唯一 config、Kac/actual-k 实现、生产训练路径 CPU gate 和 exact resume 已通过；
+4. **E-M1-V100（当前）**：在第一张 V100 做固定 10-iteration FP32 pilot，记录显存、速度与恢复；
+5. **E-M1-host-repeat**：第一台通过后，第二台做同配置独立复现；
 6. 只有 stationary gate 通过，才启动基线、消融、跨市场和论文主结果。
 
 停止规则：若 state-complete 重训在冻结 post-gate 指标上仍接近旧结果（约 1--2/11），EcoMD 可以
