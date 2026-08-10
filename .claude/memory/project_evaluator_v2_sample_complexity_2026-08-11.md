@@ -20,3 +20,15 @@ Implementation is in `ecomd/eval/synthetic_dgps.py` and
 volatility-memory, leverage and volume-coupling structures. A reduced full matrix exercises every metric, length,
 signal/null and diagnostic branch. Pre-output validation: 146 tests pass, strict mypy passes 77 package modules,
 and Ruff passes. The formal runner requires clean HEAD equal to upstream and verifies the source evaluator result.
+
+Formal result: `results/evaluator_v2/sample_complexity_v1.json`, clean/pushed commit `3fe5a5eed`, canonical SHA
+`376eeca24355e0d5ce1eebc0cb4b67ebcf3962019da651aa5de7c8a48881a183`, file SHA
+`d1f920f300711bf5118c34de0c4f787f0cd79c2700dd0ab1c2a74e899f9ca73a`, CPU runtime 129.90 s/no GPU.
+Frozen-fixture minima: autocorr/acf-squared/volume 120; aggregation 180; conditional/skew 240; Hill/DFA/leverage
+500; Fano 2000; Zumbach diagnostic. All minima and longer grid cells pass signal/null with complete 64×8 data.
+
+Reviewer constraint: these are optimistic strong-signal DGP detectability floors, not universal sample complexity or
+market evidence. Real feasibility-v1 FAIL remains binding. Four-role non-overlap requires about 16N observations:
+N500 needs ~31.7 years and N2000 ~127 years per market. Near-term fresh-market P0 is acf-squared, volume coupling
+and aggregation; conditional/skew remain falsification targets, long-N metrics depend on coverage, and Fano exits
+the per-market near-term set.
