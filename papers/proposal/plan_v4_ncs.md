@@ -31,8 +31,10 @@ starts 均达到 `1e-5`，但 16 个 direct-Hawkes generated references 中 2 �
 超过更严格的 `1e-8` reference gate，故正式结果仍为 **8/9 gates、整体 FAIL**。combined generated
 fits 全部达到 `1e-7`，最大 objective gap 仅 `1.79e-14`，说明失败局限于 reference solver 的边界
 精度；它不能改写冻结结论，也不能把 exp138 已查看的 test split 变回独立确认数据。
-exp140 已在 `6d3940b9` 预注册一个只用 fresh generated seeds 的 analytic-Hessian active-set Newton
-reference gate；已见 exp139 streams 只作为 solver development，formal root `140202608` 尚未生成。
+exp140 随后在 `6d3940b9` 预注册、以 `1312b5be` 完成只用 fresh generated seeds 的 analytic-Hessian
+active-set Newton reference gate，但正式结果仍为 **7/9、整体 FAIL**：62/64 endpoints 达到 `1e-10`，
+两个 float64/Armijo 停滞点为 `2.45e-10`/`2.99e-10`，使 convergence 和 dual-start gates 失败。代数
+等价误差仅 `3.33e-16`，Hessian 条件数小于 8；不再为这一数值精度追加 formal solver chase。
 
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
 
@@ -354,11 +356,14 @@ targets 及 240/240 starts 达到 `1e-5`，最大 selected KKT `8.91e-7`、最�
 `experiments/139_queue_hawkes_optimizer_kkt/RESULTS.md`。下一次 numerical gate 必须使用新预注册的
 solver family 与 fresh generated seeds，付费数据状态不变。
 
-exp140 已在实现前冻结：16 条 fresh generated streams、两种固定 starts、`1e-10` projected-KKT/
-complementarity gate、解析 Hessian、无 fallback 的 active-set Newton、代数 parameterization identity 和
-cross-node anchor。开发仅使用已经暴露的 exp139 generated endpoints；独立 smoke root `140202610`
-达到最坏 KKT `6.87e-12`、最大 start gap `2.22e-16` 和最大等价 objective error `2.22e-16`。这些只是
-execution evidence；formal root `140202608` 必须由 clean implementation commit 首次生成。
+exp140 已在实现前冻结并完成：16 条 fresh generated streams、两种固定 starts、`1e-10` projected-
+KKT/complementarity gate、解析 Hessian、无 fallback 的 active-set Newton、代数 parameterization identity
+和 cross-node anchor。62/64 endpoints 合格，median KKT `3.17e-15`；replicate/target/start `(5,1,
+rate_zero)` 与 `(8,1,positive)` 在 `2.99e-10`/`2.45e-10` 停滞，故 convergence 及依赖 32/32 双起点
+合格的 robustness gate 失败，正式为 **7/9、整体 FAIL**。两点均因 Armijo 缩步后 candidate 参数
+bit-identical 而零位移重复 8 次，并非 Hessian 病态。完整结果见
+`experiments/140_hawkes_active_set_newton/RESULTS.md`；只修 software stagnation guard，不重跑或追加
+exp141，把工作重心转回 G0/G3。
 
 **数据。** 先用生成的 event streams 和免费 LOBSTER/Tardis 样本做 schema、reconstruction 与
 recovery；G2 通过后才解锁付费 L2 的训练 split。真实测试 split 在预注册后保持封存。
@@ -652,10 +657,10 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
    point-process 与 timestamp/sign audit，8/9 gates 通过；19/20 combined real cells 未达到冻结优化器
    门槛。exp139 training-only/generated optimizer/KKT repair 已完成，真实 120/120 targets 收敛，但
    两个 direct-reference generated fits 未过更严格的 `1e-8`，因此按冻结规则仍为 8/9、整体 FAIL。
-   exp140 已在 `6d3940b9` 用 analytic-Hessian active-set Newton、`1e-10` gate 和 fresh formal root
-   `140202608` 单独预注册；当前仅独立 smoke 通过，formal 尚未启动。即便 formal 通过，也只能在
-   独立未见日期/市场上做 empirical confirmation。此前不采购 L2，也不把当前正向 queue-control
-   信号写成外部确认；
+   exp140 已按该协议完成但正式为 7/9、整体 FAIL：62/64 endpoints 合格，两个 float64 零位移停滞点
+   未过 `1e-10`，不得放宽或重写结论。修复 software stagnation reporting 后停止 solver chase，下一步
+   回到 frozen EcoMD-to-message map 与独立未见日期/市场。此前不采购 L2，也不把当前正向
+   queue-control 信号写成外部确认；
 10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
    `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后
    再排 canonical re-benchmark，且不抢占其他正式任务；

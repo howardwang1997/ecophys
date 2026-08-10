@@ -75,9 +75,12 @@ metadata:
   above their stricter `1e-8` gate. This is a reference-solver boundary failure, but the frozen FAIL stands.
   Another numerical gate needs a separately preregistered solver family and fresh generated seeds; exp138's
   exposed test split remains ineligible for confirmation.
-- Exp140 is preregistered at `6d3940b9` to test only that missing numerical component with 16 fresh generated
-  streams, two fixed starts, an analytic-Hessian active-set Newton polish, `1e-10` KKT/complementarity gates and
-  an algebraic direct/intercept-only identity check. A disclosed development prototype used only exp139's
-  already exposed generated endpoints. Separate-root smoke reached maximum KKT `6.87e-12`, maximum start gap
-  `2.22e-16` and objective-identity error `2.22e-16`; formal root `140202608` remains ungenerated until a clean
-  implementation commit is launched. Even a PASS closes only the numerical reference sub-blocker.
+- Exp140 was preregistered at `6d3940b9` and run from clean `1312b5be` on 16 fresh generated streams with two
+  fixed starts, analytic-Hessian active-set Newton, `1e-10` KKT/complementarity gates and an algebraic direct/
+  intercept-only identity check. It formally **FAILS 7/9 gates**: 62/64 endpoints qualified, but `(replicate,
+  target,start)=(5,1,rate_zero)` and `(8,1,positive)` stopped at `2.99e-10` and `2.45e-10`, failing convergence
+  and the derived 32/32 dual-start gate. Both are float64 Armijo stagnation: after 23--25 backtracks the candidate
+  parameters were bit-identical, yet the frozen implementation accepted eight zero-displacement steps. Median
+  KKT was `3.17e-15`, maximum start gap `2.22e-16`, algebraic objective error `3.33e-16`, and Hessian condition
+  numbers were below 8. Preserve the FAIL, add a software stagnation guard without rerunning, and stop formal
+  solver chasing; G0/G3 are higher-value blockers.

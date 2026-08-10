@@ -126,7 +126,7 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
   the formal decision into PASS. Any new numerical gate needs a separately preregistered solver family and
   fresh generated seeds; real empirical confirmation still requires unseen dates or markets.
 
-## Exp140 independent reference solver — formal pending
+## Exp140 independent reference solver — formal FAIL (7/9)
 
 - A temporary development prototype used only exp139's eight already exposed generated streams. One analytic-
   Hessian Newton step reduced all 16 direct-reference projected residuals to at most `4.39e-15`, with objective
@@ -138,4 +138,15 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
 - The separate-root dirty smoke passed execution diagnostics: 8/8 endpoints qualified, maximum projected KKT
   `6.87e-12`, maximum complementarity `4.72e-13`, maximum start gap `2.22e-16`, objective-identity error
   `2.22e-16`, gradient-chain error `5.23e-17` and identical anchors. Twenty-five focused observation tests,
-  Ruff and bounded strict mypy pass. Formal execution awaits a clean implementation commit.
+  Ruff and bounded strict mypy passed before clean implementation commit `1312b5be`.
+- Both clean formal CPU-only shards completed in 3.85/3.77 worker seconds with CUDA hidden. Shard hashes are
+  `c1d7f0ed...a69f5` and `598b7510...14719`; merged hash is `7216af08...32871`, and a second merge was
+  byte-identical. Shared anchor hash `108bc914...748c` matched across nodes.
+- Exp140 formally **FAILS 7/9 gates**. 62/64 endpoints met `1e-10`, with median KKT `3.17e-15`, but
+  `(5,1,rate_zero)` and `(8,1,positive)` stopped at `2.99e-10` and `2.45e-10`. Thus all-endpoint convergence and
+  the derived 32/32 dual-start gate failed. Maximum complementarity was `5.14e-11`; maximum/median start gaps
+  were `2.22e-16`/`0`; algebraic objective and gradient errors were `3.33e-16` and `4.37e-16`.
+- The two failures are a diagnosed float64 line-search stagnation, not ill conditioning: condition numbers were
+  about 6.7--7.0, but backtracking reached bit-identical candidates and recorded eight zero-displacement steps.
+  Preserve the formal FAIL. Add a tested stagnation guard for honest software behavior, do not rerun exp140 or
+  start exp141, and redirect effort to G0 novelty and G3 semantics/unseen data.
