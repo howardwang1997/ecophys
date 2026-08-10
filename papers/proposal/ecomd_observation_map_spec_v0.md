@@ -200,6 +200,24 @@ removal/execution rows referenced an earlier ID.
 
 This PASS does not reverse the field-audit FAIL. It makes the support boundary executable: the current adapter
 is accepted only as `synthetic_fixture`, while `aggregate_bin` + P3 is accepted as a prospective declaration.
-F1 remains AMBER until that aggregate-bin measurement object, train-only calibration and exact reconstruction
-are implemented and tested under a separate preregistration. Result:
+The then-pending measurement implementation was delegated to exp143. Result:
 `experiments/142_observation_semantic_contract/RESULTS.md`.
+
+## 12. Exp143 aggregate-bin P3 outcome
+
+Exp143 was preregistered at commit `6d56a0b4`, implemented at clean commit `2b54170e`, and formally run once.
+All ten gates passed. The runner reconstructed 4,096 bins from 104,160 generated aggregate rows, including
+14,268 timestamp ties. Six-mark counts and executed share volume were exact; maximum return error against the
+independent generated reference was `1.70e-16`; monolithic/chunk/checkpoint outputs were bit-exact.
+
+The train-only fit was unchanged byte-for-byte after every held-out response was corrupted, while a training
+perturbation changed its hash. In the self-generated control only, latent/observation-only RMSE ratios were
+0.313 (return) and 0.437 (log volume), directional gain was 0.100 nats/event, and the anchored sign beat the
+unrefitted flipped sign by 0.457 nats/event. These are correct-specification plumbing values, not empirical
+market results. The factor-seven gauge passed and the fit serializes
+`COEFFICIENTS_CONDITIONAL_ON_FROZEN_LATENT_SCALE`.
+
+F1 is now PASS only for the synthetic implementation/semantics of `aggregate_bin` + P3 under unconditional
+train-calibrated simulation. `aggregate_event` and `individual_order` support remain FAIL, and any real
+predictive claim remains entirely gated by F4 on genuinely unseen panels. Result:
+`experiments/143_aggregate_bin_p3/RESULTS.md`.

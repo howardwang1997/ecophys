@@ -37,6 +37,12 @@ metadata:
   streaming/checkpoint parity, generated P3 return/volume/direction recovery, held-out-corruption invariance,
   observation-only/sign-flip controls and an explicit latent-scale gauge. Formal root is `143202608`; no real
   archive or current event adapter is permitted.
+- Exp143 formally PASSed 10/10 once from clean implementation `2b54170e` (result JSON SHA-256
+  `f1c34143...f1bf0`). It reconstructed 4,096 bins from 104,160 generated rows with exact integer aggregates
+  and `1.70e-16` maximum return error. Held-out corruption left the fit exact; training corruption changed it.
+- F1 is therefore PASS only for synthetic implementation/semantics of aggregate-bin P3. Event/order support
+  remains FAIL and real predictive evidence remains F4. The self-generated RMSE/likelihood gains are plumbing,
+  not market evidence. Next gate is F0 prior-art closure before E-B or any resource expansion.
 - Immediate resource cap before F0--F2: about 10 V100-equivalent hours and 1,150 CPU core-hours. The current
   two V100 32 GB hosts are sufficient and may also run CPU jobs. H20 is excluded. No purchase or expansion is
   unlocked before the corresponding gates.
