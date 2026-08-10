@@ -21,8 +21,11 @@ bit-exact，耗时 16.81 秒。exp134--137 依次通过最小 aggregate-L2 recov
 misspecification/observation-only stress、state-complete EcoMD adapter，以及带 queue depletion、price
 move、20% censoring、queue-reactive 和 discrete marked-Hawkes-logit 对照的动态桥测试；变量已迁移为
 `latent_flow_alignment`。exp137 使用两台 V100 主机的 CPU 在 64 条流、256 万事件上通过 9/9 硬
-gate，但仍没有连续时间 point-process likelihood 或真实市场验证。exp128--137 均是零采购 preflight，
-不构成 confirmatory evidence，G3 不升级。
+gate。exp138 随后把外部 LOBSTER 方向/时间戳审计与真正的连续时间 queue--Hawkes likelihood 接入
+264 万条免费消息；synthetic recovery、无前视、模型嵌套、错位 queue control 和 tie-policy 稳健性
+均通过，但 combined queue--Hawkes 的 20 个 real cells 中 19 个没有达到冻结的优化器收敛标准，故
+正式结果为 **8/9 gates、整体 FAIL**。exp128--138 均是零采购 preflight，不构成 confirmatory
+evidence，G3 不升级，付费 L2 继续锁定。
 
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
 
@@ -324,6 +327,16 @@ continuous-time Hawkes likelihood，且消息仍由 evaluator 能表示的合成
 后采用确定性 queue reset。真实 L2 的外部 timestamp/sign anchor、out-of-family holdout、连续时间
 point-process 和 individual-order semantics 仍未完成，G3 不升级，付费数据不解锁。
 
+exp138 又在五条非重复免费 LOBSTER 样本流（2,641,557 条外部消息）上实现了六类 mark、两个确定性
+timestamp-tie policies、full multiscale Hawkes、queue-reactive 与 combined queue--Hawkes 的精确连续
+时间 likelihood。八个生成 Hawkes controls、外部 sign/schema、严格时间切分、row-`i-1` queue
+features、训练 nesting、错位 queue control 和 tie-policy robustness 均通过。两种 policy 下
+aligned-minus-shifted 的跨股票中位数分别为 `0.003731` 与 `0.003913` nats/event，5/5 股票均为正；
+但 aligned combined fits 为 0/10 收敛、shifted 为 1/10 收敛，失败 cells 的最终梯度远高于冻结的
+`1e-5` fallback，因此 exp138 按预注册判为 **FAIL**，这些似然差只能作为诊断信号。任何 numerical
+repair 必须新预注册，并只能在 generated/development 或 training-only 数据上开发；已经查看的 test
+split 不能再充当独立确认。完整结果见 `experiments/138_external_continuous_time_baselines/RESULTS.md`。
+
 **数据。** 先用生成的 event streams 和免费 LOBSTER/Tardis 样本做 schema、reconstruction 与
 recovery；G2 通过后才解锁付费 L2 的训练 split。真实测试 split 在预注册后保持封存。
 
@@ -612,8 +625,10 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
 9. **动态合成 observation preflight 已完成：** `ofi -> latent_flow_alignment` 迁移和
    backward-compatible artifact alias 已完成；exp134 recovery、exp135 misspecification/
    observation-only stress、exp136 state-complete EcoMD adapter 与 exp137 dynamic queue/price stress 全
-   gate 通过。下一步必须另行冻结外部免费消息、连续时间 marked point-process、timestamp/sign audit
-   与 out-of-family holdout 协议；完成前不采购 L2，也不把结构 sign convention 写成外部验证；
+   gate 通过。**外部 baseline preflight 已完成但失败：** exp138 接入免费外部消息、连续时间 marked
+   point-process 与 timestamp/sign audit，8/9 gates 通过；19/20 combined real cells 未达到冻结优化器
+   门槛。下一步只允许新预注册的 training-only/generated optimizer/KKT repair，随后才可在独立未见
+   日期/市场上确认；此前不采购 L2，也不把当前正向 queue-control 信号写成外部确认；
 10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
    `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后
    再排 canonical re-benchmark，且不抢占其他正式任务；
