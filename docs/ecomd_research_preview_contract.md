@@ -63,6 +63,8 @@ semantics. Those require a separate generative mechanism and validation target.
 The source preview is built from an explicit allow-list. It excludes all checkpoints,
 experiment outputs, raw/derived market data, vendor archives, secrets, and the bulk research
 history. A tag or archive of the current research monorepo is not a valid release artifact.
+Wheel builds used for hash comparison must run in independent extracted source directories;
+setuptools uses a source-local `build/` directory and concurrent builds in one tree can race.
 
 ## Hardware boundary
 
