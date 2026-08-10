@@ -125,3 +125,17 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
   all six refinement stages. This localizes the failure to strict reference-solver convergence but cannot turn
   the formal decision into PASS. Any new numerical gate needs a separately preregistered solver family and
   fresh generated seeds; real empirical confirmation still requires unseen dates or markets.
+
+## Exp140 independent reference solver — formal pending
+
+- A temporary development prototype used only exp139's eight already exposed generated streams. One analytic-
+  Hessian Newton step reduced all 16 direct-reference projected residuals to at most `4.39e-15`, with objective
+  changes at most `1.33e-15`. No future formal stream or real data was inspected.
+- Exp140 was preregistered at `6d3940b9` before implementation and before generating root `140202608`. It freezes
+  16 new two-mark Hawkes streams, two starts, an L-BFGS-B warm stage, at most eight no-fallback active-set Newton
+  steps, `1e-10` KKT/complementarity gates, analytic gradient/Hessian checks, algebraic direct/intercept-only
+  identity, cross-node determinism and complete reporting. It opens no real archive.
+- The separate-root dirty smoke passed execution diagnostics: 8/8 endpoints qualified, maximum projected KKT
+  `6.87e-12`, maximum complementarity `4.72e-13`, maximum start gap `2.22e-16`, objective-identity error
+  `2.22e-16`, gradient-chain error `5.23e-17` and identical anchors. Twenty-five focused observation tests,
+  Ruff and bounded strict mypy pass. Formal execution awaits a clean implementation commit.

@@ -17,6 +17,7 @@ IntArray: TypeAlias = NDArray[np.int64]
 TimestampPolicy: TypeAlias = Literal["nextafter", "capped_uniform"]
 BaseKind: TypeAlias = Literal["constant", "loglinear"]
 Objective: TypeAlias = Callable[[FloatArray], tuple[float, FloatArray]]
+HessianObjective: TypeAlias = Callable[[FloatArray], tuple[float, FloatArray, FloatArray]]
 Bound: TypeAlias = tuple[float | None, float | None]
 
 LOBSTER_MARK_NAMES = (
@@ -74,6 +75,36 @@ class OptimizerStageResult:
     complementarity_inf_norm: float
     active_bounds: int
     message: str
+
+
+@dataclass(frozen=True)
+class NewtonIterationResult:
+    index: int
+    parameters: FloatArray
+    objective: float
+    raw_gradient_inf_norm: float
+    projected_gradient_inf_norm: float
+    complementarity_inf_norm: float
+    active_bounds: int
+    hessian_condition_number: float
+    hessian_minimum_eigenvalue: float
+    step_size: float | None
+    line_search_trials: int
+    directional_derivative: float | None
+    armijo_satisfied: bool | None
+
+
+@dataclass(frozen=True)
+class ActiveSetNewtonResult:
+    parameters: FloatArray
+    objective: float
+    success: bool
+    message: str
+    raw_gradient_inf_norm: float
+    projected_gradient_inf_norm: float
+    complementarity_inf_norm: float
+    active_bounds: int
+    trace: tuple[NewtonIterationResult, ...]
 
 
 @dataclass(frozen=True)
@@ -339,6 +370,34 @@ def hawkes_objective_gradient(
     return objective, gradient
 
 
+def hawkes_objective_gradient_hessian(
+    parameters: FloatArray,
+    event_features: FloatArray,
+    integrated_features: FloatArray,
+    duration: float,
+    normalizer: int,
+) -> tuple[float, FloatArray, FloatArray]:
+    """Negative Hawkes likelihood with its analytic gradient and Hessian."""
+    values = np.asarray(parameters, dtype=np.float64)
+    features = np.asarray(event_features, dtype=np.float64)
+    integrated = np.asarray(integrated_features, dtype=np.float64)
+    if values.size != integrated.size + 1 or features.shape[1] != integrated.size:
+        raise ValueError("Hawkes objective dimensions are inconsistent")
+    if normalizer < 1 or duration <= 0.0 or not np.isfinite(duration):
+        raise ValueError("Hawkes duration and normalizer must be positive")
+    design = np.column_stack((np.ones(features.shape[0], dtype=np.float64), features))
+    compensator = np.concatenate(([duration], integrated))
+    intensity = design @ values
+    if values[0] <= 0.0 or np.any(values[1:] < 0.0) or np.any(intensity <= 0.0):
+        invalid = np.full_like(values, np.nan)
+        return float("inf"), invalid, np.full((values.size, values.size), np.nan)
+    inverse = 1.0 / intensity
+    objective = (-float(np.sum(np.log(intensity))) + float(np.dot(compensator, values))) / normalizer
+    gradient = (-design.T @ inverse + compensator) / normalizer
+    hessian = (design.T * np.square(inverse)) @ design / normalizer
+    return objective, np.asarray(gradient, dtype=np.float64), np.asarray(hessian, dtype=np.float64)
+
+
 def queue_objective_gradient(
     parameters: FloatArray,
     event_queue: FloatArray,
@@ -497,6 +556,253 @@ def run_lbfgsb_stage(
         active_bounds=active,
         message=str(result.message),
     )
+
+
+def run_active_set_newton(
+    objective: HessianObjective,
+    initial: FloatArray,
+    lower_bounds: FloatArray,
+    *,
+    maxiter: int,
+    stop_kkt: float,
+    active_tolerance: float,
+    armijo_constant: float,
+    backtrack_factor: float,
+    max_line_search_trials: int,
+) -> ActiveSetNewtonResult:
+    """Polish a lower-bounded convex optimum with analytic-Hessian Newton steps."""
+    values = np.asarray(initial, dtype=np.float64).copy()
+    lower = np.asarray(lower_bounds, dtype=np.float64)
+    if values.ndim != 1 or lower.shape != values.shape:
+        raise ValueError("initial values and lower bounds must be aligned vectors")
+    if not np.isfinite(values).all() or not np.isfinite(lower).all():
+        raise ValueError("initial values and lower bounds must be finite")
+    if np.any(values < lower - active_tolerance):
+        raise ValueError("initial value violates a lower bound")
+    if maxiter < 1 or max_line_search_trials < 1:
+        raise ValueError("Newton iteration settings must be positive")
+    if stop_kkt <= 0.0 or active_tolerance < 0.0:
+        raise ValueError("Newton tolerances are invalid")
+    if not 0.0 < armijo_constant < 1.0 or not 0.0 < backtrack_factor < 1.0:
+        raise ValueError("line-search constants must lie strictly between zero and one")
+    bounds: tuple[Bound, ...] = tuple((float(bound), None) for bound in lower)
+    trace: list[NewtonIterationResult] = []
+
+    def evaluate(candidate: FloatArray) -> tuple[float, FloatArray, FloatArray, tuple[float, float, float, int]]:
+        value, gradient, hessian = objective(candidate)
+        derivatives = np.asarray(gradient, dtype=np.float64)
+        curvature = np.asarray(hessian, dtype=np.float64)
+        if derivatives.shape != candidate.shape or curvature.shape != (candidate.size, candidate.size):
+            raise ValueError("Newton objective returned inconsistent derivative dimensions")
+        diagnostics = bound_constrained_kkt_diagnostics(
+            candidate,
+            derivatives,
+            bounds,
+            active_tolerance=active_tolerance,
+        )
+        return float(value), derivatives, curvature, diagnostics
+
+    def append_snapshot(
+        index: int,
+        value: float,
+        gradient: FloatArray,
+        hessian: FloatArray,
+        diagnostics: tuple[float, float, float, int],
+        *,
+        step_size: float | None,
+        line_search_trials: int,
+        directional_derivative: float | None,
+        armijo_satisfied: bool | None,
+    ) -> None:
+        if np.isfinite(hessian).all():
+            symmetric = 0.5 * (hessian + hessian.T)
+            eigenvalues = np.linalg.eigvalsh(symmetric)
+            minimum_eigenvalue = float(np.min(eigenvalues))
+            condition = float(np.linalg.cond(hessian))
+        else:
+            minimum_eigenvalue = float("nan")
+            condition = float("inf")
+        raw, projected, complementarity, active = diagnostics
+        trace.append(
+            NewtonIterationResult(
+                index=index,
+                parameters=values.copy(),
+                objective=value,
+                raw_gradient_inf_norm=raw,
+                projected_gradient_inf_norm=projected,
+                complementarity_inf_norm=complementarity,
+                active_bounds=active,
+                hessian_condition_number=condition,
+                hessian_minimum_eigenvalue=minimum_eigenvalue,
+                step_size=step_size,
+                line_search_trials=line_search_trials,
+                directional_derivative=directional_derivative,
+                armijo_satisfied=armijo_satisfied,
+            )
+        )
+
+    def finish(message: str, success: bool) -> ActiveSetNewtonResult:
+        final = trace[-1]
+        return ActiveSetNewtonResult(
+            parameters=values.copy(),
+            objective=final.objective,
+            success=success,
+            message=message,
+            raw_gradient_inf_norm=final.raw_gradient_inf_norm,
+            projected_gradient_inf_norm=final.projected_gradient_inf_norm,
+            complementarity_inf_norm=final.complementarity_inf_norm,
+            active_bounds=final.active_bounds,
+            trace=tuple(trace),
+        )
+
+    for iteration in range(maxiter):
+        value, gradient, hessian, diagnostics = evaluate(values)
+        if not np.isfinite(value) or not np.isfinite(gradient).all() or not np.isfinite(hessian).all():
+            append_snapshot(
+                iteration,
+                value,
+                gradient,
+                hessian,
+                diagnostics,
+                step_size=None,
+                line_search_trials=0,
+                directional_derivative=None,
+                armijo_satisfied=False,
+            )
+            return finish("nonfinite objective or derivatives", False)
+        if diagnostics[1] <= stop_kkt:
+            append_snapshot(
+                iteration,
+                value,
+                gradient,
+                hessian,
+                diagnostics,
+                step_size=None,
+                line_search_trials=0,
+                directional_derivative=None,
+                armijo_satisfied=None,
+            )
+            return finish("projected KKT target reached", True)
+
+        active = (values <= lower + active_tolerance) & (gradient > 0.0)
+        direction = np.zeros_like(values)
+        while True:
+            free = ~active
+            if not np.any(free):
+                append_snapshot(
+                    iteration,
+                    value,
+                    gradient,
+                    hessian,
+                    diagnostics,
+                    step_size=None,
+                    line_search_trials=0,
+                    directional_derivative=None,
+                    armijo_satisfied=False,
+                )
+                return finish("active set contains every coordinate", False)
+            try:
+                direction.fill(0.0)
+                direction[free] = np.linalg.solve(
+                    hessian[np.ix_(free, free)],
+                    -gradient[free],
+                )
+            except np.linalg.LinAlgError:
+                append_snapshot(
+                    iteration,
+                    value,
+                    gradient,
+                    hessian,
+                    diagnostics,
+                    step_size=None,
+                    line_search_trials=0,
+                    directional_derivative=None,
+                    armijo_satisfied=False,
+                )
+                return finish("singular free Hessian", False)
+            newly_blocked = free & (values <= lower + active_tolerance) & (direction < 0.0)
+            if not np.any(newly_blocked):
+                break
+            active |= newly_blocked
+
+        directional = float(np.dot(gradient, direction))
+        if not np.isfinite(direction).all() or not np.isfinite(directional) or directional >= 0.0:
+            append_snapshot(
+                iteration,
+                value,
+                gradient,
+                hessian,
+                diagnostics,
+                step_size=None,
+                line_search_trials=0,
+                directional_derivative=directional,
+                armijo_satisfied=False,
+            )
+            return finish("Newton direction is not strict descent", False)
+
+        negative = direction < 0.0
+        step = 1.0
+        if np.any(negative):
+            feasible = (values[negative] - lower[negative]) / -direction[negative]
+            step = min(step, float(np.min(feasible)))
+        if not np.isfinite(step) or step <= 0.0:
+            append_snapshot(
+                iteration,
+                value,
+                gradient,
+                hessian,
+                diagnostics,
+                step_size=step,
+                line_search_trials=0,
+                directional_derivative=directional,
+                armijo_satisfied=False,
+            )
+            return finish("Newton direction has no positive feasible step", False)
+
+        accepted = False
+        trials = 0
+        candidate = values.copy()
+        for trial in range(1, max_line_search_trials + 1):
+            trials = trial
+            candidate = np.maximum(values + step * direction, lower)
+            candidate_value, candidate_gradient, candidate_hessian, _ = evaluate(candidate)
+            if (
+                np.isfinite(candidate_value)
+                and np.isfinite(candidate_gradient).all()
+                and np.isfinite(candidate_hessian).all()
+                and candidate_value <= value + armijo_constant * step * directional
+            ):
+                accepted = True
+                break
+            step *= backtrack_factor
+        append_snapshot(
+            iteration,
+            value,
+            gradient,
+            hessian,
+            diagnostics,
+            step_size=step,
+            line_search_trials=trials,
+            directional_derivative=directional,
+            armijo_satisfied=accepted,
+        )
+        if not accepted:
+            return finish("Armijo line search failed", False)
+        values = candidate
+
+    value, gradient, hessian, diagnostics = evaluate(values)
+    append_snapshot(
+        maxiter,
+        value,
+        gradient,
+        hessian,
+        diagnostics,
+        step_size=None,
+        line_search_trials=0,
+        directional_derivative=None,
+        armijo_satisfied=None,
+    )
+    return finish("maximum Newton iterations reached", diagnostics[1] <= stop_kkt)
 
 
 def _run_optimizer(

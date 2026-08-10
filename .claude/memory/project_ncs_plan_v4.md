@@ -62,8 +62,8 @@ metadata:
   convergence requirement. Aligned-minus-shifted was positive for all 5 symbols under both tie policies, but
   it is diagnostic only because the fits are not converged. Any repair is a new preregistered training-only/
   generated experiment; the inspected test split cannot be reused as independent confirmation.
-- G3 is not passed. The observation work still lacks a frozen EcoMD-to-external-message mapping, converged
-  combined real fits, independent days/markets, an unseen real confirmation set and individual-order or
+- G3 is not passed. The observation work still lacks a frozen EcoMD-to-external-message mapping, independently
+  confirmed combined real fits, independent days/markets, an unseen real confirmation set and individual-order or
   explicitly limited aggregate semantics. Paid L2 stays gated.
 - Exp139 froze the numerical repair rather than rewriting exp138: unchanged likelihood/features/splits/two
   starts, correct lower-bound projected KKT, deterministic staged refinement, generated equivalence anchors and
@@ -75,3 +75,9 @@ metadata:
   above their stricter `1e-8` gate. This is a reference-solver boundary failure, but the frozen FAIL stands.
   Another numerical gate needs a separately preregistered solver family and fresh generated seeds; exp138's
   exposed test split remains ineligible for confirmation.
+- Exp140 is preregistered at `6d3940b9` to test only that missing numerical component with 16 fresh generated
+  streams, two fixed starts, an analytic-Hessian active-set Newton polish, `1e-10` KKT/complementarity gates and
+  an algebraic direct/intercept-only identity check. A disclosed development prototype used only exp139's
+  already exposed generated endpoints. Separate-root smoke reached maximum KKT `6.87e-12`, maximum start gap
+  `2.22e-16` and objective-identity error `2.22e-16`; formal root `140202608` remains ungenerated until a clean
+  implementation commit is launched. Even a PASS closes only the numerical reference sub-blocker.

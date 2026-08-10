@@ -16,10 +16,12 @@ from ecomd.observation.continuous_time import (
     fit_linear_hawkes_process,
     fit_poisson_process,
     hawkes_objective_gradient,
+    hawkes_objective_gradient_hessian,
     lobster_mark_ids,
     point_process_log_likelihood,
     queue_hawkes_objective_gradient,
     queue_objective_gradient,
+    run_active_set_newton,
     run_lbfgsb_stage,
     simulate_exponential_hawkes_cluster,
     strictify_timestamps,
@@ -168,6 +170,82 @@ def test_projected_kkt_handles_active_lower_and_upper_bounds() -> None:
     assert projected == 0.4
     assert complementarity == 0.8
     assert active == 2
+
+
+def test_hawkes_analytic_hessian_matches_gradient_difference() -> None:
+    event_trace = np.asarray(((0.2, 0.5), (0.7, 0.1), (0.4, 0.3)), dtype=np.float64)
+    integrated = np.asarray((1.4, 0.8), dtype=np.float64)
+    values = np.asarray((0.8, 0.15, 0.12), dtype=np.float64)
+    objective, gradient, hessian = hawkes_objective_gradient_hessian(
+        values,
+        event_trace,
+        integrated,
+        3.2,
+        7,
+    )
+    plain_objective, plain_gradient = hawkes_objective_gradient(
+        values,
+        event_trace,
+        integrated,
+        3.2,
+        7,
+    )
+    numerical = np.empty_like(hessian)
+    for index in range(values.size):
+        plus = values.copy()
+        minus = values.copy()
+        plus[index] += 1e-6
+        minus[index] -= 1e-6
+        plus_gradient = hawkes_objective_gradient_hessian(
+            plus,
+            event_trace,
+            integrated,
+            3.2,
+            7,
+        )[1]
+        minus_gradient = hawkes_objective_gradient_hessian(
+            minus,
+            event_trace,
+            integrated,
+            3.2,
+            7,
+        )[1]
+        numerical[:, index] = (plus_gradient - minus_gradient) / (2e-6)
+    assert np.isclose(objective, plain_objective, atol=1e-15, rtol=0.0)
+    assert np.allclose(gradient, plain_gradient, atol=1e-15, rtol=0.0)
+    assert np.allclose(hessian, numerical, atol=1e-9)
+    assert np.allclose(hessian, hessian.T, atol=1e-15)
+
+
+def test_active_set_newton_reaches_bound_constrained_kkt() -> None:
+    def objective(values: FloatArray) -> tuple[float, FloatArray, FloatArray]:
+        difference = values - np.asarray((2.0, -1.0), dtype=np.float64)
+        return (
+            0.5 * float(np.dot(difference, difference)),
+            difference,
+            np.eye(2, dtype=np.float64),
+        )
+
+    result = run_active_set_newton(
+        objective,
+        np.asarray((0.0, 2.0), dtype=np.float64),
+        np.asarray((-10.0, 0.0), dtype=np.float64),
+        maxiter=8,
+        stop_kkt=1e-11,
+        active_tolerance=1e-12,
+        armijo_constant=1e-4,
+        backtrack_factor=0.5,
+        max_line_search_trials=60,
+    )
+    assert result.success
+    assert np.allclose(result.parameters, (2.0, 0.0), atol=1e-12)
+    assert result.raw_gradient_inf_norm == 1.0
+    assert result.projected_gradient_inf_norm <= 1e-12
+    assert result.complementarity_inf_norm <= 1e-12
+    assert result.active_bounds == 1
+    accepted = [iteration for iteration in result.trace if iteration.step_size is not None]
+    assert len(accepted) == 2
+    assert all(iteration.armijo_satisfied for iteration in accepted)
 
 
 def test_lbfgsb_stage_recomputes_projected_kkt() -> None:
