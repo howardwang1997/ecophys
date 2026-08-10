@@ -40,6 +40,16 @@ cannot establish that EcoMD drives market order flow or unlock paid L2 data.
 The dynamic operator is deliberately aggregate and stylized. It does not claim individual-order price-time
 priority, exchange latency or a calibrated queue-reset distribution.
 
+### Pre-formal implementation clarification — executable non-best removals
+
+After the first unit test, but before any pilot/formal statistic or fitted result existed, the following
+previously unspecified boundary was frozen. For an addition or hidden event, the level law remains exactly
+proportional to `exp(-0.70*level)`. For a displayed removal, the same weights are conditioned on executable
+levels: level 0 is always eligible because depletion invokes the declared price reset, while a non-best level
+is eligible only when its displayed queue exceeds one. The chosen non-best removal is then truncated to leave
+one unit. This prevents zero-size/no-op messages without changing truth coefficients, thresholds, seeds,
+counts, censoring or any fitted model. The original commit remains the audit record of the ambiguity.
+
 ## Frozen truth families and stress cells
 
 For each stream, `z_t` is stationary Gaussian AR(1) with `rho in {0.60, 0.95}`. Let `h_t` be a pre-event
