@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "status": "post_result_diagnostic_evaluator_sanity_not_protocol_rescue",
+  "formal_m1_result_sha256": "2d046ce38f5a78f35c3be952e53d81110d01d9c74f1eb0f809becf6635973846",
+  "execution_git_sha": "80a3d61a547f91d893f25376b9bbb98e612f467d",
+  "data_manifest_path": "data/manifests/ecomd_v1_m1_spx_4a2332d62.json",
+  "data_manifest_sha256": "0836ddd279a16db5010907120e65da87db58a2f2634c25f0e732334a98ffff7c",
+  "stylized_facts_sha256": "8d8f7e9887af9a32b9f5133cacb9e3874934fa1a9999df3cbf8ca0719a3e7e9b",
+  "canonical_bands_sha256": "d46413106c5c9d742d3d655489202ebb96cdb08b826f2cd86ab138bfecef2632",
+  "preprocessing": "numpy.diff(numpy.log(adjusted_close_float64)); volume=sorted_daily_volume_float64[1:]",
+  "sealed_2020_opened": false,
+  "same_length_as_model_scoring_window": false,
+  "purpose": "Check whether the generic canonical bands accept the exact real-data metric implementation; never alter the frozen M1 result or thresholds.",
+  "splits": {
+    "train_2015_2018": {
+      "return_rows": 1005,
+      "return_float64_le_sha256": "5b295cf9d11b0796f69547e6251ae2ba3462589b735223932bbf53aaf34e5713",
+      "pass_count": 5,
+      "passing_facts": [
+        "autocorr_returns",
+        "hill_tail_index",
+        "dfa_hurst_abs_r",
+        "leverage_effect",
+        "volume_volatility_corr"
+      ],
+      "estimates": {
+        "acf_squared_returns": 0.11513162769583993,
+        "aggregational_gaussianity": 1.8720114793098501,
+        "autocorr_returns": 0.030951435361659257,
+        "conditional_kurtosis": 3.4922615594407773,
+        "dfa_hurst_abs_r": 0.852527157652283,
+        "gain_loss_asymmetry": -0.4945022939072087,
+        "hill_tail_index": 3.5180891564118846,
+        "intermittency_fano": 1.515151515151515,
+        "leverage_effect": -1.0662505649015361,
+        "volume_volatility_corr": 0.4092668835747253,
+        "zumbach_asymmetry": -0.04462153087173687
+      }
+    },
+    "validation_2019": {
+      "return_rows": 251,
+      "return_float64_le_sha256": "241e2f175d5189267ca4f54298ae5007cd3d061d4db634f839e66a4c34c0e9c1",
+      "pass_count": 5,
+      "passing_facts": [
+        "autocorr_returns",
+        "hill_tail_index",
+        "conditional_kurtosis",
+        "leverage_effect",
+        "zumbach_asymmetry"
+      ],
+      "estimates": {
+        "acf_squared_returns": 0.047317090184956494,
+        "aggregational_gaussianity": 2.4113331094515558,
+        "autocorr_returns": 0.05308806259301195,
+        "conditional_kurtosis": 1.6086588357614877,
+        "dfa_hurst_abs_r": 1.0356744843715207,
+        "gain_loss_asymmetry": -0.6400345883733164,
+        "hill_tail_index": 2.6317676354175363,
+        "intermittency_fano": 0.97979797979798,
+        "leverage_effect": -0.8535185944109485,
+        "volume_volatility_corr": 0.22796015555059662,
+        "zumbach_asymmetry": 0.06833689079781155
+      }
+    },
+    "temporal_2021_2024": {
+      "return_rows": 1004,
+      "return_float64_le_sha256": "999a00cce7cde67b1f119fa177d984f47abcaad448c1de5bf2108210491afa54",
+      "pass_count": 5,
+      "passing_facts": [
+        "autocorr_returns",
+        "hill_tail_index",
+        "conditional_kurtosis",
+        "dfa_hurst_abs_r",
+        "leverage_effect"
+      ],
+      "estimates": {
+        "acf_squared_returns": 0.13263092353516948,
+        "aggregational_gaussianity": 1.2979711537532306,
+        "autocorr_returns": 0.030416909340618647,
+        "conditional_kurtosis": 0.8654705966019272,
+        "dfa_hurst_abs_r": 0.6860239832033538,
+        "gain_loss_asymmetry": -0.26558685670338333,
+        "hill_tail_index": 3.995904098070151,
+        "intermittency_fano": 1.6336088154269979,
+        "leverage_effect": -0.6845898021375592,
+        "volume_volatility_corr": 0.2953855831628318,
+        "zumbach_asymmetry": -0.028673080152734964
+      }
+    }
+  },
+  "band_semantic_audit": {
+    "canonical_bands_add_commit": "2734ee9351293bd72c1afe73bd5af2ef7c0a1e7e",
+    "cited_empirical_provenance_found_in_add_commit": false,
+    "gain_loss_metric_first_implementation_commit": "e7c282c2d2096979dc878eac2501863d173df234",
+    "gain_loss_documented_estimate": "sample skewness",
+    "gain_loss_frozen_band": [-30.0, -3.0],
+    "gain_loss_band_excludes_all_three_real_splits": true
+  },
+  "interpretation": {
+    "formal_frozen_decision_changed": false,
+    "canonical_pass_count_publishable_as_validated_realism_metric": false,
+    "target_matched_failures_visible_without_the_questionable_gain_loss_band": [
+      "hill_tail_index",
+      "acf_squared_returns",
+      "dfa_hurst_abs_r",
+      "leverage_effect",
+      "volume_volatility_corr"
+    ]
+  }
+}

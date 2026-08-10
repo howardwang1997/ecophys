@@ -162,3 +162,14 @@ metadata:
   commit `3f1303b04`. They pin W-star 500, the exact gate/checkpoint/source/seed hashes, require the binding blob
   to equal its sole first-add commit and encode every frozen decision tier. Full regression is 132 tests and
   strict mypy covers 75 modules. Commit/deploy/preflight this freeze next; no held-out output exists yet.
+- M1 is now complete and formally **FAILS**. Held-out execution from immutable binding commit `80a3d61a5` used
+  16 fresh trajectories; frozen W-star 500 transfers, but every one of ten fixed windows is exactly 2/11.
+  W=500/4000 normalized distances are 0.24319/0.25223, ratio 1.03717. Only return autocorrelation and conditional
+  kurtosis pass. Formal result SHA is `2d046ce3...73846`; v1 S1/model-paper, multiseed/baseline/ablation/cross-
+  market production and GPU/data expansion stop.
+- This failure is not interpreted solely through the generic pass count. A post-result audit found no empirical
+  provenance in the canonical-band add commit and a clear gain/loss semantic mismatch: the implementation emits
+  skewness, while its band is `[-30,-3]`; exact SPX train/2019/temporal splits all fail that band and pass only
+  5/11 overall. Nevertheless robust target-matched misses remain: tail index 6.74 vs 3.52, squared-return ACF
+  0.011 vs 0.115, DFA 0.586 vs 0.853, leverage near zero vs -1.066 and volume correlation near zero vs 0.409.
+  A future v2 must first repair evaluator self-coverage without tuning on current held-out, then use new seeds.

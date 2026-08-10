@@ -4,6 +4,11 @@
 state-complete 模型通过 stationary-fidelity gate 后，才发布模型 checkpoint 和正面 model-paper
 claim。当前 research monorepo 不能直接打包成 release。
 
+**2026-08-11 结果更新：** 新 state-complete checkpoint 的 stationarity transfer 通过，但 early、
+frozen post 和 late 全部只有 2/11 generic-band passes。M1 按冻结规则 FAIL，S1/model-paper 路线停止；
+只保留明确标注 empirically unvalidated 的 S0 source preview。另见
+`ecomd_v1_m1_result_2026-08-11.md`。
+
 ## 1. 为什么现在切换到这条主线
 
 NCS invariant-calibration 路线没有通过 G0，通用 simulator-audit 论文也没有通过 F0 prior-art
@@ -40,8 +45,8 @@ post-stationarity 结果、基线与消融结果。旧 checkpoint 不得重命�
 | R2 包安装 | committed tree 构建 wheel；隔离路径安装和 import/run 成功；core strict mypy | **PASS**：两个独立源码目录生成同一 wheel；隔离 import/smoke 通过；strict mypy 对 66 个模块为 0 errors | 保持回归；342 条全包 Ruff 历史债务单列，不伪装成新错误 |
 | R3 数据无关 smoke | CPU 生成有限 trajectory、梯度、任意 chunk、checkpoint round trip | **PASS**：35 个 finite nonzero gradient params；chunk/resume bit-exact；报告已归档 | 保持回归测试 |
 | R4 V100 reference | 冻结 config 在一张 V100 32 GB 训练/恢复/rollout；第二台独立复现 | **PASS**：两个独立 GPU UUID 在 `f1e3cd4fb312` 上的 history/后续轨迹 bit-exact；peak reserved 均为 11.994 GiB，600-step 投影 0.276--0.284 h | 冻结真实数据 provenance 与 stationary protocol 后才跑 600-step reference |
-| R5 stationary fidelity | 预注册 gate 后固定窗口，early/post-gate/late 全报告，多 seed | **FAIL**：旧 exp127 late-time 约 1--2/11 | 若新模型仍失败，停止正面 model-paper claim |
-| R6 论文证据 | 强基线、关键消融、时间外/市场外/频率外、梯度效用、规模曲线 | **未开始** | R5 通过后扩展数据和算力 |
+| R5 stationary fidelity | 预注册 gate 后固定窗口，early/post-gate/late 全报告，多 seed | **FAIL**：新 checkpoint 的 frozen W-star 500 成功 transfer，但 W=0/500/4000 与其余窗口均为 2/11；generic-band evaluator 另有 provenance/语义缺陷，不能作为论文 realism 分数 | v1 正面 model-paper 与 production expansion 停止；公开失败与 evaluator 限制 |
+| R6 论文证据 | 强基线、关键消融、时间外/市场外/频率外、梯度效用、规模曲线 | **STOPPED for v1** | 只有新 evaluator、新模型和新 held-out protocol 才能重启 |
 
 ## 4. M0：要冻结的模型规格
 
@@ -91,7 +96,7 @@ CPU/V100 gates 和停止规则。clean implementation commit `8951208ffd2f` 的 
 - 第二张 V100 32 GB：独立 host/seed 复现；
 - 两卡不做未经验证的长 sweep。先用短 pilot 得到每 iteration wall time，再据此冻结预算。
 
-### R5 通过后
+### 未来新版本通过可信 R5 后
 
 可以扩展到更多非 H20 GPU，用于多 seed、cross-market、ablation 和 scaling；算力增加只提升证据
 覆盖，不能替代 state contract、数据许可或 held-out 设计。
@@ -102,8 +107,10 @@ CPU/V100 gates 和停止规则。clean implementation commit `8951208ffd2f` 的 
 2. **E-R2（完成）**：从 wheel 隔离安装，运行 data-free CPU trajectory 与完整状态 checkpoint round trip；
 3. **E-M0（完成）**：唯一 config、Kac/actual-k 实现、生产训练路径 CPU gate 和 exact resume 已通过；
 4. **E-M1-V100（完成）**：两台 V100 的固定 10-vs-5+5 FP32 pilot 均通过，且跨主机 bit-exact；
-5. **E-M1-data/stationarity（当前）**：冻结 SPX provenance、预处理 hash 和 stationary-fidelity protocol；
-6. 只有 stationary gate 通过，才启动基线、消融、跨市场和论文主结果。
+5. **E-M1-data/stationarity（完成，FAIL）**：frozen W-star 500 在 held-out transfer，但所有固定窗口均
+   只有 2/11；正式结果 SHA 为 `2d046ce3...73846`；
+6. **停止 v1 production**：不启动多 seed、基线、消融、跨市场或数据/算力扩容。下一步仅做免费的
+   real-data estimator/band audit，并为新模型与全新 held-out protocol 另行冻结 v2。
 
 停止规则：若 state-complete 重训在冻结 post-gate 指标上仍接近旧结果（约 1--2/11），EcoMD 可以
 继续作为研究软件，但不写“成功复现市场统计”的正面模型论文。
