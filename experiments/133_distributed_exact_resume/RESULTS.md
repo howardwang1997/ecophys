@@ -3,7 +3,8 @@
 **Run date:** 2026-08-10  
 **Implementation commit:** `a54b4406f738f929197f179a6b3f0a223050f3be`  
 **CPU artifact:** `CPU_GLOO_RESULTS.json`  
-**Decision:** two-rank CPU/Gloo gate PASS; single-V100 CUDA gate waiting for an idle card
+**Single-V100 artifact:** `V100_RESULTS_455ed73a6f41.json`
+**Decision:** two-rank CPU/Gloo and single-V100 CUDA gates PASS
 
 ## CPU process-boundary result
 
@@ -31,16 +32,28 @@ complete runtime record per rank and promotes a temporary file with `os.replace`
 `SimulatorState.to(device)` was added so CPU-normalized checkpoint tensors can be restored to a local CUDA
 device while RNG payloads remain in their required CPU representation.
 
+## Single-V100 CUDA result
+
+The supervised queue waited behind the unrelated graphene workload and launched only after the blocker was
+inactive, no compute process was present and ten consecutive low-utilization polls passed. The clean formal run
+used PyTorch 2.3.1+cu121 at queued repository commit `455ed73a6f41f6096b05d581385082a9e7fdc3f6` and finished
+in 16.81 seconds.
+
+All 12 recorded CUDA checks passed. The uninterrupted and `3 + new process + 3` executions had identical final
+model, optimizer, complete rank runtime and RNG state; all three difference counts were zero. The rank/model
+digest was synchronized, iterations and resume history were exact, a world-size mismatch hard failed, all
+losses and gradients were finite, and no temporary checkpoint remained. The artifact SHA-256 is
+`3b3ab8be3bc77e0a88bd619a527c3b8d85093d96b3ae4d68f4703421e4bdf943`.
+
 ## Remaining scope
 
 This PASS establishes exact continuation for the tiny, stateful two-rank Gloo fixture. It does not yet establish:
 
-- single-V100 CPU-to-CUDA round-trip parity;
 - multi-node NCCL behavior or production `N=10,000` scale;
 - an actual asynchronous kill during a write or durability under power loss;
 - a real distributed sampler/data cursor, scheduler, AMP scaler or W&B resume contract.
 
-At the time of the formal CPU run, both available V100s were executing unrelated graphene production jobs, so
-the CUDA gate was not launched. Their jobs were left untouched. WP1 remains incomplete until the V100 check and
-the production-only cursor/scheduler/scaler contracts relevant to the chosen training configuration are tested.
-
+At the time of the formal CPU run, both V100s were executing unrelated graphene production jobs and were left
+untouched. The guarded queue later completed the CUDA gate without sharing or stopping that workload. WP1 still
+requires the production-only cursor/scheduler/scaler, logging and interruption contracts relevant to the chosen
+training configuration; the mechanics probe alone is not a production checkpoint guarantee.
