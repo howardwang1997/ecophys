@@ -56,3 +56,18 @@ The first formal invocation from `71ed5a9b6` produced no artifact: diagnostic-on
 `report_no_eligibility_decision` string reached the eligibility relation parser. No values were printed or
 inspected. The execution-only fix keeps diagnostic real/control estimates, sets `passed: null`, and excludes them
 from eligibility as the original protocol requires; it has a direct regression test. No scientific rule changed.
+
+## Formal result
+
+The sole formal artifact is `results/evaluator_v2/feasibility_v1.json`, run from clean/pushed commit `c6c606485`.
+Canonical payload SHA is `057946d365686cc4e63c13e8db3d547e83601560d701e3ac52e39f572438d25f`;
+file SHA is `52814472321ae9dbc89b74b4eb73a0b5eac170b3d9fdb157d70699c506b1df02`. It self-verifies, records no GPU use,
+and never parses sealed 2020 for metrics.
+
+Only `autocorr_returns` qualifies (SPX/GLD/EURUSD). This is only a sanity check, so the 11-fact evaluator FAILS
+and cannot authorize EcoMD-v2 scoring/training. Primary-cell summary: acf-squared 6/8 (SPX/EURUSD eligible),
+aggregation 4/8 (all L240 pass, all L120 undefined), conditional kurtosis 3/8 (surrogate 8/8 but coverage unstable),
+DFA 0/8, skew gain/loss 0/4, Hill 2/8, Fano 0/8 with 7 non-finite, leverage 2/4 (L120 only), and volume 5/6
+(NDX/GLD eligible). L500 is finite but conformal-insufficient (n_cal=2, k=3); gain/loss and Fano still have zero
+surrogate passes. Keep V100s idle. Next: metric-specific analytic admissibility plus fresh free-market confirmation;
+current four-market 2015--2024 outputs are spent for redesigned-estimator confirmation.
