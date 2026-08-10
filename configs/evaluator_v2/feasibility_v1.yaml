@@ -111,12 +111,20 @@ metric_contract:
 eligibility:
   applies_only_to_primary_lengths: true
   all_original_and_surrogate_estimates_finite: true
+  original_finiteness_splits: [reference, conformal_calibration, confirmation, temporal_test]
+  report_only_guard_excluded_from_selection: true
+  paired_effect: real_estimate_minus_within_block_surrogate_median
+  pooled_iqr_population: all_real_and_all_surrogate_replicate_estimates
+  pooled_iqr_quantile_method: numpy_linear
+  direction_ties_count_as_pass: false
+  nonpositive_pooled_iqr: fail_closed
   confirmation_and_temporal_coverage_required: true
   directional_relation_minimum_paired_block_fraction: 0.75
   directional_relation_minimum_abs_median_effect_in_pooled_iqr_units: 0.50
   equivalence_maximum_abs_median_effect_in_pooled_iqr_units: 0.50
   minimum_eligible_symbols_for_all_symbol_metric: 3
   minimum_eligible_symbols_for_equity_only_metric: 2
+  minimum_eligible_symbols_for_volume_metric: 3
   metric_eligible_only_if_every_applicable_primary_length_passes: true
 
 decision:

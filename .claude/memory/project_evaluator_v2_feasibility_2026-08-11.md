@@ -40,3 +40,14 @@ manifest is `data/manifests/evaluator_v2_free_daily_2005_2024.json`; canonical p
 
 Do not design a new EcoMD score from this study unless real-data self-coverage and surrogate falsification both
 pass under the frozen rules. Failure is an evaluator result, not permission to retune after inspection.
+
+## Implementation freeze
+
+`ecomd/eval/evaluator_v2.py` and `scripts/run_evaluator_v2_feasibility.py` implement the bound study. Before any
+real metric output, the remaining machine-level semantics were fixed: real-minus-within-block-control-median is
+the paired effect; pooled IQR contains all real and all eight-replicate control estimates; direction ties and
+nonpositive IQR fail; selection-finiteness excludes report-only 2019; volume eligibility requires three markets.
+The runner requires clean HEAD equal to upstream, verifies all 80 raw file hashes and each non-sealed return hash,
+and never parses sealed-2020 values. Synthetic tests deliberately confirm that unchanged L=120 aggregational
+Gaussianity and DFA can fail finite-sample requirements rather than being silently adapted. Pre-output validation:
+140 tests pass, Ruff passes, and strict mypy passes all 76 package modules.

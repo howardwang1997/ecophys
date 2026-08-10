@@ -38,6 +38,16 @@ def test_evaluator_v2_protocol_and_acquisition_constants_match() -> None:
         "paid_data_forbidden": True,
         "h20_forbidden": True,
     }
+    assert protocol["eligibility"]["minimum_eligible_symbols_for_volume_metric"] == 3
+    assert protocol["eligibility"]["original_finiteness_splits"] == [
+        "reference",
+        "conformal_calibration",
+        "confirmation",
+        "temporal_test",
+    ]
+    assert protocol["eligibility"]["paired_effect"] == (
+        "real_estimate_minus_within_block_surrogate_median"
+    )
 
 
 def test_canonical_sha_excludes_only_self_hash() -> None:

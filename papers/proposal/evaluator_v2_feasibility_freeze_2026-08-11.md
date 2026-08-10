@@ -70,3 +70,14 @@ sign-randomized 更负；daily Zumbach 仅报告，不能决定 eligibility。
 
 本阶段 CPU-only、零付费数据、禁止 GPU。只有数据 manifest 先提交、实现与 source hash 再提交以后，
 才能产生第一份 feasibility 输出。
+
+## 7. 实现绑定澄清（数据 manifest 之后、任何指标输出之前）
+
+这一步不改变 metric、阈值、市场、时期或 block length，只消除第 5 节尚未写成机器语义的歧义：每个
+paired effect 定义为“real block estimate 减去该 block 八个 surrogate estimate 的 median”；标准化分母
+是所有 real estimates 与所有 surrogate replicate estimates 合并后的 NumPy-linear IQR。方向相等不算
+同方向，IQR 非正时 fail closed。original-finiteness gate 只使用 reference、conformal calibration、
+confirmation 和 temporal test；2019 仍只报告。volume metric 作为跨市场指标至少需要三个合格市场。
+
+这些字段在查看任何价格、return 或 stylized-fact estimate 前写入 YAML 和测试；获取阶段只查看了清单的
+文件数、行数、时间边界、重复数和 hash。
