@@ -33,6 +33,10 @@ metadata:
   FAIL and advances only the prospective aggregate-bin P3 declaration to a code-enforced specification.
 - F1 remains AMBER pending a separately preregistered aggregate-bin measurement/reconstruction implementation,
   train-only scale fitting and identifiability checks. No real held-out data, paid data or GPU is unlocked.
+- Exp143 freezes that next CPU-only gate: 60-second half-open bins, exact six-mark/share-volume aggregation,
+  streaming/checkpoint parity, generated P3 return/volume/direction recovery, held-out-corruption invariance,
+  observation-only/sign-flip controls and an explicit latent-scale gauge. Formal root is `143202608`; no real
+  archive or current event adapter is permitted.
 - Immediate resource cap before F0--F2: about 10 V100-equivalent hours and 1,150 CPU core-hours. The current
   two V100 32 GB hosts are sufficient and may also run CPU jobs. H20 is excluded. No purchase or expansion is
   unlocked before the corresponding gates.

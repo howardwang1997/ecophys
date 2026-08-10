@@ -146,8 +146,8 @@ queue-reactive、permutation、time-shift 和 surrogate。单位是独立日期/
 2. **已完成：**exp142 machine-readable contract 正式 9/9 PASS；当前 adapter 仅以
    `synthetic_fixture` 被接受，任何静默 support escalation 均失败；
 3. **已完成：**预注册 exp142 的纯 synthetic validator gate；实现与正式运行必须使用后续独立提交；
-4. 预注册并实现 `aggregate_bin` + P3 measurement object 的 exact synthetic reconstruction、单位与
-   train-only fit firewall；不读真实 test；
+4. **已预注册：**exp143 `aggregate_bin` + P3 measurement object 的 exact synthetic reconstruction、
+   单位与 train-only fit firewall；下一步按独立 implementation commit 执行，不读真实 test；
 5. 完成 A0 的 simulator-audit prior-art matrix，决定 F0；
 6. 只有 F0/F1 仍可行时，才预注册低成本 E-B screening；否则直接整理 EcoMD v1 software release。
 
