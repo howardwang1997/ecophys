@@ -51,7 +51,9 @@ metadata:
 - A no-data CPU smoke checks exact arbitrary chunking, serialized-state resume and finite nonzero gradients. It
   produced 35 nonzero finite gradient-bearing parameters and deterministic return hash
   `38398a13e5ce56cf6bd3dd789884c517488c8d39b3da8aa035968845b8d1db71` under the current environment.
-- Twenty-seven focused release/state/training tests pass. Ruff passes on all changed Python files.
+- Twenty-seven extracted-artifact release/state/training tests and all 76 tests in the sparse research checkout
+  pass. The strict package target passes on all 66 source modules. Commit-delta Ruff has zero findings on added
+  lines; the separate full-package historical Ruff baseline is 342 findings and remains maintenance debt.
 - Wheel `ecomd-0.0.1` built successfully, installed to an isolated target directory, imported from that target
   and passed the same CPU smoke. A pre-commit build hash was
   `131e8250c052a2c2198a2b635aed017e02b9b154d2cd7303eab4abe16e22f099`; it is diagnostic, not a release hash.
@@ -61,14 +63,20 @@ metadata:
   `53bb866aef886ecbb05a02756d7325d7ec1d57b1f14f4154265ff9dc5fcc0386`; isolated install, CPU
   smoke, 27 tests and changed-file Ruff passed. Machine report:
   `release/verification/16a822c843db.json`.
-- Full strict mypy is not clean: 83 errors in 17 imported files. This is an honest R2 blocker, not waived by the
-  focused runtime tests.
+- The original machine report understated the full strict-mypy baseline as 83 errors/17 files because it checked
+  only `train_distributed.py` plus its import graph. The true `mypy ecomd` baseline was 121 errors/26 files. Commit
+  `4b741d6692e934540f9849c13d3d89b3878c5426` reduces the configured full-package target to zero errors across
+  66 modules.
+- Clean-commit QA for `4b741d6692e9` produced the same 246,840-byte/89-file source archive twice, SHA-256
+  `7bec028d8a3468f546792b868b4991d1eb900b1e2b6af825294183faaf1afba6`. Two independent extracted source
+  directories produced identical 248,107-byte wheels, SHA-256
+  `5535add9760a4627698cfbe0d76148f83baaabc32622490a32a9dd29e77a3caa`; isolated import/smoke, 27 artifact
+  tests and extracted-package strict mypy all pass. Machine report: `release/verification/4b741d6692e9.json`.
 
 ## Compute and next gate
 
 - Keep both V100s idle until R0--R3 and one canonical M0 configuration are frozen. Then use one V100 32 GB for
   an fp32 reference pilot/checkpoint-resume/long-rollout run and the second for an independent host/seed repeat.
   Future expansion may use more non-H20 hardware; H20 remains excluded.
-- Next: commit the contract/repair, run the clean-commit source artifact and isolated-wheel experiment, close
-  strict typing or narrow the genuinely public core, then freeze one M0 model configuration. Only after that
-  may an M1 V100 pilot be queued.
+- R0--R3 are operationally complete for S0, which is ready but not published. S1 remains blocked. Next freeze one
+  M0 model configuration and its traceability/resource contract; only then may an M1 V100 pilot be queued.
