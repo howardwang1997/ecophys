@@ -1,0 +1,146 @@
+contract:
+  name: evaluator_v2_fresh_market_short_block_confirmation
+  version: 1
+  status: frozen_before_fresh_market_acquisition_or_metric_outputs
+  purpose: confirm_short_block_measurement_contract_on_unseen_instruments
+  source_sample_complexity_result_canonical_sha256: 376eeca24355e0d5ce1eebc0cb4b67ebcf3962019da651aa5de7c8a48881a183
+  current_four_market_outputs_for_threshold_selection: forbidden
+  instrument_holdout_not_independent_macro_time_holdout: true
+  model_scoring_or_training_authorization: forbidden
+
+data:
+  provider: Yahoo Finance via yfinance
+  interval: 1d
+  start_inclusive: "2005-01-01"
+  end_exclusive: "2025-01-01"
+  price_column: adjusted_close
+  volume_alignment: sorted_daily_volume_float64[1:]
+  preprocessing: numpy.diff(numpy.log(adjusted_close_float64))
+  raw_redistribution: forbidden
+  instrument_groups:
+    equity_indices: [^DJI, ^RUT, ^N225, ^FTSE, ^GDAXI, ^HSI]
+    volume_etfs: [SPY, EEM, TLT, EWJ]
+  all_symbols: [^DJI, ^RUT, ^N225, ^FTSE, ^GDAXI, ^HSI, SPY, EEM, TLT, EWJ]
+  excluded_spent_symbols: [^GSPC, ^NDX, GLD, EURUSD=X]
+  manifest_path: data/manifests/evaluator_v2_fresh_markets_daily_2005_2024.json
+  manifest_binding_status: pending_result_blind_acquisition
+  splits:
+    reference: [2005, 2009]
+    conformal_calibration: [2010, 2014]
+    confirmation: [2015, 2018]
+    report_only_guard: [2019, 2019]
+    sealed_crash: [2020, 2020]
+    temporal_test: [2021, 2024]
+
+blocking:
+  construction: sequential_nonoverlapping_within_each_split_after_return_preprocessing
+  drop_remainder: true
+  all_lengths: [120, 180, 240]
+  minimum_blocks_per_gating_split_at_each_applicable_length: 4
+  gating_splits: [reference, conformal_calibration, confirmation, temporal_test]
+  no_cross_split_or_cross_symbol_blocks: true
+
+metric_contract:
+  autocorr_returns:
+    role: required_sanity
+    scope: all_symbols
+    lengths: [120, 240]
+    primary_surrogate: temporal_joint_permutation
+    relation: equivalent
+    minimum_eligible_symbols: 6
+  acf_squared_returns:
+    role: core_primary
+    scope: all_symbols
+    lengths: [120, 240]
+    primary_surrogate: temporal_joint_permutation
+    relation: real_higher
+    minimum_eligible_symbols: 6
+  aggregational_gaussianity:
+    role: core_primary
+    scope: all_symbols
+    lengths: [180, 240]
+    primary_surrogate: gaussian_iid
+    relation: real_higher
+    minimum_eligible_symbols: 6
+  volume_volatility_corr:
+    role: core_primary
+    scope: volume_etfs_only
+    symbols: [SPY, EEM, TLT, EWJ]
+    lengths: [120, 240]
+    primary_surrogate: volume_alignment_break
+    relation: real_higher
+    minimum_eligible_symbols: 3
+  conditional_kurtosis:
+    role: secondary_falsification
+    scope: all_symbols
+    lengths: [240]
+    primary_surrogate: gaussian_iid
+    relation: real_higher
+    minimum_eligible_symbols: 6
+  gain_loss_asymmetry:
+    estimand: unbiased_sample_skewness
+    role: secondary_falsification
+    scope: equity_indices_only
+    symbols: [^DJI, ^RUT, ^N225, ^FTSE, ^GDAXI, ^HSI]
+    lengths: [240]
+    primary_surrogate: sign_randomization
+    relation: real_lower
+    minimum_eligible_symbols: 4
+  zumbach_asymmetry:
+    role: diagnostic_only
+    scope: all_symbols
+    lengths: [180, 240]
+    primary_surrogate: temporal_joint_permutation
+    relation: report_no_eligibility_decision
+
+conformal:
+  center: reference_split_median_per_symbol_fact_length
+  nonconformity: absolute_deviation_from_reference_median
+  calibration_split: conformal_calibration
+  alpha: 0.20
+  finite_sample_order_index: ceil((n_calibration_blocks + 1) * (1 - alpha))
+  insufficient_if_order_index_exceeds_n_calibration_blocks: true
+  minimum_observed_confirmation_coverage: 0.75
+  minimum_observed_temporal_coverage: 0.75
+  both_periods_required: true
+
+surrogates:
+  replicates_per_real_block: 8
+  root_seed: 812400
+  generation_splits: [reference, conformal_calibration]
+  types:
+    temporal_joint_permutation: same_permutation_for_return_and_aligned_volume
+    sign_randomization: independent_rademacher_multiplier_on_returns_volume_unchanged
+    volume_alignment_break: nonzero_circular_shift_of_volume_returns_unchanged
+    gaussian_iid: exact_sample_mean_and_population_std_matched_returns_independently_permuted_volume
+
+eligibility:
+  all_original_and_surrogate_estimates_finite: true
+  original_finiteness_splits: [reference, conformal_calibration, confirmation, temporal_test]
+  report_only_guard_excluded_from_selection: true
+  block_count_gate_precedes_metric_computation: true
+  paired_effect: real_estimate_minus_within_block_surrogate_median
+  pooled_iqr_population: all_real_and_all_surrogate_replicate_estimates
+  pooled_iqr_quantile_method: numpy_linear
+  direction_ties_count_as_pass: false
+  nonpositive_pooled_iqr: fail_closed
+  directional_relation_minimum_paired_block_fraction: 0.75
+  directional_relation_minimum_abs_median_effect_in_pooled_iqr_units: 0.50
+  equivalence_maximum_abs_median_effect_in_pooled_iqr_units: 0.50
+  metric_eligible_only_if_every_applicable_length_passes: true
+
+decision:
+  core_suite_required_metrics: [autocorr_returns, acf_squared_returns, aggregational_gaussianity, volume_volatility_corr]
+  core_suite_qualified_only_if_every_required_metric_eligible: true
+  secondary_metrics_cannot_rescue_core_failure: true
+  pass_allows_only_evaluator_specification_not_model_scoring: true
+  instrument_holdout_pass_does_not_establish_time_independent_universality: true
+  no_post_result_threshold_scope_length_or_symbol_changes: true
+  acquisition_or_block_count_failure: mark_symbol_length_ineligible_without_replacement
+  core_failure: stop_short_block_evaluator_and_do_not_train_ecomd_v2
+
+compute:
+  cpu_only: true
+  gpu_forbidden: true
+  paid_data_forbidden: true
+  h20_forbidden: true
