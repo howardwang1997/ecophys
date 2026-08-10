@@ -20,13 +20,13 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass, field, replace
-from typing import Any
+from typing import Any, Literal
 
 import torch
 import torch.nn as nn
 from torch import Tensor
 
-from ..physics.integrator import LangevinIntegrator, OverdampedLangevin
+from ..physics.integrator import IntegratorStep, LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
 from .agent_memory import AgentMemoryConfig, AgentMemoryGRU
 from .ecomd_v2 import EcoMDv2Config, EcoMDv2Potential
@@ -47,6 +47,7 @@ from .potentials import (
     dissipative_forces,
 )
 from .price_formation import (
+    ExcessDemandPrice,
     PriceFormation,
     PriceState,
     build_price_formation,
@@ -328,7 +329,7 @@ class EcoMDConfig:
     lam_dissipation: float = 0.01
     learn_gamma: bool = True
     learn_temperature: bool = True
-    noise_dist: str = "normal"               # 'normal' | 't' (Student-t, v0.6+) | 'levy' (α-stable, v4)
+    noise_dist: Literal["normal", "t", "levy"] = "normal"
     noise_df: int = 5                        # only used when noise_dist='t'
     # V4 mechanism 1 — symmetric α-stable (Lévy) noise via Chambers-Mallows-
     # Stuck. α=2 ≈ Normal; α<2 is heavy-tailed (infinite variance for α<2).
@@ -378,7 +379,7 @@ class EcoMDConfig:
     # (leverage-asymmetric variant). Both = 0 → no-op.
     zumbach_feedback_lambda: float = 0.0
     zumbach_feedback_strength: float = 0.0
-    zumbach_feedback_mode: str = "abs"  # 'abs' | 'downside'
+    zumbach_feedback_mode: Literal["abs", "downside"] = "abs"
     # B-round mechanism 4 — power-law external potential. Replaces the MLP
     # external potential with V_ext(s) = w_mlp · MLP + w_pow · |s|^α / α.
     # Sub-linear restoring force at large |s| produces fat-tailed return
@@ -456,8 +457,8 @@ class EcoMDConfig:
     # If twopop_enabled and pairwise_kind != ecomd_v2, we still build a type
     # vector of length k_types using v2_type_seed.
     twopop_enabled: bool = False
-    twopop_gamma_scale: tuple = (1.0, 1.0, 1.0, 1.0)  # per-type multiplier on γ
-    twopop_temp_scale: tuple  = (1.0, 1.0, 1.0, 1.0)  # per-type multiplier on T
+    twopop_gamma_scale: tuple[float, ...] = (1.0, 1.0, 1.0, 1.0)
+    twopop_temp_scale: tuple[float, ...] = (1.0, 1.0, 1.0, 1.0)
     # BPTT gradient checkpointing (paper-a-loss-redesign 2026-04-26):
     # 0 = off (store all activations, original behavior).
     # K > 0 = wrap rollout_chunk in groups of K steps via
@@ -721,6 +722,7 @@ class EcoMDSimulator(nn.Module):
         # ``global_state_into_pair`` flag only gates the pair side).
         if self.cfg.global_state_enabled:
             ext_ctx_dim += self.cfg.global_state_d
+        external: ExternalPotential | PowerLawExternalPotential
         if self.cfg.power_law_external:
             external = PowerLawExternalPotential(
                 d=d, context_dim=ext_ctx_dim, hidden=self.cfg.hidden,
@@ -1209,9 +1211,12 @@ class EcoMDSimulator(nn.Module):
         # incoming price_state.vol_latent is v_{t-1} (end of previous step), so
         # this step's noise reacts to the current vol level. Differentiable in
         # both rollout paths (computed fresh inside step()).
-        if (self.cfg.sv_integrator_enabled
-                and price_state.vol_latent is not None
-                and getattr(self.price_formation, "sv", None) is not None):
+        if (
+            self.cfg.sv_integrator_enabled
+            and price_state.vol_latent is not None
+            and isinstance(self.price_formation, ExcessDemandPrice)
+            and self.price_formation.sv is not None
+        ):
             vbar = self.price_formation.sv.vbar(price_state.vol_latent)
             noise_scale_mult = noise_scale_mult * torch.exp(
                 float(self.cfg.sv_integrator_gain) * vbar
@@ -1223,7 +1228,7 @@ class EcoMDSimulator(nn.Module):
         s_outer_in = s
         s_running = s
         s_prev_running = s_prev
-        last_step_out = None
+        last_step_out: IntegratorStep | None = None
         # Bind the rollout's seeded generator to the stochastic pairwise
         # potential's edge sampler so torch.rand draws inside
         # _sample_edges are reproducible (fixes the unsedeed
@@ -1258,7 +1263,9 @@ class EcoMDSimulator(nn.Module):
             )
             s_prev_running = s_running
             s_running = last_step_out.s_next
-        step_out = last_step_out  # last inner step's IntegratorStep (forces, velocity)
+        if last_step_out is None:
+            raise RuntimeError("inner agent-dynamics loop produced no step")
+        step_out = last_step_out
 
         price_step = self.price_formation.step(
             state=price_state,
@@ -1599,22 +1606,24 @@ class EcoMDSimulator(nn.Module):
             # channels (f_cons, velocities, etc.) are detached — see
             # bptt_step_function.py docstring.
             from .bptt_step_function import step_via_function
-            zero_aux = lambda shape, dtype=s.dtype: torch.zeros(
-                shape, device=s.device, dtype=dtype
-            )
+            def zero_aux(
+                shape: tuple[int, ...] | torch.Size,
+                dtype: torch.dtype = s.dtype,
+            ) -> Tensor:
+                return torch.zeros(shape, device=s.device, dtype=dtype)
             for k in range(n_steps):
-                step_noise_mult: float = 1.0
+                custom_noise_mult: float = 1.0
                 if ss_active:
                     u = torch.rand((), generator=generator, device=s.device, dtype=s.dtype)
                     if float(u) < ss_prob:
-                        step_noise_mult = ss_sigma_mult
+                        custom_noise_mult = ss_sigma_mult
                 (s_next, s_prev_next, price_state,
                  h_regime, h_agent, h_global, log_return) = step_via_function(
                     self, s, s_prev, price_state,
                     generator=generator,
                     h_regime=h_regime, h_agent=h_agent, h_global=h_global,
                     step_idx=k,
-                    noise_scale_mult=step_noise_mult,
+                    noise_scale_mult=custom_noise_mult,
                 )
                 # Recorder gets log_return live; aux channels detached
                 # placeholders to keep schema compatible with downstream code.
@@ -1707,24 +1716,29 @@ class EcoMDSimulator(nn.Module):
                 gen_state_before = None
 
             def _run_group(
-                s_in, s_prev_in,
-                lp_in, llr_in, vol_in, hk_in, hkl_in,
-                h_reg_in,
-                h_agent_in,
-                h_global_in,
+                s_in: Tensor,
+                s_prev_in: Tensor,
+                lp_in: Tensor,
+                llr_in: Tensor,
+                vol_in: Tensor,
+                hk_in: Tensor,
+                hkl_in: Tensor,
+                h_reg_in: Tensor,
+                h_agent_in: Tensor,
+                h_global_in: Tensor,
                 # Closure-captured constants (bound at definition time):
-                _step_start=local_step_start,
-                _this_group=this_group,
-                _gen=generator,
-                _gen_state=gen_state_before,
-                _has_hawkes=has_hawkes,
-                _has_hawkes_long=has_hawkes_long,
-                _has_regime=has_regime,
-                _has_agent=has_agent,
-                _has_global=has_global,
-                _create_graph=create_graph,
-                _sim=sim_self,
-            ):
+                _step_start: int = local_step_start,
+                _this_group: int = this_group,
+                _gen: torch.Generator | None = generator,
+                _gen_state: Tensor | None = gen_state_before,
+                _has_hawkes: bool = has_hawkes,
+                _has_hawkes_long: bool = has_hawkes_long,
+                _has_regime: bool = has_regime,
+                _has_agent: bool = has_agent,
+                _has_global: bool = has_global,
+                _create_graph: bool = create_graph,
+                _sim: EcoMDSimulator = sim_self,
+            ) -> tuple[Tensor, ...]:
                 # Restore RNG state at start of group — happens both on
                 # initial forward (no-op, gen already there) and on recompute
                 # during backward (rewinds gen).

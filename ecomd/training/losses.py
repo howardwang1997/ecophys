@@ -374,6 +374,10 @@ def build_targets_from_returns(
         acf = float(acf_sq_mean(r, max_lag=max_lag).item())
         lev = float(leverage_effect_sum(r, max_lag=max_lag).item())
         hill = float(soft_hill_tail_index(r, k_frac=k_frac).item())
+        skew: float | None
+        agg: float | None
+        fano: float | None
+        dfa: float | None
         if include_multi_fact:
             skew = float(fact_surrogates.gain_loss_skew(r).item())
             agg = float(fact_surrogates.agg_gaussianity(r, scale_large=agg_gauss_scale_large).item())

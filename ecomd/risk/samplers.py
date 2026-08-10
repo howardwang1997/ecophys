@@ -8,9 +8,13 @@ Each sampler follows the protocol expected by ``rolling_backtest``:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Literal, cast
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from ecomd.baselines.garch import GARCH11
+    from ecomd.models.ecomd import EcoMDSimulator
 
 
 class HistoricalSampler:
@@ -58,10 +62,10 @@ class GARCHSampler:
             raise ValueError(f"dist must be 'normal' or 't', got {dist!r}")
         if fit_window < 100:
             raise ValueError(f"fit_window must be ≥ 100, got {fit_window}")
-        self.dist = dist
+        self.dist = cast(Literal["normal", "t"], dist)
         self.fit_window = fit_window
         self.refit_every = int(refit_every)
-        self._model = None  # lazy
+        self._model: GARCH11 | None = None
         self._step_counter: int = 0
         self._n_calls: int = 0
 
@@ -138,7 +142,7 @@ class EcoMDSampler:
         self.checkpoint_path = Path(checkpoint_path)
         self.config_path = Path(config_path)
         self.device = device
-        self._sim = None  # lazy
+        self._sim: EcoMDSimulator | None = None
 
     def _load(self) -> None:
         if self._sim is not None:

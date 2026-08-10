@@ -20,9 +20,12 @@ and score_phase.py work unchanged):
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import torch
 import torch.nn as nn
+from torch import Tensor
 
 
 def _sinusoidal_embed(t: torch.Tensor, dim: int) -> torch.Tensor:
@@ -43,6 +46,7 @@ class _Denoiser(nn.Module):
         super().__init__()
         self.conditional = conditional
         self.t_embed = t_embed
+        self.ctx_enc: nn.Sequential | None
         if conditional:
             # Encode the (context, 2) window [r, |r|] → cond vector.
             self.ctx_enc = nn.Sequential(
@@ -64,7 +68,7 @@ class _Denoiser(nn.Module):
         parts = [x_t, te]
         if self.conditional and self.ctx_enc is not None:
             parts.append(self.ctx_enc(ctx.reshape(ctx.size(0), -1)))
-        return self.net(torch.cat(parts, dim=-1))
+        return cast(Tensor, self.net(torch.cat(parts, dim=-1)))
 
 
 class ScoreDiffusionSimulator:

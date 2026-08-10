@@ -11,7 +11,7 @@ Design choices vs. existing latents
 
 | latent | input | output | shapes V? |
 |---|---|---|---|
-| ``h_regime`` | market_stats (price summary) | scalar multipliers on γ, T, κ | NO (modulates rates only) |
+| ``h_regime`` | market_stats (price summary) | scalar rate multipliers | NO (modulates rates only) |
 | ``h_agent`` | per-agent (s_i, log_return, vol) | mean-pooled into external context | partial (only external) |
 | ``u`` (this) | aggregated ⟨s⟩ + market_stats + (optional) ⟨h_agent⟩ | concatenated into pair AND external inputs | YES (changes V surface itself) |
 
@@ -33,6 +33,7 @@ global "phase" that the V surface conforms to.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import torch
 import torch.nn as nn
@@ -110,4 +111,4 @@ class GlobalStateGRU(nn.Module):
             # h_agent absent at runtime but cell expects d_agent input — pad zeros
             parts.append(torch.zeros(self.d_agent, device=u.device, dtype=u.dtype))
         x = torch.cat(parts, dim=0).unsqueeze(0)         # (1, d_input)
-        return self.cell(x, u.unsqueeze(0)).squeeze(0)
+        return cast(Tensor, self.cell(x, u.unsqueeze(0)).squeeze(0))

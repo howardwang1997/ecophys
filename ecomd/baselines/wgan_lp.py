@@ -20,9 +20,12 @@ SOTA generative model.
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import torch
 import torch.nn as nn
+from torch import Tensor
 from torch.utils.data import DataLoader, TensorDataset
 
 
@@ -48,7 +51,7 @@ class _Generator(nn.Module):
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         # z: (B, latent_dim, window)
-        return self.net(z).squeeze(1)  # (B, window)
+        return cast(Tensor, self.net(z).squeeze(1))
 
 
 class _Critic(nn.Module):
@@ -64,7 +67,7 @@ class _Critic(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.net(x.unsqueeze(1)).squeeze(-1)
+        return cast(Tensor, self.net(x.unsqueeze(1)).squeeze(-1))
 
 
 def _gradient_penalty(critic: _Critic, real: torch.Tensor, fake: torch.Tensor,
@@ -77,7 +80,7 @@ def _gradient_penalty(critic: _Critic, real: torch.Tensor, fake: torch.Tensor,
         outputs=d_interp.sum(), inputs=interp,
         create_graph=True, retain_graph=True,
     )[0]
-    return ((grads.norm(2, dim=1) - 1) ** 2).mean()
+    return cast(Tensor, ((grads.norm(2, dim=1) - 1) ** 2).mean())
 
 
 class WGANLPSimulator:
@@ -166,7 +169,7 @@ class WGANLPSimulator:
         n_win = (n_steps + self.window - 1) // self.window
         z = torch.randn(n_win, self.latent_dim, self.window, device=self.device)
         out = self.G(z).cpu().numpy().reshape(-1)[:n_steps]
-        return out * self._std + self._mean
+        return np.asarray(out * self._std + self._mean)
 
 
 __all__ = ["WGANLPSimulator"]

@@ -19,8 +19,10 @@ import logging
 import os
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 import pyarrow as pa
@@ -73,7 +75,8 @@ def _write_shards(df: pd.DataFrame, symbol: str, interval: str, out_dir: Path) -
         shard_dir.mkdir(parents=True, exist_ok=True)
         path = shard_dir / f"year={year}.parquet"
         table = pa.Table.from_pandas(year_df.drop(columns=["year"]), preserve_index=False)
-        pq.write_table(table, path, compression="zstd", compression_level=7)
+        write_table = cast(Callable[..., None], pq.write_table)
+        write_table(table, path, compression="zstd", compression_level=7)
         written.append(path)
     return written
 

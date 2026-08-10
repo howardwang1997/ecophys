@@ -26,6 +26,7 @@ import logging
 import os
 import time
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import torch
@@ -175,7 +176,7 @@ def main() -> None:
         if rank == 0:
             log.info(f"[exp123] shock {spec} at steps {list(sim._shock_schedule)}")
 
-    rank_results = []
+    rank_results: list[dict[str, Any]] = []
     for r_idx, seed in enumerate(rank_seeds):
         if torch.cuda.is_available():
             torch.cuda.reset_peak_memory_stats(local_rank)
@@ -198,7 +199,7 @@ def main() -> None:
                           if torch.cuda.is_available() else 0)
         peak_reserved = (int(torch.cuda.max_memory_reserved(local_rank))
                          if torch.cuda.is_available() else 0)
-        traj_np = None
+        traj_np: dict[str, np.ndarray | int] | None = None
         if args.save_trajectory:
             traj_np = {
                 "log_returns": returns,
@@ -233,9 +234,19 @@ def main() -> None:
         if args.save_trajectory and traj_np is not None:
             traj_path = out_dir / f"trajectory_seed{seed}.npz"
             np.savez_compressed(
-                traj_path, seed=seed, n_steps=args.n_steps,
-                n_recorded_returns=n_recorded_returns, rank=rank,
-                **traj_np,
+                traj_path,
+                seed=seed,
+                n_steps=args.n_steps,
+                n_recorded_returns=n_recorded_returns,
+                rank=rank,
+                log_returns=traj_np["log_returns"],
+                volumes=traj_np["volumes"],
+                log_prices=traj_np["log_prices"],
+                excess_demand=traj_np["excess_demand"],
+                ed_is_raw=traj_np["ed_is_raw"],
+                latent_flow_alignment=traj_np["latent_flow_alignment"],
+                ofi=traj_np["ofi"],
+                ofi_is_legacy_alias=traj_np["ofi_is_legacy_alias"],
             )
             log.info(f"[rank {rank}] saved trajectory → {traj_path.name}")
             del traj_np
@@ -249,7 +260,7 @@ def main() -> None:
         dist.barrier()
 
     if rank == 0:
-        all_results: list[dict] = []
+        all_results: list[dict[str, Any]] = []
         for r in range(world_size):
             p = out_dir / f"inference_rank_{r}.json"
             if p.exists():

@@ -25,8 +25,10 @@ import logging
 import shutil
 import urllib.request
 import zipfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -73,7 +75,7 @@ def _zip_url(symbol: str, level: int) -> str:
 def _download(url: str, timeout: float = 60.0) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": "ecophys-research/0.1"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+        return bytes(resp.read())
 
 
 def _find_csvs(zf: zipfile.ZipFile) -> tuple[str, str]:
@@ -121,7 +123,8 @@ def _parse_orderbook(csv_bytes: bytes, level: int) -> pd.DataFrame:
 def _write_parquet(df: pd.DataFrame, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     table = pa.Table.from_pandas(df, preserve_index=False)
-    pq.write_table(table, path, compression="zstd", compression_level=10)
+    write_table = cast(Callable[..., None], pq.write_table)
+    write_table(table, path, compression="zstd", compression_level=10)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

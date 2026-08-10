@@ -24,6 +24,7 @@ Notes
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import torch
 import torch.nn as nn
@@ -42,7 +43,7 @@ class AgentMemoryConfig:
 class AgentMemoryGRU(nn.Module):
     """Per-agent GRU. Each of N agents carries its own h_i ∈ R^d_memory.
 
-    State: ``h ∈ R^{N × d_memory}``.
+    State: ``h in R^{N x d_memory}``.
     Update: ``h_{t+1} = GRUCell(input_t, h_t)`` every ``update_every`` steps.
 
     Inputs per agent are a low-rank projection of the agent's current
@@ -96,7 +97,7 @@ class AgentMemoryGRU(nn.Module):
         lr = log_return.expand(n).unsqueeze(-1)
         vol = volatility.expand(n).unsqueeze(-1)
         x = torch.cat([s_proj, lr, vol], dim=-1)  # (N, d_input)
-        return self.cell(x, h_agent)
+        return cast(Tensor, self.cell(x, h_agent))
 
     def read_global(self, h_agent: Tensor) -> Tensor:
         """Mean-pool h_agent over agents → (d_memory,) for external context."""

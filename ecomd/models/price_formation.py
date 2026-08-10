@@ -28,11 +28,14 @@ Matches the common empirical proxy (shares traded).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 import torch
 import torch.nn as nn
 from torch import Tensor
+
+if TYPE_CHECKING:
+    from .stoch_vol import StochVolProcess
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Shared types
@@ -161,7 +164,7 @@ class ExcessDemandParams:
     sv_state_dep: bool = False
     sv_leverage: bool = True
     sv_v_clip: float = 3.0
-    sv_kappa_init: tuple = (0.5, 0.1, 0.02)
+    sv_kappa_init: tuple[float, ...] = (0.5, 0.1, 0.02)
     sv_xi_init: float = 0.1
     sv_gain_init: float = 0.5
     # 2026-06-01 tail-clamp probe (exp 112). The fat-tail overshoot (hill<2,
@@ -241,9 +244,11 @@ class ExcessDemandPrice(nn.Module):
         else:
             self.beta_net = None
 
+        self.sv: StochVolProcess | None
         if self.params.sv_price_enabled:
             from .stoch_vol import StochVolProcess
-            self.sv: nn.Module | None = StochVolProcess(
+
+            self.sv = StochVolProcess(
                 d_v=self.params.sv_d,
                 state_dep=self.params.sv_state_dep,
                 leverage=self.params.sv_leverage,
@@ -402,6 +407,7 @@ class ExcessDemandPrice(nn.Module):
             sign_factor = torch.ones_like(log_ret_core)
         else:  # "coherent" (default, backward compat)
             sign_factor = torch.sign(log_ret_core)
+        hawkes_mem_next: Tensor | None
         if p.hawkes_alpha > 0.0:
             mem_prev = state.hawkes_memory
             if mem_prev is None:
@@ -411,6 +417,7 @@ class ExcessDemandPrice(nn.Module):
         else:
             hawkes_mem_next = state.hawkes_memory
 
+        hawkes_mem_long_next: Tensor | None
         if p.hawkes_alpha_long > 0.0:
             mem_long_prev = state.hawkes_memory_long
             if mem_long_prev is None:
@@ -705,14 +712,14 @@ class CollectivePrice(nn.Module):
 
 def build_price_formation(kind: str, d: int, **kwargs: Any) -> PriceFormation:
     if kind == "excess_demand":
-        params = ExcessDemandParams(**kwargs) if kwargs else None
-        return ExcessDemandPrice(params)
+        excess_params = ExcessDemandParams(**kwargs) if kwargs else None
+        return ExcessDemandPrice(excess_params)
     if kind == "readout":
-        params = ReadoutParams(**kwargs) if kwargs else None
-        return ReadoutPrice(d=d, params=params)
+        readout_params = ReadoutParams(**kwargs) if kwargs else None
+        return ReadoutPrice(d=d, params=readout_params)
     if kind == "collective":
-        params = CollectiveParams(**kwargs) if kwargs else None
-        return CollectivePrice(d=d, params=params)
+        collective_params = CollectiveParams(**kwargs) if kwargs else None
+        return CollectivePrice(d=d, params=collective_params)
     raise ValueError(
         f"unknown price formation {kind!r}; "
         f"expected 'excess_demand' | 'readout' | 'collective'"

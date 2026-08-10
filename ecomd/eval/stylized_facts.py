@@ -26,6 +26,7 @@ Conventions:
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -47,7 +48,7 @@ class StylizedFactResult:
     estimate: float
     ci_low: float | None = None
     ci_high: float | None = None
-    diagnostic: dict[str, list[float]] = field(default_factory=dict)
+    diagnostic: dict[str, list[float] | list[int]] = field(default_factory=dict)
     meta: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -716,7 +717,7 @@ def compute_all(
     abs_r = np.abs(r)
     out: dict[str, StylizedFactResult] = {}
 
-    def _run(name: str, fn):
+    def _run(name: str, fn: Callable[[], StylizedFactResult]) -> None:
         if name in skip:
             return
         try:

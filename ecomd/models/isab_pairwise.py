@@ -15,9 +15,9 @@ supports it, but to avoid backend-version surprises we just write the
 attention by hand. At M=64 the einsum cost is negligible.
 
 Memory budget (N=10K, M=64, d=32, fp32):
-- attention scores (one head): 10K × 64 × 4B = 2.5 MB per layer
-- attended output: 10K × 32 × 4B = 1.3 MB per layer
-- multi-head h=4 → ×4 (still tiny)
+- attention scores (one head): 10K x 64 x 4B = 2.5 MB per layer
+- attended output: 10K x 32 x 4B = 1.3 MB per layer
+- multi-head h=4 gives a factor of 4 (still tiny)
 
 Output: a scalar V_pair to be plugged into the ConservativePotential.
 """
@@ -25,6 +25,7 @@ Output: a scalar V_pair to be plugged into the ConservativePotential.
 from __future__ import annotations
 
 import math
+from typing import cast
 
 import torch
 import torch.nn as nn
@@ -58,22 +59,22 @@ class _MultiHeadCrossAttn(nn.Module):
             nn.init.xavier_uniform_(m.weight, gain=init_gain)
 
     def forward(self, q_in: Tensor, kv_in: Tensor) -> Tensor:
-        Lq = q_in.shape[0]
-        Lkv = kv_in.shape[0]
-        H = self.n_heads
-        D = self.d_head
+        length_q = q_in.shape[0]
+        length_kv = kv_in.shape[0]
+        n_heads = self.n_heads
+        d_head = self.d_head
 
-        q = self.q_proj(q_in).view(Lq, H, D).transpose(0, 1)        # (H, Lq, D)
-        k = self.k_proj(kv_in).view(Lkv, H, D).transpose(0, 1)      # (H, Lkv, D)
-        v = self.v_proj(kv_in).view(Lkv, H, D).transpose(0, 1)      # (H, Lkv, D)
+        q = self.q_proj(q_in).view(length_q, n_heads, d_head).transpose(0, 1)
+        k = self.k_proj(kv_in).view(length_kv, n_heads, d_head).transpose(0, 1)
+        v = self.v_proj(kv_in).view(length_kv, n_heads, d_head).transpose(0, 1)
 
-        scale = 1.0 / math.sqrt(D)
+        scale = 1.0 / math.sqrt(d_head)
         scores = torch.einsum("hqd,hkd->hqk", q, k) * scale          # (H, Lq, Lkv)
         attn = torch.softmax(scores, dim=-1)
         attended = torch.einsum("hqk,hkd->hqd", attn, v)             # (H, Lq, D)
 
-        out = attended.transpose(0, 1).contiguous().view(Lq, H * D)  # (Lq, d_out)
-        return self.o_proj(out)
+        out = attended.transpose(0, 1).contiguous().view(length_q, n_heads * d_head)
+        return cast(Tensor, self.o_proj(out))
 
 
 class ISABPairwisePotential(nn.Module):
@@ -141,10 +142,11 @@ class ISABPairwisePotential(nn.Module):
         assert d == self.d, f"expected last dim {self.d}, got {d}"
 
         if self.d_global_in > 0:
-            if context is None:
-                u = torch.zeros(self.d_global_in, device=s.device, dtype=s.dtype)
-            else:
-                u = context
+            u = (
+                torch.zeros(self.d_global_in, device=s.device, dtype=s.dtype)
+                if context is None
+                else context
+            )
             u_b = u.unsqueeze(0).expand(n, self.d_global_in)
             x_in = torch.cat([s, u_b], dim=-1)
         else:
@@ -154,4 +156,4 @@ class ISABPairwisePotential(nn.Module):
         h = self.compress(self.I, x)                 # (M, hidden)
         y = self.broadcast(x, h)                     # (N, hidden)
         v = self.readout(y).squeeze(-1)              # (N,)
-        return v.sum()
+        return cast(Tensor, v.sum())

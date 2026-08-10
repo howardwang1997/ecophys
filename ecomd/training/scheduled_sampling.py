@@ -25,7 +25,10 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Literal
+from typing import TYPE_CHECKING, Literal, cast
+
+if TYPE_CHECKING:
+    from ..models.ecomd import EcoMDConfig
 
 
 RampSchedule = Literal["linear", "cosine"]
@@ -76,7 +79,7 @@ class ScheduledSamplingState:
         return self.max_prob > 0.0 and self.sigma_mult > 1.0
 
 
-def state_from_config(cfg) -> ScheduledSamplingState | None:
+def state_from_config(cfg: EcoMDConfig) -> ScheduledSamplingState | None:
     """Build a state from an EcoMDConfig (or any object with matching fields).
 
     Returns ``None`` if scheduled sampling is disabled in the config — callers
@@ -86,7 +89,7 @@ def state_from_config(cfg) -> ScheduledSamplingState | None:
         return None
     return ScheduledSamplingState(
         max_prob=float(cfg.ss_max_prob),
-        ramp_schedule=cfg.ss_ramp_schedule,
+        ramp_schedule=cast(RampSchedule, cfg.ss_ramp_schedule),
         warmup_iters=int(cfg.ss_warmup_iters),
         sigma_mult=float(cfg.ss_sigma_mult),
     )

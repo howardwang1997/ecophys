@@ -82,7 +82,7 @@ class GARCH11:
         if r.size < 100:
             raise ValueError(f"need at least 100 observations to fit GARCH(1,1); got {r.size}")
         scale = 100.0 if rescale_to_percent else 1.0
-        distribution = "t" if dist == "t" else "normal"
+        distribution: Literal["t", "normal"] = "t" if dist == "t" else "normal"
         model = arch_model(r * scale, vol="GARCH", p=1, q=1,
                            mean="Constant", dist=distribution, rescale=False)
         res = model.fit(disp="off", show_warning=False)
@@ -142,7 +142,7 @@ class GARCH11:
             # Unit-variance Student-t: divide samples by sqrt(nu/(nu-2))
             assert p.nu is not None
             raw = rng.standard_t(df=p.nu, size=n)
-            return raw / np.sqrt(p.nu / (p.nu - 2.0))
+            return np.asarray(raw / np.sqrt(p.nu / (p.nu - 2.0)), dtype=np.float64)
         raise AssertionError(p.dist)
 
     # ── Utilities ──────────────────────────────────────────────────────

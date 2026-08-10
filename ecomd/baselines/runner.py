@@ -42,9 +42,10 @@ import argparse
 import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 import numpy as np
 import yaml
@@ -56,6 +57,7 @@ from ..baselines.lux_marchesi import LuxMarchesi1999, LuxMarchesiParams
 from ..eval.stylized_facts import compute_all
 
 log = logging.getLogger("baseline_runner")
+SimulateFn = Callable[[int, int], np.ndarray]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -107,44 +109,50 @@ def _load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def _build_baseline(kind: str, baseline_cfg: dict[str, Any], real_r: np.ndarray | None):
+def _build_baseline(
+    kind: str,
+    baseline_cfg: dict[str, Any],
+    real_r: np.ndarray | None,
+) -> tuple[SimulateFn, dict[str, Any]]:
     """Returns a ``simulate(n_steps, seed)`` callable plus a metadata dict."""
     fit_from_data = bool(baseline_cfg.get("fit_from_data", False))
     params_override = dict(baseline_cfg.get("params") or {})
 
     if kind == "gbm":
         if fit_from_data and real_r is not None:
-            model = GBM.fit(real_r)
+            gbm = GBM.fit(real_r)
         else:
-            model = GBM(**params_override)
-        meta = {"kind": kind, "params": asdict(model.params)}
-        return (lambda n, seed: model.simulate(n, seed=seed)), meta
+            gbm = GBM(**params_override)
+        meta = {"kind": kind, "params": asdict(gbm.params)}
+        return (lambda n, seed: gbm.simulate(n, seed=seed)), meta
 
     if kind == "garch":
         if fit_from_data and real_r is not None:
-            dist = params_override.get("dist", "t")
-            model = GARCH11.fit(real_r, dist=dist)
+            dist = str(params_override.get("dist", "t"))
+            if dist not in ("normal", "t"):
+                raise ValueError(f"unsupported GARCH distribution: {dist!r}")
+            garch = GARCH11.fit(real_r, dist=cast(Literal["normal", "t"], dist))
         else:
-            model = GARCH11(**params_override)
-        meta = {"kind": kind, "params": asdict(model.params)}
-        return (lambda n, seed: model.simulate(n, seed=seed)), meta
+            garch = GARCH11(**params_override)
+        meta = {"kind": kind, "params": asdict(garch.params)}
+        return (lambda n, seed: garch.simulate(n, seed=seed)), meta
 
     if kind == "ar1_sv":
         if fit_from_data and real_r is not None:
-            model = AR1SV.fit(real_r)
+            ar1_sv = AR1SV.fit(real_r)
         else:
-            model = AR1SV(**params_override)
-        meta = {"kind": kind, "params": asdict(model.params)}
-        return (lambda n, seed: model.simulate(n, seed=seed)), meta
+            ar1_sv = AR1SV(**params_override)
+        meta = {"kind": kind, "params": asdict(ar1_sv.params)}
+        return (lambda n, seed: ar1_sv.simulate(n, seed=seed)), meta
 
     if kind == "lux_marchesi":
         params = LuxMarchesiParams(**params_override) if params_override else LuxMarchesiParams()
-        model = LuxMarchesi1999(params)
+        lux = LuxMarchesi1999(params)
         meta = {"kind": kind, "params": {f.name: getattr(params, f.name)
                                           for f in params.__dataclass_fields__.values()}}
         # Lux-Marchesi returns a trajectory; we expose log-returns.
-        def _sim(n, seed):
-            traj = model.run(n_steps=n + 1, dt=0.01, seed=seed)
+        def _sim(n: int, seed: int) -> np.ndarray:
+            traj = lux.run(n_steps=n + 1, dt=0.01, seed=seed)
             return traj.log_returns
         return _sim, meta
 

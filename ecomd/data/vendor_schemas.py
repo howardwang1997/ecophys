@@ -226,9 +226,13 @@ def validate(df: pd.DataFrame, schema: SchemaSpec) -> ValidationReport:
 
     # Date range coverage
     if schema.date_range_required is not None:
-        col = "trade_date" if "trade_date" in df.columns else "timestamp" if "timestamp" in df.columns else None
-        if col:
-            ts = pd.to_datetime(df[col])
+        date_col = (
+            "trade_date"
+            if "trade_date" in df.columns
+            else "timestamp" if "timestamp" in df.columns else None
+        )
+        if date_col:
+            ts = pd.to_datetime(df[date_col])
             lo_req, hi_req = schema.date_range_required
             actual_lo, actual_hi = ts.min(), ts.max()
             rep.stats["date_range"] = (str(actual_lo), str(actual_hi))

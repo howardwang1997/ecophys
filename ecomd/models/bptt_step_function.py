@@ -50,11 +50,17 @@ Constraints
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, cast
+
 import torch
 from torch import Tensor
 
 from .amp_compat import cuda_custom_bwd, cuda_custom_fwd
 from .price_formation import PriceState
+
+if TYPE_CHECKING:
+    from .ecomd import EcoMDSimulator
 
 
 class EcoMDStepFunction(torch.autograd.Function):
@@ -82,10 +88,10 @@ class EcoMDStepFunction(torch.autograd.Function):
     @staticmethod
     @cuda_custom_fwd
     def forward(
-        ctx,
-        sim,
-        generator,
-        gen_state_before,
+        ctx: Any,
+        sim: EcoMDSimulator,
+        generator: torch.Generator | None,
+        gen_state_before: Tensor | None,
         step_idx: int,
         noise_scale_mult: float,
         has_hawkes: bool,
@@ -187,7 +193,10 @@ class EcoMDStepFunction(torch.autograd.Function):
 
     @staticmethod
     @cuda_custom_bwd
-    def backward(ctx, *grad_outputs):
+    def backward(
+        ctx: Any,
+        *grad_outputs: Tensor | None,
+    ) -> tuple[Tensor | None, ...]:
         # Unpack grads matching forward output order
         (g_s_next, g_s_prev_next, g_lp, g_llr, g_vol, g_hk, g_hkl,
          g_h_reg, g_h_agent, g_h_global, g_vol_lat, g_log_return) = grad_outputs
@@ -373,7 +382,7 @@ class EcoMDStepFunction(torch.autograd.Function):
 
 
 def step_via_function(
-    sim,
+    sim: EcoMDSimulator,
     s: Tensor,
     s_prev: Tensor,
     price_state: PriceState,
@@ -396,20 +405,20 @@ def step_via_function(
     has_vol = price_state.vol_latent is not None
 
     zero_h = torch.zeros((), device=s.device, dtype=s.dtype)
-    vol_in = price_state.vol_latent if has_vol else zero_h
-    h_reg_in = h_regime if has_regime else zero_h
+    vol_in = price_state.vol_latent if price_state.vol_latent is not None else zero_h
+    h_reg_in = h_regime if h_regime is not None else zero_h
     # h_agent placeholder shape must match the real one (N, d_memory) so
     # that grad outputs flow with consistent shapes.
-    if has_agent:
-        h_agent_in = h_agent
-    else:
+    if h_agent is None:
         d_mem = sim.cfg.agent_memory_d
         h_agent_in = torch.zeros((sim.cfg.n_agents, d_mem), device=s.device, dtype=s.dtype)
-    if has_global:
-        h_global_in = h_global
     else:
+        h_agent_in = h_agent
+    if h_global is None:
         d_g = sim.cfg.global_state_d
         h_global_in = torch.zeros((d_g,), device=s.device, dtype=s.dtype)
+    else:
+        h_global_in = h_global
 
     ps_t = price_state.to_tensors()
     gen_state = (
@@ -418,7 +427,8 @@ def step_via_function(
 
     params = tuple(sim.parameters())
 
-    out = EcoMDStepFunction.apply(
+    apply_step = cast(Callable[..., tuple[Tensor, ...]], EcoMDStepFunction.apply)
+    out = apply_step(
         sim, generator, gen_state, step_idx, noise_scale_mult,
         has_hawkes, has_hawkes_long, has_regime, has_agent, has_global, has_vol,
         s, s_prev,

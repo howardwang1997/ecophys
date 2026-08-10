@@ -30,11 +30,13 @@ import hashlib
 import logging
 import os
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Any, TypeVar
 
 log = logging.getLogger("r2_sync")
+T = TypeVar("T")
 
 _DEFAULT_BUCKET = "ecophys"
 _ENV_FILE_NAMES = (".env.r2", ".env")  # searched in project root, in order
@@ -102,7 +104,7 @@ def _load_env_file(path: Path) -> None:
         os.environ.setdefault(k, v)
 
 
-def _client(cfg: R2Config):
+def _client(cfg: R2Config) -> Any:
     import boto3  # lazy
     from botocore.config import Config as BotoConfig
 
@@ -211,17 +213,17 @@ def _walk_for_upload(root: Path, remote_prefix: str) -> Iterable[tuple[Path, str
         yield p, f"{remote_prefix}/{rel}" if remote_prefix else rel
 
 
-def _list_keys(client, bucket: str, prefix: str) -> Iterable[str]:
+def _list_keys(client: Any, bucket: str, prefix: str) -> Iterable[str]:
     paginator = client.get_paginator("list_objects_v2")
     for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
         for item in page.get("Contents", []):
             yield item["Key"]
 
 
-def _remote_etag(client, bucket: str, key: str) -> str | None:
+def _remote_etag(client: Any, bucket: str, key: str) -> str | None:
     try:
         resp = client.head_object(Bucket=bucket, Key=key)
-        return resp.get("ETag", "").strip('"')
+        return str(resp.get("ETag", "")).strip('"')
     except Exception:  # noqa: BLE001
         return None
 
@@ -261,14 +263,15 @@ def _guess_mime(p: Path) -> str:
 
 
 def _human_size(n: int) -> str:
+    value = float(n)
     for unit in ["B", "KB", "MB", "GB", "TB"]:
-        if n < 1024:
-            return f"{n:.1f}{unit}"
-        n /= 1024  # type: ignore[assignment]
-    return f"{n:.1f}PB"
+        if value < 1024:
+            return f"{value:.1f}{unit}"
+        value /= 1024
+    return f"{value:.1f}PB"
 
 
-def _chunks(seq: list, size: int) -> Iterable[list]:
+def _chunks(seq: list[T], size: int) -> Iterable[list[T]]:
     for i in range(0, len(seq), size):
         yield seq[i:i + size]
 

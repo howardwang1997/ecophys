@@ -100,7 +100,7 @@ def compute_entropy_production_stats(
     )
 
 
-def per_channel_force_decomposition(traj: EcoMDTrajectory) -> dict[str, np.ndarray]:
+def per_channel_force_decomposition(traj: EcoMDTrajectory) -> dict[str, float]:
     """Mean force magnitude per channel over the trajectory.
 
     Useful for Paper A's "force probe" figure — shows which channel

@@ -23,7 +23,7 @@ Design notes
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, cast
 
 import torch
 import torch.nn as nn
@@ -84,7 +84,7 @@ class PairwisePotential(nn.Module):
         phi = 0.5 * (phi_ij + phi_ji)
 
         mask = torch.triu(torch.ones(n, n, device=s.device, dtype=torch.bool), diagonal=1)
-        return phi[mask].sum()
+        return cast(Tensor, phi[mask].sum())
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -122,6 +122,15 @@ class StochasticPairwisePotential(nn.Module):
     resample_per_step : if True, sample fresh edges each forward; if False,
         keep the same edges within a training chunk (faster but higher variance).
     """
+
+    pair_input_ln: nn.LayerNorm | None
+    type_idx: Tensor | None
+    backbone: nn.Sequential | None
+    net: nn.Sequential | None
+    head_w: nn.Parameter | None
+    head_b: nn.Parameter | None
+    gate_mlp: nn.Sequential | None
+    gate_input_ln: nn.LayerNorm | None
 
     def __init__(
         self,
@@ -191,6 +200,10 @@ class StochasticPairwisePotential(nn.Module):
         # Tier 1.2: type-aware heads. Shared backbone (all but last layer);
         # per-(src-type, dst-type) last linear → K² heads.
         self.type_aware_heads = type_aware_heads
+        self.backbone = None
+        self.net = None
+        self.head_w = None
+        self.head_b = None
         if type_aware_heads:
             assert type_idx is not None, "type_aware_heads=True requires type_idx"
             self.n_types = int(n_types)
@@ -230,14 +243,16 @@ class StochasticPairwisePotential(nn.Module):
         # Tier 4.2: gate MLP. Input is (s_i, s_j, |Δs|) plus optional u.
         # Output is a per-edge logit; we sigmoid + rescale by 1/gate_init_p
         # so E[w·phi] ≈ E[phi] at init (initial bias makes sigmoid ≈ p).
+        self.gate_mlp = None
         if self.edge_gating:
             gate_in_dim = 3 * d
             if self.gate_input_u and self.d_global_in > 0:
                 gate_in_dim += self.d_global_in
+            gate_output = nn.Linear(hidden, 1)
             self.gate_mlp = nn.Sequential(
                 nn.Linear(gate_in_dim, hidden),
                 nn.SiLU(),
-                nn.Linear(hidden, 1),
+                gate_output,
             )
             for m in self.gate_mlp.modules():
                 if isinstance(m, nn.Linear):
@@ -247,7 +262,9 @@ class StochasticPairwisePotential(nn.Module):
             import math as _math
             p = max(min(self.gate_init_p, 0.99), 0.01)
             b0 = _math.log(p / (1.0 - p))
-            self.gate_mlp[-1].bias.data.fill_(b0)
+            if gate_output.bias is not None:
+                with torch.no_grad():
+                    gate_output.bias.fill_(b0)
             # Same scale-invariance fix for the gate MLP input when
             # input_layernorm flag is on.
             if self.input_layernorm:
@@ -345,10 +362,19 @@ class StochasticPairwisePotential(nn.Module):
             inp_ij = self.pair_input_ln(inp_ij)
             inp_ji = self.pair_input_ln(inp_ji)
         if not self.type_aware_heads:
+            if self.net is None:
+                raise RuntimeError("missing shared pairwise network")
             phi_ij = self.net(inp_ij).squeeze(-1)
             phi_ji = self.net(inp_ji).squeeze(-1)
-            return 0.5 * (phi_ij + phi_ji)
+            return cast(Tensor, 0.5 * (phi_ij + phi_ji))
         # Type-aware: route each edge to its (type_src, type_dst) head.
+        if (
+            self.backbone is None
+            or self.type_idx is None
+            or self.head_w is None
+            or self.head_b is None
+        ):
+            raise RuntimeError("incomplete type-aware pairwise network")
         h_ij = self.backbone(inp_ij)                             # (E, hidden)
         h_ji = self.backbone(inp_ji)
         t_src = self.type_idx[src]                               # (E,)
@@ -361,7 +387,7 @@ class StochasticPairwisePotential(nn.Module):
         b_ji = self.head_b[head_idx_ji]
         phi_ij = (h_ij * w_ij).sum(dim=-1) + b_ij                # (E,)
         phi_ji = (h_ji * w_ji).sum(dim=-1) + b_ji
-        return 0.5 * (phi_ij + phi_ji)
+        return cast(Tensor, 0.5 * (phi_ij + phi_ji))
 
     def forward(self, s: Tensor, context: Tensor | None = None) -> Tensor:
         # Tier 4.1: when d_global_in>0, the simulator passes the global state
@@ -391,6 +417,8 @@ class StochasticPairwisePotential(nn.Module):
         # pair_features_extra mode) so it's interpretable as "should this
         # edge contribute to V at all?" rather than "with what kernel?".
         if self.edge_gating:
+            if self.gate_mlp is None:
+                raise RuntimeError("missing edge-gating network")
             gate_inp = torch.cat([s_i, s_j, (s_i - s_j).abs()], dim=-1)
             if self.gate_input_u and self.d_global_in > 0 and u is not None:
                 gate_inp = torch.cat(
@@ -450,7 +478,7 @@ class ExternalPotential(nn.Module):
         ctx = context.unsqueeze(0).expand(n, self.context_dim)
         inp = torch.cat([s, ctx], dim=-1)
         psi = self.net(inp).squeeze(-1)
-        return psi.sum()
+        return cast(Tensor, psi.sum())
 
 
 class PowerLawExternalPotential(nn.Module):
@@ -524,7 +552,7 @@ class PowerLawExternalPotential(nn.Module):
         # Clamp |s| from below so gradient at s≈0 is bounded.
         s_abs = s.abs().clamp_min(self.eps)
         psi_pow = (s_abs.pow(self.alpha) / self.alpha).sum()
-        return self.w_mlp * psi_mlp + self.w_pow * psi_pow
+        return cast(Tensor, self.w_mlp * psi_mlp + self.w_pow * psi_pow)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -563,10 +591,10 @@ class DissipationPotential(nn.Module):
 class ConservativePotential(nn.Module):
     """V_cons = V_pairwise + V_external. Learned; no dissipation."""
 
-    def __init__(self, pairwise: PairwisePotential, external: ExternalPotential) -> None:
+    def __init__(self, pairwise: Potential, external: Potential) -> None:
         super().__init__()
-        self.pairwise = pairwise
-        self.external = external
+        self.pairwise: Potential = pairwise
+        self.external: Potential = external
 
     def forward(
         self,

@@ -13,12 +13,16 @@ FunctionT = TypeVar("FunctionT", bound=Callable[..., Any])
 def cuda_custom_fwd(function: FunctionT) -> FunctionT:
     modern = getattr(torch.amp, "custom_fwd", None)
     if modern is not None:
-        return cast(FunctionT, modern(device_type="cuda")(function))
-    return cast(FunctionT, torch.cuda.amp.custom_fwd(function))
+        factory = cast(Callable[..., Callable[[FunctionT], FunctionT]], modern)
+        return factory(device_type="cuda")(function)
+    legacy = cast(Callable[[FunctionT], FunctionT], torch.cuda.amp.custom_fwd)
+    return legacy(function)
 
 
 def cuda_custom_bwd(function: FunctionT) -> FunctionT:
     modern = getattr(torch.amp, "custom_bwd", None)
     if modern is not None:
-        return cast(FunctionT, modern(device_type="cuda")(function))
-    return cast(FunctionT, torch.cuda.amp.custom_bwd(function))
+        factory = cast(Callable[..., Callable[[FunctionT], FunctionT]], modern)
+        return factory(device_type="cuda")(function)
+    legacy = cast(Callable[[FunctionT], FunctionT], torch.cuda.amp.custom_bwd)
+    return legacy(function)

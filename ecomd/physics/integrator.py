@@ -64,6 +64,8 @@ class LangevinIntegrator(Protocol):
         gamma: Tensor | float,
         dt: float,
         generator: torch.Generator | None = None,
+        update_mask: Tensor | None = None,
+        create_graph: bool = True,
         noise_scale_mult: Tensor | float = 1.0,
     ) -> IntegratorStep: ...
 
@@ -499,6 +501,8 @@ class UnderdampedLangevin:
         gamma: Tensor | float,
         dt: float,
         generator: torch.Generator | None = None,
+        update_mask: Tensor | None = None,
+        create_graph: bool = True,
         noise_scale_mult: Tensor | float = 1.0,
     ) -> IntegratorStep:
         raise NotImplementedError("UnderdampedLangevin reserved for Phase 4; use OverdampedLangevin in v0")

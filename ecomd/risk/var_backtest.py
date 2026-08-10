@@ -124,7 +124,7 @@ def christoffersen_ind_test(violations: np.ndarray) -> tuple[float, float]:
             return 0.0
         if p <= 0.0:
             return -1e9 if count > 0 else 0.0
-        return count * np.log(p)
+        return float(count * np.log(p))
 
     # Restricted (independence): both transitions use p_uncond
     ll_restricted = (

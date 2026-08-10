@@ -46,6 +46,7 @@ import torch
 import torch.distributed as dist
 import yaml
 from torch import Tensor
+from torch.amp.autocast_mode import autocast
 
 from ..eval.stylized_facts import log_returns_from_prices
 from ..models.ecomd import EcoMDConfig, EcoMDSimulator, SimulatorState
@@ -544,7 +545,7 @@ def _compute_rollout_reg_loss(
     n_done = 0
     while n_done < steps:
         n_step = min(chunk, steps - n_done)
-        with torch.amp.autocast(device_type=amp_device_type, dtype=amp_dtype, enabled=use_amp):
+        with autocast(device_type=amp_device_type, dtype=amp_dtype, enabled=use_amp):
             if state_complete:
                 if simulator_state is None:
                     raise RuntimeError("missing state-complete rollout state")
@@ -763,7 +764,7 @@ def train_distributed(
                 simulator_state = simulator_state.detached()
             ss_prob = ss_state.get_prob(it) if ss_state is not None else 0.0
             ss_sigma_mult = ss_state.sigma_mult if ss_state is not None else 1.0
-            with torch.amp.autocast(
+            with autocast(
                 device_type=amp_device_type,
                 dtype=amp_dtype,
                 enabled=use_amp,
@@ -792,7 +793,7 @@ def train_distributed(
 
             ss_prob = ss_state.get_prob(it) if ss_state is not None else 0.0
             ss_sigma_mult = ss_state.sigma_mult if ss_state is not None else 1.0
-            with torch.amp.autocast(
+            with autocast(
                 device_type=amp_device_type,
                 dtype=amp_dtype,
                 enabled=use_amp,
@@ -834,13 +835,15 @@ def train_distributed(
         if use_amp:
             sim_returns = sim_returns.float()
         per_asset_outs: dict[str, dict[str, Tensor]] = {}
-        total = None
+        total: Tensor | None = None
         out: dict[str, Tensor] = {}
         for lbl, ts, w in targets_list:
             out_a = compute_loss(sim_returns, None, ts, weights)
             per_asset_outs[lbl] = out_a
             term = w * out_a["total"]
             total = term if total is None else (total + term)
+        if total is None:
+            raise ValueError("training requires at least one target")
         # For logging, expose per-asset acf_sim/leverage_sim/hill_sim under the
         # default-asset name so existing log readers still work; also store
         # all assets as <metric>_<label>.
@@ -882,7 +885,7 @@ def train_distributed(
                 w_lb = float(getattr(sim.cfg, "moe_load_balance_w", 0.0))
                 total = total + w_lb * lb
 
-        total.backward()
+        torch.autograd.backward(total)
 
         # Post-backward: restore the generator state to where forward ended.
         # Without this, with BPTT checkpointing on, gen would be rewound by

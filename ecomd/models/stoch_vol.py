@@ -78,6 +78,7 @@ class StochVolProcess(nn.Module):
         self.log_xi = nn.Parameter(torch.full((self.d_v,), float(torch.log(torch.tensor(xi_init)))))
         self.g = nn.Parameter(torch.tensor(float(gain_init)))    # global gain on log-vol -> scale
 
+        self.mlp: nn.Sequential | None
         if self.state_dep:
             # Shared small MLP applied per component: features (d_v, 4) -> (d_v, 1).
             self.mlp = nn.Sequential(

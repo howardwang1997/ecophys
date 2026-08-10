@@ -25,9 +25,11 @@ import os
 import sys
 import time
 import zipfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 import pyarrow as pa
@@ -86,7 +88,7 @@ def _download_zip(url: str, retries: int, sleep_between: float) -> bytes | None:
                 log.info("not found (likely before listing): %s", url)
                 return None
             resp.raise_for_status()
-            return resp.content
+            return bytes(resp.content)
         except Exception as exc:  # noqa: BLE001
             last_err = exc
             log.warning("attempt %d failed for %s: %s", attempt, url, exc)
@@ -127,7 +129,8 @@ def _write(df: pd.DataFrame, symbol: str, market: str, interval: str, year: int,
     shard_dir.mkdir(parents=True, exist_ok=True)
     path = shard_dir / f"month={month:02d}.parquet"
     table = pa.Table.from_pandas(df, preserve_index=False)
-    pq.write_table(table, path, compression="zstd", compression_level=7)
+    write_table = cast(Callable[..., None], pq.write_table)
+    write_table(table, path, compression="zstd", compression_level=7)
     return path
 
 

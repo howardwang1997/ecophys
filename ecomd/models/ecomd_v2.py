@@ -31,6 +31,7 @@ orthogonal to this file.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import torch
 import torch.nn as nn
@@ -95,6 +96,8 @@ class TypeEmbedding(nn.Module):
     so different simulator instances get reproducible label assignments.
     """
 
+    labels: Tensor
+
     def __init__(self, n_agents: int, k_types: int, d_type_emb: int,
                  generator: torch.Generator | None = None) -> None:
         super().__init__()
@@ -113,7 +116,7 @@ class TypeEmbedding(nn.Module):
 
     def forward(self) -> tuple[Tensor, Tensor]:
         """Return (labels[N], embeddings[N, d_type_emb])."""
-        emb = self.embedding(self.labels)       # (N, d_type_emb)
+        emb = cast(Tensor, self.embedding(self.labels))
         return self.labels, emb
 
     def resample_labels(self, generator: torch.Generator | None = None) -> None:
@@ -166,6 +169,8 @@ class KyleGlobalPotential(nn.Module):
     whether it's positive (anti-herding) or negative (herding).
     """
 
+    lambda_raw: Tensor
+
     def __init__(self, d_state: int, d_type_emb: int, d_pi: int, hidden: int,
                  lambda_init: float = 0.01, lambda_learnable: bool = True,
                  init_gain: float = 0.5) -> None:
@@ -206,7 +211,7 @@ class KyleGlobalPotential(nn.Module):
         pi = self.pi_net(inp)                                  # (N, d_pi)
         n = pi.shape[0]
         agg = pi.sum(dim=0) / max(n, 1)                        # (d_pi,) — mean, scale-inv
-        return self.lambda_raw * (agg * agg).sum()             # scalar
+        return cast(Tensor, self.lambda_raw * (agg * agg).sum())
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -314,7 +319,7 @@ class TypedRelationalPotential(nn.Module):
 
         # Weighted edge sum, with unbiased rescaling (N-1)/(2k)
         scale = (n - 1) / (2.0 * self.k_random)
-        return scale * (coupling * phi).sum()
+        return cast(Tensor, scale * (coupling * phi).sum())
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -364,7 +369,7 @@ class EcoMDv2Potential(nn.Module):
         if self.kyle is not None:
             v = v + self.kyle(s, emb, gauge_axis=self.cfg.gauge_axis)
         v = v + self.rel(s, labels, emb, gauge_axis=self.cfg.gauge_axis)
-        return v
+        return cast(Tensor, v)
 
 
 __all__ = [

@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -55,7 +56,7 @@ class CalibrationRun:
     n_iters_actual: int = 0
     facts_pass: int = 0
     facts_total: int = 11
-    fact_values: dict = field(default_factory=dict)
+    fact_values: dict[str, Any] = field(default_factory=dict)
     out_dir: Path | None = None
 
     @property
@@ -63,7 +64,7 @@ class CalibrationRun:
         return self.facts_pass / max(self.facts_total, 1)
 
 
-def _count_facts_pass(aggregated: dict) -> int:
+def _count_facts_pass(aggregated: dict[str, Any]) -> int:
     n = 0
     for fact, band in _PASS_BANDS.items():
         rec = aggregated.get(fact)

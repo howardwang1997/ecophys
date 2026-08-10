@@ -75,6 +75,9 @@ class GaussianRBF(nn.Module):
     Centers evenly spaced on [0, cutoff]; widths fixed to spacing/2.
     """
 
+    centers: Tensor
+    width: Tensor
+
     def __init__(self, n_rbf: int, cutoff: float) -> None:
         super().__init__()
         centers = torch.linspace(0.0, cutoff, n_rbf)

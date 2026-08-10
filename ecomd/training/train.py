@@ -131,7 +131,7 @@ def train_ecomd(
         sim_returns = traj.log_returns[start:]
         out = moment_matching_loss(sim_returns, targets, weights)
         total = out["total"]
-        total.backward()
+        torch.autograd.backward(total)
 
         with torch.no_grad():
             grad_sq = torch.tensor(0.0)

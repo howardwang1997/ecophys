@@ -2,8 +2,8 @@
 
 Plan v3 §Phase B: a slow latent variable h_regime ∈ R^d_regime that
 captures the current market "regime" (high/low vol, trending/ranging,
-crisis/calm). Modulates Hawkes self-excitation strength κ and Langevin
-parameters γ, T so the simulator can produce different behaviour in
+crisis/calm). Modulates Hawkes self-excitation and Langevin parameters
+so the simulator can produce different behaviour in
 different regimes without changing its weights.
 
 Design choices
@@ -15,7 +15,7 @@ Design choices
 - **Aggregate stats input**: takes per-window market features (vol, |r|
   mean, log-return, returns autocorr proxy) — never raw agent state.
 - **Read heads**: output `h_regime` is consumed by separate small MLP
-  heads in ExcessDemandPrice (κ_eff(h)) and EcoMDSimulator (γ_eff(h),
+  heads in ExcessDemandPrice and EcoMDSimulator (effective friction and
   T_eff(h)). The heads are owned by their consumers, not by RegimeGRU.
 
 The latent's rank is broadcast to all positions in the rollout. This
@@ -26,6 +26,7 @@ regime would need a different design (out of scope for v3).
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import torch
 import torch.nn as nn
@@ -75,7 +76,7 @@ class RegimeGRU(nn.Module):
         if step_idx % self.cfg.update_every != 0:
             return h
         x = market_stats.unsqueeze(0)
-        h_new = self.cell(x, h.unsqueeze(0)).squeeze(0)
+        h_new = cast(Tensor, self.cell(x, h.unsqueeze(0)).squeeze(0))
         return h_new
 
     def read(self, h: Tensor) -> Tensor:
@@ -87,8 +88,8 @@ class RegimeGRU(nn.Module):
 class RegimeReadHead(nn.Module):
     """Small MLP turning h_regime → scalar multiplier for a given param.
 
-    Used by ExcessDemandPrice for κ_eff(h_regime) and by EcoMDSimulator
-    for γ_eff(h_regime), T_eff(h_regime). Output is bounded via softplus
+    Used by ExcessDemandPrice and by EcoMDSimulator for effective friction
+    and temperature. Output is bounded via softplus
     around 1.0 so the multiplier stays positive.
     """
 
@@ -195,7 +196,7 @@ class DiscreteRegimeGRU(nn.Module):
         if step_idx % self.cfg.update_every != 0:
             return h
         x = market_stats.unsqueeze(0)
-        new_logits = self.cell(x, h.unsqueeze(0)).squeeze(0)
+        new_logits = cast(Tensor, self.cell(x, h.unsqueeze(0)).squeeze(0))
         return new_logits
 
     def read(self, h: Tensor) -> Tensor:
