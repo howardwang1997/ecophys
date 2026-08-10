@@ -80,3 +80,16 @@ metadata:
   Future expansion may use more non-H20 hardware; H20 remains excluded.
 - R0--R3 are operationally complete for S0, which is ready but not published. S1 remains blocked. Next freeze one
   M0 model configuration and its traceability/resource contract; only then may an M1 V100 pilot be queued.
+
+## M0 freeze and implementation — 2026-08-11
+
+- The unique pre-implementation contract is committed at `2701833bcf7ba42803995745cd0fd338762b9ce0` and
+  implemented by `configs/ecomd_v1/m0_reference.yaml`. Its raw SHA-256 is
+  `8e161bee28a4712e9a152539894ad6a9193d2311498fa066d24e16427e9ffa33`.
+- Reference architecture: N=256, d=32, hidden=96, stochastic symmetric k=50 pair MLP with Kac normalization,
+  global GRU, four fixed friction/temperature types, Gaussian bath, zero jumps, normalized aggregate demand and
+  fixed square-root impact. The model has 36,541 parameters. Long-rollout regularization is disabled.
+- Kac/full-neighbour tests now lock dense-vs-stochastic energy and force equality. The stochastic estimator also
+  scales by the actual sampled partner count when N is smaller than configured k, removing a small-N bias.
+- A dirty-worktree debug run of the production trainer passed the data-free CPU exact-resume gate in about 5.8
+  seconds. It is diagnostic only. A clean committed-SHA report remains required before either V100 starts.

@@ -31,7 +31,12 @@ Run the data-free CPU checks:
 conda run -n ecophys python examples/ecomd_cpu_smoke.py
 conda run -n ecophys python -m pytest tests/test_ecomd_smoke.py \
   tests/test_simulator_state.py tests/test_release_contract.py -q
+conda run -n ecophys python scripts/run_m0_cpu_feasibility.py --require-clean
 ```
+
+The M0 feasibility command uses the frozen reference architecture with only the
+pre-registered CPU overrides (`n_agents=64`, `n_iters=2`). It compares continuous
+training against exact interrupt/resume and does not measure market fidelity.
 
 Production training configurations intended for a future checkpoint release must include
 `training.release_contract_version: 1`. The loader then hard-fails unless complete and

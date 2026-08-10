@@ -526,9 +526,10 @@ def _compute_rollout_reg_loss(
     state_complete: bool = False,
 ) -> Tensor | None:
     """Multi-chunk truncated-BPTT rollout from fresh init, with SF loss
-    computed on the concatenated returns. Each chunk's gradient flows to
-    params independently (state detached at boundary), so peak memory at
-    backward ≈ ONE chunk's V-graph — same as main training.
+    computed on the concatenated returns. State is detached at each chunk
+    boundary, but all chunk graphs remain reachable from the concatenated
+    loss until backward; activation memory therefore grows with the number
+    of chunks.
 
     Returns the SF loss (already in fp32) or None if no usable returns.
     """
@@ -853,11 +854,10 @@ def train_distributed(
         out["total"] = total
 
         # Long-horizon rollout regularization (057): every K iters, compute
-        # SF loss over a fresh-init multi-chunk rollout. Each chunk has its
-        # own gradient graph (state detached at chunk boundary, so memory
-        # peaks at one chunk's V-graph). Goal: reduce the train(24-step) /
-        # eval(4000-step) horizon mismatch by giving the model supervision
-        # on a longer trajectory.
+        # SF loss over a fresh-init multi-chunk rollout. State gradients stop
+        # at each boundary, but the concatenated loss retains every chunk's
+        # activation graph until backward. Goal: reduce the train/eval horizon
+        # mismatch by giving the model supervision on a longer trajectory.
         reg_loss_val = 0.0
         if rollout_reg_cfg and rollout_reg_cfg.get("enabled") and \
                 (it % max(1, rollout_reg_cfg.get("every", 5)) == 0):

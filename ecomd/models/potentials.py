@@ -53,9 +53,15 @@ class PairwisePotential(nn.Module):
     permutation-invariant.
     """
 
-    def __init__(self, d: int, hidden: int = 64) -> None:
+    def __init__(
+        self,
+        d: int,
+        hidden: int = 64,
+        kac_normalize: bool = False,
+    ) -> None:
         super().__init__()
         self.d = d
+        self.kac_normalize = bool(kac_normalize)
         self.net = nn.Sequential(
             nn.Linear(3 * d, hidden),
             nn.SiLU(),
@@ -84,7 +90,10 @@ class PairwisePotential(nn.Module):
         phi = 0.5 * (phi_ij + phi_ji)
 
         mask = torch.triu(torch.ones(n, n, device=s.device, dtype=torch.bool), diagonal=1)
-        return cast(Tensor, phi[mask].sum())
+        energy = phi[mask].sum()
+        if self.kac_normalize:
+            energy = energy / max(n - 1, 1)
+        return cast(Tensor, energy)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -96,8 +105,8 @@ class StochasticPairwisePotential(nn.Module):
     """Same symmetric pair kernel as ``PairwisePotential`` but evaluated on a
     random subset of pairs per forward pass.
 
-    Each agent i samples ``k_random`` other agents uniformly (with replacement
-    excluded from self). The full V = Σ_{i<j} φ(s_i, s_j) is estimated by
+    Each agent i samples ``k_random`` other agents uniformly without
+    replacement. The full V = Σ_{i<j} φ(s_i, s_j) is estimated by
 
         V_stoch(s) = (N-1)/(2k) · Σ_{(i,j) ∈ E_random} φ(s_i, s_j)
 
@@ -105,8 +114,9 @@ class StochasticPairwisePotential(nn.Module):
     P = N(N-1)/2 and E = N·k. At N=10^4, k=50 → std-to-signal ~10%,
     comparable to minibatch SGD noise.
 
-    Memory cost: O(N·k·d) forward per step (vs O(N²·d) for the dense
-    version), enabling N ≥ 10^4 on a single H20 card.
+    With ``kac_normalize=True``, the estimator is additionally divided by
+    ``N-1`` so the pair energy is extensive. Memory cost is O(N·k·d)
+    forward per step (vs O(N²·d) for the dense version).
 
     Key design choice vs MACE-lite's k-NN: **pairs are sampled uniformly at
     random**, not by feature-space proximity. Random sampling gives an
@@ -147,12 +157,16 @@ class StochasticPairwisePotential(nn.Module):
         gate_init_p: float = 0.7,
         gate_input_u: bool = True,
         input_layernorm: bool = False,
+        kac_normalize: bool = False,
     ) -> None:
         super().__init__()
+        if k_random < 1:
+            raise ValueError("k_random must be positive")
         self.d = d
         self.k_random = k_random
         self.resample_per_step = resample_per_step
         self.d_global_in = int(d_global_in)
+        self.kac_normalize = bool(kac_normalize)
         # Optional per-rollout torch.Generator for deterministic edge
         # sampling. Set externally by :meth:`EcoMDSimulator.step` to the
         # rollout's seeded generator. When None, falls back to global RNG
@@ -287,6 +301,8 @@ class StochasticPairwisePotential(nn.Module):
         attribute is absent or ``None`` (legacy / direct test calls), falls
         back to the global torch RNG — same behavior as pre-2026-05-22.
         """
+        if n < 2:
+            raise ValueError("stochastic pair potential requires at least two agents")
         k = min(self.k_random, n - 1)
         # For each i ∈ [n], pick k distinct j ≠ i. Use torch.randperm per-row,
         # then drop self-match. Vectorized with rand + topk.
@@ -435,7 +451,12 @@ class StochasticPairwisePotential(nn.Module):
         # Each agent contributes k random partners → N·k ordered edges, but
         # the original V_full sum is over unordered pairs. The factor
         # (N-1)/(2k) makes E[V_stoch] = V_full.
-        scale = (n - 1) / (2.0 * self.k_random)
+        k_actual = min(self.k_random, n - 1)
+        scale = (
+            1.0 / (2.0 * k_actual)
+            if self.kac_normalize
+            else (n - 1) / (2.0 * k_actual)
+        )
         return scale * phi.sum()
 
 

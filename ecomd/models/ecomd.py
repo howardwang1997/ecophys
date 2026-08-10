@@ -416,6 +416,7 @@ class EcoMDConfig:
                                          # to total loss (training loop only)
     # v1 (MACE-lite) settings — only used when pairwise_kind == "mace_lite"
     pairwise_kind: str = "mlp"               # 'mlp' (v0.x) or 'mace_lite' (v1+)
+    pairwise_kac_normalize: bool = False
     mace_k: int = 16                         # k-NN neighbours
     mace_body_order: int = 2                 # 2, 3, or 4
     mace_n_classes: int = 4                  # K agent-type classes
@@ -646,7 +647,11 @@ class EcoMDSimulator(nn.Module):
 
         pairwise: nn.Module
         if self.cfg.pairwise_kind == "mlp":
-            pairwise = PairwisePotential(d=d, hidden=self.cfg.hidden)
+            pairwise = PairwisePotential(
+                d=d,
+                hidden=self.cfg.hidden,
+                kac_normalize=self.cfg.pairwise_kac_normalize,
+            )
         elif self.cfg.pairwise_kind == "stochastic_mlp":
             if self.cfg.pair_heterogeneous_heads:
                 assert type_idx_buf is not None
@@ -663,6 +668,7 @@ class EcoMDSimulator(nn.Module):
                 gate_init_p=self.cfg.edge_gating_init_p,
                 gate_input_u=self.cfg.edge_gating_input_u,
                 input_layernorm=self.cfg.pair_input_layernorm,
+                kac_normalize=self.cfg.pairwise_kac_normalize,
             )
         elif self.cfg.pairwise_kind == "isab":
             pairwise = ISABPairwisePotential(

@@ -1,0 +1,141 @@
+contract:
+  name: ecomd_v1_m0
+  model_contract_version: 1
+  status: frozen
+  preregistration_commit: 2701833bcf7ba42803995745cd0fd338762b9ce0
+  allowed_cpu_overrides:
+    simulator.n_agents: [64]
+    training.n_iters: [2]
+
+simulator:
+  n_agents: 256
+  d_state: 32
+  hidden: 96
+  dt: 0.01
+  gamma_init: 10.0
+  temperature_init: 0.05
+  init_state_scale: 0.1
+  price_formation: excess_demand
+  price_formation_kwargs:
+    beta: 0.02
+    kappa: 0.5
+    sigma_price: 0.005
+    ewma_alpha: 0.05
+    initial_log_price: 0.0
+    learnable_beta: false
+    beta_hidden: 16
+    hawkes_alpha: 0.1
+    hawkes_kappa: 0.3
+    hawkes_alpha_long: 0.0
+    hawkes_kappa_long: 0.0
+    hawkes_sign_mode: coherent
+    volume_mode: delta_pos
+    sigma_ed: 0.0
+    ed_normalize: true
+    sv_price_enabled: false
+    tail_clamp_c: 0.0
+    het_mass_enabled: false
+    impact_concave_enabled: true
+    impact_delta_init: 0.5
+    impact_delta_learnable: false
+    impact_scale: 0.5
+    log_raw_excess_demand: true
+  lam_dissipation: 0.01
+  learn_gamma: false
+  learn_temperature: false
+  noise_dist: normal
+  noise_df: 5
+  noise_levy_alpha: 1.7
+  noise_levy_clip: 50.0
+  asym_drag_alpha: 0.0
+  memory_kernel_lambda: 0.0
+  memory_kernel_strength: 0.0
+  microstructure_rho: 0.0
+  ar1_whiten_lambda: 0.0
+  ar1_whiten_strength: 0.0
+  ar1_whiten_clip: 0.0
+  zumbach_feedback_lambda: 0.0
+  zumbach_feedback_strength: 0.0
+  power_law_external: false
+  pairwise_kind: stochastic_mlp
+  pairwise_kac_normalize: true
+  sps_k_random: 50
+  sps_resample_per_step: true
+  v2_type_seed: 42
+  v2_kyle_enabled: false
+  v2_kyle_lambda_learnable: false
+  regime_enabled: false
+  regime_kind: gru
+  regime_modulate_gamma: false
+  regime_modulate_temp: false
+  regime_modulate_kappa: false
+  twopop_enabled: true
+  twopop_gamma_scale: [0.7, 1.5, 1.0, 0.5]
+  twopop_temp_scale: [0.5, 2.0, 1.0, 0.3]
+  bptt_checkpoint_every: 0
+  inner_steps_per_price: 1
+  agent_memory_enabled: false
+  pair_heterogeneous_heads: false
+  pair_features_extra: none
+  pair_input_layernorm: true
+  jump_lambda: 0.0
+  jump_scale: 0.0
+  jump_legacy_train_proxy: false
+  legacy_total_derivative_force: false
+  multi_timescale_enabled: false
+  moe_enabled: false
+  info_asym_enabled: false
+  global_state_enabled: true
+  global_state_d: 16
+  global_state_update_every: 1
+  global_state_into_pair: true
+  edge_gating_enabled: false
+  edge_gating_input_u: false
+  bptt_custom_function: false
+  sv_integrator_enabled: false
+  scheduled_sampling_enabled: false
+
+training:
+  model_contract_version: 1
+  release_contract_version: 1
+  state_complete: true
+  persistent_state: true
+  n_iters: 600
+  chunk_steps: 64
+  warmup_steps: 16
+  lr: 0.001
+  lr_warmup_iters: 10
+  grad_clip_max_norm: 100.0
+  mixed_precision: fp32
+  checkpoint_every_s: 600.0
+  rollout_reg_enabled: false
+  seed: 0
+  target_dataset: spx
+  target_period: 2015-2018_daily
+  loss_weights:
+    loss_family: moments
+    distance_mode: l1
+    tail_estimator: soft_hill
+    max_lag: 8
+    hill_k_frac: 0.05
+    w_acf_sq: 1.0
+    w_leverage: 0.2
+    w_hill: 0.1
+    w_autocorr_r: 0.5
+    w_hill_max: 0.3
+    hill_max_target: 10.0
+    balance_mode: fixed
+
+data_protocol:
+  train: 2015-2018_daily
+  validation: 2019_daily
+  sealed_crash_test: 2020_daily
+  temporal_test: 2021-2024_daily
+  supplemental_holdout: 2025-2026_daily
+
+compute_protocol:
+  reference_device: v100_32gb
+  cpu_gate_n_agents: 64
+  v100_pilot_n_iters: 10
+  peak_reserved_gib_max: 26.0
+  projected_reference_hours_max: 12.0
