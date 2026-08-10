@@ -20,3 +20,9 @@ inspected. Bound manifest `data/manifests/evaluator_v2_fresh_markets_daily_2005_
 `e738e53e7ae74205f5d85fe16c070188bfa7d809df8420d2bf95391b8cd0ce0d` and file SHA
 `1e0393f8f803c104e0326225ebdee7c9443bcdf38132a2a0ff23ba1d82314cf0`. Internal data root:
 `/private/tmp/ecophys-evaluator-v2-fresh-data-RYarjf`.
+
+Implementation: `ecomd/eval/fresh_market_confirmation.py` plus
+`scripts/run_evaluator_v2_fresh_market_confirmation.py`. It enforces block count before metric calls, only runs
+declared metric-specific lengths/scopes, keeps report-only errors outside gates, verifies all bound raw/derived
+hashes and requires clean HEAD=upstream. Pre-output validation: 150 tests pass, strict mypy passes 78 package
+modules, and Ruff passes. Formal output always records model scoring/training authorization as false.
