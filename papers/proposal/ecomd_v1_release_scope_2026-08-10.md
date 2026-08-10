@@ -35,10 +35,10 @@ post-stationarity 结果、基线与消融结果。旧 checkpoint 不得重命�
 
 | Gate | 通过条件 | 2026-08-10 状态 | 失败后的动作 |
 |---|---|---|---|
-| R0 范围/许可 | allow-list artifact；无 `.pt`、vendor raw data、secret；逐数据源 provenance | **进行中**：wheel 可构建；monorepo 和 `data/sample` 不可直接发布 | 只发布 synthetic/source artifact；另行处理历史 Git 数据 |
+| R0 范围/许可 | allow-list artifact；无 `.pt`、vendor raw data、secret；逐数据源 provenance | **artifact PASS / monorepo FAIL**：commit `16a822c8` 的 89-file allow-list 包可重复构建；整个仓库仍不可发布 | 只发布 synthetic/source artifact；另行处理历史 Git 数据 |
 | R1 状态/定律 | 主训练、regularizer、inference 使用同一 forward law 和完整状态；exact resume 测试 | **代码 PASS，checkpoint FAIL**：20 个相关 CPU 测试通过；旧 checkpoint 不合格 | 冻结新配置后从零重训 |
-| R2 包安装 | committed tree 构建 wheel；隔离路径安装和 import/run 成功 | **部分 PASS**：基线 wheel 已构建，尚待修改后重建和隔离 smoke | 本轮完成 |
-| R3 数据无关 smoke | CPU 生成有限 trajectory、梯度、任意 chunk、checkpoint round trip | **PASS/需归档报告** | 本轮生成 machine-readable report |
+| R2 包安装 | committed tree 构建 wheel；隔离路径安装和 import/run 成功；core strict mypy | **运行 PASS / typing FAIL**：双构建 wheel 同 hash，隔离 smoke 通过；strict mypy 仍有 83 errors/17 files | 清理或严格收窄真正 public core 后重验 |
+| R3 数据无关 smoke | CPU 生成有限 trajectory、梯度、任意 chunk、checkpoint round trip | **PASS**：27 tests；35 个 finite nonzero gradient params；报告已归档 | 保持回归测试 |
 | R4 V100 reference | 冻结 config 在一张 V100 32 GB 训练/恢复/rollout；第二台独立复现 | **未启动**；旧 exp127 只证明容量足够 | R0--R3 与配置冻结后才排队 |
 | R5 stationary fidelity | 预注册 gate 后固定窗口，early/post-gate/late 全报告，多 seed | **FAIL**：旧 exp127 late-time 约 1--2/11 | 若新模型仍失败，停止正面 model-paper claim |
 | R6 论文证据 | 强基线、关键消融、时间外/市场外/频率外、梯度效用、规模曲线 | **未开始** | R5 通过后扩展数据和算力 |

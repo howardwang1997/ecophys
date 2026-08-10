@@ -55,6 +55,12 @@ metadata:
 - Wheel `ecomd-0.0.1` built successfully, installed to an isolated target directory, imported from that target
   and passed the same CPU smoke. A pre-commit build hash was
   `131e8250c052a2c2198a2b635aed017e02b9b154d2cd7303eab4abe16e22f099`; it is diagnostic, not a release hash.
+- Final clean-commit operational QA for `16a822c843db` built the 245,445-byte/89-file source archive twice with
+  identical SHA-256 `e45bef6d6617880c84fd38afdbf4cc763d356c25fb987f39c2c60805b76bb454`. Two
+  independent extracted trees built identical 246,664-byte wheels with SHA-256
+  `53bb866aef886ecbb05a02756d7325d7ec1d57b1f14f4154265ff9dc5fcc0386`; isolated install, CPU
+  smoke, 27 tests and changed-file Ruff passed. Machine report:
+  `release/verification/16a822c843db.json`.
 - Full strict mypy is not clean: 83 errors in 17 imported files. This is an honest R2 blocker, not waived by the
   focused runtime tests.
 
