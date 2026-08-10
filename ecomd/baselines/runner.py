@@ -54,6 +54,7 @@ from ..baselines.ar1_sv import AR1SV
 from ..baselines.garch import GARCH11
 from ..baselines.gbm import GBM
 from ..baselines.lux_marchesi import LuxMarchesi1999, LuxMarchesiParams
+from ..data.parquet_io import read_single_parquet
 from ..eval.stylized_facts import compute_all
 
 log = logging.getLogger("baseline_runner")
@@ -84,7 +85,10 @@ def _load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray
                 shards = sorted(d.glob("year=*.parquet"))
                 if not shards:
                     continue
-                df = pd.concat([pd.read_parquet(p) for p in shards], ignore_index=True)
+                df = pd.concat(
+                    [read_single_parquet(p) for p in shards],
+                    ignore_index=True,
+                )
                 df = df.sort_values("timestamp").reset_index(drop=True)
                 col = "adjusted_close" if "adjusted_close" in df.columns else "close"
                 return log_returns_from_prices(df[col].to_numpy())
@@ -97,7 +101,10 @@ def _load_real_returns(repo_root: Path, dataset: str, period: str) -> np.ndarray
                 shards = sorted(d.glob("month=*.parquet"))
                 if not shards:
                     continue
-                df = pd.concat([pd.read_parquet(p) for p in shards], ignore_index=True)
+                df = pd.concat(
+                    [read_single_parquet(p) for p in shards],
+                    ignore_index=True,
+                )
                 df = df.sort_values("open_time").reset_index(drop=True)
                 return log_returns_from_prices(df["close"].to_numpy())
         raise FileNotFoundError(f"no {sym} Binance data")

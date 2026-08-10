@@ -48,6 +48,7 @@ import yaml
 from torch import Tensor
 from torch.amp.autocast_mode import autocast
 
+from ..data.parquet_io import read_single_parquet
 from ..eval.stylized_facts import log_returns_from_prices
 from ..models.ecomd import EcoMDConfig, EcoMDSimulator, SimulatorState
 from .losses import LossWeights, MomentTargets, build_targets_from_returns, compute_loss
@@ -202,7 +203,7 @@ def load_yfinance_daily_any_rank(
                         continue
                     kept.append(p)
                 shards = kept
-            frames = [pd.read_parquet(p) for p in shards]
+            frames = [read_single_parquet(p) for p in shards]
             if frames:
                 df = pd.concat(frames, ignore_index=True).sort_values("timestamp").reset_index(drop=True)
                 col = "adjusted_close" if "adjusted_close" in df.columns else "close"
@@ -214,7 +215,10 @@ def load_binance_1m_returns_any_rank(repo_root: Path, symbol: str) -> np.ndarray
     for root in (repo_root / "data" / "raw", repo_root / "data" / "sample"):
         d = root / "binance" / "market=spot" / "interval=1m" / f"symbol={symbol}" / "year=2024"
         if d.exists():
-            frames = [pd.read_parquet(p) for p in sorted(d.glob("month=*.parquet"))]
+            frames = [
+                read_single_parquet(p)
+                for p in sorted(d.glob("month=*.parquet"))
+            ]
             if frames:
                 df = pd.concat(frames, ignore_index=True).sort_values("open_time").reset_index(drop=True)
                 return log_returns_from_prices(df["close"].to_numpy())

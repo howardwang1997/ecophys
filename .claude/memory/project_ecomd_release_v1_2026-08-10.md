@@ -118,3 +118,8 @@ metadata:
   next freeze real SPX provenance/preprocessing and the stationary-fidelity protocol before a 600-step run.
 - Both machines used the hostname `ubuntu22`, so the pilot's hostname-only hash collided. The distinct GPU UUIDs
   establish independent hardware for these reports; future reports hash hostname plus `/etc/machine-id`.
+- Pre-M1 data audit exposed a real loader bug: `pandas.read_parquet` on physical files below Hive-style paths
+  inferred partition fields and collided with the same stored `symbol` field. Training and baseline loaders now
+  read each physical file through `pyarrow.parquet.ParquetFile`; a path-conflict/adjusted-close regression test
+  is included. The 2015--2024 Yahoo files pass schema/coverage/null/duplicate audits, but lack acquisition time,
+  request and library-version provenance. Reacquire the free SPX input with a complete manifest before M1.
