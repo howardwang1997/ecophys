@@ -4,6 +4,10 @@
 simulator-audit F0 均未通过后，本计划成为当前主线。详细发布边界见
 `ecomd_v1_release_scope_2026-08-10.md`。
 
+M0 的唯一模型与 implementation-before-results 合同已预先固定在
+`ecomd_v1_m0_freeze_2026-08-11.md`。其中新增的 Kac normalization 与 aggregate-demand scale
+contract 是进入 V100 前的硬门，不是可按结果开关的 ablation。
+
 ## 1. 为什么不能现在直接发布
 
 EcoMD 尚无论文或公开软件，而 exp 127 已显示：初始化窗口中的有利重尾分数在冻结的 post-gate

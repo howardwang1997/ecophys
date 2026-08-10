@@ -45,6 +45,9 @@ post-stationarity 结果、基线与消融结果。旧 checkpoint 不得重命�
 
 ## 4. M0：要冻结的模型规格
 
+2026-08-11 的 implementation 前冻结见 `ecomd_v1_m0_freeze_2026-08-11.md`；它先固定 Kac/需求
+尺度归一化、唯一 active modules、数据切分、CPU/V100 gates 和停止规则，再允许实现或运行。
+
 冻结前不再把历史配置中的模块并列写成“EcoMD v1”。候选方向是 exp127 使用的
 `stochastic_mlp` 交互、两类 agent、global state 和 excess-demand price path，但它只是候选，不是
 最终 canonical architecture。冻结配置必须：
