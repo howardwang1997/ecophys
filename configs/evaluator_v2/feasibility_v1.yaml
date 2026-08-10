@@ -1,0 +1,129 @@
+contract:
+  name: evaluator_v2_real_data_self_coverage_feasibility
+  version: 1
+  status: frozen_before_free_data_acquisition_or_metric_outputs
+  purpose: qualify_estimators_not_score_any_ecomd_checkpoint
+  current_ecomd_v1_heldout_for_threshold_selection: forbidden
+  sealed_2020_for_selection: forbidden
+
+data:
+  provider: Yahoo Finance via yfinance
+  symbols: [^GSPC, ^NDX, GLD, EURUSD=X]
+  interval: 1d
+  start_inclusive: "2005-01-01"
+  end_exclusive: "2025-01-01"
+  price_column: adjusted_close
+  volume_alignment: sorted_daily_volume_float64[1:]
+  preprocessing: numpy.diff(numpy.log(adjusted_close_float64))
+  raw_redistribution: forbidden
+  manifest_path: data/manifests/evaluator_v2_free_daily_2005_2024.json
+  manifest_binding_status: pending_result_blind_acquisition
+  splits:
+    reference: [2005, 2009]
+    conformal_calibration: [2010, 2014]
+    confirmation: [2015, 2018]
+    report_only_guard: [2019, 2019]
+    sealed_crash: [2020, 2020]
+    temporal_test: [2021, 2024]
+
+blocking:
+  construction: sequential_nonoverlapping_within_each_split_after_return_preprocessing
+  drop_remainder: true
+  lengths: [120, 240, 500]
+  primary_lengths: [120, 240]
+  diagnostic_length: 500
+  no_cross_split_or_cross_symbol_blocks: true
+
+conformal:
+  center: reference_split_median_per_symbol_fact_length
+  nonconformity: absolute_deviation_from_reference_median
+  calibration_split: conformal_calibration
+  alpha: 0.20
+  finite_sample_order_index: ceil((n_calibration_blocks + 1) * (1 - alpha))
+  insufficient_if_order_index_exceeds_n_calibration_blocks: true
+  minimum_observed_confirmation_coverage: 0.75
+  minimum_observed_temporal_coverage: 0.75
+  both_periods_required: true
+
+surrogates:
+  replicates_per_real_block: 8
+  root_seed: 811920
+  generation_splits: [reference, conformal_calibration]
+  types:
+    temporal_joint_permutation: same_permutation_for_return_and_aligned_volume
+    sign_randomization: independent_rademacher_multiplier_on_returns_volume_unchanged
+    volume_alignment_break: nonzero_circular_shift_of_volume_returns_unchanged
+    gaussian_iid: mean_and_population_std_matched_returns_independently_permuted_volume
+
+metric_contract:
+  autocorr_returns:
+    scope: all_symbols
+    primary_surrogate: temporal_joint_permutation
+    relation: equivalent
+  hill_tail_index:
+    scope: all_symbols
+    primary_surrogate: gaussian_iid
+    relation: real_lower
+  gain_loss_asymmetry:
+    estimand: unbiased_sample_skewness
+    scope: equity_indices_only
+    symbols: [^GSPC, ^NDX]
+    primary_surrogate: sign_randomization
+    relation: real_lower
+  aggregational_gaussianity:
+    scope: all_symbols
+    primary_surrogate: gaussian_iid
+    relation: real_higher
+  intermittency_fano:
+    scope: all_symbols
+    primary_surrogate: temporal_joint_permutation
+    relation: real_higher
+  acf_squared_returns:
+    scope: all_symbols
+    primary_surrogate: temporal_joint_permutation
+    relation: real_higher
+  conditional_kurtosis:
+    scope: all_symbols
+    primary_surrogate: gaussian_iid
+    relation: real_higher
+  dfa_hurst_abs_r:
+    scope: all_symbols
+    primary_surrogate: temporal_joint_permutation
+    relation: real_higher
+  leverage_effect:
+    scope: equity_indices_only
+    symbols: [^GSPC, ^NDX]
+    primary_surrogate: sign_randomization
+    relation: real_lower
+  volume_volatility_corr:
+    scope: symbols_with_finite_nonconstant_volume
+    primary_surrogate: volume_alignment_break
+    relation: real_higher
+  zumbach_asymmetry:
+    scope: diagnostic_only_at_daily_frequency
+    primary_surrogate: temporal_joint_permutation
+    relation: report_no_eligibility_decision
+
+eligibility:
+  applies_only_to_primary_lengths: true
+  all_original_and_surrogate_estimates_finite: true
+  confirmation_and_temporal_coverage_required: true
+  directional_relation_minimum_paired_block_fraction: 0.75
+  directional_relation_minimum_abs_median_effect_in_pooled_iqr_units: 0.50
+  equivalence_maximum_abs_median_effect_in_pooled_iqr_units: 0.50
+  minimum_eligible_symbols_for_all_symbol_metric: 3
+  minimum_eligible_symbols_for_equity_only_metric: 2
+  metric_eligible_only_if_every_applicable_primary_length_passes: true
+
+decision:
+  feasibility_pass_allows_only_evaluator_v2_specification: true
+  feasibility_pass_is_not_model_or_physics_evidence: true
+  insufficient_blocks_or_self_coverage_failure: stop_band_construction_and_expand_free_data_or_revise_estimator
+  surrogate_failure: revise_or_drop_metric_before_any_new_model_confirmatory_run
+  no_post_result_threshold_or_scope_changes: true
+
+compute:
+  cpu_only: true
+  gpu_forbidden: true
+  paid_data_forbidden: true
+  h20_forbidden: true
