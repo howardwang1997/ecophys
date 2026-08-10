@@ -14,3 +14,9 @@ and 120 otherwise. Zumbach remains diagnostic.
 The current SPX/NDX/GLD/EURUSD 2015--2024 results are spent and forbidden for redesigned-estimator confirmation.
 A synthetic pass only allows a new, separately frozen free-market holdout protocol. No thresholds/DGP/grid changes
 after output. Keep V100s idle.
+
+Implementation is in `ecomd/eval/synthetic_dgps.py` and
+`scripts/run_evaluator_v2_sample_complexity.py`. DGP tests verify deterministic finite paths plus the declared skew,
+volatility-memory, leverage and volume-coupling structures. A reduced full matrix exercises every metric, length,
+signal/null and diagnostic branch. Pre-output validation: 146 tests pass, strict mypy passes 77 package modules,
+and Ruff passes. The formal runner requires clean HEAD equal to upstream and verifies the source evaluator result.

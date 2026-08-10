@@ -742,6 +742,7 @@ __all__ = [
     "RelationResult",
     "SeriesBlock",
     "SplitSeries",
+    "SurrogateKind",
     "assess_declared_relation",
     "assess_relation",
     "build_nonoverlapping_blocks",
