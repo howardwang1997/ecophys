@@ -189,3 +189,17 @@ test split is opened.
    CPU core-hours locally; the V100 hosts may be used as CPU workers if needed.
 6. A later real confirmation requires genuinely unseen days/markets. Exp138's exposed test portions remain
    development evidence and cannot be relabeled.
+
+## 11. Exp142 enforcement outcome
+
+Exp142 was preregistered at commit `021d0b0b`, implemented at clean commit `44daf531`, and formally run once.
+All nine gates passed. The three scoped declarations had their exact expected reports, all twelve isolated
+semantic defects returned their frozen single error, and invalid fit callbacks ran zero times. The formal
+adapter probe emitted 256 rows for 256 steps; all 256 IDs were new consecutive event counters, and none of 132
+removal/execution rows referenced an earlier ID.
+
+This PASS does not reverse the field-audit FAIL. It makes the support boundary executable: the current adapter
+is accepted only as `synthetic_fixture`, while `aggregate_bin` + P3 is accepted as a prospective declaration.
+F1 remains AMBER until that aggregate-bin measurement object, train-only calibration and exact reconstruction
+are implemented and tested under a separate preregistration. Result:
+`experiments/142_observation_semantic_contract/RESULTS.md`.

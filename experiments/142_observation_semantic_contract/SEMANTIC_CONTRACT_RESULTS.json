@@ -1,0 +1,1238 @@
+{
+  "adapter_probe": {
+    "declared_observed_size_unit": "model_coordinate",
+    "declared_price_processes": [
+      "emitted_book"
+    ],
+    "dt": 0.005,
+    "emission_seed": 6053302557698777958,
+    "finite": true,
+    "max_abs_increment_minus_dt": 1.1535911115245767e-16,
+    "n_emitted_rows": 256,
+    "n_latent_steps": 256,
+    "one_row_per_step": true,
+    "order_ids_consecutive_exact": true,
+    "passed": true,
+    "removal_or_execution_rows": 132,
+    "removal_or_execution_rows_referencing_prior_id": 0,
+    "root_seed": 142202608,
+    "timestamp_formula_exact": true,
+    "unique_order_id_count": 256
+  },
+  "decision": "PASS",
+  "environment": {
+    "conda_default_env": "ecophys",
+    "executable": "/Users/howardwang/miniconda3/envs/ecophys/bin/python",
+    "packages": {
+      "mypy": "1.20.2",
+      "numpy": "2.4.4",
+      "pytest": "9.0.3",
+      "ruff": "0.15.11"
+    },
+    "platform": "macOS-15.7.3-arm64-arm-64bit",
+    "python": "3.11.15",
+    "thread_variables": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "experiment": 142,
+  "fit_firewall": {
+    "invalid": {
+      "N1": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "EXTERNAL_EVENT_CLOCK_REQUIRES_CONDITIONAL_LAW"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N10": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "LATENT_CLAIM_REQUIRES_LATENT_INPUT"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N11": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "SIGN_FLIP_CONTROL_REQUIRED"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N12": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "OBSERVATION_ONLY_CONTROL_REQUIRED"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N2": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "DUAL_PRICE_PROCESS_WITHOUT_LINK"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N3": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "AGGREGATE_BIN_REQUIRES_PHYSICAL_SECONDS"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N4": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "EVENT_COUNTER_MUST_NOT_BE_ORDER_ID"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N5": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "INDIVIDUAL_ORDER_CAPABILITIES_MISSING"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N6": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "MARKET_SIZE_REQUIRES_TRAIN_ONLY_LINK"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N7": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "LATENT_PROXY_MUST_NOT_BE_LABELED_OFI"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N8": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "DIRECTIONAL_SIGN_CONTRADICTS_ANCHOR"
+        ],
+        "passed": true,
+        "returned": false
+      },
+      "N9": {
+        "callback_calls": 0,
+        "escaped_errors": [
+          "TEST_CONDITIONED_LATENT_FORBIDDEN"
+        ],
+        "passed": true,
+        "returned": false
+      }
+    },
+    "passed": true,
+    "positive": {
+      "aggregate_bin_p3": {
+        "callback_calls": 1,
+        "passed": true,
+        "returned": "sentinel:aggregate_bin_p3"
+      },
+      "aggregate_event_p2_schema": {
+        "callback_calls": 1,
+        "passed": true,
+        "returned": "sentinel:aggregate_event_p2_schema"
+      },
+      "current_adapter_synthetic": {
+        "callback_calls": 1,
+        "passed": true,
+        "returned": "sentinel:current_adapter_synthetic"
+      }
+    }
+  },
+  "gates": {
+    "adapter_probe": true,
+    "chronology_provenance": true,
+    "code_quality": true,
+    "complete_reporting": true,
+    "fit_firewall": true,
+    "mutation_isolation": true,
+    "no_silent_support_escalation": true,
+    "positive_scope": true,
+    "schema_determinism": true
+  },
+  "generated_at_utc": "2026-08-10T10:04:25.919801+00:00",
+  "interpretation": "A PASS enforces the frozen semantic vocabulary only; it does not establish external validity, identifiability, causal latent inference, novelty, order mechanics or market physics.",
+  "mode": "formal",
+  "mutations": {
+    "passed": true,
+    "records": {
+      "N1": {
+        "contract": {
+          "clock": {
+            "count_law": "one_per_transition",
+            "kind": "simulator_step",
+            "physical_seconds": 0.005
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": "event_id",
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "event_counter"
+          },
+          "latent": {
+            "access": "causal_filter",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_event_p2_schema_fixture",
+          "price": {
+            "choice": "P2",
+            "scored_processes": [
+              "emitted_book"
+            ],
+            "train_only_measurement_link": false
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_event"
+        },
+        "exact": true,
+        "expected_errors": [
+          "EXTERNAL_EVENT_CLOCK_REQUIRES_CONDITIONAL_LAW"
+        ],
+        "report": {
+          "errors": [
+            "EXTERNAL_EVENT_CLOCK_REQUIRES_CONDITIONAL_LAW"
+          ],
+          "requested_support": "aggregate_event",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N10": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "observation_only",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "LATENT_CLAIM_REQUIRES_LATENT_INPUT"
+        ],
+        "report": {
+          "errors": [
+            "LATENT_CLAIM_REQUIRES_LATENT_INPUT"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N11": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "SIGN_FLIP_CONTROL_REQUIRED"
+        ],
+        "report": {
+          "errors": [
+            "SIGN_FLIP_CONTROL_REQUIRED"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N12": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "OBSERVATION_ONLY_CONTROL_REQUIRED"
+        ],
+        "report": {
+          "errors": [
+            "OBSERVATION_ONLY_CONTROL_REQUIRED"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N2": {
+        "contract": {
+          "clock": {
+            "count_law": "conditional_intensity",
+            "kind": "conditional_event",
+            "physical_seconds": 1.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": "event_id",
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "event_counter"
+          },
+          "latent": {
+            "access": "causal_filter",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_event_p2_schema_fixture",
+          "price": {
+            "choice": "P2",
+            "scored_processes": [
+              "ecomd_internal",
+              "emitted_book"
+            ],
+            "train_only_measurement_link": false
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_event"
+        },
+        "exact": true,
+        "expected_errors": [
+          "DUAL_PRICE_PROCESS_WITHOUT_LINK"
+        ],
+        "report": {
+          "errors": [
+            "DUAL_PRICE_PROCESS_WITHOUT_LINK"
+          ],
+          "requested_support": "aggregate_event",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N3": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": null
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "AGGREGATE_BIN_REQUIRES_PHYSICAL_SECONDS"
+        ],
+        "report": {
+          "errors": [
+            "AGGREGATE_BIN_REQUIRES_PHYSICAL_SECONDS"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N4": {
+        "contract": {
+          "clock": {
+            "count_law": "conditional_intensity",
+            "kind": "conditional_event",
+            "physical_seconds": 1.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": "order_id",
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "event_counter"
+          },
+          "latent": {
+            "access": "causal_filter",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_event_p2_schema_fixture",
+          "price": {
+            "choice": "P2",
+            "scored_processes": [
+              "emitted_book"
+            ],
+            "train_only_measurement_link": false
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_event"
+        },
+        "exact": true,
+        "expected_errors": [
+          "EVENT_COUNTER_MUST_NOT_BE_ORDER_ID"
+        ],
+        "report": {
+          "errors": [
+            "EVENT_COUNTER_MUST_NOT_BE_ORDER_ID"
+          ],
+          "requested_support": "aggregate_event",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N5": {
+        "contract": {
+          "clock": {
+            "count_law": "conditional_intensity",
+            "kind": "conditional_event",
+            "physical_seconds": 1.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": "event_id",
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "event_counter"
+          },
+          "latent": {
+            "access": "causal_filter",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_event_p2_schema_fixture",
+          "price": {
+            "choice": "P2",
+            "scored_processes": [
+              "emitted_book"
+            ],
+            "train_only_measurement_link": false
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "individual_order"
+        },
+        "exact": true,
+        "expected_errors": [
+          "INDIVIDUAL_ORDER_CAPABILITIES_MISSING"
+        ],
+        "report": {
+          "errors": [
+            "INDIVIDUAL_ORDER_CAPABILITIES_MISSING"
+          ],
+          "requested_support": "individual_order",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N6": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": false
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "MARKET_SIZE_REQUIRES_TRAIN_ONLY_LINK"
+        ],
+        "report": {
+          "errors": [
+            "MARKET_SIZE_REQUIRES_TRAIN_ONLY_LINK"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N7": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "ofi",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "LATENT_PROXY_MUST_NOT_BE_LABELED_OFI"
+        ],
+        "report": {
+          "errors": [
+            "LATENT_PROXY_MUST_NOT_BE_LABELED_OFI"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N8": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "sign_flipped",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "DIRECTIONAL_SIGN_CONTRADICTS_ANCHOR"
+        ],
+        "report": {
+          "errors": [
+            "DIRECTIONAL_SIGN_CONTRADICTS_ANCHOR"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      },
+      "N9": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "test_conditioned",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [
+          "TEST_CONDITIONED_LATENT_FORBIDDEN"
+        ],
+        "report": {
+          "errors": [
+            "TEST_CONDITIONED_LATENT_FORBIDDEN"
+          ],
+          "requested_support": "aggregate_bin",
+          "valid": false,
+          "warnings": []
+        }
+      }
+    }
+  },
+  "name": "observation_semantic_contract_firewall",
+  "positive_contracts": {
+    "passed": true,
+    "records": {
+      "aggregate_bin_p3": {
+        "contract": {
+          "clock": {
+            "count_law": "aggregated_counts",
+            "kind": "fixed_physical_bin",
+            "physical_seconds": 60.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": null,
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "none"
+          },
+          "latent": {
+            "access": "unconditional_train_calibrated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_bin_p3_external",
+          "price": {
+            "choice": "P3",
+            "scored_processes": [
+              "ecomd_internal",
+              "external_mid"
+            ],
+            "train_only_measurement_link": true
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_bin"
+        },
+        "exact": true,
+        "expected_errors": [],
+        "expected_warnings": [],
+        "report": {
+          "errors": [],
+          "requested_support": "aggregate_bin",
+          "valid": true,
+          "warnings": []
+        }
+      },
+      "aggregate_event_p2_schema": {
+        "contract": {
+          "clock": {
+            "count_law": "conditional_intensity",
+            "kind": "conditional_event",
+            "physical_seconds": 1.0
+          },
+          "data_scope": "external",
+          "identity": {
+            "field_name": "event_id",
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "event_counter"
+          },
+          "latent": {
+            "access": "causal_filter",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "aggregate_event_p2_schema_fixture",
+          "price": {
+            "choice": "P2",
+            "scored_processes": [
+              "emitted_book"
+            ],
+            "train_only_measurement_link": false
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "shares",
+            "train_only_measurement_link": true
+          },
+          "support_level": "aggregate_event"
+        },
+        "exact": true,
+        "expected_errors": [],
+        "expected_warnings": [],
+        "report": {
+          "errors": [],
+          "requested_support": "aggregate_event",
+          "valid": true,
+          "warnings": []
+        }
+      },
+      "current_adapter_synthetic": {
+        "contract": {
+          "clock": {
+            "count_law": "one_per_transition",
+            "kind": "simulator_step",
+            "physical_seconds": 0.005
+          },
+          "data_scope": "generated",
+          "identity": {
+            "field_name": "order_id",
+            "matching_engine": false,
+            "persistent_lifecycle": false,
+            "price_time_priority": false,
+            "semantics": "event_counter"
+          },
+          "latent": {
+            "access": "generated",
+            "claim": "latent_incremental",
+            "controls": [
+              "observation_only",
+              "sign_flip"
+            ],
+            "model_inputs": "combined",
+            "observable_label": "latent_flow_alignment",
+            "sign_anchor": "fixed_structural",
+            "source_quantity": "latent_flow_alignment"
+          },
+          "name": "current_ecomd_l2_adapter_synthetic_only",
+          "price": {
+            "choice": "P2",
+            "scored_processes": [
+              "emitted_book"
+            ],
+            "train_only_measurement_link": false
+          },
+          "schema_version": "ecomd-observation-contract/v1",
+          "size": {
+            "latent_unit": "model_coordinate",
+            "observed_unit": "model_coordinate",
+            "train_only_measurement_link": false
+          },
+          "support_level": "synthetic_fixture"
+        },
+        "exact": true,
+        "expected_errors": [],
+        "expected_warnings": [
+          "SYNTHETIC_ORDER_ID_IS_EVENT_COUNTER"
+        ],
+        "report": {
+          "errors": [],
+          "requested_support": "synthetic_fixture",
+          "valid": true,
+          "warnings": [
+            "SYNTHETIC_ORDER_ID_IS_EVENT_COUNTER"
+          ]
+        }
+      }
+    }
+  },
+  "provenance": {
+    "dirty_before_run": false,
+    "dirty_entries_before_run": [],
+    "implementation_git_sha": "44daf531db4d72dbbee6776f929cd21df7882135",
+    "preregistration_commit": "021d0b0b",
+    "preregistration_is_ancestor": true,
+    "protocol_path": "experiments/142_observation_semantic_contract/PREREG.md",
+    "protocol_sha256": "b8a77fad4bce7032eec5c5030fa71007b18375d3014464ae4a3ecc01eda6e270",
+    "root_seed": 142202608
+  },
+  "quality": {
+    "passed": true,
+    "records": {
+      "mypy": {
+        "command": [
+          "/Users/howardwang/miniconda3/envs/ecophys/bin/python",
+          "-m",
+          "mypy",
+          "--strict",
+          "ecomd/observation/semantic_contract.py",
+          "experiments/142_observation_semantic_contract/run_contract.py"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "Success: no issues found in 2 source files\n"
+      },
+      "pytest": {
+        "command": [
+          "/Users/howardwang/miniconda3/envs/ecophys/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_semantic_contract.py",
+          "-q"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "..................                                                       [100%]\n"
+      },
+      "ruff": {
+        "command": [
+          "/Users/howardwang/miniconda3/envs/ecophys/bin/python",
+          "-m",
+          "ruff",
+          "check",
+          "ecomd/observation/semantic_contract.py",
+          "tests/test_semantic_contract.py",
+          "experiments/142_observation_semantic_contract/run_contract.py"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "All checks passed!\n"
+      }
+    }
+  },
+  "resources": {
+    "external_data_read": false,
+    "gpu_used": false,
+    "peak_rss_raw": 102924288,
+    "peak_rss_unit": "bytes_on_macos_kib_on_linux",
+    "wall_seconds": 0.9961031669517979
+  },
+  "serialization": {
+    "cases": {
+      "N1": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"one_per_transition\",\"kind\":\"simulator_step\",\"physical_seconds\":0.005},\"data_scope\":\"external\",\"identity\":{\"field_name\":\"event_id\",\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"event_counter\"},\"latent\":{\"access\":\"causal_filter\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_event_p2_schema_fixture\",\"price\":{\"choice\":\"P2\",\"scored_processes\":[\"emitted_book\"],\"train_only_measurement_link\":false},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_event\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "a3fea8a03b634001a4aed4c843d41cf8ec7bc2184e2c2d8b9ba4df4a3fdafd58",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N10": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"observation_only\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "1fe07ac25184c82413948c6330fe91be92b445491e35c5acb3ca8c4ec3f00546",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N11": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "54c4e7cf00ce048bb698be2583740c78cbe788513ac876d2cf22f0408db12c19",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N12": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "c0c9ecb13e597764afa81560c1e973c3f87e253bab0b7f67b6a894c115411552",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N2": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"conditional_intensity\",\"kind\":\"conditional_event\",\"physical_seconds\":1.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":\"event_id\",\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"event_counter\"},\"latent\":{\"access\":\"causal_filter\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_event_p2_schema_fixture\",\"price\":{\"choice\":\"P2\",\"scored_processes\":[\"ecomd_internal\",\"emitted_book\"],\"train_only_measurement_link\":false},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_event\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "31ddb8124a864532e698f4a6c051c8d0c2b8407fae53af5251902a99775a0829",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N3": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":null},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "7ed757fc8c678a533fb13420ecfc87de4bd5a3108b85ef846f295b2fb3eccbb2",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N4": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"conditional_intensity\",\"kind\":\"conditional_event\",\"physical_seconds\":1.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":\"order_id\",\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"event_counter\"},\"latent\":{\"access\":\"causal_filter\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_event_p2_schema_fixture\",\"price\":{\"choice\":\"P2\",\"scored_processes\":[\"emitted_book\"],\"train_only_measurement_link\":false},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_event\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "b6fe4542f0a61857da38ddd051b8aa6a658cf93384641ee2cb6028faf6177def",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N5": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"conditional_intensity\",\"kind\":\"conditional_event\",\"physical_seconds\":1.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":\"event_id\",\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"event_counter\"},\"latent\":{\"access\":\"causal_filter\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_event_p2_schema_fixture\",\"price\":{\"choice\":\"P2\",\"scored_processes\":[\"emitted_book\"],\"train_only_measurement_link\":false},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"individual_order\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "4ca12ad5e3ff503cb3575e5abf621707ba961c22d10f7a1ce492e8582a901bef",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N6": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":false},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "6ccf41a635a145b5e06cd7dce60a7ae3ecec874b91b3589f046fa896eceb5bf2",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N7": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"ofi\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "6d14228e6ab19da189eb7f5b4d8f6e634348997b4e0963e23fc1a6b9694d8c46",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N8": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"sign_flipped\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "76951c91087cc74b252859368bd1bf7efa41a9f1356d5bcf9feec6df7d923538",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "N9": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"test_conditioned\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "66acbee581a568cb058d171338a543bc1b67f010617706681dc11678136f247e",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "aggregate_bin_p3": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"aggregated_counts\",\"kind\":\"fixed_physical_bin\",\"physical_seconds\":60.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":null,\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"none\"},\"latent\":{\"access\":\"unconditional_train_calibrated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_bin_p3_external\",\"price\":{\"choice\":\"P3\",\"scored_processes\":[\"ecomd_internal\",\"external_mid\"],\"train_only_measurement_link\":true},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_bin\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "2c4e182e27abf1810cf5b966051ba15db95ec4ab651078b0e99141adbf080ff0",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "aggregate_event_p2_schema": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"conditional_intensity\",\"kind\":\"conditional_event\",\"physical_seconds\":1.0},\"data_scope\":\"external\",\"identity\":{\"field_name\":\"event_id\",\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"event_counter\"},\"latent\":{\"access\":\"causal_filter\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"aggregate_event_p2_schema_fixture\",\"price\":{\"choice\":\"P2\",\"scored_processes\":[\"emitted_book\"],\"train_only_measurement_link\":false},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"shares\",\"train_only_measurement_link\":true},\"support_level\":\"aggregate_event\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "2fd350e5b852b1a2efa517529f67fafc06ff7c9b63d0eb811e6a6a196ba0a8f5",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      },
+      "current_adapter_synthetic": {
+        "canonical_json": "{\"clock\":{\"count_law\":\"one_per_transition\",\"kind\":\"simulator_step\",\"physical_seconds\":0.005},\"data_scope\":\"generated\",\"identity\":{\"field_name\":\"order_id\",\"matching_engine\":false,\"persistent_lifecycle\":false,\"price_time_priority\":false,\"semantics\":\"event_counter\"},\"latent\":{\"access\":\"generated\",\"claim\":\"latent_incremental\",\"controls\":[\"observation_only\",\"sign_flip\"],\"model_inputs\":\"combined\",\"observable_label\":\"latent_flow_alignment\",\"sign_anchor\":\"fixed_structural\",\"source_quantity\":\"latent_flow_alignment\"},\"name\":\"current_ecomd_l2_adapter_synthetic_only\",\"price\":{\"choice\":\"P2\",\"scored_processes\":[\"emitted_book\"],\"train_only_measurement_link\":false},\"schema_version\":\"ecomd-observation-contract/v1\",\"size\":{\"latent_unit\":\"model_coordinate\",\"observed_unit\":\"model_coordinate\",\"train_only_measurement_link\":false},\"support_level\":\"synthetic_fixture\"}",
+        "canonical_repeat_exact": true,
+        "canonical_sha256": "64072443d3e62ede3a1b945bdf5b7e41e21df0aad26c06733de442db94c3ccb2",
+        "round_trip_exact": true,
+        "validation_repeat_exact": true
+      }
+    },
+    "nonfinite_json_rejected": true,
+    "passed": true,
+    "unknown_enum_rejected": true,
+    "unknown_key_rejected": true
+  },
+  "support_escalation": {
+    "passed": true,
+    "records": {
+      "aggregate_bin": {
+        "errors": [
+          "AGGREGATE_BIN_REQUIRES_FIXED_CLOCK",
+          "EVENT_COUNTER_MUST_NOT_BE_ORDER_ID",
+          "EXTERNAL_SIZE_UNIT_REQUIRED"
+        ],
+        "preserved": true,
+        "rejected": true,
+        "requested_support": "aggregate_bin"
+      },
+      "aggregate_event": {
+        "errors": [
+          "EVENT_COUNTER_MUST_NOT_BE_ORDER_ID",
+          "EXTERNAL_EVENT_CLOCK_REQUIRES_CONDITIONAL_LAW",
+          "EXTERNAL_SIZE_UNIT_REQUIRED"
+        ],
+        "preserved": true,
+        "rejected": true,
+        "requested_support": "aggregate_event"
+      },
+      "individual_order": {
+        "errors": [
+          "EVENT_COUNTER_MUST_NOT_BE_ORDER_ID",
+          "EXTERNAL_EVENT_CLOCK_REQUIRES_CONDITIONAL_LAW",
+          "EXTERNAL_SIZE_UNIT_REQUIRED",
+          "INDIVIDUAL_ORDER_CAPABILITIES_MISSING"
+        ],
+        "preserved": true,
+        "rejected": true,
+        "requested_support": "individual_order"
+      }
+    }
+  }
+}

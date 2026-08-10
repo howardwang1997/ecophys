@@ -58,8 +58,10 @@ EcoMD step 一个事件、使用无市场单位的 size、以逐事件新编号�
 与 EcoMD `log_price` 是两个独立过程。它只能作为 `synthetic_fixture`。
 
 F1 尚未整体关闭：免费可恢复路线是 `aggregate_bin` + P3（只比较按物理时间分箱后的收益、成交量与
-aggregate marks，不声称逐订单生成）。该路线在机器可读 semantic contract 与预注册 negative
-controls 通过前保持 **AMBER**；失败则 A4/F4 真实观测桥关闭，论文退为 correctness/release。
+aggregate marks，不声称逐订单生成）。Exp142 已从干净 implementation `44daf531` 正式 **PASS
+9/9**：机器可读 contract 接受这个窄声明，并在拟合前拒绝 12 类预注册语义错误。该结果只把设计
+变成 code-enforced specification；实际 aggregate-bin measurement/reconstruction、识别性和外部预测
+仍未验证，因此 F1 整体保持 **AMBER**。
 
 ## 4. 工作、数据和算力
 
@@ -141,11 +143,13 @@ queue-reactive、permutation、time-shift 和 surrogate。单位是独立日期/
 ## 7. 立即执行队列（不买数据、不扩容）
 
 1. **已完成：**冻结 `ecomd_observation_map_spec_v0.md`，并完成现有 adapter 的静态字段审计；
-2. 写 machine-readable contract；重点拦截双 price、one-step/one-message clock、错误 volume/size
-   单位、伪 order-ID、latent/OFI 混同和 test-conditioned latent；
+2. **已完成：**exp142 machine-readable contract 正式 9/9 PASS；当前 adapter 仅以
+   `synthetic_fixture` 被接受，任何静默 support escalation 均失败；
 3. **已完成：**预注册 exp142 的纯 synthetic validator gate；实现与正式运行必须使用后续独立提交；
-4. 完成 A0 的 simulator-audit prior-art matrix，决定 F0；
-5. 只有 F0/F1 仍可行时，才预注册低成本 E-B screening；否则直接整理 EcoMD v1 software release。
+4. 预注册并实现 `aggregate_bin` + P3 measurement object 的 exact synthetic reconstruction、单位与
+   train-only fit firewall；不读真实 test；
+5. 完成 A0 的 simulator-audit prior-art matrix，决定 F0；
+6. 只有 F0/F1 仍可行时，才预注册低成本 E-B screening；否则直接整理 EcoMD v1 software release。
 
 ## 8. 已有证据如何进入论文
 

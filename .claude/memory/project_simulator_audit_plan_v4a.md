@@ -27,6 +27,12 @@ metadata:
 - Exp142 is the frozen CPU-only contract firewall protocol. It has three valid declarations, twelve isolated
   semantic mutations, a no-fit-before-validation callback guard and a direct probe of the current adapter.
   Passing enforces vocabulary only; it does not establish empirical mapping, identifiability or novelty.
+- Exp142 formally PASSed 9/9 once from clean implementation `44daf531` (result JSON SHA-256
+  `57fa2bf3...f1e9cc`). All 12 invalid callbacks ran zero times. The adapter probe found 256 unique event
+  counters and zero prior-ID references among 132 removal/execution rows. This preserves the message/order
+  FAIL and advances only the prospective aggregate-bin P3 declaration to a code-enforced specification.
+- F1 remains AMBER pending a separately preregistered aggregate-bin measurement/reconstruction implementation,
+  train-only scale fitting and identifiability checks. No real held-out data, paid data or GPU is unlocked.
 - Immediate resource cap before F0--F2: about 10 V100-equivalent hours and 1,150 CPU core-hours. The current
   two V100 32 GB hosts are sufficient and may also run CPU jobs. H20 is excluded. No purchase or expansion is
   unlocked before the corresponding gates.
