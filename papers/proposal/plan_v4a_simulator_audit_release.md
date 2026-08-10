@@ -50,6 +50,17 @@ EcoMD 是主要复杂案例和首次正式软件发布，不是普适性证据�
 
 所有 gate 失败都保留，不放宽阈值追求正结果。
 
+### 3.1 F1 静态审计决定（2026-08-10）
+
+`papers/proposal/ecomd_observation_map_spec_v0.md` 已冻结字段级边界。当前
+`EcoMDL2Adapter` 对真实 `aggregate_event` / `individual_order` 映射为 **FAIL**：它强制每个
+EcoMD step 一个事件、使用无市场单位的 size、以逐事件新编号冒充 `order_id`，且 emitted book price
+与 EcoMD `log_price` 是两个独立过程。它只能作为 `synthetic_fixture`。
+
+F1 尚未整体关闭：免费可恢复路线是 `aggregate_bin` + P3（只比较按物理时间分箱后的收益、成交量与
+aggregate marks，不声称逐订单生成）。该路线在机器可读 semantic contract 与预注册 negative
+controls 通过前保持 **AMBER**；失败则 A4/F4 真实观测桥关闭，论文退为 correctness/release。
+
 ## 4. 工作、数据和算力
 
 | WP | 工作 | 当前免费数据 | 后续可扩展数据 | 当前算力 | Gate 后扩展 |
@@ -129,10 +140,9 @@ queue-reactive、permutation、time-shift 和 surrogate。单位是独立日期/
 
 ## 7. 立即执行队列（不买数据、不扩容）
 
-1. 冻结 `ecomd_observation_map_spec_v0.md`：逐字段说明模型量、外部量、单位、时间顺序、可识别性
-   和禁止 claim；
-2. 对现有 adapter 做静态审计并写 machine-readable contract；重点检查 EcoMD price 与 emitted book
-   price 是否为两个互不相干的过程、one-step/one-message clock、volume/size 单位和 order-ID 语义；
+1. **已完成：**冻结 `ecomd_observation_map_spec_v0.md`，并完成现有 adapter 的静态字段审计；
+2. 写 machine-readable contract；重点拦截双 price、one-step/one-message clock、错误 volume/size
+   单位、伪 order-ID、latent/OFI 混同和 test-conditioned latent；
 3. 预注册 E-A 的纯 synthetic validator gate；先写失败阈值，再实现；
 4. 完成 A0 的 simulator-audit prior-art matrix，决定 F0；
 5. 只有 F0/F1 仍可行时，才预注册低成本 E-B screening；否则直接整理 EcoMD v1 software release。
