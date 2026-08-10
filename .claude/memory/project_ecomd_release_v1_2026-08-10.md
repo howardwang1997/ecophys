@@ -123,3 +123,9 @@ metadata:
   read each physical file through `pyarrow.parquet.ParquetFile`; a path-conflict/adjusted-close regression test
   is included. The 2015--2024 Yahoo files pass schema/coverage/null/duplicate audits, but lack acquisition time,
   request and library-version provenance. Reacquire the free SPX input with a complete manifest before M1.
+- M1 is frozen before new outputs in `configs/ecomd_v1/m1_stationarity_screen.yaml` and its companion proposal.
+  It uses a fresh audited Yahoo acquisition, seed-0 300+resume-to-600 training, 16 new calibration seeds
+  (811000--811015), a committed gate fit before 16 held-out seeds (811100--811115), T=8000/L=4000 and full
+  early/post/late reporting. No W-star or failed held-out transfer fails. Either post or late <=2/11 stops the
+  positive-paper route; 3--4 is diagnostic-only; both >=5 plus <=10% late distance degradation merely authorizes
+  multiseed/baseline/cross-market production. No checkpoint/rollout or new outcome was seen before this freeze.

@@ -1,0 +1,125 @@
+contract:
+  name: ecomd_v1_m1_stationarity_screen
+  version: 1
+  status: frozen_before_checkpoint_or_rollout
+  freeze_commit_rule: first_git_commit_containing_this_file
+  m0_config_path: configs/ecomd_v1/m0_reference.yaml
+  m0_config_sha256: 8e161bee28a4712e9a152539894ad6a9193d2311498fa066d24e16427e9ffa33
+  expected_parameter_count: 36541
+
+data:
+  dataset_id: ecomd_v1_m1_spx_yahoo_daily_2015_2024
+  manifest_binding: exact_manifest_file_sha256_in_execution_record
+  target_symbol: ^GSPC
+  target_period: 2015-2018_daily
+  price_column: adjusted_close
+  preprocessing: numpy.diff(numpy.log(adjusted_close_float64))
+  validation: 2019_daily_report_only
+  sealed_crash_test: 2020_daily_no_training_selection_or_protocol_change
+  temporal_test: 2021-2024_daily
+
+training:
+  seed: 0
+  precision: fp32
+  first_segment_stop_after_iter: 300
+  final_iter: 600
+  resume_required: true
+  early_stopping: false
+  reference_host: v100_a
+
+rollout:
+  usable_returns: 8000
+  simulator_steps: 8001
+  calibration_seeds:
+    - 811000
+    - 811001
+    - 811002
+    - 811003
+    - 811004
+    - 811005
+    - 811006
+    - 811007
+    - 811008
+    - 811009
+    - 811010
+    - 811011
+    - 811012
+    - 811013
+    - 811014
+    - 811015
+  heldout_seeds:
+    - 811100
+    - 811101
+    - 811102
+    - 811103
+    - 811104
+    - 811105
+    - 811106
+    - 811107
+    - 811108
+    - 811109
+    - 811110
+    - 811111
+    - 811112
+    - 811113
+    - 811114
+    - 811115
+  node_shards:
+    v100_a:
+      calibration: [811000, 811002, 811004, 811006, 811008, 811010, 811012, 811014]
+      heldout: [811100, 811102, 811104, 811106, 811108, 811110, 811112, 811114]
+    v100_b:
+      calibration: [811001, 811003, 811005, 811007, 811009, 811011, 811013, 811015]
+      heldout: [811101, 811103, 811105, 811107, 811109, 811111, 811113, 811115]
+  ordering_rule: calibration_only_then_frozen_gate_commit_then_heldout
+  shocks_or_inference_overrides: forbidden
+
+energy_gate:
+  block_length: 500
+  gate_starts: [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000]
+  late_starts: [6000, 6500, 7000, 7500]
+  max_w_star: 3000
+  persistence_blocks: 3
+  tolerance_quantile: 0.95
+  bootstrap_replicates: 2000
+  bootstrap_seed: 811900
+  mad_floor: 1.0e-12
+  implementation_sha256: 0c1c3606060391deefd38c546e785200d53bc0ac46be7e31be250e1a27de2347
+
+adf_kpss_comparator:
+  block_length: 500
+  gate_starts: [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000]
+  max_w_star: 3000
+  persistence_blocks: 3
+  trajectory_pass_fraction: 0.5
+  adf_alpha: 0.05
+  kpss_alpha: 0.05
+  adf_maxlag: 10
+  implementation_sha256: a6c8006194f8f766baad6dfdbaf61dc5bb46904ae5c330f4669e001d54b8d5e2
+
+scoring:
+  fixed_length: 4000
+  starts: [0, 50, 100, 200, 500, 1000, 1500, 2000, 3000, 4000]
+  aggregate_across_heldout: per_fact_median_then_band_score
+  fact_count: 11
+  canonical_bands_sha256: d46413106c5c9d742d3d655489202ebb96cdb08b826f2cd86ab138bfecef2632
+  all_starts_reported: true
+
+decision:
+  mechanical_fail_if_nonfinite_or_checkpoint_not_iter_600: true
+  stationarity_fail_if_no_w_star_or_heldout_transfer_fails: true
+  stop_positive_model_paper_if_post_or_late_pass_count_at_most: 2
+  diagnostic_only_if_post_or_late_pass_count_in: [3, 4]
+  authorize_multiseed_baselines_and_cross_market_if:
+    minimum_post_w_star_pass_count: 5
+    minimum_late_w4000_pass_count: 5
+    maximum_late_to_post_mean_normalized_distance_ratio: 1.10
+  authorization_is_not_a_paper_claim: true
+
+compute:
+  allowed_gpu_family: v100_32gb
+  h20_forbidden: true
+  training_gpu_count: 1
+  calibration_rollout_gpu_count: 2
+  heldout_rollout_gpu_count_after_freeze: 2
+  cpu_gate_fit_and_scoring: true
