@@ -5,6 +5,12 @@ EcoMD v1 正面 model-paper、NCS 不变测度方法、静态 evaluator、日频
 taker-flow relaxation 均停止。下一项允许启动的工作只有 **T0：熵产生/TUR 的可识别性与观测合同审计**；
 它是 CPU-only 的理论/合成 gate，不是新的真实数据搜索。
 
+**T0 更新：** T0 已在 G0 prior-art/irreducible-claim gate **FAIL**，并按冻结顺序在数值实现前停止。
+Partial entropy bounds、coarse-grained/semi-Markov TUR、financial TUR/time irreversibility 和 LOB
+temperature/entropy 均有直接先行工作；当前候选没有新 theorem 或独立 market law。故本文件原定的
+T0 是最后一个已授权 gate，而不是仍待运行的任务。完整结果见
+`entropy_tur_observability_t0_g0_result_2026-08-11.md`。
+
 ## 1. 结论先行
 
 现有结果支持的是一套可靠的失败检测与数据基础设施，不支持 Nature Physics/NCS 级真实市场发现：

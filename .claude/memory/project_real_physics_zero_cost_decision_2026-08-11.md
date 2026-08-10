@@ -22,10 +22,12 @@ financial fluctuation-theorem and FDT/impact prior art exists, and the current o
 physical temperature or controlled forward/reverse work protocol. B3 entropy production/TUR is only a conditional
 candidate.
 
-The sole authorized next experiment is CPU-only T0 observability/no-go: define state, time reversal, antisymmetric
-current, forward/reverse path density and hidden-state boundary; validate on detailed-balance, driven-ring and
-observationally equivalent/hidden-entropy counterexamples; prove when coarse-grained output is a lower bound or
-must refuse total-entropy claims; complete a forward claim matrix. T0 must pass null, truth-recovery, coverage,
-time-reversal, identifiability and novelty gates before any fresh L2 pilot. Budget <=100 core-h/20 GB, no GPU.
+T0 subsequently failed at its first, pre-implementation G0. Direct work already covers path-KLD/hidden entropy,
+waiting-time bounds, partial-network inference, coarse-grained semi-Markov TUR, financial TUR/time irreversibility
+and LOB temperature/entropy. All four frozen exits were either occupied, non-identifiable, application-only or
+blocked by EcoMD M1. No estimator or synthetic run was executed. Fresh L2, paid data, bulk data, EcoMD and GPU
+remain forbidden. Plan-v3 A1/B2/B3 are all inactive; a new line requires a new real mechanism problem and an
+irreducible claim before any data experiment.
 
-Full binding decision: `papers/proposal/real_physics_zero_cost_decision_2026-08-11.md`.
+Full binding decision: `papers/proposal/real_physics_zero_cost_decision_2026-08-11.md`; T0 result:
+`papers/proposal/entropy_tur_observability_t0_g0_result_2026-08-11.md`.
