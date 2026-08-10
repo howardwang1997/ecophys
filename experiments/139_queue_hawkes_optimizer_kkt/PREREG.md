@@ -62,7 +62,9 @@ gradient in the scaled coordinates used by the optimizer: seven standardized que
 
 Report raw and projected norms, active-bound count, the maximum absolute complementarity product
 `|alpha_i g_i|`, objective, iterations, function evaluations and termination message for every target/start/
-stage. Unit tests use hand-computable boundary cases and central finite differences away from bounds.
+stage. The formal self-check uses central differences with step `1e-6` at frozen interior points and requires
+maximum absolute analytic-versus-numeric error `<=5e-7`; hand-computable projected-bound cases require maximum
+absolute error `<=1e-15`.
 
 ## Frozen legacy comparator and repaired optimizer
 
