@@ -154,3 +154,7 @@ metadata:
   no-value shard-manifest hashes are `959c4047...51d9` and `44c2e944...6e8`. The result-blind gate fitter is
   implemented and requires global seed ordering plus exact file/manifest/source bindings. Calibration values
   have not yet been fitted at this point; held-out remains absent and locked until the gate artifact is committed.
+- Calibration was first opened only after the fitter commit `179da420a`. The exact 16-by-8000 matrix hash is
+  `18149f87...a90c`. The frozen energy tolerance is `0.019507027186009607`; W=0 fails narrowly and W=500/1000/
+  1500 pass, selecting W-star 500. ADF/KPSS selects W-star 0. Gate artifact SHA is `17ad4f26...ae55`, with zero
+  held-out trajectories at fit time. This only authorizes held-out transfer; no fidelity/physics claim follows.
