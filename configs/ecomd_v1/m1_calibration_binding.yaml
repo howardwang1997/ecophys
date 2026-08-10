@@ -1,0 +1,39 @@
+contract:
+  name: ecomd_v1_m1_calibration_only
+  version: 1
+  status: frozen_before_calibration_rollouts
+  freeze_commit_rule: first_git_commit_containing_this_file
+  heldout_locked: true
+
+training:
+  git_sha: 7b2cd40fe0f387893d8de7511a38217e5bd16b34
+  config_path: configs/ecomd_v1/m0_reference.yaml
+  config_sha256: 8e161bee28a4712e9a152539894ad6a9193d2311498fa066d24e16427e9ffa33
+  protocol_path: configs/ecomd_v1/m1_stationarity_screen.yaml
+  protocol_sha256: 449b169267e7f97b0ddb60485aa02f078b83c4b99e4cb8a0c2e15718d1bd9096
+  checkpoint_sha256: 7822c030b44aa8e18110d807d7a4bfc15dea5ebd0175c5bd0fa2d2a10f96f34a
+  checkpoint_iter: 600
+  parameter_count: 36541
+  data_manifest_sha256: 0836ddd279a16db5010907120e65da87db58a2f2634c25f0e732334a98ffff7c
+  train_return_float64_le_sha256: 5b295cf9d11b0796f69547e6251ae2ba3462589b735223932bbf53aaf34e5713
+  train_return_rows: 1005
+
+implementation:
+  model_tree_git_oid: 7277ec08e55619450243a924cdeac3929e1341a8
+  physics_tree_git_oid: 2156e56b94baa688c0c72820fe5d520c94a58b50
+  stylized_facts_sha256: 8d8f7e9887af9a32b9f5133cacb9e3874934fa1a9999df3cbf8ca0719a3e7e9b
+  run_large_sha256: be8be529bea4265902377bb13f8314f6b54c12b3c5b743d3e92028194f8f695d
+  seed_manifest_sha256: 2e38f8a8ef4f27fab8cbf52ade2ade04da8913c14d782ae15d43cedf46ccd7a8
+
+rollout:
+  simulator_steps: 8001
+  expected_recorded_returns: 8000
+  save_trajectory: true
+  shocks_or_overrides: forbidden
+  calibration:
+    v100_a:
+      seeds_path: configs/ecomd_v1/m1_calibration_v100a_seeds.json
+      seeds_sha256: f85e35ea0ed73954c20d05cfcc3a730afc3660759738074ab1e1a96cd1de4cd0
+    v100_b:
+      seeds_path: configs/ecomd_v1/m1_calibration_v100b_seeds.json
+      seeds_sha256: 91528c0492298baeb64ce4c8c82688694b15f064345fcb28b8ac662b9d4bc1fe

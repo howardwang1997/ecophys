@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "training_complete_mechanics_only_no_fidelity_claim",
+  "run_id": "ecomd_v1_m1_spx_seed0",
+  "execution": {
+    "git_sha": "7b2cd40fe0f387893d8de7511a38217e5bd16b34",
+    "m0_config_sha256": "8e161bee28a4712e9a152539894ad6a9193d2311498fa066d24e16427e9ffa33",
+    "m1_protocol_sha256": "449b169267e7f97b0ddb60485aa02f078b83c4b99e4cb8a0c2e15718d1bd9096",
+    "data_manifest_sha256": "0836ddd279a16db5010907120e65da87db58a2f2634c25f0e732334a98ffff7c",
+    "data_canonical_payload_sha256": "c8733a5f5e9442e3ae5e83209deea992ce9c4ec3656f0e0db8d50a15a8f41fb8",
+    "train_return_float64_le_sha256": "5b295cf9d11b0796f69547e6251ae2ba3462589b735223932bbf53aaf34e5713",
+    "train_return_rows": 1005,
+    "parameter_count": 36541,
+    "precision": "fp32",
+    "seed": 0,
+    "world_size": 1
+  },
+  "hardware": {
+    "node": "v100_a",
+    "gpu_name": "Tesla PG503-216",
+    "gpu_uuid": "GPU-91ba8f02-b2d7-7aad-1ce7-71b9680029ab",
+    "memory_total_mib": 32768
+  },
+  "segments": [
+    {
+      "start_iter": 0,
+      "end_iter": 300,
+      "train_time_seconds": 294.84959411621094,
+      "peak_allocated_gib": 11.429025650024414,
+      "peak_reserved_gib": 11.951171875,
+      "checkpoint_sha256_at_boundary": "0c08ece67f74a7f7407d95e9d97c3a8b31a8fb6f776255b6e03f5e1574b20f3f",
+      "segment_record_sha256": "2b31270e180188762de23f1dbf9bc57ee0059dccbf07f610c92737623e9dc160"
+    },
+    {
+      "start_iter": 300,
+      "end_iter": 600,
+      "exact_resume_reported": true,
+      "train_time_seconds": 294.61216711997986,
+      "peak_allocated_gib": 11.429034233093262,
+      "peak_reserved_gib": 11.951171875,
+      "checkpoint_sha256_at_boundary": "7822c030b44aa8e18110d807d7a4bfc15dea5ebd0175c5bd0fa2d2a10f96f34a",
+      "segment_record_sha256": "c5a0f4762842ea817c157d0de1e3cd6e270e1c1961572a815d9bfc081b25bb7f"
+    }
+  ],
+  "final_checkpoint": {
+    "sha256": "7822c030b44aa8e18110d807d7a4bfc15dea5ebd0175c5bd0fa2d2a10f96f34a",
+    "format_version": 2,
+    "iter_idx": 600,
+    "state_complete": true,
+    "runtime_count": 1,
+    "history_count": 600,
+    "history_first_iter": 0,
+    "history_last_iter": 599,
+    "all_checked_history_values_finite": true,
+    "positive_gradient_rows": 600,
+    "training_log_sha256": "9f4f317796a44e5a228d24776978f9109434f5507b2269d46ad96c82341b1a16"
+  },
+  "post_run": {
+    "service_exit_status": 0,
+    "git_worktree_clean": true,
+    "gpu_memory_used_mib": 8,
+    "gpu_utilization_percent": 0,
+    "compute_processes": 0,
+    "graphene_release_marker_absent": true
+  },
+  "operational_deviations": [
+    {
+      "stage": "deployment_only",
+      "detail": "The first isolated clone omitted --no-checkout and was terminated during an unintended full worktree checkout. It never initialized CUDA and was not used for execution."
+    },
+    {
+      "stage": "deployment_only",
+      "detail": "The first shared sparse checkout lacked promised new blobs and was rejected because git status showed deletions. A separate clean checkout was used."
+    },
+    {
+      "stage": "prelaunch_safety_check",
+      "detail": "The first service command locally expanded one nvidia-smi substitution. Independent checks immediately before and after launch showed no competing process; the resume launch used the corrected remote-only guard."
+    }
+  ],
+  "claim_boundary": {
+    "checkpoint_eligible_for_calibration": true,
+    "stationarity_or_fidelity_evaluated": false,
+    "positive_market_or_physics_claim_authorized": false,
+    "heldout_rollouts_authorized": false
+  }
+}

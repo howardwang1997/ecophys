@@ -140,3 +140,12 @@ metadata:
   The only legal phases are a clean no-checkpoint `stop_after_iter=300` first segment and explicit resume from
   expected iter 300 to the unchanged final iter 600. Full regression is 110 tests and strict mypy covers 71
   modules. Deploy the exact clean commit next; no M1 checkpoint or rollout exists yet.
+- The seed-0 SPX reference training completed on V100-A at exact `7b2cd40fe0f3`: 300+exact-resume+300 took
+  294.85+294.61 seconds, peak reserved HBM 11.951 GiB. Final checkpoint SHA is
+  `7822c030b44aa8e18110d807d7a4bfc15dea5ebd0175c5bd0fa2d2a10f96f34a`; it is format-2/state-complete/
+  iter-600 with history 0--599, all checked values finite and 600 positive gradient rows. Services exited 0,
+  checkout remained clean and GPU returned idle. Verification: `release/verification/7b2cd40fe0f3-m1-spx-training.json`.
+- Operational disclosure: one accidental full checkout was terminated before CUDA, one missing-blob checkout
+  was rejected, and one prelaunch shell substitution warning was bounded by independent idle checks immediately
+  before/after. Neither rejected tree ran the experiment. Calibration is now separately bound to the final
+  checkpoint and fresh node seed files; held-out is still locked and no stationarity/fidelity result exists.

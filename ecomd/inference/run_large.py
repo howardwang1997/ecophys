@@ -148,7 +148,7 @@ def main() -> None:
         out_dir.mkdir(parents=True, exist_ok=True)
 
     sim = EcoMDSimulator(simulator_config)
-    ckpt = torch.load(ckpt_path, map_location="cpu")
+    ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
     sim.load_state_dict(ckpt["sim_state_dict"])
     if torch.cuda.is_available():
         sim = sim.cuda(local_rank)

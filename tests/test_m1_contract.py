@@ -7,6 +7,7 @@ import pytest
 import yaml
 
 from ecomd.eval.m1_contract import validate_m1_protocol
+from ecomd.inference.seed_manifest import load_seed_file
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_PATH = REPO_ROOT / "configs/ecomd_v1/m1_stationarity_screen.yaml"
@@ -57,3 +58,28 @@ def test_frozen_m1_protocol_rejects_seed_reassignment() -> None:
     node["calibration"][0] = 999
     with pytest.raises(ValueError, match="do not partition"):
         validate_m1_protocol(payload, REPO_ROOT)
+
+
+@pytest.mark.parametrize(
+    ("split", "node", "filename"),
+    [
+        ("calibration", "v100_a", "m1_calibration_v100a_seeds.json"),
+        ("calibration", "v100_b", "m1_calibration_v100b_seeds.json"),
+        ("heldout", "v100_a", "m1_heldout_v100a_seeds.json"),
+        ("heldout", "v100_b", "m1_heldout_v100b_seeds.json"),
+    ],
+)
+def test_rollout_seed_files_match_frozen_node_shards(
+    split: str,
+    node: str,
+    filename: str,
+) -> None:
+    payload = _payload()
+    rollout = payload["rollout"]
+    assert isinstance(rollout, dict)
+    shards = rollout["node_shards"]
+    assert isinstance(shards, dict)
+    node_payload = shards[node]
+    assert isinstance(node_payload, dict)
+    expected = node_payload[split]
+    assert load_seed_file(REPO_ROOT / "configs/ecomd_v1" / filename) == expected
