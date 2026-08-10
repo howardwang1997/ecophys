@@ -1,7 +1,7 @@
 # Candidate invariant-gradient estimator v0: mathematical specification and red-team audit
 
 **Frozen:** 2026-08-10  
-**Status:** specification complete; **NOT CLEARED as a novel method**  
+**Status:** specification complete; **REJECTED as a novel method by G0**
 **Parent gate:** G0 in `plan_v4_ncs.md`  
 **Permitted use:** baseline definition and falsification only; do not assign an algorithm name or make a novelty claim
 
@@ -167,18 +167,17 @@ diagnostics.” Therefore the required non-equivalence test fails.
 
 ## 7. Binding decision
 
-1. **G0 remains AMBER / not passed.** This v0 specification must not be implemented or presented as a named
-   novel estimator.
+1. **G0 is FAIL.** This v0 specification must not be implemented or presented as a named novel estimator.
 2. exp131 remains a valid known-baseline harness; exp132 remains a frozen failed diagnostic. Neither is method
    evidence.
 3. E0--E3 candidate comparisons stay blocked until an irreducible mathematical primitive is written down.
    Running more baseline cells cannot resolve novelty.
-4. A v1 may proceed only if it contributes at least one of: a new cross-parameter coupling with a proved
-   staleness correction; a computable finite-budget residual bound under materially weaker assumptions; or a
-   variance/cost result not obtained by the direct composition above.
-5. Before v1 coding, that primitive must survive a targeted citation audit and be expressible as a theorem or
-   falsifiable estimator identity. If it cannot, the NCS methods route stops and the work retreats to a rigorous
-   simulator-audit/benchmark paper.
+4. The 2026-08-10 forward audit found that the proposed v1 escape clauses are occupied or unsupported: SOUL and
+   controlled-chain SA cover warm-started changing kernels; Jarzynski/JALA/SOSMC cover weighted reuse across
+   evolving targets; empirical diagnostics cannot replace model-specific assumptions; and no new variance/cost
+   result exists here.
+5. The current NCS methods route is stopped. Reopening requires a new branch, a genuinely new theorem or
+   falsifiable estimator identity, and a fresh audit before coding. See `ncs_g0_forward_audit_2026-08-10.md`.
 
 ## 8. Primary sources checked for this specification
 

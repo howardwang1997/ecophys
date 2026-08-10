@@ -1,16 +1,20 @@
 # NCS G0 新颖性审计：不变测度校准与长时程梯度
 
 **审计日期：** 2026-08-09  
-**状态：** AMBER；广义 claim 已否决，候选方法仅获准进入零成本可行性验证  
+**状态：** **FAIL；当前 NCS 不变测度校准方法主线停止**
 **适用计划：** `papers/proposal/plan_v4_ncs.md`  
 **资源约束：** 当前阶段不采购数据、不扩容、不得使用 H20
 
-**2026-08-10 执行更新：** exp131 已通过 E1 的已知 baseline/harness 门槛，但没有 candidate
+**2026-08-10 最终更新：** exp131 已通过 E1 的已知 baseline/harness 门槛，但没有 candidate
 estimator；exp132 的 v1 mixing diagnostic 因 easy resolved rate `78.125% < 80%` 按预注册判 FAIL。
 `ncs_candidate_estimator_spec_v0.md` 已写出目标、混合梯度、随机 horizon、staleness bound 和误差账本，
 但逐项红队结论是直接组合 PCD、pathwise/LR、Rhee--Glynn 与 StochasticAD/GGE；没有新的 stochastic
 identity、coupling、residual theorem 或 variance result。v0 非等价性 FAIL，禁止命名和启动 E0--E3
-candidate benchmark，G0 仍为 AMBER。
+candidate benchmark。随后完成的 33 篇一手文献 forward audit 发现：SOUL 已覆盖参数变化时的
+warm-started Markov kernel，Jarzynski/JALA/SOSMC 已覆盖跨参数的加权粒子复用，2025 PCD 工作已给出
+耦合参数--采样动力学的 uniform-in-time error，而经验 mixing diagnostics 不能在未知混合常数下提供
+有限预算证书。三个 v1 出口均不成立，故 G0 正式 **FAIL**。完整证据与绑定决定见
+`ncs_g0_forward_audit_2026-08-10.md`。
 
 ## 1. Gate 结论
 
@@ -30,9 +34,9 @@ candidate benchmark，G0 仍为 AMBER。
 > 梯度估计与校准协议；同时给出有限 ensemble、有限 horizon、state-bank staleness 和离散事件项的
 > 可分解误差诊断。
 
-这仍只是 **candidate estimator**，不是已经成立的方法贡献。若它等价于 PCD、Rhee--Glynn
+这仍只是 **candidate estimator**，不是已经成立的方法贡献。它可以被 PCD、Rhee--Glynn
 telescoping、已有 steady-state likelihood-ratio/pathwise estimator、StochasticAD 或 generator gradient
-estimator 的直接拼装，G0 必须判失败。
+estimator 的直接拼装；forward audit 又排除了 v1 的三个候选出口，因此 G0 已判失败。
 
 ## 2. 主文献 claim matrix
 
@@ -79,10 +83,10 @@ estimator 的直接拼装，G0 必须判失败。
 10. Suh, H. J. T., Simchowitz, M., Zhang, K. and Tedrake, R.,
     [Do Differentiable Simulators Give Better Policy Gradients?](https://arxiv.org/abs/2202.00817).
 
-## 4. Candidate estimator：允许实现的最小规格
+## 4. Candidate estimator：已冻结的失败规格
 
-完整数学规格与非等价表见 `ncs_candidate_estimator_spec_v0.md`。该 v0 已在编码前判定为直接组合，
-因此本节保留为未来 v1 的最低接口要求，而不是当前获准实现的方法。
+完整数学规格与非等价表见 `ncs_candidate_estimator_spec_v0.md`。该 v0 已在编码前判定为直接组合；
+本节只保留为失败记录和已知 baseline 接口，不再授权当前分支实现 v1 或启动 candidate benchmark。
 
 本阶段不命名算法。实现必须拆成四个可独立消融的模块：
 
@@ -145,15 +149,16 @@ variance/ESS、mixing diagnostic、估计的 truncation residual，以及是否�
   数学 spec 已完成但非等价性失败；下一步若继续，必须先提出可写成 theorem 或 estimator identity
   的不可约 primitive，而不是继续累计 baseline smoke。
 
-## 6. G0 的最终判定规则
+## 6. G0 的最终判定
 
-当前判定为 **AMBER / 未通过**。满足以下全部条件后才改为 PASS：
+当前判定为 **FAIL**，理由是必要的非等价性条件已失败：
 
-- 完成至少 30 篇主文献的 backward/forward citation audit，并补齐 2024--2026 相关工作；
-- 写出 estimator 的数学式、假设、复杂度和与五个最近邻方法的逐项非等价性；
-- E0--E2 达到预注册阈值，E3 至少不被已知 estimator 在准确度--成本上支配；
-- 一名外部、熟悉 steady-state sensitivity 的方法研究者无法用“PCD + randomized truncation +
-  StochasticAD/GGE 的直接组合”复述全部贡献。
+- 33 篇一手文献 backward/forward audit 已覆盖 2024--2026 最近邻；
+- v0 数学式可以被完整复述为 PCD + hybrid pathwise/LR + Rhee--Glynn + diagnostics；
+- v1 的 cross-parameter coupling、weaker-assumption residual 和 variance--cost 三个出口均无新定理或
+  estimator identity；
+- 因此在运行 E0--E3 之前就没有可比较的 candidate，继续跑 toy benchmark 不会修复 novelty。
 
-若任一项失败，NCS 方法主线停止。state-complete EcoMD、免费 L2 重建和 simulator audit 仍作为
-独立且有价值的工程/科学交付继续，但不能用于掩盖方法新颖性失败。
+当前 NCS 方法主线停止。state-complete EcoMD、免费 L2 重建和 simulator audit 仍作为独立且有价值
+的工程/科学交付继续，但不能用于掩盖方法新颖性失败。若未来重新开启，必须先在新分支写出未被
+`ncs_g0_forward_audit_2026-08-10.md` 覆盖的数学原语并重新审计，而不是改写本次 FAIL。

@@ -3,7 +3,7 @@
 **日期：** 2026-08-09
 **最近更新：** 2026-08-10
 
-**状态：** NCS 路线的当前执行计划
+**状态：** **G0 FAIL；当前 NCS 方法路线已停止，本文件保留为 gate/预算审计记录**
 
 **主目标：** *Nature Computational Science* Article
 
@@ -13,7 +13,14 @@
 
 **数据边界：** 当前数据只是 D0 起点；后续按科学问题和 gate 扩展市场、交易所、时间跨度与数据模态
 
-**2026-08-10 执行状态：** G0 仍为 AMBER（广义 novelty claim 已被先行工作否决）；exp131 的离散
+**2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
+候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、
+2025 PCD 理论和 ICML 2026 SOSMC 又分别覆盖 warm-started 参数依赖 kernel、跨参数加权粒子复用、
+uniform-in-time persistent-chain error 和 ESS-resampled evolving-target optimization。当前仓库没有新
+coupling、weaker-assumption finite-budget residual 或 variance--cost theorem。按硬 gate，WP3/WP4 与
+当前 NCS 投稿路线停止，付费数据和扩容不解锁；完整结论见
+`papers/proposal/ncs_g0_forward_audit_2026-08-10.md`。以下 exp131--140 结果保留为 simulator-audit
+基础设施与负结果，不改变 G0。exp131 的离散
 事件已知基线/harness 通过，但没有 candidate estimator；exp132 的双稳态 fail-visible diagnostic 按
 预注册门槛失败。WP1 的 CPU 六项语义测试、版本化单 V100 v2 mechanics probe，以及 exp133 的
 双 rank CPU/Gloo 和单 V100/CUDA 原子 exact-resume 均已通过；CUDA 连续/恢复的 12 项比较全为
@@ -52,14 +59,16 @@ active-set Newton reference gate，但正式结果仍为 **7/9、整体 FAIL**�
 ### 1.1 论文主线
 
 不能把“发布一个从未公开的市场模拟器”本身当作 NCS 贡献，也不能把 exp127 中已经识别出的
-初始化瞬态包装成市场物理。NCS 的合理主线是：
+初始化瞬态包装成市场物理。本计划原先要求的 NCS 主线是：
 
 > 为有隐状态、随机事件和长混合时间的可微模拟器建立一种可扩展的不变测度校准方法；给出梯度
 > 误差或偏差—方差的受控刻画；在 EcoMD 之外的独立系统上验证；随后修复 EcoMD 的长时程语义，
 > 通过经过验证的观测算子连接模型与真实 L2 数据，并完成一个冻结的、方法依赖的样本外预测。
 
-这里的“方法依赖”是硬要求：如果标准短时程 BPTT、只拟合观测的模型或传统生成时序基线也能得到
-同样的真实数据结果，真实应用不能支撑本论文的主 claim。
+G0 已证明当前候选不能提供其中的“建立一种新方法”，所以这段主线现在是失败条件记录，而非执行
+授权。这里的“方法依赖”仍是硬要求：如果标准短时程 BPTT、只拟合观测的模型或传统生成时序基线
+也能得到同样的真实数据结果，真实应用不能支撑本论文的主 claim。当前执行路线转至
+`plan_v4a_simulator_audit_release.md`。
 
 ### 1.2 预期贡献结构
 
@@ -84,9 +93,9 @@ active-set Newton reference gate，但正式结果仍为 **7/9、整体 FAIL**�
 
 ### 1.4 诚实概率与退出原则
 
-从当前状态直接完成并被 NCS 接收的联合概率暂估 **7–12%**；若 G0–G4 全部通过，条件接收概率
-可上调到约 **20–35%**。这是研究规划判断，不是统计量。NCS 官方定位同时要求显著的计算方法推进
-和跨科学问题的价值；Article 目前限制主文约 3,500 词、摘要 150 词、最多 6 个 display items。
+原先 **7–12%** 的联合概率和 **20–35%** 的条件概率现已失效，因为 G0 是硬 gate 且已失败。当前
+v0/v1 构造直接投稿 NCS 的规划概率按 **0%（路线停止）** 处理，而不是用更多实验把失败稀释。
+若未来出现经过独立审计的新数学原语，必须另开计划重新估计；那不是本路线的延续。
 
 退出不是失败掩饰：每个 gate 都对应一个仍可发表且科学边界清楚的退路，见第 12 节。
 
@@ -633,7 +642,8 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
 
 ## 11. 接下来 14 天的具体动作
 
-1. **已完成：** G0 prior-art matrix；当前结论 AMBER，广义 claim 已否决，在 E1--E3 前不写算法名称；
+1. **已完成并失败：** G0 prior-art/forward audit 共覆盖 33 篇一手文献；当前结论 FAIL，v0/v1
+   不具有不可约方法新颖性，禁止命名、实现 candidate 或启动 E0--E3；当前 NCS 方法路线停止；
 2. **已完成：** `SimulatorState`、六类 CPU parity/resume tests 和版本化单 V100 mechanics probe；
 3. **已完成：** 免费 LOBSTER 八个样本、1,381,420 条事件的流式重建 hard gates；
 4. **已完成：** exp131 两状态 chain/compound-Poisson OU 基线审计；已知 LR/FD controls 与前向
@@ -644,12 +654,11 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
    跨进程 bit-exact；安全队列在 V100-A 空闲后完成单卡 CUDA formal run，连续/恢复 12/12 比较通过、
    所有 difference count 为零、耗时 16.81 秒；另行纳入真实 data cursor、scheduler/scaler、W&B
    contract、多节点 NCCL 与异步断电 durability；
-7. 以 `experiments/128_state_semantics_preflight/` 为输入冻结正式 WP2 preregistration，写明五臂、
-   独立训练 seeds、post-stationarity 主指标、compute matching 和 stop rule；在 G0 review 前不启动
-   550--1,050 V100-eq h 的正式规模；
-8. **v0 spec 已完成但非等价性失败：** 现有构造可被完整复述为 PCD + hybrid pathwise/LR +
-   Rhee--Glynn + diagnostics，禁止命名或启动 E0--E3；只有先提出可写成 theorem/identity 的新 coupling、
-   residual bound 或 variance result，才允许预注册 v1；
+7. **取消原 NCS WP2 正式规模：** 不启动 550--1,050 V100-eq h 的五臂 NCS campaign；先在 fallback
+   claim ledger 下把 exp128 的五类缺陷缩成免费/低成本 causal audit，重新预注册后才允许运行；
+8. **v0/v1 路线停止：** 现有构造可被完整复述为 PCD + hybrid pathwise/LR + Rhee--Glynn +
+   diagnostics；forward audit 又覆盖三个 v1 出口。禁止命名、实现或启动 E0--E3，除非未来在新分支
+   先给出审计通过的新 theorem/identity；
 9. **动态合成 observation preflight 已完成：** `ofi -> latent_flow_alignment` 迁移和
    backward-compatible artifact alias 已完成；exp134 recovery、exp135 misspecification/
    observation-only stress、exp136 state-complete EcoMD adapter 与 exp137 dynamic queue/price stress 全
@@ -664,8 +673,9 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
 10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
    `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后
    再排 canonical re-benchmark，且不抢占其他正式任务；
-11. 完成 G0/G1-preflight review：若 novelty 不成立，停止 WP3 方法 claim；若 V100 exact resume 或
-    production cursor contract 未通过，不启动正式五臂训练。
+11. **当前下一步：** 冻结 EcoMD state-to-message observation map，明确只能支持 aggregate 还是
+    individual-order 语义；完成 fallback simulator-audit claim/experiment plan；在这两个文档通过
+    前不启动新 GPU 生产训练、不购买 L2。
 
 ---
 

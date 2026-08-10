@@ -1,6 +1,6 @@
 ---
 name: ncs-plan-v4-invariant-calibration
-description: "Authoritative 2026-08-09 NCS plan: a gated invariant-measure/long-horizon calibration method beyond EcoMD, state/dynamics repair, validated L2 observation bridge, frozen real-data application, scalable non-H20 compute, and expandable data."
+description: "Closed 2026-08-10 NCS plan: G0 novelty failed after a 33-paper forward audit; retained as gate and budget provenance."
 metadata:
   node_type: memory
   type: project
@@ -10,20 +10,26 @@ metadata:
 
 **Authoritative plan:** `papers/proposal/plan_v4_ncs.md`.
 
-- The paper is not “EcoMD exists” and does not reinterpret simulator error as market physics. Its spine
+**Binding 2026-08-10 status:** G0 is **FAIL** and this NCS method route is closed. The document remains the
+historical gate/budget record, not the active execution plan. The 33-primary-paper forward audit found no
+irreducible v0/v1 primitive beyond PCD/SOUL, Jarzynski/JALA/SOSMC, Rhee--Glynn, StochasticAD/GGE and empirical
+diagnostics. WP3/WP4, candidate E0--E3, data purchases and compute expansion are not authorized. The active route
+is `papers/proposal/plan_v4a_simulator_audit_release.md`.
+
+- Historical intended spine, never cleared by G0: the paper was not “EcoMD exists” and did not reinterpret simulator error as market physics. Its spine
   is a genuinely new invariant-measure/long-horizon calibration method with controlled error, validation
   on at least two independent model families beyond EcoMD, a repaired EcoMD, a validated model-to-L2
   observation bridge, and a frozen method-dependent real-data prediction.
 - EcoMD's current `sum(dpos)/sum(abs(dpos))` is `latent_flow_alignment`, not empirical CKS OFI.
-- Sim2Science remains an audit-only workshop artifact. If all gates pass, the NCS paper is EcoMD's first
-  formal method/software release; otherwise the audited release follows the fallback archival paper.
+- Sim2Science remains an audit-only workshop artifact. The NCS gates did not all pass; the audited EcoMD release
+  now follows Plan v4a rather than this method paper.
 - Hard gates: G0 novelty, G1 state/dynamics and five-arm causal confirmation, G2 cross-system method,
   G3 observation bridge, G4 held-out real data, G5 paper/release reproducibility. Do not submit NCS if
   any load-bearing gate fails.
 - Current compute is two independent V100 32 GB nodes. Future capacity may expand to more GPU/CPU
   workers, but **H20 is excluded**. Use V100-equivalent GPU-hours, separate heterogeneous hardware pools,
   and never shrink seeds/horizons/baselines to fit the initial two cards.
-- Full all-gates planning envelope: roughly 3,900–10,300 V100-eq GPU-hours and 9,000–30,400 CPU core-hours.
+- Historical, now-void all-gates envelope: roughly 3,900–10,300 V100-eq GPU-hours and 9,000–30,400 CPU core-hours.
   Two V100s are enough for WP0–WP2; average 8 workers after G1 and 16-worker bursts after G3/G4 support
   the 42-week target.
 - Three to five training seeds are screening only. Every stochastic headline uses at least 20 independent
@@ -32,16 +38,17 @@ metadata:
   D4 event metadata; D5 external scientific benchmarks; D6 optional cross-market expansion. Purchases
   require current quotes, sample reconstruction, provenance/license review, preregistration, and the
   preceding scientific gate. Current holdings and old $8–12k quotes are not ceilings or fixed prices.
-- Honest planning probability: about 7–12% joint from the current state, 20–35% conditional on all
-  scientific gates passing. Fallback is TMLR/appropriate ML or microstructure venue without overclaiming.
-- Zero-purchase preflight on 2026-08-09 left G0 **AMBER**: broad novelty claims are occupied by prior art.
+- Superseded pre-G0 probability: about 7–12% joint and 20–35% conditional. After G0 FAIL, this route is treated
+  as stopped rather than assigned a residual submission probability.
+- Interim zero-purchase preflight on 2026-08-09 left G0 **AMBER**; the 2026-08-10 forward audit later closed it
+  as FAIL. Broad novelty claims are occupied by prior art.
   WP1 now has a state-complete single-process API, CPU/V100 mechanics evidence and a two-rank CPU/Gloo atomic
   exact-resume PASS; the single-V100 exact-resume and production data-cursor contract are still open. Exp128
   uses five arms because force semantics are a third defect alongside missing state
   and train/inference jump mismatch. Exp129 shows persistent detached state alone remains biased in a
   slow-mixing AR(1). Exp130 validates streaming reconstruction on 1,381,420 free LOBSTER sample events,
   not an EcoMD-to-L2 observation model. See `project_ncs_zero_cost_preflight_2026-08-09.md`.
-- The 2026-08-10 continuation did not upgrade G0: exp131 passed only a known event-gradient baseline/harness
+- Before the final forward audit, the 2026-08-10 continuation did not upgrade G0: exp131 passed only a known event-gradient baseline/harness
   audit, while exp132 failed its frozen easy-resolution diagnostic gate. Exp133 found and fixed missing initial
   rank-model broadcast, passed exact two-rank CPU continuation, and later passed all 12 single-V100 CUDA
   uninterrupted/resume comparisons with zero difference counts in 16.81 seconds. Production cursor,

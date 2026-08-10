@@ -1,6 +1,6 @@
 ---
 name: ncs-preflight-continuation-2026-08-10
-description: "Exp131-139 lasting outcomes: no novel estimator, exact CPU/distributed/CUDA state semantics, synthetic observation passes, and external continuous-time baseline/numerical-repair failures; G0 and G3 remain open."
+description: "Exp131-140 lasting outcomes plus final G0 closure: no novel estimator, exact state semantics, synthetic observation passes, external-baseline failures, and a 33-paper audit that stops the NCS method route."
 metadata:
   node_type: memory
   type: project
@@ -10,8 +10,9 @@ metadata:
 
 ## Scientific status
 
-- G0 remains **AMBER / not passed**. Exp131 validates known LR and coupled-FD controls for two-state and
-  compound-Poisson systems, but supplies no candidate estimator or accuracy--cost improvement.
+- Interim experiment status was **AMBER / not passed**; the later forward audit closes G0 as **FAIL**. Exp131
+  validates known LR and coupled-FD controls for two-state and compound-Poisson systems, but supplies no
+  candidate estimator or accuracy--cost improvement.
 - In exp131's slow two-state cell, fresh-short LR bias was `-12.61%`, persistent-detached LR `-38.01%`,
   stationary-oracle LR `+0.30%`, full-long LR `+0.47%`, and FD-CRN `-3.06%`.
 - In the slow jump cell, coupled finite difference had `+5.64%` relative bias and `92.19%` 90% coverage;
@@ -39,7 +40,8 @@ metadata:
 
 Do not turn additional baseline smokes into G0 evidence. The v0 mathematical candidate spec is complete but
 fails non-equivalence: it is direct composition of persistent chains, hybrid pathwise/LR, Rhee--Glynn and
-diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator identity survives citation audit.
+diagnostics. The subsequent forward audit closes the route; E0--E3 candidate runs are stopped. A future restart
+requires a new branch and a theorem/identity that first survives a new citation audit.
 
 ## Synthetic observation bridge
 
@@ -151,3 +153,19 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
   Preserve the formal FAIL. A post-result regression guard now rejects bit-identical candidates immediately for
   honest software behavior; exp140 was not rerun, exp141 will not be started, and effort returns to G0 novelty
   and G3 semantics/unseen data.
+
+## Binding G0 closure after exp140
+
+- A 33-primary-paper backward/forward audit through 2026-08-10 closes G0 as **FAIL**, not AMBER. SOUL already
+  handles warm-started parameter-dependent kernels; Jarzynski EBM/JALA and ICML 2026 SOSMC reuse weighted
+  particles across evolving parameter-dependent targets; the 2025 persistent-CD work gives uniform-in-time
+  coupled parameter/sampling error under explicit assumptions.
+- The three allowed v1 escape clauses all fail: there is no new cross-parameter coupling, no finite-budget
+  residual theorem under weaker assumptions, and no new variance--cost theorem. ESS/IACT/split-chain checks can
+  reject failures but cannot certify unseen-mode bias without model-specific mixing assumptions.
+- Candidate E0--E3 and NCS WP3/WP4 are stopped. More solver/toy runs cannot repair novelty. The old NCS
+  probability and scale-up budget are void; paid L2 remains locked.
+- Reusable evidence moves to Plan v4a: a falsifiable state/law/observation simulator audit plus EcoMD's first
+  formal release. TMLR remains conditional on a separate audit-novelty gate and replication on two non-EcoMD
+  systems. See `papers/proposal/ncs_g0_forward_audit_2026-08-10.md` and
+  `papers/proposal/plan_v4a_simulator_audit_release.md`.
