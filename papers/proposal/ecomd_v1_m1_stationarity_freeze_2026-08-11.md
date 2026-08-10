@@ -26,6 +26,11 @@ paper claim。M1 FAIL 则阻止正面 model paper，但不阻止透明的软件/
 - 训练入口必须校验 manifest 的文件 SHA 与 split-return hash；execution record 绑定该 manifest
   文件自身 SHA。若重新下载导致 byte/return hash 改变，视为新数据版本，不可冒充相同 run。
 
+**结果前数据绑定补充（2026-08-11）：** 正式 acquisition 已完成但尚未产生 checkpoint。冻结 manifest
+为 `data/manifests/ecomd_v1_m1_spx_4a2332d62.json`，文件 SHA-256 为
+`0836ddd279a16db5010907120e65da87db58a2f2634c25f0e732334a98ffff7c`。新下载的十个年度文件与
+历史缓存逐字节一致；该事实不改变任何训练、rollout 或决策规则。
+
 ## 3. 唯一训练
 
 - 模型配置只能是 `m0_reference.yaml`，raw SHA-256 为

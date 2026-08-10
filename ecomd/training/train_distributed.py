@@ -426,6 +426,7 @@ def save_checkpoint(
     world_size: int = 1,
     state_complete: bool = False,
     rank_runtimes: list[dict[str, Any]] | None = None,
+    execution_metadata: dict[str, Any] | None = None,
 ) -> None:
     if isinstance(targets, MomentTargets):
         targets_serialised: Any = asdict(targets)
@@ -459,6 +460,8 @@ def save_checkpoint(
         "sim_config": sim_config,
         "train_config": train_config,
     }
+    if execution_metadata is not None:
+        payload["execution_metadata"] = execution_metadata
     _atomic_torch_save(payload, path)
 
 
@@ -471,10 +474,18 @@ def try_load_checkpoint(
     world_size: int = 1,
     state_complete: bool = False,
     device: torch.device | None = None,
+    expected_execution_metadata: dict[str, Any] | None = None,
 ) -> tuple[int, dict[str, Any] | None, bool]:
     if not path.exists():
         return 0, None, False
     ckpt = torch.load(path, map_location="cpu", weights_only=False)
+    if expected_execution_metadata is not None:
+        actual_metadata = ckpt.get("execution_metadata")
+        if actual_metadata != expected_execution_metadata:
+            raise ValueError(
+                "checkpoint execution metadata does not match the current "
+                "Git/config/protocol/data binding"
+            )
     sim.load_state_dict(ckpt["sim_state_dict"])
     optim.load_state_dict(ckpt["optim_state_dict"])
     _optimizer_to(optim, device or sim.device)
@@ -635,6 +646,8 @@ def train_distributed(
     sim_config: dict[str, Any] | None = None,
     train_config: dict[str, Any] | None = None,
     stop_after_iter: int | None = None,
+    execution_metadata: dict[str, Any] | None = None,
+    expected_start_iter: int | None = None,
 ) -> list[dict[str, Any]]:
     """Each rank runs train_ecomd-style iterations with its own seed.
 
@@ -694,12 +707,17 @@ def train_distributed(
             world_size=world_size,
             state_complete=state_complete,
             device=device,
+            expected_execution_metadata=execution_metadata,
         )
         if start_iter > 0 and _is_main(rank):
             log.info(
                 f"[rank 0] resumed from {checkpoint_path} at iter {start_iter} "
                 f"exact={exact_resume}"
             )
+    if expected_start_iter is not None and start_iter != expected_start_iter:
+        raise ValueError(
+            f"checkpoint iteration {start_iter} != expected {expected_start_iter}"
+        )
 
     # Each rank gets a distinct seed so independent trajectories are explored
     gen = torch.Generator(device=device)
@@ -980,6 +998,7 @@ def train_distributed(
                     world_size=world_size,
                     state_complete=state_complete,
                     rank_runtimes=rank_runtimes,
+                    execution_metadata=execution_metadata,
                 )
                 log.info(
                     f"[rank 0] checkpointed to {checkpoint_path} at iter {it + 1}"
@@ -1017,6 +1036,7 @@ def train_distributed(
                 world_size=world_size,
                 state_complete=state_complete,
                 rank_runtimes=rank_runtimes,
+                execution_metadata=execution_metadata,
             )
 
     return history
@@ -1036,40 +1056,77 @@ def main() -> None:
                         help="tiny run (3 iters) for dry-run validation")
     parser.add_argument("--resume", action="store_true",
                         help="resume from checkpoint in out_dir if present")
+    parser.add_argument("--stop-after-iter", type=int, default=None,
+                        help="stop at this global iteration while retaining the config schedule")
+    parser.add_argument("--m1-protocol", type=Path, default=None,
+                        help="frozen M1 protocol required by the canonical M0 production run")
+    parser.add_argument("--data-manifest", type=Path, default=None,
+                        help="frozen audited data manifest required by M1")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+
+    config_path = Path(args.config).resolve()
+    cfg = yaml.safe_load(config_path.read_text())
+    if not isinstance(cfg, dict):
+        raise ValueError("training config must be a YAML mapping")
+    sim_cfg_dict = dict(cfg["simulator"])
+    train_cfg = dict(cfg["training"])
+
+    legacy_warning = False
+    if "release_contract_version" in train_cfg:
+        validate_release_training_contract(sim_cfg_dict, train_cfg)
+    elif not bool(train_cfg.get("state_complete", False)):
+        legacy_warning = True
+
+    if args.smoke:
+        train_cfg["n_iters"] = min(train_cfg["n_iters"], 3)
+        train_cfg["chunk_steps"] = min(train_cfg["chunk_steps"], 16)
+
+    exp_dir = config_path.parent
+    out_dir = Path(args.out_dir) if args.out_dir else exp_dir / "results"
+    checkpoint_path = out_dir / "checkpoint.pt" if args.resume or not args.smoke else None
+    repo_root = Path(__file__).resolve().parents[2]
+
+    preflight: Any | None = None
+    segment_bounds: tuple[int, int] | None = None
+    contract = cfg.get("contract")
+    is_canonical_m0 = isinstance(contract, dict) and contract.get("name") == "ecomd_v1_m0"
+    if is_canonical_m0 and not args.smoke:
+        if args.m1_protocol is None or args.data_manifest is None:
+            raise ValueError("canonical M0 production requires --m1-protocol and --data-manifest")
+        if checkpoint_path is None:
+            raise RuntimeError("canonical M1 training requires checkpoint output")
+        from .m1_preflight import run_m1_preflight, validate_m1_training_phase
+
+        preflight = run_m1_preflight(
+            config_path=config_path,
+            protocol_path=args.m1_protocol.resolve(),
+            manifest_path=args.data_manifest.resolve(),
+            repo_root=repo_root,
+        )
+        segment_bounds = validate_m1_training_phase(
+            preflight,
+            checkpoint_path=checkpoint_path,
+            resume=args.resume,
+            stop_after_iter=args.stop_after_iter,
+        )
+    elif args.m1_protocol is not None or args.data_manifest is not None:
+        raise ValueError("M1 protocol/data flags are only valid for the canonical M0 config")
 
     rank, world_size, local_rank = setup_dist()
     if _is_main(rank):
         log.info(f"[dist] rank={rank} world_size={world_size} local_rank={local_rank} "
                  f"cuda_available={torch.cuda.is_available()}")
-
-    cfg = yaml.safe_load(Path(args.config).read_text())
-    sim_cfg_dict = dict(cfg["simulator"])
-    train_cfg = dict(cfg["training"])
-
-    if "release_contract_version" in train_cfg:
-        validate_release_training_contract(sim_cfg_dict, train_cfg)
-    elif not bool(train_cfg.get("state_complete", False)) and _is_main(rank):
-        log.warning(
-            "legacy state-incomplete training path enabled; this run is not eligible "
-            "for a model release"
-        )
-
-    if args.smoke:
-        train_cfg["n_iters"] = min(train_cfg["n_iters"], 3)
-        train_cfg["chunk_steps"] = min(train_cfg["chunk_steps"], 16)
-        if _is_main(rank):
+        if args.smoke:
             log.info("SMOKE MODE — overriding n_iters=3 chunk=16")
-
-    config_path = Path(args.config).resolve()
-    exp_dir = config_path.parent
-    out_dir = Path(args.out_dir) if args.out_dir else exp_dir / "results"
+        if legacy_warning:
+            log.warning(
+                "legacy state-incomplete training path enabled; this run is not eligible "
+                "for a model release"
+            )
     if _is_main(rank):
         out_dir.mkdir(parents=True, exist_ok=True)
-
-    repo_root = Path(__file__).resolve().parents[2]
 
     # Build targets (each rank loads independently — data is small).
     # Multi-asset: train_cfg["joint_assets"] is a list of dicts with
@@ -1130,8 +1187,10 @@ def main() -> None:
     if _is_main(rank):
         n_params = sum(p.numel() for p in sim.parameters())
         log.info(f"EcoMDSimulator built: {n_params} parameters (device={sim.device})")
-
-    checkpoint_path = out_dir / "checkpoint.pt" if args.resume or not args.smoke else None
+        if preflight is not None and n_params != preflight.expected_parameter_count:
+            raise ValueError(
+                f"M1 parameter count {n_params} != expected {preflight.expected_parameter_count}"
+            )
 
     t0 = time.time()
     history = train_distributed(
@@ -1160,6 +1219,9 @@ def main() -> None:
         state_complete=bool(train_cfg.get("state_complete", False)),
         sim_config=sim_cfg_dict,
         train_config=train_cfg,
+        stop_after_iter=args.stop_after_iter,
+        execution_metadata=(preflight.execution_metadata if preflight is not None else None),
+        expected_start_iter=(segment_bounds[0] if segment_bounds is not None else None),
     )
     t_total = time.time() - t0
 
@@ -1187,14 +1249,42 @@ def main() -> None:
                 {"label": lbl, "targets": asdict(t), "weight": w}
                 for lbl, t, w in targets
             ]
-        (out_dir / "training_log.json").write_text(json.dumps({
+        checkpoint_sha256 = None
+        if checkpoint_path is not None and checkpoint_path.is_file():
+            from ..data.yfinance_provenance import sha256_file
+
+            checkpoint_sha256 = sha256_file(checkpoint_path)
+        training_record = {
             "config": {"simulator": sim_cfg_dict, "training": train_cfg},
             "targets": targets_dump,
             "history": history,
             "train_time_seconds": t_total,
             "world_size": world_size,
             "peak_hbm": peak_hbm,
-        }, indent=2))
+            "execution_metadata": (
+                preflight.execution_metadata if preflight is not None else None
+            ),
+            "segment_start_iter": segment_bounds[0] if segment_bounds is not None else 0,
+            "segment_end_iter": (
+                segment_bounds[1] if segment_bounds is not None else len(history)
+            ),
+            "checkpoint_sha256": checkpoint_sha256,
+        }
+        (out_dir / "training_log.json").write_text(json.dumps(training_record, indent=2))
+        if segment_bounds is not None:
+            assert preflight is not None
+            segment_path = out_dir / (
+                f"training_segment_{segment_bounds[0]:03d}_{segment_bounds[1]:03d}.json"
+            )
+            segment_path.write_text(json.dumps({
+                "execution_metadata": preflight.execution_metadata,
+                "segment_start_iter": segment_bounds[0],
+                "segment_end_iter": segment_bounds[1],
+                "train_time_seconds": t_total,
+                "world_size": world_size,
+                "peak_hbm": peak_hbm,
+                "checkpoint_sha256": checkpoint_sha256,
+            }, indent=2))
         log.info(f"[rank 0] wrote {out_dir}/training_log.json")
 
     cleanup_dist()

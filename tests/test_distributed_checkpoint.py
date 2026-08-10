@@ -189,3 +189,49 @@ def test_checkpoint_requires_every_rank_runtime(tmp_path: Path) -> None:
             state_complete=True,
             rank_runtimes=[],
         )
+
+
+def test_checkpoint_execution_metadata_must_match_on_resume(tmp_path: Path) -> None:
+    sim, optim, state, generator, auxiliary = _make_runtime()
+    runtime = capture_rank_runtime(
+        rank=0,
+        simulator_state=state,
+        generator=generator,
+        auxiliary_generator=auxiliary,
+        history=[],
+        device=torch.device("cpu"),
+    )
+    checkpoint = tmp_path / "checkpoint.pt"
+    binding = {"git_sha": "abc", "data_manifest_sha256": "def"}
+    save_checkpoint(
+        checkpoint,
+        sim=sim,
+        optim=optim,
+        iter_idx=1,
+        targets=MomentTargets(0.1, -0.1, 3.0),
+        sim_config={},
+        train_config={},
+        world_size=1,
+        state_complete=True,
+        rank_runtimes=[runtime],
+        execution_metadata=binding,
+    )
+    restored_sim = EcoMDSimulator(_config())
+    restored_optim = torch.optim.Adam(restored_sim.parameters(), lr=1e-3)
+    iteration, _, exact = try_load_checkpoint(
+        checkpoint,
+        sim=restored_sim,
+        optim=restored_optim,
+        state_complete=True,
+        expected_execution_metadata=binding,
+    )
+    assert iteration == 1
+    assert exact
+    with pytest.raises(ValueError, match="execution metadata"):
+        try_load_checkpoint(
+            checkpoint,
+            sim=restored_sim,
+            optim=restored_optim,
+            state_complete=True,
+            expected_execution_metadata={**binding, "git_sha": "wrong"},
+        )

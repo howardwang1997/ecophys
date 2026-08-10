@@ -134,3 +134,9 @@ metadata:
   revision/normalization drift. The committed no-value manifest SHA is `0836ddd279a16db5010907120e65da87db58a2f2634c25f0e732334a98ffff7c`;
   train has 1,005 returns. Vendor bytes remain internal/untracked. Training must fail closed on manifest, physical
   shard and derived train-return hashes before V100 allocation.
+- M1 production entry is fail-closed: the protocol now pins manifest file SHA `0836ddd2...`; preflight runs
+  before CUDA and rehashes the manifest, all ten physical shards and all reconstructed split-return vectors.
+  Checkpoints bind Git/config/protocol/manifest/dataset/train-return metadata and reject mismatched resumes.
+  The only legal phases are a clean no-checkpoint `stop_after_iter=300` first segment and explicit resume from
+  expected iter 300 to the unchanged final iter 600. Full regression is 110 tests and strict mypy covers 71
+  modules. Deploy the exact clean commit next; no M1 checkpoint or rollout exists yet.
