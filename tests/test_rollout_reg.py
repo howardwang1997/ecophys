@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 import torch
 
 from ecomd.models.ecomd import EcoMDConfig, EcoMDSimulator
@@ -49,7 +48,8 @@ def test_rollout_reg_fp32_finite_and_grad():
     sim = _build_tiny_sim()
     ts = _build_targets()
     w = _weights()
-    gen = torch.Generator(); gen.manual_seed(0)
+    gen = torch.Generator()
+    gen.manual_seed(0)
 
     loss = _compute_rollout_reg_loss(
         sim, [("default", ts, 1.0)], w, gen,
@@ -73,7 +73,8 @@ def test_rollout_reg_bf16_autocast_runs():
     sim = _build_tiny_sim()
     ts = _build_targets()
     w = _weights()
-    gen = torch.Generator(); gen.manual_seed(0)
+    gen = torch.Generator()
+    gen.manual_seed(0)
 
     loss = _compute_rollout_reg_loss(
         sim, [("default", ts, 1.0)], w, gen,
@@ -97,10 +98,11 @@ def test_rollout_reg_chunked_independent():
     sim = _build_tiny_sim()
     ts = _build_targets()
     w = _weights()
-    gen = torch.Generator(); gen.manual_seed(1)
+    gen = torch.Generator()
+    gen.manual_seed(1)
 
     # 4 chunks of 6 = 24 steps total. If chunk-detach works, peak memory
-    # stays at 1 chunk's V-graph; if not, we'd see ~4× memory.
+    # stays at 1 chunk's V-graph; if not, we'd see about 4x memory.
     loss = _compute_rollout_reg_loss(
         sim, [("default", ts, 1.0)], w, gen,
         steps=24, chunk=6, warmup_steps=1,
@@ -113,3 +115,47 @@ def test_rollout_reg_chunked_independent():
     g_sum = sum(p.grad.abs().sum().item() for p in sim.parameters()
                 if p.grad is not None)
     assert g_sum > 0
+
+
+def test_rollout_reg_state_complete_uses_full_state_path(monkeypatch):
+    sim = EcoMDSimulator(EcoMDConfig(
+        n_agents=12,
+        d_state=4,
+        hidden=8,
+        pairwise_kind="stochastic_mlp",
+        sps_k_random=3,
+        sps_resample_per_step=False,
+        agent_memory_enabled=True,
+        agent_memory_d=4,
+        global_state_enabled=True,
+        global_state_d=4,
+        global_state_into_pair=True,
+        jump_lambda=1.0,
+        jump_scale=0.01,
+    ))
+    targets = _build_targets()
+    weights = _weights()
+    generator = torch.Generator().manual_seed(17)
+
+    def reject_legacy_path(*args, **kwargs):
+        raise AssertionError("state-complete regularization used rollout_chunk")
+
+    monkeypatch.setattr(sim, "rollout_chunk", reject_legacy_path)
+    loss = _compute_rollout_reg_loss(
+        sim,
+        [("default", targets, 1.0)],
+        weights,
+        generator,
+        steps=12,
+        chunk=4,
+        warmup_steps=1,
+        use_amp=False,
+        amp_device_type="cpu",
+        amp_dtype=torch.float32,
+        state_complete=True,
+    )
+
+    assert loss is not None
+    assert torch.isfinite(loss)
+    loss.backward()
+    assert any(parameter.grad is not None for parameter in sim.parameters())

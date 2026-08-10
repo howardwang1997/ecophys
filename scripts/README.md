@@ -1,137 +1,53 @@
-# `scripts/` — H20 deployment scripts
+# `scripts/`
 
-All scripts in this directory are designed to run **on the H20 machine** via
-SSH. From a Mac Claude session, the code is prepared here; the user
-executes it remotely.
+This directory contains current utilities and historical experiment launchers. A filename
+is not an endorsement of a current compute target.
 
-## Pre-requisites (run ONCE per H20)
+## Current policy
 
-```bash
-# After fresh git clone on H20:
-bash scripts/h20_setup_once.sh          # install conda env + pyproject
-conda activate ecophys
-# Data: data/sample/ (SPX daily 2015-2026) ships in git — enough for v1 training.
-# Additional data from R2 only needed for multi-market work (M3.5+):
-# bash scripts/h20_pull_from_r2.sh data/
-wandb login                              # or set WANDB_API_KEY
-```
+- Run Python through `conda run -n ecophys python ...`.
+- Use CPU for package, state-contract, synthetic-smoke, and small feasibility checks.
+- Use one V100 32 GB only after the model/config/release contract is frozen.
+- Use the second V100 for an independent seed or cross-host reproducibility run after the
+  single-card reference passes.
+- Do not schedule new H20 work. Files named `h20_*` are retained only as historical
+  provenance for old experiments.
 
-## Data you need at each phase
+The current remote addresses and credentials are deliberately not stored in public
+documentation.
 
-| Phase | Data | Source |
-|---|---|---|
-| **v1 / v1+ training** (now) | SPX daily 12 yr | ✓ in `data/sample/` (git) |
-| M3 Paper A final | SPX full + BTC + LOBSTER | R2 pull (Tier 1 LOBSTER) |
-| M3.5 A1 pilot | SPX + BTC + EUR/USD | yfinance + Binance + extra EUR/USD |
-| M4 A1 full 8-market | + 5 more markets | yfinance + Tardis ~$3k |
+## Release checks
 
-## Training (v1 and v1+)
+Build the allow-listed source preview from a committed revision:
 
 ```bash
-# Default: 4 cards
-bash scripts/h20_launch_v1.sh            # EcoMD v1 (MACE-lite on v0.5 base)
-bash scripts/h20_launch_v1plus.sh        # EcoMD v1+ (v0.6 + MACE-lite)
-
-# Override to 8 cards (after 4-card run verified stable):
-NPROC=8 bash scripts/h20_launch_v1.sh
-
-# Dry-run (print command, don't execute):
-DRY_RUN=1 bash scripts/h20_launch_v1.sh
-
-# Resume from last checkpoint:
-RESUME=1 bash scripts/h20_launch_v1.sh
+conda run -n ecophys python scripts/build_source_preview.py \
+  --output-dir output/source-preview
 ```
 
-Training writes checkpoint + wandb log to
-`experiments/006_ecomd_v1/results/checkpoint.pt` (v1) or
-`experiments/007_ecomd_v1plus/results/checkpoint.pt` (v1+).
-Checkpoints are saved every 30 min on rank 0.
-
-## Inference / evaluation
-
-After training completes, run inference to produce long-rollout stylized
-facts:
+Run the data-free CPU checks:
 
 ```bash
-bash scripts/h20_inference.sh v1                # 4 cards × 2 rollouts = 8 realizations
-bash scripts/h20_inference.sh v1plus            # same for v1+
-NPROC=8 bash scripts/h20_inference.sh v1        # 8 cards × 2 = 16 realizations
-
-# Extra args pass through to the Python script:
-bash scripts/h20_inference.sh v1 --n-steps 8000 --n-realizations-per-rank 4
+conda run -n ecophys python examples/ecomd_cpu_smoke.py
+conda run -n ecophys python -m pytest tests/test_ecomd_smoke.py \
+  tests/test_simulator_state.py tests/test_release_contract.py -q
 ```
 
-Outputs:
-- `experiments/.../results/inference_rank_{0..N-1}.json` — per-rank realizations
-- `experiments/.../results/inference_merged.json` — aggregated across all ranks
+Production training configurations intended for a future checkpoint release must include
+`training.release_contract_version: 1`. The loader then hard-fails unless complete and
+persistent state is enabled and legacy training/inference-law shortcuts are disabled.
 
-## Distributed architecture
+## Historical launchers
 
-The code uses **data-parallel DDP** (each rank independent rollout, gradients
-all-reduced at the end of each training iteration). This avoids the
-complexity of tensor-parallel while still achieving near-linear scaling on
-NVLink. Tensor-parallel is reserved for v2 at N≥5×10⁵.
+Most older launchers encode a particular machine, experiment number, checkpoint layout,
+or superseded hardware assumption. Preserve them for reproducibility, but do not copy one
+into a new experiment without revalidating:
 
-Backend: NCCL when CUDA available, GLOO otherwise. torchrun handles the
-rendezvous.
+- simulator and training configuration;
+- full-state chunk continuation and exact resume;
+- input-data provenance and time split;
+- output paths and checkpoint format;
+- current hardware and memory budget.
 
-## Monitoring
-
-```bash
-# In another SSH session:
-tail -f experiments/006_ecomd_v1/results/run_*.log           # live stdout
-nvidia-smi                                                   # GPU utilization
-nvidia-smi topo -m                                           # NVLink topology
-wandb                                                        # live at wandb.ai
-```
-
-## Capturing results for retrieval on Mac
-
-Training + inference both **automatically** write:
-
-```
-experiments/<exp>/results/
-├── training_log.json            # per-iter loss trace, wall time
-├── checkpoint.pt                # model weights (every 30 min)
-├── inference_merged.json        # stylized facts from N rollouts
-├── inference_rank_*.json        # per-rank raw outputs
-├── run_YYYYMMDD-HHMMSS.log      # full stdout/stderr from this invocation
-├── inference_YYYYMMDD-HHMMSS.log  # inference stdout
-└── run_info.json                # git SHA, hostname, GPU count, timestamp
-```
-
-Retrieve to Mac after H20 run completes:
-
-```bash
-# On H20 — push lightweight artifacts (excludes checkpoint.pt by default)
-bash scripts/h20_push_results_to_r2.sh
-
-# On Mac
-python -m ecomd.data.r2_sync download h20_results/ ./h20_results/
-# Then hand me the path and I'll generate the 8-way comparison table.
-```
-
-Need the checkpoint back (e.g. for further local analysis)?
-
-```bash
-INCLUDE_CKPT=1 bash scripts/h20_push_results_to_r2.sh 006   # v1 only
-```
-
-## Troubleshooting
-
-- **torchrun hangs on Mac (local dev)**: known macOS rendezvous issue.
-  Test on Mac via manual env vars instead:
-  ```bash
-  RANK=0 LOCAL_RANK=0 WORLD_SIZE=1 MASTER_ADDR=localhost MASTER_PORT=29500 \
-      python -m ecomd.training.train_distributed --config <cfg> --smoke
-  ```
-  On Linux H20 with NCCL, torchrun works normally.
-
-- **NCCL all-reduce hang**: usually a firewall or NIC issue. Verify with:
-  ```bash
-  NCCL_DEBUG=INFO NPROC=2 bash scripts/h20_launch_v1.sh
-  ```
-  Look for "NCCL INFO" log lines in output.
-
-- **Out of memory**: reduce `simulator.n_agents` in the config or lower
-  `training.chunk_steps`. For N=10⁴, peak memory is ~20 GB per card.
+Active experiment-specific instructions belong in that experiment's `DESIGN.md` or
+`README.md`, not in this directory-level document.

@@ -1,14 +1,16 @@
 # EcoMD 独立模型论文与软件发布计划（2026-08-09）
 
-**状态：** 延后执行；不属于 2026 workshop 投稿。本计划承接 Sim2Science audit 之后的 EcoMD
-首次正式方法发布。
+**状态：** 已启动 M0/R0--R3；checkpoint/model-paper claim 仍由 M1 gate 阻断。NCS G0 与通用
+simulator-audit F0 均未通过后，本计划成为当前主线。详细发布边界见
+`ecomd_v1_release_scope_2026-08-10.md`。
 
 ## 1. 为什么不能现在直接发布
 
 EcoMD 尚无论文或公开软件，而 exp 127 已显示：初始化窗口中的有利重尾分数在冻结的 post-gate
 等长窗口中不能维持，late-time stylized-fact fidelity 很弱。此时把 Sim2Science 改写成 EcoMD
-model paper，会把一个已识别的模型缺陷包装成方法贡献。正确顺序是先公开审计结论，再修复模型，
-最后用独立论文发布方法、代码和 checkpoints。
+model paper，会把一个已识别的模型缺陷包装成方法贡献。正确顺序是保留审计失败记录、先发布
+不含 checkpoint 的 source preview，再修复并重训模型，最后才用独立论文发布通过硬门的方法、
+代码和 checkpoints。
 
 ## 2. 独立模型论文的最小 claim
 
@@ -28,6 +30,8 @@ model paper，会把一个已识别的模型缺陷包装成方法贡献。正确
 - 明确训练时 jump proxy 与 inference compound-Poisson jump 的差异，优先消除而不是隐藏；
 - 修复训练 chunk 每 24 steps 把 global state $u$ 归零、而 inference 让它连续 8,000 steps 的
   horizon/state mismatch，并用回归测试锁定；
+- 修复 long-rollout regularizer 在 `state_complete` 主路径下仍调用旧 `rollout_chunk` 的第二处
+  state mismatch；
 - 给参数量、计算复杂度、随机边采样无偏性和可微路径提供测试或推导。
 
 ### M1：stationary-fidelity 修复
@@ -67,15 +71,14 @@ model paper，会把一个已识别的模型缺陷包装成方法贡献。正确
 - 每个数据集写 license/redistribution 边界；公开不了的原始数据必须提供可替代 smoke dataset；
 - release candidate 在干净环境和两台 V100 上各做一次重建，记录 hash 和可复现性差异。
 
-## 4. 与 Sim2Science 的边界
+## 4. 与已终止 audit-paper 路线的边界
 
-Sim2Science 只发布 audit code、冻结 synthetic trajectories、结果和 EcoMD audit-object 的完整
-科学规格；不发布核心模型源码与 checkpoint binaries。未来 model paper 必须引用并正面讨论该
-audit，证明修复后结果不再依赖初始化瞬态。两篇不能共享同一个正面 fidelity claim：前者是发现
-并量化失败，后者只有在失败被预注册实验真正修复后才成立。
+通用 simulator-audit 路线没有通过 F0 prior-art novelty gate，因此不再作为独立投稿推进。
+已有 audit code、冻结 synthetic trajectories 和 Exp128--143 结果保留为 EcoMD 内部 QA 与失败
+披露。未来 model paper 必须正面讨论该 audit，证明修复后结果不再依赖初始化瞬态。
 
 ## 5. 下一次启动条件
 
-完成 Sim2Science submission 后再启动 M0/M1。第一阶段只做 stationary-fidelity repair 和
-surrogate sanity cascade；在 M1 通过前不写 model-paper 摘要、不公开 checkpoints，也不为追求
-venue 叙事新增真实市场物理 claim。
+M0 与 source-preview R0--R3 立即执行。第一阶段只做 state/law contract、stationary-fidelity
+repair 和 surrogate sanity cascade；在 M1 通过前不写正面 model-paper 摘要、不公开 checkpoints，
+也不为追求 venue 叙事新增真实市场物理 claim。

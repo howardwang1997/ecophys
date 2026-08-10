@@ -1,8 +1,6 @@
-"""Distributed training entry point for EcoMD v1 / v1+.
+"""Distributed training entry point for EcoMD research configurations.
 
-Launched by ``torchrun``; works on 4-card and 8-card H20 NVLink nodes. The
-code is ``world_size``-agnostic: switch between 4 and 8 by changing
-``--nproc_per_node`` on torchrun.
+Launched by ``torchrun``; the code is ``world_size``-agnostic.
 
 Parallelism strategy: **data parallelism over training iterations**. Each
 rank runs its own complete BPTT chunk with a different seed; at the end of
@@ -10,13 +8,9 @@ each iteration, losses and gradients are all-reduced. This is the
 standard DDP pattern but wrapped around our custom train_ecomd loop.
 
 Why data-parallel not tensor-parallel:
-- For v1 at N=10⁴ on a single H20 (96 GB HBM), the full MACE-lite forward
-  + BPTT through chunk_steps=64 fits comfortably (~20 GB peak). No need
-  to shard the model.
-- Multi-rank independent rollouts give 4–8× more training signal per
-  wall-clock second — that's the real value of NVLink here.
-- Tensor-parallel is the v2 story when N=5×10⁵ forces single-model
-  sharding.
+- Each rank owns a complete rollout and contributes one gradient estimate.
+- Independent rank-local generators preserve distinct stochastic paths.
+- Tensor parallelism is outside the current implementation.
 
 Checkpointing:
 - Every ``checkpoint_every_s`` seconds (default 1800 = 30 min)
@@ -29,10 +23,7 @@ Usage:
         -m ecomd.training.train_distributed \\
         --config experiments/006_ecomd_v1/config_h20.yaml
 
-    # Scale to 8 cards:
-    torchrun --nproc_per_node=8 --standalone -m ecomd.training.train_distributed ...
-
-    # Dry-run single-rank on Mac:
+    # Dry-run single-rank:
     torchrun --nproc_per_node=1 --standalone -m ecomd.training.train_distributed \\
         --config experiments/006_ecomd_v1/config_h20.yaml --smoke
 """
@@ -61,6 +52,35 @@ from ..models.ecomd import EcoMDConfig, EcoMDSimulator, SimulatorState
 from .losses import LossWeights, MomentTargets, build_targets_from_returns, compute_loss
 
 log = logging.getLogger("train_distributed")
+
+RELEASE_TRAINING_CONTRACT_VERSION = 1
+
+
+def validate_release_training_contract(
+    simulator_config: dict[str, Any],
+    training_config: dict[str, Any],
+) -> None:
+    """Reject configurations that violate the versioned release semantics."""
+    errors: list[str] = []
+    version = training_config.get("release_contract_version")
+    if version != RELEASE_TRAINING_CONTRACT_VERSION:
+        errors.append(
+            "training.release_contract_version must equal "
+            f"{RELEASE_TRAINING_CONTRACT_VERSION}"
+        )
+    if training_config.get("state_complete") is not True:
+        errors.append("training.state_complete must be true")
+    if training_config.get("persistent_state") is not True:
+        errors.append("training.persistent_state must be explicitly true")
+    if simulator_config.get("jump_legacy_train_proxy") is not False:
+        errors.append("simulator.jump_legacy_train_proxy must be explicitly false")
+    if int(simulator_config.get("bptt_checkpoint_every", 0)) != 0:
+        errors.append("simulator.bptt_checkpoint_every must be 0")
+    if bool(simulator_config.get("bptt_custom_function", False)):
+        errors.append("simulator.bptt_custom_function must be false")
+    if errors:
+        detail = "\n- ".join(errors)
+        raise ValueError(f"EcoMD release training contract violation:\n- {detail}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -502,6 +522,7 @@ def _compute_rollout_reg_loss(
     amp_device_type: str,
     amp_dtype: torch.dtype,
     target_returns_map: dict[str, Tensor] | None = None,
+    state_complete: bool = False,
 ) -> Tensor | None:
     """Multi-chunk truncated-BPTT rollout from fresh init, with SF loss
     computed on the concatenated returns. Each chunk's gradient flows to
@@ -510,39 +531,52 @@ def _compute_rollout_reg_loss(
 
     Returns the SF loss (already in fp32) or None if no usable returns.
     """
-    s = sim.init_state(generator=gen)
-    s_prev = s.detach().clone()
-    price_state = sim.init_price()
-    h_regime = sim.init_regime()
+    simulator_state = (
+        sim.init_simulator_state(generator=gen) if state_complete else None
+    )
+    if not state_complete:
+        s = sim.init_state(generator=gen)
+        s_prev = s.detach().clone()
+        price_state = sim.init_price()
+        h_regime = sim.init_regime()
 
     all_returns: list[Tensor] = []
     n_done = 0
     while n_done < steps:
         n_step = min(chunk, steps - n_done)
         with torch.amp.autocast(device_type=amp_device_type, dtype=amp_dtype, enabled=use_amp):
-            s_new, price_state_new, traj, h_regime_new = sim.rollout_chunk(
-                s, s_prev, price_state,
-                n_steps=n_step, generator=gen, create_graph=True,
-                h_regime=h_regime,
-            )
+            if state_complete:
+                if simulator_state is None:
+                    raise RuntimeError("missing state-complete rollout state")
+                simulator_state, traj = sim.rollout_state(
+                    simulator_state,
+                    n_steps=n_step,
+                    generator=gen,
+                    create_graph=True,
+                )
+            else:
+                s_new, price_state_new, traj, h_regime_new = sim.rollout_chunk(
+                    s, s_prev, price_state,
+                    n_steps=n_step, generator=gen, create_graph=True,
+                    h_regime=h_regime,
+                )
         # Skip warmup only at the very first chunk (state is fresh-init).
         # Subsequent chunks have a state that's continuous from prior chunks.
-        if n_done == 0:
-            start = 1 + min(warmup_steps, max(0, n_step - 4))
-        else:
-            start = 1
+        start = 1 + min(warmup_steps, max(0, n_step - 4)) if n_done == 0 else 1
         if start < traj.log_returns.shape[0]:
             all_returns.append(traj.log_returns[start:])
         # Detach state at boundary — gradient barrier between chunks.
-        s = s_new.detach()
-        if n_step >= 2:
-            s_prev = traj.states[-2].detach()
+        if state_complete:
+            if simulator_state is None:
+                raise RuntimeError("missing state-complete rollout state")
+            simulator_state = simulator_state.detached()
         else:
-            s_prev = s_new.detach()
-        # Detach price + regime states too
-        from .train import _detach_price
-        price_state = _detach_price(price_state_new)
-        h_regime = h_regime_new.detach() if h_regime_new is not None else None
+            s = s_new.detach()
+            s_prev = traj.states[-2].detach() if n_step >= 2 else s_new.detach()
+            from .train import _detach_price
+
+            price_state = _detach_price(price_state_new)
+            h_regime = h_regime_new.detach() if h_regime_new is not None else None
         n_done += n_step
 
     if not all_returns:
@@ -634,9 +668,8 @@ def train_distributed(
             "autograd step"
         )
 
-    # Mixed precision: bf16 cuts activation memory ~2× and on H20 SXM5
-    # also ~2× compute throughput. fp16 needs GradScaler (not implemented);
-    # bf16 needs no scaler since exponent range matches fp32.
+    # fp16 needs GradScaler (not implemented); bf16 needs no scaler because
+    # its exponent range matches fp32.
     use_amp = mixed_precision in ("bf16", "bfloat16")
     amp_dtype = torch.bfloat16 if use_amp else torch.float32
     amp_device_type = "cuda" if device.type == "cuda" else "cpu"
@@ -779,18 +812,15 @@ def train_distributed(
         # by recompute on backward. Snapshot the post-forward state here and
         # restore it after backward to keep the noise stream coherent across
         # iterations.
-        bptt_K = int(getattr(sim.cfg, "bptt_checkpoint_every", 0))
+        bptt_k = int(getattr(sim.cfg, "bptt_checkpoint_every", 0))
         gen_state_after_forward = (
             gen.get_state().clone()
-            if (not state_complete and bptt_K > 0 and gen is not None)
+            if (not state_complete and bptt_k > 0 and gen is not None)
             else None
         )
 
         if not state_complete:
-            if chunk_steps >= 2:
-                s_prev = traj.states[-2].detach()
-            else:
-                s_prev = s.detach()
+            s_prev = traj.states[-2].detach() if chunk_steps >= 2 else s.detach()
 
         start = 1 + warmup_steps
         if start >= traj.log_returns.shape[0]:
@@ -837,6 +867,7 @@ def train_distributed(
                 steps=reg_steps, chunk=reg_chunk, warmup_steps=warmup_steps,
                 use_amp=use_amp, amp_device_type=amp_device_type,
                 amp_dtype=amp_dtype, target_returns_map=target_returns_map,
+                state_complete=state_complete,
             )
             if reg_total is not None:
                 total = total + reg_weight * reg_total
@@ -897,7 +928,8 @@ def train_distributed(
         if _is_main(rank) and (it == start_iter or (it + 1) % max(1, n_iters // 20) == 0):
             log.info(
                 f"it={it:4d} lr={rec['lr']:.2e} loss_world={rec['total_world_mean']:.4f} "
-                f"|∇|={rec['grad_norm']:.2e} γ={rec['gamma']:.3f} T={rec['temperature']:.4f}"
+                f"grad={rec['grad_norm']:.2e} gamma={rec['gamma']:.3f} "
+                f"T={rec['temperature']:.4f}"
             )
 
         # Checkpoint
@@ -1009,6 +1041,14 @@ def main() -> None:
     cfg = yaml.safe_load(Path(args.config).read_text())
     sim_cfg_dict = dict(cfg["simulator"])
     train_cfg = dict(cfg["training"])
+
+    if "release_contract_version" in train_cfg:
+        validate_release_training_contract(sim_cfg_dict, train_cfg)
+    elif not bool(train_cfg.get("state_complete", False)) and _is_main(rank):
+        log.warning(
+            "legacy state-incomplete training path enabled; this run is not eligible "
+            "for a model release"
+        )
 
     if args.smoke:
         train_cfg["n_iters"] = min(train_cfg["n_iters"], 3)
