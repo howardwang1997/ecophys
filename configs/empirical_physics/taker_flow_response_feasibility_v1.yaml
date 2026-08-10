@@ -8,6 +8,12 @@ contract:
   source_regime_result_file_sha256: c4c3aab72892818cb4f8057a41b393198ed7679ef9daf87b6c8316ab01e1c2f3
   current_daily_and_lobster_outputs_for_threshold_selection: forbidden
   paper_claim_or_model_training_authorization: forbidden
+  pre_output_protocol_correction:
+    field: event_selection.first_eligible_minute_index
+    old_value: 60
+    new_value: 61
+    reason: minute_index_0_return_is_declared_unavailable_so_index_60_has_only_59_valid_past_returns
+    made_before_any_imbalance_event_response_or_gate_output: true
 
 data:
   provider: Binance public data archive
@@ -86,7 +92,7 @@ event_selection:
   evaluation_threshold: reuse_symbol_specific_january_threshold
   threshold_comparison: strict_greater_than
   scan: chronological_within_each_utc_day
-  first_eligible_minute_index: 60
+  first_eligible_minute_index: 61
   last_eligible_minute_index: 1379
   minimum_selected_event_separation_minutes: 61
   selection_uses_current_or_future_returns: false

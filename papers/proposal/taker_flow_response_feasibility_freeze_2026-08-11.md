@@ -34,9 +34,13 @@ I_t = (2 * taker_buy_quote_t - quote_volume_t) / quote_volume_t .
 ```
 
 January 按 symbol 冻结 `|I|` 的 99% quantile。February/March 只选择严格超过该 threshold 的 minutes。
-每个 UTC day 从 minute index 60 到 1379 顺序扫描；选中后 61 分钟内不再选，保证 60-minute response
+每个 UTC day 从 minute index 61 到 1379 顺序扫描；选中后 61 分钟内不再选，保证 60-minute response
 windows 不重叠。选择不看当前或未来 return，只使用当前 `|I|` 和过去选中时间。每个 symbol-month 至少
 20 个 events，否则 fail closed。
+
+实现前、任何 imbalance/response 输出前发现原冻结写的是 index 60，但同一协议又声明每个 UTC day 的
+index-0 close-to-close return 不可用；index 60 因而只有 59 个有效 past returns。唯一的 pre-output
+correction 是把 first eligible index 从 60 改为 61。数据、threshold、horizons、separation 和 gates 不变。
 
 Pre-volatility 是前 60 分钟 close-to-close returns 的 RMS。对 `h=1,2,5,10,30,60`，
 
