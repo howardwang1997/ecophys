@@ -63,6 +63,20 @@ class PointProcessFit:
 
 
 @dataclass(frozen=True)
+class OptimizerStageResult:
+    parameters: FloatArray
+    objective: float
+    scipy_success: bool
+    iterations: int
+    function_evaluations: int
+    raw_gradient_inf_norm: float
+    projected_gradient_inf_norm: float
+    complementarity_inf_norm: float
+    active_bounds: int
+    message: str
+
+
+@dataclass(frozen=True)
 class RescalingDiagnostics:
     count: int
     mean: float
@@ -231,9 +245,7 @@ def build_queue_feature_design(
         )
     )
     fraction = (times[:-1] - archive_start) / (archive_end - archive_start)
-    clock = np.column_stack(
-        (np.sin(2.0 * np.pi * fraction), np.cos(2.0 * np.pi * fraction))
-    )
+    clock = np.column_stack((np.sin(2.0 * np.pi * fraction), np.cos(2.0 * np.pi * fraction)))
     raw_features = np.empty((times.size, 6), dtype=np.float64)
     raw_features[1:] = np.column_stack((state, clock))
     raw_features[0] = raw_features[1]
@@ -270,9 +282,7 @@ def circular_shift_queue_state(
         offset = length // 3
         if offset < 1:
             raise ValueError("split is too short for the frozen shift")
-        shifted[start:end, 1:5] = np.roll(
-            values[start:end, 1:5], shift=offset, axis=0
-        )
+        shifted[start:end, 1:5] = np.roll(values[start:end, 1:5], shift=offset, axis=0)
     return shifted
 
 
@@ -320,9 +330,7 @@ def hawkes_objective_gradient(
     if mu <= 0.0 or np.any(alpha < 0.0) or np.any(intensity <= 0.0):
         return float("inf"), np.full_like(values, np.nan)
     objective = (
-        -float(np.sum(np.log(intensity)))
-        + mu * duration
-        + float(np.dot(alpha, integrated))
+        -float(np.sum(np.log(intensity))) + mu * duration + float(np.dot(alpha, integrated))
     ) / normalizer
     inverse = 1.0 / intensity
     gradient = np.empty_like(values)
@@ -348,14 +356,8 @@ def queue_objective_gradient(
         intensity = np.exp(linear)
     if not np.isfinite(intensity).all():
         return float("inf"), np.full_like(theta, np.nan)
-    objective = (
-        -float(np.sum(event_values @ theta))
-        + float(np.dot(intensity, intervals))
-    ) / normalizer
-    gradient = (
-        -np.sum(event_values, axis=0)
-        + all_values.T @ (intensity * intervals)
-    ) / normalizer
+    objective = (-float(np.sum(event_values @ theta)) + float(np.dot(intensity, intervals))) / normalizer
+    gradient = (-np.sum(event_values, axis=0) + all_values.T @ (intensity * intervals)) / normalizer
     return objective, np.asarray(gradient, dtype=np.float64)
 
 
@@ -392,13 +394,109 @@ def queue_hawkes_objective_gradient(
     ) / normalizer
     inverse = 1.0 / event_intensity
     queue_gradient = (
-        -event_queue.T @ (event_base * inverse)
-        + all_queue.T @ (all_base * interval_lengths)
+        -event_queue.T @ (event_base * inverse) + all_queue.T @ (all_base * interval_lengths)
     ) / normalizer
-    excitation_gradient = (
-        -event_traces.T @ inverse + integrated_traces
-    ) / normalizer
+    excitation_gradient = (-event_traces.T @ inverse + integrated_traces) / normalizer
     return objective, np.concatenate((queue_gradient, excitation_gradient))
+
+
+def bound_constrained_kkt_diagnostics(
+    parameters: FloatArray,
+    gradient: FloatArray,
+    bounds: Sequence[Bound],
+    *,
+    active_tolerance: float = 1e-10,
+) -> tuple[float, float, float, int]:
+    """Return raw, projected, complementarity and active-bound diagnostics."""
+    values = np.asarray(parameters, dtype=np.float64)
+    derivatives = np.asarray(gradient, dtype=np.float64)
+    if values.ndim != 1 or derivatives.shape != values.shape:
+        raise ValueError("parameters and gradient must be aligned vectors")
+    if len(bounds) != values.size:
+        raise ValueError("bounds do not match parameter count")
+    if active_tolerance < 0.0 or not np.isfinite(active_tolerance):
+        raise ValueError("active tolerance must be finite and nonnegative")
+    if not np.isfinite(values).all() or not np.isfinite(derivatives).all():
+        return float("inf"), float("inf"), float("inf"), 0
+    projected = derivatives.copy()
+    complementarity: list[float] = []
+    active = 0
+    for index, (lower, upper) in enumerate(bounds):
+        value = float(values[index])
+        derivative = float(derivatives[index])
+        if lower is not None:
+            if value < lower - active_tolerance:
+                raise ValueError("parameter violates its lower bound")
+            distance = max(value - lower, 0.0)
+            complementarity.append(abs(distance * derivative))
+            if distance <= active_tolerance:
+                active += 1
+                if derivative > 0.0:
+                    projected[index] = 0.0
+        if upper is not None:
+            if value > upper + active_tolerance:
+                raise ValueError("parameter violates its upper bound")
+            distance = max(upper - value, 0.0)
+            complementarity.append(abs(distance * derivative))
+            if distance <= active_tolerance:
+                active += 1
+                if derivative < 0.0:
+                    projected[index] = 0.0
+    raw_norm = float(np.max(np.abs(derivatives))) if derivatives.size else 0.0
+    projected_norm = float(np.max(np.abs(projected))) if projected.size else 0.0
+    complementarity_norm = max(complementarity, default=0.0)
+    return raw_norm, projected_norm, complementarity_norm, active
+
+
+def run_lbfgsb_stage(
+    objective: Objective,
+    initial: FloatArray,
+    bounds: Sequence[Bound],
+    *,
+    maxiter: int,
+    ftol: float,
+    gtol: float,
+    maxls: int,
+    maxcor: int = 10,
+    active_tolerance: float = 1e-10,
+) -> OptimizerStageResult:
+    """Run one deterministic L-BFGS-B stage and recompute KKT diagnostics."""
+    if maxiter < 1 or maxls < 1 or maxcor < 1:
+        raise ValueError("optimizer iteration settings must be positive")
+    result = minimize(
+        objective,
+        np.asarray(initial, dtype=np.float64),
+        method="L-BFGS-B",
+        jac=True,
+        bounds=list(bounds),
+        options={
+            "maxiter": maxiter,
+            "ftol": ftol,
+            "gtol": gtol,
+            "maxls": maxls,
+            "maxcor": maxcor,
+        },
+    )
+    parameters = np.asarray(result.x, dtype=np.float64)
+    value, gradient = objective(parameters)
+    raw, projected, complementarity, active = bound_constrained_kkt_diagnostics(
+        parameters,
+        gradient,
+        bounds,
+        active_tolerance=active_tolerance,
+    )
+    return OptimizerStageResult(
+        parameters=parameters,
+        objective=float(value),
+        scipy_success=bool(result.success),
+        iterations=int(result.nit),
+        function_evaluations=int(result.nfev),
+        raw_gradient_inf_norm=raw,
+        projected_gradient_inf_norm=projected,
+        complementarity_inf_norm=complementarity,
+        active_bounds=active,
+        message=str(result.message),
+    )
 
 
 def _run_optimizer(
@@ -538,26 +636,22 @@ def fit_linear_hawkes_process(
     messages: list[str] = []
     normalizer = end - start
     for target in range(n_marks):
-        indices = (
-            np.arange(target * n_scales, (target + 1) * n_scales)
-            if diagonal
-            else np.arange(n_features)
-        )
+        indices = np.arange(target * n_scales, (target + 1) * n_scales) if diagonal else np.arange(n_features)
         feature_scales = np.maximum(integrated[indices] / duration, 1e-8)
-        target_features = (
-            window_traces[window_marks == target][:, indices] / feature_scales
-        )
+        target_features = window_traces[window_marks == target][:, indices] / feature_scales
         target_integrated = integrated[indices] / feature_scales
         rate = target_features.shape[0] / duration
         initial = np.concatenate(([max(rate, 1e-10)], np.zeros(indices.size)))
         objective = cast(
             Objective,
-            lambda values, target_features=target_features, target_integrated=target_integrated: hawkes_objective_gradient(
-                values,
-                target_features,
-                target_integrated,
-                duration,
-                normalizer,
+            lambda values, target_features=target_features, target_integrated=target_integrated: (
+                hawkes_objective_gradient(
+                    values,
+                    target_features,
+                    target_integrated,
+                    duration,
+                    normalizer,
+                )
             ),
         )
         fitted, _, success, n_iter, gradient, message = _run_optimizer(
@@ -620,24 +714,22 @@ def fit_queue_hawkes_process(
         target_traces = window_traces[target_mask] / trace_scales
         objective = cast(
             Objective,
-            lambda values, target_queue=target_queue, target_traces=target_traces: queue_hawkes_objective_gradient(
-                values,
-                target_queue,
-                target_traces,
-                queue,
-                intervals,
-                integrated / trace_scales,
-                normalizer,
+            lambda values, target_queue=target_queue, target_traces=target_traces: (
+                queue_hawkes_objective_gradient(
+                    values,
+                    target_queue,
+                    target_traces,
+                    queue,
+                    intervals,
+                    integrated / trace_scales,
+                    normalizer,
+                )
             ),
         )
-        queue_start = np.concatenate(
-            (queue_fit.base_coefficients[target], np.zeros(n_trace))
-        )
+        queue_start = np.concatenate((queue_fit.base_coefficients[target], np.zeros(n_trace)))
         hawkes_theta = np.zeros(n_queue, dtype=np.float64)
         hawkes_theta[0] = np.log(max(float(hawkes_fit.base_coefficients[target]), 1e-12))
-        hawkes_start = np.concatenate(
-            (hawkes_theta, hawkes_fit.excitation[target] * trace_scales)
-        )
+        hawkes_start = np.concatenate((hawkes_theta, hawkes_fit.excitation[target] * trace_scales))
         bounds: list[Bound] = [
             *([(None, None)] * n_queue),
             *([(0.0, None)] * n_trace),
@@ -717,9 +809,7 @@ def time_rescaling_diagnostics(
     )
     queue = queue_features[start:end]
     if fit.base_kind == "constant":
-        base_total = np.full(
-            intervals.size, float(np.sum(fit.base_coefficients)), dtype=np.float64
-        )
+        base_total = np.full(intervals.size, float(np.sum(fit.base_coefficients)), dtype=np.float64)
     else:
         base_total = np.sum(np.exp(queue @ fit.base_coefficients.T), axis=1)
     excitation_weights = np.sum(fit.excitation, axis=0)

@@ -8,6 +8,7 @@ import pytest
 from numpy.typing import NDArray
 
 from ecomd.observation.continuous_time import (
+    bound_constrained_kkt_diagnostics,
     branching_spectral_radius,
     build_queue_feature_design,
     circular_shift_queue_state,
@@ -19,6 +20,7 @@ from ecomd.observation.continuous_time import (
     point_process_log_likelihood,
     queue_hawkes_objective_gradient,
     queue_objective_gradient,
+    run_lbfgsb_stage,
     simulate_exponential_hawkes_cluster,
     strictify_timestamps,
     time_rescaling_diagnostics,
@@ -38,9 +40,7 @@ def _finite_difference(
         minus = values.copy()
         plus[index] += epsilon
         minus[index] -= epsilon
-        gradient[index] = (objective(plus)[0] - objective(minus)[0]) / (
-            2.0 * epsilon
-        )
+        gradient[index] = (objective(plus)[0] - objective(minus)[0]) / (2.0 * epsilon)
     return gradient
 
 
@@ -64,7 +64,8 @@ def test_timestamp_validation_rejects_bad_input() -> None:
         strictify_timestamps(np.asarray((1.0, 0.9)), "nextafter")
     with pytest.raises(ValueError, match="unknown"):
         strictify_timestamps(
-            np.asarray((1.0, 2.0)), "random"  # type: ignore[arg-type]
+            np.asarray((1.0, 2.0)),
+            "random",  # type: ignore[arg-type]
         )
 
 
@@ -110,22 +111,24 @@ def test_analytic_point_process_gradients_match_finite_difference() -> None:
     event_trace = np.asarray(((0.2, 0.5), (0.7, 0.1), (0.4, 0.3)))
     integrated = np.asarray((1.4, 0.8))
     hawkes_values = np.asarray((0.8, 0.15, 0.12))
+
     def hawkes_objective(values: FloatArray) -> tuple[float, FloatArray]:
         return hawkes_objective_gradient(values, event_trace, integrated, 3.2, 7)
+
     assert np.allclose(
         hawkes_objective(hawkes_values)[1],
         _finite_difference(hawkes_objective, hawkes_values),
         atol=1e-8,
     )
 
-    all_queue = np.asarray(
-        ((1.0, -0.4), (1.0, 0.2), (1.0, 0.7), (1.0, -0.1))
-    )
+    all_queue = np.asarray(((1.0, -0.4), (1.0, 0.2), (1.0, 0.7), (1.0, -0.1)))
     event_queue = all_queue[[0, 2]]
     intervals = np.asarray((0.2, 0.4, 0.3, 0.5))
     queue_values = np.asarray((-0.3, 0.2))
+
     def queue_objective(values: FloatArray) -> tuple[float, FloatArray]:
         return queue_objective_gradient(values, event_queue, all_queue, intervals, 4)
+
     assert np.allclose(
         queue_objective(queue_values)[1],
         _finite_difference(queue_objective, queue_values),
@@ -134,6 +137,7 @@ def test_analytic_point_process_gradients_match_finite_difference() -> None:
 
     event_hawkes = np.asarray(((0.2, 0.1), (0.4, 0.6)))
     combined_values = np.asarray((-0.3, 0.2, 0.1, 0.15))
+
     def combined_objective(values: FloatArray) -> tuple[float, FloatArray]:
         return queue_hawkes_objective_gradient(
             values,
@@ -144,11 +148,47 @@ def test_analytic_point_process_gradients_match_finite_difference() -> None:
             integrated,
             4,
         )
+
     assert np.allclose(
         combined_objective(combined_values)[1],
         _finite_difference(combined_objective, combined_values),
         atol=2e-8,
     )
+
+
+def test_projected_kkt_handles_active_lower_and_upper_bounds() -> None:
+    parameters = np.asarray((0.0, 0.0, 2.0, 3.0), dtype=np.float64)
+    gradient = np.asarray((0.2, 0.5, -0.4, -0.3), dtype=np.float64)
+    raw, projected, complementarity, active = bound_constrained_kkt_diagnostics(
+        parameters,
+        gradient,
+        ((None, None), (0.0, None), (0.0, None), (None, 3.0)),
+    )
+    assert raw == 0.5
+    assert projected == 0.4
+    assert complementarity == 0.8
+    assert active == 2
+
+
+def test_lbfgsb_stage_recomputes_projected_kkt() -> None:
+    def objective(values: FloatArray) -> tuple[float, FloatArray]:
+        difference = values - np.asarray((2.0, -1.0), dtype=np.float64)
+        return float(np.dot(difference, difference)), 2.0 * difference
+
+    result = run_lbfgsb_stage(
+        objective,
+        np.asarray((0.0, 2.0), dtype=np.float64),
+        ((None, None), (0.0, None)),
+        maxiter=100,
+        ftol=1e-15,
+        gtol=1e-10,
+        maxls=40,
+    )
+    assert np.allclose(result.parameters, (2.0, 0.0), atol=1e-10)
+    assert result.raw_gradient_inf_norm >= 1.9
+    assert result.projected_gradient_inf_norm <= 1e-10
+    assert result.complementarity_inf_norm <= 1e-10
+    assert result.active_bounds == 1
 
 
 def test_queue_features_use_only_preceding_book_and_shift_state_only() -> None:
@@ -178,9 +218,7 @@ def test_queue_features_use_only_preceding_book_and_shift_state_only() -> None:
     assert first.source_indices[10] == 9
     assert np.array_equal(first.values[9], second.values[9])
     assert not np.array_equal(first.values[10], second.values[10])
-    shifted = circular_shift_queue_state(
-        first.values, train_start=2, train_end=8, test_end=12
-    )
+    shifted = circular_shift_queue_state(first.values, train_start=2, train_end=8, test_end=12)
     assert np.array_equal(shifted[:, 0], first.values[:, 0])
     assert np.array_equal(shifted[:, 5:], first.values[:, 5:])
     assert np.allclose(
