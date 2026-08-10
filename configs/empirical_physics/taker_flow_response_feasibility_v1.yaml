@@ -1,0 +1,141 @@
+contract:
+  name: binance_taker_flow_response_feasibility
+  version: 1
+  status: frozen_after_daily_regime_failure_before_binance_acquisition_or_response_outputs
+  purpose: qualify_a_signed_taker_flow_response_and_relaxation_measurement_before_event_time_expansion
+  evidence_class: free_high_frequency_feasibility_only
+  source_regime_result_canonical_sha256: c7c70686654b4d0a168cb1e419b6d6396e4821a3e2a0bc1a4a58cb754572659b
+  source_regime_result_file_sha256: c4c3aab72892818cb4f8057a41b393198ed7679ef9daf87b6c8316ab01e1c2f3
+  current_daily_and_lobster_outputs_for_threshold_selection: forbidden
+  paper_claim_or_model_training_authorization: forbidden
+
+data:
+  provider: Binance public data archive
+  official_documentation: https://github.com/binance/binance-public-data/blob/master/README.md
+  known_monthly_daily_discrepancy_report: https://github.com/binance/binance-public-data/issues/475
+  base_url: https://data.binance.vision/data
+  market: spot
+  data_type: klines
+  interval: 1m
+  symbols: [BTCUSDT, ETHUSDT, SOLUSDT]
+  months: [2024-01, 2024-02, 2024-03]
+  monthly_url_template: spot/monthly/klines/{symbol}/1m/{symbol}-1m-{month}.zip
+  checksum_suffix: .CHECKSUM
+  expected_rows:
+    2024-01: 44640
+    2024-02: 41760
+    2024-03: 44640
+  timestamp_unit: milliseconds
+  schema: [open_time, open, high, low, close, volume, close_time, quote_volume, trade_count, taker_buy_base, taker_buy_quote]
+  signed_flow_name: taker_flow_imbalance_not_cks_ofi
+  signed_flow_formula: (2*taker_buy_quote-quote_volume)/quote_volume
+  signed_flow_interpretation: net_aggressive_buy_share_of_traded_quote_volume
+  cks_ofi_language: forbidden
+  raw_redistribution: forbidden_pending_separate_data_license_review
+  manifest_path: data/manifests/binance_spot_1m_q1_2024_taker_flow.json
+  manifest_binding_status: pending_result_blind_acquisition
+  manifest_canonical_payload_sha256: null
+  manifest_file_sha256: null
+  acquisition_protocol_git_sha: null
+  acquisition_protocol_sha256: null
+
+archive_validation:
+  official_checksum_required_for_every_archive: true
+  exact_monthly_minute_grid_required: true
+  duplicate_or_missing_open_time: fail_closed
+  finite_positive_ohlc: true
+  finite_nonnegative_volume_and_quote_volume: true
+  taker_buy_quote_within_zero_and_quote_volume: true
+  daily_monthly_exact_crosscheck_dates:
+    - 2024-01-01
+    - 2024-01-15
+    - 2024-01-31
+    - 2024-02-01
+    - 2024-02-15
+    - 2024-02-29
+    - 2024-03-01
+    - 2024-03-15
+    - 2024-03-31
+  crosscheck_all_three_symbols: true
+  crosscheck_requires_exact_all_columns: true
+  mismatch_policy: stop_without_daily_substitution
+  manifest_contains_price_flow_or_response_values: false
+
+time_split:
+  threshold_fit: 2024-01
+  confirmation: 2024-02
+  temporal_test: 2024-03
+  no_threshold_or_event_rule_refit_after_january: true
+  confirmation_and_temporal_test_both_required: true
+
+preprocessing:
+  return: log_close_to_close_within_utc_day
+  first_minute_of_each_utc_day: unavailable_as_return
+  valid_bar_requires_quote_volume_strictly_positive: true
+  pre_volatility_window_minutes: 60
+  pre_volatility: sqrt_mean_squared_close_to_close_return_t_minus_60_through_t_minus_1
+  response_horizons_minutes: [1, 2, 5, 10, 30, 60]
+  normalized_signed_response: sign(imbalance_t)*(log_close_t_plus_h-log_close_t)/(pre_volatility*sqrt(h))
+  early_response: mean_of_normalized_signed_response_at_h_1_2_5
+  late_response: normalized_signed_response_at_h_60
+  decay_statistic: early_response_minus_late_response
+
+event_selection:
+  january_absolute_imbalance_quantile: 0.99
+  quantile_method: numpy_linear
+  evaluation_threshold: reuse_symbol_specific_january_threshold
+  threshold_comparison: strict_greater_than
+  scan: chronological_within_each_utc_day
+  first_eligible_minute_index: 60
+  last_eligible_minute_index: 1379
+  minimum_selected_event_separation_minutes: 61
+  selection_uses_current_or_future_returns: false
+  selection_uses_only_absolute_current_imbalance_and_past_selected_time: true
+  minimum_selected_events_per_symbol_month: 20
+
+dependence_aware_inference:
+  asset_day_curve: mean_over_selected_events_within_symbol_utc_day
+  pooled_month_curve: equal_weight_mean_over_asset_days_with_at_least_one_event
+  inference_unit: common_utc_calendar_day_not_event_or_asset_day
+  circular_sign_null:
+    replicates: 999
+    root_seed: 813100
+    shift_range_minutes_inclusive: [61, 1379]
+    same_day_shift_for_all_assets: true
+    event_times_and_absolute_imbalance_unchanged: true
+    statistic: pooled_month_decay_statistic
+    p_value: one_plus_null_ge_real_divided_by_replicates_plus_one
+  calendar_day_bootstrap:
+    replicates: 5000
+    root_seed: 813101
+    same_resampled_day_for_all_assets: true
+    confidence_level: 0.90
+    statistic: pooled_month_decay_statistic
+
+sanity_gate:
+  january_selected_event_contemporaneous_signed_response_strictly_positive_each_symbol: true
+  january_is_measurement_sanity_not_primary_evidence: true
+
+primary_gate:
+  every_symbol_month_meets_minimum_event_count: true
+  every_symbol_in_both_evaluation_months_has_early_response_strictly_positive: true
+  every_symbol_in_both_evaluation_months_has_decay_statistic_strictly_positive: true
+  pooled_early_response_minimum_each_evaluation_month: 0.05
+  pooled_decay_fraction_of_early_minimum_each_evaluation_month: 0.20
+  circular_sign_permutation_p_maximum_each_evaluation_month: 0.05
+  calendar_day_bootstrap_90pct_lower_decay_strictly_positive_each_evaluation_month: true
+  every_clause_required: true
+
+decision:
+  pass: permit_fresh_quarter_aggtrades_event_time_confirmation_protocol_only
+  fail: stop_taker_flow_relaxation_line_and_do_not_download_bulk_aggtrades
+  pass_is_not_a_physical_law_or_publication_claim: true
+  secondary_persistent_or_wrong_shape_response_cannot_rescue_decay_failure: true
+  no_post_result_symbol_month_threshold_horizon_event_or_gate_changes: true
+  model_scoring_or_training_authorization: forbidden
+
+compute:
+  acquisition_and_analysis_cpu_only: true
+  gpu_forbidden: true
+  paid_data_forbidden: true
+  h20_forbidden: true
