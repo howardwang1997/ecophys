@@ -110,3 +110,11 @@ metadata:
   history and eight-step continuation are bit-exact; 18 gradient tensors are finite/nonzero. Remote/local report
   SHA is `c99df8708de58119769a24069ff53da3049b6ea6da0c56d6048d15990b1410d7`; archived at
   `release/verification/f1e3cd4fb312-v100a.json`. V100-B is now authorized for the same-SHA host repeat.
+- V100-B passed the identical pilot on a distinct GPU UUID. The complete 10-record history, continuation hash,
+  memory profile, software environment, synthetic target and parameter count are exactly equal across hosts.
+  V100-B took 16.54 seconds for ten iterations versus 17.02 on A (2.83% absolute difference over their mean).
+  B report SHA: `1830a8527bd03e181a487b766aeea9a81c33403163fe55029c0611a1a9caf911`.
+  Cross-host report: `release/verification/f1e3cd4fb312-v100-cross-host.json`. M0/R4 mechanics are complete;
+  next freeze real SPX provenance/preprocessing and the stationary-fidelity protocol before a 600-step run.
+- Both machines used the hostname `ubuntu22`, so the pilot's hostname-only hash collided. The distinct GPU UUIDs
+  establish independent hardware for these reports; future reports hash hostname plus `/etc/machine-id`.

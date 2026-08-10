@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "result_scope": "cross_host_mechanical_reproducibility_only_not_market_fidelity",
+  "scientific_claim_authorized": false,
+  "full_reference_capacity_authorized_next": true,
+  "real_data_training_authorized": false,
+  "real_data_training_blocker": "freeze data provenance and stationary-fidelity protocol first",
+  "git_sha": "f1e3cd4fb312cdf484aa65564953e17e8125f00b",
+  "reference_config_sha256": "8e161bee28a4712e9a152539894ad6a9193d2311498fa066d24e16427e9ffa33",
+  "pilot_effective_config_sha256": "0adb0ef6a5a3e9693e9b91fe301ab1ada19360a2b58de3bc0ec2173580937a88",
+  "reports": {
+    "v100_a": {
+      "path": "release/verification/f1e3cd4fb312-v100a.json",
+      "sha256": "c99df8708de58119769a24069ff53da3049b6ea6da0c56d6048d15990b1410d7",
+      "gpu_uuid": "GPU-91ba8f02-b2d7-7aad-1ce7-71b9680029ab"
+    },
+    "v100_b": {
+      "path": "release/verification/f1e3cd4fb312-v100b.json",
+      "sha256": "1830a8527bd03e181a487b766aeea9a81c33403163fe55029c0611a1a9caf911",
+      "gpu_uuid": "GPU-159be1c9-3dcd-b386-087b-ef85ac894f13"
+    }
+  },
+  "gates": {
+    "distinct_gpu_uuids": true,
+    "software_environment_exact": true,
+    "synthetic_target_exact": true,
+    "parameter_count_exact": true,
+    "memory_profile_exact": true,
+    "ten_iteration_history_exact": true,
+    "continuation_returns_sha256_exact": true,
+    "both_same_host_resume_gates_pass": true,
+    "both_capacity_gates_pass": true
+  },
+  "shared_continuation_returns_sha256": "eae72431c96618b423c7e5b4d90aefc78bc4c07b5a5aa454f50c462d00640692",
+  "shared_peak_reserved_gib": 11.994140625,
+  "uninterrupted_10_iteration_seconds": {
+    "v100_a": 17.01958875497803,
+    "v100_b": 16.54458935407456,
+    "absolute_difference_over_mean": 0.028303949488062023
+  },
+  "note": "Both operating-system hostnames were ubuntu22, so the pilot's hostname-only host hash collided; distinct GPU UUIDs establish independent hosts."
+}

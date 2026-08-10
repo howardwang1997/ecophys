@@ -39,7 +39,7 @@ post-stationarity 结果、基线与消融结果。旧 checkpoint 不得重命�
 | R1 状态/定律 | 主训练、regularizer、inference 使用同一 forward law 和完整状态；exact resume 测试 | **代码 PASS，checkpoint FAIL**：仓库 76 tests、artifact 27 tests 均通过；旧 checkpoint 不合格 | 冻结新配置后从零重训 |
 | R2 包安装 | committed tree 构建 wheel；隔离路径安装和 import/run 成功；core strict mypy | **PASS**：两个独立源码目录生成同一 wheel；隔离 import/smoke 通过；strict mypy 对 66 个模块为 0 errors | 保持回归；342 条全包 Ruff 历史债务单列，不伪装成新错误 |
 | R3 数据无关 smoke | CPU 生成有限 trajectory、梯度、任意 chunk、checkpoint round trip | **PASS**：35 个 finite nonzero gradient params；chunk/resume bit-exact；报告已归档 | 保持回归测试 |
-| R4 V100 reference | 冻结 config 在一张 V100 32 GB 训练/恢复/rollout；第二台独立复现 | **V100-A PASS / V100-B 待复现**：`f1e3cd4fb312` 的 exact resume 通过，peak reserved 11.994 GiB，600-step 投影 0.284 h | 用第二台跑同 SHA/同配置，比较轨迹与 history hash |
+| R4 V100 reference | 冻结 config 在一张 V100 32 GB 训练/恢复/rollout；第二台独立复现 | **PASS**：两个独立 GPU UUID 在 `f1e3cd4fb312` 上的 history/后续轨迹 bit-exact；peak reserved 均为 11.994 GiB，600-step 投影 0.276--0.284 h | 冻结真实数据 provenance 与 stationary protocol 后才跑 600-step reference |
 | R5 stationary fidelity | 预注册 gate 后固定窗口，early/post-gate/late 全报告，多 seed | **FAIL**：旧 exp127 late-time 约 1--2/11 | 若新模型仍失败，停止正面 model-paper claim |
 | R6 论文证据 | 强基线、关键消融、时间外/市场外/频率外、梯度效用、规模曲线 | **未开始** | R5 通过后扩展数据和算力 |
 
@@ -101,8 +101,8 @@ CPU/V100 gates 和停止规则。clean implementation commit `8951208ffd2f` 的 
 1. **E-R0（完成）**：构建 allow-listed source preview，扫描 forbidden suffix/path，记录 SHA-256；
 2. **E-R2（完成）**：从 wheel 隔离安装，运行 data-free CPU trajectory 与完整状态 checkpoint round trip；
 3. **E-M0（完成）**：唯一 config、Kac/actual-k 实现、生产训练路径 CPU gate 和 exact resume 已通过；
-4. **E-M1-V100（当前）**：在第一张 V100 做固定 10-iteration FP32 pilot，记录显存、速度与恢复；
-5. **E-M1-host-repeat**：第一台通过后，第二台做同配置独立复现；
+4. **E-M1-V100（完成）**：两台 V100 的固定 10-vs-5+5 FP32 pilot 均通过，且跨主机 bit-exact；
+5. **E-M1-data/stationarity（当前）**：冻结 SPX provenance、预处理 hash 和 stationary-fidelity protocol；
 6. 只有 stationary gate 通过，才启动基线、消融、跨市场和论文主结果。
 
 停止规则：若 state-complete 重训在冻结 post-gate 指标上仍接近旧结果（约 1--2/11），EcoMD 可以

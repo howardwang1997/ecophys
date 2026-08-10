@@ -143,7 +143,14 @@ def _gpu_metadata(device: torch.device) -> dict[str, Any]:
 
 
 def _host_id() -> str:
-    return hashlib.sha256(socket.gethostname().encode("utf-8")).hexdigest()[:16]
+    machine_id_path = Path("/etc/machine-id")
+    machine_id = (
+        machine_id_path.read_text(encoding="utf-8").strip()
+        if machine_id_path.is_file()
+        else "unavailable"
+    )
+    material = f"{socket.gethostname()}:{machine_id}".encode()
+    return hashlib.sha256(material).hexdigest()[:16]
 
 
 def _is_v100_32gb(gpu: dict[str, Any]) -> bool:
