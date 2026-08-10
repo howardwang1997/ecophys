@@ -1,6 +1,6 @@
 ---
 name: ncs-preflight-continuation-2026-08-10
-description: "Exp131-138 lasting outcomes: no novel estimator, a frozen mixing-diagnostic failure, exact CPU/distributed/CUDA state semantics, synthetic observation passes, and an external continuous-time baseline that fails its optimizer gate; G0 and G3 remain open."
+description: "Exp131-139 lasting outcomes: no novel estimator, exact CPU/distributed/CUDA state semantics, synthetic observation passes, and external continuous-time baseline/numerical-repair failures; G0 and G3 remain open."
 metadata:
   node_type: memory
   type: project
@@ -99,7 +99,7 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
   bounded strict-mypy target passed before formal execution. Its formal shard hashes are `3c28a680...172f5e`
   and `624ffd91...43c6d`; the merged hash is `0e25df8c...2fecf2` and a temporary re-merge was byte-identical.
 
-## Exp139 numerical repair — formal result pending
+## Exp139 numerical repair — formal FAIL (8/9)
 
 - A read-only training-objective audit showed that exp138's raw gradients overstate boundary violations, but
   the correct cell-level projected residuals were still `1.318e-4--1.092e-2`, above `1e-5`; exp138 remains FAIL.
@@ -110,8 +110,18 @@ diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator ide
 - Thirty-one focused observation tests, Ruff and bounded strict mypy passed. Two dirty 20k-row smokes completed
   all 120 target fits: maximum selected KKT `4.21e-7`, 120 dual-qualified starts, maximum start gap `3.69e-8`,
   generated objective gap `1.11e-15` and matching anchor hashes. These are execution diagnostics only.
-- Both clean formal CPU-only shards were launched with one BLAS thread and CUDA hidden. Shard1 completed in
-  819.84 seconds and wrote a 1,703,829-byte artifact with SHA-256 `4e4879d823c5672dd5ca0428efee3058996c14c751d7e679e6362844dd9aed35`.
-  Shard0 was last observed active and healthy after about 16.8 CPU minutes, with no partial artifact. Both
-  Tailscale nodes then became unreachable simultaneously while the local tunnel remained up. Do not duplicate
-  shard0; on restored access, inspect its service and artifact first. Exp139 has no merged decision yet.
+- Both clean formal CPU-only shards completed with one BLAS thread and CUDA hidden. Shard0 used 1,412.49 worker
+  seconds and has SHA-256 `2fe252db3ef0533b06c08cfcfd3a6e9aa5b75d190148f2421a7d27e784e28276`; shard1 used
+  819.84 seconds and has SHA-256 `4e4879d823c5672dd5ca0428efee3058996c14c751d7e679e6362844dd9aed35`.
+  The recovered services had deactivated successfully, no duplicate shard was launched, and both V100s stayed
+  unused. The merged artifact hash is `21818f9d9798b0c213239efa19160ac9bf46be1759cb98643367d221a8b08984`;
+  an independent re-merge was byte-identical.
+- Exp139 formally **FAILS 8/9 gates**. All 120 real selected targets and all 240 individual starts met the
+  `1e-5` KKT selection threshold; maximum selected KKT was `8.91e-7`, maximum complementarity `7.62e-9`, and
+  maximum dual-start objective gap `6.52e-9`. Every selected objective improved on the legacy rerun. All 32
+  generated combined starts met `1e-7` and matched the direct-reference objectives within `1.79e-14` nats/event.
+- The sole failed gate is generated equivalence because direct-Hawkes references for replicate/target `(1,0)`
+  and `(5,0)` stopped at `1.62e-8` and `2.02e-8`, above the separately frozen `1e-8` reference threshold after
+  all six refinement stages. This localizes the failure to strict reference-solver convergence but cannot turn
+  the formal decision into PASS. Any new numerical gate needs a separately preregistered solver family and
+  fresh generated seeds; real empirical confirmation still requires unseen dates or markets.

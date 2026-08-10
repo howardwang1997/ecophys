@@ -24,11 +24,13 @@ move、20% censoring、queue-reactive 和 discrete marked-Hawkes-logit 对照的
 gate。exp138 随后把外部 LOBSTER 方向/时间戳审计与真正的连续时间 queue--Hawkes likelihood 接入
 264 万条免费消息；synthetic recovery、无前视、模型嵌套、错位 queue control 和 tie-policy 稳健性
 均通过，但 combined queue--Hawkes 的 20 个 real cells 中 19 个没有达到冻结的优化器收敛标准，故
-正式结果为 **8/9 gates、整体 FAIL**。exp128--138 均是零采购 preflight，不构成 confirmatory
+正式结果为 **8/9 gates、整体 FAIL**。exp128--139 均是零采购 preflight，不构成 confirmatory
 evidence，G3 不升级，付费 L2 继续锁定。exp139 已在 `338e0165`/`732e1e7b` 预注册 projected-KKT
-numerical repair，并以 `e6a7eaaf` 完成实现；formal shard1 已正常落盘，shard0 最后确认仍正常运行后
-两台 Tailscale 节点同时失联。exp139 尚未合并，**不得记录 PASS/FAIL**，恢复连通后先审计原 service/
-artifact，禁止盲目重复分片。
+numerical repair，并以 `e6a7eaaf` 完成 formal 两分片；真实 training-prefix 的 120/120 targets 和两种
+starts 均达到 `1e-5`，但 16 个 direct-Hawkes generated references 中 2 个停在 `1.62e-8`/`2.02e-8`，
+超过更严格的 `1e-8` reference gate，故正式结果仍为 **8/9 gates、整体 FAIL**。combined generated
+fits 全部达到 `1e-7`，最大 objective gap 仅 `1.79e-14`，说明失败局限于 reference solver 的边界
+精度；它不能改写冻结结论，也不能把 exp138 已查看的 test split 变回独立确认数据。
 
 本文件取代以下文档中与 NCS 投稿直接相关的旧路线：
 
@@ -340,13 +342,15 @@ aligned-minus-shifted 的跨股票中位数分别为 `0.003731` 与 `0.003913` n
 repair 必须新预注册，并只能在 generated/development 或 training-only 数据上开发；已经查看的 test
 split 不能再充当独立确认。完整结果见 `experiments/138_external_continuous_time_baselines/RESULTS.md`。
 
-exp139 已按上述边界冻结：不改变 exp138 likelihood、features、betas、split 或两种 starts，只增加
-正确的 lower-bound projected KKT 和最多 6×500 次 deterministic refinement；真实部分只 materialize
-burn+training prefix，不计算任何 test/held-out 指标。两个 20k-row smoke 在 120/120 targets 上达到
-最大 KKT `4.21e-7`，两种 starts 全部合格，generated equivalence objective gap 约 `1.1e-15`，但这些
-只是 dirty/non-formal execution evidence。正式 shard1 已在 clean `e6a7eaaf` 上用时 819.84 秒完成，
-SHA-256 为 `4e4879d8...9aed35`；shard0 在约 16.8 CPU 分钟时仍正常、无 artifact，随后两台主机同时
-从 tailnet 不可达。因此正式 gate 尚无结论，付费数据状态不变。
+exp139 已按上述边界冻结并完成：不改变 exp138 likelihood、features、betas、split 或两种 starts，
+只增加正确的 lower-bound projected KKT 和最多 6×500 次 deterministic refinement；真实部分只
+materialize burn+training prefix，不计算任何 test/held-out 指标。正式真实结果为 120/120 selected
+targets 及 240/240 starts 达到 `1e-5`，最大 selected KKT `8.91e-7`、最大 start objective gap
+`6.52e-9`，且每个 selected objective 都优于 legacy rerun。generated combined 的 32/32 starts 达到
+`1e-7`，最大 reference objective gap `1.79e-14`，但两个 direct-Hawkes references 只到 `1.62e-8` 与
+`2.02e-8`，未过冻结的 `1e-8` reference gate。因此 exp139 也是 **8/9 gates、整体 FAIL**；完整结果见
+`experiments/139_queue_hawkes_optimizer_kkt/RESULTS.md`。下一次 numerical gate 必须使用新预注册的
+solver family 与 fresh generated seeds，付费数据状态不变。
 
 **数据。** 先用生成的 event streams 和免费 LOBSTER/Tardis 样本做 schema、reconstruction 与
 recovery；G2 通过后才解锁付费 L2 的训练 split。真实测试 split 在预注册后保持封存。
@@ -638,10 +642,11 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
    observation-only stress、exp136 state-complete EcoMD adapter 与 exp137 dynamic queue/price stress 全
    gate 通过。**外部 baseline preflight 已完成但失败：** exp138 接入免费外部消息、连续时间 marked
    point-process 与 timestamp/sign audit，8/9 gates 通过；19/20 combined real cells 未达到冻结优化器
-   门槛。exp139 training-only/generated optimizer/KKT repair 已预注册、实现并启动 formal shards；
-   当前因两台远端节点同时不可达而未完成合并。恢复后必须先检查原 shard0 service/artifact，不得
-   重跑或改变门槛；只有 exp139 gate 合并后，才决定是否在独立未见日期/市场上确认。此前不采购
-   L2，也不把当前正向 queue-control 信号写成外部确认；
+   门槛。exp139 training-only/generated optimizer/KKT repair 已完成，真实 120/120 targets 收敛，但
+   两个 direct-reference generated fits 未过更严格的 `1e-8`，因此按冻结规则仍为 8/9、整体 FAIL。
+   若继续 numerical repair，先用新 solver family 与 fresh generated seeds 单独预注册；即便通过，也
+   只能在独立未见日期/市场上做 empirical confirmation。此前不采购 L2，也不把当前正向
+   queue-control 信号写成外部确认；
 10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
    `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后
    再排 canonical re-benchmark，且不抢占其他正式任务；
