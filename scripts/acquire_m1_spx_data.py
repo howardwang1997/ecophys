@@ -100,7 +100,7 @@ def acquire(out_dir: Path, manifest_path: Path, *, allow_dirty: bool = False) ->
             "started_at_utc": started,
             "finished_at_utc": finished,
             "command_template": (
-                "conda run -n ecophys python scripts/acquire_m1_spx_data.py "
+                "conda run -n ecophys python -m scripts.acquire_m1_spx_data "
                 "--out-dir <internal-dir> --manifest <manifest.json>"
             ),
         },
