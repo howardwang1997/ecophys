@@ -30,9 +30,12 @@ identifiability gates. These failures remain binding.
 
 The active Plan v5 feasibility branch asks a different question: can a model with an exact
 exchange mechanism, learned event behavior, slower behavioral adaptation and explicit
-institutional interventions predict a sealed market-rule change? Initial work is generated
-data only and carries no positive market claim. See the [Plan v5 proposal](papers/proposal/plan_v5_interventional_market_world.md),
-[research lineage](docs/research_lineage.md), and [experiment 141 preregistration](experiments/141_multiclock_intervention_feasibility/PREREGISTRATION.md).
+institutional interventions predict a sealed market-rule change? Experiment 141 passed its
+generated-data mechanism, controlled-identifiability and cross-hardware gates, but its task is
+family-conditioned and deliberately not real evidence. R0 intervention/data selection is now
+active; R1, data purchase and manuscript claims remain locked. See the [Plan v5 proposal](papers/proposal/plan_v5_interventional_market_world.md),
+[research lineage](docs/research_lineage.md), [experiment 141 preregistration](experiments/141_multiclock_intervention_feasibility/PREREGISTRATION.md),
+and [result](experiments/141_multiclock_intervention_feasibility/RESULTS.md).
 
 The EcoMD source-preview boundary is unchanged; see the [release scope](papers/proposal/ecomd_v1_release_scope_2026-08-10.md)
 and [research-preview contract](docs/ecomd_research_preview_contract.md).

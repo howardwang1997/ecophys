@@ -1,12 +1,19 @@
 # Plan v5 — Interventional Multi-clock Market World Model
 
-**Status (2026-08-12):** feasibility only; no positive model, market-science, NMI, or NCS claim is authorized.
+**Status (2026-08-12):** exp141 F1--F3 PASS on generated data; R0 is active. No positive model, market-science,
+NMI, or NCS claim is authorized.
 
 **Branch:** `interventional-market-world-v1`
 
 **Lineage base:** `ncs-invariant-calibration-v4@a8bf89427f38d53cf0cb1ad836b133d74e9d6ecd`
 
 **Immediate protocol:** `experiments/141_multiclock_intervention_feasibility/PREREGISTRATION.md`
+
+**Feasibility result:** `experiments/141_multiclock_intervention_feasibility/RESULTS.md`
+
+The PASS validates the minimal mechanism, controlled-clock identifiability workflow and heterogeneous-worker
+execution only. Its family-conditioned synthetic task is too easy to serve as paper evidence. It unlocks R0
+intervention/data selection, not R1, paid data, a large model or a manuscript claim.
 
 ## 1. Research question
 

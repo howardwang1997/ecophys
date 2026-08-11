@@ -1,21 +1,19 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. Plan v4 (2026-08-09) is authoritative for the next NCS archival project: novel invariant-measure calibration beyond EcoMD, corrected long-horizon semantics, a validated L2 observation bridge, and a frozen real-data application. Compute starts at 2×V100 32 GB, may expand, and excludes H20; data may expand behind gates. Plan v3 is historical/parallel physics context.
+description: EcoPhys/EcoMD research overview. Plan v5 (2026-08-12) is active: a mechanism-separated interventional market world. Exp141 generated-data F1-F3 passed; R0 intervention/data selection is active. Plan v3/4 and EcoMD positive claims are historical failures. Compute is non-H20 and data expansion remains gated.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 
 # EcoPhys — Project Overview
 
-> **Plan-of-record update (2026-08-09).** For the next archival project, use
-> `papers/proposal/plan_v4_ncs.md`, not the hardware/data assumptions below. The NCS route is gated on a
-> genuinely novel invariant-measure/long-horizon calibration method, validation on at least two model
-> families beyond EcoMD, state-complete and train/inference-consistent EcoMD dynamics, a validated L2
-> observation operator, and a frozen method-dependent real-data result. Current compute is 2×V100
-> 32 GB and can expand to more non-H20 GPU/CPU nodes; H20 is excluded from future plans. Current data
-> are a starting tier, not a ceiling. Plan v3 remains historical/parallel physics context.
+> **Plan-of-record update (2026-08-12).** Use `papers/proposal/plan_v5_interventional_market_world.md`.
+> Plan v4 invariant calibration closed at G0 and Plan v3 physics claims are historical. Exp141 passed F1--F3 on
+> generated data across 2×V100 32 GB and RTX2060, establishing only exact-kernel, controlled-identifiability and
+> cross-hardware feasibility. R0 intervention/data selection is active. Real-data R1, paid data, NMI/NCS claims and
+> compute expansion remain locked; H20 is excluded.
 
-> **Zero-cost preflight (2026-08-09).** G0 is AMBER rather than passed. The broad estimator novelty claim is
+> **Historical Plan v4 zero-cost preflight (closed at G0).** The broad estimator novelty claim was
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete
 > single-process API and corrected force/jump semantics now pass CPU and versioned single-V100 mechanics tests,
 > and a two-rank CPU/Gloo atomic exact-resume test is bit-exact. The single-V100 exact-resume and production
@@ -25,6 +23,9 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > exact latent-sign gauge requires an external sign anchor. G3 remains open and paid L2 stays locked. Details:
 > `project_ncs_zero_cost_preflight_2026-08-09.md` and
 > `project_ncs_preflight_continuation_2026-08-10.md`.
+
+> All EcoMD goals, pillars, budgets and timelines below are retained as historical provenance. They do not override
+> Plan v5 or reopen a failed physics/model claim.
 
 ## Research goal
 Build **EcoMD**: a differentiable, equivariant, learned-potential molecular-dynamics-style simulator for financial markets. Agents = particles in latent feature space; dynamics = Langevin; interaction potentials learned end-to-end from high-frequency order flow / return data.

@@ -14,6 +14,10 @@ kernel, learned event generator, slower behavioral update and institutional inte
 old molecular-dynamics simulator may later enter only as an optional mesoscopic ablation and earns no privileged
 role.
 
+Experiment 141 closed F1--F3 PASS on 2026-08-12 using generated data and three isolated non-H20 workers. This is an
+engineering/controlled-identifiability result only. R0 intervention selection is now active; no historical EcoMD,
+LOBSTER, Binance, daily or crash result is promoted into Plan v5 confirmation.
+
 ## Historical projects
 
 | Project | Status | What remains reusable | What cannot be carried forward as evidence |
@@ -23,7 +27,7 @@ role.
 | NCS invariant-calibration Plan v4 | G0 failed | Budget accounting, cross-system gate design | Novel invariant-gradient method |
 | Real-physics zero-cost sweep | Closed with no positive law | Parsers, nulls, failure ledger | Heavy-tail transient transfer, static universal evaluator, regime or taker-flow law |
 | Sim2Science workshop paper | Complete audit-only artifact | Transparent model--reality-gap evidence | EcoMD software/checkpoint release or positive market mechanism |
-| Plan v5 interventional world model | Feasibility active | New work, conditional on gates | No positive claim before R1/R2 |
+| Plan v5 interventional world model | F1--F3 PASS; R0 active | Exact exchange, exp141 workflow and worker compatibility | No positive claim before R1/R2 |
 
 ## Code inheritance rules
 
