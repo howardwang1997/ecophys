@@ -1,0 +1,68 @@
+manifest_version: 1
+experiment: 141
+protocol_version: imwm-feasibility-v1
+formal_commit: 2ffcb208e8ffcd2290d6c8cec28bd3bd42cdc098
+fit_source_commit: fd5accb41ddf42f7c31f87470bdfada84709a9e8
+config_sha256: 2e52c5d0f15ed47bfb961b59360a96fb746360f79bf6b6a907910e1b2452186d
+research_code_sha256: 55e61a1f20f95e95c5d73172bd3315f43fd73cf6dfd91124142d9a676336ac52
+development_fit_sha256: 4282ab93652900d4ef74fb323eb99e67728d9840b60a75343bfd544272a7ca14
+transfer_verification: remote_and_local_sha256_exact_match
+total_bytes: 380748
+
+launch_audit:
+  preflight:
+    v100_a_idle_for_new_primary_task: true
+    v100_b_idle_for_new_primary_task: true
+    v100_a_release_marker_absent: true
+    v100_b_release_marker_absent: true
+    all_compute_process_lists_empty: true
+    all_gpu_utilization_percent: 0
+  deviation:
+    present: true
+    scope: v100_same_shell_idle_value_grep
+    detail: >-
+      Shell quoting made grep verify the idle-field text while treating the token true as an additional missing
+      filename. The launch continued. A read-only preflight immediately before launch had verified both values as
+      true; the same launch chains separately verified absent release markers, empty compute-process lists and zero
+      GPU utilization. Scientific code, seeds and outputs were unaffected. This deviation is retained, not erased.
+
+artifacts:
+  - file: raw/shard_0.json
+    worker: v100-a
+    host: 100.80.236.112
+    remote_path: /data/exp141_imwm_v1/a/shard_0.json
+    bytes: 123636
+    sha256: 162d187522ea771a7cb7cfaca4f67c326a2ba2d3277f841afe32d966e5338a0a
+    formal_rows: 80
+    wall_seconds: 302.449276
+  - file: raw/shard_1.json
+    worker: v100-b
+    host: 100.123.220.57
+    remote_path: /data/exp141_imwm_v1/b/shard_1.json
+    bytes: 122288
+    sha256: 9c54f1085c4134711f69bd0dde01257e66a95f3881630372e0cbd3f399092d28
+    formal_rows: 80
+    wall_seconds: 324.998085
+  - file: raw/shard_2.json
+    worker: rtx2060
+    host: 100.105.21.7
+    remote_path: /home/howardwang/exp141_imwm_v1/rtx2060/shard_2.json
+    bytes: 124438
+    sha256: 82c6bd7ffde72e980f8701dc683d34543cb6d0302ca0d40fd5159dd9095948c2
+    formal_rows: 80
+    wall_seconds: 198.630804
+  - file: raw/hardware_v100_a.json
+    worker: v100-a
+    gpu_uuid: GPU-91ba8f02-b2d7-7aad-1ce7-71b9680029ab
+    bytes: 3455
+    sha256: c8cb60aa86223ef50b8ff7d37dcb14e74ac10b1f1332d60842dff4262d22f71c
+  - file: raw/hardware_v100_b.json
+    worker: v100-b
+    gpu_uuid: GPU-159be1c9-3dcd-b386-087b-ef85ac894f13
+    bytes: 3455
+    sha256: d70bbd5b5f7fadbf4b95ec8e12d60cee346c9de4569828124c56a01c87aea65a
+  - file: raw/hardware_rtx2060.json
+    worker: rtx2060
+    gpu_uuid: GPU-7f9d9749-a97b-8370-2a8a-1e4622a1fa58
+    bytes: 3476
+    sha256: b6d4cb3e2af8bb2465cd490321da0816ff4d1a63f0f4dbb5b2565a2bca77e515
