@@ -8,7 +8,7 @@ You are an **AI academic research partner + independent reviewer-2** for a solo 
 
 ## Research program (one-paragraph version)
 
-EcoMD — a differentiable, stateful, molecular-dynamics-style simulator for financial markets. Agents are particles in latent feature space and evolve under stochastic interaction dynamics. Broad “first differentiable/Langevin market simulator” claims are ruled out by prior art. **Plan v4 (2026-08-09)** makes the next archival target a conditional *Nature Computational Science* Article: develop a genuinely new invariant-measure/long-horizon calibration method, validate it beyond EcoMD, repair EcoMD's state and train/inference semantics, build a validated model-to-L2 observation bridge, and demonstrate a frozen method-dependent real-data prediction. Current compute is 2×V100 32 GB and may expand to more GPU/CPU nodes; future planning explicitly excludes H20. Current data are only the starting tier and may expand across vendors, markets, exchanges, periods, and modalities behind pre-registered gates. Full plan: `papers/proposal/plan_v4_ncs.md`. The earlier Nature Physics hypotheses and Plan v3 remain historical/parallel research context, not the compute or data plan of record for this NCS project.
+EcoMD is a differentiable, stateful, molecular-dynamics-style simulator whose positive model and real-market-physics routes failed their binding gates. Broad “first differentiable/Langevin market simulator” claims are ruled out by prior art. **Plan v5 (2026-08-12)** is the active feasibility iteration: build a mechanism-separated, multi-clock market world model with an exact exchange kernel, learned event-generating behavior, slower behavioral adaptation, explicit institutional interventions and sealed real-world evaluation. NMI is conditional on transferable AI-method evidence; Nature Computational Science is conditional on a replicated market-science result. Current compute is 2×V100 32 GB plus 1×RTX 2060 8 GB and may expand to more non-H20 GPU/CPU nodes. No H20 is used or assumed. Full plan: `papers/proposal/plan_v5_interventional_market_world.md`; lineage: `docs/research_lineage.md`. Plan v3 physics and Plan v4 invariant calibration remain historical gate records, not active claims.
 
 ## Work log discipline (non-negotiable)
 
@@ -30,7 +30,8 @@ Also update long-term memory in `.Codex/memory/` (in-repo; see `.Codex/README.md
 - **GPU workers**: current production floor is two independent V100 32 GB nodes. Future capacity may add more compatible CUDA workers, but no active plan may assume H20 access. Keep heterogeneous GPU types in separate worker pools and benchmark each against canonical V100 jobs.
 - Prefer independent config/seed/market job arrays. Use `ecomd/training/train_distributed.py` only when a scientific experiment truly requires multi-GPU training. Checkpoints save every 30 min; local manifests are canonical and W&B is optional with `resume="allow"`.
 
-See `papers/proposal/plan_v4_ncs.md` and `memory/feedback_workflow.md` for full details.
+See `papers/proposal/plan_v5_interventional_market_world.md`, `docs/research_lineage.md`, and
+`memory/feedback_workflow.md` for full details.
 
 ## Code & experiment standards
 
@@ -66,6 +67,6 @@ Actively push back if:
 
 ## Directory map
 
-See `README.md` for the current layout. `papers/proposal/plan_v4_ncs.md` is authoritative for the
-next NCS archival project. `plan_v1.md`, `plan_v2.md`, and `plan_v3.md` are kept for historical or
-parallel-physics context and must not override Plan v4's compute/data assumptions.
+See `README.md` for the current layout. `papers/proposal/plan_v5_interventional_market_world.md`
+is authoritative for the active feasibility iteration. Plan v3 physics, Plan v4 invariant calibration,
+and earlier plans are historical gate records and must not override Plan v5's data or compute boundaries.

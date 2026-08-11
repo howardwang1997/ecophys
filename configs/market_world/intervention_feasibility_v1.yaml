@@ -1,0 +1,71 @@
+experiment: 141
+protocol_version: imwm-feasibility-v1
+root_seed: 14120260812
+base_commit: a8bf89427f38d53cf0cb1ad836b133d74e9d6ecd
+
+world:
+  n_agents: 16
+  initial_mid_price: 10000
+  initial_tick_size: 1
+  post_tick_size: 2
+  initial_cash: 1000000000.0
+  initial_inventory: 1000000
+  initial_levels_per_side: 4
+  initial_orders_per_level: 4
+  order_quantity: 10
+  events_per_epoch: 256
+  pre_epochs: 16
+  post_epochs: 24
+  baseline_market_probability: 0.18
+  baseline_cancel_probability: 0.16
+  target_slope: -0.80
+  single_rate: 0.18
+  two_rate_fast: 0.40
+  two_rate_slow: 0.06
+  two_rate_fast_weight: 0.35
+  confound_probability_shift: 0.08
+  confound_epochs: 3
+
+development:
+  intervention_magnitudes: [0.5, 1.0, 1.5]
+  seed_start: 100
+  n_seeds: 16
+
+evaluation:
+  truth_families: [none, single_rate, two_rate, confounded]
+  intervention_magnitudes: [0.75, 2.0]
+  seed_start: 10000
+  n_seeds: 30
+  shared_anchor_seed: 141
+  n_shards: 3
+
+fit:
+  lower_rate: 0.0001
+  upper_rate: 0.9999
+  rho_bounds: [0.0001, 0.95]
+  target_slope_bounds: [-3.0, 3.0]
+
+gates:
+  maximum_mechanics_violations: 0
+  single_rate_minimum_rmse_reduction: 0.25
+  single_rate_minimum_bootstrap_lower: 0.10
+  two_rate_minimum_rmse_reduction: 0.10
+  two_rate_minimum_bootstrap_lower: 0.00
+  no_adaptation_maximum_rmse_degradation: 0.05
+  confound_residual_z_threshold: 3.0
+  confound_minimum_detection_rate: 0.90
+  confound_maximum_false_positive_rate: 0.10
+  bootstrap_replicates: 2000
+  bootstrap_seed: 14120260813
+
+hardware_probe:
+  seed: 14120260814
+  batch_size: 256
+  sequence_length: 32
+  feature_dim: 8
+  hidden_dim: 32
+  steps: 40
+  split_step: 20
+  learning_rate: 0.001
+  maximum_memory_fraction: 0.70
+  cross_device_relative_loss_tolerance: 0.001

@@ -24,18 +24,18 @@ universal heavy-tail, crash-precursor, and real-market-physics claims are not ac
 
 ## Current decision gates
 
-The simulator-audit paper route failed its prior-art novelty gate. EcoMD work is therefore
-focused on a narrower sequence:
+EcoMD v1 failed its stationary-fidelity gate, the invariant-calibration route failed its
+novelty gate, and the real-market thermodynamic hypotheses failed their empirical or
+identifiability gates. These failures remain binding.
 
-1. produce a source-only research preview with synthetic smoke tests and no raw market data;
-2. freeze one state-complete model specification and retrain from scratch;
-3. require post-stationarity, time-out-of-sample fidelity before releasing a checkpoint or
-   drafting a positive model-paper claim;
-4. add strong baselines, ablations, generalization, gradient-utility, and scaling evidence.
+The active Plan v5 feasibility branch asks a different question: can a model with an exact
+exchange mechanism, learned event behavior, slower behavioral adaptation and explicit
+institutional interventions predict a sealed market-rule change? Initial work is generated
+data only and carries no positive market claim. See the [Plan v5 proposal](papers/proposal/plan_v5_interventional_market_world.md),
+[research lineage](docs/research_lineage.md), and [experiment 141 preregistration](experiments/141_multiclock_intervention_feasibility/PREREGISTRATION.md).
 
-See the [release scope](papers/proposal/ecomd_v1_release_scope_2026-08-10.md), the
-[model-paper plan](papers/proposal/ecomd_model_paper_release_plan_2026-08-09.md), and the
-[research-preview contract](docs/ecomd_research_preview_contract.md).
+The EcoMD source-preview boundary is unchanged; see the [release scope](papers/proposal/ecomd_v1_release_scope_2026-08-10.md)
+and [research-preview contract](docs/ecomd_research_preview_contract.md).
 
 ## CPU quick start
 
@@ -71,6 +71,9 @@ papers/         paper drafts, proposal gates, and release plans
 scripts/        current utilities plus clearly marked historical launch scripts
 logs/           dated research work log
 ```
+
+New Plan v5 components live under `ecomd/market_world/`; their presence does not turn
+historical EcoMD checkpoints into validated market-world models.
 
 ## License
 
