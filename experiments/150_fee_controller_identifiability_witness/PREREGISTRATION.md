@@ -8,6 +8,11 @@
 
 **Scientific role:** generated identifiability and nontriviality attack only; no observed market evidence
 
+**Clarification before implementation:** the witness is constructed separately at each topology's declared
+development controller: Prague/Osaka for the BPO1/BPO2 comparison, and generated `K_0` for the generated
+non-proportional comparison. This resolves an ambiguity between Sections 3 and 4 of the first committed text. No
+matrix, seed, threshold, decision mapping or outcome was changed, and zero formal cells had executed.
+
 ## 1. Question
 
 Does one exact controller regime identify a local behavioral fee-response matrix when latent demand has its own
@@ -73,17 +78,25 @@ by the topology of official Base denominator changes and is not claimed to be on
 
 ## 4. Frozen formal tasks
 
-For each of the four perturbation matrices in `config.yaml` and every one of 128 SHA256-derived innovation seeds:
+For each of the four perturbation matrices in `config.yaml`, both topology-specific development controllers and
+every one of 128 SHA256-derived innovation seeds:
 
-1. run the reference and transformed system for 512 blocks under `K_0` with shared innovations;
-2. verify maximum absolute difference across all observed `q_t,y_t` is at most `1e-12`;
-3. continue both systems for 128 zero-innovation blocks under each intervention geometry, without changing any
+1. construct `(Phi',Gamma')` using the topology's development gain: Prague/Osaka for the BPO topology and
+   generated `K_0` for the non-proportional topology;
+2. run the reference and transformed system for 512 blocks under that development gain with shared innovations;
+3. verify maximum absolute difference across all observed `q_t,y_t` is at most `1e-12`;
+4. continue both systems for 128 zero-innovation blocks under each intervention geometry, without changing any
    behavioral or latent-state parameter;
-4. record the maximum and RMS observed divergence for BPO1, BPO2 and the non-proportional gain;
-5. calculate the rank and singular values of the intervention stack
+5. record the maximum and RMS observed divergence for BPO1, BPO2 and the non-proportional gain;
+6. calculate the rank and singular values of the intervention stack
    `S=[(K_r-K_0)^T tensor I_2]`, which maps `vec(Delta)` to the latent-transition change required to maintain the
    alias under another gain;
-6. verify the exact algebraic residuals for `Phi'-Phi-Delta K_0` and the frozen `Gamma'` identity.
+7. verify the exact algebraic residuals for `Phi'-Phi-Delta K_0` and the frozen `Gamma'` identity.
+
+The exact innovation label is
+`15020260813|<topology>|<perturbation_id>|<seed_index>`. The first eight SHA256 digest bytes, interpreted as an
+unsigned big-endian integer, seed NumPy's `default_rng`. Reference and transformed systems in a cell share the
+resulting innovation array; different topology labels intentionally produce independent arrays.
 
 The report contains aggregate maxima/minima, ranks and gate decisions only. Individual generated paths are not
 needed for interpretation.
