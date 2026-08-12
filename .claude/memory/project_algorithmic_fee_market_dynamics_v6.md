@@ -44,3 +44,18 @@ exact-controller, novelty, free-data, causal-identification and metadata-scale g
   network/remote/GPU/outcome files. This clears G0 only and unlocks at most a separate generated-identification
   preregistration, never real data.
 - Two V100 32 GB workers, RTX2060, remote CPU and all GPUs remain idle and unqueued.
+
+## Scale and replication attack — 2026-08-13
+
+- BPO is nearly a pure scale family: Prague/Osaka, BPO1 and BPO2 have `M/T=1.5`, `F/T` differs relatively by at
+  most `3.99384e-8`, and exact standardized fee spread is at most `2.15e-5` through state 2,000. BPO transfer must
+  be compared with an exact scale oracle and cannot be the NCS headline by itself.
+- OP execution-controller coordinates are target `T=L/E`, saturation `E` and gain `D`. This published-mechanism
+  reduction is a baseline, not a theorem.
+- The official Base deployment repository at commit `12116aa7e58d3c6fc86de45075759e05a1c113be` yields eight
+  intervention topologies from May 2025 to March 2026. Seven are receipt-backed; the 2025-11-05 README says
+  executed but the frozen record is absent. Some operations bundle DA scalar or sit near minimum-fee changes.
+- Base is same-chain historical development stress, never independent replication. Its frozen active task
+  directory contains only `.gitkeep`. No future independent event is registered.
+- V6-NCS-1 is `ATTACKING`; Exp150 may be preregistered for generated nontriviality/identification tests on Mac CPU.
+  Outcomes, workers and GPUs remain locked. NMI remains `NO_SURVIVOR`.

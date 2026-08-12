@@ -27,9 +27,16 @@ e'_{t+1}=\lambda e_t+G(\lambda n_t-\lambda T)=\lambda e_{t+1}.
 
 The initial condition closes the induction, and division by `F'=lambda F` gives the fee identity.
 
+**Protocol-scale audit.** Prague/Osaka, BPO1 and BPO2 all have `M/T=1.5`. Their `F/T` values are
+`834619.333333`, `834619.300000` and `834619.357143`, differing relatively by at most `3.99384e-8` from the first
+schedule. At standardized integer excess states `e=G*T*s`, the exact fee is identical on the quarter grid through
+`s=64`; the first integer-grid difference through `s=2000` is only at `s=74`, and the maximum relative spread is
+`2.15e-5`.
+
 **Scope.** Ethereum is integer-valued. `fake_exponential` floors intermediate terms; BPO scaling factors are
 rational; blob counts have finite support; reflection, maximum utilization, the reserve branch and inherited state
-break exact equivariance. This is a continuous oracle, not an empirical law or novelty result.
+break exact equivariance. The numerical protocol audit makes scale equivariance a mandatory baseline, not an
+empirical law or novelty result.
 
 ## F2 — inherited-state fork defect
 
@@ -67,9 +74,26 @@ substitution or learned behavior.
 **Scope.** EIP-7918 itself describes the delayed, no-decrease response, and EIP-7999 generalizes multidimensional
 fee coupling. The card is a required negative-control identity, not an NMI contribution.
 
-## F4 — what would be irreducible
+## F4 — execution-controller coordinates
 
-A viable new result must go beyond F1--F3 and established closed-loop identification. Examples of admissible proof
+For gas limit `L`, elasticity `E`, denominator `D` and target `T=L/E`, the continuous EIP-1559 update away from
+floors is
+
+\[
+\frac{b_{t+1}-b_t}{b_t}=\frac{u_t/T-1}{D}
+=\frac{E(u_t/L)-1}{D}.
+\]
+
+Thus `T` sets the absolute scale, `E` sets saturation in target units and `D` sets feedback gain. A proportional
+capacity change or target-preserving change tests fewer controller directions than a denominator-only or joint
+non-proportional change.
+
+**Scope.** This follows directly from the published controller and is not new. Integer division, minimum upward
+increments and minimum-base-fee policies must still be evaluated by the exact oracle.
+
+## F5 — what would be irreducible
+
+A viable new result must go beyond F1--F4 and established closed-loop identification. Examples of admissible proof
 obligations, not claims, are:
 
 1. a partially identified cross-resource response set with a sharp bound that exploits integer controller
@@ -81,4 +105,3 @@ obligations, not claims, are:
 
 No such statement survived the present audit. Until one does, NMI is closed and these cards serve only as exact
 oracles for an NCS phenomenon study.
-

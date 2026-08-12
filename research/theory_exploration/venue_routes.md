@@ -173,3 +173,18 @@ closes V6 before outcome inspection.
 Even after G0, a single successful BPO forecast without external replication routes to a specialist venue, not
 NCS. NCS becomes plausible only when both the prospective intervention and independent replication cells are
 filled before their outcomes are viewed.
+
+## V6 scale-attack route decision
+
+- **NMI:** unchanged `NO_SURVIVOR`; controller normalization is an audit identity, not a learning theorem.
+- **NCS:** `ATTACKING`. BPO1/2 are almost exact scale transformations, so BPO transfer cannot be the headline.
+  The method must beat an exact scale oracle on gain, target and saturation changes and fail safely under drift.
+- **Development topology:** eight official Base interventions span those directions but remain one chain and one
+  administration; several are bundled, one has incomplete execution-record provenance, and none is future-sealed.
+- **Replication:** OP Mainnet, Celo, World Chain and opBNB are catalog candidates only; no finalized untouched
+  independently administered parameter change has been registered.
+- **Compute/data:** Experiment 150 may use generated paths on local Mac CPU after separate preregistration. Real
+  outcomes, remote CPU, V100s, RTX2060 and GPUs remain locked and unqueued.
+
+A generated pass would show only that the proposed test can distinguish non-proportional controller response in
+known DGPs. It would not identify real behavioral adaptation or raise the route above conditional NCS status.

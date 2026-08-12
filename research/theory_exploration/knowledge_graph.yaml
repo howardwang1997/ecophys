@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
 iteration: algorithmic-fee-market-dynamics-v6
-decision: V6_G0_PASS_NMI_NO_SURVIVOR_NCS_PROSPECTIVE_BLOCKED
+decision: V6_SCALE_ATTACK_NMI_NO_SURVIVOR_NCS_ATTACKING_BLOCKED
 
 nodes:
   - id: src.controlled_world_models
@@ -1602,6 +1602,38 @@ nodes:
     url: https://github.com/ethpandaops/xatu-data
     primary: true
     evidence_level: official_dataset_catalog
+  - id: src.v6_eip7892
+    type: source
+    title: EIP-7892 Blob Parameter-Only Forks
+    track: ncs
+    claim: The Prague and BPO schedules co-vary blob target maximum and update fraction to preserve nearly the same normalized controller response.
+    url: https://eips.ethereum.org/EIPS/eip-7892
+    primary: true
+    evidence_level: protocol_standard
+  - id: src.v6_op_holocene_systemconfig
+    type: source
+    title: OP Stack Holocene SystemConfig
+    track: ncs
+    claim: OP Stack denominator and elasticity are dynamically configurable controller parameters with gas target equal to gas limit divided by elasticity.
+    url: https://specs.optimism.io/protocol/holocene/system-config.html
+    primary: true
+    evidence_level: protocol_specification
+  - id: src.v6_base_deployments
+    type: source
+    title: Base Contract Deployments Registry
+    track: ncs
+    claim: The frozen official repository records a same-chain sequence of gain target saturation and bundled controller parameter operations.
+    url: https://github.com/base/contract-deployments/tree/12116aa7e58d3c6fc86de45075759e05a1c113be
+    primary: true
+    evidence_level: official_deployment_registry
+  - id: src.v6_base_changelog
+    type: source
+    title: Base Configuration Changelog
+    track: ncs
+    claim: Base controller settings and minimum-base-fee policies can change in nearby windows and must be treated as bundled or confounded interventions.
+    url: https://docs.base.org/base-chain/network-information/configuration-changelog
+    primary: true
+    evidence_level: official_configuration_registry
 
   - id: kr.v6_protocol_exactness
     type: known_result
@@ -1623,13 +1655,23 @@ nodes:
     title: Continuous scaling and inherited-state diagnostics
     track: both
     claim: A continuous relaxation is scale equivariant only when state also scales while protocol state carryover induces a deterministic fork transient.
+  - id: kr.v6_bpo_scale_equivalence
+    type: known_result
+    title: BPO normalized scale equivalence
+    track: ncs
+    claim: Prague BPO1 and BPO2 preserve maximum-to-target ratio while update-fraction-to-target differs only at order 1e-8 relatively and exact standardized fees differ by at most 2.15e-5 on the declared grid.
+  - id: kr.v6_execution_controller_coordinates
+    type: known_result
+    title: Execution-controller target saturation and gain coordinates
+    track: ncs
+    claim: The continuous EIP-1559 relative update decomposes into target scale T equals L over E saturation E and gain denominator D.
 
   - id: cand.v6.controller_transfer
     type: candidate
     title: Exact-controller cross-regime response transfer
     track: ncs
     claim: A behavioral response operator estimated before a fee-controller capacity change may predict the signed joint execution and blob resource response under the exact new controller without behavioral refitting.
-    status: FORMALIZING
+    status: ATTACKING
     history:
       - date: "2026-08-13"
         to: SCOUT
@@ -1640,6 +1682,11 @@ nodes:
         to: FORMALIZING
         reason: Exact fixtures and free fields exist and no direct prospective no-refit replication was found but BPO3 and independent replication remain unavailable.
         evidence: [research/theory_exploration/algorithmic_fee_market_audit_v6.md, data.v6_bpo3_unset, data.v6_xatu_free_fields]
+      - date: "2026-08-13"
+        from: FORMALIZING
+        to: ATTACKING
+        reason: The BPO sequence is nearly a pure scale family and the Base topology is same-chain development only so nontriviality and independent replication remain under active attack.
+        evidence: [research/theory_exploration/fee_controller_scale_and_replication_audit_v6.md, kr.v6_bpo_scale_equivalence, data.v6_base_interventions]
   - id: cand.v6.closed_loop_method
     type: candidate
     title: Mechanism-constrained adaptive-demand identification
@@ -1681,11 +1728,21 @@ nodes:
     title: Concurrent fork and workload change
     track: ncs
     claim: Protocol software changes anticipation release schedules batching and common workload can reproduce a finite post-fork response without a transferable demand law.
+  - id: ce.v6.same_chain_replication
+    type: counterexample
+    title: Multiple interventions without independent replication
+    track: ncs
+    claim: Repeated parameter operations on one SystemConfig share software governance demand history and administration so intervention count does not create an independent confirmation.
   - id: bench.v6.closed_loop_oracles
     type: benchmark
     title: Closed-loop identification and fixed-demand oracles
     track: both
     claim: Exact-controller stationary and latent-demand baselines plus standard system identification IV structural demand and no-refit transfer are mandatory direct comparators.
+  - id: bench.v6.scale_oracle
+    type: benchmark
+    title: Exact controller plus scale-equivariance oracle
+    track: ncs
+    claim: Any transfer method must outperform bit-exact controller execution with normalized state and demand rescaling on non-proportional parameter changes.
   - id: data.v6_metadata_only
     type: dataset
     title: V6 pre-outcome metadata tier
@@ -1703,6 +1760,18 @@ nodes:
     track: ncs
     claim: EIP-8138 preserves a prospective sealing opportunity but activation and parameter cells are unset so no real experiment is admitted.
     artifact: research/theory_exploration/algorithmic_fee_market_audit_v6.md
+  - id: data.v6_base_interventions
+    type: dataset
+    title: Base fee-controller intervention metadata v1
+    track: ncs
+    claim: Eight official same-chain operation topologies are frozen from deployment metadata without opening any L2 response outcome and cannot serve as independent replication.
+    artifact: data/manifests/base_fee_controller_interventions_v1.yaml
+  - id: data.v6_independent_intervention_empty
+    type: dataset
+    title: Independent fee-controller intervention cell
+    track: ncs
+    claim: Compatible systems were cataloged but no finalized unexecuted independently administered parameter intervention was identified or sealed.
+    artifact: research/theory_exploration/fee_controller_scale_and_replication_audit_v6.md
   - id: compute.v6_t0_cpu_only
     type: compute_gate
     title: V6 T0 local CPU gate
@@ -1730,8 +1799,14 @@ nodes:
     type: decision
     title: Algorithmic fee-market dynamics v6 pre-outcome audit
     track: both
-    claim: NMI has no survivor while NCS remains prospectively formalizing but blocked on finalized BPO3 independent replication and protocol conformance.
+    claim: NMI has no survivor while NCS remains prospective and blocked on finalized BPO3 identification and independent replication after protocol conformance passed.
     artifact: research/theory_exploration/algorithmic_fee_market_audit_v6.md
+  - id: decision.iteration_v6_scale_attack
+    type: decision
+    title: V6 scale nontriviality and replication attack
+    track: both
+    claim: BPO-only transfer is rejected as a sufficient behavioral result and Base is restricted to same-chain development while generated nontriviality testing is the only next experiment.
+    artifact: research/theory_exploration/fee_controller_scale_and_replication_audit_v6.md
 
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
@@ -1995,3 +2070,18 @@ edges:
   - {source: bench.exp149_protocol_oracle, target: decision.exp149_protocol_pass, type: supports, claim: All frozen archive member count and controller comparisons passed exactly.}
   - {source: decision.exp149_protocol_pass, target: cand.v6.controller_transfer, type: supports, claim: Exact implementation conformance removes one mechanical ambiguity but supplies no behavioral evidence.}
   - {source: decision.exp149_protocol_pass, target: data.sealed_real_interventions, type: forbids, claim: Protocol conformance does not unlock real outcomes without BPO3 identification and replication.}
+  - {source: src.v6_eip7892, target: kr.v6_bpo_scale_equivalence, type: supports, claim: Official schedule constants supply the normalized scale comparison.}
+  - {source: src.v6_op_holocene_systemconfig, target: kr.v6_execution_controller_coordinates, type: proves, claim: Published OP Stack semantics define target elasticity and denominator coordinates.}
+  - {source: src.v6_base_deployments, target: data.v6_base_interventions, type: supports, claim: Frozen official operations and receipts supply the intervention topology and provenance.}
+  - {source: src.v6_base_changelog, target: ce.v6.concurrent_regime_change, type: supports, claim: Nearby minimum-fee changes demonstrate that parameter operations can be confounded.}
+  - {source: kr.v6_bpo_scale_equivalence, target: bench.v6.scale_oracle, type: supports, claim: Near-equivalent BPO mechanics make scale transfer the direct nontriviality oracle.}
+  - {source: kr.v6_execution_controller_coordinates, target: bench.v6.scale_oracle, type: supports, claim: Target saturation and gain coordinates define proportional and non-proportional attacks.}
+  - {source: cand.v6.controller_transfer, target: bench.v6.scale_oracle, type: distinguished_by, claim: Behavioral transfer must add value beyond exact normalized controller execution.}
+  - {source: cand.v6.controller_transfer, target: ce.v6.same_chain_replication, type: falsified_by, claim: Multiple Base episodes cannot satisfy independent replication.}
+  - {source: cand.v6.controller_transfer, target: decision.iteration_v6_scale_attack, type: branches_to, claim: The candidate advances only to generated nontriviality and identification attack.}
+  - {source: data.v6_base_interventions, target: ce.v6.same_chain_replication, type: supports, claim: All frozen Base operations share one chain SystemConfig and administrator.}
+  - {source: decision.exp149_protocol_pass, target: decision.iteration_v6_scale_attack, type: supports, claim: Exact conformance permits the controller-scale attack without supplying behavioral evidence.}
+  - {source: decision.iteration_v6_scale_attack, target: data.v6_base_interventions, type: supports, claim: Base is admitted only as historical development topology.}
+  - {source: decision.iteration_v6_scale_attack, target: data.v6_independent_intervention_empty, type: supports, claim: The independent replication cell remains explicitly empty.}
+  - {source: decision.iteration_v6_scale_attack, target: data.sealed_real_interventions, type: forbids, claim: Nontriviality and replication failures keep every response outcome sealed.}
+  - {source: decision.iteration_v6_scale_attack, target: compute.ncs_post_c1, type: forbids, claim: Remote CPU and GPU scale-up remain locked before generated P0 and identification pass.}

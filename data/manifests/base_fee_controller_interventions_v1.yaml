@@ -1,0 +1,144 @@
+schema_version: ecophys-intervention-metadata/v1
+name: base-fee-controller-interventions-v1
+created_at: "2026-08-13"
+outcome_access: none
+scope: controller parameters, governance-call timestamps and L1 receipt status only
+
+source:
+  repository: https://github.com/base/contract-deployments
+  commit: 12116aa7e58d3c6fc86de45075759e05a1c113be
+  commit_time: "2026-08-07T21:06:13Z"
+  license: MIT
+  retrieved_at: "2026-08-13"
+  active_evm_task_files:
+    - active/evm/tasks/.gitkeep
+  unexecuted_parameter_task_count: 0
+
+system:
+  chain: Base
+  chain_id: 8453
+  l1_execution_chain_id: 1
+  system_config: "0x73a79fab69143498ed3712e519a88a918e1f4072"
+  governance_safe: "0x14536667cd30e52c0b458baaccb9fada7046e056"
+  replication_role: same_chain_historical_development_only
+  independent_replication: false
+
+interventions:
+  - id: base_2025_05_denominator
+    evidence_status: executed_receipt_backed
+    executed_at: "2025-05-27T20:53:02Z"
+    l1_block: 22576630
+    l1_tx: "0x7841cdb1fc6b4e28866c17e2d440f6c672cd24af4c4629b778ae019d0dc619e3"
+    receipt_status: 1
+    before: {gas_limit: 140000000, elasticity: 2, denominator: 250, gas_target: 70000000}
+    after: {gas_limit: 140000000, elasticity: 2, denominator: 50, gas_target: 70000000}
+    bundled_changes: []
+    role: denominator_only_gain_attack
+  - id: base_2025_06_elasticity_and_limit
+    evidence_status: executed_receipt_backed
+    executed_at: "2025-06-18T21:49:02Z"
+    l1_block: 22734156
+    l1_tx: "0xcc7c7eaf09ef2bee959aea547bef4cbb152c4921d97b0c56482c8696d49b05e6"
+    receipt_status: 1
+    before: {gas_limit: 140000000, elasticity: 2, denominator: 50, gas_target: 70000000}
+    after: {gas_limit: 150000000, elasticity: 3, denominator: 50, gas_target: 50000000}
+    evidence_note: calldata sets 150000000; README summary contains a 15m typo
+    bundled_changes: []
+    role: target_and_saturation_attack
+  - id: base_2025_10_elasticity_and_limit
+    evidence_status: executed_receipt_backed
+    executed_at: "2025-10-29T16:36:14.673Z"
+    l1_block: 23684281
+    l1_tx: "0x29b2b633ebc1da25d1a90f52b812e13b3469c12cc851b0609ab7a671b38a8cad"
+    receipt_status: 1
+    before: {gas_limit: 150000000, elasticity: 3, denominator: 50, gas_target: 50000000}
+    after: {gas_limit: 200000000, elasticity: 4, denominator: 50, gas_target: 50000000}
+    bundled_changes: []
+    role: target_preserving_scale_and_saturation_attack
+  - id: base_2025_11_05_limit
+    evidence_status: executed_readme_no_frozen_record
+    executed_at: null
+    l1_block: null
+    l1_tx: "0xfbf7dad2372bd9596cccf28f89eb4811c1d4f613638acf2c08e0399379db0e6b"
+    receipt_status: null
+    before: {gas_limit: 200000000, elasticity: 4, denominator: 50, gas_target: 50000000}
+    after: {gas_limit: 250000000, elasticity: 4, denominator: 50, gas_target: 62500000}
+    bundled_changes: []
+    evidence_note: README marks executed but frozen repository contains no execution record; do not infer time or block
+    role: target_only_capacity_attack_with_incomplete_provenance
+  - id: base_2025_11_10_elasticity_and_limit
+    evidence_status: executed_receipt_backed
+    executed_at: "2025-11-12T16:43:25.898Z"
+    l1_block: 23784411
+    l1_tx: "0xf4015a79142f5655775c4a3dac133ec820403c91443ca050227f658e8a094cd2"
+    receipt_status: 1
+    before: {gas_limit: 250000000, elasticity: 4, denominator: 50, gas_target: 62500000}
+    after: {gas_limit: 300000000, elasticity: 5, denominator: 50, gas_target: 60000000}
+    bundled_changes: []
+    role: target_and_saturation_attack
+  - id: base_2025_12_elasticity_limit_da
+    evidence_status: executed_receipt_backed
+    executed_at: "2025-12-18T19:08:49Z"
+    l1_block: 24041479
+    l1_tx: "0x1fd203ec603c389111e1b1f567265f770f551fc911fc991b833c8313509bd232"
+    receipt_status: 1
+    before: {gas_limit: 300000000, elasticity: 5, denominator: 50, gas_target: 60000000}
+    after: {gas_limit: 375000000, elasticity: 6, denominator: 50, gas_target: 62500000}
+    bundled_changes:
+      - {field: da_scalar, before: 312, after: 325}
+    role: bundled_target_saturation_da_attack
+  - id: base_2026_02_denominator
+    evidence_status: executed_receipt_backed
+    executed_at: "2026-02-04T13:27:25.877Z"
+    l1_block: 24383784
+    l1_tx: "0x30bb34595b1536556112591bfd26b9b24096dbfb37d59cc13515101a5f8b4de5"
+    receipt_status: 1
+    before: {gas_limit: 375000000, elasticity: 6, denominator: 50, gas_target: 62500000}
+    after: {gas_limit: 375000000, elasticity: 6, denominator: 125, gas_target: 62500000}
+    bundled_changes:
+      - {field: minimum_base_fee, timing: nearby_2026_02_02, value_not_opened: true}
+    role: denominator_only_but_near_floor_change
+  - id: base_2026_03_joint_parameters
+    evidence_status: executed_receipt_backed
+    executed_at: "2026-03-25T20:46:37.995Z"
+    l1_block: 24737043
+    l1_tx: "0xa0e2f62a2867858350ff32a7943a23ddb872571eeacee7bc0453b46948a5c372"
+    receipt_status: 1
+    before: {gas_limit: 375000000, elasticity: 6, denominator: 125, gas_target: 62500000}
+    after: {gas_limit: 400000000, elasticity: 5, denominator: 100, gas_target: 80000000}
+    bundled_changes:
+      - {field: da_scalar, before: 139, after: 148}
+    invariant_note: maximum positive controller step remains 4 percent because (elasticity - 1) / denominator is unchanged
+    role: bundled_nonproportional_attack
+
+frozen_files:
+  - {path: archive/legacy/mainnet/2025-05-15-eip1559-denominator-reduction/.env, bytes: 226, git_blob: b4f68035640acf30756ced328ef7090313ca2284, sha256: 7a541c768e7867910323fda4ee8bab25ac0d960df8d4e6e91eb17b2d561c5e66}
+  - {path: archive/legacy/mainnet/2025-05-15-eip1559-denominator-reduction/README.md, bytes: 4268, git_blob: 3fbaa25b55276dca9c9d216d5e9917ed70b50a3a, sha256: bd6c1f3c9e19e6c37a3f2ed3b06ba5c47631143939cdac5232cf4d088a2fad5e}
+  - {path: archive/legacy/mainnet/2025-05-15-eip1559-denominator-reduction/records/ReduceEip1559Denominator.s.sol/1/run-1748379182.json, bytes: 7025, git_blob: 6b77826c422c93dad96eee568d66ea9e2bdb9e86, sha256: bbc4a40e68cedccda1657d51de42208e131974a96d2753a3974d2715a93e9d41}
+  - {path: archive/legacy/mainnet/2025-06-18-eip1559-elasticity-increase/.env, bytes: 226, git_blob: b4f68035640acf30756ced328ef7090313ca2284, sha256: 7a541c768e7867910323fda4ee8bab25ac0d960df8d4e6e91eb17b2d561c5e66}
+  - {path: archive/legacy/mainnet/2025-06-18-eip1559-elasticity-increase/README.md, bytes: 4495, git_blob: 5c578d610da0b6630da4073e15c8d815e01e60b4, sha256: c8c80956d47b86e888d727b1e231257fbf1352f4802ac7a776fe6e0913e33d17}
+  - {path: archive/legacy/mainnet/2025-06-18-eip1559-elasticity-increase/records/IncreaseEip1559ElasticityAndIncreaseGasLimit.s.sol/1/run-1750283342.json, bytes: 9000, git_blob: 94f907247ef175298e77de21a65908d4c467bdaf, sha256: 53a7ba06edc48a0a8ea2bb71db1ada6b7b23667d519dba35f73cd0342793b464}
+  - {path: archive/legacy/mainnet/2025-10-28-increase-gas-and-elasticity-limit/.env, bytes: 385, git_blob: c5ecfad9c1df8f842c79e4e6f2aa8efa32ed930d, sha256: adfc03ede0684d160a69626c29ba3ff102694d6453020f9ba58c2a7eb1f51534}
+  - {path: archive/legacy/mainnet/2025-10-28-increase-gas-and-elasticity-limit/README.md, bytes: 6615, git_blob: c922173a645d9f93c6c9becc226cc07009fb6f53, sha256: 16165cd1736a40e4f3d82a9a30373b1febc6f117bd3e5d6a4acc32c1e3329036}
+  - {path: archive/legacy/mainnet/2025-10-28-increase-gas-and-elasticity-limit/records/IncreaseEip1559ElasticityAndIncreaseGasLimit.s.sol/1/run-1761755774673.json, bytes: 9008, git_blob: 2c7fd810a817f6be20f12592e617e61da839f7c6, sha256: c66f481760d578eeed94cd5d2a1af39b848d17857a1f0ce5e963677d219d01d6}
+  - {path: archive/legacy/mainnet/2025-11-05-increase-gas-limit/.env, bytes: 419, git_blob: 9208cc8c37055120403acfe14e33a6f967d26e92, sha256: 0a281256330860ddfa219988be074f21d5aa330f21581094787e435f1dc27579}
+  - {path: archive/legacy/mainnet/2025-11-05-increase-gas-limit/README.md, bytes: 10534, git_blob: 74096ef7496c885442872f5763b2449259d9efa5, sha256: 7879cfde3520d9ce008f1e80daeda89d1b857fa81cdc1df3be0c7748aed237ec}
+  - {path: archive/legacy/mainnet/2025-11-10-increase-gas-and-elasticity-limit/.env, bytes: 385, git_blob: fff3ba98095fa2d1abf31695ccc7b9d86f9945fe, sha256: 27fb38f5877608ffd54d5bc066b424903978ea25061763950a0a242a3769d860}
+  - {path: archive/legacy/mainnet/2025-11-10-increase-gas-and-elasticity-limit/README.md, bytes: 1418, git_blob: 7e3c6d0f245c82107315dd99273034358e574a7c, sha256: 60edd5281622a4f0f755bb94e69cb651f88bbc075cef6cef7f2eb9cf3318ef69}
+  - {path: archive/legacy/mainnet/2025-11-10-increase-gas-and-elasticity-limit/records/UpdateGasParams.s.sol/1/run-1762965805898.json, bytes: 9004, git_blob: b00fd32d445ddd646670f104861e872aaa493734, sha256: 50d748fa621b2d2597c0646e36ca9ccece7a8cc90f040ada242d412fdc7073be}
+  - {path: archive/legacy/mainnet/2025-12-08-increase-gas-and-elasticity-limit/.env, bytes: 761, git_blob: 361bde53223bfce1147ac4559aa47afdf803cfa9, sha256: c3eb491bdef4728d6c22c990ff62e01d68c002fbee6e6c5d5e220a77a58433e4}
+  - {path: archive/legacy/mainnet/2025-12-08-increase-gas-and-elasticity-limit/README.md, bytes: 3648, git_blob: b8eea21628ca12e010d86519971642f5c30fcaf1, sha256: 1516f62ef958346f21f475bac462394835a88833efa82afa2ed687cd7ea17846}
+  - {path: archive/legacy/mainnet/2025-12-08-increase-gas-and-elasticity-limit/records/IncreaseEip1559ElasticityAndIncreaseGasLimit.s.sol/1/run-1766084929.json, bytes: 10976, git_blob: 130e775fd14a0c1f4e0cce579bda02b191d33c26, sha256: 6a783cd2611bd286bb047ce3c41cf82fe5c814b5cc0e4f36a83e314475d04528}
+  - {path: archive/legacy/mainnet/2026-02-03-eip1559-denominator-increase/.env, bytes: 762, git_blob: 1d2e72a20b7393dacfe789abd5a16dd513c2fbed, sha256: 8eb6924ad0ae1f76701d30bf0116b8cae126202a621e16ee1b13f6e266fb8a4c}
+  - {path: archive/legacy/mainnet/2026-02-03-eip1559-denominator-increase/README.md, bytes: 2231, git_blob: 5845149388dce11863cc2c8f2f5ec2d7f0caa467, sha256: 910059a31063ab2855b7706558f848770a19a0fb026643c137c5ee388328b664}
+  - {path: archive/legacy/mainnet/2026-02-03-eip1559-denominator-increase/records/IncreaseEip1559Denominator.s.sol/1/run-1770211645877.json, bytes: 7030, git_blob: 5a257b6253c4e836bd2d2f359bd4c73ac448719f, sha256: b4c4289a1ae4813b7b0e3e1575294f2f599ccfdef2e0d0cee3d4abea7fd95efc}
+  - {path: archive/legacy/mainnet/2026-03-25-increase-gas-and-elasticity-limit/.env, bytes: 1099, git_blob: 79de7c5fa3b23962aaf99a56c3e115d684421dc8, sha256: e9bb6d4d463a15147578f6682232d573446b864176a42f6de50b479c43cc0474}
+  - {path: archive/legacy/mainnet/2026-03-25-increase-gas-and-elasticity-limit/README.md, bytes: 3645, git_blob: f518c2bf6c11de83492180db933bcdc8018b4b09, sha256: 730a5207052eed29e78cea2a054aec951a1867ba1221ef99b17dfd9aebf294d3}
+  - {path: archive/legacy/mainnet/2026-03-25-increase-gas-and-elasticity-limit/records/IncreaseEip1559ElasticityAndIncreaseGasLimit.s.sol/1/run-1774471597995.json, bytes: 12905, git_blob: e74a348a1b67abeb613562c52e664ba9ffa1edbf, sha256: 7082ffe27e325ae477ad448a9115f5dab4b08ab8b32d16d282ad50882b5cb3d7}
+
+leakage_control:
+  opened_l2_fee_values: 0
+  opened_l2_gas_used_values: 0
+  opened_l2_transactions: 0
+  opened_response_windows: 0
+  note: repository metadata reveals intervention settings and execution status only; it cannot identify demand response

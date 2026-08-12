@@ -297,3 +297,28 @@ All 107 execution-fee values, all 107 excess-state values and all 86 observable 
 raw SHA256 `2a124acc5881204a69b34b0024c4d51387ca4060bf2525c44f1f2ff17ff3873a`. This passes implementation
 conformance only and authorizes at most a separate generated-identification stress test, not real data. The two
 V100 workers, RTX2060, remote hosts and all GPUs remain idle and unqueued.
+
+## 14. Nontriviality attack and revised queue — 2026-08-13
+
+The scale audit changes what counts as a successful V6 result. Prague/Osaka, BPO1 and BPO2 preserve `M/T=1.5`
+and their `F/T` values differ by less than `4e-8` relatively. Exact standardized blob-fee values remain equal or
+within `2.15e-5` over the declared audit grid. A BPO forecast can therefore be solved almost completely by an
+exact-controller scale oracle. V6-NCS-1 is now `ATTACKING`, and any estimator must beat this oracle on
+non-proportional controller changes before real-data admission.
+
+The frozen Base deployment sequence supplies historical gain-only, target-preserving, target-changing and joint
+parameter topologies. It is development/transport stress only: the episodes share one chain and administrator,
+some bundle DA-scalar or minimum-fee changes, and no future task exists in the frozen active directory. No
+independently administered sealed intervention has been identified.
+
+The revised work queue is:
+
+1. freeze a generated-only Experiment 150 before implementation;
+2. test exact scale oracle, transparent pre-change response estimators and fixed-latent-demand countermodels on
+   scale-equivalent and non-proportional parameter changes;
+3. require fail-closed behavior under latent drift and bundled changes;
+4. keep Base and BPO1/2 historical outcomes sealed until P0 passes, without treating either as confirmation;
+5. monitor BPO3 and independently administered systems for finalized future interventions, but do not queue a
+   remote host or GPU merely while waiting.
+
+Even a generated P0 pass does not satisfy I0, unlock outcomes or restore NMI.

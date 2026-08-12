@@ -2,7 +2,7 @@
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** v6 NMI `NO_SURVIVOR`; NCS prospective `FORMALIZING`, blocked on BPO3 and independent
+**Current decision:** v6 NMI `NO_SURVIVOR`; NCS `ATTACKING`, blocked on nontriviality, BPO3 and independent
 replication; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
@@ -122,6 +122,8 @@ flowchart TB
         EXACT["protocol-exact execution/blob controllers"]
         DEMAND["latent adaptive cross-resource demand"]
         G0["Exp149 G0 PASS: 97 cases / 0 mismatch"]
+        SCALE["BPO scale oracle: max spread 2.15e-5"]
+        BASE["Base: 8 same-chain parameter topologies"]
         BPO3["BPO3 draft: params/time unset"]
         REPL["independent replication missing"]
         NCS6["NCS: prospective no-refit transfer"]
@@ -129,13 +131,16 @@ flowchart TB
         EXACT --> NCS6
         DEMAND --> NCS6
         EXACT --> G0
+        EXACT --> SCALE
+        SCALE -. "nontriviality attack" .-> NCS6
+        BASE -->|development only| NCS6
         BPO3 -. "blocks" .-> NCS6
         REPL -. "blocks" .-> NCS6
         DEMAND --> NMI6
     end
 
     RETIRE --> V6
-    V6 --> AUDIT["rules / prior art / metadata / identification only"]
+    V6 --> AUDIT["exact mechanics / scale / replication / identification"]
     AUDIT --> LOCK6["chain outcomes / workers / GPUs locked"]
 ```
 
@@ -194,14 +199,16 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v5 NCS annual feedback | `RETIRED_FEASIBILITY` | Exp148: 9/16 gated cells pass; rounded null over-rejects; all six 5% effect cells miss 80% power | immutable negative result and design lesson only |
 | v5 cutoff pool | restricted | 80/2,000 share RTS 28 boundaries; 600/9,000 have low-price zero first stages | cutoff 10 plus price-qualified 600 primary |
 | v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
-| v6 NCS controller transfer | `FORMALIZING` | exact mechanism/free fields exist; BPO3 parameters and independent replication do not | protocol oracle and prospective metadata only |
+| v6 NCS controller transfer | `ATTACKING` | BPO is nearly scale-equivalent; Base supplies same-chain topology only; BPO3 and independent replication remain empty | generated nontriviality test only |
 | v6 NMI closed-loop method | `RETIRED_PRIOR_ART` | closed-loop ID, multi-resource dynamic fees and gas-demand IV cover the composition | mandatory baselines only |
 | v6 protocol G0 | `PASS_EXP149` | 97 official cases/107 blocks/86 blob-fee observations, zero mismatch | exact implementation baseline only |
+| v6 BPO nontriviality | `REJECTED_AS_SUFFICIENT` | `M/T` fixed at 1.5; `F/T` differs at order 1e-8; exact standardized fee spread <=2.15e-5 | mandatory exact scale oracle |
+| v6 Base topology | development only | eight operations share one chain/SystemConfig/administrator and several are bundled | generated/historical attack topology, never replication |
 
-The graph has 221 nodes after the V6 mechanism/prior-art/data audit and Experiment 149 result. NMI has no
-survivor; NCS is not admitted to real data because its prospective intervention and independent replication cells
-are empty. No chain outcome, fee series, transaction, FITRS outcome pair, remote worker or GPU was opened, and both
-V100 workers and the RTX2060 remain outside the queue.
+The graph has 232 nodes after the V6 mechanism, scale and replication attacks and Experiment 149 result. NMI has
+no survivor; NCS is not admitted to real data because nontriviality, prospective intervention and independent
+replication remain unresolved. No chain outcome, fee series, L2 transaction, FITRS outcome pair, remote worker or
+GPU was opened, and both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

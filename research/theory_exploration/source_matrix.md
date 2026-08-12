@@ -166,11 +166,15 @@ use.
 | [Dual system-level closed-loop identification](https://arxiv.org/abs/2304.02379) | Known-feedback closed-loop response identification is an established systems problem. | Exact controller plus response learner as an NMI method. | Direct method oracle. |
 | [Price Elasticity of Gas Demand on L1 and L2](https://arxiv.org/abs/2606.13555) | Wallet-lagged-fee IV targets causal gas-demand elasticity under congestion endogeneity. | Naive demand-on-fee regression and first causal elasticity claims. | Empirical identification baseline. |
 | [Xatu data](https://github.com/ethpandaops/xatu-data) | CC BY 4.0 public Parquet exposes finalized/deduplicated canonical execution and consensus plus blob events. | Claims that basic field reconstruction requires paid data. | Conditional free-data route; attribution/replication still required. |
+| [EIP-7892](https://eips.ethereum.org/EIPS/eip-7892) | Prague and BPO schedule constants deliberately co-vary target, maximum and update fraction. | Treating BPO capacity transfer as automatically nontrivial. | Exact scale-equivalence oracle. |
+| [OP Holocene SystemConfig](https://specs.optimism.io/protocol/holocene/system-config.html) | OP Stack chains can configure EIP-1559 denominator and elasticity dynamically. | Treating one Ethereum parameter family as the only controller topology. | Non-proportional generated attacks and compatible-system catalog. |
+| [Base deployment registry](https://github.com/base/contract-deployments/tree/12116aa7e58d3c6fc86de45075759e05a1c113be) | A frozen official MIT repository records eight Base gas-controller operations: seven receipt-backed and one README-only at that commit. | Calling Base episodes prospective or independent replications. | Same-chain blind historical topology; response outcomes remain sealed. |
+| [Base configuration changelog](https://docs.base.org/base-chain/network-information/configuration-changelog) | Controller and minimum-base-fee parameters can change near one another. | Treating the February denominator operation as an isolated behavioral instrument. | Confounder registry and exclusion/robustness input. |
 
 ### V6 synthesis
 
 - G0 passed Experiment 149: 97 official cases/107 blocks, 86 observable blob-fee values and zero mismatch.
 - NMI has no survivor because every current method statement is a direct composition of occupied results.
-- NCS remains a conditional prospective route. BPO1/2 are development-only; draft BPO3 and an independent
-  replication must be frozen before any corresponding outcomes are opened.
+- NCS is under nontriviality attack. BPO schedules are nearly scale-equivalent, while Base supplies only
+  same-chain historical stress. A future change and an independent replication must still be frozen.
 - No chain outcome, remote worker or GPU has been used.

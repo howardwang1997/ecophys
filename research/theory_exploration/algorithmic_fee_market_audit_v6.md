@@ -2,8 +2,8 @@
 
 **Audit frozen:** 2026-08-13  
 **Outcome access:** none; no chain fee, utilization, transaction, rollup or reliability value was opened  
-**Decision:** G0 `PROTOCOL_ORACLE_CONFORMANCE_PASS`; `NMI_NO_SURVIVOR`; NCS `PROSPECTIVE_CANDIDATE`, blocked
-before outcomes by intervention and replication
+**Decision:** G0 `PROTOCOL_ORACLE_CONFORMANCE_PASS`; `NMI_NO_SURVIVOR`; NCS `ATTACKING`, blocked before outcomes
+by nontriviality, intervention and replication
 
 ## 1. What was audited
 
@@ -118,7 +118,23 @@ contact and GPU work remain locked. If BPO3 is finalized, freeze its
 metadata and forecast protocol before opening any post-activation values; if no independent replication is found,
 route any eventual single-system result below NCS rather than weakening the claim.
 
-## 7. Primary sources
+## 7. Scale and replication attack
+
+The follow-up audit in `fee_controller_scale_and_replication_audit_v6.md` narrows the candidate further. Prague,
+BPO1 and BPO2 preserve `M/T=1.5`, while their `F/T` values differ relatively by at most `3.99384e-8`. Exact
+`fake_exponential` values agree across the three schedules throughout a declared quarter-grid and differ by at
+most `2.15e-5` relatively on standardized integer states through 2,000. BPO transfer is therefore almost a pure
+scale oracle; success there cannot by itself establish behavioral adaptation.
+
+The official Base deployment history contributes eight same-chain controller changes spanning denominator-only,
+target-preserving and non-proportional directions. Seven have frozen execution records; one is marked executed in
+its README but lacks a record and must retain unresolved time/block fields. Several events bundle DA-scalar or
+minimum-base-fee changes. Base is useful historical development stress, not independent replication. No
+unexecuted task is present in the frozen active directory, and no finalized independent-system intervention was
+found. Candidate state is now `ATTACKING`; a generated nontriviality/identification preregistration is permissible,
+but I0 and all real outcomes remain locked.
+
+## 8. Primary sources
 
 - [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559)
 - [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844)
@@ -133,3 +149,6 @@ route any eventual single-system result below NCS rather than weakening the clai
 - [A Dual System-Level Parameterization for Identification from Closed-Loop Data](https://arxiv.org/abs/2304.02379)
 - [Price Elasticity of Gas Demand on L1 and L2](https://arxiv.org/abs/2606.13555)
 - [Xatu public data catalog](https://github.com/ethpandaops/xatu-data)
+- [OP Stack Holocene SystemConfig](https://specs.optimism.io/protocol/holocene/system-config.html)
+- [Base contract deployments](https://github.com/base/contract-deployments/tree/12116aa7e58d3c6fc86de45075759e05a1c113be)
+- [Base configuration changelog](https://docs.base.org/base-chain/network-information/configuration-changelog)
