@@ -137,3 +137,19 @@ Experiment 148 is immutable. This route cannot advance by rerunning, changing se
 opening real signs, adding ordinary years post hoc or buying compute. Re-entry requires a prospectively different
 data/design opportunity with substantially denser independent cutoff information or a stronger exogenous first
 stage. The final iteration status is `V5_NO_SURVIVOR` for both Nature routes.
+
+## V6 initial route decision
+
+- **NCS:** `SCOUT`. The candidate is an exact-controller, pre-change no-refit prediction of the joint execution/blob
+  resource response after a capacity/parameter change, followed by an independent replication. A descriptive
+  occupancy plot, one-upgrade event study or post-change refit is below scope.
+- **NMI:** `SCOUT`, with a stronger admission burden. It requires a method or theorem outside standard closed-loop
+  system identification, IV and structural demand estimation, plus validation on non-blockchain systems.
+- **Data state:** official specifications, test vectors, fork schedules and catalog/schema/licence metadata only.
+  No fee, resource-use, transaction, rollup or other chain outcome may be opened.
+- **Compute state:** <=30 Mac CPU core-hours, zero remote-worker contact and zero GPU-hours. V100/RTX2060 jobs remain
+  locked until an independently frozen generated-feasibility experiment is justified.
+
+The next decision is joint G0/N0/D0/I0: exact mechanism, non-equivalent contribution, free reproducible data and a
+causal design robust to simultaneity, common demand and concurrent fork changes. Failure at any indispensable gate
+closes V6 before outcome inspection.

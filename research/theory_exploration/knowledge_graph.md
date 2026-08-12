@@ -1,8 +1,8 @@
-# Theory-exploration topology v5
+# Theory-exploration topology v6
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** v5 `V5_NO_SURVIVOR`; NMI and NCS real-data/remote-compute gates locked
+**Current decision:** v6 `SCOUT`; v5 remains `V5_NO_SURVIVOR`; all V6 outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit and v5 annual-rule-feedback gate. Graph proximity is not evidence of
@@ -116,6 +116,21 @@ flowchart TB
     DV5 --> CPU["9/16 gated cells pass"]
     CPU --> RETIRE["V5_NO_SURVIVOR"]
     RETIRE --> LOCK["real values / workers / GPUs locked"]
+
+    subgraph V6["v6: exact fee controllers + adaptive demand"]
+        EXACT["protocol-exact execution/blob controllers"]
+        DEMAND["latent adaptive cross-resource demand"]
+        NCS6["NCS: pre-change no-refit transfer"]
+        NMI6["NMI: non-equivalent identification"]
+        EXACT --> NCS6
+        DEMAND --> NCS6
+        EXACT --> NMI6
+        DEMAND --> NMI6
+    end
+
+    RETIRE --> V6
+    V6 --> AUDIT["rules / prior art / metadata / identification only"]
+    AUDIT --> LOCK6["chain outcomes / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -173,12 +188,13 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v5 NCS annual feedback | `RETIRED_FEASIBILITY` | Exp148: 9/16 gated cells pass; rounded null over-rejects; all six 5% effect cells miss 80% power | immutable negative result and design lesson only |
 | v5 cutoff pool | restricted | 80/2,000 share RTS 28 boundaries; 600/9,000 have low-price zero first stages | cutoff 10 plus price-qualified 600 primary |
 | v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
+| v6 NCS controller transfer | `SCOUT` | frozen prospective no-refit joint-response claim; audit not yet run | specifications, literature and metadata only |
+| v6 NMI closed-loop method | `SCOUT` | must differ from system ID, IV and structural demand and transfer outside blockchain | symbolic/prior-art audit only |
 
-The graph has 190 nodes after recording the exp148 generated-identification failure. NMI has no theorem or
-estimator ready for human novelty audit. NCS retains a scientifically meaningful real mechanism but no feasible
-current identification design and no empirical effect. One schema query disclosed a single 2021 value for
-`ROROCEACNOR1`; it is permanently excluded. No FITRS ZIP, outcome pair, remote worker or GPU was opened, and both
-V100 workers and the RTX2060 remain outside the queue.
+The graph has 200 nodes after freezing V6's two candidates, proof obligations, countermodels, oracles and
+data/compute locks. Neither candidate has passed novelty, data or identification. No chain outcome, fee series,
+transaction, FITRS outcome pair, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain
+outside the queue.
 
 ## Validation
 

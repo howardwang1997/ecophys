@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
-iteration: endogenous-market-rule-feedback-v5
-decision: V5_NO_SURVIVOR
+iteration: algorithmic-fee-market-dynamics-v6
+decision: V6_SCOUT_V5_NO_SURVIVOR
 
 nodes:
   - id: src.controlled_world_models
@@ -1506,6 +1506,70 @@ nodes:
     claim: Only 9 of 16 gated cells passed; rounded-null cutoff 10 exceeded false-positive gates and every five-percent effect cell missed the eighty-percent power gate, retiring V5 before real outcomes.
     artifact: experiments/148_generated_market_rule_feedback_rd_serial/RESULTS.md
 
+  - id: cand.v6.controller_transfer
+    type: candidate
+    title: Exact-controller cross-regime response transfer
+    track: ncs
+    claim: A behavioral response operator estimated before a fee-controller capacity change may predict the signed joint execution and blob resource response under the exact new controller without behavioral refitting.
+    status: SCOUT
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen before chain outcomes as an information-first candidate requiring exact-mechanism novelty data identification and power audits.
+        evidence: [papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md]
+  - id: cand.v6.closed_loop_method
+    type: candidate
+    title: Mechanism-constrained adaptive-demand identification
+    track: nmi
+    claim: A transferable method might identify or bound behavioral cross-resource response inside a known deterministic controller under latent nonstationary demand.
+    status: SCOUT
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen as conditional on a non-equivalent result beyond closed-loop system identification instrumental variables and structural demand estimation.
+        evidence: [papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md]
+  - id: po.v6.prospective_transfer
+    type: proof_obligation
+    title: Prospective no-refit response transfer
+    track: ncs
+    claim: Fit behavioral response before the parameter change then predict the entire joint post-change direction damping and uncertainty under the exact new controller and replicate independently.
+  - id: po.v6.method_non_equivalence
+    type: proof_obligation
+    title: Closed-loop method non-equivalence
+    track: nmi
+    claim: Supply a distinct estimand assumption set or guarantee not obtainable from standard closed-loop identification IV or structural demand methods and validate it outside blockchain.
+  - id: ce.v6.closed_loop_simultaneity
+    type: counterexample
+    title: Endogenous fee-demand simultaneity
+    track: both
+    claim: Deterministic fee feedback makes observed protocol prices respond to prior demand so a naive demand-on-price regression is not a causal behavioral response.
+  - id: ce.v6.concurrent_regime_change
+    type: counterexample
+    title: Concurrent fork and workload change
+    track: ncs
+    claim: Protocol software changes anticipation release schedules batching and common workload can reproduce a finite post-fork response without a transferable demand law.
+  - id: bench.v6.closed_loop_oracles
+    type: benchmark
+    title: Closed-loop identification and fixed-demand oracles
+    track: both
+    claim: Exact-controller stationary and latent-demand baselines plus standard system identification IV structural demand and no-refit transfer are mandatory direct comparators.
+  - id: data.v6_metadata_only
+    type: dataset
+    title: V6 pre-outcome metadata tier
+    track: both
+    claim: Only specifications test vectors fork calendars and catalog schema licence and aggregate coverage metadata are authorized before the joint gate decision.
+  - id: compute.v6_t0_cpu_only
+    type: compute_gate
+    title: V6 T0 local CPU gate
+    track: both
+    claim: At most thirty Mac CPU core-hours and zero remote or GPU use are authorized for the pre-outcome audit.
+  - id: decision.iteration_v6_freeze
+    type: decision
+    title: Algorithmic fee-market dynamics v6 freeze
+    track: both
+    claim: V6 begins at SCOUT with a prospective no-refit NCS target and conditional non-equivalent NMI target while all chain outcomes and scale-up remain locked.
+    artifact: papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -1733,3 +1797,17 @@ edges:
   - {source: cand.v5.annual_rule_feedback, target: decision.exp148_generated_failure, type: retired_by, claim: Failed type-I and minimum-effect power gates retire the current identification design before market outcomes.}
   - {source: decision.exp148_generated_failure, target: data.v5_official_panel_metadata, type: forbids, claim: Instrument-level outcome pairs and sealed UK records remain closed for this retired design.}
   - {source: decision.exp148_generated_failure, target: compute.ncs_post_c1, type: forbids, claim: More compute cannot repair the missing independent cutoff information.}
+
+  - {source: cand.v6.controller_transfer, target: po.v6.prospective_transfer, type: requires, claim: NCS requires a preregistered pre-change forecast and independent replication rather than post-hoc fit.}
+  - {source: cand.v6.controller_transfer, target: ce.v6.concurrent_regime_change, type: falsified_by, claim: Concurrent protocol and demand changes can invalidate transfer attribution.}
+  - {source: cand.v6.controller_transfer, target: bench.v6.closed_loop_oracles, type: distinguished_by, claim: Transparent exact-controller and standard identification baselines define the minimum comparator set.}
+  - {source: cand.v6.controller_transfer, target: decision.iteration_v6_freeze, type: branches_to, claim: The candidate enters only a pre-outcome rules literature metadata and identification audit.}
+  - {source: cand.v6.closed_loop_method, target: po.v6.method_non_equivalence, type: requires, claim: NMI requires an equation-level non-equivalence result and non-blockchain validation.}
+  - {source: cand.v6.closed_loop_method, target: ce.v6.closed_loop_simultaneity, type: falsified_by, claim: Exact feedback makes naive price-demand estimation endogenous and does not identify behavior.}
+  - {source: cand.v6.closed_loop_method, target: bench.v6.closed_loop_oracles, type: distinguished_by, claim: Standard closed-loop system identification IV and structural demand are the nearest-composition oracles.}
+  - {source: cand.v6.closed_loop_method, target: decision.iteration_v6_freeze, type: branches_to, claim: No method implementation is authorized before the novelty audit.}
+  - {source: decision.iteration_v6_freeze, target: data.v6_metadata_only, type: supports, claim: Specifications test vectors and catalog metadata are the only open data tier.}
+  - {source: decision.iteration_v6_freeze, target: compute.v6_t0_cpu_only, type: supports, claim: The blind audit is limited to local CPU work.}
+  - {source: decision.iteration_v6_freeze, target: data.sealed_real_interventions, type: forbids, claim: Chain outcomes and replication periods remain sealed until all pre-outcome gates pass.}
+  - {source: decision.iteration_v6_freeze, target: compute.nmi_post_n1, type: forbids, claim: No NMI method candidate has cleared non-equivalence.}
+  - {source: decision.iteration_v6_freeze, target: compute.ncs_post_c1, type: forbids, claim: No NCS data or identification contract has passed.}

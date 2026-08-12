@@ -5,6 +5,14 @@ for a later project.
 
 ## Current theory state
 
+`algorithmic-fee-market-dynamics-v6` started from integrated `main@efe14ad44` on 2026-08-13. It is an
+information-first scout of exact execution/blob fee controllers coupled to unknown adaptive demand. The NCS
+candidate is a pre-change, no-refit prediction of the joint response to a new controller-capacity regime plus an
+independent replication. The NMI route requires a non-equivalent closed-loop identification theorem/method and
+non-blockchain validation. Only specifications, official test vectors, primary literature and
+catalog/schema/licence metadata are authorized; no chain outcome, paid data, remote worker or GPU may be used.
+Protocol: `papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md`.
+
 `endogenous-market-rule-feedback-v5` started from integrated `main@268050126` on 2026-08-13 and closed
 `V5_NO_SURVIVOR` the same day. It tested the real loop
 `ADNT_y -> annual liquidity-band/tick assignment_(y+1) -> ADNT_(y+1)` without opening a market outcome. NMI
@@ -96,6 +104,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Dual-track theory exploration v3 | `V3_NO_SURVIVOR`; closed at equation audit | 135-node graph, prior-art map and noisy-XOR missing-state control | No new closure/memory/operator method, experiment, data contract or compute unlock |
 | Phenomenon-first theory exploration v4 | `V4_NO_SURVIVOR`; closed prior-art/witness audit | Prior-art map and explicit no-witness outcomes | No scientific law, commensurability, dataset contract, method novelty or compute unlock |
 | Endogenous market-rule feedback v5 | `V5_NO_SURVIVOR`; generated identification preflight failed | Exact rule clock, ESMA/FCA metadata contract, immutable Exp148 artifact and power/type-I lesson | No market effect, method novelty, real-data unlock, worker or GPU authorization |
+| Algorithmic fee-market dynamics v6 | `SCOUT`; pre-outcome audit only | Exact-controller target, prospective no-refit response claim and information-first gates | No chain outcome, method novelty, data/compute unlock or venue claim |
 
 ## Code inheritance rules
 
