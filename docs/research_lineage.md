@@ -5,6 +5,12 @@ for a later project.
 
 ## Active iteration
 
+`theory-exploration-nmi-ncs-v2` starts from integrated `main@648fd96da`. It preserves every v1 retirement and
+freezes two bounded zero-cost tasks: NCS C0 prior-art/identification audit plus metadata-only intervention screening,
+and NMI N0 target-conditioned-identifiability primitive search. Its plan is
+`papers/proposal/plan_theory_exploration_nmi_ncs_v2.md`. Outcome values, sealed periods, bulk data, purchases and
+GPU work remain forbidden.
+
 `theory-exploration-nmi-ncs-v1` started from `main@fdf0c5f72` as a theorem/mechanism search layer and its verified
 result tree `ba437a7d8` was integrated into `main` on 2026-08-12. It does not replace or reopen any negative gate.
 Its frozen protocol is `papers/proposal/plan_theory_exploration_nmi_ncs_v1.md` and its canonical
