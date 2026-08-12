@@ -9,6 +9,9 @@ type: project
 Started on `theory-exploration-nmi-ncs-v1` from `main@fdf0c5f72` on 2026-08-12. The plan of record is
 `papers/proposal/plan_theory_exploration_nmi_ncs_v1.md`.
 
+The verified result tree `ba437a7d89bef3c78b7789f1f1fee2e864d88919` was fast-forwarded to remote `main` on
+2026-08-12. The historical Plan v5 archive remained exactly `436dad6e7f80999584e44c4a616a1f213b9c814d`.
+
 The shared mathematical object separates an audited fast mechanism `G`, learned event behavior `pi`, slower
 adaptation `U` and explicit mechanism/intervention `M`. NMI requires a method/theorem that transfers beyond markets;
 NCS requires a prospectively specified real response mechanism replicated across independent interventions.

@@ -5,9 +5,10 @@ for a later project.
 
 ## Active iteration
 
-`theory-exploration-nmi-ncs-v1` starts from `main@fdf0c5f72` as a theorem/mechanism search layer. It does not
-replace or reopen any negative gate. Its frozen protocol is `papers/proposal/plan_theory_exploration_nmi_ncs_v1.md`
-and its canonical source/candidate/counterexample graph is under `research/theory_exploration/`.
+`theory-exploration-nmi-ncs-v1` started from `main@fdf0c5f72` as a theorem/mechanism search layer and its verified
+result tree `ba437a7d8` was integrated into `main` on 2026-08-12. It does not replace or reopen any negative gate.
+Its frozen protocol is `papers/proposal/plan_theory_exploration_nmi_ncs_v1.md` and its canonical
+source/candidate/counterexample graph is under `research/theory_exploration/`.
 
 The 2026-08-12 iteration retires S1--S5 and the narrowed NMI mechanism-excitation lead. NMI therefore has
 `NO_SURVIVOR`. Exp144 confirms that the easiest rank gain is ordinary stacked observability and that fixed
