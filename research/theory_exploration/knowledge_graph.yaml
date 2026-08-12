@@ -1,0 +1,604 @@
+schema_version: ecophys-theory-graph/v1
+as_of: "2026-08-12"
+iteration: theory-exploration-nmi-ncs-v1
+decision: CONJECTURE_ONLY
+
+nodes:
+  - id: src.controlled_world_models
+    type: source
+    title: On the Identifiability of Controlled World Models
+    track: nmi
+    claim: Joint latent-state and controlled-transition identification needs spectral separation and conditional action excitation; weak excitation amplifies counterfactual error.
+    url: https://arxiv.org/abs/2607.22430
+    primary: true
+    evidence_level: preprint
+  - id: src.policy_interventions
+    type: source
+    title: Causal Modeling of Policy Interventions From Sequences of Treatments and Outcomes
+    track: shared
+    claim: Sequential policy counterfactuals factorize under consistency, positivity, no unmeasured confounding and full mediation through actions.
+    url: https://proceedings.mlr.press/v202/hizli23a.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.soft_intervention_crl
+    type: source
+    title: Causal Representation Learning from Multiple Distributions
+    track: nmi
+    claim: Multiple soft interventions identify latent causal structure up to a stated equivalence class and permit unseen combinatorial-intervention sampling under assumptions.
+    url: https://arxiv.org/abs/2307.06250
+    primary: true
+    evidence_level: preprint
+  - id: src.score_crl
+    type: source
+    title: Score-based Causal Representation Learning
+    track: nmi
+    claim: Pairs of sufficiently discrepant interventions can identify latent variables and causal graphs under stated transformation and regularity assumptions.
+    url: https://www.jmlr.org/papers/v26/24-0194.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.psr
+    type: source
+    title: Predictive State Representations
+    track: nmi
+    claim: Action-conditional predictions can form a sufficient predictive state without recovering a hidden ontological state.
+    url: https://proceedings.neurips.cc/paper_files/paper/2001/hash/1e4d36177d71bbb3558e43af9577d70e-Abstract.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.cross_mdp_bisimulation
+    type: source
+    title: Generalized Bisimulation Metrics for Cross-MDP Transfer
+    track: nmi
+    claim: Cross-MDP state aggregation and policy transfer can be controlled by a generalized bisimulation metric.
+    url: https://proceedings.neurips.cc/paper_files/paper/2025/hash/458567910b6d21f438f22aa20c036723-Abstract-Conference.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.effect_invariance
+    type: source
+    title: Effect-Invariant Mechanisms for Policy Generalization
+    track: nmi
+    claim: Effect-invariance is sufficient for zero-shot policy generalization under explicit environment assumptions.
+    url: https://www.jmlr.org/papers/v25/23-0802.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.causal_abstraction
+    type: source
+    title: Causal Abstraction with Arbitrary Mechanism Transformations
+    track: nmi
+    claim: Causal abstraction and intervention faithfulness formalize valid transformations between mechanisms at different levels.
+    url: https://www.jmlr.org/papers/v26/23-0058.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.invariant_block_mdp
+    type: source
+    title: Invariant Causal Prediction for Block MDPs
+    track: nmi
+    claim: Environment interventions can identify invariant state abstractions and yield model and generalization bounds under block-MDP assumptions.
+    url: https://arxiv.org/abs/2003.06016
+    primary: true
+    evidence_level: preprint
+  - id: src.howm
+    type: source
+    title: Toward Compositional Generalization in Object-Oriented World Modeling
+    track: nmi
+    claim: MDP homomorphism and equivariance support lifting and compositional generalization to unseen object combinations.
+    url: https://proceedings.mlr.press/v162/zhao22b.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.dsge_world_model
+    type: source
+    title: DSGE Models are Structured World Models
+    track: shared
+    claim: Structural factorization can re-compose under policy change whereas a reduced-form single-regime learner is unconstrained off path.
+    url: https://arxiv.org/abs/2607.03144
+    primary: true
+    evidence_level: preprint
+  - id: src.markov_response
+    type: source
+    title: Markovian Perturbation, Response and Fluctuation Dissipation Theorem
+    track: shared
+    claim: General Markov linear response depends on the perturbation family, with response formulas and equilibrium identities.
+    url: https://arxiv.org/abs/0710.4394
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.two_timescale_markov
+    type: source
+    title: Singularly Perturbed Markov Chains and Two-Time-Scale Reductions
+    track: shared
+    claim: Averaged generators and asymptotic expansions describe fast-slow Markov systems under singular perturbation.
+    url: https://epubs.siam.org/doi/10.1137/S003613990139756X
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.stochastic_pump
+    type: source
+    title: Unified Geometric Theory of Mesoscopic Stochastic Pumps
+    track: shared
+    claim: Cyclic parameter changes in memoryless stochastic kinetics can produce order- and path-dependent geometric responses.
+    url: https://arxiv.org/abs/0705.2057
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.interventional_lti
+    type: source
+    title: An Interventional Perspective on Identifiability in Gaussian LTI Systems
+    track: nmi
+    claim: Diverse multi-environment intervention signals can identify Gaussian LTI system parameters under diversity assumptions.
+    url: https://proceedings.mlr.press/v236/rajendran24a.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.sec_tick_pilot
+    type: source
+    title: SEC Tick Size Pilot Plan and Market Quality
+    track: ncs
+    claim: A controlled difference-in-differences study finds heterogeneous spread, depth, volatility and efficiency responses to a tick-size increase.
+    url: https://www.sec.gov/about/divisions-offices/division-economic-risk-analysis/staff-papers-analyses/dera_wp_tick_size-market_quality
+    primary: true
+    evidence_level: regulator_study
+  - id: src.tick_pilot_forward_reverse
+    type: source
+    title: When Does the Tick Size Help or Harm Market Quality
+    track: ncs
+    claim: Both imposition and conclusion of the US Tick Size Pilot have already been studied with depth-of-book data and heterogeneous spread strata.
+    url: https://doi.org/10.1016/j.finmar.2025.101024
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.economic_world_models
+    type: source
+    title: From Economic Agents to Agentic Economies
+    track: shared
+    claim: The economic-world-model blueprint motivates executable multiscale environments but does not itself establish an identifiability theorem or validated intervention mechanism.
+    url: https://arxiv.org/abs/2608.06020
+    primary: true
+    evidence_level: preprint
+  - id: src.nmi_scope
+    type: source
+    title: Nature Machine Intelligence aims and scope
+    track: nmi
+    claim: NMI covers broadly transferable AI, machine learning, reinforcement learning and multi-agent methods.
+    url: https://www.nature.com/natmachintell/submission-guidelines/about/aims
+    primary: true
+    evidence_level: official_venue
+  - id: src.ncs_scope
+    type: source
+    title: Nature Computational Science aims and scope
+    track: ncs
+    claim: NCS covers fundamental computational methods and computational social science with substantive scientific insight.
+    url: https://www.nature.com/natcomputsci/natcomputsci/natcomputsci/about/aims
+    primary: true
+    evidence_level: official_venue
+
+  - id: kr.structural_policy_transport
+    type: known_result
+    title: Structural policy transport under modularity and overlap
+    track: shared
+    claim: Exact structural transitions can be replayed under a new policy or mechanism only when structural invariance and the relevant causal support assumptions hold.
+  - id: kr.interventional_identifiability
+    type: known_result
+    title: Intervention diversity yields latent identifiability
+    track: nmi
+    claim: Multiple sufficiently diverse interventions can repair latent or transition non-identifiability through standard excitation, score or causal-representation conditions.
+  - id: kr.predictive_equivalence
+    type: known_result
+    title: Predictive state and bisimulation equivalence
+    track: nmi
+    claim: A minimal intervention-relevant observable state is generally a predictive equivalence class rather than a uniquely identified hidden state.
+  - id: kr.compositional_transport
+    type: known_result
+    title: Compositional intervention and world-model transport
+    track: nmi
+    claim: Intervention composition and structured world-model lifting are already supported by causal factorization, homomorphism and invariance results.
+  - id: kr.fast_slow_response
+    type: known_result
+    title: Fast-slow averaging and perturbation response
+    track: shared
+    claim: Duhamel expansions, Markov response and singular perturbation already decompose fast and slow responses with approximation remainders.
+  - id: kr.order_effect_without_adaptation
+    type: known_result
+    title: Order effects do not identify adaptation
+    track: shared
+    claim: Noncommuting frozen Markov operators or stochastic-pump geometric phases can create nonzero order effects without learned or adaptive behavior.
+  - id: kr.invgrad_g0_fail
+    type: known_result
+    title: Plan v4 invariant-gradient G0 failure
+    track: ncs
+    claim: The earlier invariant-gradient construction is a composition of mapped prior art and cannot be revived by renaming.
+  - id: kr.entropy_tur_g0_fail
+    type: known_result
+    title: Entropy and TUR observability failure
+    track: ncs
+    claim: Anonymous partial L2 cannot identify total entropy production and the proposed entropy/TUR route is closed.
+
+  - id: concept.exact_mechanism
+    type: concept
+    title: Exact or audited fast mechanism
+    track: both
+    claim: Exchange or environment transition rules are separated from learned behavior and carry explicit uncertainty when not exact.
+  - id: concept.adaptive_predictive_state
+    type: concept
+    title: Adaptive predictive state
+    track: both
+    claim: The target is the smallest state sufficient for future observable behavior under a declared intervention family, not beliefs or identity.
+  - id: concept.closed_intervention_loop
+    type: concept
+    title: Closed intervention loop and observable holonomy
+    track: ncs
+    claim: A forward-and-reverse mechanism sequence can test path dependence only after frozen dynamics, relaxation and confounding are controlled.
+
+  - id: cand.s1.action_lift
+    type: candidate
+    title: Action lift across singular mechanism changes
+    track: nmi
+    claim: Counterfactual action paths might remain transportable even when post-mechanism state-path measures are singular.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as an action-space alternative to state-density-ratio transport.
+        evidence: [concept.exact_mechanism]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared with sequential g-formula, structural re-composition and controlled-world-model support conditions.
+        evidence: [src.policy_interventions, src.dsge_world_model, src.controlled_world_models]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Exact action replay is structural g-computation; singular state support does not remove policy invariance, state coverage or confounding requirements.
+        evidence: [kr.structural_policy_transport, ce.action_lift_off_support]
+  - id: cand.s2.single_environment_adaptation
+    type: candidate
+    title: Single-environment adaptive-response impossibility
+    track: nmi
+    claim: Pre-intervention observations from one environment do not identify arbitrary post-intervention adaptation.
+    status: RETIRED_IDENTIFIABILITY
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as a possible lower-bound theorem.
+        evidence: [concept.adaptive_predictive_state]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Constructed observationally equivalent latent-update models and audited intervention-identifiability results.
+        evidence: [src.score_crl, src.interventional_lti]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_IDENTIFIABILITY
+        reason: The impossibility is a generic latent-state and intervention-support failure unless paired with a genuinely new constructive boundary.
+        evidence: [kr.interventional_identifiability, ce.single_environment_equivalence]
+  - id: cand.s3.fast_slow_decomposition
+    type: candidate
+    title: Fast-slow intervention response decomposition
+    track: both
+    claim: Immediate mechanical and delayed adaptive response might admit a controlled finite-timescale decomposition.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered from the multiscale Economic World Model architecture.
+        evidence: [src.economic_world_models]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Reduced the proposed split to Markov perturbation and singular averaging forms.
+        evidence: [src.markov_response, src.two_timescale_markov]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: The decomposition is not new without a stronger remainder, weaker assumptions or a nonstandard observable identity.
+        evidence: [kr.fast_slow_response, ce.standard_response_reduction]
+  - id: cand.s4.predictive_quotient
+    type: candidate
+    title: Mechanism-conditioned predictive quotient
+    track: nmi
+    claim: A minimal observable state might suffice for arbitrary mechanism sequences without identifying agent beliefs.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered to respect anonymous-L2 non-identifiability.
+        evidence: [concept.adaptive_predictive_state]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared with PSR, bisimulation, invariant block-MDP and causal-abstraction definitions.
+        evidence: [src.psr, src.cross_mdp_bisimulation, src.invariant_block_mdp]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: The quotient is a standard predictive or bisimulation equivalence unless a new intervention family changes the equivalence relation nontrivially.
+        evidence: [kr.predictive_equivalence, ce.predictive_state_relabeling]
+  - id: cand.s5.intervention_composition
+    type: candidate
+    title: Composition of unseen mechanism interventions
+    track: nmi
+    claim: Learned responses might compose across unseen combinations and sequences of exact rule changes.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as a transferable world-model theorem candidate.
+        evidence: [src.economic_world_models]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Audited soft-intervention composition, MDP homomorphism, effect invariance and structural re-composition.
+        evidence: [src.soft_intervention_crl, src.howm, src.effect_invariance, src.dsge_world_model]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Composition alone is occupied; novelty would require a new adaptive-sequence obstruction or bound not present in these frameworks.
+        evidence: [kr.compositional_transport, ce.composition_specialization]
+  - id: cand.nmi.mechanism_excitation
+    type: candidate
+    title: Known-mechanism excitation margin for adaptive predictive state
+    track: nmi
+    claim: A family of known mechanism maps may create enough independent excitation to identify an adaptive predictive state that is non-identifiable in any single environment.
+    status: ATTACKING
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Created after retiring the generic single-environment impossibility candidate.
+        evidence: [cand.s2.single_environment_adaptation, concept.exact_mechanism]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: FORMALIZING
+        reason: Proposed a stacked mechanism-sensitive information or observability margin and a two-model witness.
+        evidence: [po.mechanism_excitation_margin, ce.stacked_rank_is_generic]
+      - date: "2026-08-12"
+        from: FORMALIZING
+        to: ATTACKING
+        reason: Closest results already use conditional action excitation, intervention diversity and multi-environment system identification; non-equivalence remains unproved.
+        evidence: [src.controlled_world_models, src.score_crl, src.interventional_lti]
+  - id: cand.ncs.adaptation_holonomy
+    type: candidate
+    title: Excess closed-loop response as an adaptation-holonomy estimand
+    track: ncs
+    claim: After subtracting a prospectively validated frozen-mechanism baseline, a forward-and-reverse rule loop may expose persistent observable path dependence attributable to adaptation under explicit assumptions.
+    status: ATTACKING
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Created as an order-sensitive empirical mechanism rather than a generic fast-slow decomposition.
+        evidence: [concept.closed_intervention_loop]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: FORMALIZING
+        reason: Defined observed loop response minus frozen-behavior exact-mechanism response.
+        evidence: [po.closed_loop_identification]
+      - date: "2026-08-12"
+        from: FORMALIZING
+        to: ATTACKING
+        reason: Noncommuting frozen dynamics and stochastic pumps defeat the naive certificate, while the Tick Size Pilot forward/reverse setting is already empirically occupied.
+        evidence: [kr.order_effect_without_adaptation, src.tick_pilot_forward_reverse, ce.frozen_noncommuting_order]
+
+  - id: po.action_lift_non_equivalence
+    type: proof_obligation
+    title: Action-lift non-equivalence obligation
+    track: nmi
+    claim: Exhibit an estimand or bound unavailable from sequential g-computation plus structural replay under identical assumptions.
+  - id: po.constructive_impossibility_boundary
+    type: proof_obligation
+    title: Constructive boundary for adaptation identifiability
+    track: nmi
+    claim: Pair any impossibility with minimal extra observations and an estimator that becomes identifiable exactly at the boundary.
+  - id: po.fast_slow_new_remainder
+    type: proof_obligation
+    title: Nonstandard fast-slow remainder
+    track: both
+    claim: Prove a finite-timescale error term stronger than direct Markov response, Duhamel or averaging specializations.
+  - id: po.predictive_quotient_novelty
+    type: proof_obligation
+    title: Predictive quotient novelty obligation
+    track: nmi
+    claim: Show that the mechanism-sequence equivalence is not a PSR, bisimulation or causal-abstraction relabeling.
+  - id: po.adaptive_composition
+    type: proof_obligation
+    title: Adaptive intervention composition obligation
+    track: nmi
+    claim: Derive a sequence-dependent compositional result not implied by SCM modularity, effect invariance or MDP homomorphism.
+  - id: po.mechanism_excitation_margin
+    type: proof_obligation
+    title: Mechanism-specific excitation theorem
+    track: nmi
+    claim: Define a mechanism-sensitive margin, prove necessity or sufficiency beyond stacked observability, and give an error law with a non-equivalence witness.
+  - id: po.closed_loop_identification
+    type: proof_obligation
+    title: Closed-loop adaptation identification
+    track: ncs
+    claim: State assumptions under which excess loop response excludes frozen noncommutativity, incomplete relaxation, anticipation, spillover and concurrent shocks.
+
+  - id: ce.action_lift_off_support
+    type: counterexample
+    title: Action support does not imply policy-state support
+    track: nmi
+    claim: A new exact mechanism can drive observed states outside the policy-training support even when every primitive action remains supported.
+  - id: ce.single_environment_equivalence
+    type: counterexample
+    title: Two adaptive updates agree in one environment
+    track: nmi
+    claim: Distinct latent adaptation maps can induce the same pre-intervention observable law and arbitrary different post-intervention responses.
+  - id: ce.standard_response_reduction
+    type: counterexample
+    title: Proposed split collapses to standard response expansion
+    track: shared
+    claim: With regular generators, the mechanical and adaptive terms are ordinary perturbation and averaging terms plus a familiar remainder.
+  - id: ce.predictive_state_relabeling
+    type: counterexample
+    title: Hidden-state relabeling preserves all intervention predictions
+    track: nmi
+    claim: Latent states related by predictive equivalence cannot be uniquely identified from the declared observables.
+  - id: ce.composition_specialization
+    type: counterexample
+    title: Intervention composition is structural substitution
+    track: nmi
+    claim: Under modularity, composing target mechanisms is already a structural substitution or homomorphic lifting operation.
+  - id: ce.stacked_rank_is_generic
+    type: counterexample
+    title: Stacked mechanism rank may be ordinary observability
+    track: nmi
+    claim: A toy multi-mechanism rank gain can be exactly a stacked observability or Fisher-information condition and therefore supplies no novelty witness.
+  - id: ce.frozen_noncommuting_order
+    type: counterexample
+    title: Frozen noncommuting operators create order effects
+    track: ncs
+    claim: Two fixed transition operators with no learned adaptation can yield different terminal observables when their order is swapped.
+  - id: ce.reversal_confounding
+    type: counterexample
+    title: Long-horizon rule reversal is not a reset
+    track: ncs
+    claim: Macro regime, composition, anticipation and survivor changes between rule introduction and repeal can mimic a persistent loop residual.
+
+  - id: bench.scm_policy_rollout
+    type: benchmark
+    title: Sequential g-formula and structural rollout oracle
+    track: shared
+    claim: Candidate transport methods must beat or weaken assumptions relative to exact structural replay and policy-intervention baselines.
+  - id: bench.controlled_identifiability
+    type: benchmark
+    title: Controlled-world-model and intervention-diversity oracle
+    track: nmi
+    claim: Candidate identification gains must exceed conditional excitation, CRL and standard multi-environment system-identification predictions.
+  - id: bench.predictive_abstractions
+    type: benchmark
+    title: PSR, bisimulation and causal-abstraction oracle
+    track: nmi
+    claim: Any sufficient-state construction must differ quantitatively from standard predictive equivalence baselines.
+  - id: bench.fast_slow_oracle
+    type: benchmark
+    title: Markov response and averaging oracle
+    track: shared
+    claim: Any response identity must be compared equation by equation with perturbation and singular-averaging expansions.
+  - id: bench.ncs_forward_reverse
+    type: benchmark
+    title: Frozen digital twin plus forward/reverse event-study controls
+    track: ncs
+    claim: The NCS mechanism must beat frozen behavior, noncommuting Markov, point-process and matched-control explanations without post-period fitting.
+
+  - id: data.generated_linear_fixture
+    type: dataset
+    title: Generated linear identifiability fixtures
+    track: nmi
+    claim: Analytic low-dimensional systems are used only to falsify reductions and verify rank calculations, never to establish novelty.
+  - id: data.nonmarket_mechanism_families
+    type: dataset
+    title: Two structurally distinct non-market mechanism families
+    track: nmi
+    claim: A future NMI method must transfer beyond exchange simulation before a general AI claim is considered.
+  - id: data.tick_pilot_development
+    type: dataset
+    title: Tick-pilot metadata and development sample
+    track: ncs
+    claim: Public rule timing and sample data may audit feasibility but cannot serve as sealed replication after this exploration.
+  - id: data.sealed_real_interventions
+    type: dataset
+    title: Sealed independent real intervention replications
+    track: ncs
+    claim: At least two prospectively frozen intervention environments with event coverage and controls are required for an NCS mechanism claim.
+
+  - id: compute.cpu_theory_gate
+    type: compute_gate
+    title: T0-T2 CPU-only theory gate
+    track: shared
+    claim: Literature, symbolic derivation and tiny generated counterexamples use no GPU and no sealed or paid data.
+  - id: compute.nmi_post_n1
+    type: compute_gate
+    title: NMI post-theory compute gate
+    track: nmi
+    claim: Non-H20 GPU scaling remains locked until a human-auditable theorem candidate survives nearest-method attacks.
+  - id: compute.ncs_post_c1
+    type: compute_gate
+    title: NCS post-data-contract compute gate
+    track: ncs
+    claim: Digital-twin fitting remains locked until intervention metadata, controls and sealed replication satisfy C1.
+
+  - id: venue.nmi_transferable_method
+    type: venue_claim
+    title: NMI transferable mechanism-conditioned world model
+    track: nmi
+    claim: A broadly useful learning method with novel theory and transfer across non-market and real intervention environments.
+  - id: venue.ncs_real_mechanism
+    type: venue_claim
+    title: NCS replicated computational market mechanism
+    track: ncs
+    claim: A prospectively validated and independently replicated response mechanism, with the simulator serving as support rather than the discovery itself.
+  - id: decision.iteration_v1
+    type: decision
+    title: Theory exploration v1 outcome
+    track: both
+    claim: CONJECTURE_ONLY; five starting neighborhoods are retired, two narrower leads remain under attack, no candidate is ready for human novelty audit, and data/GPU expansion is forbidden.
+
+edges:
+  - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
+  - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
+  - {source: src.dsge_world_model, target: kr.structural_policy_transport, type: proves, claim: Structural re-composition under policy change is already formalized.}
+  - {source: src.soft_intervention_crl, target: kr.interventional_identifiability, type: proves, claim: Diverse soft interventions identify a causal representation up to equivalence.}
+  - {source: src.score_crl, target: kr.interventional_identifiability, type: proves, claim: Discrepant intervention pairs identify latent nodes and graphs under assumptions.}
+  - {source: src.interventional_lti, target: kr.interventional_identifiability, type: proves, claim: Multi-environment intervention diversity identifies Gaussian LTI systems.}
+  - {source: src.psr, target: kr.predictive_equivalence, type: proves, claim: Action-conditional predictions form predictive states.}
+  - {source: src.cross_mdp_bisimulation, target: kr.predictive_equivalence, type: proves, claim: Cross-MDP transfer can be bounded through bisimulation equivalence.}
+  - {source: src.causal_abstraction, target: kr.predictive_equivalence, type: proves, claim: Mechanism transformations admit formal causal abstractions.}
+  - {source: src.invariant_block_mdp, target: kr.predictive_equivalence, type: proves, claim: Environment invariance identifies causal state abstractions under assumptions.}
+  - {source: src.howm, target: kr.compositional_transport, type: proves, claim: Homomorphism and equivariance provide compositional lifting.}
+  - {source: src.effect_invariance, target: kr.compositional_transport, type: proves, claim: Effect invariance yields zero-shot policy generalization.}
+  - {source: src.soft_intervention_crl, target: kr.compositional_transport, type: proves, claim: Identified mechanisms can be combined into unseen combinatorial interventions.}
+  - {source: src.markov_response, target: kr.fast_slow_response, type: proves, claim: General Markov perturbations have explicit response functions.}
+  - {source: src.two_timescale_markov, target: kr.fast_slow_response, type: proves, claim: Fast-slow Markov systems have averaged reductions and asymptotic expansions.}
+  - {source: src.stochastic_pump, target: kr.order_effect_without_adaptation, type: proves, claim: Geometric pump effects generate path-dependent response in frozen stochastic kinetics.}
+  - {source: src.sec_tick_pilot, target: bench.ncs_forward_reverse, type: supports, claim: Tick changes have established heterogeneous causal event-study baselines.}
+  - {source: src.tick_pilot_forward_reverse, target: bench.ncs_forward_reverse, type: supports, claim: The forward and reverse Tick Size Pilot windows are already directly analyzed.}
+  - {source: src.economic_world_models, target: concept.exact_mechanism, type: supports, claim: The blueprint motivates executable separated mechanisms but is not a theorem.}
+  - {source: src.nmi_scope, target: venue.nmi_transferable_method, type: supports, claim: The route is aligned only if the contribution is broadly transferable AI methodology.}
+  - {source: src.ncs_scope, target: venue.ncs_real_mechanism, type: supports, claim: The route is aligned only if the computational method yields substantive scientific insight.}
+
+  - {source: kr.structural_policy_transport, target: cand.s1.action_lift, type: covers, claim: The action-lift statement is structural policy transport plus support assumptions.}
+  - {source: kr.interventional_identifiability, target: cand.s2.single_environment_adaptation, type: covers, claim: Single-environment failure and intervention-diversity repair are known identifiability phenomena.}
+  - {source: kr.fast_slow_response, target: cand.s3.fast_slow_decomposition, type: covers, claim: The proposed decomposition is a standard perturbation or averaging specialization.}
+  - {source: kr.predictive_equivalence, target: cand.s4.predictive_quotient, type: covers, claim: The proposed quotient is occupied by predictive-state and bisimulation theory.}
+  - {source: kr.compositional_transport, target: cand.s5.intervention_composition, type: covers, claim: Generic unseen composition is occupied by structural and homomorphic results.}
+  - {source: kr.invgrad_g0_fail, target: venue.ncs_real_mechanism, type: forbids, claim: The rejected invariant-gradient composition cannot support this venue claim.}
+  - {source: kr.entropy_tur_g0_fail, target: venue.ncs_real_mechanism, type: forbids, claim: The closed entropy and TUR line cannot support this venue claim.}
+
+  - {source: concept.exact_mechanism, target: cand.nmi.mechanism_excitation, type: supports, claim: Known mechanism maps define the proposed environment-specific excitation.}
+  - {source: concept.adaptive_predictive_state, target: cand.nmi.mechanism_excitation, type: supports, claim: The identified object is predictive sufficiency rather than private beliefs.}
+  - {source: concept.closed_intervention_loop, target: cand.ncs.adaptation_holonomy, type: supports, claim: A loop provides the order-sensitive observable target.}
+
+  - {source: cand.s1.action_lift, target: po.action_lift_non_equivalence, type: requires, claim: Retirement could be reversed only by a formal non-equivalence result.}
+  - {source: cand.s1.action_lift, target: ce.action_lift_off_support, type: falsified_by, claim: Primitive action coverage does not guarantee policy-state coverage.}
+  - {source: cand.s1.action_lift, target: bench.scm_policy_rollout, type: distinguished_by, claim: Structural rollout is the nearest-composition benchmark.}
+  - {source: cand.s1.action_lift, target: kr.structural_policy_transport, type: retired_by, claim: Existing structural policy transport covers the candidate.}
+  - {source: cand.s2.single_environment_adaptation, target: po.constructive_impossibility_boundary, type: requires, claim: A constructive minimal-assumption boundary is missing.}
+  - {source: cand.s2.single_environment_adaptation, target: ce.single_environment_equivalence, type: falsified_by, claim: Generic observational equivalence makes the standalone impossibility non-distinctive.}
+  - {source: cand.s2.single_environment_adaptation, target: bench.controlled_identifiability, type: distinguished_by, claim: Intervention-diversity identification is the nearest positive comparator.}
+  - {source: cand.s2.single_environment_adaptation, target: kr.interventional_identifiability, type: retired_by, claim: Existing identifiability theory already supplies the generic boundary.}
+  - {source: cand.s3.fast_slow_decomposition, target: po.fast_slow_new_remainder, type: requires, claim: A nonstandard quantitative remainder is absent.}
+  - {source: cand.s3.fast_slow_decomposition, target: ce.standard_response_reduction, type: falsified_by, claim: The symbolic split reduces to standard response and averaging.}
+  - {source: cand.s3.fast_slow_decomposition, target: bench.fast_slow_oracle, type: distinguished_by, claim: A direct Markov-response and averaging oracle is required.}
+  - {source: cand.s3.fast_slow_decomposition, target: kr.fast_slow_response, type: retired_by, claim: Existing perturbation theory covers the generic claim.}
+  - {source: cand.s4.predictive_quotient, target: po.predictive_quotient_novelty, type: requires, claim: A non-PSR equivalence relation is missing.}
+  - {source: cand.s4.predictive_quotient, target: ce.predictive_state_relabeling, type: falsified_by, claim: Predictively equivalent relabelings remain observationally indistinguishable.}
+  - {source: cand.s4.predictive_quotient, target: bench.predictive_abstractions, type: distinguished_by, claim: PSR, bisimulation and abstraction are direct comparators.}
+  - {source: cand.s4.predictive_quotient, target: kr.predictive_equivalence, type: retired_by, claim: Existing predictive equivalence theory covers the claim.}
+  - {source: cand.s5.intervention_composition, target: po.adaptive_composition, type: requires, claim: A genuinely adaptive sequence theorem is missing.}
+  - {source: cand.s5.intervention_composition, target: ce.composition_specialization, type: falsified_by, claim: Generic composition is structural substitution or homomorphic lifting.}
+  - {source: cand.s5.intervention_composition, target: bench.scm_policy_rollout, type: distinguished_by, claim: Structural composition is a required baseline.}
+  - {source: cand.s5.intervention_composition, target: kr.compositional_transport, type: retired_by, claim: Existing composition results cover the generic candidate.}
+
+  - {source: cand.nmi.mechanism_excitation, target: po.mechanism_excitation_margin, type: requires, claim: The margin needs a theorem and non-equivalence witness.}
+  - {source: cand.nmi.mechanism_excitation, target: ce.stacked_rank_is_generic, type: falsified_by, claim: Ordinary stacked observability would retire the candidate.}
+  - {source: cand.nmi.mechanism_excitation, target: bench.controlled_identifiability, type: distinguished_by, claim: Controlled-world-model, CRL and system-identification oracles are mandatory.}
+  - {source: cand.nmi.mechanism_excitation, target: venue.nmi_transferable_method, type: branches_to, claim: It can route to NMI only after a non-market theorem and transfer evidence.}
+  - {source: cand.nmi.mechanism_excitation, target: data.generated_linear_fixture, type: requires, claim: Tiny fixtures are needed for counterexamples and rank checks.}
+  - {source: cand.nmi.mechanism_excitation, target: compute.cpu_theory_gate, type: requires, claim: Current attacks are CPU only.}
+  - {source: cand.ncs.adaptation_holonomy, target: po.closed_loop_identification, type: requires, claim: A causal identification statement is mandatory.}
+  - {source: cand.ncs.adaptation_holonomy, target: ce.frozen_noncommuting_order, type: falsified_by, claim: Naive order effects occur without adaptation.}
+  - {source: cand.ncs.adaptation_holonomy, target: ce.reversal_confounding, type: falsified_by, claim: A real reversal does not reset the market or macro state.}
+  - {source: cand.ncs.adaptation_holonomy, target: bench.ncs_forward_reverse, type: distinguished_by, claim: Frozen noncommuting and matched forward/reverse controls are mandatory.}
+  - {source: cand.ncs.adaptation_holonomy, target: venue.ncs_real_mechanism, type: branches_to, claim: It can route to NCS only after blind replicated real intervention evidence.}
+  - {source: cand.ncs.adaptation_holonomy, target: data.tick_pilot_development, type: requires, claim: Only metadata and development feasibility may be inspected before a new seal.}
+  - {source: cand.ncs.adaptation_holonomy, target: compute.cpu_theory_gate, type: requires, claim: Current counterexample work is CPU only.}
+
+  - {source: venue.nmi_transferable_method, target: data.nonmarket_mechanism_families, type: requires, claim: At least two structurally distinct non-market systems are required.}
+  - {source: venue.nmi_transferable_method, target: compute.nmi_post_n1, type: requires, claim: GPU scaling opens only after formal novelty review.}
+  - {source: venue.ncs_real_mechanism, target: data.sealed_real_interventions, type: requires, claim: Independent sealed real replications are required.}
+  - {source: venue.ncs_real_mechanism, target: compute.ncs_post_c1, type: requires, claim: Compute opens only after the real-data contract passes.}
+  - {source: decision.iteration_v1, target: compute.nmi_post_n1, type: forbids, claim: No NMI theorem candidate is ready, so post-N1 scaling remains locked.}
+  - {source: decision.iteration_v1, target: compute.ncs_post_c1, type: forbids, claim: No NCS data contract exists, so post-C1 scaling remains locked.}
