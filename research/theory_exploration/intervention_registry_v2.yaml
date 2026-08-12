@@ -1,0 +1,411 @@
+schema_version: ecophys-intervention-registry/v2
+as_of: "2026-08-12"
+contains_market_data: false
+sealed_periods_opened: false
+data_purchased: false
+workers_contacted: false
+protocol_deviations:
+  - id: public-summary-snippet-exposure
+    case_ids: [us_tick_size_pilot, nyse_american_speed_bump]
+    description: Public regulator, venue and article-search pages exposed published numerical summaries during screening; no raw records were opened, but both cases are permanently development-only rather than sealed.
+
+cases:
+  - id: us_tick_size_pilot
+    rule: US Tick Size Pilot Plan
+    jurisdiction: United States
+    venue: National Market System equities
+    mechanism_family: tick-size and trade-at restrictions
+    dates:
+      announcement: {status: exact, date: "2015-05-06", source_ids: [sec_expiration]}
+      implementation: {status: exact, date: "2016-10-03", source_ids: [sec_expiration]}
+      end_or_reversal: {status: exact, date: "2018-09-28", source_ids: [sec_expiration]}
+      transition: {status: exact, date: "2018-10-01", source_ids: [sec_expiration]}
+    design:
+      description: Randomized security groups with one control and three test groups, followed by termination of quoting and trading requirements.
+      treatment: Published pilot-group assignments by security and rule bucket.
+      control: Contemporaneous official control group, with eligibility and migration checks required.
+      published_analysis: true
+      independence: Suitable only for protocol development because regulator and academic forward/reverse analyses already exist.
+    required_data:
+      event_fields: [symbol, timestamp, quote, trade, venue, pilot_group, order_event_if_available]
+      depth: Full depth preferred; consolidated quotes and trades insufficient for queue claims.
+      clock_precision: Microsecond or better with feed-sequence ordering.
+      identifiers: Security master, group assignment, corporate actions and eligibility history.
+    access:
+      public: Rule documents, group lists and pilot reporting files are public.
+      vendor: Full-depth reconstruction requires licensed exchange or normalized vendor feeds.
+      licence: Public documents are accessible; redistribution and research rights for depth data require contract review.
+      records_opened: false
+    risks: [anticipation, group migration, heterogeneous rule buckets, delistings and corporate actions, already published forward and reverse analyses]
+    role: development_only
+    rationale: Strongest documented control design, but neither the imposition nor conclusion can be treated as untouched confirmation.
+    sources:
+      - id: sec_expiration
+        url: https://www.sec.gov/newsroom/speeches-statements/tm-dera-statement-expiration-tick-size-pilot
+        accessed: "2026-08-12"
+        primary: true
+        supports: Approval, implementation, early termination, baseline return and reporting-transition dates.
+
+  - id: nyse_american_speed_bump
+    rule: NYSE American 350-microsecond Delay Mechanism
+    jurisdiction: United States
+    venue: NYSE American
+    mechanism_family: intentional access delay and order-priority design
+    dates:
+      announcement: {status: exact, date: "2017-02-09", source_ids: [sec_approval]}
+      implementation: {status: exact, date: "2017-07-24", source_ids: [nyse_launch]}
+      end_or_reversal: {status: exact, date: "2019-11-18", source_ids: [sec_removal]}
+      transition: {status: not_single_date, date: null, note: Delay removal, order-type reintroduction and later floor-DMM restoration were separate changes., source_ids: [sec_removal]}
+    design:
+      description: Venue-specific launch and removal with contemporaneous securities trading on other US venues.
+      treatment: NYSE American message handling and securities with exposure to the venue.
+      control: Other venues and matched securities, subject to routing spillovers and changing venue share.
+      published_analysis: true
+      independence: The launch is already studied and the venue published its own screening summaries; removal is bundled with other design changes.
+    required_data:
+      event_fields: [venue, symbol, timestamp, quote, trade, order_event, routing_status, message_sequence]
+      depth: Venue-level full depth plus consolidated cross-venue state.
+      clock_precision: Nanosecond or native sequence precision because the intervention is sub-millisecond.
+      identifiers: Listing venue, routing destination, order type, hidden or displayed status and corporate actions.
+    access:
+      public: Rule filings and operational notices are public.
+      vendor: TAQ supports coarse controls; causal message response requires proprietary depth and order-event data.
+      licence: Exchange and vendor redistribution restrictions require contract review.
+      records_opened: false
+    risks: [routing spillovers, low treated venue share, proprietary-feed delay, concurrent order-type changes, later floor-DMM restoration, published launch analysis]
+    role: development_only
+    rationale: Useful to debug a multivenue response protocol, but it is neither isolated on reversal nor untouched.
+    sources:
+      - id: sec_approval
+        url: https://www.sec.gov/rules/sro/nysemkt/2017/34-80700.pdf
+        accessed: "2026-08-12"
+        primary: true
+        supports: Approval and rule mechanics of the delay.
+      - id: nyse_launch
+        url: https://www.nyse.com/publicdocs/nyse/markets/nyse-american/Pillar_Update_NYSE_American_March_2017.pdf
+        accessed: "2026-08-12"
+        primary: true
+        supports: Operational relaunch and delayed-message design.
+      - id: sec_removal
+        url: https://www.sec.gov/rules-regulations/self-regulatory-organization-rulemaking/sr-nyseamer-2019-48
+        accessed: "2026-08-12"
+        primary: true
+        supports: Removal and concurrent reintroduction of order types.
+
+  - id: regulation_sho_pilot
+    rule: Regulation SHO price-test pilot
+    jurisdiction: United States
+    venue: National Market System equities
+    mechanism_family: short-sale price-test suspension
+    dates:
+      announcement: {status: exact, date: "2005-04-26", source_ids: [sec_sho_press]}
+      implementation: {status: exact, date: "2005-05-02", source_ids: [sec_sho_pilot]}
+      end_or_reversal: {status: exact, date: "2007-08-06", source_ids: [sec_sho_extension]}
+      transition: {status: not_applicable, date: null, note: Later nationwide rule changes prevent interpreting pilot end as a clean return to the prior mechanism., source_ids: [sec_sho_extension]}
+    design:
+      description: Stratified pilot securities with public assignments and transactional short-sale reporting.
+      treatment: Securities exempted from price tests during the pilot.
+      control: Non-pilot securities under contemporaneous price tests.
+      published_analysis: true
+      independence: Extensively studied and followed by broader regulatory change.
+    required_data:
+      event_fields: [symbol, timestamp, trade, quote, short_sale_flag, pilot_group]
+      depth: Trades and quotes for market-quality paths; order-level short flags for mechanism claims.
+      clock_precision: Millisecond or better with consistent historical feed semantics.
+      identifiers: Pilot assignments, listing history, price-test status and corporate actions.
+    access:
+      public: Pilot assignments and monthly short-sale files were made public.
+      vendor: Historical TAQ or equivalent is required for intraday controls.
+      licence: Public pilot files and commercial market data have separate terms.
+      records_opened: false
+    risks: [extensive prior analysis, long pilot duration, market-regime drift, later nationwide rule changes, securities composition changes]
+    role: reject
+    rationale: It is not a clean closed loop and cannot provide untouched confirmation.
+    sources:
+      - id: sec_sho_press
+        url: https://www.sec.gov/news/press/2005-67.htm
+        accessed: "2026-08-12"
+        primary: true
+        supports: Research design announcement and public-data intent.
+      - id: sec_sho_pilot
+        url: https://www.sec.gov/spotlight/shopilot.htm
+        accessed: "2026-08-12"
+        primary: true
+        supports: Original implementation date and group mechanics.
+      - id: sec_sho_extension
+        url: https://www.sec.gov/news/press/2006/2006-60.htm
+        accessed: "2026-08-12"
+        primary: true
+        supports: Extension and terminal date.
+
+  - id: us_emergency_short_sale_ban
+    rule: SEC emergency prohibition on short sales of financial stocks
+    jurisdiction: United States
+    venue: US listed financial securities
+    mechanism_family: temporary short-sale prohibition
+    dates:
+      announcement: {status: exact, date: "2008-09-19", source_ids: [sec_ban_start]}
+      implementation: {status: exact, date: "2008-09-19", source_ids: [sec_ban_start]}
+      end_or_reversal: {status: exact, date: "2008-10-08", source_ids: [sec_ban_end]}
+      transition: {status: exact, date: "2008-10-08", source_ids: [sec_ban_end]}
+    design:
+      description: Emergency treated list with nominally unaffected securities during an acute systemic crisis.
+      treatment: Named financial securities subject to the emergency prohibition.
+      control: Unlisted securities are invalid as simple controls because crisis exposure and selection differ.
+      published_analysis: true
+      independence: The rule coincided with multiple emergency measures and the financial crisis.
+    required_data:
+      event_fields: [symbol, timestamp, quote, trade, short_sale_flag, emergency_list_version]
+      depth: At least national best bid and offer plus trades; lending data needed for short-side mechanism attribution.
+      clock_precision: Millisecond historical precision with list-version timestamps.
+      identifiers: Emergency-list changes, sector exposure, bailout exposure and corporate events.
+    access:
+      public: Orders and list history are public; outcome reconstruction is not.
+      vendor: Historical market and securities-lending data require vendors.
+      licence: Market and lending data require paid licences.
+      records_opened: false
+    risks: [global financial crisis, endogenous treated list, simultaneous emergency rules, bailout news, international spillovers]
+    role: reject
+    rationale: Concurrent systemic shocks defeat the identification burden for a relaxation mechanism.
+    sources:
+      - id: sec_ban_start
+        url: https://www.sec.gov/news/press/2008/2008-211.htm
+        accessed: "2026-08-12"
+        primary: true
+        supports: Immediate start and treated-list scope.
+      - id: sec_ban_end
+        url: https://www.sec.gov/news/press/2008/2008-238.htm
+        accessed: "2026-08-12"
+        primary: true
+        supports: Terminal date tied to emergency legislation.
+
+  - id: uk_2008_short_sale_ban
+    rule: FSA Short Selling No 2 Instrument 2008
+    jurisdiction: United Kingdom
+    venue: UK listed financial-sector securities
+    mechanism_family: temporary short-sale prohibition and disclosure
+    dates:
+      announcement: {status: exact, date: "2008-09-18", source_ids: [fsa_instrument]}
+      implementation: {status: exact, date: "2008-09-19", source_ids: [fsa_instrument]}
+      end_or_reversal: {status: exact, date: "2009-01-16", source_ids: [fsa_instrument]}
+      transition: {status: exact, date: "2009-01-16", source_ids: [fsa_instrument]}
+    design:
+      description: Temporary financial-sector restriction during the global crisis.
+      treatment: Listed financial issuers covered by the instrument.
+      control: Other issuers or jurisdictions remain exposed to nonparallel crisis shocks.
+      published_analysis: true
+      independence: Coordinated crisis policy and international spillovers dominate the nominal control structure.
+    required_data:
+      event_fields: [instrument, timestamp, quote, trade, short_sale_flag, covered_list]
+      depth: Intraday quotes and trades plus securities-lending measures.
+      clock_precision: Millisecond historical precision.
+      identifiers: Covered-list revisions, sector, listing venue and corporate actions.
+    access:
+      public: Rule instrument and covered lists are public.
+      vendor: Intraday and lending records require licensed sources.
+      licence: Commercial UK market data terms require review.
+      records_opened: false
+    risks: [global crisis, coordinated US action, endogenous coverage, bank rescues, disclosure-rule overlap]
+    role: reject
+    rationale: No defensible untreated counterfactual or isolated return-to-baseline window exists.
+    sources:
+      - id: fsa_instrument
+        url: https://www.handbook.fca.org.uk/instrument/2008/2008_50.pdf
+        accessed: "2026-08-12"
+        primary: true
+        supports: Rule, commencement and sunset metadata.
+
+  - id: australia_2008_short_sale_ban
+    rule: ASIC covered short-selling prohibition
+    jurisdiction: Australia
+    venue: Australian licensed markets
+    mechanism_family: temporary covered short-sale prohibition
+    dates:
+      announcement: {status: exact, date: "2008-09-21", source_ids: [asic_start]}
+      implementation: {status: exact, date: "2008-09-22", source_ids: [asic_start]}
+      end_or_reversal: {status: exact, date: "2009-05-25", source_ids: [asic_financial_end]}
+      transition: {status: not_single_date, date: null, note: Non-financial and financial securities reopened on different dates., source_ids: [asic_financial_end]}
+    design:
+      description: Broad initial prohibition followed by phased relaxation for non-financial and financial securities.
+      treatment: Securities covered by each phase of the ASIC restriction.
+      control: Cross-sector timing is endogenous to perceived financial risk.
+      published_analysis: true
+      independence: The phased design remains embedded in crisis policy and selection.
+    required_data:
+      event_fields: [instrument, timestamp, quote, trade, short_sale_flag, phase_status]
+      depth: Intraday market data and securities-lending records.
+      clock_precision: Millisecond historical precision.
+      identifiers: Sector, restriction phase, listing history and corporate actions.
+    access:
+      public: Regulatory orders and phase dates are public.
+      vendor: Market and lending records require licensed vendors.
+      licence: ASX and vendor licences require review.
+      records_opened: false
+    risks: [global crisis, phased endogenous release, cross-sector noncomparability, international spillovers]
+    role: reject
+    rationale: Phased release does not supply an exogenous closed rule loop.
+    sources:
+      - id: asic_start
+        url: https://asic.gov.au/about-asic/news-centre/find-a-media-release/2008-releases/08-205-covered-short-selling-not-permitted/
+        accessed: "2026-08-12"
+        primary: true
+        supports: Announcement and start of the covered short-selling prohibition.
+      - id: asic_financial_end
+        url: https://download.asic.gov.au/media/1326200/co09-39.pdf
+        accessed: "2026-08-12"
+        primary: true
+        supports: Effective lifting date for covered short sales of financial securities.
+
+  - id: eu_covid_short_sale_bans
+    rule: Coordinated national emergency short-selling restrictions during COVID-19
+    jurisdiction: Austria, Belgium, France, Greece and Spain
+    venue: National EU trading venues
+    mechanism_family: temporary short-sale prohibitions
+    dates:
+      announcement: {status: not_single_date, date: null, note: National authorities announced restrictions on jurisdiction-specific dates in March 2020., source_ids: [esma_renewal]}
+      implementation: {status: not_single_date, date: null, note: Initial starts and April renewal-effective dates differ across the five jurisdictions., source_ids: [esma_renewal]}
+      end_or_reversal: {status: exact, date: "2020-05-18", source_ids: [esma_renewal]}
+      transition: {status: not_single_date, date: null, note: National exemptions and later policy transitions are jurisdiction specific., source_ids: [esma_renewal]}
+    design:
+      description: Heterogeneous national restrictions with nominal cross-country comparisons during the first COVID-19 wave.
+      treatment: Shares under national emergency restrictions.
+      control: Countries without bans are exposed differently to pandemic, lockdown and fiscal shocks.
+      published_analysis: true
+      independence: Pandemic timing and national policy bundles invalidate a simple closed-loop interpretation.
+    required_data:
+      event_fields: [instrument, venue, timestamp, quote, trade, short_sale_flag, national_rule_status]
+      depth: Harmonized multivenue intraday data and securities lending.
+      clock_precision: Millisecond precision with timezone-normalized rule activation.
+      identifiers: Home regulator, venue, exemption, index membership and corporate actions.
+    access:
+      public: ESMA and national rule metadata are public.
+      vendor: Harmonized pan-European depth and lending data are commercial.
+      licence: Cross-vendor and cross-venue redistribution terms are complex.
+      records_opened: false
+    risks: [COVID-19 shock, lockdown heterogeneity, coordinated policies, cross-border spillovers, jurisdiction-specific exemptions]
+    role: reject
+    rationale: The nominal stagger is dominated by heterogeneous pandemic exposure and concurrent policy.
+    sources:
+      - id: esma_renewal
+        url: https://www.esma.europa.eu/ro/press-news/esma-news/esma-issues-positive-opinions-short-selling-bans-austrian-fma-belgian-fsma
+        accessed: "2026-08-12"
+        primary: true
+        supports: Jurisdictions, renewal-effective dates and common terminal date.
+
+  - id: sec_transaction_fee_pilot
+    rule: Regulation NMS Rule 610T Transaction Fee Pilot
+    jurisdiction: United States
+    venue: National securities exchanges
+    mechanism_family: fee caps and rebate prohibition
+    dates:
+      announcement: {status: exact, date: "2018-12-19", source_ids: [sec_fee_pilot]}
+      implementation: {status: not_implemented, date: null, note: The rule became legally effective, but treatment periods were stayed and no pilot treatment began., source_ids: [sec_fee_pilot, court_vacatur]}
+      end_or_reversal: {status: exact, date: "2020-06-16", source_ids: [court_vacatur]}
+      transition: {status: not_applicable, date: null, note: Vacatur ended the planned design before treated observations existed., source_ids: [court_vacatur]}
+    design:
+      description: Planned randomized fee and no-rebate groups across exchanges.
+      treatment: No realized treated period.
+      control: No realized control period under the planned pilot.
+      published_analysis: false
+      independence: A design without implementation cannot support a response study.
+    required_data:
+      event_fields: [planned_group, fee_schedule, routing, quote, trade]
+      depth: Not applicable because treatment never started.
+      clock_precision: Not applicable because treatment never started.
+      identifiers: Planned group assignments and court-stay status.
+    access:
+      public: Rule and court documents are public.
+      vendor: No vendor record can create an unimplemented treatment.
+      licence: Not applicable to screening decision.
+      records_opened: false
+    risks: [no treatment, litigation stay, vacated rule]
+    role: reject
+    rationale: The natural experiment never occurred.
+    sources:
+      - id: sec_fee_pilot
+        url: https://www.sec.gov/rules-regulations/2018/12/transaction-fee-pilot-nms-stocks
+        accessed: "2026-08-12"
+        primary: true
+        supports: Adopted design and effective-rule metadata.
+      - id: court_vacatur
+        url: https://media.cadc.uscourts.gov/opinions/docs/2020/06/19-1042-1847356.pdf
+        accessed: "2026-08-12"
+        primary: true
+        supports: Vacatur before implementation.
+
+  - id: canada_fee_rebate_pilot
+    rule: CSA Trading Fee Rebate Pilot Study
+    jurisdiction: Canada
+    venue: Canadian equity marketplaces
+    mechanism_family: marketplace rebate prohibition
+    dates:
+      announcement: {status: exact, date: "2020-01-23", source_ids: [csa_notice]}
+      implementation: {status: not_implemented, date: null, note: Proceeding was conditional on implementation of the US pilot., source_ids: [csa_notice]}
+      end_or_reversal: {status: not_implemented, date: null, note: No treated pilot period began., source_ids: [csa_notice]}
+      transition: {status: not_applicable, date: null, note: There was no treatment to reverse., source_ids: [csa_notice]}
+    design:
+      description: Planned coordinated Canadian sample with rebate restrictions.
+      treatment: No realized treated period.
+      control: No realized contemporaneous pilot controls.
+      published_analysis: false
+      independence: Conditional coordination with the vacated US pilot prevented implementation.
+    required_data:
+      event_fields: [planned_group, fee_schedule, routing, quote, trade, participant_class]
+      depth: Not applicable because treatment never started.
+      clock_precision: Not applicable because treatment never started.
+      identifiers: Planned security sample and interlisted status.
+    access:
+      public: Design notice is public.
+      vendor: No vendor record can create an unimplemented treatment.
+      licence: Not applicable to screening decision.
+      records_opened: false
+    risks: [no treatment, dependency on US pilot, cross-border routing]
+    role: reject
+    rationale: The planned intervention never generated a treated period.
+    sources:
+      - id: csa_notice
+        url: https://www.osc.gov.on.ca/documents/en/Securities-Category2/csa_20200123_23-325_trading-fee-rebate.pdf
+        accessed: "2026-08-12"
+        primary: true
+        supports: Conditional design and announcement date.
+
+  - id: nyse_floor_closure_2020
+    rule: Temporary closure of the NYSE physical trading floor
+    jurisdiction: United States
+    venue: New York Stock Exchange
+    mechanism_family: floor removal and all-electronic auction operation
+    dates:
+      announcement: {status: exact, date: "2020-03-21", source_ids: [sec_floor_closure]}
+      implementation: {status: exact, date: "2020-03-23", source_ids: [sec_floor_closure]}
+      end_or_reversal: {status: unresolved, date: null, note: Reopening was phased rather than a single restoration of the pre-closure mechanism., source_ids: [sec_floor_update]}
+      transition: {status: not_single_date, date: null, note: Partial floor and DMM returns occurred in phases alongside temporary rule changes., source_ids: [sec_floor_update]}
+    design:
+      description: Abrupt shift to electronic auctions with other venues as nominal controls.
+      treatment: NYSE floor-dependent functions and affected listed securities.
+      control: Other venues remained subject to the same pandemic and extraordinary volatility.
+      published_analysis: true
+      independence: COVID-19 and multiple emergency market rules coincide exactly with the intervention.
+    required_data:
+      event_fields: [venue, symbol, timestamp, auction_message, quote, trade, dmm_participation, floor_status]
+      depth: Auction imbalance feeds, full depth and cross-venue state.
+      clock_precision: Native exchange sequence and nanosecond timestamps.
+      identifiers: Listing venue, auction type, DMM assignment, floor status and rule version.
+    access:
+      public: Closure and rule documents are public.
+      vendor: Auction and full-depth histories require licensed exchange products.
+      licence: NYSE feed redistribution and research rights require review.
+      records_opened: false
+    risks: [COVID-19, extreme volatility, circuit breakers, emergency fiscal and monetary policy, phased reopening, concurrent auction-rule changes]
+    role: reject
+    rationale: The pandemic shock and bundled market changes dominate identification.
+    sources:
+      - id: sec_floor_closure
+        url: https://www.sec.gov/newsroom/press-releases/2020-67
+        accessed: "2026-08-12"
+        primary: true
+        supports: Announcement, closure date and temporary auction modifications.
+      - id: sec_floor_update
+        url: https://www.sec.gov/newsroom/speeches-statements/update-commissions-targeted-regulatory-relief-assist-market-participants-affected-covid-19
+        accessed: "2026-08-12"
+        primary: true
+        supports: Phased reopening and expiration of temporary rules.
