@@ -6,6 +6,10 @@ type: project
 
 # Dual-track NMI/NCS theory exploration v1
 
+> Subsequent status: v2 retired the remaining NCS relaxation-exceedance lead as
+> `NCS_C0_FAIL_IDENTIFICATION`. The `ATTACKING` and `CONJECTURE_ONLY` labels below are the immutable v1 decision,
+> not current authorization.
+
 Started on `theory-exploration-nmi-ncs-v1` from `main@fdf0c5f72` on 2026-08-12. The plan of record is
 `papers/proposal/plan_theory_exploration_nmi_ncs_v1.md`.
 

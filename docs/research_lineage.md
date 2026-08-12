@@ -3,13 +3,16 @@
 This document prevents historical hypotheses, software artifacts and data splits from silently becoming evidence
 for a later project.
 
-## Active iteration
+## Current theory state
 
-`theory-exploration-nmi-ncs-v2` starts from integrated `main@648fd96da`. It preserves every v1 retirement and
-freezes two bounded zero-cost tasks: NCS C0 prior-art/identification audit plus metadata-only intervention screening,
-and NMI N0 target-conditioned-identifiability primitive search. Its plan is
-`papers/proposal/plan_theory_exploration_nmi_ncs_v2.md`. Outcome values, sealed periods, bulk data, purchases and
-GPU work remain forbidden.
+`theory-exploration-nmi-ncs-v2` started from integrated `main@648fd96da` and closed on 2026-08-12. It preserves
+every v1 retirement and ends NMI `NMI_NO_SURVIVOR`, NCS `NCS_C0_FAIL_IDENTIFICATION`. Target
+completeness/horizon/complementarity/order reduce to masked-prediction identifiability, matrix-power ambiguity,
+predictive partitions and Blackwell comparison. Exp145 proves that fixed non-adaptive hidden state can exceed a
+declared relaxation envelope or reproduce any bounded finite path, so the certificate rejects only the selected
+model class. Registry v2 contains two development-only, eight rejected and zero sealed cases; no data contract or
+GPU work is authorized. Its plan and completed outcome are
+`papers/proposal/plan_theory_exploration_nmi_ncs_v2.md`.
 
 `theory-exploration-nmi-ncs-v1` started from `main@fdf0c5f72` as a theorem/mechanism search layer and its verified
 result tree `ba437a7d8` was integrated into `main` on 2026-08-12. It does not replace or reopen any negative gate.
@@ -51,6 +54,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Plan v5 interventional world model | Archived after F1--F3 generated feasibility PASS | Exact exchange, exp141 workflow and worker compatibility | No method, fidelity or real-market claim |
 | Plan v4 G0 re-entry v1 | R1--R3 process infrastructure complete; no candidate; old G0 FAIL binding | Candidate admission, equivalence attacks and reproducible stop rules | No novelty PASS without new mathematics and human audit |
 | Dual-track theory exploration v1 | NMI no survivor; NCS contraction-envelope conjecture only | Typed knowledge graph, source matrix, exp144 negative controls, event-layer information identity | No theorem/venue claim, hidden-belief identification, real mechanism evidence or compute/data unlock |
+| Dual-track theory exploration v2 | NMI no survivor; NCS C0 identification fail | 108-node exploration graph, target-task prior-art map, exp145 attribution counterexamples and validated rule metadata | No adaptation label, sealed replication, data contract, theorem/venue claim or compute unlock |
 
 ## Code inheritance rules
 

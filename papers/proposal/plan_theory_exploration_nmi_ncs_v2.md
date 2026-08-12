@@ -147,3 +147,63 @@ Decision states are `NMI_NO_SURVIVOR`, `NMI_CONJECTURE_ONLY` and `NMI_READY_FOR_
 6. Stop NMI if all four primitives reduce to mapped results; do not manufacture a replacement candidate.
 7. End with separate NMI and NCS decisions, explicit remaining proof/data obligations and an immutable exploration
    history.
+
+## 7. Completed outcome
+
+**Closed:** 2026-08-12
+
+**NMI:** `NMI_NO_SURVIVOR`
+
+**NCS:** `NCS_C0_FAIL_IDENTIFICATION`
+
+**Data routing:** `ready_for_data_contract: false`
+
+**Compute routing:** zero GPU and no worker queue
+
+### NMI result
+
+All four proposed target-conditioned primitives were retired at equation level:
+
+- target completeness and collections of optimal predictors are directly studied by masked-prediction
+  identifiability;
+- a longer pairwise horizon is not monotonically identifying because distinct stochastic transitions can share a
+  power;
+- complementary targets are task-partition intersection, stacked information or tensor identifiability;
+- universal target informativeness is a Blackwell comparison/sufficient-statistic order.
+
+The exact relation
+
+\[
+\sim_{\mathcal F_1\cup\mathcal F_2}
+=\sim_{\mathcal F_1}\cap\sim_{\mathcal F_2}
+\]
+
+is preserved as standard bookkeeping, not a theorem claim. No NMI implementation or GPU experiment is justified.
+
+### NCS result
+
+Standard Markov perturbation/contraction work covers construction and estimation of relaxation envelopes; dynamic
+event-study methods cover response paths; simulator-discrepancy and causal-digital-twin results block attribution
+of a residual without structural assumptions.
+
+Experiment 145 then confirmed two preregistered non-adaptive counterexamples:
+
+- a fixed hidden mode with contraction `0.9` exceeded a declared `0.6^L` envelope at every frozen lag;
+- a fixed time-homogeneous clock chain exactly reproduced an arbitrary six-point response path.
+
+Therefore an exceedance rejects the specified baseline class but does not identify adaptation, learning or belief.
+The candidate is retired as `RETIRED_IDENTIFIABILITY`.
+
+### Metadata result and protocol note
+
+The validated registry contains ten public cases: two development-only, eight rejected and zero sealed candidates.
+No raw market records or sealed periods were opened. During web screening, public pages/search summaries exposed
+already-published numerical summaries for the two usable cases; that deviation is recorded explicitly and makes
+both permanently ineligible as sealed confirmation.
+
+### Resource audit
+
+- Experiment compute: Mac CPU only, under one second; 0.0 GPU-hours.
+- Market files read: 0; sealed periods opened: 0; purchases: none.
+- V100-A, V100-B and RTX2060 contacts: 0.
+- No future compute or data tier is unlocked by v2.

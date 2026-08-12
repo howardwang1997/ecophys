@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-12"
-iteration: theory-exploration-nmi-ncs-v1
-decision: CONJECTURE_ONLY
+iteration: theory-exploration-nmi-ncs-v2
+decision: NMI_NO_SURVIVOR__NCS_C0_FAIL_IDENTIFICATION
 
 nodes:
   - id: src.controlled_world_models
@@ -172,6 +172,86 @@ nodes:
     url: https://arxiv.org/abs/2608.06020
     primary: true
     evidence_level: preprint
+  - id: src.masked_prediction_identifiability
+    type: source
+    title: Masked Prediction A Parameter Identifiability View
+    track: nmi
+    claim: Identifiability depends on the prediction target; pairwise HMM tasks and matrix powers can fail while a two-token tensor target identifies under stated assumptions.
+    url: https://proceedings.neurips.cc/paper_files/paper/2022/hash/85dd09d356ca561169b2c03e43cf305e-Abstract-Conference.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.causal_states
+    type: source
+    title: Computational Mechanics Pattern and Prediction Structure and Simplicity
+    track: nmi
+    claim: Equality of future laws defines causal states, which form a unique minimal predictive representation.
+    url: https://csc.ucdavis.edu/~cmg/compmech/pubs/cmppss.htm
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.blackwell_experiments
+    type: source
+    title: Equivalent Comparisons of Experiments
+    track: nmi
+    claim: Universal informativeness of experiments is characterized by attainable decision performance and randomization or garbling.
+    url: https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-24/issue-2/Equivalent-Comparisons-of-Experiments/10.1214/aoms/1177729032.full
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.markov_perturbation_sensitivity
+    type: source
+    title: Sensitivity and Convergence of Uniformly Ergodic Markov Chains
+    track: ncs
+    claim: Iterated ergodicity coefficients bound finite-time transition perturbations and invariant-law sensitivity in uniformly ergodic chains.
+    url: https://www.cambridge.org/core/services/aop-cambridge-core/content/view/26A9854BCB8D103B3A63A9B272616EC0/S0021900200001066a.pdf/sensitivity_and_convergence_of_uniformly_ergodic_markov_chains.pdf
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.mixing_contraction_estimation
+    type: source
+    title: Mixing Time Estimation with Contraction Methods
+    track: ncs
+    claim: Generalized Dobrushin contraction controls nonreversible mixing and admits data-dependent confidence intervals from one trajectory.
+    url: https://proceedings.mlr.press/v117/wolfer20a.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.dynamic_event_studies
+    type: source
+    title: Revisiting Event-Study Designs
+    track: ncs
+    claim: Dynamic treatment effects by horizon require explicit estimands, no anticipation, parallel trends and robust handling of heterogeneous effects.
+    url: https://academic.oup.com/restud/article/91/6/3253/7601390
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.synthetic_control_guidance
+    type: source
+    title: Using Synthetic Controls Feasibility Data Requirements and Methodological Aspects
+    track: ncs
+    claim: Synthetic controls have explicit feasibility and data requirements and can fail without a credible donor design.
+    url: https://www.aeaweb.org/articles?id=10.1257/jel.20191450
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.model_discrepancy
+    type: source
+    title: Learning about Physical Parameters the Importance of Model Discrepancy
+    track: ncs
+    claim: Simulator discrepancy confounds calibration and physical parameters and can cause biased overconfident inference without meaningful structural priors.
+    url: https://www.tonyohagan.co.uk/academic/pdf/simmach.pdf
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.equilibrium_causal_twins
+    type: source
+    title: Equilibrium Causal Digital Twins Validation Transport and Identification Limits
+    track: ncs
+    claim: Finite experimental validation cannot identify arbitrary equilibrium counterfactuals without query-specific structural assumptions.
+    url: https://arxiv.org/abs/2607.21667
+    primary: true
+    evidence_level: preprint
+  - id: src.digital_twin_counterfactual
+    type: source
+    title: The Digital Twin Counterfactual Framework
+    track: ncs
+    claim: Twin fidelity is hierarchical and some joint counterfactual claims remain assumption-indexed even after observable-arm validation.
+    url: https://arxiv.org/abs/2604.01325
+    primary: true
+    evidence_level: preprint
   - id: src.nmi_scope
     type: source
     title: Nature Machine Intelligence aims and scope
@@ -229,6 +309,36 @@ nodes:
     title: Frozen Markov relaxation envelope
     track: ncs
     claim: After a mechanism returns to baseline, a frozen Markov model with Dobrushin contraction coefficient below one bounds every bounded-observable residual by a geometrically decaying envelope.
+  - id: kr.target_task_identifiability
+    type: known_result
+    title: Prediction-target-dependent parameter identifiability
+    track: nmi
+    claim: Optimal prediction tasks induce parameter equivalence classes; changing target algebra or a task family can refine the class from nonidentifying to identifying under model assumptions.
+  - id: kr.target_partition_refinement
+    type: known_result
+    title: Task-family partition refinement
+    track: nmi
+    claim: The equivalence relation induced by a union of prediction tasks is the intersection of the individual task-equivalence relations.
+  - id: kr.blackwell_target_order
+    type: known_result
+    title: Blackwell order of target experiments
+    track: nmi
+    claim: Universal usefulness of one observed experiment or target over another is an established comparison by decision performance or garbling.
+  - id: kr.dynamic_treatment_response
+    type: known_result
+    title: Dynamic causal response by event horizon
+    track: ncs
+    claim: Event studies already target treatment responses by horizon under explicit no-anticipation, parallel-trend and control assumptions.
+  - id: kr.model_class_rejection
+    type: known_result
+    title: Model-class rejection does not label the omitted mechanism
+    track: ncs
+    claim: A response outside a validated simulator or mixing envelope rejects the declared class but cannot distinguish adaptation from fixed hidden state or discrepancy without structural restrictions.
+  - id: kr.digital_twin_identification_limits
+    type: known_result
+    title: Finite digital-twin validation has query-specific identification limits
+    track: ncs
+    claim: Agreement over a finite validation design does not generally identify an untested counterfactual; structural assumptions or partial identification remain necessary.
   - id: kr.invgrad_g0_fail
     type: known_result
     title: Plan v4 invariant-gradient G0 failure
@@ -402,7 +512,7 @@ nodes:
     title: Relaxation-exceedance response after a closed mechanism loop
     track: ncs
     claim: A real response that remains outside every prospectively validated frozen-mechanism relaxation envelope may reveal persistent adaptive or omitted state under explicit controls and independent replication.
-    status: ATTACKING
+    status: RETIRED_IDENTIFIABILITY
     history:
       - date: "2026-08-12"
         to: SCOUT
@@ -428,6 +538,96 @@ nodes:
         to: ATTACKING
         reason: Narrowed the candidate from raw order effects to residual persistence beyond a frozen Markov contraction envelope; attribution still requires real controls and replication.
         evidence: [kr.markov_relaxation_envelope, po.closed_loop_identification]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_IDENTIFIABILITY
+        reason: Experiment 145 proved fixed hidden-state exceedance and arbitrary finite-path reproduction without adaptation; standard event-study and digital-twin discrepancy results leave the mechanism label unidentified, and registry v2 found no sealed replication.
+        evidence: [bench.exp145_relaxation_negative_controls, kr.model_class_rejection, data.intervention_registry_v2]
+
+  - id: cand.nmi.v2_target_completeness
+    type: candidate
+    title: Prediction-target completeness for adaptive parameters
+    track: nmi
+    claim: A declared future target family might force a predictive representation to retain an adaptive parameter omitted by easier targets.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as v2 target-conditioned-identifiability primitive T1.
+        evidence: [concept.target_conditioned_identifiability]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared directly with masked-prediction parameter identifiability and minimal predictive states.
+        evidence: [src.masked_prediction_identifiability, src.causal_states]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Existing work already asks which optimal prediction tasks identify model parameters and gives positive and negative sequential-model theorems.
+        evidence: [kr.target_task_identifiability, kr.predictive_equivalence]
+  - id: cand.nmi.v2_horizon_threshold
+    type: candidate
+    title: Critical prediction horizon for parameter recovery
+    track: nmi
+    claim: A parameter might become identifiable only above a task horizon that is intrinsic to the observed dynamics.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as v2 primitive T2.
+        evidence: [concept.target_conditioned_identifiability]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Attacked with matrix powers, observability indices and target-algebra dependence.
+        evidence: [src.masked_prediction_identifiability, ce.longer_horizon_matrix_power]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Longer pairwise horizons are not monotonically identifying; any threshold is model and target specific under established system-identification or tensor conditions.
+        evidence: [kr.target_task_identifiability, ce.longer_horizon_matrix_power]
+  - id: cand.nmi.v2_complementary_targets
+    type: candidate
+    title: Complementary prediction targets
+    track: nmi
+    claim: A target family may identify a parameter although no member target identifies it alone.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as v2 primitive T3.
+        evidence: [concept.target_conditioned_identifiability]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Reduced the task-family equivalence to intersection of parameter partitions and compared tensor-target HMM results.
+        evidence: [kr.target_partition_refinement, src.masked_prediction_identifiability]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Complementarity is already instantiated by collections of predictors, stacked information and tensor identifiability; no non-lattice interaction survived.
+        evidence: [kr.target_partition_refinement, ce.task_family_intersection]
+  - id: cand.nmi.v2_target_order
+    type: candidate
+    title: Target-induced informativeness order for intervention transfer
+    track: nmi
+    claim: One prediction target may be universally more useful than another for downstream intervention-transfer decisions.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as v2 primitive T4.
+        evidence: [concept.target_conditioned_identifiability]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared universal target usefulness with comparison of statistical experiments and garbling.
+        evidence: [src.blackwell_experiments]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: The universal order is Blackwell informativeness or sufficient-statistic refinement unless the decision family is restricted.
+        evidence: [kr.blackwell_target_order, ce.blackwell_garbling]
 
   - id: po.action_lift_non_equivalence
     type: proof_obligation
@@ -464,6 +664,26 @@ nodes:
     title: Closed-loop adaptation identification
     track: ncs
     claim: State assumptions under which excess loop response excludes frozen noncommutativity, incomplete relaxation, anticipation, spillover and concurrent shocks.
+  - id: po.target_completeness_non_equivalence
+    type: proof_obligation
+    title: Target-completeness non-equivalence
+    track: nmi
+    claim: Supply a target-retention theorem not expressible as injectivity of optimal predictors, minimal sufficiency or observability.
+  - id: po.horizon_threshold_non_equivalence
+    type: proof_obligation
+    title: Horizon-threshold non-equivalence
+    track: nmi
+    claim: Establish a critical horizon law not reducible to matrix powers, observability index, delay embedding or moment uniqueness.
+  - id: po.complementary_target_non_equivalence
+    type: proof_obligation
+    title: Complementary-target non-equivalence
+    track: nmi
+    claim: Exhibit an interaction among targets not represented by partition intersection, stacked information or tensor identifiability.
+  - id: po.target_order_non_blackwell
+    type: proof_obligation
+    title: Target-order non-Blackwell obligation
+    track: nmi
+    claim: Define an intervention-transfer order with different axioms and a witness not captured by Blackwell garbling.
 
   - id: ce.action_lift_off_support
     type: counterexample
@@ -505,6 +725,31 @@ nodes:
     title: Long-horizon rule reversal is not a reset
     track: ncs
     claim: Macro regime, composition, anticipation and survivor changes between rule introduction and repeal can mimic a persistent loop residual.
+  - id: ce.longer_horizon_matrix_power
+    type: counterexample
+    title: Longer pairwise horizons need not identify a transition
+    track: nmi
+    claim: Distinct stochastic transition matrices can share a declared power, so a farther pairwise prediction target is not monotonically more identifying.
+  - id: ce.task_family_intersection
+    type: counterexample
+    title: Complementary tasks are partition intersection
+    track: nmi
+    claim: Combining targets intersects their parameter-equivalence relations and can isolate a cell without introducing a new identifiability primitive.
+  - id: ce.blackwell_garbling
+    type: counterexample
+    title: Universal target order is Blackwell comparison
+    track: nmi
+    claim: If one target is at least as useful for every decision problem, the proposed order is an experiment-comparison or garbling relation.
+  - id: ce.hidden_slow_exceedance
+    type: counterexample
+    title: Fixed hidden slow state exceeds a faster envelope
+    track: ncs
+    claim: A time-homogeneous non-adaptive omitted state with contraction rho exceeds every declared d-to-the-L bound when rho is greater than d.
+  - id: ce.fixed_clock_response
+    type: counterexample
+    title: Fixed Markov clock reproduces any finite path
+    track: ncs
+    claim: Deterministic state augmentation with a fixed time-homogeneous kernel can reproduce any bounded finite response sequence without adaptation.
 
   - id: bench.scm_policy_rollout
     type: benchmark
@@ -537,6 +782,17 @@ nodes:
     track: both
     claim: A frozen CPU-only result confirms exact reduction to stacked observability and a 0.075 order effect from fixed non-adaptive Markov operators; raw SHA-256 is 92351520b073d6674c0629380020599273c2beada29faf06437546a421eddcf8.
     artifact: experiments/144_theory_reduction_witnesses/artifacts/raw/witnesses.json
+  - id: bench.target_task_prior_art
+    type: benchmark
+    title: Target-task identifiability and experiment-comparison oracle
+    track: nmi
+    claim: Any target-conditioned primitive must differ equation by equation from masked-prediction injectivity, minimal predictive sufficiency, tensor identifiability and Blackwell comparison.
+  - id: bench.exp145_relaxation_negative_controls
+    type: benchmark
+    title: Experiment 145 relaxation-attribution negative controls
+    track: ncs
+    claim: A frozen CPU-only result confirms envelope exceedance from a fixed hidden slow mode and exact finite-path reproduction by a fixed Markov clock; raw SHA-256 is 9b752b4ad428ceb56d82483f94cf7e3c92d26ed3869cbe8a7ddbfbe75c5c5d4f.
+    artifact: experiments/145_relaxation_exceedance_negative_controls/artifacts/raw/negative_controls.json
 
   - id: data.generated_linear_fixture
     type: dataset
@@ -558,6 +814,12 @@ nodes:
     title: Sealed independent real intervention replications
     track: ncs
     claim: At least two prospectively frozen intervention environments with event coverage and controls are required for an NCS mechanism claim.
+  - id: data.intervention_registry_v2
+    type: dataset
+    title: Metadata-only intervention registry v2
+    track: ncs
+    claim: Ten public rule cases yield two development-only, eight rejected and zero sealed candidates; no market records or sealed periods were opened.
+    artifact: research/theory_exploration/intervention_registry_v2.yaml
 
   - id: compute.cpu_theory_gate
     type: compute_gate
@@ -590,6 +852,11 @@ nodes:
     title: Theory exploration v1 outcome
     track: both
     claim: CONJECTURE_ONLY; the five starting neighborhoods and the narrowed NMI mechanism-excitation lead are retired, only the NCS excess-response lead remains under attack, no candidate is ready for human novelty audit, and data/GPU expansion is forbidden.
+  - id: decision.iteration_v2
+    type: decision
+    title: Theory exploration v2 outcome
+    track: both
+    claim: NMI_NO_SURVIVOR and NCS_C0_FAIL_IDENTIFICATION; target-task primitives reduce to mapped results, relaxation exceedance cannot identify adaptation, the registry has no sealed replication, and all data and GPU gates remain locked.
 
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
@@ -614,6 +881,16 @@ edges:
   - {source: src.sec_tick_pilot, target: bench.ncs_forward_reverse, type: supports, claim: Tick changes have established heterogeneous causal event-study baselines.}
   - {source: src.tick_pilot_forward_reverse, target: bench.ncs_forward_reverse, type: supports, claim: The forward and reverse Tick Size Pilot windows are already directly analyzed.}
   - {source: src.economic_world_models, target: concept.exact_mechanism, type: supports, claim: The blueprint motivates executable separated mechanisms but is not a theorem.}
+  - {source: src.masked_prediction_identifiability, target: kr.target_task_identifiability, type: proves, claim: Positive and negative HMM results show that target algebra governs parameter identifiability.}
+  - {source: src.causal_states, target: kr.predictive_equivalence, type: proves, claim: Equality of future laws gives the minimal predictive partition.}
+  - {source: src.blackwell_experiments, target: kr.blackwell_target_order, type: proves, claim: Universal experiment informativeness is characterized through comparison and randomization.}
+  - {source: src.markov_perturbation_sensitivity, target: kr.markov_relaxation_envelope, type: proves, claim: Ergodicity coefficients connect convergence with transition perturbation sensitivity.}
+  - {source: src.mixing_contraction_estimation, target: kr.markov_relaxation_envelope, type: proves, claim: Generalized contraction controls mixing and can receive empirical confidence intervals.}
+  - {source: src.dynamic_event_studies, target: kr.dynamic_treatment_response, type: proves, claim: Dynamic treatment paths by horizon are established causal estimands under explicit assumptions.}
+  - {source: src.synthetic_control_guidance, target: bench.ncs_forward_reverse, type: covers, claim: Credible matched controls require explicit donor feasibility and can fail.}
+  - {source: src.model_discrepancy, target: kr.model_class_rejection, type: proves, claim: Simulator discrepancy cannot be interpreted as a physical parameter without structural prior information.}
+  - {source: src.equilibrium_causal_twins, target: kr.digital_twin_identification_limits, type: proves, claim: Finite validation designs leave target counterfactuals unidentified without structural assumptions.}
+  - {source: src.digital_twin_counterfactual, target: kr.digital_twin_identification_limits, type: supports, claim: Twin fidelity levels separate testable marginal claims from assumption-indexed joint claims.}
   - {source: src.nmi_scope, target: venue.nmi_transferable_method, type: supports, claim: The route is aligned only if the contribution is broadly transferable AI methodology.}
   - {source: src.ncs_scope, target: venue.ncs_real_mechanism, type: supports, claim: The route is aligned only if the computational method yields substantive scientific insight.}
 
@@ -630,6 +907,11 @@ edges:
   - {source: kr.event_layer_information_conservation, target: cand.nmi.mechanism_excitation, type: covers, claim: An exact downstream mechanism supplies no same-event latent information beyond its observed inputs.}
   - {source: concept.closed_intervention_loop, target: cand.ncs.adaptation_holonomy, type: supports, claim: A loop provides the order-sensitive observable target.}
   - {source: kr.markov_relaxation_envelope, target: cand.ncs.adaptation_holonomy, type: supports, claim: The standard contraction bound supplies a falsifiable frozen-mechanics null rather than theorem novelty.}
+  - {source: kr.target_task_identifiability, target: cand.nmi.v2_target_completeness, type: covers, claim: Existing prediction-task injectivity results directly cover generic target completeness.}
+  - {source: kr.target_task_identifiability, target: cand.nmi.v2_horizon_threshold, type: covers, claim: Matrix-power and target-algebra results occupy a generic horizon threshold.}
+  - {source: kr.target_partition_refinement, target: cand.nmi.v2_complementary_targets, type: covers, claim: A target family refines parameter partitions by intersection.}
+  - {source: kr.blackwell_target_order, target: cand.nmi.v2_target_order, type: covers, claim: Universal task usefulness is comparison of experiments.}
+  - {source: kr.model_class_rejection, target: cand.ncs.adaptation_holonomy, type: covers, claim: Exceedance rejects the frozen class but does not label adaptation.}
 
   - {source: cand.s1.action_lift, target: po.action_lift_non_equivalence, type: requires, claim: Retirement could be reversed only by a formal non-equivalence result.}
   - {source: cand.s1.action_lift, target: ce.action_lift_off_support, type: falsified_by, claim: Primitive action coverage does not guarantee policy-state coverage.}
@@ -667,6 +949,27 @@ edges:
   - {source: cand.ncs.adaptation_holonomy, target: venue.ncs_real_mechanism, type: branches_to, claim: It can route to NCS only after blind replicated real intervention evidence.}
   - {source: cand.ncs.adaptation_holonomy, target: data.tick_pilot_development, type: requires, claim: Only metadata and development feasibility may be inspected before a new seal.}
   - {source: cand.ncs.adaptation_holonomy, target: compute.cpu_theory_gate, type: requires, claim: Current counterexample work is CPU only.}
+  - {source: cand.ncs.adaptation_holonomy, target: ce.hidden_slow_exceedance, type: falsified_by, claim: A fixed omitted slow mode exceeds the declared contraction envelope without adaptation.}
+  - {source: cand.ncs.adaptation_holonomy, target: ce.fixed_clock_response, type: falsified_by, claim: A fixed hidden-state clock can reproduce any finite response path.}
+  - {source: cand.ncs.adaptation_holonomy, target: bench.exp145_relaxation_negative_controls, type: distinguished_by, claim: Formal fixtures verify both non-adaptive attribution failures.}
+  - {source: cand.ncs.adaptation_holonomy, target: kr.model_class_rejection, type: retired_by, claim: The surviving estimand is model-class rejection rather than an identified adaptive mechanism.}
+
+  - {source: cand.nmi.v2_target_completeness, target: po.target_completeness_non_equivalence, type: requires, claim: A result outside injectivity and sufficiency was required but absent.}
+  - {source: cand.nmi.v2_target_completeness, target: ce.task_family_intersection, type: falsified_by, claim: Task collections induce standard partition refinement.}
+  - {source: cand.nmi.v2_target_completeness, target: bench.target_task_prior_art, type: distinguished_by, claim: Masked prediction and minimal predictive states are direct comparators.}
+  - {source: cand.nmi.v2_target_completeness, target: kr.target_task_identifiability, type: retired_by, claim: Existing target-task identifiability covers the generic primitive.}
+  - {source: cand.nmi.v2_horizon_threshold, target: po.horizon_threshold_non_equivalence, type: requires, claim: A non-observability threshold theorem was required but absent.}
+  - {source: cand.nmi.v2_horizon_threshold, target: ce.longer_horizon_matrix_power, type: falsified_by, claim: Longer horizons need not distinguish transition matrices.}
+  - {source: cand.nmi.v2_horizon_threshold, target: bench.target_task_prior_art, type: distinguished_by, claim: Matrix-power and tensor-target results are mandatory comparators.}
+  - {source: cand.nmi.v2_horizon_threshold, target: kr.target_task_identifiability, type: retired_by, claim: Existing target-dependent identification covers the formulation.}
+  - {source: cand.nmi.v2_complementary_targets, target: po.complementary_target_non_equivalence, type: requires, claim: A non-lattice interaction was required but absent.}
+  - {source: cand.nmi.v2_complementary_targets, target: ce.task_family_intersection, type: falsified_by, claim: Complementarity is partition intersection or stacked information.}
+  - {source: cand.nmi.v2_complementary_targets, target: bench.target_task_prior_art, type: distinguished_by, claim: Collections of predictors and tensor targets are direct comparators.}
+  - {source: cand.nmi.v2_complementary_targets, target: kr.target_partition_refinement, type: retired_by, claim: Standard partition algebra covers the proposed identity.}
+  - {source: cand.nmi.v2_target_order, target: po.target_order_non_blackwell, type: requires, claim: A non-Blackwell order and witness were required but absent.}
+  - {source: cand.nmi.v2_target_order, target: ce.blackwell_garbling, type: falsified_by, claim: Universal task usefulness reduces to comparison of experiments.}
+  - {source: cand.nmi.v2_target_order, target: bench.target_task_prior_art, type: distinguished_by, claim: Blackwell comparison is the mandatory oracle.}
+  - {source: cand.nmi.v2_target_order, target: kr.blackwell_target_order, type: retired_by, claim: Existing comparison-of-experiments theory covers the universal order.}
 
   - {source: venue.nmi_transferable_method, target: data.nonmarket_mechanism_families, type: requires, claim: At least two structurally distinct non-market systems are required.}
   - {source: venue.nmi_transferable_method, target: compute.nmi_post_n1, type: requires, claim: GPU scaling opens only after formal novelty review.}
@@ -675,3 +978,7 @@ edges:
   - {source: decision.iteration_v1, target: compute.nmi_post_n1, type: forbids, claim: No NMI theorem candidate is ready, so post-N1 scaling remains locked.}
   - {source: decision.iteration_v1, target: compute.ncs_post_c1, type: forbids, claim: No NCS data contract exists, so post-C1 scaling remains locked.}
   - {source: decision.iteration_v1, target: bench.exp144_negative_controls, type: supports, claim: The formal negative controls preserve the CONJECTURE_ONLY decision and zero-GPU lock.}
+  - {source: decision.iteration_v2, target: compute.nmi_post_n1, type: forbids, claim: All v2 NMI primitives are retired, so post-N1 scaling remains locked.}
+  - {source: decision.iteration_v2, target: compute.ncs_post_c1, type: forbids, claim: NCS C0 failed identification and registry v2 has no sealed candidate.}
+  - {source: decision.iteration_v2, target: bench.exp145_relaxation_negative_controls, type: supports, claim: The formal negative controls establish the mechanism-attribution failure.}
+  - {source: decision.iteration_v2, target: data.intervention_registry_v2, type: supports, claim: Metadata screening provides no development-plus-sealed pair.}

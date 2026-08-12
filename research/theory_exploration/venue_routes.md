@@ -14,12 +14,12 @@ share a headline by implication. Each route needs its own admission decision and
 | real evidence | cannot be inherited from inspected periods | at least two independent interventions/environments | development intervention plus sealed independent replication |
 | simulator role | implementation and falsification substrate | one domain among several | counterfactual support; not the discovery itself |
 
-## NMI route after retirement of the current lead
+## NMI route after the v2 target-task audit
 
-NMI-T1 is `RETIRED_PRIOR_ART`. There is currently no admissible NMI theorem/method candidate. The next search may
-focus on prediction-target-conditioned identifiability—what future adaptive target forces a latent to retain—but
-this is only a search direction and must first clear the recent controlled-world-model and physical-parameter
-identifiability literature.
+NMI-T1 and v2 target-task candidates T1--T4 are `RETIRED_PRIOR_ART`. There is currently no admissible NMI
+theorem/method candidate. Prediction-target-conditioned identifiability is no longer listed as an open primitive:
+masked-prediction identifiability, minimal predictive states and Blackwell comparison directly occupy its generic
+forms.
 
 1. **N0 new-primitive audit:** a successor must start from a new symbolic primitive and clear stacked
    observability, Fisher information, persistent excitation, controlled/switching-world-model identification,
@@ -41,10 +41,10 @@ identifiability literature.
 | N3 screening | generated/public systems, 3–5 seeds | 200–800 V100-equivalent hours | locked |
 | N3/N4 confirmation | expanded cross-domain and real intervention data, 2–10 TB provisional | 4,000–12,000 V100-equivalent hours; 8–16 non-H20 workers | locked |
 
-## NCS route from the current relaxation-exceedance lead
+## NCS route after the v2 relaxation-attribution failure
 
-1. **C0 mechanism gap:** determine whether replicated response outside a preregistered frozen Markov contraction
-   envelope is distinct from forward/reverse event studies, response theory and stochastic pumps.
+1. **C0 mechanism gap:** failed for the current lead. A response outside a preregistered frozen Markov contraction
+   envelope rejects the frozen class but does not identify adaptation; exp145 gives fixed hidden-state witnesses.
 2. **C1 data contract:** identify one development loop/intervention and one sealed independent replication using
    rule metadata, control availability, event coverage and licences only. No confirmatory values may be viewed.
 3. **C2 identification:** generated exact-mechanism tests must show that the proposed residual rejects frozen Markov,
@@ -59,7 +59,7 @@ identifiability literature.
 | Gate state | Data | Compute ceiling | Current authorization |
 |---|---|---|---|
 | C0 | literature, rule documents, generated counterexamples | <=50 CPU core-hours, 0 GPU-hours | open |
-| C1 metadata audit | public/vendor samples for schema, licence and coverage only | CPU only | locked until a distinct estimand survives C0 |
+| C1 metadata audit | public rule/schema/licence metadata only | CPU only | completed as a negative screen; no contract opened |
 | C2 generated feasibility | exact exchange kernel and fresh generated paths | <=500 CPU core-hours, <=20 V100-equivalent hours if learning is necessary | locked |
 | C3 pilot | newly frozen event-level pre/post plus controls | 100–400 V100-equivalent hours | locked |
 | C4/C5 | 10–30 TB provisional, multiple venues/markets/interventions | 1,000–4,000 V100-equivalent hours and 50k–250k CPU core-hours | locked |
@@ -68,12 +68,20 @@ Future capacity can expand beyond the current two V100 32 GB workers, but all pl
 event reconstruction and bootstrap/causal controls are likely to benefit more from 128–512 CPU cores and fast
 storage than from a single larger neural model.
 
-## Current decision
+## Current v2 decision
 
 - Exp144 confirmed that the easiest NMI rank witness is ordinary stacked observability and that a fixed
   non-adaptive Markov pair produces a `0.075` order effect. It admitted no candidate.
 - NMI-T1: retired; do not benchmark or train it. NMI has `NO_SURVIVOR` in this iteration.
-- NCS-M1: continue contraction-envelope identification work and metadata-only intervention search only after the estimand
-  differs from existing forward/reverse studies.
+- NMI-v2 T1--T4: retired. The task-family intersection identity is standard partition/sufficiency algebra; do not
+  implement or train it.
+- NCS-M1: `RETIRED_IDENTIFIABILITY`. Exp145 shows that an omitted fixed slow mode and a fixed Markov clock can
+  exceed or reproduce the response with no adaptation. The envelope may remain a diagnostic, not the headline.
+- Intervention registry v2: 10 cases, 2 development-only, 8 rejected, 0 sealed candidates; therefore
+  `ready_for_data_contract: false`.
 - Both V100 workers and the RTX2060 remain idle for this iteration. There is no authorized experiment queue.
 - No paid data, sealed period, bulk acquisition or new compute capacity is opened.
+
+The next admissible move is a genuinely new primitive with a direct non-equivalence witness, or an explicit
+lower-claim project on prospective simulator model checking. Re-running more market event studies cannot repair
+the present mechanism-identification failure.

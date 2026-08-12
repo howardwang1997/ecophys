@@ -14,12 +14,13 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > generated manifests on CPU only. Exp141's generated-data feasibility result is independently archived and is not Plan v4
 > evidence. Paid data, NCS claims and GPU expansion remain locked; H20 is excluded.
 
-> **Dual-track theory result (2026-08-12).** The NMI search has `NO_SURVIVOR`; S1--S5 and the narrowed
-> mechanism-excitation candidate are retired by direct prior art or identifiability. Exp144 confirms that a
-> multi-mechanism rank gain can be ordinary stacked observability and that fixed non-adaptive stochastic operators
-> produce a `0.075` order effect. NCS retains only an `ATTACKING` empirical mechanism: real post-rule persistence
-> beyond all prevalidated frozen Markov/mechanical relaxation envelopes. This is `CONJECTURE_ONLY`, not a Plan v4
-> G0 re-entry, data unlock, compute unlock or identification of beliefs.
+> **Dual-track theory result (2026-08-12, v2 closed).** NMI has `NMI_NO_SURVIVOR`; S1--S5,
+> mechanism excitation and target-task completeness/horizon/complementarity/order are retired by direct prior art
+> or standard partition/experiment-comparison algebra. Exp144 confirms stacked-observability and fixed-operator
+> order-effect negatives. Exp145 further proves that a fixed hidden slow state can exceed a declared relaxation
+> envelope and a fixed Markov clock can reproduce any finite response path. NCS therefore has
+> `NCS_C0_FAIL_IDENTIFICATION`: exceedance rejects the model class, not identifies adaptation. Registry v2 has two
+> development-only, eight rejected and zero sealed cases, so no data/compute gate opens.
 
 > **Historical Plan v4 zero-cost preflight (closed at G0).** The broad estimator novelty claim was
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete

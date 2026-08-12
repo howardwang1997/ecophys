@@ -1,8 +1,10 @@
-# Candidate ledger v1
+# Candidate ledger — v1 and v2
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Iteration outcome:** `CONJECTURE_ONLY`  
-**Scientific meaning:** the NMI lead is retired; one NCS hypothesis remains worth attacking and is not an admitted mechanism
+**Current outcome:** NMI `NMI_NO_SURVIVOR`; NCS `NCS_C0_FAIL_IDENTIFICATION`
+
+**Scientific meaning:** every current NMI primitive is occupied, and relaxation exceedance rejects a model class
+without identifying adaptation
 
 ## 1. Shared object and identification target
 
@@ -127,7 +129,8 @@ is `RETIRED_PRIOR_ART`; this fixture cannot be cited as candidate support.
 ## 3. NCS lead NCS-M1 — relaxation exceedance after a closed rule loop
 
 **Version:** NCS-M1-v1  
-**State:** `ATTACKING`  
+**State:** `RETIRED_IDENTIFIABILITY` in v2 (historical v1 state: `ATTACKING`)
+
 **Venue role if it survives:** real market response mechanism; the digital twin estimates a counterfactual baseline
 
 ### 3.1 Candidate estimand
@@ -242,6 +245,35 @@ the measurement protocol; the Nature-level claim needs an additional independent
 NCS-M1 cannot become `READY_FOR_HUMAN_AUDIT` until a feasible real intervention pair and sealed replication are
 identified from metadata alone.
 
+### 3.7 V2 attribution attack and final status
+
+V2 separates two statements that v1 had left coupled:
+
+1. `|R_obs(L)| > B_L` rejects the prospectively declared frozen class `B`, provided the causal comparison and
+   simultaneous uncertainty are valid.
+2. The same inequality does not identify the omitted mechanism as learning, beliefs or adaptation.
+
+Experiment 145 freezes two exact non-adaptive witnesses. First, a fixed hidden mode `S_{t+1}=0.9 S_t` exceeds a
+declared `0.6^L` envelope at every lag `1,...,8`. Second, for any declared finite path `r_0,...,r_L`, a deterministic
+time-homogeneous Markov clock on states `0,...,L`, with `P(i,i+1)=1` and `f(i)=r_i`, reproduces that path exactly.
+The latter lies outside a strict Dobrushin class; this demonstrates that the test diagnoses omitted state or class
+incompleteness, not adaptation.
+
+The equation-level audit adds three independent closures:
+
+- Markov perturbation and contraction-estimation literature already supplies uncertain relaxation envelopes.
+- Modern event studies already estimate dynamic treatment paths and make their no-anticipation/parallel-trend
+  assumptions explicit.
+- Simulator-discrepancy and causal-digital-twin results show why agreement on a finite validation design cannot
+  identify an arbitrary target counterfactual or label a residual without structural assumptions.
+
+The metadata-only registry screened ten cases. Tick Size Pilot and NYSE American speed bump remain
+`development_only`; eight are rejected, and zero are untouched `sealed_candidate` cases. The registry therefore
+cannot route a C1 data contract.
+
+**Final state:** `RETIRED_IDENTIFIABILITY`; NCS decision `NCS_C0_FAIL_IDENTIFICATION`. The envelope remains reusable
+as a model-checking diagnostic, not as the main NCS mechanism.
+
 ## 4. Retired starting candidates
 
 | ID | Final state | Mathematical reason |
@@ -252,7 +284,27 @@ identified from metadata alone.
 | S4 predictive quotient | `RETIRED_PRIOR_ART` | PSR, bisimulation and causal abstraction |
 | S5 unseen composition | `RETIRED_PRIOR_ART` | soft-intervention composition, homomorphism and effect invariance |
 
-## 5. Version history
+## 5. V2 NMI target-conditioned search
+
+| ID | Proposed primitive | Decisive coverage | Final state |
+|---|---|---|---|
+| NMI-v2-T1 | target completeness: which target forces retention of a parameter | masked-prediction Definition 1 and Theorems 2/5; minimal predictive sufficiency | `RETIRED_PRIOR_ART` |
+| NMI-v2-T2 | a general critical prediction horizon | matrix-power nonidentifiability and ordinary observability/delay-index dependence | `RETIRED_PRIOR_ART` |
+| NMI-v2-T3 | complementary targets identify what no single target does | task-family injectivity, tensor targets and partition intersection | `RETIRED_PRIOR_ART` |
+| NMI-v2-T4 | universal target-informativeness order for transfer | Blackwell comparison/garbling and sufficient-statistic refinement | `RETIRED_PRIOR_ART` |
+
+The strongest compact identity is
+
+\[
+\sim_{\mathcal F_1\cup\mathcal F_2}
+=\sim_{\mathcal F_1}\cap\sim_{\mathcal F_2},
+\]
+
+where two parameters are task-equivalent when they induce the same optimal predictor. This is definitional
+partition refinement, not a new theorem. The two formal cards and the NCS impossibility construction are preserved
+in `formal_cards_v2.md`.
+
+## 6. Version history
 
 | Date | Version | Change | Decision |
 |---|---|---|---|
@@ -260,3 +312,4 @@ identified from metadata alone.
 | 2026-08-12 | v1.1 | Exp144 confirmed stacked-observability reduction and a fixed-operator order effect; neither active lead advanced. | `CONJECTURE_ONLY`; continue symbolic attacks only |
 | 2026-08-12 | v1.2 | Added the event-layer information identity and switching/active-design coverage; retired NMI-T1. | NMI `NO_SURVIVOR`; NCS `CONJECTURE_ONLY`; no data/GPU authorization |
 | 2026-08-12 | v1.3 | Replaced raw NCS order effects with a contraction-envelope exceedance test over a validated frozen baseline class. | NCS remains `ATTACKING`; empirical identification and data contract absent |
+| 2026-08-12 | v2 | Audited target-conditioned identifiability, contraction estimation, dynamic causal response and digital-twin discrepancy; exp145 confirmed two non-adaptive exceedance witnesses; metadata screening found no sealed replication. | NMI `NMI_NO_SURVIVOR`; NCS `NCS_C0_FAIL_IDENTIFICATION`; no data/GPU authorization |
