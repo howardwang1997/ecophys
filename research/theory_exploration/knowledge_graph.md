@@ -1,11 +1,11 @@
-# Theory-exploration topology v3
+# Theory-exploration topology v4
 
 **Canonical machine state:** `knowledge_graph.yaml`  
-**As of:** 2026-08-12  
-**Current decision:** `V3_NO_SURVIVOR`
+**As of:** 2026-08-13
+**Current decision:** `V4_NO_SURVIVOR`
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
-adds the v3 state-closure, memory-repair and operator-calibration attacks. Graph proximity is not evidence of
+adds the v3 state-closure/operator attacks and v4 phenomenon-first audit. Graph proximity is not evidence of
 novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
 exact counterexample.
 
@@ -80,7 +80,22 @@ flowchart TB
     DNMI --> V3
     DNCS --> V3
     V3 --> DV3["V3_NO_SURVIVOR"]
-    DV3 --> LOCK["data/GPU gates locked"]
+
+    subgraph V4["v4: phenomenon-first human / algorithm / agent audit"]
+        P1["P1 population response spectrum"]
+        P2["P2 aggregate-to-micro loss"]
+        P3["P3 strategic memory breaks"]
+        POP["dynamic markets + institutional response + effect surrogacy"]
+        MICRO["same-protocol macro--micro dissociation"]
+        RESET["no randomized erase/replay witness"]
+        POP -->|covers| P1
+        MICRO -->|covers| P2
+        RESET -->|no witness| P3
+    end
+
+    DV3 --> V4
+    V4 --> DV4["V4_NO_SURVIVOR"]
+    DV4 --> LOCK["data / API / worker / GPU gates locked"]
 ```
 
 ## Exact reductions retained
@@ -131,9 +146,12 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v3 C1 state closure | `RETIRED_PRIOR_ART` | controlled PSR, operational Markov condition and PSR-f completion | probe-relative model check only |
 | v3 C2 memory repair | `RETIRED_PRIOR_ART` | process-recovery task bound and data-driven Mori--Zwanzig | reduced-dynamics baseline only |
 | v3 C3 operator calibration | `RETIRED_PRIOR_ART` | Poisson/Stein identities, long-term Koopman and invariant-measure training | baseline after state closure only |
+| v4 P1 population response | `RETIRED_PRIOR_ART` | dynamic human/LLM markets, institutional comparisons and effect-surrogacy work; no signed law/sealed pair | lower-claim benchmark only |
+| v4 P2 aggregation loss | `RETIRED_PRIOR_ART` | direct same-protocol macro--micro dissociation | mandatory warning/baseline only |
+| v4 P3 strategic memory | `RETIRED_NO_WITNESS` | no randomized erase/replay market dataset with independent replication | none until a true causal break exists |
 
-The graph has 135 nodes after v3. Neither branch has a theorem, estimator or real mechanism ready for human novelty
-audit. Exp146 was not run. Both V100 workers and the RTX2060 remain outside the queue.
+The graph has 161 nodes after v4. Neither branch has a theorem, estimator or real mechanism ready for human novelty
+audit. Exp146 and a v4 experiment were not run. Both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

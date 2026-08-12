@@ -1,7 +1,7 @@
-# Candidate ledger — v1 through v3
+# Candidate ledger — v1 through v4
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** v3 `V3_NO_SURVIVOR`; NMI/NCS data and compute gates remain locked
+**Current outcome:** v4 `V4_NO_SURVIVOR`; NMI/NCS data and compute gates remain locked
 
 **Scientific meaning:** every current NMI primitive is occupied, and relaxation exceedance rejects a model class
 without identifying adaptation
@@ -326,3 +326,16 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-12 | v1.3 | Replaced raw NCS order effects with a contraction-envelope exceedance test over a validated frozen baseline class. | NCS remains `ATTACKING`; empirical identification and data contract absent |
 | 2026-08-12 | v2 | Audited target-conditioned identifiability, contraction estimation, dynamic causal response and digital-twin discrepancy; exp145 confirmed two non-adaptive exceedance witnesses; metadata screening found no sealed replication. | NMI `NMI_NO_SURVIVOR`; NCS `NCS_C0_FAIL_IDENTIFICATION`; no data/GPU authorization |
 | 2026-08-12 | v3 | Audited controlled state closure, memory repair and Poisson/operator calibration; all three reduce equation-by-equation to PSR/process-tensor/Mori--Zwanzig/Stein/Koopman results. | `V3_NO_SURVIVOR`; exp146 not run; no data/GPU authorization |
+| 2026-08-13 | v4 | Audited cross-population mechanism response, aggregation loss and strategic memory against direct human/LLM experiments, surrogate inference, interference theory and free repository metadata. | `V4_NO_SURVIVOR`; no experiment, outcome file, worker or GPU authorization |
+
+## 8. V4 phenomenon-first candidates
+
+| ID | Proposed phenomenon | Decisive coverage or missing witness | Final state |
+|---|---|---|---|
+| P1 | matched intervention-response spectrum across human, classical-algorithmic and agentic-AI populations | dynamic human/LLM market studies, institution-dependent comparisons, effect-prediction/surrogacy work; no signed law or free sealed pair | `RETIRED_PRIOR_ART` |
+| P2 | stable adaptation information lost from participant trajectories under anonymous aggregation | direct same-protocol macro--micro dissociation plus standard information/partial-identification theory | `RETIRED_PRIOR_ART` |
+| P3 | population-specific strategic memory after randomized causal breaks and rule transfer | no free randomized memory-erasure/replay market dataset or independent replication; session boundaries do not identify memory | `RETIRED_NO_WITNESS` |
+
+The narrower “LLM surrogate under market interference” question remains a legitimate technical gap, but v4 found
+only a direct composition of existing surrogacy and interference frameworks and no sealable market evidence. It is
+not promoted to an active candidate.

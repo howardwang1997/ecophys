@@ -100,3 +100,20 @@ comparison plus existing long-horizon Koopman and invariant-measure training obj
 
 The next search must begin from a specific scientific phenomenon with a discriminating observation or randomized
 mechanism, not from another generic synonym for hidden state, memory or long-horizon loss.
+
+## V4 route decision
+
+The phenomenon-first reversal did not reopen either venue:
+
+- NMI: `V4_NO_SURVIVOR`. P1/P2 are occupied at the phenomenon and method-neighborhood levels; the narrowed
+  surrogate-under-interference extension is an obvious composition unless a new estimand or theorem is produced.
+- NCS: `V4_NO_SURVIVOR`. No new signed scientific law and no free development-plus-sealed data pair survived.
+  P3 has no randomized causal-break witness.
+- A reproducible cross-population benchmark could be useful at a specialist venue, but it is not the current
+  Nature-level archival route.
+- No LLM API, raw human outcome, EcoMD training, V100 or RTX2060 work is authorized or queued.
+
+The next NCS search may return to real market physics. One metadata-level scout is feedback created by endogenous
+market rules: measured liquidity determines a future tick-size band, which then changes future liquidity. The
+one-step effect and annual reclassification are already studied, so only a replicated multi-year feedback law with
+credible identification could survive. It must be frozen in a separate iteration before any values are opened.

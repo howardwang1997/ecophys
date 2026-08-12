@@ -227,3 +227,22 @@ candidate list is not a queue.
 - Do not make humans, algorithms and LLM agents commensurate by z-scoring incomparable tasks after seeing results.
 - Preserve v1--v3 and all failed candidates append-only in the source/failure ledgers and knowledge graph.
 - Update `docs/research_lineage.md`, `logs/2026-08-13.md` and `.claude/memory/` after every v4 work session.
+
+## 10. Post-freeze outcome — 2026-08-13
+
+**Decision:** `V4_NO_SURVIVOR`. Full audit: `research/theory_exploration/phenomenon_audit_v4.md`.
+
+- P1 is `RETIRED_PRIOR_ART`: dynamic human/LLM market comparison, institution-dependent human/LLM differences,
+  large-scale treatment-effect prediction and classical-agent market comparisons occupy the broad response-spectrum
+  framing. V4 specified no new signed cross-population law, and no free development-plus-sealed matched pair exists.
+- P2 is `RETIRED_PRIOR_ART`: a direct matched-protocol study already reports aggregate cooperation agreement with
+  individual heterogeneity and conditional-rule mismatch. Generic aggregation loss remains standard information,
+  ecological-inference or partial-identification theory.
+- P3 is `RETIRED_NO_WITNESS`: no free randomized memory-break/replay market dataset with raw trajectories and an
+  independent replication was identified. A session or price reset is not a causal erasure of strategy memory.
+- Interference-aware LLM surrogacy is a legitimate open technical extension, but the obvious route is a composition
+  of existing surrogacy and marketplace/network-interference results. No non-equivalent NMI theorem or NCS data
+  contract survived.
+
+No experiment was preregistered or run. No outcome file, paid data, API, worker, V100, RTX2060 or GPU queue was
+opened. A successor iteration may audit endogenous market-rule feedback, but v4 does not admit or authorize it.

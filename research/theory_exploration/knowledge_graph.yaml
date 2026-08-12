@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
-as_of: "2026-08-12"
-iteration: theory-exploration-nmi-ncs-v3
-decision: V3_NO_SURVIVOR
+as_of: "2026-08-13"
+iteration: phenomenon-first-nmi-ncs-v4
+decision: V4_NO_SURVIVOR
 
 nodes:
   - id: src.controlled_world_models
@@ -1081,6 +1081,215 @@ nodes:
     track: both
     claim: V3_NO_SURVIVOR; all three candidates reduce to mapped closure, memory or operator theory, exp146 was not run, and every data and GPU gate remains locked.
 
+  - id: src.v4_llm_market_feedback
+    type: source
+    title: Can Generative AI Agents Behave Like Humans in Laboratory Markets
+    track: both
+    claim: Dynamic LLM-agent price feedback reproduces some broad human laboratory-market trends while understating behavioral heterogeneity.
+    url: https://arxiv.org/abs/2505.07457
+    primary: true
+    evidence_level: preprint
+  - id: src.v4_llm_credence_markets
+    type: source
+    title: LLM-Agent Interactions on Markets with Information Asymmetries
+    track: both
+    claim: LLM credence-goods markets respond differently from human markets across liability, verifiability, reputation and repeated interaction.
+    url: https://arxiv.org/abs/2603.08853
+    primary: true
+    evidence_level: preprint
+  - id: src.v4_macro_micro_dissociation
+    type: source
+    title: Collective Cooperation without Individual Fidelity in LLM Agents
+    track: both
+    claim: Matched human and LLM protocols can agree in aggregate trajectories while disagreeing in individual heterogeneity and conditional response rules.
+    url: https://arxiv.org/abs/2606.30454
+    primary: true
+    evidence_level: preprint
+  - id: src.v4_llm_surrogacy
+    type: source
+    title: Statistical Foundations of LLM-based A-B Testing
+    track: nmi
+    claim: Surrogacy and comparability identify calibrated human treatment effects from LLM outcomes under no interference, with falsification and overlap diagnostics.
+    url: https://arxiv.org/abs/2606.17165
+    primary: true
+    evidence_level: preprint
+  - id: src.v4_social_effect_forecast
+    type: source
+    title: Large Language Models Can Predict Results of Social Science Experiments
+    track: both
+    claim: LLM predictions correlate with hundreds of experimental effects but systematically overestimate their magnitude.
+    url: https://www.nature.com/articles/s41586-026-10742-x
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v4_marketplace_interference
+    type: source
+    title: Experimental Design in Two-Sided Platforms
+    track: nmi
+    claim: Marketplace interference creates design-dependent treatment-effect bias characterized by a stochastic mean-field market model.
+    url: https://arxiv.org/abs/2002.05670
+    primary: true
+    evidence_level: preprint
+  - id: src.v4_treatment_dependent_interference
+    type: source
+    title: Experimentation under Treatment Dependent Network Interference
+    track: nmi
+    claim: Treatment-dependent interaction networks admit explicit instrumental-variable estimators under declared assumptions.
+    url: https://proceedings.mlr.press/v286/shankar25a.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v4_intervention_drift
+    type: source
+    title: The Illusion of Intervention
+    track: both
+    claim: LLM-simulated treatments may alter the simulated user specification rather than isolate the intended intervention.
+    url: https://arxiv.org/abs/2605.20767
+    primary: true
+    evidence_level: preprint
+
+  - id: kr.v4_population_surrogate_coverage
+    type: known_result
+    title: Population and treatment-effect fidelity coverage
+    track: both
+    claim: Dynamic markets, institutional comparisons and calibrated effect prediction already cover generic human-to-LLM response fidelity questions.
+  - id: kr.v4_macro_micro_nonimplication
+    type: known_result
+    title: Aggregate fidelity does not imply micro fidelity
+    track: both
+    claim: A direct matched-protocol experiment already shows aggregate trajectory agreement alongside different heterogeneity and local response rules.
+  - id: kr.v4_interference_composition
+    type: known_result
+    title: Surrogacy and market-interference composition boundary
+    track: nmi
+    claim: No-interference LLM surrogacy and existing marketplace or treatment-dependent interference theory are the mandatory nearest components of any narrowed estimator.
+
+  - id: cand.v4.population_response_spectrum
+    type: candidate
+    title: Cross-population intervention-response spectrum
+    track: both
+    claim: Human, classical-algorithmic and agentic-AI populations might obey a reproducible ordering of mechanism responses.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen as P1 before reading outcome values.
+        evidence: [papers/proposal/plan_phenomenon_first_nmi_ncs_v4.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared the framing with dynamic markets, institutional agent markets and treatment-effect surrogate studies.
+        evidence: [src.v4_llm_market_feedback, src.v4_llm_credence_markets, src.v4_social_effect_forecast]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: The wide comparison is occupied, no signed law was specified and metadata yielded no development-plus-sealed matched pair.
+        evidence: [kr.v4_population_surrogate_coverage, data.v4_no_sealed_population_pair]
+  - id: cand.v4.aggregation_loss_profile
+    type: candidate
+    title: Causal adaptation loss under anonymous aggregation
+    track: both
+    claim: A stable mechanism-dependent gap might separate aggregate trajectory fidelity from individual adaptation fidelity.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen as P2 before reading outcome values.
+        evidence: [papers/proposal/plan_phenomenon_first_nmi_ncs_v4.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Audited matched human and LLM studies plus aggregation and surrogate-identification neighbors.
+        evidence: [src.v4_macro_micro_dissociation, src.v4_llm_surrogacy]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: A direct matched-protocol study already reports the intended macro-micro dissociation and no distinct quantitative law survived.
+        evidence: [kr.v4_macro_micro_nonimplication, ce.v4_aggregate_micro_alias]
+  - id: cand.v4.strategic_memory_breaks
+    type: candidate
+    title: Strategic memory under causal breaks and rule transfer
+    track: both
+    claim: Population types might retain systematically different strategy information after randomized erasure and transfer.
+    status: RETIRED_NO_WITNESS
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen as P3 before reading outcome values.
+        evidence: [papers/proposal/plan_phenomenon_first_nmi_ncs_v4.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Screened market-experiment metadata for randomized erase or replay interventions and raw trajectories.
+        evidence: [data.v4_no_randomized_memory_break]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_NO_WITNESS
+        reason: No free randomized memory-break dataset with an independent replication was identified; ordinary resets are not causal erasure.
+        evidence: [data.v4_no_randomized_memory_break, ce.v4_reset_not_erasure]
+
+  - id: po.v4_signed_population_law
+    type: proof_obligation
+    title: Signed cross-population law and non-equivalence
+    track: both
+    claim: P1 required a directional law with competing explanations and evidence beyond a benchmark vector or known treatment-effect calibration.
+  - id: po.v4_aggregation_bound
+    type: proof_obligation
+    title: Nonstandard aggregation-loss law
+    track: both
+    claim: P2 required a quantitative law or identified-set bound beyond data processing ecological inference and the published macro-micro dissociation.
+  - id: po.v4_memory_manipulation
+    type: proof_obligation
+    title: Verified causal memory manipulation
+    track: both
+    claim: P3 required randomized strategy-information erasure with a manipulation check and untouched replication.
+
+  - id: ce.v4_population_incommensurability
+    type: counterexample
+    title: Population-task incommensurability
+    track: both
+    claim: Post-hoc normalization can make human, algorithm and LLM responses appear ordered even when their actions, information and utilities are not the same estimand.
+  - id: ce.v4_aggregate_micro_alias
+    type: counterexample
+    title: Aggregate and micro-mechanism aliasing
+    track: both
+    claim: Distinct individual response distributions and conditional rules can generate similar aggregate trajectories.
+  - id: ce.v4_reset_not_erasure
+    type: counterexample
+    title: Nominal reset without strategy erasure
+    track: both
+    claim: A new session, prompt truncation or price reset can leave human or agent strategy information intact and therefore does not identify memory retention.
+
+  - id: bench.v4_population_surrogacy
+    type: benchmark
+    title: Human-agent market and surrogate oracle
+    track: both
+    claim: Any P1 result must differ from direct dynamic market comparisons institutional treatments and calibrated treatment-effect prediction.
+  - id: bench.v4_macro_micro
+    type: benchmark
+    title: Matched-protocol macro-micro fidelity oracle
+    track: both
+    claim: Any P2 result must add a cross-mechanism law beyond the published aggregate-versus-local mismatch.
+  - id: bench.v4_interference_memory
+    type: benchmark
+    title: Interference and causal-break oracle
+    track: both
+    claim: Any narrowed method must exceed existing market-interference estimators and any memory claim needs actual randomized erasure.
+
+  - id: data.v4_no_sealed_population_pair
+    type: dataset
+    title: V4 cross-population metadata outcome
+    track: both
+    claim: Public market packages include development material but no commensurate development-plus-sealed human classical and agentic population pair was found; no outcomes were opened.
+  - id: data.v4_no_randomized_memory_break
+    type: dataset
+    title: V4 causal-break metadata outcome
+    track: both
+    claim: No free market dataset with randomized strategy-memory erasure raw trajectories and independent replication was identified.
+  - id: decision.iteration_v4
+    type: decision
+    title: Phenomenon-first exploration v4 outcome
+    track: both
+    claim: V4_NO_SURVIVOR; P1 and P2 are occupied, P3 lacks a causal-break witness, no experiment ran and all data, API, worker and GPU gates remain locked.
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -1240,3 +1449,33 @@ edges:
   - {source: decision.iteration_v3, target: bench.v3_psr_process_tensor, type: supports, claim: The closure oracle records the decisive C1 reduction.}
   - {source: decision.iteration_v3, target: bench.v3_mz_process_recovery, type: supports, claim: The memory oracle records the decisive C2 reduction.}
   - {source: decision.iteration_v3, target: bench.v3_poisson_koopman, type: supports, claim: The operator oracle records the decisive C3 reduction and noisy-XOR scope warning.}
+
+  - {source: src.v4_llm_market_feedback, target: kr.v4_population_surrogate_coverage, type: supports, claim: Direct dynamic market feedback and human comparison occupy the broad market-population question.}
+  - {source: src.v4_llm_credence_markets, target: kr.v4_population_surrogate_coverage, type: supports, claim: Institution-dependent LLM and human market differences are already measured.}
+  - {source: src.v4_social_effect_forecast, target: kr.v4_population_surrogate_coverage, type: supports, claim: Cross-experiment treatment-effect fidelity and systematic distortion already have large-scale evidence.}
+  - {source: src.v4_macro_micro_dissociation, target: kr.v4_macro_micro_nonimplication, type: proves, claim: The same-protocol study directly establishes macro agreement with micro and rule mismatch.}
+  - {source: src.v4_llm_surrogacy, target: kr.v4_interference_composition, type: supports, claim: Surrogacy and comparability provide the no-interference calibration component.}
+  - {source: src.v4_marketplace_interference, target: kr.v4_interference_composition, type: supports, claim: Two-sided marketplace interference provides the market design and bias component.}
+  - {source: src.v4_treatment_dependent_interference, target: kr.v4_interference_composition, type: supports, claim: Treatment-dependent network estimators cover endogenous interaction structure.}
+  - {source: src.v4_intervention_drift, target: ce.v4_population_incommensurability, type: supports, claim: Intervention prompts may change the represented computational participant as well as the intended treatment.}
+
+  - {source: kr.v4_population_surrogate_coverage, target: cand.v4.population_response_spectrum, type: covers, claim: Existing dynamic-market institutional and treatment-effect studies occupy the generic cross-population spectrum.}
+  - {source: kr.v4_macro_micro_nonimplication, target: cand.v4.aggregation_loss_profile, type: covers, claim: Direct matched-protocol evidence occupies the intended aggregate-to-micro dissociation.}
+
+  - {source: cand.v4.population_response_spectrum, target: po.v4_signed_population_law, type: requires, claim: A signed law with competing explanations was required but absent.}
+  - {source: cand.v4.population_response_spectrum, target: ce.v4_population_incommensurability, type: falsified_by, claim: Incomparable actions utilities and information can make a post-hoc response order meaningless.}
+  - {source: cand.v4.population_response_spectrum, target: bench.v4_population_surrogacy, type: distinguished_by, claim: Dynamic market human-agent comparisons and surrogate calibration are mandatory direct comparators.}
+  - {source: cand.v4.population_response_spectrum, target: kr.v4_population_surrogate_coverage, type: retired_by, claim: Prior studies occupy the wide claim and metadata provides no sealed pair.}
+  - {source: cand.v4.aggregation_loss_profile, target: po.v4_aggregation_bound, type: requires, claim: A new quantitative law beyond generic aggregation loss was required but absent.}
+  - {source: cand.v4.aggregation_loss_profile, target: ce.v4_aggregate_micro_alias, type: falsified_by, claim: Similar aggregate paths can arise from different individual distributions and local rules.}
+  - {source: cand.v4.aggregation_loss_profile, target: bench.v4_macro_micro, type: distinguished_by, claim: The direct matched-protocol macro-micro result is the nearest oracle.}
+  - {source: cand.v4.aggregation_loss_profile, target: kr.v4_macro_micro_nonimplication, type: retired_by, claim: The proposed phenomenon is already demonstrated directly.}
+  - {source: cand.v4.strategic_memory_breaks, target: po.v4_memory_manipulation, type: requires, claim: Randomized information erasure and a manipulation check were required but unavailable.}
+  - {source: cand.v4.strategic_memory_breaks, target: ce.v4_reset_not_erasure, type: falsified_by, claim: Ordinary resets can retain strategy information and cannot identify memory.}
+  - {source: cand.v4.strategic_memory_breaks, target: bench.v4_interference_memory, type: distinguished_by, claim: Causal-break designs rather than session boundaries are the required oracle.}
+  - {source: cand.v4.strategic_memory_breaks, target: data.v4_no_randomized_memory_break, type: retired_by, claim: Metadata yielded no admissible causal-break witness or sealed replication.}
+
+  - {source: decision.iteration_v4, target: compute.nmi_post_n1, type: forbids, claim: No v4 non-equivalent method or theorem survived, so NMI scaling remains locked.}
+  - {source: decision.iteration_v4, target: compute.ncs_post_c1, type: forbids, claim: No v4 scientific law or sealed data contract survived, so NCS scaling remains locked.}
+  - {source: decision.iteration_v4, target: data.v4_no_sealed_population_pair, type: supports, claim: The cross-population data gate failed before outcomes.}
+  - {source: decision.iteration_v4, target: data.v4_no_randomized_memory_break, type: supports, claim: The strategic-memory witness gate failed at metadata.}

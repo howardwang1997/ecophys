@@ -24,6 +24,10 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
 | 2026-08-12 | V3 C1 interventional state closure | `RETIRED_PRIOR_ART` | Controlled PSR/causal-state rows and the operational Markov condition already define the certificate; PSR-f provides rank-based state completion. | A finite controlled memory rejection is probe-relative and does not identify a unique hidden state. | A weaker-assumption population implication or repair lower bound outside PSR/process-state theory. |
 | 2026-08-12 | V3 C2 semigroup-memory repair | `RETIRED_PRIOR_ART` | Process-recovery theory already bounds supported task error by operational memory strength, while Mori--Zwanzig supplies the exact resolved-memory split. | A Chapman--Kolmogorov defect diagnoses inadequate closure but does not uniquely recover physical memory. | A sharp observable repair guarantee not obtainable from process tensors, PSR rank or Mori--Zwanzig. |
 | 2026-08-12 | V3 C3 Poisson operator calibration | `RETIRED_PRIOR_ART` | Poisson/Stein identities and long-horizon Koopman/invariant-measure objectives directly contain the proposed algebra and optimization form. | Long-run calibration presupposes a sufficient state; it cannot compensate for projection-induced memory. | A new estimator or bound that remains valid under declared partial observation and is not a direct composition. |
+| 2026-08-13 | V4 P1 population response spectrum | `RETIRED_PRIOR_ART` | Direct dynamic-market and credence-market studies already compare LLM agents with human experiments across feedback or institutional mechanisms; treatment-effect prediction and calibration are also established. No signed cross-population law or sealed matched pair was specified. | Benchmark breadth and a vector of group differences are not a scientific mechanism. | A preregistered directional law with competing explanations, commensurate executable rules and independent untouched replication. |
+| 2026-08-13 | V4 P2 aggregation-loss profile | `RETIRED_PRIOR_ART` | A same-protocol human/LLM network study already demonstrates macro trajectory agreement with micro heterogeneity and conditional-rule mismatch; generic aggregation loss is standard. | Aggregate fidelity cannot validate microscopic mechanisms, but this warning is already a published result. | A new quantitative cross-mechanism law or non-equivalent identified-set bound with paired participant/aggregate replication. |
+| 2026-08-13 | V4 P3 strategic memory under causal breaks | `RETIRED_NO_WITNESS` | No free dataset metadata supplied a randomized strategy-memory break, raw market trajectories and an independent replication. Ordinary resets and session boundaries are not memory interventions. | Never infer retained strategy state from observational persistence across a nominal reset. | A legal randomized erase/replay design with manipulation checks and a sealed replication. |
+| 2026-08-13 | V4 interference-aware LLM surrogate narrowing | NOT ADMITTED | LLM surrogacy explicitly leaves interference open, but marketplace and treatment-dependent network interference already provide the neighboring identification machinery; v4 found no non-equivalent theorem or data contract. | A paper's future-work sentence is not evidence that the obvious method composition is novel. | A distinct estimand, weaker assumption, impossibility-plus-repair result or variance law and an independent strategic-interaction dataset. |
 
 ## Cross-iteration rules extracted from the failures
 
@@ -54,3 +58,11 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
     they do not discover histories erased by that class.
 14. Exact one-step and invariant-marginal agreement does not imply multi-time agreement. The v3 noisy-XOR example
     is a mandatory negative control for future long-horizon calibration claims.
+15. Cross-population comparison requires a signed, falsifiable law and commensurate interventions; adding human,
+    algorithm and LLM columns to a benchmark does not itself create a mechanism.
+16. Aggregate agreement can coexist with different heterogeneity and local response rules. This is now direct
+    prior art, not merely a hypothetical failure mode.
+17. An explicitly listed open extension is not automatically novel when its obvious solution is a composition of
+    established neighboring frameworks.
+18. A price, prompt or session reset is not a causal memory break unless strategy information is randomized or
+    demonstrably erased and the manipulation is checked.

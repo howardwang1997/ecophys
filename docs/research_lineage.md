@@ -5,13 +5,15 @@ for a later project.
 
 ## Current theory state
 
-`phenomenon-first-nmi-ncs-v4` started from integrated `main@8283e77f7` on 2026-08-13. NMI/NCS remain the targets,
-but v4 selects a concrete intervention-rich scientific phenomenon before proposing a method. It audits matched
-rule responses across human, classical-algorithmic and agentic-AI populations, causal information lost under
-anonymous aggregation and strategic memory under true randomized causal breaks. Its frozen T0 permits only
-primary literature and official dataset metadata with <=30 Mac CPU core-hours; no outcome values, human
-interaction, API/data purchase, worker contact or GPU use. Protocol:
-`papers/proposal/plan_phenomenon_first_nmi_ncs_v4.md`.
+`phenomenon-first-nmi-ncs-v4` started from integrated `main@8283e77f7` on 2026-08-13 and closed
+`V4_NO_SURVIVOR` the same day. Dynamic human/LLM markets, institutional agent-market comparisons, large-scale
+treatment-effect prediction and LLM surrogacy occupy P1's broad response-spectrum framing. A direct matched-protocol
+study already establishes P2's macro agreement with micro heterogeneity/rule mismatch. P3 has no free randomized
+memory-erasure/replay market dataset with an independent replication. The narrower surrogate-under-interference
+extension is currently only a composition of existing surrogacy and market/network-interference frameworks. No
+outcomes, human interaction, API/data purchase, worker or GPU were used. Protocol and audit:
+`papers/proposal/plan_phenomenon_first_nmi_ncs_v4.md` and
+`research/theory_exploration/phenomenon_audit_v4.md`.
 
 `theory-exploration-nmi-ncs-v3` started from integrated `main@490fffe42` on 2026-08-12 and closed
 `V3_NO_SURVIVOR` on 2026-08-13. Controlled state closure and repair reduce to controlled PSR, operational Markov

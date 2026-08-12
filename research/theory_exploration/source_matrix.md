@@ -1,6 +1,6 @@
 # Primary-source coverage matrix
 
-**Search date:** 2026-08-12  
+**Search date:** 2026-08-13
 **Rule:** theorem/equation coverage blocks claims; venue fit does not establish novelty
 
 | Primary source | Audited result | Candidate statement blocked or constrained | Residual gap, if any |
@@ -103,3 +103,28 @@ switching system identification and active experiment design.
 
 V3 therefore closes `V3_NO_SURVIVOR`. Experiment 146 was not run because the mandatory literature stop condition
 fired before preregistration.
+
+## V4 phenomenon-first audit
+
+| Primary source | Audited result | V4 statement blocked or constrained | Residual gap, if any |
+|---|---|---|---|
+| [Dynamic LLM laboratory markets](https://arxiv.org/abs/2505.07457) | LLM agents interact through endogenous price feedback and are compared with human positive- and negative-feedback market experiments; broad trends can match while heterogeneity differs. | P1 as the first human/LLM dynamic-market comparison or first population-response mismatch. | A prospectively signed law across three population classes and independent experiments was not supplied by v4. |
+| [LLM credence-goods markets](https://arxiv.org/abs/2603.08853) | Varies liability, verifiability, reputation, repetition and preferences, then compares institution-dependent outcomes with human experiments. | A generic cross-institution response spectrum for agentic markets. | Exact reproducibility and broader populations remain useful benchmark questions, not an admitted Nature claim. |
+| [Collective cooperation without individual fidelity](https://arxiv.org/abs/2606.30454) | Uses the same human protocol, payoffs and networks for nine open-weight LLMs and finds macro agreement with micro heterogeneity and conditional-rule mismatch. | P2's intended aggregate-to-micro dissociation. | Replication across mechanisms could strengthen the finding but does not make the phenomenon new. |
+| [LLM A/B surrogacy](https://arxiv.org/abs/2606.17165) | Gives surrogacy/comparability identification, falsification and overlap-bias tools for human effects; assumes no interference. | Generic treatment-effect transport/calibration as a new method. | Multi-agent interference is explicitly open, but direct composition with existing interference methods is not enough for NMI. |
+| [LLMs predict social-science experiments](https://www.nature.com/articles/s41586-026-10742-x) | Tests hundreds of effects in preregistered experiment archives and finds useful correlation but systematic effect-size overestimation. | Treatment-effect fidelity across experiments as an unexplored scientific question. | Strategic interaction is different, but needs an independently identified and replicated law. |
+| [Experimental design in two-sided platforms](https://arxiv.org/abs/2002.05670) | Mean-field marketplace models characterize interference bias under demand-, supply- and two-sided randomization. | Treating marketplace interference as a new complication introduced by LLM agents. | A distinct surrogate-under-interference estimand or theorem remains logically possible but was not found. |
+| [Treatment-dependent network interference](https://proceedings.mlr.press/v286/shankar25a.html) | Provides estimators and assumptions when treatment changes the interference network. | Endogenous interaction structure alone as a new causal-estimation primitive. | LLM-specific measurement error may alter rates, but v4 derived no new non-equivalent result. |
+| [Illusion of intervention](https://arxiv.org/abs/2605.20767) | Shows that an LLM-simulated treatment can alter the simulated user rather than only the intervention. | Treating prompt/persona invariance as an optional robustness check. | Executable-mechanism/text orthogonalization is useful design hygiene, but nearby framing and demand-effect work occupies the broad claim. |
+
+### V4 synthesis
+
+- P1's broad three-population comparison is a benchmark composition without a preregistered signed law or sealed
+  data pair; it is `RETIRED_PRIOR_ART`.
+- P2's macro--micro dissociation has a direct matched-protocol precedent and is `RETIRED_PRIOR_ART`.
+- P3 lacks a randomized memory-break witness and independent replication, so it is `RETIRED_NO_WITNESS`.
+- The OpenICPSR credence-goods package is development-only metadata. Its licence and outcome files were not opened
+  after D0 failed.
+
+V4 therefore closes `V4_NO_SURVIVOR` without an experiment, raw outcome inspection, API call, worker contact or GPU
+use.
