@@ -5,6 +5,16 @@ for a later project.
 
 ## Current theory state
 
+`endogenous-market-rule-feedback-v5` started from integrated `main@268050126` on 2026-08-13. It is a bounded
+metadata-first scout of the real loop `ADNT_y -> annual liquidity-band/tick assignment_(y+1) -> ADNT_(y+1)`. The
+candidate NCS finding is a replicated discontinuity in the future statistic that controls the rule's next setting,
+not the already-studied one-step effect of tick changes on spreads, depth or orders. EU/EEA history is development,
+later EU cycles are temporal validation and instrument-level UK files are sealed external replication. Initial
+authorization is official rules, literature and catalog/schema/licence metadata only: <=30 Mac CPU core-hours,
+zero instrument-level values, purchases, workers or GPUs. NMI remains conditional on a method/theorem outside
+standard RD and threshold systems. Protocol: `papers/proposal/plan_endogenous_market_rule_feedback_nmi_ncs_v5.md`.
+This topic iteration is unrelated to the archived exp141 Plan v5 and does not relabel its generated results.
+
 `phenomenon-first-nmi-ncs-v4` started from integrated `main@8283e77f7` on 2026-08-13 and closed
 `V4_NO_SURVIVOR` the same day. Dynamic human/LLM markets, institutional agent-market comparisons, large-scale
 treatment-effect prediction and LLM surrogacy occupy P1's broad response-spectrum framing. A direct matched-protocol
