@@ -10,6 +10,10 @@ for a later project.
 `origin/main@51466a703`. The branch does not erase Plan v4's G0 failure: it can only validate candidate-specification
 completeness and route a genuinely new mathematical object to human audit.
 
+The admission infrastructure is complete. Exp142 retained a formal aggregation-process FAIL; exp143 repaired only
+the raw-observation-to-positive-gate mapping and passed 10/10 frozen process gates. The same eight controlled cases
+were reproduced, but the suite explicitly contains no real candidate. This is QA/process evidence, not a G0 PASS.
+
 The pre-iteration state is immutable at
 `archive/plan-v5-exp141-feasibility-20260812@436dad6e7f80999584e44c4a616a1f213b9c814d`. The original
 `interventional-market-world-v1` branch remains at the same commit. Experiment 141's generated-data F1--F3 PASS is
@@ -26,7 +30,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Real-physics zero-cost sweep | Closed with no positive law | Parsers, nulls, failure ledger | Heavy-tail transient transfer, static universal evaluator, regime or taker-flow law |
 | Sim2Science workshop paper | Complete audit-only artifact | Transparent model--reality-gap evidence | EcoMD software/checkpoint release or positive market mechanism |
 | Plan v5 interventional world model | Archived after F1--F3 generated feasibility PASS | Exact exchange, exp141 workflow and worker compatibility | No method, fidelity or real-market claim |
-| Plan v4 G0 re-entry v1 | Active planning/development; old G0 FAIL remains binding | Candidate admission, equivalence attacks and reproducible stop rules | No novelty PASS without new mathematics and human audit |
+| Plan v4 G0 re-entry v1 | R1--R3 process infrastructure complete; no candidate; old G0 FAIL binding | Candidate admission, equivalence attacks and reproducible stop rules | No novelty PASS without new mathematics and human audit |
 
 ## Code inheritance rules
 

@@ -32,7 +32,9 @@ Plan v4 is the current NCS plan of record, but its v0/v1 invariant-calibration c
 closed at G0: it reduced to known components and supplied no new coupling, weaker-assumption residual
 theorem or variance--cost result. The active re-entry branch therefore starts with a theorem-first
 candidate-admission contract, not another estimator implementation. It uses no market data or GPU and
-cannot emit an automated novelty PASS. See the [Plan v4 proposal](papers/proposal/plan_v4_ncs.md),
+cannot emit an automated novelty PASS. Exp142 preserved a process FAIL caused by inverted boolean aggregation;
+the separately preregistered exp143 repair passed all ten process gates. No real candidate was present, so G0 and
+the data/GPU locks are unchanged. See the [Plan v4 proposal](papers/proposal/plan_v4_ncs.md),
 [G0 decision](papers/proposal/ncs_g0_forward_audit_2026-08-10.md), [re-entry plan](papers/proposal/plan_v4_g0_reentry_v1.md),
 and [research lineage](docs/research_lineage.md).
 

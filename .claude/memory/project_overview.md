@@ -1,6 +1,6 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. Plan v4 is authoritative for the conditional NCS route; its old G0 FAIL remains binding. The current theorem-first re-entry work uses no market data or GPU. Plan v5/exp141 is archived context. Compute is non-H20 and data expansion remains gated.
+description: EcoPhys/EcoMD research overview. Plan v4 is authoritative for the conditional NCS route; its old G0 FAIL remains binding. The theorem-first process guard is complete after exp142 FAIL and exp143 repair PASS, but no real candidate exists. Plan v5/exp141 is archived context. Compute is non-H20 and data expansion remains gated.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
@@ -9,8 +9,9 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 
 > **Plan-of-record update (2026-08-12).** Use `papers/proposal/plan_v4_ncs.md` and the constrained re-entry plan
 > `papers/proposal/plan_v4_g0_reentry_v1.md`. The v0/v1 invariant-calibration candidate remains closed at G0; the
-> current branch validates a theorem-first admission process and cannot emit a novelty PASS. R0--R3 use generated
-> manifests on CPU only. Exp141's generated-data feasibility result is independently archived and is not Plan v4
+> theorem-first admission process now passes its repaired process gate and cannot emit a novelty PASS. Exp142's
+> aggregation FAIL remains immutable; exp143 passed the isolated repair. No real candidate exists. R0--R3 used
+> generated manifests on CPU only. Exp141's generated-data feasibility result is independently archived and is not Plan v4
 > evidence. Paid data, NCS claims and GPU expansion remain locked; H20 is excluded.
 
 > **Historical Plan v4 zero-cost preflight (closed at G0).** The broad estimator novelty claim was
@@ -18,7 +19,7 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > single-process API and corrected force/jump semantics now pass CPU and versioned single-V100 mechanics tests,
 > and a two-rank CPU/Gloo atomic exact-resume test is bit-exact. The single-V100 exact-resume and production
 > cursor contract remain open. Exp131 validates known event-gradient controls only; exp132 failed its frozen
-> diagnostic utility gate, so G0 remains AMBER. Free LOBSTER exp130 validates streaming book reconstruction
+> diagnostic utility gate and did not support G0; the later forward audit made G0 FAIL. Free LOBSTER exp130 validates streaming book reconstruction
 > only. Exp134 adds a correctly specified minimal synthetic L2 recovery PASS but not an EcoMD/real bridge; its
 > exact latent-sign gauge requires an external sign anchor. G3 remains open and paid L2 stays locked. Details:
 > `project_ncs_zero_cost_preflight_2026-08-09.md` and

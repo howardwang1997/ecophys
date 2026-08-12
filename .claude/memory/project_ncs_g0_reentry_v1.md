@@ -19,3 +19,8 @@ R0--R3 use existing documents and generated YAML fixtures on the Mac CPU only, c
 GPU-hours. They open no market or sealed data. Current 2xV100 32 GB resources and any future non-H20 expansion stay
 locked until a new theorem/identity survives primary-literature and proof review. Plan and gates:
 `papers/proposal/plan_v4_g0_reentry_v1.md`.
+
+R1--R3 completed on 2026-08-12. Exp142's eight cases all matched, but its raw `actual_market_data_read=false` was
+incorrectly folded through `all(gates.values())`, so the immutable formal result is `FAIL_PROCESS_VALIDATION` (raw
+SHA `ec41af58…`). Exp143 was separately preregistered and changed only aggregation semantics; 10/10 positive gates
+passed (raw SHA `56084cbc…`). The suite has no real candidate, so G0 remains FAIL and both V100s remain locked.

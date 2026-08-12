@@ -1,11 +1,20 @@
 # Plan v4 G0 re-entry v1 — theorem-first admission before implementation
 
 **Frozen:** 2026-08-12  
-**Status:** planning gate; no candidate method has been admitted  
+**Status:** R1--R3 process infrastructure complete; G0 remains FAIL; R4 blocked without a real candidate
 **Plan of record:** `papers/proposal/plan_v4_ncs.md`  
 **Binding negative decision:** `papers/proposal/ncs_g0_forward_audit_2026-08-10.md`  
 **Development branch:** `ncs-plan-v4-g0-reentry-v1`  
 **Immutable predecessor archive:** `archive/plan-v5-exp141-feasibility-20260812@436dad6e7f80999584e44c4a616a1f213b9c814d`
+
+**Execution update (2026-08-12):** R1--R3 are complete as process infrastructure. Exp142 retained a formal
+`FAIL_PROCESS_VALIDATION` caused by an inverted raw-observation boolean; exp143 preregistered the one-defect repair
+and passed all ten positive aggregation gates. All eight candidate fixtures matched, but none is a real candidate.
+G0 therefore remains FAIL, R4 has no admitted input, and data/GPU scale-up remains locked.
+
+Repository integration was verified separately from the immutable formal runs: 659 collected tests passed across
+resource-bounded shards after the affected paths were rerun, strict mypy passed 91 source files, and scoped
+diff-relevant Ruff checks passed. The repository-wide Ruff backlog is not part of this gate and remains open.
 
 ## 1. Decision and scope
 
