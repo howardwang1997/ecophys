@@ -28,14 +28,17 @@ EcoMD v1 failed its stationary-fidelity gate, the invariant-calibration route fa
 novelty gate, and the real-market thermodynamic hypotheses failed their empirical or
 identifiability gates. These failures remain binding.
 
-The active Plan v5 feasibility branch asks a different question: can a model with an exact
-exchange mechanism, learned event behavior, slower behavioral adaptation and explicit
-institutional interventions predict a sealed market-rule change? Experiment 141 passed its
-generated-data mechanism, controlled-identifiability and cross-hardware gates, but its task is
-family-conditioned and deliberately not real evidence. R0 intervention/data selection is now
-active; R1, data purchase and manuscript claims remain locked. See the [Plan v5 proposal](papers/proposal/plan_v5_interventional_market_world.md),
-[research lineage](docs/research_lineage.md), [experiment 141 preregistration](experiments/141_multiclock_intervention_feasibility/PREREGISTRATION.md),
-and [result](experiments/141_multiclock_intervention_feasibility/RESULTS.md).
+Plan v4 is the current NCS plan of record, but its v0/v1 invariant-calibration construction remains
+closed at G0: it reduced to known components and supplied no new coupling, weaker-assumption residual
+theorem or variance--cost result. The active re-entry branch therefore starts with a theorem-first
+candidate-admission contract, not another estimator implementation. It uses no market data or GPU and
+cannot emit an automated novelty PASS. See the [Plan v4 proposal](papers/proposal/plan_v4_ncs.md),
+[G0 decision](papers/proposal/ncs_g0_forward_audit_2026-08-10.md), [re-entry plan](papers/proposal/plan_v4_g0_reentry_v1.md),
+and [research lineage](docs/research_lineage.md).
+
+Plan v5 and experiment 141 are independently archived feasibility context. Exp141 passed generated-data
+mechanism, controlled-identifiability and cross-hardware gates, but its family-conditioned task is not
+real-market or method evidence and is not promoted into Plan v4.
 
 The EcoMD source-preview boundary is unchanged; see the [release scope](papers/proposal/ecomd_v1_release_scope_2026-08-10.md)
 and [research-preview contract](docs/ecomd_research_preview_contract.md).
@@ -75,8 +78,8 @@ scripts/        current utilities plus clearly marked historical launch scripts
 logs/           dated research work log
 ```
 
-New Plan v5 components live under `ecomd/market_world/`; their presence does not turn
-historical EcoMD checkpoints into validated market-world models.
+Plan v5 components under `ecomd/market_world/` and historical EcoMD checkpoints remain available as
+archived research artifacts; their presence does not validate a market-world model or a Plan v4 method claim.
 
 ## License
 

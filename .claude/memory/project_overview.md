@@ -1,17 +1,17 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. Plan v5 (2026-08-12) is active: a mechanism-separated interventional market world. Exp141 generated-data F1-F3 passed; R0 intervention/data selection is active. Plan v3/4 and EcoMD positive claims are historical failures. Compute is non-H20 and data expansion remains gated.
+description: EcoPhys/EcoMD research overview. Plan v4 is authoritative for the conditional NCS route; its old G0 FAIL remains binding. The current theorem-first re-entry work uses no market data or GPU. Plan v5/exp141 is archived context. Compute is non-H20 and data expansion remains gated.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 
 # EcoPhys — Project Overview
 
-> **Plan-of-record update (2026-08-12).** Use `papers/proposal/plan_v5_interventional_market_world.md`.
-> Plan v4 invariant calibration closed at G0 and Plan v3 physics claims are historical. Exp141 passed F1--F3 on
-> generated data across 2×V100 32 GB and RTX2060, establishing only exact-kernel, controlled-identifiability and
-> cross-hardware feasibility. R0 intervention/data selection is active. Real-data R1, paid data, NMI/NCS claims and
-> compute expansion remain locked; H20 is excluded.
+> **Plan-of-record update (2026-08-12).** Use `papers/proposal/plan_v4_ncs.md` and the constrained re-entry plan
+> `papers/proposal/plan_v4_g0_reentry_v1.md`. The v0/v1 invariant-calibration candidate remains closed at G0; the
+> current branch validates a theorem-first admission process and cannot emit a novelty PASS. R0--R3 use generated
+> manifests on CPU only. Exp141's generated-data feasibility result is independently archived and is not Plan v4
+> evidence. Paid data, NCS claims and GPU expansion remain locked; H20 is excluded.
 
 > **Historical Plan v4 zero-cost preflight (closed at G0).** The broad estimator novelty claim was
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete
@@ -25,7 +25,7 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > `project_ncs_preflight_continuation_2026-08-10.md`.
 
 > All EcoMD goals, pillars, budgets and timelines below are retained as historical provenance. They do not override
-> Plan v5 or reopen a failed physics/model claim.
+> Plan v4, reopen its failed candidate or reopen a failed physics/model claim.
 
 ## Research goal
 Build **EcoMD**: a differentiable, equivariant, learned-potential molecular-dynamics-style simulator for financial markets. Agents = particles in latent feature space; dynamics = Langevin; interaction potentials learned end-to-end from high-frequency order flow / return data.

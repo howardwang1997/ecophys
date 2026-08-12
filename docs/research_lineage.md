@@ -5,18 +5,16 @@ for a later project.
 
 ## Active iteration
 
-`interventional-market-world-v1` is the implementation branch for Plan v5. It was created from
-`ncs-invariant-calibration-v4@a8bf89427f38d53cf0cb1ad836b133d74e9d6ecd` so that the new work inherits the latest
-state, observation, provenance and failure-audit infrastructure.
+`ncs-plan-v4-g0-reentry-v1` is the theorem-first re-entry branch for Plan v4. It begins at merge
+`720c35717080bc15f0bba122b9beb76503b90bfd`, which joins the preserved research line at `436dad6e7` with
+`origin/main@51466a703`. The branch does not erase Plan v4's G0 failure: it can only validate candidate-specification
+completeness and route a genuinely new mathematical object to human audit.
 
-The new project is an **interventional market world model**, not a renamed EcoMD checkpoint. Its exact exchange
-kernel, learned event generator, slower behavioral update and institutional intervention are separate modules. The
-old molecular-dynamics simulator may later enter only as an optional mesoscopic ablation and earns no privileged
-role.
-
-Experiment 141 closed F1--F3 PASS on 2026-08-12 using generated data and three isolated non-H20 workers. This is an
-engineering/controlled-identifiability result only. R0 intervention selection is now active; no historical EcoMD,
-LOBSTER, Binance, daily or crash result is promoted into Plan v5 confirmation.
+The pre-iteration state is immutable at
+`archive/plan-v5-exp141-feasibility-20260812@436dad6e7f80999584e44c4a616a1f213b9c814d`. The original
+`interventional-market-world-v1` branch remains at the same commit. Experiment 141's generated-data F1--F3 PASS is
+engineering/controlled-identifiability evidence only; it is not NCS method, EcoMD fidelity or real-market evidence.
+No Plan v5 artifact is relabelled as Plan v4 confirmation.
 
 ## Historical projects
 
@@ -27,7 +25,8 @@ LOBSTER, Binance, daily or crash result is promoted into Plan v5 confirmation.
 | NCS invariant-calibration Plan v4 | G0 failed | Budget accounting, cross-system gate design | Novel invariant-gradient method |
 | Real-physics zero-cost sweep | Closed with no positive law | Parsers, nulls, failure ledger | Heavy-tail transient transfer, static universal evaluator, regime or taker-flow law |
 | Sim2Science workshop paper | Complete audit-only artifact | Transparent model--reality-gap evidence | EcoMD software/checkpoint release or positive market mechanism |
-| Plan v5 interventional world model | F1--F3 PASS; R0 active | Exact exchange, exp141 workflow and worker compatibility | No positive claim before R1/R2 |
+| Plan v5 interventional world model | Archived after F1--F3 generated feasibility PASS | Exact exchange, exp141 workflow and worker compatibility | No method, fidelity or real-market claim |
+| Plan v4 G0 re-entry v1 | Active planning/development; old G0 FAIL remains binding | Candidate admission, equivalence attacks and reproducible stop rules | No novelty PASS without new mathematics and human audit |
 
 ## Code inheritance rules
 
@@ -35,18 +34,19 @@ LOBSTER, Binance, daily or crash result is promoted into Plan v5 confirmation.
 2. Generic LOBSTER parsing, queue reconstruction, continuous-time likelihood, provenance, exact-resume and testing
    utilities may be imported.
 3. Latent particles, synthetic price heads and thermodynamic observables are not the default market mechanism.
-4. Any EcoMD component used by Plan v5 is an ablation with an explicit adapter and may be removed without changing
-   the main method definition.
+4. Any EcoMD or Plan v5 component used after G0 is an ablation with an explicit adapter and may be removed without
+   changing the main method definition.
 5. A learned exchange surrogate is never treated as the rule ground truth without equivalence tests.
 
 ## Data inheritance rules
 
 Previously inspected market periods are development-only. Their values may support regression tests, but they do
-not become Plan v5 confirmation. Every real intervention claim needs a newly frozen dataset registry entry, exact
-rule timestamp, treated/control design and sealed post-period.
+not become Plan v4 confirmation. Any future real-data claim needs a newly frozen dataset registry entry, temporal
+split, provenance/licence record and sealed test period.
 
 ## Publication relationship
 
 The Sim2Science paper documents why stationarity and simulator-internal findings are insufficient. Plan v5 asks a
-different forward question: whether a mechanism-separated model predicts an unseen real intervention. The workshop
-paper may motivate the evaluation protocol, but its experiment cannot be counted as a Plan v5 positive result.
+separate historical question about unseen interventions. Neither workshop nor exp141 evidence can establish Plan
+v4 method novelty. A future Plan v4 paper must trace its mathematical claim to a new G0 report and its empirical
+claims to experiments frozen after that report.
