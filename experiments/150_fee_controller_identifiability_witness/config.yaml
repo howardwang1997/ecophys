@@ -1,0 +1,95 @@
+schema_version: ecophys-fee-controller-identifiability-witness/v1
+experiment_id: 150_fee_controller_identifiability_witness
+registered_at: "2026-08-13"
+seed_root: 15020260813
+seed_derivation: sha256_first_64_bits
+seed_count: 128
+development_steps: 512
+intervention_steps: 128
+
+state:
+  q0: [0.10, -0.08]
+  h0: [0.02, -0.015]
+  innovation_sigma: 0.03
+
+reference:
+  response_matrix:
+    - [-0.40, 0.12]
+    - [0.08, -0.30]
+  latent_transition:
+    - [0.72, 0.06]
+    - [0.03, 0.68]
+  fee_to_latent:
+    - [0.025, -0.010]
+    - [0.015, 0.020]
+
+alias_perturbations:
+  - id: execution_column
+    matrix:
+      - [0.25, 0.00]
+      - [-0.10, 0.00]
+  - id: blob_column
+    matrix:
+      - [0.00, 0.25]
+      - [0.00, -0.10]
+  - id: cross_resource
+    matrix:
+      - [0.20, -0.10]
+      - [-0.05, 0.20]
+  - id: strong_cross_resource
+    matrix:
+      - [0.40, -0.20]
+      - [-0.10, 0.40]
+
+controllers:
+  generated_development:
+    diagonal: [0.02, 0.02]
+    provenance: generated_nonproportional_topology
+  generated_nonproportional:
+    diagonal: [0.008, 0.04]
+    provenance: generated_nonproportional_topology
+  bpo:
+    gas_per_blob: 131072
+    execution_gain: 0.125
+    schedules:
+      - {name: Prague_Osaka, target: 6, maximum: 9, update_fraction: 5007716}
+      - {name: BPO1, target: 10, maximum: 15, update_fraction: 8346193}
+      - {name: BPO2, target: 14, maximum: 21, update_fraction: 11684671}
+
+gates:
+  minimum_response_matrix_distance: 0.20
+  maximum_development_observation_difference: 1.0e-12
+  maximum_algebra_residual: 1.0e-14
+  maximum_latent_spectral_radius: 0.995
+  maximum_bpo_gain_displacement: 1.0e-7
+  maximum_bpo_observation_divergence: 1.0e-7
+  minimum_nonproportional_divergence: 1.0e-6
+  minimum_nonproportional_seed_fraction: 0.95
+  required_nonproportional_stack_rank: 4
+  minimum_nonproportional_stack_singular_value: 0.01
+  maximum_bpo_stack_rank: 2
+  maximum_bpo_stack_minimum_singular_value: 1.0e-7
+
+expected_counts:
+  perturbations: 4
+  seeds: 128
+  development_cells: 512
+  bpo_intervention_cells: 1024
+  nonproportional_intervention_cells: 512
+
+decisions:
+  pass: IDENTIFIABILITY_WITNESS_CONFIRMED
+  intervention_fail: INTERVENTION_GEOMETRY_INSUFFICIENT
+  implementation_fail: IMPLEMENTATION_OR_SPEC_FAILURE
+
+resources:
+  device: mac_cpu
+  controller_processes: 1
+  numerical_threads: 1
+  max_cpu_core_hours: 1.0
+  max_wall_minutes: 10.0
+  max_ram_gb: 2.0
+  network_calls: 0
+  chain_outcome_files: 0
+  remote_hosts: 0
+  gpu_hours: 0.0
