@@ -5,8 +5,9 @@ for a later project.
 
 ## Current theory state
 
-`theory-exploration-nmi-ncs-v2` started from integrated `main@648fd96da` and closed on 2026-08-12. It preserves
-every v1 retirement and ends NMI `NMI_NO_SURVIVOR`, NCS `NCS_C0_FAIL_IDENTIFICATION`. Target
+`theory-exploration-nmi-ncs-v2` started from integrated `main@648fd96da`, closed on 2026-08-12 and its verified
+result tree `accdbf6d2` was fast-forwarded into `main`. It preserves every v1 retirement and ends NMI
+`NMI_NO_SURVIVOR`, NCS `NCS_C0_FAIL_IDENTIFICATION`. Target
 completeness/horizon/complementarity/order reduce to masked-prediction identifiability, matrix-power ambiguity,
 predictive partitions and Blackwell comparison. Exp145 proves that fixed non-adaptive hidden state can exceed a
 declared relaxation envelope or reproduce any bounded finite path, so the certificate rejects only the selected

@@ -10,6 +10,9 @@ Started on `theory-exploration-nmi-ncs-v2` from integrated `main@648fd96da` and 
 outcome of record:
 `papers/proposal/plan_theory_exploration_nmi_ncs_v2.md`.
 
+The verified result tree `accdbf6d2bbd2197801ad310954b40fffec01510` was fast-forwarded into `main` on
+2026-08-12. The research branch remains as the immutable v2 result pointer.
+
 Inherited decisions are binding: v1 NMI `NO_SURVIVOR`, v1 NCS `CONJECTURE_ONLY`, and exp144
 `NEGATIVE_CONTROLS_CONFIRMED`. V2 may inspect primary literature and public rule/date/schema/licence metadata, but
 not treatment outcomes or sealed values. It uses <=50 CPU core-hours and zero GPU-hours; no worker is contacted.
