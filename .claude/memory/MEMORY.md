@@ -28,6 +28,7 @@
 - [Branch F (088) — SUPERSEDED 2026-05-20](project_branch_f_088.md) — 460-run sweep, depth-2 sweet spot, BTC fact-trading; pair_AB 5.18 SOTA superseded by xa_gold_zumdn 5.96 (092)
 - [Pareto-bounded floors](project_arch_floors.md) — 089 attribution found single mechs CAN lift autocorr/zumbach floors but each lift breaks ≥1 other fact ≥20pp; zumdn is the only no-collateral cell. Replaces old "9/11 architectural ceiling" framing.
 - [Arch state 2026-05-04](project_arch_state_2026-05-04.md) — `p_4_2__2_1` 85-seed mean **5.14/11** (pre-V4 architecture; superseded by Branch D/E/F results, kept for history)
+- [Tier 4.2 dynamic-graph breakthrough](project_arch_breakthrough.md) — Historical 2026-04-29 result: gate-without-u reached mean 6.10/11 and top 9/11 before larger-sample and later failure audits superseded the headline; u hurt the gate and LayerNorm was load-bearing.
 - [AR(1) drift artifact](project_ar1_drift_artifact.md) — returns are AR(1) ρ̂=0.904, not random walk. autocorr_returns 4% pre→ 94% post-whitening pass. Source diagnosed: smooth force-field drift in integrator.py:327
 - [Arch state 2026-04-30](project_arch_state_2026-04-30.md) — superseded; kept for history
 - [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 4 confirmed hits (047/048/090c/098); even n=30 can underflow on heavy-tail seed dists
@@ -38,7 +39,7 @@
 - [Mac BLAS determinism](feedback_mac_blas_determinism.md) — Mac in-process A/B needs `torch.set_num_threads(1)`; SPS edge gen fixed in `ce47e4fb`; H20 unaffected
 - [Chunk OOM constraint](project_chunk_oom_constraint.md) — full 4.2 arch + N=10K, chunk>24 OOMs single-card; 8 cards = DDP not tensor-parallel; bf16 / N reduction / rollout-reg are the levers
 - [User role](user_role.md) — independent full-time researcher; current 2×V100 32 GB may expand to more non-H20 GPU/CPU capacity; data may expand beyond current holdings behind scientific gates; Mac+R2+GitHub workflow
-- [Project overview](project_overview.md) — EcoPhys/EcoMD research program; **Plan v4 is authoritative for the next NCS archival route**, while Plan v3 remains historical/parallel physics context
+- [Project overview](project_overview.md) — EcoPhys/EcoMD research program; **Plan v4 is authoritative for the next NCS archival route**, while Plan v3 and Plan v5/exp141 remain independently archived context
 - [Pre-registration clauses](feedback_preregistration.md) — 3 rigor clauses user accepted 2026-04-24 (surrogate kill, sanity-check cascade, arXiv pre-registration); binding for Paper B
 - [Critical thinking stance](feedback_critical_thinking.md) — act as independent reviewer-2; honest probability estimates; pushback when warranted
 - [Memory + work log discipline](feedback_long_memory_and_logs.md) — update memory after each session; write dated logs in repo `logs/`
