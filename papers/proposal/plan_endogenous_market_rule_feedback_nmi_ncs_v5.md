@@ -330,7 +330,7 @@ cells, six gated `sigma=0.10` effect cells, six descriptive `sigma=0.20` cells, 
 and deterministic shared-rule/tick-first-stage guards. It uses official `rdrobust==2.0.0` HC3/CR3 robust
 bias-corrected inference plus a declared fixed-design curvature oracle. Passing is code/design feasibility only.
 
-The implementation has 12 deterministic micro-tests covering stream stability, standard/regression-to-mean/
+The implementation has 13 deterministic micro-tests covering stream stability, standard/regression-to-mean/
 clustered generators, HC3 and CR3 extraction, the bias-bound oracle, sorting/attrition/mass-point diagnostics,
 the full 19-by-6 statutory tick table, Wilson summaries, gate aggregation and fail-closed network behavior. Focused
 pytest, Ruff and strict mypy pass. No Monte Carlo cell has run. The formal runner still requires a separately

@@ -337,3 +337,20 @@ def test_runner_network_audit_hook_and_zero_success_summary_fail_closed() -> Non
     assert summary["successful_fits"] == 0
     assert summary["gate_pass"] is False
     assert summary["gate_checks"]["successful_fits"] is False
+
+
+def test_runner_hides_accelerators_before_numerical_imports() -> None:
+    runner = _load_runner()
+
+    assert runner.os.environ["CUDA_VISIBLE_DEVICES"] == "-1"
+    assert runner.os.environ["ROCR_VISIBLE_DEVICES"] == "-1"
+    assert all(
+        runner.os.environ[variable] == "1"
+        for variable in (
+            "OMP_NUM_THREADS",
+            "OPENBLAS_NUM_THREADS",
+            "MKL_NUM_THREADS",
+            "VECLIB_MAXIMUM_THREADS",
+            "NUMEXPR_NUM_THREADS",
+        )
+    )

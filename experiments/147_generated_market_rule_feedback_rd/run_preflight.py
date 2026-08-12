@@ -20,6 +20,11 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import cast
 
+_ACCELERATOR_ENV_BEFORE_GUARD = {
+    variable: os.environ.get(variable) for variable in ("CUDA_VISIBLE_DEVICES", "ROCR_VISIBLE_DEVICES")
+}
+for _accelerator_variable in _ACCELERATOR_ENV_BEFORE_GUARD:
+    os.environ[_accelerator_variable] = "-1"
 for _thread_variable in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "VECLIB_MAXIMUM_THREADS", "NUMEXPR_NUM_THREADS"):
     os.environ[_thread_variable] = "1"
 
@@ -593,9 +598,11 @@ def main() -> int:
         raise RuntimeError("frozen resource boundary must disable network and remote workers")
     if _number(resources, "gpu_hours") != 0.0 or _string(resources, "device") != "mac_cpu":
         raise RuntimeError("frozen resource boundary must remain Mac CPU with zero GPU-hours")
-    for variable in ("CUDA_VISIBLE_DEVICES", "ROCR_VISIBLE_DEVICES"):
-        if os.environ.get(variable) not in (None, "", "-1"):
-            raise RuntimeError(f"{variable} must hide accelerators for Experiment 147")
+    for variable, original_value in _ACCELERATOR_ENV_BEFORE_GUARD.items():
+        if original_value not in (None, "", "-1"):
+            raise RuntimeError(f"{variable} exposed accelerators before the Experiment 147 guard")
+        if os.environ.get(variable) != "-1":
+            raise RuntimeError(f"{variable} guard was modified after import")
 
     _install_network_guard()
     started = time.perf_counter()

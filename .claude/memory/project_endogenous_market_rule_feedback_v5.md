@@ -42,6 +42,6 @@ preflight. FITRS ZIPs, real prices, UK records, remote workers and GPUs remain l
 Experiment 147 preregistration was pushed at `3febf132d` before implementation. It freezes official
 `rdrobust==2.0.0` robust bias-corrected HC3/CR3 inference, a known-smoothness fixed-design oracle, 300 replicates
 per cell, null/effect/diagnostic gates and a Mac-only four-process resource ceiling. Implementation development has
-12 passing deterministic micro-tests plus Ruff and strict mypy; the 300-replicate suite has not run. A separate
+13 passing deterministic micro-tests plus Ruff and strict mypy; the 300-replicate suite has not run. A separate
 pushed `FREEZE.yaml` remains mandatory before the single formal run. All FITRS values, prices, UK records, V100s,
 RTX2060 and GPUs remain locked.
