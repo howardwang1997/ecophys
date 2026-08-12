@@ -1,0 +1,58 @@
+schema_version: ecophys-fee-controller-identifiability-witness-freeze/v1
+experiment_id: 151_fee_controller_identifiability_witness
+frozen_at: "2026-08-13T11:48:39+12:00"
+formal_run_authorized: true
+formal_attempts_before_freeze: 0
+
+preregistration_commit: 49628f37fc9636eb78e5d9fffa5fbe7ac98c09c6
+void_commit: a8a75171a22c65b889090f640724c5e10ebe8e52
+implementation_commit: 2110585aa587450f90f8a292739b060105cce48e
+
+files:
+  config:
+    path: experiments/151_fee_controller_identifiability_witness/config.yaml
+    sha256: 3b3539169f41c86c7d3e1424a4ed2d5e32431b07a0d5f9c3a9ca19c7d79b6afd
+  preregistration:
+    path: experiments/151_fee_controller_identifiability_witness/PREREGISTRATION.md
+    sha256: 980cec0e3c2236edccf44142a5c5598f9dfd296600774b134a2a3d8890528ec6
+  readme:
+    path: experiments/151_fee_controller_identifiability_witness/README.md
+    sha256: 5dc71b7224c0be8d5bdef4fdd07c19b2d384d62bf94d8171d9367c45147b9a15
+  void_record:
+    path: experiments/150_fee_controller_identifiability_witness/PROTOCOL_DEVIATION_VOID.md
+    sha256: 8a346645439c98159c08a55892197b5fe10f63e741fc8f14d7c14278c57c9099
+  module:
+    path: ecomd/research/fee_controller_identifiability.py
+    sha256: 7a49a5fb0d64e342e7878abe35278065cd315dca68148fc33dae07925dfebeb1
+  test:
+    path: tests/test_fee_controller_identifiability.py
+    sha256: fb7ae9e83f1bbcad3e2e3742ff146589a422825114e9038d443796372f85e3f0
+
+dependencies:
+  python: 3.11.15
+  numpy: 2.4.4
+  pyyaml: 6.0.3
+
+formal_command: >-
+  conda run -n ecophys python -m ecomd.research.fee_controller_identifiability
+  --config experiments/151_fee_controller_identifiability_witness/config.yaml
+  --output experiments/151_fee_controller_identifiability_witness/artifacts/raw/witness.json
+
+preconditions:
+  clean_checkout: true
+  implementation_commit_pushed: true
+  remote_head_matches_local: true
+  output_absent: true
+  experiment_151_formal_cells_executed: 0
+  chain_outcome_files: 0
+  network_calls: 0
+  remote_hosts: 0
+  gpu_hours: 0.0
+
+binding_interpretation:
+  generated_negative_control_only: true
+  blind_discovery: false
+  independent_confirmation: false
+  chain_outcomes_unlocked: false
+  latent_dynamics_invariance_required_for_separation: true
+  rescue_rerun_allowed: false
