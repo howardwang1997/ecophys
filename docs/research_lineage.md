@@ -5,6 +5,12 @@ for a later project.
 
 ## Active iteration
 
+`theory-exploration-nmi-ncs-v1` starts from `main@fdf0c5f72` as a theorem/mechanism search layer. It does not
+replace or reopen any negative gate. It will maintain a shared source/candidate/counterexample graph, then route
+surviving objects separately: transferable mechanism-conditioned world-model theory toward NMI, and replicated
+real intervention mechanisms toward NCS. Its frozen protocol is
+`papers/proposal/plan_theory_exploration_nmi_ncs_v1.md`. No theorem or venue claim is currently admitted.
+
 `ncs-plan-v4-g0-reentry-v1` was the isolated theorem-first re-entry branch for Plan v4 and its verified result tree
 was integrated into `main` on 2026-08-12. It begins at merge
 `720c35717080bc15f0bba122b9beb76503b90bfd`, which joins the preserved research line at `436dad6e7` with
