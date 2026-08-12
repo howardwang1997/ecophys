@@ -25,6 +25,7 @@ from typing import Any, Literal
 import torch
 import torch.nn as nn
 from torch import Tensor
+from torch.utils.checkpoint import checkpoint
 
 from ..physics.integrator import IntegratorStep, LangevinIntegrator, OverdampedLangevin
 from ..physics.observables import EcoMDTrajectory, TrajectoryRecorder
@@ -1823,7 +1824,7 @@ class EcoMDSimulator(nn.Module):
                 )
 
             ps_in_t = price_state.to_tensors()
-            outputs = torch.utils.checkpoint.checkpoint(
+            outputs = checkpoint(
                 _run_group,
                 s, s_prev,
                 ps_in_t[0], ps_in_t[1], ps_in_t[2], ps_in_t[3], ps_in_t[4],

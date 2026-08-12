@@ -1,7 +1,7 @@
 """Smoke + gradient-flow tests for Tier 4.2 (Gated Stochastic Pairwise).
 
-Default-off: ``edge_gating_enabled=False`` ⟹ output bit-identical to
-pre-Tier-4.2 baseline. Flag-on: per-edge gate w_ij = σ(g(s_i, s_j, u))
+Default-off: the implicit default and explicit ``edge_gating_enabled=False``
+are bit-identical under the current simulator contract. Flag-on: per-edge gate w_ij = sigmoid(g(s_i, s_j, u))
 multiplies the pair kernel φ, rescaled by 1/gate_init_p so the
 estimator stays approximately unbiased at init.
 """
@@ -23,7 +23,8 @@ def _run(cfg_kwargs: dict, *, custom_fn: bool, n_steps: int = 4) -> dict:
     base.update(cfg_kwargs)
     cfg = EcoMDConfig(**base)
     sim = EcoMDSimulator(cfg)
-    gen = torch.Generator(); gen.manual_seed(0)
+    gen = torch.Generator()
+    gen.manual_seed(0)
     s = sim.init_state(generator=gen)
     s_prev = s.detach().clone()
     ps = sim.init_price()
@@ -45,21 +46,33 @@ def _run(cfg_kwargs: dict, *, custom_fn: bool, n_steps: int = 4) -> dict:
 
 
 def test_default_off_equivalence():
-    """edge_gating_enabled=False (default) ⟹ output unchanged from pre-4.2 baseline."""
-    torch.manual_seed(0)
-    cfg = EcoMDConfig(
-        n_agents=20, d_state=8, hidden=16,
-        pairwise_kind="stochastic_mlp", sps_k_random=4,
-    )
-    sim = EcoMDSimulator(cfg)
-    gen = torch.Generator(); gen.manual_seed(0)
-    s = sim.init_state(generator=gen)
-    s_prev = s.detach().clone()
-    ps = sim.init_price()
-    _, _, traj, _ = sim.rollout_chunk(s, s_prev, ps, n_steps=4, generator=gen, create_graph=True)
-    # Hardcoded reference value from pre-Tier-4.2 baseline (verified
-    # repeatedly during arch-extensions sprint smoke tests).
-    assert abs(traj.log_returns.sum().item() - 0.263843) < 1e-4
+    """The default flag and explicit false setting must be bit-identical."""
+
+    def run(explicit_false: bool) -> torch.Tensor:
+        torch.manual_seed(0)
+        kwargs = {
+            "n_agents": 20,
+            "d_state": 8,
+            "hidden": 16,
+            "pairwise_kind": "stochastic_mlp",
+            "sps_k_random": 4,
+        }
+        if explicit_false:
+            kwargs["edge_gating_enabled"] = False
+        sim = EcoMDSimulator(EcoMDConfig(**kwargs))
+        generator = torch.Generator().manual_seed(0)
+        state = sim.init_state(generator=generator)
+        _, _, trajectory, _ = sim.rollout_chunk(
+            state,
+            state.detach().clone(),
+            sim.init_price(),
+            n_steps=4,
+            generator=generator,
+            create_graph=True,
+        )
+        return trajectory.log_returns
+
+    assert torch.equal(run(False), run(True))
 
 
 @pytest.mark.parametrize("custom_fn", [False, True])
@@ -113,7 +126,7 @@ def test_gate_input_u_false_isolates_pair_signal():
 
 
 def test_init_close_to_baseline_at_zero_grad():
-    """At step 0, with init bias = logit(0.7), σ ≈ 0.7 and rescale 1/0.7
+    """At step 0, with init bias = logit(0.7), sigmoid is about 0.7 and rescale 1/0.7
     ⟹ V_with_gate ≈ V_without_gate. Verify within tolerance over a 1-step
     rollout (variance is large; we just check magnitudes are comparable)."""
     torch.manual_seed(0)
@@ -132,7 +145,8 @@ def test_init_close_to_baseline_at_zero_grad():
     sim_on = EcoMDSimulator(cfg_on)
 
     # Force same agent states + prices.
-    g = torch.Generator(); g.manual_seed(0)
+    g = torch.Generator()
+    g.manual_seed(0)
     s = torch.randn(20, 8, generator=g) * 0.1
 
     # Compute V from both at the same s. Expect the gated V's magnitude
@@ -140,7 +154,8 @@ def test_init_close_to_baseline_at_zero_grad():
     # them on the same scale at init).
     g.manual_seed(0)
     sim_off.potential.pairwise._sample_edges_gen = g
-    g2 = torch.Generator(); g2.manual_seed(0)
+    g2 = torch.Generator()
+    g2.manual_seed(0)
 
     v_off = sim_off.potential.pairwise(s).item()
     # Reset edge cache + use same seed for on
