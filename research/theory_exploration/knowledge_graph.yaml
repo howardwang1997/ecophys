@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-12"
-iteration: theory-exploration-nmi-ncs-v2
-decision: NMI_NO_SURVIVOR__NCS_C0_FAIL_IDENTIFICATION
+iteration: theory-exploration-nmi-ncs-v3
+decision: V3_NO_SURVIVOR
 
 nodes:
   - id: src.controlled_world_models
@@ -858,6 +858,229 @@ nodes:
     track: both
     claim: NMI_NO_SURVIVOR and NCS_C0_FAIL_IDENTIFICATION; target-task primitives reduce to mapped results, relaxation exceedance cannot identify adaptation, the registry has no sealed replication, and all data and GPU gates remain locked.
 
+  - id: src.operational_markov_condition
+    type: source
+    title: Operational Markov Condition for Quantum Processes
+    track: both
+    claim: Causal-break instruments provide a necessary-and-sufficient operational Markov condition whose classical limit is conditional independence.
+    url: https://arxiv.org/abs/1801.09811
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.psr_state_completion
+    type: source
+    title: Completing State Representations using Spectral Learning
+    track: nmi
+    claim: PSR-f augments an imperfect state with predictive tests and characterizes minimal completion dimensions through system-dynamics ranks.
+    url: https://papers.nips.cc/paper/7686-completing-state-representations-using-spectral-learning
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.nonmarkov_memory_recovery
+    type: source
+    title: Non-Markovian Memory Strength Bounds Process Recoverability
+    track: both
+    claim: Operational memory strength bounds the supported multi-time observable error of a finite-memory recovered process.
+    url: https://doi.org/10.1038/s41534-021-00481-4
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.sgd_process_tensor
+    type: source
+    title: Process-Tensor Tomography of SGD
+    track: nmi
+    claim: Observable operational Markov consistency and causal-break divergence backflow are already implemented as learning-dynamics memory diagnostics.
+    url: https://arxiv.org/abs/2601.16563
+    primary: true
+    evidence_level: preprint
+  - id: src.data_driven_mz
+    type: source
+    title: Data-driven Mori-Zwanzig
+    track: shared
+    claim: The exact resolved dynamics split into Markov, memory and orthogonal terms, and reduced memory operators can be learned from data.
+    url: https://epubs.siam.org/doi/10.1137/21M1401759
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.partial_observation_mz
+    type: source
+    title: Partial Observation of Linear Systems with Mori-Zwanzig
+    track: shared
+    claim: Partially observed linear systems already admit explicit Mori-Zwanzig memory representations.
+    url: https://arxiv.org/abs/2606.23341
+    primary: true
+    evidence_level: preprint
+  - id: src.glynn_meyn_poisson
+    type: source
+    title: A Lyapunov Bound for Solutions of the Poisson Equation
+    track: shared
+    claim: Poisson-equation theory controls Markov-chain invariant measures, stability and perturbation sensitivity.
+    url: https://doi.org/10.1214/aop/1039639370
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.stein_generator_comparison
+    type: source
+    title: Stein Generator Comparison for Steady-State Diffusion Approximations
+    track: shared
+    claim: Distributional error is represented as an expected generator difference evaluated on a Poisson or Stein solution.
+    url: https://arxiv.org/abs/2102.12027
+    primary: true
+    evidence_level: preprint
+  - id: src.long_term_koopman
+    type: source
+    title: Long-term Prediction of Ergodic Dynamical Systems
+    track: shared
+    claim: Koopman regression admits high-probability operator-power prediction bounds uniform over arbitrarily long horizons.
+    url: https://proceedings.mlr.press/v235/kostic24a.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.dyslim
+    type: source
+    title: DySLIM Learning Dynamical Systems that Preserve Invariant Measures
+    track: shared
+    claim: Learned dynamics can jointly optimize pointwise tracking and invariant-measure fidelity.
+    url: https://proceedings.mlr.press/v235/schiff24b.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.invariant_neural_operator
+    type: source
+    title: Learning Invariant-Preserving Neural Operators
+    track: shared
+    claim: Neural solution operators can be trained explicitly for invariant-measure preservation and long-time statistics.
+    url: https://arxiv.org/abs/2306.01187
+    primary: true
+    evidence_level: preprint
+
+  - id: kr.operational_state_closure
+    type: known_result
+    title: Operational predictive-state closure and completion
+    track: both
+    claim: Equality of controlled future tests defines predictive closure; causal breaks test it and PSR ranks characterize finite linear completion.
+  - id: kr.memory_recovery
+    type: known_result
+    title: Operational memory recovery and reduced dynamics
+    track: both
+    claim: Finite operational memory supports recovered-process error bounds, while Mori-Zwanzig represents partial-observation memory exactly.
+  - id: kr.poisson_operator_comparison
+    type: known_result
+    title: Poisson and long-horizon operator comparison
+    track: both
+    claim: Poisson and Stein identities weight local operator error for invariant observables, and existing Koopman objectives control long-horizon statistics under a valid state class.
+
+  - id: cand.v3.interventional_state_closure
+    type: candidate
+    title: Interventional state-closure certificate
+    track: both
+    claim: Controlled histories mapped to the same declared state might admit a new finite certificate and minimal task-relevant repair.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered after v2 showed that persistent residuals do not identify adaptation.
+        evidence: [papers/proposal/plan_theory_exploration_nmi_ncs_v3.md]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared the defect row by row with predictive-state and operational Markov definitions.
+        evidence: [src.operational_markov_condition, src.psr_state_completion, src.sgd_process_tensor]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Controlled closure and finite completion are already PSR and process-state objects; finite probes remain instrument-relative.
+        evidence: [kr.operational_state_closure, ce.v3_finite_probe_blind_spot]
+  - id: cand.v3.semigroup_memory_repair
+    type: candidate
+    title: Controlled semigroup defect and task-relevant memory repair
+    track: both
+    claim: Cross-scale semigroup inconsistency might quantify the minimal missing memory needed for a declared task.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as a quantitative repair rather than a generic non-Markovianity test.
+        evidence: [papers/proposal/plan_theory_exploration_nmi_ncs_v3.md]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Audited process recovery, finite Markov order and data-driven Mori-Zwanzig equations.
+        evidence: [src.nonmarkov_memory_recovery, src.data_driven_mz, src.partial_observation_mz]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Existing theory already connects operational memory to supported task error and supplies the resolved-memory decomposition.
+        evidence: [kr.memory_recovery, ce.v3_nonunique_memory_realization]
+  - id: cand.v3.poisson_operator_calibration
+    type: candidate
+    title: Poisson-weighted long-horizon operator calibration
+    track: both
+    claim: A learned Poisson witness might jointly control finite-horizon and invariant-observable errors in partially observed systems.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-12"
+        to: SCOUT
+        reason: Entered as a possible long-horizon calibration primitive after invariant-gradient v4 failed.
+        evidence: [papers/proposal/plan_theory_exploration_nmi_ncs_v3.md]
+      - date: "2026-08-12"
+        from: SCOUT
+        to: ATTACKING
+        reason: Reduced the objective to Poisson perturbation, Stein generator comparison and long-horizon Koopman learning.
+        evidence: [src.glynn_meyn_poisson, src.stein_generator_comparison, src.long_term_koopman, src.dyslim]
+      - date: "2026-08-12"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: The algebra and objectives are occupied, and the exact noisy-XOR case proves they cannot repair an omitted state.
+        evidence: [kr.poisson_operator_comparison, ce.v3_one_step_stationary_aliasing]
+
+  - id: po.v3_closure_non_equivalence
+    type: proof_obligation
+    title: Non-equivalence of finite controlled closure
+    track: both
+    claim: A survivor needed a population implication or repair lower bound not expressible through PSR rank, conditional independence or operational Markov order.
+  - id: po.v3_task_repair_bound
+    type: proof_obligation
+    title: Task-error bound from cross-scale defects
+    track: both
+    claim: A survivor needed a sharp observable bound from semigroup defects to minimal task-relevant state repair beyond process recovery and Mori-Zwanzig.
+  - id: po.v3_operator_nonstein
+    type: proof_obligation
+    title: Partial-observation operator result outside Poisson and Stein
+    track: both
+    claim: A survivor needed an estimable finite-and-infinite-horizon result not obtained by substitution into standard Poisson, Stein or telescoping identities.
+
+  - id: ce.v3_finite_probe_blind_spot
+    type: counterexample
+    title: Finite controlled-probe blind spot
+    track: both
+    claim: A hidden branch activated only by an unprobed action sequence agrees on every tested history and future test, so non-rejection is span-relative.
+  - id: ce.v3_nonunique_memory_realization
+    type: counterexample
+    title: Non-unique hidden-state and memory realization
+    track: both
+    claim: The same observed semigroup defect can arise from distinct hidden Markov states or memory kernels and therefore does not identify a unique physical repair.
+  - id: ce.v3_one_step_stationary_aliasing
+    type: counterexample
+    title: Exact one-step and stationary aliasing
+    track: both
+    claim: A noisy second-order XOR process and an iid Bernoulli chain share the observed one-step kernel and invariant marginal but have different three-time laws.
+
+  - id: bench.v3_psr_process_tensor
+    type: benchmark
+    title: PSR and operational-process closure oracle
+    track: both
+    claim: Any closure certificate or repair must differ equation by equation from controlled PSR rows, causal breaks, finite Markov order and PSR-f completion.
+  - id: bench.v3_mz_process_recovery
+    type: benchmark
+    title: Process-recovery and Mori-Zwanzig oracle
+    track: both
+    claim: Any task-relevant memory method must exceed existing operational recovery bounds and exact reduced-memory decompositions.
+  - id: bench.v3_poisson_koopman
+    type: benchmark
+    title: Poisson Stein and long-horizon Koopman oracle
+    track: both
+    claim: Any long-horizon calibration method must differ from Poisson-weighted generator comparison and existing invariant-measure or operator-power objectives.
+
+  - id: decision.iteration_v3
+    type: decision
+    title: Theory exploration v3 outcome
+    track: both
+    claim: V3_NO_SURVIVOR; all three candidates reduce to mapped closure, memory or operator theory, exp146 was not run, and every data and GPU gate remains locked.
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -982,3 +1205,38 @@ edges:
   - {source: decision.iteration_v2, target: compute.ncs_post_c1, type: forbids, claim: NCS C0 failed identification and registry v2 has no sealed candidate.}
   - {source: decision.iteration_v2, target: bench.exp145_relaxation_negative_controls, type: supports, claim: The formal negative controls establish the mechanism-attribution failure.}
   - {source: decision.iteration_v2, target: data.intervention_registry_v2, type: supports, claim: Metadata screening provides no development-plus-sealed pair.}
+
+  - {source: src.operational_markov_condition, target: kr.operational_state_closure, type: proves, claim: Causal breaks characterize operational Markov closure relative to declared instruments.}
+  - {source: src.psr_state_completion, target: kr.operational_state_closure, type: proves, claim: Predictive tests complete an imperfect state with rank-characterized minimal dimensions.}
+  - {source: src.sgd_process_tensor, target: kr.operational_state_closure, type: supports, claim: Operational closure and divergence backflow already have a learning-dynamics implementation.}
+  - {source: src.nonmarkov_memory_recovery, target: kr.memory_recovery, type: proves, claim: Operational memory strength controls recovered-process error for supported multi-time observables.}
+  - {source: src.data_driven_mz, target: kr.memory_recovery, type: proves, claim: Resolved dynamics have an exact Markov-memory-orthogonal split and learnable reduced operators.}
+  - {source: src.partial_observation_mz, target: kr.memory_recovery, type: supports, claim: Partial observation already produces explicit Mori-Zwanzig memory in linear systems.}
+  - {source: src.glynn_meyn_poisson, target: kr.poisson_operator_comparison, type: proves, claim: Poisson equations control invariant-measure perturbation and stability.}
+  - {source: src.stein_generator_comparison, target: kr.poisson_operator_comparison, type: proves, claim: Stein comparison expresses distribution error through a generator difference on a Poisson solution.}
+  - {source: src.long_term_koopman, target: kr.poisson_operator_comparison, type: proves, claim: Existing operator regression controls arbitrarily long prediction horizons under ergodic assumptions.}
+  - {source: src.dyslim, target: kr.poisson_operator_comparison, type: supports, claim: Pointwise and invariant-measure objectives are already combined in dynamical-system learning.}
+  - {source: src.invariant_neural_operator, target: kr.poisson_operator_comparison, type: supports, claim: Invariant-preserving operator learning already targets long-time statistical fidelity.}
+
+  - {source: kr.operational_state_closure, target: cand.v3.interventional_state_closure, type: covers, claim: Controlled future-test equality and finite state completion directly cover the proposed certificate and repair.}
+  - {source: kr.memory_recovery, target: cand.v3.semigroup_memory_repair, type: covers, claim: Existing process-recovery bounds and Mori-Zwanzig memory contain the proposed diagnostic-to-repair route.}
+  - {source: kr.poisson_operator_comparison, target: cand.v3.poisson_operator_calibration, type: covers, claim: Standard Poisson Stein and Koopman machinery contains the proposed long-horizon calibration route.}
+
+  - {source: cand.v3.interventional_state_closure, target: po.v3_closure_non_equivalence, type: requires, claim: A result outside PSR rank and operational Markov closure was required but absent.}
+  - {source: cand.v3.interventional_state_closure, target: ce.v3_finite_probe_blind_spot, type: falsified_by, claim: Finite tests cannot certify histories or interventions outside their declared span.}
+  - {source: cand.v3.interventional_state_closure, target: bench.v3_psr_process_tensor, type: distinguished_by, claim: PSR completion and operational process tests are direct comparators.}
+  - {source: cand.v3.interventional_state_closure, target: kr.operational_state_closure, type: retired_by, claim: Existing predictive and operational process-state theory occupies the candidate.}
+  - {source: cand.v3.semigroup_memory_repair, target: po.v3_task_repair_bound, type: requires, claim: A nonstandard defect-to-minimal-repair guarantee was required but absent.}
+  - {source: cand.v3.semigroup_memory_repair, target: ce.v3_nonunique_memory_realization, type: falsified_by, claim: An observed defect does not select a unique hidden-state or memory realization.}
+  - {source: cand.v3.semigroup_memory_repair, target: bench.v3_mz_process_recovery, type: distinguished_by, claim: Process recovery and Mori-Zwanzig are direct error-bound and representation comparators.}
+  - {source: cand.v3.semigroup_memory_repair, target: kr.memory_recovery, type: retired_by, claim: Existing memory recovery and reduced-dynamics theory occupies the candidate.}
+  - {source: cand.v3.poisson_operator_calibration, target: po.v3_operator_nonstein, type: requires, claim: A partial-observation result outside standard operator identities was required but absent.}
+  - {source: cand.v3.poisson_operator_calibration, target: ce.v3_one_step_stationary_aliasing, type: falsified_by, claim: Exact one-step and stationary fit can miss a wrong multi-time law.}
+  - {source: cand.v3.poisson_operator_calibration, target: bench.v3_poisson_koopman, type: distinguished_by, claim: Poisson Stein long-horizon Koopman and invariant-learning methods are direct comparators.}
+  - {source: cand.v3.poisson_operator_calibration, target: kr.poisson_operator_comparison, type: retired_by, claim: Existing operator comparison and invariant-learning theory occupies the candidate.}
+
+  - {source: decision.iteration_v3, target: compute.nmi_post_n1, type: forbids, claim: No v3 method or theorem candidate survived, so NMI scaling remains locked.}
+  - {source: decision.iteration_v3, target: compute.ncs_post_c1, type: forbids, claim: V3 produced neither a new computational method nor a real scientific finding, so NCS scaling remains locked.}
+  - {source: decision.iteration_v3, target: bench.v3_psr_process_tensor, type: supports, claim: The closure oracle records the decisive C1 reduction.}
+  - {source: decision.iteration_v3, target: bench.v3_mz_process_recovery, type: supports, claim: The memory oracle records the decisive C2 reduction.}
+  - {source: decision.iteration_v3, target: bench.v3_poisson_koopman, type: supports, claim: The operator oracle records the decisive C3 reduction and noisy-XOR scope warning.}

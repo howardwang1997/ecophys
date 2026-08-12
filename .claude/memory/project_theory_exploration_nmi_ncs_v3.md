@@ -1,6 +1,6 @@
 ---
 name: Dual-track NMI/NCS theory exploration v3
-description: Active bounded pivot from adaptation attribution to falsifiable controlled state closure, cross-scale memory defects and operator-level long-horizon calibration.
+description: Completed negative audit of controlled state closure, cross-scale memory repair and long-horizon operator calibration.
 type: project
 ---
 
@@ -15,11 +15,12 @@ learning from persistent residuals. It searches for a general falsifiable certif
 state closure, a task-relevant repair of cross-scale memory defects, or a genuinely new estimable
 Poisson/operator calibration result.
 
-Initial authorization is algebra, primary literature and generated exact fixtures only: <=50 Mac CPU core-hours,
-0 GPU-hours, zero worker contacts, no market-outcome inspection and no purchase. PSR/OOM/causal states,
-bisimulation, Markov-order/process-tensor tests, Mori--Zwanzig, Koopman, Poisson perturbation and Stein/generator
-matching are mandatory kill neighborhoods. A diagnostic that only detects generic non-Markovianity is not enough.
+Closed `V3_NO_SURVIVOR` on 2026-08-13. C1 controlled state closure reduces to controlled PSR, operational Markov
+conditions and PSR-f completion. C2 semigroup/memory repair reduces to process-recovery bounds and Mori--Zwanzig.
+C3 Poisson-weighted calibration reduces to Poisson/Stein identities plus long-horizon Koopman and
+invariant-measure learning.
 
-Only `V3_READY_FOR_HUMAN_AUDIT`, followed by human equation-level review and a preregistration, may unlock free data
-or the two V100 workers. H20 remains excluded at every future tier.
-
+The exact noisy-XOR warning matches an iid chain in its observed one-step kernel and stationary marginal while
+disagreeing in its three-time law. It is a mandatory state-closure negative control, not a new theorem. Exp146 was
+not run; no data were opened, no workers were contacted and GPU use was 0.0 hours. The 135-node graph validates.
+The next search keeps NMI/NCS fixed but must start from a specific observable or randomized scientific phenomenon.

@@ -74,3 +74,32 @@ the factorization gives `I(Z;Q_{n+1} | Q_n,A_n,M)=0`. This is a standard conditi
 identity, not a novelty claim. It closes the idea that an exact event-layer update directly identifies hidden
 behavior; only later feedback into observed actions can add information, returning the problem to controlled or
 switching system identification and active experiment design.
+
+## V3 equation-level audit
+
+| Primary source | Audited result | V3 statement blocked or constrained | Residual gap, if any |
+|---|---|---|---|
+| [Operational Markov condition](https://arxiv.org/abs/1801.09811) | Defines an intervention-relative necessary-and-sufficient Markov condition using causal breaks and future process independence; the classical limit is ordinary conditional independence. | C1 as a new controlled closure definition or reset/replay certificate. | A finance implementation may be useful, but a finite probe family certifies only its declared instrument span. |
+| [Completing State Representations using Spectral Learning](https://papers.nips.cc/paper/7686-completing-state-representations-using-spectral-learning) | PSR-f augments an imperfect state with predictive tests; Theorem 2 gives the minimal test/history dimensions through system-dynamics ranks and Theorem 3 gives consistent spectral completion. | C1 as a new minimal repair of an aliased state. | Nonlinear or continuous implementations remain engineering/statistical questions unless they produce a distinct theorem. |
+| [Non-Markovian Memory Strength Bounds Quantum Process Recoverability](https://doi.org/10.1038/s41534-021-00481-4) | Classical finite Markov order is conditional factorization/CMI; Theorem 1 bounds supported multi-time observable error of a recovered finite-memory process by operational memory strength. | C1/C2 as a new chain from memory witness to finite repair and task-error guarantee. | The instrument-specific restriction matters operationally, but it is already part of the framework. |
+| [Process-Tensor Tomography of SGD](https://arxiv.org/abs/2601.16563) | Defines observable operational Markov consistency, causal-break interventions, divergence backflow and uncertainty for learning dynamics. Preprint. | Reset/replay and data-processing backflow as a new ML memory diagnostic. | Markets are a different application domain, not a new diagnostic principle. |
+| [Data-driven Mori--Zwanzig](https://epubs.siam.org/doi/10.1137/21M1401759) | The exact generalized Langevin decomposition separates resolved Markov dynamics, memory and orthogonal dynamics; the work learns reduced Markov and memory operators from data. | C2 as a new interpretation of semigroup defects as missing memory or a new learned memory-kernel program. | A sharper task-specific estimator could matter, but no v3 non-equivalent estimator or bound survived. |
+| [Partial Observation of Linear Systems with Mori--Zwanzig](https://arxiv.org/abs/2606.23341) | Develops explicit Mori--Zwanzig representations for partially observed linear systems. Preprint. | Partial observation alone as the novelty that distinguishes C2 from established memory reduction. | Nonlinear market observation is harder, but hardness is not mathematical novelty. |
+| [Glynn--Meyn Poisson perturbation](https://doi.org/10.1214/aop/1039639370) | Poisson-equation solutions control Markov-chain stability, invariant measures and perturbations. | C3's invariant-observable weighting identity as a new calibration theorem. | Computable neural approximation may be useful only with a distinct guarantee beyond direct substitution. |
+| [Stein's method for steady-state diffusion approximations](https://arxiv.org/abs/2102.12027) | The prelimit-generator method rewrites distributional error as an expected generator difference evaluated on a Poisson/Stein solution. | C3 as a new learned critic/operator discrepancy. | A controlled partial-observation application still inherits the state-closure problem. |
+| [Learning dynamical systems via Koopman operator regression in reproducing kernel Hilbert spaces](https://proceedings.mlr.press/v235/kostic24a.html) | Gives high-probability operator-power prediction bounds uniform over arbitrarily long horizons for ergodic Markov systems, with mass-preserving constructions. | Long-horizon operator control itself as the missing C3 theorem. | These guarantees assume a valid state/operator class; they do not repair an omitted state. |
+| [DySLIM](https://proceedings.mlr.press/v235/schiff24b.html) | Regularizes learned dynamics by matching invariant measures while retaining pointwise trajectory fitting. | Joint pointwise plus invariant-measure calibration as a new practical objective. | Closure and multi-time validation remain necessary, but v3 found no new repair. |
+| [Learning invariant-preserving neural operators](https://arxiv.org/abs/2306.01187) | Learns solution operators while explicitly preserving invariant measures for long-time statistical fidelity. | Invariant-measure preservation as the standalone C3 contribution. | A market-specific implementation would be application evidence only. |
+
+### V3 synthesis
+
+- C1 is a controlled PSR/operational-Markov closure test, and PSR-f already supplies a rank-based state repair.
+- C2 is a process-memory or Mori--Zwanzig diagnostic; process-recovery theory already links operational memory to
+  supported task error.
+- C3 is standard Poisson/Stein operator comparison combined with occupied long-horizon Koopman and
+  invariant-measure objectives.
+- The exact noisy-XOR construction in `formal_cards_v3.md` shows that perfect one-step and one-time invariant fit
+  can coexist with wrong multi-time dynamics. It is an elementary scope warning, not a novelty claim.
+
+V3 therefore closes `V3_NO_SURVIVOR`. Experiment 146 was not run because the mandatory literature stop condition
+fired before preregistration.

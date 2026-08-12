@@ -214,3 +214,30 @@ Passing a compute tier cannot repair a failed theorem or identification gate.
 - Stop immediately if all three candidates reduce to mapped methods. Do not preserve the round by inventing a
   market-specific name for a generic diagnostic.
 
+## 10. Completed outcome
+
+**Closed:** 2026-08-13
+
+**Decision:** `V3_NO_SURVIVOR`
+
+The mandatory equation-level audit fired the stop condition before any experiment:
+
+- C1 is `RETIRED_PRIOR_ART`: the proposed controlled closure defect is a restricted controlled-system-dynamics or
+  predictive-state row distance. Operational Markov causal breaks already test the same instrument-relative
+  closure, and PSR-f already characterizes finite linear state completion through ranks.
+- C2 is `RETIRED_PRIOR_ART`: process-recovery theory already bounds supported multi-time observable error by
+  operational memory strength, while Mori--Zwanzig supplies the exact resolved Markov/memory/orthogonal split and
+  data-driven reduced operators.
+- C3 is `RETIRED_PRIOR_ART`: its exact identities are standard Poisson perturbation and Stein generator
+  comparison. Long-horizon Koopman bounds and invariant-measure training already occupy the proposed practical
+  objective.
+
+The retained noisy-XOR construction proves a binding scope restriction: an observed process can match an iid
+model exactly in its stationary one-time law and one-step kernel while disagreeing in its three-time law. Thus
+Poisson or invariant-measure calibration cannot repair a state representation that has already erased relevant
+history. This construction is elementary and is recorded as a future negative control, not a theorem claim.
+
+Experiment 146 was neither preregistered nor run. V3 opened no market data, sealed period or purchased data; used
+0.0 GPU-hours; contacted neither V100 nor the RTX2060; and left no job queued. The canonical graph contains 135
+validated nodes. NMI/NCS remain the targets, but the next topic search must start from a specific observable or
+randomizable scientific phenomenon rather than another generic state, memory or long-horizon objective.

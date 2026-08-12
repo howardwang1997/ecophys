@@ -1,7 +1,7 @@
-# Candidate ledger — v1 and v2
+# Candidate ledger — v1 through v3
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** NMI `NMI_NO_SURVIVOR`; NCS `NCS_C0_FAIL_IDENTIFICATION`
+**Current outcome:** v3 `V3_NO_SURVIVOR`; NMI/NCS data and compute gates remain locked
 
 **Scientific meaning:** every current NMI primitive is occupied, and relaxation exceedance rejects a model class
 without identifying adaptation
@@ -304,7 +304,19 @@ where two parameters are task-equivalent when they induce the same optimal predi
 partition refinement, not a new theorem. The two formal cards and the NCS impossibility construction are preserved
 in `formal_cards_v2.md`.
 
-## 6. Version history
+## 6. V3 state-closure and operator-calibration pivot
+
+| ID | Proposed primitive | Decisive coverage | Final state |
+|---|---|---|---|
+| C1 | interventional state-closure certificate and minimal predictive repair | controlled PSR/causal states, operational Markov condition, finite Markov order, PSR-f rank completion | `RETIRED_PRIOR_ART` |
+| C2 | controlled cross-scale semigroup defect linked to task-relevant memory repair | process-tensor recovery bound, Chapman--Kolmogorov tests and data-driven Mori--Zwanzig | `RETIRED_PRIOR_ART` |
+| C3 | Poisson-weighted finite/infinite-horizon operator calibration | Markov Poisson perturbation, Stein generator comparison, long-term Koopman bounds and invariant-measure regularization | `RETIRED_PRIOR_ART` |
+
+The retained noisy-XOR warning has exact one-step kernel and invariant marginal agreement with an iid chain but a
+different three-time law. It proves that stationary and one-step objectives cannot repair a missing state. This is
+elementary and is not an admitted theorem. With no formal survivor, exp146 was neither preregistered nor run.
+
+## 7. Version history
 
 | Date | Version | Change | Decision |
 |---|---|---|---|
@@ -313,3 +325,4 @@ in `formal_cards_v2.md`.
 | 2026-08-12 | v1.2 | Added the event-layer information identity and switching/active-design coverage; retired NMI-T1. | NMI `NO_SURVIVOR`; NCS `CONJECTURE_ONLY`; no data/GPU authorization |
 | 2026-08-12 | v1.3 | Replaced raw NCS order effects with a contraction-envelope exceedance test over a validated frozen baseline class. | NCS remains `ATTACKING`; empirical identification and data contract absent |
 | 2026-08-12 | v2 | Audited target-conditioned identifiability, contraction estimation, dynamic causal response and digital-twin discrepancy; exp145 confirmed two non-adaptive exceedance witnesses; metadata screening found no sealed replication. | NMI `NMI_NO_SURVIVOR`; NCS `NCS_C0_FAIL_IDENTIFICATION`; no data/GPU authorization |
+| 2026-08-12 | v3 | Audited controlled state closure, memory repair and Poisson/operator calibration; all three reduce equation-by-equation to PSR/process-tensor/Mori--Zwanzig/Stein/Koopman results. | `V3_NO_SURVIVOR`; exp146 not run; no data/GPU authorization |

@@ -1,13 +1,13 @@
-# Theory-exploration topology v2
+# Theory-exploration topology v3
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-12  
-**Current decision:** NMI `NMI_NO_SURVIVOR`; NCS `NCS_C0_FAIL_IDENTIFICATION`
+**Current decision:** `V3_NO_SURVIVOR`
 
-The graph is an append-only research-control artifact. It preserves the v1 search, exp144 and every retirement,
-then adds v2 target-task and relaxation-attribution attacks. Graph proximity is not evidence of novelty; each
-`covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or executable
-counterexample.
+The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
+adds the v3 state-closure, memory-repair and operator-calibration attacks. Graph proximity is not evidence of
+novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
+exact counterexample.
 
 ```mermaid
 flowchart TB
@@ -59,12 +59,28 @@ flowchart TB
         REG -->|no C1 pair| CLASS
     end
 
+    subgraph V3["v3: closure, memory and long horizon"]
+        C1["C1 controlled state closure"]
+        C2["C2 semigroup-memory repair"]
+        C3["C3 Poisson operator calibration"]
+        PSR["PSR + operational Markov + PSR-f"]
+        MZ["process recovery + Mori-Zwanzig"]
+        POIS["Poisson/Stein + Koopman + invariant loss"]
+        XOR["noisy XOR: one-step/stationary alias"]
+        PSR -->|covers| C1
+        MZ -->|covers| C2
+        POIS -->|covers| C3
+        XOR -. "missing-state blind spot" .-> C3
+    end
+
     NMI1 --> NMI2
     NCS1 --> NCS2
     NMI2 --> DNMI["NMI_NO_SURVIVOR"]
     NCS2 --> DNCS["NCS_C0_FAIL_IDENTIFICATION"]
-    DNMI --> LOCK["data/GPU gates locked"]
-    DNCS --> LOCK
+    DNMI --> V3
+    DNCS --> V3
+    V3 --> DV3["V3_NO_SURVIVOR"]
+    DV3 --> LOCK["data/GPU gates locked"]
 ```
 
 ## Exact reductions retained
@@ -88,6 +104,19 @@ satisfies `delta_0 P^ell f=r_ell`. Thus a finite response path, including one ou
 does not identify adaptation without a state-completeness or structural restriction. Exp145 verifies this exact
 construction and the simpler fixed slow-mode exceedance.
 
+For the v3 noisy-XOR warning,
+
+\[
+X_{t+1}=X_t\oplus X_{t-1}\oplus E_t,
+\qquad E_t\sim\operatorname{Bernoulli}(\varepsilon),
+\quad 0<\varepsilon<\tfrac12.
+\]
+
+The pair state has a uniform invariant law, so the observed marginal and one-step kernel exactly match an iid
+Bernoulli chain. The three-time parity law is nevertheless correct with probability `1-epsilon`, not one-half.
+Thus one-step and invariant-measure calibration can both be perfect while the observed multi-time process is
+wrong. This elementary counterexample is a scope control, not a new theorem.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -99,9 +128,12 @@ construction and the simpler fixed slow-mode exceedance.
 | v2 NMI T4 | `RETIRED_PRIOR_ART` | Blackwell comparison/garbling | correct terminology and oracle |
 | NCS relaxation exceedance | `RETIRED_IDENTIFIABILITY` | exp145 plus discrepancy and causal-twin identification limits | prospective model-checking diagnostic |
 | intervention metadata | `NO_DATA_CONTRACT` | 10 cases, no untouched replication | two development cases only |
+| v3 C1 state closure | `RETIRED_PRIOR_ART` | controlled PSR, operational Markov condition and PSR-f completion | probe-relative model check only |
+| v3 C2 memory repair | `RETIRED_PRIOR_ART` | process-recovery task bound and data-driven Mori--Zwanzig | reduced-dynamics baseline only |
+| v3 C3 operator calibration | `RETIRED_PRIOR_ART` | Poisson/Stein identities, long-term Koopman and invariant-measure training | baseline after state closure only |
 
-The graph has 108 nodes after v2. Neither branch has a theorem or real mechanism ready for human novelty audit.
-Both V100 workers and the RTX2060 remain outside the queue.
+The graph has 135 nodes after v3. Neither branch has a theorem, estimator or real mechanism ready for human novelty
+audit. Exp146 was not run. Both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

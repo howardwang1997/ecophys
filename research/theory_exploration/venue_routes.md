@@ -85,3 +85,18 @@ storage than from a single larger neural model.
 The next admissible move is a genuinely new primitive with a direct non-equivalence witness, or an explicit
 lower-claim project on prospective simulator model checking. Re-running more market event studies cannot repair
 the present mechanism-identification failure.
+
+## V3 route decision
+
+The state-closure pivot does not reopen either venue route. C1 and C2 reduce to controlled predictive/process
+states, operational Markov order, process recovery and Mori--Zwanzig. C3 reduces to Poisson/Stein operator
+comparison plus existing long-horizon Koopman and invariant-measure training objectives. Therefore:
+
+- NMI: `V3_NO_SURVIVOR`; there is no new general method, theorem or estimator to benchmark.
+- NCS: `V3_NO_SURVIVOR`; there is no new computational method and no real scientific phenomenon was tested.
+- EcoMD may later serve as one controlled environment for an independently selected scientific question, but
+  neither simulator construction nor a market-only closure diagnostic clears a Nature-level gate.
+- Exp146, market data, paid data, V100s and RTX2060 remain outside the queue.
+
+The next search must begin from a specific scientific phenomenon with a discriminating observation or randomized
+mechanism, not from another generic synonym for hidden state, memory or long-horizon loss.

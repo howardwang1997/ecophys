@@ -21,6 +21,9 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
 | 2026-08-12 | NMI-v2 T4 target order | `RETIRED_PRIOR_ART` | Universal downstream usefulness is a comparison-of-experiments/Blackwell order or sufficient-statistic refinement. | State the restricted decision family if using task informativeness; never claim a new universal order by renaming it. | An intervention-transfer order with different axioms and a non-Blackwell witness. |
 | 2026-08-12 | NCS relaxation-exceedance attribution | `RETIRED_IDENTIFIABILITY`; exp145 formal negative control | A fixed omitted slow mode exceeded every declared lag bound, and a fixed time-homogeneous clock chain reproduced an arbitrary finite response path exactly with no adaptation. Raw SHA `9b752b4a…`. | Exceedance rejects the chosen baseline class; mechanism attribution needs independent structural or state-completeness evidence. | A measured variable or randomized design that separates adaptive updates from every fixed hidden-state explanation, plus untouched replication. |
 | 2026-08-12 | NCS intervention registry v2 | `NO_DATA_CONTRACT` | Ten metadata cases yielded two development-only, eight rejected and zero sealed candidates; public snippets also contaminated the two usable development cases. | Published natural experiments are useful for method development but cannot be recycled as blind confirmation. | One exact development design and at least one genuinely untouched independent replication registered before any values are opened. |
+| 2026-08-12 | V3 C1 interventional state closure | `RETIRED_PRIOR_ART` | Controlled PSR/causal-state rows and the operational Markov condition already define the certificate; PSR-f provides rank-based state completion. | A finite controlled memory rejection is probe-relative and does not identify a unique hidden state. | A weaker-assumption population implication or repair lower bound outside PSR/process-state theory. |
+| 2026-08-12 | V3 C2 semigroup-memory repair | `RETIRED_PRIOR_ART` | Process-recovery theory already bounds supported task error by operational memory strength, while Mori--Zwanzig supplies the exact resolved-memory split. | A Chapman--Kolmogorov defect diagnoses inadequate closure but does not uniquely recover physical memory. | A sharp observable repair guarantee not obtainable from process tensors, PSR rank or Mori--Zwanzig. |
+| 2026-08-12 | V3 C3 Poisson operator calibration | `RETIRED_PRIOR_ART` | Poisson/Stein identities and long-horizon Koopman/invariant-measure objectives directly contain the proposed algebra and optimization form. | Long-run calibration presupposes a sufficient state; it cannot compensate for projection-induced memory. | A new estimator or bound that remains valid under declared partial observation and is not a direct composition. |
 
 ## Cross-iteration rules extracted from the failures
 
@@ -43,3 +46,11 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
 10. A finite dynamic response has no unique hidden mechanism without structural restrictions: fixed state
     augmentation can reproduce it. Causal treatment attribution and behavioral mechanism attribution are separate
     gates.
+11. Operational closure is always relative to an intervention and test span. Failure to reject on finitely many
+    probes is not universal state sufficiency.
+12. A semigroup or memory defect can reject a declared observed-state Markov model, but hidden-state realization
+    and memory-kernel realization are generally non-unique.
+13. Poisson, Stein and invariant-measure objectives control errors only within the supplied state/operator class;
+    they do not discover histories erased by that class.
+14. Exact one-step and invariant-marginal agreement does not imply multi-time agreement. The v3 noisy-XOR example
+    is a mandatory negative control for future long-horizon calibration claims.
