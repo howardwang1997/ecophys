@@ -5,7 +5,8 @@ for a later project.
 
 ## Active iteration
 
-`ncs-plan-v4-g0-reentry-v1` is the theorem-first re-entry branch for Plan v4. It begins at merge
+`ncs-plan-v4-g0-reentry-v1` was the isolated theorem-first re-entry branch for Plan v4 and its verified result tree
+was integrated into `main` on 2026-08-12. It begins at merge
 `720c35717080bc15f0bba122b9beb76503b90bfd`, which joins the preserved research line at `436dad6e7` with
 `origin/main@51466a703`. The branch does not erase Plan v4's G0 failure: it can only validate candidate-specification
 completeness and route a genuinely new mathematical object to human audit.

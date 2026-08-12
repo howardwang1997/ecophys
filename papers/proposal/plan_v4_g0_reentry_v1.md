@@ -12,6 +12,9 @@
 and passed all ten positive aggregation gates. All eight candidate fixtures matched, but none is a real candidate.
 G0 therefore remains FAIL, R4 has no admitted input, and data/GPU scale-up remains locked.
 
+**Integration update:** the verified result tree `81866a73f` was fast-forwarded into remote `main` on 2026-08-12;
+the immutable predecessor archive remained at `436dad6e7f80999584e44c4a616a1f213b9c814d`.
+
 Repository integration was verified separately from the immutable formal runs: 659 collected tests passed across
 resource-bounded shards after the affected paths were rerun, strict mypy passed 91 source files, and scoped
 diff-relevant Ruff checks passed. The repository-wide Ruff backlog is not part of this gate and remains open.

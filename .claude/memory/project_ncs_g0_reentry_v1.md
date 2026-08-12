@@ -24,3 +24,7 @@ R1--R3 completed on 2026-08-12. Exp142's eight cases all matched, but its raw `a
 incorrectly folded through `all(gates.values())`, so the immutable formal result is `FAIL_PROCESS_VALIDATION` (raw
 SHA `ec41af58…`). Exp143 was separately preregistered and changed only aggregation semantics; 10/10 positive gates
 passed (raw SHA `56084cbc…`). The suite has no real candidate, so G0 remains FAIL and both V100s remain locked.
+
+The verified result tree `81866a73f` was fast-forwarded into remote `main` on 2026-08-12. At integration time the
+development branch and `main` matched exactly, and the predecessor archive remained fixed at full commit
+`436dad6e7f80999584e44c4a616a1f213b9c814d`. Post-merge documentation does not change the scientific verdict.
