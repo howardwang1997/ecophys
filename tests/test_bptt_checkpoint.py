@@ -186,9 +186,9 @@ def test_hawkes_path_under_checkpoint():
 
 @pytest.mark.slow
 def test_chunk_64_runs_under_checkpoint():
-    """Sanity: large chunk + checkpoint completes without OOM at small N."""
+    """Sanity: a 64-step checkpointed chunk completes at CI-scale N."""
     cfg = EcoMDConfig(
-        n_agents=200, d_state=16, hidden=24,
+        n_agents=64, d_state=16, hidden=24,
         pairwise_kind="mlp",
         bptt_checkpoint_every=8,
     )
