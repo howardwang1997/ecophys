@@ -364,3 +364,28 @@ pass, as do Ruff and strict mypy. One pre-freeze adapter probe executed a single
 only its success/failure flags; it was removed from the repeatable suite and is not a formal result. The complete
 300-replicate suite remains unrun. A separately pushed `FREEZE.yaml` is still required before the sole formal
 attempt. Real data and remote/GPU compute remain locked.
+
+## 14. Experiment 148 final decision (appended 2026-08-13)
+
+Experiment 148 froze at `b396d40fc` and its sole formal serial run completed from that clean checkout. The raw
+artifact is `experiments/148_generated_market_rule_feedback_rd_serial/artifacts/raw/preflight.json`, SHA256
+`6b5f0ba9fd594c241a4e4977299d2e90a8c45371418b30acaaf6a27ba401532b`. The decision is
+`GENERATED_RD_PREFLIGHT_FAIL`:
+
+- 6,600/6,600 primary fits and 1,800/1,800 oracle constructions succeeded; all five deterministic/stochastic
+  diagnostic guards passed and no fit or oracle failure occurred.
+- Only 9/16 gated cells passed. At cutoff 10, the rounded null rejected 25/300 times (`8.33%`) with Wilson 95%
+  upper bound `12.01%`, failing the frozen `<=8%` point and `<=11%` upper-bound requirements.
+- Every `|tau|=0.05`, `sigma=0.10` effect cell failed the 80% power gate. Non-clustered power was
+  `48.67%--56.33%`; clustered reinforcing power was `33.67%`.
+- The run used one controller, zero workers, one numerical thread, about `0.02135` CPU core-hours and `0.1965 GB`
+  peak RSS. It opened no market/FITRS/price/paid/sealed data, made no network call, contacted no remote host and
+  used zero GPU-hours.
+
+The failure is therefore about statistical identification at the blind metadata-supported sample scale, not
+software instability and not evidence that the real feedback mechanism is absent. The preregistered stop rule
+retires the current V5 design before any market outcome is opened. Experiment 148 may not be rerun, and the design
+may not be rescued by changing seeds, relaxing gates, inspecting real signs, adding ordinary years post hoc,
+buying data with the same independent-unit structure or adding GPUs. Re-entry requires a prospectively new
+data/design opportunity with substantially denser independent cutoff support or a stronger exogenous first stage.
+Final iteration decision: `V5_NO_SURVIVOR` for NMI and NCS.

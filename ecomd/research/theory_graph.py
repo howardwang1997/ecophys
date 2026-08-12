@@ -47,13 +47,19 @@ CANDIDATE_STATES = frozenset(
         "ATTACKING",
         "RETIRED_PRIOR_ART",
         "RETIRED_IDENTIFIABILITY",
+        "RETIRED_FEASIBILITY",
         "RETIRED_NO_WITNESS",
         "CONJECTURE",
         "READY_FOR_HUMAN_AUDIT",
     }
 )
 RETIRED_STATES = frozenset(
-    {"RETIRED_PRIOR_ART", "RETIRED_IDENTIFIABILITY", "RETIRED_NO_WITNESS"}
+    {
+        "RETIRED_PRIOR_ART",
+        "RETIRED_IDENTIFIABILITY",
+        "RETIRED_FEASIBILITY",
+        "RETIRED_NO_WITNESS",
+    }
 )
 TRACKS = frozenset({"shared", "nmi", "ncs", "both"})
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]*$")

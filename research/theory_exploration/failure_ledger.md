@@ -74,6 +74,10 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
     reporting, transparency and eligibility rule for the same numerical boundary before pooling cutoffs.
 22. Metadata queries can accidentally disclose values. Record the deviation, exclude the contaminated unit and
     switch to zero-row aggregate queries; do not retroactively redefine the value as metadata.
+23. A clean implementation and stable estimator do not imply an adequate empirical design. Pre-outcome generated
+    calibration must test both type-I error and minimum-effect power at the actual metadata-supported sample scale.
+24. GPU scaling cannot create independent cutoff support. When the information unit is an instrument-year near a
+    statutory threshold, more accelerators only compute an underpowered answer faster.
 
 ## V5 gate failures retained
 
@@ -82,3 +86,5 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
 | 2026-08-13 | V5 NMI threshold-feedback method | `RETIRED_PRIOR_ART` | Robust bias-corrected, multi-cutoff and discrete-running-variable RD directly cover the proposed estimator; no non-equivalent theorem card exists. | A new market application and a feedback interpretation do not create a general AI/ML method. | A theorem with a distinct estimand, assumptions or coverage result and validation outside markets. |
 | 2026-08-13 | V5 clean pooling of all five cutoffs | `REJECTED_DESIGN` | RTS 28 uses 80 and 2,000 ADNT as reporting-group boundaries; some adjacent tick columns are identical at low prices. | Pooling statutory cutoffs can combine different treatment bundles or zero first stages. | Primary evidence from cutoff 10 plus price-qualified 600; shared boundaries only as diagnostics. |
 | 2026-08-13 | V5 zero-value metadata boundary | `PROTOCOL_DEVIATION_CONTAINED` | A schema-discovery `rows=1` query returned one 2021 ADNT for `ROROCEACNOR1`; no pair or cutoff-selected value was opened. | Schema inspection must request no records by construction. | Permanent exclusion of the ISIN, recorded disclosure and `rows=0` until a new preregistration. |
+| 2026-08-13 | Experiment 147 process-pool execution | `IMPLEMENTATION_OR_SPEC_FAILURE` | The sole frozen attempt stopped in `ProcessPoolExecutor` construction when the sandbox denied a semaphore-limit query; zero tasks, panels, fits and outputs were created. | Resource assumptions belong in the executable contract; a pre-task infrastructure failure contains no statistical evidence. | A separately preregistered wrapper may change orchestration only; the failed experiment itself is immutable. |
+| 2026-08-13 | V5 annual-feedback RD identification | `RETIRED_FEASIBILITY`; `V5_NO_SURVIVOR` | Experiment 148 completed 6,600/6,600 fits and 1,800/1,800 oracle intervals, but only 9/16 gated cells passed. Rounded-null cutoff 10 rejected 8.33% with Wilson upper 12.01%; all six 5% effect cells had only 33.67%--56.33% power. | Passing diagnostics and low bias cannot compensate for false-positive and power failure at the available independent-unit scale. | A prospectively new source/design with substantially denser independent cutoff support or a stronger exogenous first stage, frozen before any outcome inspection. |

@@ -1,6 +1,6 @@
 ---
 name: Endogenous market-rule feedback v5
-description: Active metadata-first audit of multi-year feedback created by ADNT-dependent tick-size assignment.
+description: Closed v5 audit; generated identification preflight retired the annual ADNT-dependent tick-feedback design.
 type: project
 ---
 
@@ -59,3 +59,16 @@ one controller PID, zero workers and one numerical thread. Five repeatable tests
 pre-freeze single-task adapter probe inspected only success/failure flags and is logged separately from formal
 results. The full suite has not run and still requires a pushed `FREEZE.yaml`. Real data, V100s, RTX2060 and GPUs
 remain locked.
+
+Experiment 148 froze at `b396d40fc` and its sole formal run returned `GENERATED_RD_PREFLIGHT_FAIL`. Raw artifact:
+`experiments/148_generated_market_rule_feedback_rd_serial/artifacts/raw/preflight.json`, SHA256
+`6b5f0ba9fd594c241a4e4977299d2e90a8c45371418b30acaaf6a27ba401532b`. All 6,600 fits, all 1,800 oracle
+constructions and all five diagnostic guards succeeded, but only 9/16 gated cells passed. Rounded-null cutoff 10
+rejected 8.33% with Wilson upper 12.01%, and all six 5% effect cells had only 33.67%--56.33% power versus the 80%
+gate. This is a statistical-design failure at the blind metadata-supported sample scale, not evidence that the
+real feedback mechanism is absent.
+
+Final status is `V5_NO_SURVIVOR` for NMI and NCS. Experiment 148 is immutable; do not rerun, change seeds, relax
+the effect floor, inspect real signs, add ordinary years post hoc or buy compute for this design. No FITRS/price/UK
+outcome was opened and no remote host or GPU was used. Re-entry requires a prospectively new design with
+substantially denser independent cutoff support or a stronger exogenous first stage.

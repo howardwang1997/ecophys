@@ -5,25 +5,23 @@ for a later project.
 
 ## Current theory state
 
-`endogenous-market-rule-feedback-v5` started from integrated `main@268050126` on 2026-08-13. It is a bounded
-metadata-first scout of the real loop `ADNT_y -> annual liquidity-band/tick assignment_(y+1) -> ADNT_(y+1)`. The
-candidate NCS finding is a replicated discontinuity in the future statistic that controls the rule's next setting,
-not the already-studied one-step effect of tick changes on spreads, depth or orders. EU/EEA history is development,
-later EU cycles are temporal validation and instrument-level UK files are sealed external replication. Initial
-authorization is official rules, literature and catalog/schema/licence metadata only: <=30 Mac CPU core-hours,
-zero instrument-level values, purchases, workers or GPUs. NMI remains conditional on a method/theorem outside
-standard RD and threshold systems. Protocol: `papers/proposal/plan_endogenous_market_rule_feedback_nmi_ncs_v5.md`.
-This topic iteration is unrelated to the archived exp141 Plan v5 and does not relabel its generated results.
+`endogenous-market-rule-feedback-v5` started from integrated `main@268050126` on 2026-08-13 and closed
+`V5_NO_SURVIVOR` the same day. It tested the real loop
+`ADNT_y -> annual liquidity-band/tick assignment_(y+1) -> ADNT_(y+1)` without opening a market outcome. NMI
+closed at prior-art audit. NCS reached a frozen generated identification preflight, but Experiment 148 passed only
+9/16 gated cells: one rounded null over-rejected and all six 5% effect cells missed the 80% power gate. All 6,600
+fits, 1,800 oracle constructions and five diagnostics completed, so this is a statistical-design failure at the
+blind metadata-supported sample scale, not a software failure or evidence that the real mechanism is absent.
+Protocol and result: `papers/proposal/plan_endogenous_market_rule_feedback_nmi_ncs_v5.md` and
+`experiments/148_generated_market_rule_feedback_rd_serial/RESULTS.md`. This iteration is unrelated to the archived
+exp141 Plan v5 and does not relabel its generated results.
 
-WP0 then returned `NCS_FEASIBILITY_CANDIDATE` and NMI `NO_SURVIVOR`. Official rules fix the annual loop and
-exceptions; ESMA's reusable register contains 2017--2025 annual records, while FCA's documented API lists
-2021--2026 history for a conditionally sealed replication. Blind zero-row facets showed local support around all
-five cutoffs. AMF already identified the circular tick--trade-count relation and FCA already tested one-step
-reclassification effects, so novelty can attach only to a repeated next-controller-input discontinuity and its
-external replication. The next-year outcome contains roughly nine months of new-column exposure. Cutoff 10 is the
-clean lead, 600 needs a price-qualified first stage, and 80/2,000 share RTS 28 boundaries. One schema query
-accidentally disclosed a 2021 value for `ROROCEACNOR1`; that ISIN is permanently excluded. Only a separately frozen
-generated Mac-CPU preflight is authorized. Full audit:
+WP0 had established the statutory rule clock, reusable ESMA metadata, conditionally sealed FCA history, blind
+cutoff support and the mixed nine-month-exposure estimand. Experiment 147's process-pool implementation then failed
+before any task because the sandbox denied a semaphore query; the separately preregistered Experiment 148 changed
+only orchestration and completed serially. It consumed about 0.02135 Mac CPU core-hours, 0.1965 GB peak RAM and
+zero GPU-hours. No FITRS ZIP, market pair, price, UK sealed record, network call or remote worker was used. The
+current design and all corresponding real-data/remote-compute gates are closed. Full audit:
 `research/theory_exploration/market_rule_feedback_audit_v5.md`.
 
 `phenomenon-first-nmi-ncs-v4` started from integrated `main@8283e77f7` on 2026-08-13 and closed
@@ -97,7 +95,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Dual-track theory exploration v2 | NMI no survivor; NCS C0 identification fail | 108-node exploration graph, target-task prior-art map, exp145 attribution counterexamples and validated rule metadata | No adaptation label, sealed replication, data contract, theorem/venue claim or compute unlock |
 | Dual-track theory exploration v3 | `V3_NO_SURVIVOR`; closed at equation audit | 135-node graph, prior-art map and noisy-XOR missing-state control | No new closure/memory/operator method, experiment, data contract or compute unlock |
 | Phenomenon-first theory exploration v4 | `V4_NO_SURVIVOR`; closed prior-art/witness audit | Prior-art map and explicit no-witness outcomes | No scientific law, commensurability, dataset contract, method novelty or compute unlock |
-| Endogenous market-rule feedback v5 | WP0 `NCS_FEASIBILITY_CANDIDATE`; NMI `NO_SURVIVOR`; generated preflight only | Exact rule clock, ESMA/FCA metadata contract, blind cutoff support and repeated-cycle estimand | No market effect, method novelty, real-data unlock, worker or GPU authorization |
+| Endogenous market-rule feedback v5 | `V5_NO_SURVIVOR`; generated identification preflight failed | Exact rule clock, ESMA/FCA metadata contract, immutable Exp148 artifact and power/type-I lesson | No market effect, method novelty, real-data unlock, worker or GPU authorization |
 
 ## Code inheritance rules
 

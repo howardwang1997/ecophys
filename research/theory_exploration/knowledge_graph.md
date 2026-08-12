@@ -2,7 +2,7 @@
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** NCS `NCS_FEASIBILITY_CANDIDATE`; NMI `NO_SURVIVOR`
+**Current decision:** v5 `V5_NO_SURVIVOR`; NMI and NCS real-data/remote-compute gates locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit and v5 annual-rule-feedback gate. Graph proximity is not evidence of
@@ -112,9 +112,10 @@ flowchart TB
     end
 
     DV4 --> V5
-    V5 --> DV5["NCS feasibility only / NMI no survivor"]
-    DV5 --> CPU["separately frozen generated Mac-CPU preflight"]
-    DV5 --> LOCK["real values / workers / GPUs locked"]
+    V5 --> DV5["Exp148: generated RD FAIL"]
+    DV5 --> CPU["9/16 gated cells pass"]
+    CPU --> RETIRE["V5_NO_SURVIVOR"]
+    RETIRE --> LOCK["real values / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -169,15 +170,15 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v4 P2 aggregation loss | `RETIRED_PRIOR_ART` | direct same-protocol macro--micro dissociation | mandatory warning/baseline only |
 | v4 P3 strategic memory | `RETIRED_NO_WITNESS` | no randomized erase/replay market dataset with independent replication | none until a true causal break exists |
 | v5 NMI threshold-feedback method | `RETIRED_PRIOR_ART` | robust bias-corrected, multi-cutoff and discrete-running-variable RD | estimation oracle only |
-| v5 NCS annual feedback | `ATTACKING` | exact statutory clock and blind support survive; exp147 failed before dispatch; exp148 serial repair is preregistered and implementation-tested but formally unrun | exp148 serial CPU feasibility only |
+| v5 NCS annual feedback | `RETIRED_FEASIBILITY` | Exp148: 9/16 gated cells pass; rounded null over-rejects; all six 5% effect cells miss 80% power | immutable negative result and design lesson only |
 | v5 cutoff pool | restricted | 80/2,000 share RTS 28 boundaries; 600/9,000 have low-price zero first stages | cutoff 10 plus price-qualified 600 primary |
 | v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
 
-The graph has 189 nodes after recording the exp147 failure and exp148 serial repair. NMI has no theorem or estimator
-ready for human novelty audit. NCS has a
-specific real mechanism and a conditional data route, but no empirical effect. One schema query disclosed a single
-2021 value for `ROROCEACNOR1`; it is permanently excluded. No FITRS ZIP, outcome pair, remote worker or GPU was
-opened, and both V100 workers and the RTX2060 remain outside the queue.
+The graph has 190 nodes after recording the exp148 generated-identification failure. NMI has no theorem or
+estimator ready for human novelty audit. NCS retains a scientifically meaningful real mechanism but no feasible
+current identification design and no empirical effect. One schema query disclosed a single 2021 value for
+`ROROCEACNOR1`; it is permanently excluded. No FITRS ZIP, outcome pair, remote worker or GPU was opened, and both
+V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

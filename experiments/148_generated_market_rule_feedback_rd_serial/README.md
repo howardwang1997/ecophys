@@ -41,3 +41,16 @@ CUDA_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 conda run -n ecophys python \
 The runner verifies a clean checkout, absent output, parent and repair hashes, commits, Python and package versions
 before installing its network guard. It writes no checkpoint and atomically renames a complete temporary JSON only
 after all tasks and diagnostics finish.
+
+## Formal result
+
+The sole formal run completed from clean checkout `b396d40fc` and returned
+`GENERATED_RD_PREFLIGHT_FAIL`. The immutable raw artifact is
+`artifacts/raw/preflight.json` (SHA256
+`6b5f0ba9fd594c241a4e4977299d2e90a8c45371418b30acaaf6a27ba401532b`); the complete interpretation is in
+`RESULTS.md`.
+
+All 6,600 primary fits and 1,800 declared oracle constructions succeeded, and all five diagnostic guards passed.
+Only 9/16 gated cells passed: one rounded null failed false-positive control, and all six 5% effect cells failed
+the 80% power gate. The result retires the current V5 identification design before any real outcome is opened.
+Experiment 148 is immutable and must not be rerun.

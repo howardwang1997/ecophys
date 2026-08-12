@@ -145,6 +145,8 @@ use.
 
 - G0 passes; D0 is conditional on the price/corporate-action and UK licence paths.
 - Blind zero-row facets show repeated local support around all cutoffs, but are upper bounds before exclusions.
-- NMI has no survivor. NCS remains an `ATTACKING` feasibility candidate, not an empirical claim.
-- A generated CPU preflight is authorized only after a separate preregistration commit; real values, remote workers
-  and GPUs remain locked.
+- NMI has no survivor. Experiment 148 also closes the NCS candidate at generated feasibility: only 9/16 gated cells
+  passed; one rounded null over-rejected and every 5% effect cell missed the power gate.
+- All 6,600 primary fits and 1,800 oracle constructions succeeded and all diagnostics passed, so the result is a
+  statistical-design failure rather than an implementation failure. Real values, remote workers and GPUs remain
+  locked; the final v5 state is `V5_NO_SURVIVOR`.

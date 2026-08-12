@@ -6,7 +6,9 @@
 
 **Scope:** rules, primary literature, official schemas/licences and aggregate register queries only
 
-**Decision:** `NCS_FEASIBILITY_CANDIDATE`; NMI `NO_SURVIVOR`; real values and all remote compute remain locked
+**WP0 decision:** `NCS_FEASIBILITY_CANDIDATE`; NMI `NO_SURVIVOR`; real values and all remote compute remain locked
+
+**Final iteration outcome:** `V5_NO_SURVIVOR` after Experiment 148 `GENERATED_RD_PREFLIGHT_FAIL`
 
 ## 1. Result in one paragraph
 
@@ -197,3 +199,22 @@ code only and cannot raise the Nature-scale probability by itself.
 - [Robust RD inference](https://doi.org/10.3982/ECTA11757)
 - [Discrete-running-variable RD](https://www.aeaweb.org/articles?id=10.1257/aer.20160945)
 - [Multi-cutoff RD analysis](https://arxiv.org/abs/1912.07346)
+
+## 9. Post-audit generated preflight outcome
+
+Experiment 147's sole frozen attempt failed before any task because its process-pool constructor made a
+sandbox-denied semaphore-limit query. The separately preregistered Experiment 148 inherited every scientific
+setting and changed only scheduling to serial in-process execution. Its sole formal run completed all 6,600
+primary fits and 1,800 oracle constructions and returned `GENERATED_RD_PREFLIGHT_FAIL`.
+
+Only 9/16 gated cells passed. The rounded null at cutoff 10 rejected 25/300 times (`8.33%`) and had a Wilson 95%
+upper bound of `12.01%`, above both frozen thresholds. All six `|tau|=0.05`, `sigma=0.10` cells missed the 80%
+power gate, with power from `33.67%` to `56.33%`. Every diagnostic guard passed and no fit or oracle failed.
+Therefore the statistical design, rather than the implementation, is inadequate at the blind metadata-supported
+sample scale.
+
+The raw artifact and full result are under
+`experiments/148_generated_market_rule_feedback_rd_serial/`. No instrument-level outcome was opened, and no
+remote worker or GPU was used. The current V5 route is retired. The result does not establish absence of real
+feedback; it forbids testing that question with this underpowered design. Re-entry requires a prospectively new
+source/design with substantially denser independent cutoff support or a stronger exogenous first stage.

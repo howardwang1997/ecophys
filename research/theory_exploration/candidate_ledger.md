@@ -1,7 +1,7 @@
-# Candidate ledger — v1 through v4
+# Candidate ledger — v1 through v5
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** v4 `V4_NO_SURVIVOR`; NMI/NCS data and compute gates remain locked
+**Current outcome:** v5 `V5_NO_SURVIVOR`; NMI/NCS real-data and remote-compute gates remain locked
 
 **Scientific meaning:** every current NMI primitive is occupied, and relaxation exceedance rejects a model class
 without identifying adaptation
@@ -327,6 +327,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-12 | v2 | Audited target-conditioned identifiability, contraction estimation, dynamic causal response and digital-twin discrepancy; exp145 confirmed two non-adaptive exceedance witnesses; metadata screening found no sealed replication. | NMI `NMI_NO_SURVIVOR`; NCS `NCS_C0_FAIL_IDENTIFICATION`; no data/GPU authorization |
 | 2026-08-12 | v3 | Audited controlled state closure, memory repair and Poisson/operator calibration; all three reduce equation-by-equation to PSR/process-tensor/Mori--Zwanzig/Stein/Koopman results. | `V3_NO_SURVIVOR`; exp146 not run; no data/GPU authorization |
 | 2026-08-13 | v4 | Audited cross-population mechanism response, aggregation loss and strategic memory against direct human/LLM experiments, surrogate inference, interference theory and free repository metadata. | `V4_NO_SURVIVOR`; no experiment, outcome file, worker or GPU authorization |
+| 2026-08-13 | v5 | Audited annual ADNT--tick feedback, then ran the single frozen generated RD preflight after a serial execution repair. Only 9/16 gated cells passed; one rounded null over-rejected and every 5% effect cell missed the power gate. | `V5_NO_SURVIVOR`; no market outcome, remote worker or GPU authorization |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -344,16 +345,20 @@ not promoted to an active candidate.
 
 | ID | Proposed object | Decisive audit | Current state |
 |---|---|---|---|
-| V5-NCS-1 | discontinuity from annual ADNT band assignment to next annual ADNT/assignment across repeated cycles | exact RTS 11 clock; 2017--2025 ESMA panel; blind support around all five cutoffs; AMF circularity and FCA one-step effects as nearest baselines | `ATTACKING`; `NCS_FEASIBILITY_CANDIDATE` only |
+| V5-NCS-1 | discontinuity from annual ADNT band assignment to next annual ADNT/assignment across repeated cycles | Experiment 148: 9/16 gated cells pass; rounded-null cutoff 10 rejects 8.33% with Wilson upper 12.01%; all six 5% effect cells have only 33.67%--56.33% power | `RETIRED_FEASIBILITY`; NCS `NO_SURVIVOR` |
 | V5-NMI-1 | transferable estimator/theorem for endogenous threshold feedback | robust bias-corrected, multi-cutoff, dynamic and discrete-score RD plus threshold systems cover the method components | `RETIRED_PRIOR_ART`; NMI `NO_SURVIVOR` |
 
-The NCS candidate is narrower than “tick affects liquidity.” Its frozen estimand is the local discontinuity in
+The retired NCS candidate was narrower than “tick affects liquidity.” Its frozen estimand was the local discontinuity in
 `log(ADNT_(y+1)/c)` at an annual statutory cutoff, where the outcome is the next controller input. AMF already
 identified the circular relation qualitatively, so only a robust, repeated and externally replicated quantitative
 effect can be new. Because the next calendar-year ADNT contains about nine months under the newly assigned column,
 the estimate is an assignment ITT with mixed exposure rather than a full-year tick elasticity.
 
-Cutoff 10 is the clean lead. Cutoff 600 becomes a second primary cutoff only with a date-correct nonzero price-row
-first stage. The 80 and 2,000 boundaries coincide with RTS 28 grouped reporting and cannot anchor a tick-only
-claim. The candidate advances no further than generated feasibility until discrete-score coverage, regression to
-the mean, sorting, attrition, shared-cutoff and mixed-exposure attacks pass.
+Cutoff 10 was the clean lead. Cutoff 600 required a date-correct nonzero price-row first stage. The 80 and 2,000
+boundaries coincide with RTS 28 grouped reporting and cannot anchor a tick-only claim. Experiment 148 completed all
+6,600 fits and 1,800 oracle constructions without numerical failure, and all five diagnostic guards passed. The
+design nevertheless failed its frozen statistical gate: one rounded null exceeded both false-positive thresholds,
+while all six `|tau|=0.05`, `sigma=0.10` effect cells missed 80% power. The current annual-RD route therefore stops
+before market outcomes. It may be reconsidered only as a prospectively new design with substantially more
+independent cutoff information or a stronger exogenous first stage, never by changing the seed, lowering the
+effect floor, opening real signs, adding ordinary years post hoc or increasing GPU compute.

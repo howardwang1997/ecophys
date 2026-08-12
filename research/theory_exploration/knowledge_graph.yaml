@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
 iteration: endogenous-market-rule-feedback-v5
-decision: NCS_FEASIBILITY_CANDIDATE_NMI_NO_SURVIVOR
+decision: V5_NO_SURVIVOR
 
 nodes:
   - id: src.controlled_world_models
@@ -1392,7 +1392,7 @@ nodes:
     title: Repeated annual market-rule feedback law
     track: ncs
     claim: Statutory liquidity-band assignment may create a reproducible local discontinuity in the next annual ADNT and subsequent assignment.
-    status: ATTACKING
+    status: RETIRED_FEASIBILITY
     history:
       - date: "2026-08-13"
         to: SCOUT
@@ -1403,6 +1403,11 @@ nodes:
         to: ATTACKING
         reason: Exact rules and reusable longitudinal catalogs survive, while nearest work covers circularity and one-step effects but not the repeated next-ADNT estimand.
         evidence: [src.v5_rts11, src.v5_amf_circularity, src.v5_fca_reclassification, data.v5_official_panel_metadata]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_FEASIBILITY
+        reason: The frozen generated design passed only 9 of 16 gated cells; one rounded null over-rejected and all six five-percent effect cells missed the power gate.
+        evidence: [decision.exp148_generated_failure]
   - id: cand.v5.threshold_feedback_method
     type: candidate
     title: Transferable endogenous threshold-feedback estimator
@@ -1454,8 +1459,8 @@ nodes:
     type: benchmark
     title: Generated annual-feedback RD preflight
     track: ncs
-    claim: Experiment 147 failed before formal task dispatch; Experiment 148 now locks its science by SHA and awaits a separately frozen serial formal run after implementation checks passed.
-    artifact: experiments/148_generated_market_rule_feedback_rd_serial/PREREGISTRATION.md
+    claim: Experiment 148 completed the exact frozen suite after the Experiment 147 orchestration failure and returned GENERATED_RD_PREFLIGHT_FAIL with 9 of 16 gated cells passing.
+    artifact: experiments/148_generated_market_rule_feedback_rd_serial/RESULTS.md
   - id: bench.v5_rd_oracle
     type: benchmark
     title: Robust multi-cutoff and honest discrete-RD oracle
@@ -1476,7 +1481,7 @@ nodes:
     type: compute_gate
     title: V5 generated CPU-only gate
     track: ncs
-    claim: Experiment 148 permits one serial single-threaded Mac CPU controller only after a pushed implementation freeze; real files remote workers and GPUs remain locked.
+    claim: Experiment 148 completed with one serial Mac CPU controller about 0.02135 core-hours and zero GPU-hours; all real-data and remote-compute gates remain locked.
   - id: decision.iteration_v5_wp0
     type: decision
     title: Endogenous market-rule feedback v5 WP0 outcome
@@ -1492,8 +1497,14 @@ nodes:
     type: benchmark
     title: Experiment 148 serial execution repair
     track: ncs
-    claim: A separately preregistered wrapper inherits 6600 fit and 1800 oracle tasks exactly while replacing only the failed process pool with controller-PID serial execution.
-    artifact: experiments/148_generated_market_rule_feedback_rd_serial/PREREGISTRATION.md
+    claim: The separately preregistered wrapper completed 6600 fit and 1800 oracle tasks while replacing only the failed process pool with controller-PID serial execution.
+    artifact: experiments/148_generated_market_rule_feedback_rd_serial/RESULTS.md
+  - id: decision.exp148_generated_failure
+    type: decision
+    title: Experiment 148 generated identification failure
+    track: ncs
+    claim: Only 9 of 16 gated cells passed; rounded-null cutoff 10 exceeded false-positive gates and every five-percent effect cell missed the eighty-percent power gate, retiring V5 before real outcomes.
+    artifact: experiments/148_generated_market_rule_feedback_rd_serial/RESULTS.md
 
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
@@ -1718,3 +1729,7 @@ edges:
   - {source: decision.exp147_execution_failure, target: compute.v5_generated_cpu_only, type: requires, claim: A separately preregistered serial Experiment 148 repair is required without opening data or remote compute.}
   - {source: decision.exp147_execution_failure, target: bench.exp148_serial_repair, type: branches_to, claim: Experiment 148 is the only authorized orchestration repair and cannot change the scientific contract.}
   - {source: bench.exp148_serial_repair, target: bench.v5_generated_rd_preflight, type: supports, claim: Serial scheduling preserves frozen tasks and can answer the still-open generated-design benchmark.}
+  - {source: bench.exp148_serial_repair, target: decision.exp148_generated_failure, type: branches_to, claim: The sole serial formal run produced the immutable generated-design failure.}
+  - {source: cand.v5.annual_rule_feedback, target: decision.exp148_generated_failure, type: retired_by, claim: Failed type-I and minimum-effect power gates retire the current identification design before market outcomes.}
+  - {source: decision.exp148_generated_failure, target: data.v5_official_panel_metadata, type: forbids, claim: Instrument-level outcome pairs and sealed UK records remain closed for this retired design.}
+  - {source: decision.exp148_generated_failure, target: compute.ncs_post_c1, type: forbids, claim: More compute cannot repair the missing independent cutoff information.}
