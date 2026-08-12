@@ -1,11 +1,11 @@
-# Theory-exploration topology v4
+# Theory-exploration topology v5
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** `V4_NO_SURVIVOR`
+**Current decision:** NCS `NCS_FEASIBILITY_CANDIDATE`; NMI `NO_SURVIVOR`
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
-adds the v3 state-closure/operator attacks and v4 phenomenon-first audit. Graph proximity is not evidence of
+adds the v3 state-closure/operator attacks, v4 phenomenon-first audit and v5 annual-rule-feedback gate. Graph proximity is not evidence of
 novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
 exact counterexample.
 
@@ -95,7 +95,26 @@ flowchart TB
 
     DV3 --> V4
     V4 --> DV4["V4_NO_SURVIVOR"]
-    DV4 --> LOCK["data / API / worker / GPU gates locked"]
+
+    subgraph V5["v5: annual endogenous market-rule feedback"]
+        RULE["RTS 11: ADNT_y -> band/tick_(y+1)"]
+        MIX["ADNT_(y+1): about 9 treated months"]
+        AMF["AMF: circularity already known"]
+        FCA["FCA: one-step effects already known"]
+        DATA["ESMA 2017--2025 + sealed FCA 2021--2026"]
+        RD["robust multi-cutoff + discrete RD"]
+        CAND["repeated next-input discontinuity"]
+        RULE --> MIX --> CAND
+        AMF -->|narrows novelty| CAND
+        FCA -->|mandatory baseline| CAND
+        DATA -->|conditional contract| CAND
+        RD -->|retires NMI method| CAND
+    end
+
+    DV4 --> V5
+    V5 --> DV5["NCS feasibility only / NMI no survivor"]
+    DV5 --> CPU["separately frozen generated Mac-CPU preflight"]
+    DV5 --> LOCK["real values / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -149,9 +168,15 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v4 P1 population response | `RETIRED_PRIOR_ART` | dynamic human/LLM markets, institutional comparisons and effect-surrogacy work; no signed law/sealed pair | lower-claim benchmark only |
 | v4 P2 aggregation loss | `RETIRED_PRIOR_ART` | direct same-protocol macro--micro dissociation | mandatory warning/baseline only |
 | v4 P3 strategic memory | `RETIRED_NO_WITNESS` | no randomized erase/replay market dataset with independent replication | none until a true causal break exists |
+| v5 NMI threshold-feedback method | `RETIRED_PRIOR_ART` | robust bias-corrected, multi-cutoff and discrete-running-variable RD | estimation oracle only |
+| v5 NCS annual feedback | `ATTACKING` | exact statutory clock, reusable longitudinal metadata and blind cutoff support; repeated effect not yet tested | generated CPU feasibility only |
+| v5 cutoff pool | restricted | 80/2,000 share RTS 28 boundaries; 600/9,000 have low-price zero first stages | cutoff 10 plus price-qualified 600 primary |
+| v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
 
-The graph has 161 nodes after v4. Neither branch has a theorem, estimator or real mechanism ready for human novelty
-audit. Exp146 and a v4 experiment were not run. Both V100 workers and the RTX2060 remain outside the queue.
+The graph has 187 nodes after v5 WP0. NMI has no theorem or estimator ready for human novelty audit. NCS has a
+specific real mechanism and a conditional data route, but no empirical effect. One schema query disclosed a single
+2021 value for `ROROCEACNOR1`; it is permanently excluded. No FITRS ZIP, outcome pair, remote worker or GPU was
+opened, and both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

@@ -117,3 +117,23 @@ The next NCS search may return to real market physics. One metadata-level scout 
 market rules: measured liquidity determines a future tick-size band, which then changes future liquidity. The
 one-step effect and annual reclassification are already studied, so only a replicated multi-year feedback law with
 credible identification could survive. It must be frozen in a separate iteration before any values are opened.
+
+## V5 route decision after WP0
+
+- **NMI:** `NO_SURVIVOR`. V5 currently applies established robust, multi-cutoff and discrete-running-variable RD.
+  A market feedback label supplies neither a new estimator nor a transferable theorem.
+- **NCS:** `NCS_FEASIBILITY_CANDIDATE`, still under attack. The admissible claim is a replicated local effect of
+  statutory annual band assignment on the next annual controller input, not first tick-size effect or first
+  circularity observation.
+- **Clean identification:** cutoff 10 is primary; cutoff 600 is required as a price-qualified independent primary
+  contrast. Cutoffs 80 and 2,000 share RTS 28 boundaries and are diagnostics. Mixed nine-month exposure must be
+  explicit.
+- **Data state:** ESMA development and later temporal cycles exist under reusable register terms. UK 2021--2026
+  history exists but remains sealed and may be accessed only through the documented FCA API/OGL path. A
+  licence-safe price/corporate-action source remains a real-data blocker.
+- **Compute state:** only a separately preregistered Mac-CPU generated preflight is unlocked. The two V100 workers,
+  RTX2060 and all GPUs remain uncontacted and unqueued.
+
+Advancing to real data requires generated frequentist coverage and false-positive control, sufficient power for
+the frozen 5% floor, two clean effective-tick contrasts, and a committed split/exclusion manifest. Passing a toy
+test is engineering evidence only; it does not improve novelty or establish a market effect.

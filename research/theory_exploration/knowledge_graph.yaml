@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
-iteration: phenomenon-first-nmi-ncs-v4
-decision: V4_NO_SURVIVOR
+iteration: endogenous-market-rule-feedback-v5
+decision: NCS_FEASIBILITY_CANDIDATE_NMI_NO_SURVIVOR
 
 nodes:
   - id: src.controlled_world_models
@@ -1290,6 +1290,198 @@ nodes:
     track: both
     claim: V4_NO_SURVIVOR; P1 and P2 are occupied, P3 lacks a causal-break witness, no experiment ran and all data, API, worker and GPU gates remain locked.
 
+  - id: src.v5_rts11
+    type: source
+    title: RTS 11 consolidated tick-size regime
+    track: ncs
+    claim: Previous-calendar-year ADNT selects a statutory liquidity column and price-dependent tick grid, subject to explicit instrument and update exceptions.
+    url: https://eur-lex.europa.eu/eli/reg_del/2017/588/2023-06-05/eng
+    primary: true
+    evidence_level: regulation
+  - id: src.v5_application_date
+    type: source
+    title: RTS 11 annual application-date amendment
+    track: ncs
+    claim: The annual ADNT result applies from the first Monday of April after publication, replacing the earlier fixed 1 April rule.
+    url: https://eur-lex.europa.eu/eli/reg_del/2023/960/oj/eng
+    primary: true
+    evidence_level: regulation
+  - id: src.v5_amf_circularity
+    type: source
+    title: MiFID II Impact of the New Tick Size Regime
+    track: ncs
+    claim: AMF explicitly states that tick changes can change trade count and calls the tick-liquidity relation circular, while predicting wide annual bands prevent material feedback.
+    url: https://www.amf-france.org/sites/institutionnel/files/contenu_simple/lettre_ou_cahier/risques_tendances/MiFID%20II%20Impact%20of%20the%20New%20Tick%20Size%20Regime.pdf
+    primary: true
+    evidence_level: regulator_study
+  - id: src.v5_fca_reclassification
+    type: source
+    title: A closer look at the UK tick size
+    track: ncs
+    claim: FCA uses the 2024 annual reclassification to estimate one-step effects on spreads cancellation order behavior and depth, with acknowledged selection risk.
+    url: https://www.fca.org.uk/publications/research-articles/uk-tick-size
+    primary: true
+    evidence_level: regulator_study
+  - id: src.v5_esma_fitrs
+    type: source
+    title: ESMA FITRS reporting and schemas
+    track: ncs
+    claim: FITRS publishes annual instrument identifiers calculation periods and ADNT on the most relevant market in official machine-readable records.
+    url: https://www.esma.europa.eu/data-reporting/mifir-reporting
+    primary: true
+    evidence_level: official_schema
+  - id: src.v5_fca_fitrs
+    type: source
+    title: FCA FITRS access and full-file instructions
+    track: ncs
+    claim: Full files retain the latest result for each ISIN and reporting period and a documented machine interface exposes file metadata and download links.
+    url: https://www.fca.org.uk/publication/systems-information/fca-fitrs-tech-spec.pdf
+    primary: true
+    evidence_level: official_schema
+  - id: src.v5_rts28
+    type: source
+    title: RTS 28 annual execution-report grouping
+    track: ncs
+    claim: Shares and depositary receipts are grouped at ADNT boundaries 80 and 2000 for annual execution reporting.
+    url: https://eur-lex.europa.eu/eli/reg_del/2017/576/oj/eng
+    primary: true
+    evidence_level: regulation
+  - id: src.v5_robust_rd
+    type: source
+    title: Robust Nonparametric Confidence Intervals for Regression Discontinuity Designs
+    track: nmi
+    claim: Robust bias-corrected local-polynomial inference for sharp and fuzzy RD is established.
+    url: https://doi.org/10.3982/ECTA11757
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v5_discrete_rd
+    type: source
+    title: Inference in Regression Discontinuity Designs with a Discrete Running Variable
+    track: nmi
+    claim: Conventional clustered-score intervals do not repair discrete-running-variable misspecification and honest alternatives are required.
+    url: https://www.aeaweb.org/articles?id=10.1257/aer.20160945
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v5_multicutoff_rd
+    type: source
+    title: Analysis of Regression Discontinuity Designs with Multiple Cutoffs or Multiple Scores
+    track: nmi
+    claim: Pooled and cutoff-specific robust inference in multi-cutoff RD is established.
+    url: https://arxiv.org/abs/1912.07346
+    primary: true
+    evidence_level: peer_reviewed
+
+  - id: kr.v5_rule_feedback_clock
+    type: known_result
+    title: Statutory annual controller clock
+    track: ncs
+    claim: Annual ADNT deterministically changes the future tick column, while the next calendar-year ADNT mixes approximately three untreated and nine treated months.
+  - id: kr.v5_circularity_prior_art
+    type: known_result
+    title: Tick-transaction-count circularity is known
+    track: ncs
+    claim: Regulator evidence already identifies the qualitative loop and one-step market-quality consequences, but not its repeated next-input discontinuity.
+  - id: kr.v5_rd_method_coverage
+    type: known_result
+    title: Robust multi-cutoff discrete-score RD coverage
+    track: nmi
+    claim: The proposed estimation ingredients reduce to established robust multi-cutoff and discrete-running-variable RD methods.
+
+  - id: cand.v5.annual_rule_feedback
+    type: candidate
+    title: Repeated annual market-rule feedback law
+    track: ncs
+    claim: Statutory liquidity-band assignment may create a reproducible local discontinuity in the next annual ADNT and subsequent assignment.
+    status: ATTACKING
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen before instrument-level values in the v5 plan.
+        evidence: [papers/proposal/plan_endogenous_market_rule_feedback_nmi_ncs_v5.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Exact rules and reusable longitudinal catalogs survive, while nearest work covers circularity and one-step effects but not the repeated next-ADNT estimand.
+        evidence: [src.v5_rts11, src.v5_amf_circularity, src.v5_fca_reclassification, data.v5_official_panel_metadata]
+  - id: cand.v5.threshold_feedback_method
+    type: candidate
+    title: Transferable endogenous threshold-feedback estimator
+    track: nmi
+    claim: A general estimator might identify feedback when a threshold policy changes its future running variable.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen as a conditional NMI route before method audit.
+        evidence: [papers/proposal/plan_endogenous_market_rule_feedback_nmi_ncs_v5.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared the estimand and inference requirements with robust multi-cutoff dynamic and discrete-score RD.
+        evidence: [src.v5_robust_rd, src.v5_discrete_rd, src.v5_multicutoff_rd]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: No non-equivalent estimand theorem or coverage result survived beyond established RD and threshold-system methods.
+        evidence: [kr.v5_rd_method_coverage]
+
+  - id: po.v5_repeated_effect_identification
+    type: proof_obligation
+    title: Repeated next-input identification
+    track: ncs
+    claim: The candidate needs robust local identification under mixed exposure discrete scores corrections sorting attrition and shared-cutoff rules plus sealed replication.
+  - id: po.v5_method_non_equivalence
+    type: proof_obligation
+    title: Threshold-feedback method non-equivalence
+    track: nmi
+    claim: An NMI route required assumptions estimand estimator and guarantee not obtainable from robust multi-cutoff dynamic or discrete-score RD.
+  - id: ce.v5_regression_to_mean
+    type: counterexample
+    title: Annual measurement regression to the mean
+    track: ncs
+    claim: Noisy annual ADNT near a cutoff can generate apparent reversal or persistence without any policy effect.
+  - id: ce.v5_joint_cutoff_rule
+    type: counterexample
+    title: Coincident statutory boundary
+    track: both
+    claim: ADNT cutoffs 80 and 2000 also change RTS 28 reporting groups, so a pooled discontinuity need not isolate the tick column.
+  - id: ce.v5_rd_relabel
+    type: counterexample
+    title: Feedback relabeling of standard RD
+    track: nmi
+    claim: Calling the future running variable a controller input does not alter the standard multi-period threshold estimand or inference problem.
+  - id: bench.v5_generated_rd_preflight
+    type: benchmark
+    title: Generated annual-feedback RD preflight
+    track: ncs
+    claim: A separately preregistered CPU suite must establish null error control coverage power and failure diagnostics before market values open.
+  - id: bench.v5_rd_oracle
+    type: benchmark
+    title: Robust multi-cutoff and honest discrete-RD oracle
+    track: both
+    claim: V5 inference must compare with robust bias correction cutoff-specific estimates and honest discrete-score intervals rather than global polynomial fits.
+  - id: data.v5_official_panel_metadata
+    type: dataset
+    title: Official annual FITRS panel metadata
+    track: ncs
+    claim: ESMA exposes reusable annual 2017-2025 records and blind cutoff counts; FCA exposes 2021-2026 file history through a documented API while UK instruments remain sealed.
+    artifact: research/theory_exploration/market_rule_feedback_audit_v5.md
+  - id: data.v5_contaminated_isin
+    type: dataset
+    title: V5 schema-query exclusion
+    track: ncs
+    claim: A schema query disclosed one 2021 value for ROROCEACNOR1; the ISIN is permanently excluded and no outcome pair was opened.
+  - id: compute.v5_generated_cpu_only
+    type: compute_gate
+    title: V5 generated CPU-only gate
+    track: ncs
+    claim: Only a separately preregistered Mac CPU generated-design preflight is authorized; real files remote workers and GPUs remain locked.
+  - id: decision.iteration_v5_wp0
+    type: decision
+    title: Endogenous market-rule feedback v5 WP0 outcome
+    track: both
+    claim: NCS_FEASIBILITY_CANDIDATE and NMI_NO_SURVIVOR; proceed only to a frozen generated CPU preflight with all market-value and remote-compute gates locked.
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -1479,3 +1671,33 @@ edges:
   - {source: decision.iteration_v4, target: compute.ncs_post_c1, type: forbids, claim: No v4 scientific law or sealed data contract survived, so NCS scaling remains locked.}
   - {source: decision.iteration_v4, target: data.v4_no_sealed_population_pair, type: supports, claim: The cross-population data gate failed before outcomes.}
   - {source: decision.iteration_v4, target: data.v4_no_randomized_memory_break, type: supports, claim: The strategic-memory witness gate failed at metadata.}
+
+  - {source: src.v5_rts11, target: kr.v5_rule_feedback_clock, type: proves, claim: RTS 11 fixes the ADNT assignment and price-dependent tick grid.}
+  - {source: src.v5_application_date, target: kr.v5_rule_feedback_clock, type: proves, claim: The amendment fixes the post-2023 annual application day.}
+  - {source: src.v5_amf_circularity, target: kr.v5_circularity_prior_art, type: proves, claim: AMF explicitly records the qualitative tick-to-trade-count feedback.}
+  - {source: src.v5_fca_reclassification, target: kr.v5_circularity_prior_art, type: supports, claim: FCA establishes one-step market-quality consequences of annual tick reclassification.}
+  - {source: src.v5_robust_rd, target: kr.v5_rd_method_coverage, type: proves, claim: Robust local-polynomial bias-corrected RD inference is established.}
+  - {source: src.v5_discrete_rd, target: kr.v5_rd_method_coverage, type: proves, claim: Honest inference addresses the discrete-score failure mode.}
+  - {source: src.v5_multicutoff_rd, target: kr.v5_rd_method_coverage, type: proves, claim: Pooled and cutoff-specific multi-cutoff inference is established.}
+  - {source: src.v5_esma_fitrs, target: data.v5_official_panel_metadata, type: supports, claim: ESMA schema and register expose the longitudinal annual fields.}
+  - {source: src.v5_fca_fitrs, target: data.v5_official_panel_metadata, type: supports, claim: FCA documents full-file history and machine access for a sealed jurisdiction.}
+  - {source: src.v5_rts28, target: ce.v5_joint_cutoff_rule, type: proves, claim: RTS 28 shares the 80 and 2000 ADNT boundaries.}
+
+  - {source: cand.v5.annual_rule_feedback, target: po.v5_repeated_effect_identification, type: requires, claim: Repeated next-input identification and external replication are required before an NCS claim.}
+  - {source: cand.v5.annual_rule_feedback, target: ce.v5_regression_to_mean, type: falsified_by, claim: Annual measurement noise can mimic persistence or correction.}
+  - {source: cand.v5.annual_rule_feedback, target: bench.v5_rd_oracle, type: distinguished_by, claim: Robust cutoff-specific and honest discrete-RD inference is the mandatory oracle.}
+  - {source: cand.v5.annual_rule_feedback, target: decision.iteration_v5_wp0, type: branches_to, claim: WP0 permits only a generated design preflight and no empirical claim.}
+  - {source: cand.v5.annual_rule_feedback, target: data.v5_official_panel_metadata, type: requires, claim: Reusable EU development and sealed UK replication histories are necessary.}
+  - {source: cand.v5.annual_rule_feedback, target: compute.v5_generated_cpu_only, type: requires, claim: The current candidate is limited to preregistered generated CPU feasibility.}
+  - {source: cand.v5.annual_rule_feedback, target: ce.v5_joint_cutoff_rule, type: falsified_by, claim: Shared statutory boundaries block naive pooling of every cutoff.}
+  - {source: cand.v5.annual_rule_feedback, target: bench.v5_generated_rd_preflight, type: distinguished_by, claim: Generated coverage and failure diagnostics must pass before values open.}
+
+  - {source: cand.v5.threshold_feedback_method, target: po.v5_method_non_equivalence, type: requires, claim: NMI required a theorem outside established RD and threshold-system results.}
+  - {source: cand.v5.threshold_feedback_method, target: ce.v5_rd_relabel, type: falsified_by, claim: Feedback terminology alone does not alter the standard estimand.}
+  - {source: cand.v5.threshold_feedback_method, target: bench.v5_rd_oracle, type: distinguished_by, claim: Robust multi-cutoff and discrete-score RD are direct method comparators.}
+  - {source: cand.v5.threshold_feedback_method, target: kr.v5_rd_method_coverage, type: retired_by, claim: Existing RD theory occupies the proposed generic method route.}
+
+  - {source: decision.iteration_v5_wp0, target: compute.nmi_post_n1, type: forbids, claim: V5 has no NMI theorem or method survivor.}
+  - {source: decision.iteration_v5_wp0, target: compute.ncs_post_c1, type: forbids, claim: Real data and model fitting remain locked until the generated design and licence gates pass.}
+  - {source: decision.iteration_v5_wp0, target: compute.v5_generated_cpu_only, type: supports, claim: Only the separately frozen generated CPU tier is authorized.}
+  - {source: decision.iteration_v5_wp0, target: data.v5_contaminated_isin, type: supports, claim: The protocol deviation is contained by permanent exclusion and disclosure.}

@@ -15,6 +15,17 @@ zero instrument-level values, purchases, workers or GPUs. NMI remains conditiona
 standard RD and threshold systems. Protocol: `papers/proposal/plan_endogenous_market_rule_feedback_nmi_ncs_v5.md`.
 This topic iteration is unrelated to the archived exp141 Plan v5 and does not relabel its generated results.
 
+WP0 then returned `NCS_FEASIBILITY_CANDIDATE` and NMI `NO_SURVIVOR`. Official rules fix the annual loop and
+exceptions; ESMA's reusable register contains 2017--2025 annual records, while FCA's documented API lists
+2021--2026 history for a conditionally sealed replication. Blind zero-row facets showed local support around all
+five cutoffs. AMF already identified the circular tick--trade-count relation and FCA already tested one-step
+reclassification effects, so novelty can attach only to a repeated next-controller-input discontinuity and its
+external replication. The next-year outcome contains roughly nine months of new-column exposure. Cutoff 10 is the
+clean lead, 600 needs a price-qualified first stage, and 80/2,000 share RTS 28 boundaries. One schema query
+accidentally disclosed a 2021 value for `ROROCEACNOR1`; that ISIN is permanently excluded. Only a separately frozen
+generated Mac-CPU preflight is authorized. Full audit:
+`research/theory_exploration/market_rule_feedback_audit_v5.md`.
+
 `phenomenon-first-nmi-ncs-v4` started from integrated `main@8283e77f7` on 2026-08-13 and closed
 `V4_NO_SURVIVOR` the same day. Dynamic human/LLM markets, institutional agent-market comparisons, large-scale
 treatment-effect prediction and LLM surrogacy occupy P1's broad response-spectrum framing. A direct matched-protocol
@@ -85,7 +96,8 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Dual-track theory exploration v1 | NMI no survivor; NCS contraction-envelope conjecture only | Typed knowledge graph, source matrix, exp144 negative controls, event-layer information identity | No theorem/venue claim, hidden-belief identification, real mechanism evidence or compute/data unlock |
 | Dual-track theory exploration v2 | NMI no survivor; NCS C0 identification fail | 108-node exploration graph, target-task prior-art map, exp145 attribution counterexamples and validated rule metadata | No adaptation label, sealed replication, data contract, theorem/venue claim or compute unlock |
 | Dual-track theory exploration v3 | `V3_NO_SURVIVOR`; closed at equation audit | 135-node graph, prior-art map and noisy-XOR missing-state control | No new closure/memory/operator method, experiment, data contract or compute unlock |
-| Phenomenon-first theory exploration v4 | Active metadata/prior-art screen; T0 only | Candidate phenomena across human, algorithmic and agentic populations with explicit S0/D0/I0 gates | No scientific law, commensurability, dataset contract, method novelty or compute unlock before audit |
+| Phenomenon-first theory exploration v4 | `V4_NO_SURVIVOR`; closed prior-art/witness audit | Prior-art map and explicit no-witness outcomes | No scientific law, commensurability, dataset contract, method novelty or compute unlock |
+| Endogenous market-rule feedback v5 | WP0 `NCS_FEASIBILITY_CANDIDATE`; NMI `NO_SURVIVOR`; generated preflight only | Exact rule clock, ESMA/FCA metadata contract, blind cutoff support and repeated-cycle estimand | No market effect, method novelty, real-data unlock, worker or GPU authorization |
 
 ## Code inheritance rules
 

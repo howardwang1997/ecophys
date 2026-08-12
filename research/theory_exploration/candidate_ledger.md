@@ -339,3 +339,21 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 The narrower “LLM surrogate under market interference” question remains a legitimate technical gap, but v4 found
 only a direct composition of existing surrogacy and interference frameworks and no sealable market evidence. It is
 not promoted to an active candidate.
+
+## 9. V5 endogenous market-rule feedback
+
+| ID | Proposed object | Decisive audit | Current state |
+|---|---|---|---|
+| V5-NCS-1 | discontinuity from annual ADNT band assignment to next annual ADNT/assignment across repeated cycles | exact RTS 11 clock; 2017--2025 ESMA panel; blind support around all five cutoffs; AMF circularity and FCA one-step effects as nearest baselines | `ATTACKING`; `NCS_FEASIBILITY_CANDIDATE` only |
+| V5-NMI-1 | transferable estimator/theorem for endogenous threshold feedback | robust bias-corrected, multi-cutoff, dynamic and discrete-score RD plus threshold systems cover the method components | `RETIRED_PRIOR_ART`; NMI `NO_SURVIVOR` |
+
+The NCS candidate is narrower than “tick affects liquidity.” Its frozen estimand is the local discontinuity in
+`log(ADNT_(y+1)/c)` at an annual statutory cutoff, where the outcome is the next controller input. AMF already
+identified the circular relation qualitatively, so only a robust, repeated and externally replicated quantitative
+effect can be new. Because the next calendar-year ADNT contains about nine months under the newly assigned column,
+the estimate is an assignment ITT with mixed exposure rather than a full-year tick elasticity.
+
+Cutoff 10 is the clean lead. Cutoff 600 becomes a second primary cutoff only with a date-correct nonzero price-row
+first stage. The 80 and 2,000 boundaries coincide with RTS 28 grouped reporting and cannot anchor a tick-only
+claim. The candidate advances no further than generated feasibility until discrete-score coverage, regression to
+the mean, sorting, attrition, shared-cutoff and mixed-exposure attacks pass.

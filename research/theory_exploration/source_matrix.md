@@ -128,3 +128,23 @@ fired before preregistration.
 
 V4 therefore closes `V4_NO_SURVIVOR` without an experiment, raw outcome inspection, API call, worker contact or GPU
 use.
+
+## V5 endogenous market-rule feedback audit
+
+| Primary source | What is already established | What it blocks | Remaining admissible role |
+|---|---|---|---|
+| [RTS 11 consolidated text](https://eur-lex.europa.eu/eli/reg_del/2017/588/2023-06-05/eng) and [2023 amendment](https://eur-lex.europa.eu/eli/reg_del/2023/960/oj/eng) | Previous-calendar-year ADNT selects one of six liquidity columns; the column applies from 1 April historically and the first Monday of April after the amendment; the table and major exceptions are statutory. | Treating the assignment clock, thresholds or grid as an inferred model. | Ground truth for the assignment ITT and versioned exclusions. |
+| [AMF 2018 tick-size report](https://www.amf-france.org/sites/institutionnel/files/contenu_simple/lettre_ou_cahier/risques_tendances/MiFID%20II%20Impact%20of%20the%20New%20Tick%20Size%20Regime.pdf) | Explicitly says tick changes can change the daily number of trades and calls the relation circular, while predicting wide annual bands prevent material feedback. | “First endogenous/circular tick rule” and purely conceptual feedback claims. | Falsifiable regulator baseline for a repeated-cycle magnitude test. |
+| [FCA annual reclassification study](https://www.fca.org.uk/publications/research-articles/uk-tick-size) | DiD around the 2024 reclassification links larger ticks to spreads, cancellation/order behavior and depth; the regulator acknowledges selection risk. | First one-step reclassification effect on market quality. | Mandatory baseline; it does not estimate next annual ADNT or next assignment. |
+| [ESMA FITRS schema/register](https://www.esma.europa.eu/data-reporting/mifir-reporting) and [legal notice](https://registers.esma.europa.eu/publication/legalNoticePage) | Official annual instrument records contain identifiers, calculation periods, ADNT and most-relevant-market ADNT; transformed register information is reusable with attribution. | Claims that the annual panel must be purchased or reconstructed from unofficial snapshots. | EU development and temporal validation after a real-data preregistration. |
+| [FCA FITRS instructions](https://www.fca.org.uk/publication/systems-information/fca-fitrs-tech-spec.pdf) and [legal terms](https://www.fca.org.uk/legal) | Full files retain the latest record per ISIN/reporting period and a documented download API; Data numerical datasets may fall under UK OGL while generic scraping is prohibited. | Unrestricted UI scraping or redistribution of raw UK files. | Sealed replication through the documented API only, after terms are archived. |
+| [RTS 28](https://eur-lex.europa.eu/eli/reg_del/2017/576/oj/eng) | Annual execution reporting groups shares at ADNT 80 and 2,000. | Treating all RTS 11 cutoffs as single-rule discontinuities. | Mark 80/2,000 as joint-rule sensitivities, not clean primary cutoffs. |
+| [Robust RD inference](https://doi.org/10.3982/ECTA11757), [discrete-score RD](https://www.aeaweb.org/articles?id=10.1257/aer.20160945), [multi-cutoff RD](https://arxiv.org/abs/1912.07346) | Robust bias correction, multi-cutoff pooling and honest inference for discrete running variables are existing methods. | V5 NMI method novelty. | Mandatory estimation and failure-diagnostic oracles for an NCS application. |
+
+### V5 synthesis
+
+- G0 passes; D0 is conditional on the price/corporate-action and UK licence paths.
+- Blind zero-row facets show repeated local support around all cutoffs, but are upper bounds before exclusions.
+- NMI has no survivor. NCS remains an `ATTACKING` feasibility candidate, not an empirical claim.
+- A generated CPU preflight is authorized only after a separate preregistration commit; real values, remote workers
+  and GPUs remain locked.

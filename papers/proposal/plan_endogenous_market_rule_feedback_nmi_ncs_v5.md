@@ -291,3 +291,32 @@ time/jurisdiction split. Public availability does not make a previously inspecte
 - Do not contact the V100/RTX2060 workers until a separate experiment preregistration authorizes a job.
 - If v5 fails, preserve it append-only and change the scientific object again; do not rescue it by making EcoMD
   the source of the phenomenon.
+
+## 10. WP0 audit outcome (appended 2026-08-13; frozen sections above unchanged)
+
+The completed rules/data/prior-art audit is
+`research/theory_exploration/market_rule_feedback_audit_v5.md`. Its decision is:
+
+- G0 `PASS`: the regular annual clock, statutory cutoffs, tick grid and exception classes are specified in
+  official rules. The 2023 amendment changed application from 1 April to the first Monday of April.
+- D0 `CONDITIONAL_PASS`: ESMA provides reusable annual 2017--2025 records; FCA provides 2021--2026 full-file
+  history through a documented API. A licence-safe price/corporate-action source and the UK API/OGL archive are
+  still required before real analysis.
+- I0 `GENERATED_ONLY`: blind `rows=0` counts show support around all cutoffs, but mixed nine-month exposure,
+  discrete ADNT, shared RTS 28 boundaries and price-dependent zero first stages require generated attacks.
+- N0 is `NCS_FEASIBILITY_CANDIDATE` and NMI `NO_SURVIVOR`. AMF already named the circular relationship, FCA
+  already estimated one-step market-quality effects, and standard robust/multi-cutoff/discrete RD occupies the
+  method. No direct repeated-cycle next-ADNT discontinuity was found in the bounded search.
+
+Cutoff 10 is the clean primary candidate. Cutoff 600 is the required independent second candidate only when a
+date-correct price establishes a nonzero tick contrast. Cutoffs 80 and 2,000 coincide with RTS 28 reporting-group
+boundaries and are sensitivity analyses; 9,000 is tertiary and price-qualified. Calendar-year `N_(y+1)` contains
+roughly nine treated months and must be described as the next-controller-input ITT, not a full-year structural tick
+elasticity.
+
+One protocol deviation is permanent: a schema-discovery query returned one 2021 value for ISIN `ROROCEACNOR1`.
+That ISIN is excluded from every future split, plot and example. No adjacent year or outcome pair was opened, and
+all subsequent metadata queries returned counts only. The deviation does not authorize other values.
+
+The only newly authorized work is a separately frozen, pushed, CPU-only generated identification preflight. All
+FITRS ZIPs, real prices, UK instrument records, remote hosts and GPUs remain locked.

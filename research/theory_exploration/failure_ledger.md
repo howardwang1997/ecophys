@@ -66,3 +66,19 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
     established neighboring frameworks.
 18. A price, prompt or session reset is not a causal memory break unless strategy information is randomized or
     demonstrably erased and the manipulation is checked.
+19. A regulator's qualitative recognition of feedback blocks a “first feedback” claim even when the repeated-cycle
+    causal magnitude remains unestimated. Novelty must attach to the identified law and replication.
+20. Annual controller inputs and annual treatment periods may be misaligned. A next-year aggregate with nine
+    treated months is an assignment ITT, not a full-year structural elasticity.
+21. A statutory cutoff is not clean merely because the focal rule changes there. Search every contemporaneous
+    reporting, transparency and eligibility rule for the same numerical boundary before pooling cutoffs.
+22. Metadata queries can accidentally disclose values. Record the deviation, exclude the contaminated unit and
+    switch to zero-row aggregate queries; do not retroactively redefine the value as metadata.
+
+## V5 gate failures retained
+
+| Date | Candidate | State | Evidence | Lesson | Re-entry condition |
+|---|---|---|---|---|---|
+| 2026-08-13 | V5 NMI threshold-feedback method | `RETIRED_PRIOR_ART` | Robust bias-corrected, multi-cutoff and discrete-running-variable RD directly cover the proposed estimator; no non-equivalent theorem card exists. | A new market application and a feedback interpretation do not create a general AI/ML method. | A theorem with a distinct estimand, assumptions or coverage result and validation outside markets. |
+| 2026-08-13 | V5 clean pooling of all five cutoffs | `REJECTED_DESIGN` | RTS 28 uses 80 and 2,000 ADNT as reporting-group boundaries; some adjacent tick columns are identical at low prices. | Pooling statutory cutoffs can combine different treatment bundles or zero first stages. | Primary evidence from cutoff 10 plus price-qualified 600; shared boundaries only as diagnostics. |
+| 2026-08-13 | V5 zero-value metadata boundary | `PROTOCOL_DEVIATION_CONTAINED` | A schema-discovery `rows=1` query returned one 2021 ADNT for `ROROCEACNOR1`; no pair or cutoff-selected value was opened. | Schema inspection must request no records by construction. | Permanent exclusion of the ISIN, recorded disclosure and `rows=0` until a new preregistration. |
