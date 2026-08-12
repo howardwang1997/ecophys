@@ -320,3 +320,20 @@ all subsequent metadata queries returned counts only. The deviation does not aut
 
 The only newly authorized work is a separately frozen, pushed, CPU-only generated identification preflight. All
 FITRS ZIPs, real prices, UK instrument records, remote hosts and GPUs remain locked.
+
+## 11. Experiment 147 preregistration and implementation state (appended 2026-08-13)
+
+Experiment 147 was preregistered and pushed at `3febf132d` before its estimator module, tests, runner, freeze or
+generated result existed. Its immutable contract is
+`experiments/147_generated_market_rule_feedback_rd/PREREGISTRATION.md`: 300 replicates per cell, ten gated null
+cells, six gated `sigma=0.10` effect cells, six descriptive `sigma=0.20` cells, three stochastic design diagnostics
+and deterministic shared-rule/tick-first-stage guards. It uses official `rdrobust==2.0.0` HC3/CR3 robust
+bias-corrected inference plus a declared fixed-design curvature oracle. Passing is code/design feasibility only.
+
+The implementation has 12 deterministic micro-tests covering stream stability, standard/regression-to-mean/
+clustered generators, HC3 and CR3 extraction, the bias-bound oracle, sorting/attrition/mass-point diagnostics,
+the full 19-by-6 statutory tick table, Wilson summaries, gate aggregation and fail-closed network behavior. Focused
+pytest, Ruff and strict mypy pass. No Monte Carlo cell has run. The formal runner still requires a separately
+committed and pushed `FREEZE.yaml`; it refuses dirty trees, hash/version mismatches, existing output, exposed GPUs,
+socket activity or resource-limit violations. Its four-process ceiling is one controller plus three single-threaded
+workers. Real values, remote workers and GPUs remain locked.

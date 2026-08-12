@@ -169,11 +169,12 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v4 P2 aggregation loss | `RETIRED_PRIOR_ART` | direct same-protocol macro--micro dissociation | mandatory warning/baseline only |
 | v4 P3 strategic memory | `RETIRED_NO_WITNESS` | no randomized erase/replay market dataset with independent replication | none until a true causal break exists |
 | v5 NMI threshold-feedback method | `RETIRED_PRIOR_ART` | robust bias-corrected, multi-cutoff and discrete-running-variable RD | estimation oracle only |
-| v5 NCS annual feedback | `ATTACKING` | exact statutory clock, reusable longitudinal metadata and blind cutoff support; repeated effect not yet tested | generated CPU feasibility only |
+| v5 NCS annual feedback | `ATTACKING` | exact statutory clock, reusable longitudinal metadata and blind cutoff support; exp147 preregistered and implementation checks pass, formal suite unrun | generated CPU feasibility only |
 | v5 cutoff pool | restricted | 80/2,000 share RTS 28 boundaries; 600/9,000 have low-price zero first stages | cutoff 10 plus price-qualified 600 primary |
 | v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
 
-The graph has 187 nodes after v5 WP0. NMI has no theorem or estimator ready for human novelty audit. NCS has a
+The graph has 187 nodes after v5 WP0 and the exp147 implementation update changes node state without adding a new
+node. NMI has no theorem or estimator ready for human novelty audit. NCS has a
 specific real mechanism and a conditional data route, but no empirical effect. One schema query disclosed a single
 2021 value for `ROROCEACNOR1`; it is permanently excluded. No FITRS ZIP, outcome pair, remote worker or GPU was
 opened, and both V100 workers and the RTX2060 remain outside the queue.
