@@ -153,3 +153,21 @@ stage. The final iteration status is `V5_NO_SURVIVOR` for both Nature routes.
 The next decision is joint G0/N0/D0/I0: exact mechanism, non-equivalent contribution, free reproducible data and a
 causal design robust to simultaneity, common demand and concurrent fork changes. Failure at any indispensable gate
 closes V6 before outcome inspection.
+
+## V6 audited route decision
+
+- **NMI:** `NO_SURVIVOR`. A known deterministic controller composed with ordinary closed-loop system
+  identification, structural demand or IV does not create a new AI method. Multi-resource demand cross-effects and
+  dynamic fee optimization are also already explicit prior art.
+- **NCS:** `CONDITIONAL_PROSPECTIVE_CANDIDATE`. The defensible claim remains a sealed pre-change, no-behavioral-
+  refit prediction of the full joint response, followed by independent replication. BPO1/2 are development-only;
+  EIP-8138/BPO3 has blank activation and parameter fields and is not yet an intervention contract.
+- **Data:** Xatu public Parquet provides a free CC BY 4.0 path to canonical execution/consensus and blob fields.
+  Rollup attribution, future-intervention freezing and independent replication are unresolved. No outcome shard is
+  authorized.
+- **Compute:** Experiment 149 alone is authorized on local CPU to validate the protocol oracle. V100/RTX2060,
+  remote CPU, real-data reconstruction and GPU work remain unqueued.
+
+Even after G0, a single successful BPO forecast without external replication routes to a specialist venue, not
+NCS. NCS becomes plausible only when both the prospective intervention and independent replication cells are
+filled before their outcomes are viewed.

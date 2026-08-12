@@ -5,13 +5,13 @@ for a later project.
 
 ## Current theory state
 
-`algorithmic-fee-market-dynamics-v6` started from integrated `main@efe14ad44` on 2026-08-13. It is an
-information-first scout of exact execution/blob fee controllers coupled to unknown adaptive demand. The NCS
-candidate is a pre-change, no-refit prediction of the joint response to a new controller-capacity regime plus an
-independent replication. The NMI route requires a non-equivalent closed-loop identification theorem/method and
-non-blockchain validation. Only specifications, official test vectors, primary literature and
-catalog/schema/licence metadata are authorized; no chain outcome, paid data, remote worker or GPU may be used.
-Protocol: `papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md`.
+`algorithmic-fee-market-dynamics-v6` started from integrated `main@efe14ad44` on 2026-08-13. It studies exact
+execution/blob fee controllers coupled to unknown adaptive demand. Its pre-outcome audit retired the generic NMI
+closed-loop method as prior art and retained only a conditional NCS route: seal a future controller change, issue
+a no-refit joint response forecast, then replicate independently. Official EIP fixtures and free Xatu metadata
+exist, but BPO3 is unset and no external replication is registered. Experiment 149 is preregistered for local
+CPU-only protocol conformance; all chain outcomes, remote workers and GPUs remain locked. Protocol:
+`papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md`.
 
 `endogenous-market-rule-feedback-v5` started from integrated `main@268050126` on 2026-08-13 and closed
 `V5_NO_SURVIVOR` the same day. It tested the real loop

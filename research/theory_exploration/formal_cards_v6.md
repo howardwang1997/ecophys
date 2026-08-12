@@ -1,0 +1,84 @@
+# Formal cards v6 — exact fee-controller reductions
+
+These cards preserve exact algebra and scope controls. None is currently claimed as a new theorem.
+
+## F1 — continuous scale equivariance
+
+Consider the continuous relaxation of the blob controller away from reflection and the EIP-7918 reserve branch,
+
+\[
+e_{t+1}=e_t+G(n_t-T),\qquad b_t=b_{\min}\exp(e_t/F).
+\]
+
+Scale target, maximum, observed blob count, excess and update fraction by the same positive factor `lambda`:
+
+\[
+(T,M,n_t,e_t,F)\mapsto
+(\lambda T,\lambda M,\lambda n_t,\lambda e_t,\lambda F).
+\]
+
+Then `e'_t/F'=e_t/F` by induction and hence `b'_t=b_t`. The normalized load and fee path are invariant.
+
+**Proof.** If `e'_t=lambda e_t`, then
+
+\[
+e'_{t+1}=\lambda e_t+G(\lambda n_t-\lambda T)=\lambda e_{t+1}.
+\]
+
+The initial condition closes the induction, and division by `F'=lambda F` gives the fee identity.
+
+**Scope.** Ethereum is integer-valued. `fake_exponential` floors intermediate terms; BPO scaling factors are
+rational; blob counts have finite support; reflection, maximum utilization, the reserve branch and inherited state
+break exact equivariance. This is a continuous oracle, not an empirical law or novelty result.
+
+## F2 — inherited-state fork defect
+
+Let a fork change `F` to `F'=lambda F` while carrying the old excess `e` unchanged. Compare the ideal log-fee
+coordinate under protocol carryover with the scale-equivariant counterfactual that also maps `e` to `lambda e`:
+
+\[
+\frac{e}{F'}-\frac{\lambda e}{F'}
+=-\frac{(\lambda-1)e}{\lambda F}.
+\]
+
+Thus the first post-fork fee contains a deterministic state-carryover displacement even with identical behavior.
+Any measured fork response must subtract the bit-exact protocol transition before it is labeled demand adaptation.
+
+**Scope.** The formula uses the ideal exponential coordinate. Experiment 149 validates the actual integer
+transition. This is a mechanical diagnostic directly implied by state carryover, not a new theorem.
+
+## F3 — reserve-branch one-sided accumulation
+
+Suppose EIP-7918's lower-bound check is false and its reserve inequality remains active over blocks `t,...,t+k-1`.
+Let `alpha=(M-T)/M`. Ignoring only integer-floor notation for display,
+
+\[
+e_{t+k}=e_t+\alpha\sum_{j=0}^{k-1}u_{t+j}.
+\]
+
+With exact arithmetic, replace each increment by `u_j(M-T)//M`. Every increment is nonnegative, so the excess
+state cannot decrease while this branch remains active. When the branch turns off, the ordinary target-subtraction
+recurrence resumes.
+
+**Consequence.** Execution base fee mechanically selects the blob-state update law. A cross-resource lag or
+hysteresis can therefore arise inside the protocol even under a fixed demand process; it is not evidence of
+substitution or learned behavior.
+
+**Scope.** EIP-7918 itself describes the delayed, no-decrease response, and EIP-7999 generalizes multidimensional
+fee coupling. The card is a required negative-control identity, not an NMI contribution.
+
+## F4 — what would be irreducible
+
+A viable new result must go beyond F1--F3 and established closed-loop identification. Examples of admissible proof
+obligations, not claims, are:
+
+1. a partially identified cross-resource response set with a sharp bound that exploits integer controller
+   switching and is strictly tighter than standard IV/closed-loop bounds under the same observations;
+2. a finite-sample no-refit transfer guarantee across controller parameter changes under explicitly testable
+   demand drift, with a lower bound showing why ordinary closed-loop identification cannot attain it;
+3. a falsifiable stochastic law for reserve-branch occupation and response that survives fixed latent-demand and
+   protocol-only countermodels and transfers outside Ethereum.
+
+No such statement survived the present audit. Until one does, NMI is closed and these cards serve only as exact
+oracles for an NCS phenomenon study.
+

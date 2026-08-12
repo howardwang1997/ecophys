@@ -1,10 +1,11 @@
 # Candidate ledger — v1 through v6
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** v6 `SCOUT`; V5 remains `V5_NO_SURVIVOR`; all V6 outcome and scale-up gates are locked
+**Current outcome:** v6 NMI `NO_SURVIVOR`; NCS `FORMALIZING` but blocked before outcomes; V5 remains
+`V5_NO_SURVIVOR`
 
-**Scientific meaning:** V6 has a precisely falsifiable prospective-response target but no admitted novelty,
-identification or data claim
+**Scientific meaning:** the exact-controller NCS target remains prospectively sealable, but no real experiment is
+admitted until a future controller change and independent replication exist
 
 ## 1. Shared object and identification target
 
@@ -329,6 +330,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v4 | Audited cross-population mechanism response, aggregation loss and strategic memory against direct human/LLM experiments, surrogate inference, interference theory and free repository metadata. | `V4_NO_SURVIVOR`; no experiment, outcome file, worker or GPU authorization |
 | 2026-08-13 | v5 | Audited annual ADNT--tick feedback, then ran the single frozen generated RD preflight after a serial execution repair. Only 9/16 gated cells passed; one rounded null over-rejected and every 5% effect cell missed the power gate. | `V5_NO_SURVIVOR`; no market outcome, remote worker or GPU authorization |
 | 2026-08-13 | v6 freeze | Changed the object to exact multi-resource fee controllers coupled to adaptive demand; made pre-change no-refit transfer the NCS target and a non-equivalent closed-loop method the conditional NMI target. | `SCOUT`; specifications/literature/catalog metadata only; no outcome or GPU authorization |
+| 2026-08-13 | v6 audit | Audited exact EIP arithmetic, BPO schedules, closed-loop/multi-resource/IV prior art and Xatu metadata; preregistered official-fixture replay. | NMI `NO_SURVIVOR`; NCS `FORMALIZING` but blocked on BPO3 plus independent replication; Exp149 only |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -368,15 +370,21 @@ effect floor, opening real signs, adding ordinary years post hoc or increasing G
 
 | ID | Proposed object | Required discriminator | Current state |
 |---|---|---|---|
-| V6-NCS-1 | joint execution/blob resource response under an exact new fee-controller regime | estimate behavior before the change; combine it with the exact new controller; predict the full post-change direction/damping without refitting; replicate independently | `SCOUT`; pre-outcome audit only |
-| V6-NMI-1 | mechanism-constrained identification of adaptive cross-resource demand | distinct estimand, assumptions or guarantee beyond closed-loop system ID, IV and structural demand; validate outside blockchain | `SCOUT`; pre-outcome audit only |
+| V6-NCS-1 | joint execution/blob resource response under an exact new fee-controller regime | estimate behavior before the change; combine it with the exact new controller; predict the full post-change direction/damping without refitting; replicate independently | `FORMALIZING`; prospective BPO3 candidate, outcomes blocked |
+| V6-NMI-1 | mechanism-constrained identification of adaptive cross-resource demand | distinct estimand, assumptions or guarantee beyond closed-loop system ID, IV and structural demand; validate outside blockchain | `RETIRED_PRIOR_ART`; NMI `NO_SURVIVOR` |
 
 The lead system is a computational resource market, not a cryptocurrency-price series. Exact protocol arithmetic
 is a controlled mechanism, while resource demand remains endogenous and partly latent. The known controller cannot
 serve as its own instrument, and raw persistence cannot be called adaptation. Common workload, batching, concurrent
 fork changes, anticipation, integer reflection/saturation and fixed latent demand are mandatory countermodels.
 
-Before any chain outcome is inspected, V6 must pass exact-controller/test-vector, nearest-prior-art, free licensed
-data, causal-identification and metadata-scale power gates. Initial authorization is <=30 Mac CPU core-hours for
-specifications, primary literature, catalog/schema/licence metadata and document/code scaffolding. Remote workers,
-the two V100s, RTX2060 and all GPUs remain idle.
+The audit found exact controller specifications and a free CC BY 4.0 Xatu reconstruction route. It also found that
+closed-loop system identification, multi-resource dynamic-fee optimization and IV gas-demand elasticity directly
+cover the generic NMI method composition. The continuous scaling identity, inherited-state defect and EIP-7918
+one-sided accumulation are protocol reductions/negative controls, not new theorems.
+
+BPO1/2 may be used only for development: BPO1 is within six days of the broad Fusaka fork, both outcomes have
+public analyses, and neither is an independently administered replication. Draft EIP-8138 leaves the BPO3
+activation and parameters unset, so it is a prospective sealing opportunity rather than an executable data
+contract. Experiment 149 is preregistered as a Mac CPU-only bit-exact conformance test over official fixtures. All
+chain outcomes, remote workers, the two V100s, RTX2060 and all GPUs remain locked.

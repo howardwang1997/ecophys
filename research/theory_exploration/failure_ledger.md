@@ -77,7 +77,13 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
 23. A clean implementation and stable estimator do not imply an adequate empirical design. Pre-outcome generated
     calibration must test both type-I error and minimum-effect power at the actual metadata-supported sample scale.
 24. GPU scaling cannot create independent cutoff support. When the information unit is an instrument-year near a
-    statutory threshold, more accelerators only compute an underpowered answer faster.
+   statutory threshold, more accelerators only compute an underpowered answer faster.
+25. An exact feedback controller is not an instrument for the demand inside its own loop. Mechanical fee-state
+    coupling must be subtracted before cross-resource lags are interpreted behaviorally.
+26. Fork state is inherited unless the protocol explicitly rescales it. A parameter change can therefore create a
+    deterministic transient even under unchanged demand.
+27. Public parameter-only upgrades may be excellent development cases while being unusable as blind confirmation;
+    prospective sealing and independent administration are separate requirements.
 
 ## V5 gate failures retained
 
@@ -88,3 +94,5 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
 | 2026-08-13 | V5 zero-value metadata boundary | `PROTOCOL_DEVIATION_CONTAINED` | A schema-discovery `rows=1` query returned one 2021 ADNT for `ROROCEACNOR1`; no pair or cutoff-selected value was opened. | Schema inspection must request no records by construction. | Permanent exclusion of the ISIN, recorded disclosure and `rows=0` until a new preregistration. |
 | 2026-08-13 | Experiment 147 process-pool execution | `IMPLEMENTATION_OR_SPEC_FAILURE` | The sole frozen attempt stopped in `ProcessPoolExecutor` construction when the sandbox denied a semaphore-limit query; zero tasks, panels, fits and outputs were created. | Resource assumptions belong in the executable contract; a pre-task infrastructure failure contains no statistical evidence. | A separately preregistered wrapper may change orchestration only; the failed experiment itself is immutable. |
 | 2026-08-13 | V5 annual-feedback RD identification | `RETIRED_FEASIBILITY`; `V5_NO_SURVIVOR` | Experiment 148 completed 6,600/6,600 fits and 1,800/1,800 oracle intervals, but only 9/16 gated cells passed. Rounded-null cutoff 10 rejected 8.33% with Wilson upper 12.01%; all six 5% effect cells had only 33.67%--56.33% power. | Passing diagnostics and low bias cannot compensate for false-positive and power failure at the available independent-unit scale. | A prospectively new source/design with substantially denser independent cutoff support or a stronger exogenous first stage, frozen before any outcome inspection. |
+| 2026-08-13 | V6 mechanism-constrained adaptive-demand method | `RETIRED_PRIOR_ART`; NMI `NO_SURVIVOR` | Closed-loop system identification handles known feedback; IV work estimates gas-demand elasticity under congestion endogeneity; optimal multi-resource fee work already models demand cross-effects and controller design. | Exact mechanism code reduces transition error but does not create an instrument, identify latent demand or establish a new ML theorem. | A sharp estimand or finite-sample guarantee unavailable from closed-loop ID, IV and structural demand under the same observations, with non-blockchain validation. |
+| 2026-08-13 | V6 completed BPO1/2 as sealed confirmation | `REJECTED_REPLICATION_ROLE` | Both changes and outcomes are public; BPO1 follows broad Fusaka changes by less than six days, and BPO2 is the same chain/controller/governance sequence. | A clean parameter-only specification is not the same as an untouched or independent scientific replication. | A future parameter change frozen before outcomes plus a separately administered compatible controller or later untouched replication. |

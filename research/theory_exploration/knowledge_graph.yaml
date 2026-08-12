@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
 iteration: algorithmic-fee-market-dynamics-v6
-decision: V6_SCOUT_V5_NO_SURVIVOR
+decision: V6_G0_PENDING_NMI_NO_SURVIVOR_NCS_PROSPECTIVE_BLOCKED
 
 nodes:
   - id: src.controlled_world_models
@@ -1506,28 +1506,161 @@ nodes:
     claim: Only 9 of 16 gated cells passed; rounded-null cutoff 10 exceeded false-positive gates and every five-percent effect cell missed the eighty-percent power gate, retiring V5 before real outcomes.
     artifact: experiments/148_generated_market_rule_feedback_rd_serial/RESULTS.md
 
+  - id: src.v6_eip1559
+    type: source
+    title: EIP-1559 Fee Market Change
+    track: both
+    claim: The execution base fee follows an exact integer recurrence from the parent fee gas target and gas use.
+    url: https://eips.ethereum.org/EIPS/eip-1559
+    primary: true
+    evidence_level: protocol_standard
+  - id: src.v6_eip4844
+    type: source
+    title: EIP-4844 Shard Blob Transactions
+    track: both
+    claim: Blob base fee is an integer fake exponential of the carried excess blob gas state and the active update fraction.
+    url: https://eips.ethereum.org/EIPS/eip-4844
+    primary: true
+    evidence_level: protocol_standard
+  - id: src.v6_eip7918
+    type: source
+    title: EIP-7918 Blob Base Fee Bounded by Execution Cost
+    track: both
+    claim: A strict execution-fee reserve condition selects a no-decrease blob-excess update using the current block schedule and parent state.
+    url: https://eips.ethereum.org/EIPS/eip-7918
+    primary: true
+    evidence_level: protocol_standard
+  - id: src.v6_eip8134
+    type: source
+    title: EIP-8134 BPO1 Mainnet Parameters
+    track: ncs
+    claim: BPO1 changed only blob target maximum and update fraction at a canonical activation timestamp.
+    url: https://eips.ethereum.org/EIPS/eip-8134
+    primary: true
+    evidence_level: protocol_registry
+  - id: src.v6_eip8135
+    type: source
+    title: EIP-8135 BPO2 Mainnet Parameters
+    track: ncs
+    claim: BPO2 continued the parameter-only blob schedule with target fourteen maximum twenty-one and update fraction 11684671.
+    url: https://eips.ethereum.org/EIPS/eip-8135
+    primary: true
+    evidence_level: protocol_registry
+  - id: src.v6_eip8138
+    type: source
+    title: EIP-8138 Draft BPO3 Registry
+    track: ncs
+    claim: BPO3 is prospective but its activation target maximum and update fraction are currently unset.
+    url: https://eips.ethereum.org/EIPS/eip-8138
+    primary: true
+    evidence_level: draft_protocol_registry
+  - id: src.v6_eip7999
+    type: source
+    title: EIP-7999 Unified Multidimensional Fee Market
+    track: both
+    claim: A proposed unified controller already normalizes multiple resource dimensions and generalizes reserve coupling.
+    url: https://eips.ethereum.org/EIPS/eip-7999
+    primary: true
+    evidence_level: draft_protocol_standard
+  - id: src.v6_execution_specs
+    type: source
+    title: Ethereum Execution Specifications and Official Fixtures
+    track: both
+    claim: Official CC0 executable fixtures cover Osaka and BPO boundary behavior for independent controller conformance.
+    url: https://github.com/ethereum/execution-specs
+    primary: true
+    evidence_level: official_reference_implementation
+  - id: src.v6_optimal_dynamic_fees
+    type: source
+    title: Optimal Dynamic Fees for Blockchain Resources
+    track: both
+    claim: Multi-resource fee design already models complementarity substitution demand shifts and optimal dynamic controllers.
+    url: https://arxiv.org/abs/2309.12735
+    primary: true
+    evidence_level: preprint
+  - id: src.v6_closed_loop_dslp
+    type: source
+    title: Dual System-Level Parameterization for Closed-Loop Identification
+    track: nmi
+    claim: Known-feedback closed-loop response identification is already formulated through system-level response parameters.
+    url: https://arxiv.org/abs/2304.02379
+    primary: true
+    evidence_level: preprint
+  - id: src.v6_gas_elasticity
+    type: source
+    title: Price Elasticity of Gas Demand on L1 and L2
+    track: both
+    claim: Lagged-fee instrumental variables already target causal gas-demand elasticity while addressing congestion endogeneity.
+    url: https://arxiv.org/abs/2606.13555
+    primary: true
+    evidence_level: preprint
+  - id: src.v6_xatu
+    type: source
+    title: EthPandaOps Xatu Public Data
+    track: ncs
+    claim: CC BY public Parquet supplies finalized deduplicated canonical execution and consensus data plus blob events.
+    url: https://github.com/ethpandaops/xatu-data
+    primary: true
+    evidence_level: official_dataset_catalog
+
+  - id: kr.v6_protocol_exactness
+    type: known_result
+    title: Exact integer fee-controller transition
+    track: both
+    claim: Execution and blob fee-state transitions are versioned deterministic integer functions once parent state use and current schedule are fixed.
+  - id: kr.v6_closed_loop_coverage
+    type: known_result
+    title: Closed-loop and structural demand coverage
+    track: nmi
+    claim: Known feedback multi-resource cross-effects and gas-demand endogeneity are already addressed by closed-loop identification dynamic fee control and IV estimation.
+  - id: kr.v6_mechanical_coupling
+    type: known_result
+    title: Protocol-internal execution-to-blob coupling
+    track: both
+    claim: EIP-7918 mechanically couples parent execution fee to the blob excess recurrence so cross-resource lag alone does not identify behavioral substitution.
+  - id: kr.v6_scale_diagnostics
+    type: known_result
+    title: Continuous scaling and inherited-state diagnostics
+    track: both
+    claim: A continuous relaxation is scale equivariant only when state also scales while protocol state carryover induces a deterministic fork transient.
+
   - id: cand.v6.controller_transfer
     type: candidate
     title: Exact-controller cross-regime response transfer
     track: ncs
     claim: A behavioral response operator estimated before a fee-controller capacity change may predict the signed joint execution and blob resource response under the exact new controller without behavioral refitting.
-    status: SCOUT
+    status: FORMALIZING
     history:
       - date: "2026-08-13"
         to: SCOUT
         reason: Frozen before chain outcomes as an information-first candidate requiring exact-mechanism novelty data identification and power audits.
         evidence: [papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: FORMALIZING
+        reason: Exact fixtures and free fields exist and no direct prospective no-refit replication was found but BPO3 and independent replication remain unavailable.
+        evidence: [research/theory_exploration/algorithmic_fee_market_audit_v6.md, data.v6_bpo3_unset, data.v6_xatu_free_fields]
   - id: cand.v6.closed_loop_method
     type: candidate
     title: Mechanism-constrained adaptive-demand identification
     track: nmi
     claim: A transferable method might identify or bound behavioral cross-resource response inside a known deterministic controller under latent nonstationary demand.
-    status: SCOUT
+    status: RETIRED_PRIOR_ART
     history:
       - date: "2026-08-13"
         to: SCOUT
         reason: Frozen as conditional on a non-equivalent result beyond closed-loop system identification instrumental variables and structural demand estimation.
         evidence: [papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared the candidate equation by equation with closed-loop identification multi-resource dynamic fees and causal gas-demand elasticity.
+        evidence: [src.v6_closed_loop_dslp, src.v6_optimal_dynamic_fees, src.v6_gas_elasticity]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: No distinct estimand assumption set or guarantee survived outside the direct composition of established methods.
+        evidence: [kr.v6_closed_loop_coverage, research/theory_exploration/formal_cards_v6.md]
   - id: po.v6.prospective_transfer
     type: proof_obligation
     title: Prospective no-refit response transfer
@@ -1558,6 +1691,18 @@ nodes:
     title: V6 pre-outcome metadata tier
     track: both
     claim: Only specifications test vectors fork calendars and catalog schema licence and aggregate coverage metadata are authorized before the joint gate decision.
+  - id: data.v6_xatu_free_fields
+    type: dataset
+    title: Xatu free canonical field route
+    track: ncs
+    claim: Public CC BY Parquet can reconstruct canonical controller inputs and blob availability while rollup attribution remains unresolved and no outcome row has been opened.
+    artifact: research/theory_exploration/algorithmic_fee_market_audit_v6.md
+  - id: data.v6_bpo3_unset
+    type: dataset
+    title: Draft BPO3 prospective intervention
+    track: ncs
+    claim: EIP-8138 preserves a prospective sealing opportunity but activation and parameter cells are unset so no real experiment is admitted.
+    artifact: research/theory_exploration/algorithmic_fee_market_audit_v6.md
   - id: compute.v6_t0_cpu_only
     type: compute_gate
     title: V6 T0 local CPU gate
@@ -1569,6 +1714,18 @@ nodes:
     track: both
     claim: V6 begins at SCOUT with a prospective no-refit NCS target and conditional non-equivalent NMI target while all chain outcomes and scale-up remain locked.
     artifact: papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md
+  - id: bench.exp149_protocol_oracle
+    type: benchmark
+    title: Experiment 149 official protocol-fixture oracle
+    track: both
+    claim: The preregistered local CPU replay must match 97 cases and 107 blocks bit-for-bit before any generated identification work.
+    artifact: experiments/149_fee_controller_protocol_oracle/PREREGISTRATION.md
+  - id: decision.iteration_v6_audit
+    type: decision
+    title: Algorithmic fee-market dynamics v6 pre-outcome audit
+    track: both
+    claim: NMI has no survivor while NCS remains prospectively formalizing but blocked on finalized BPO3 independent replication and protocol conformance.
+    artifact: research/theory_exploration/algorithmic_fee_market_audit_v6.md
 
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
@@ -1801,13 +1958,31 @@ edges:
   - {source: cand.v6.controller_transfer, target: po.v6.prospective_transfer, type: requires, claim: NCS requires a preregistered pre-change forecast and independent replication rather than post-hoc fit.}
   - {source: cand.v6.controller_transfer, target: ce.v6.concurrent_regime_change, type: falsified_by, claim: Concurrent protocol and demand changes can invalidate transfer attribution.}
   - {source: cand.v6.controller_transfer, target: bench.v6.closed_loop_oracles, type: distinguished_by, claim: Transparent exact-controller and standard identification baselines define the minimum comparator set.}
-  - {source: cand.v6.controller_transfer, target: decision.iteration_v6_freeze, type: branches_to, claim: The candidate enters only a pre-outcome rules literature metadata and identification audit.}
+  - {source: cand.v6.controller_transfer, target: decision.iteration_v6_audit, type: branches_to, claim: The candidate remains prospective and blocked while exact conformance BPO3 finalization and independent replication are pursued without outcomes.}
   - {source: cand.v6.closed_loop_method, target: po.v6.method_non_equivalence, type: requires, claim: NMI requires an equation-level non-equivalence result and non-blockchain validation.}
   - {source: cand.v6.closed_loop_method, target: ce.v6.closed_loop_simultaneity, type: falsified_by, claim: Exact feedback makes naive price-demand estimation endogenous and does not identify behavior.}
   - {source: cand.v6.closed_loop_method, target: bench.v6.closed_loop_oracles, type: distinguished_by, claim: Standard closed-loop system identification IV and structural demand are the nearest-composition oracles.}
-  - {source: cand.v6.closed_loop_method, target: decision.iteration_v6_freeze, type: branches_to, claim: No method implementation is authorized before the novelty audit.}
+  - {source: cand.v6.closed_loop_method, target: kr.v6_closed_loop_coverage, type: retired_by, claim: Closed-loop identification IV gas-demand estimation and multi-resource fee control occupy the proposed method composition.}
   - {source: decision.iteration_v6_freeze, target: data.v6_metadata_only, type: supports, claim: Specifications test vectors and catalog metadata are the only open data tier.}
   - {source: decision.iteration_v6_freeze, target: compute.v6_t0_cpu_only, type: supports, claim: The blind audit is limited to local CPU work.}
   - {source: decision.iteration_v6_freeze, target: data.sealed_real_interventions, type: forbids, claim: Chain outcomes and replication periods remain sealed until all pre-outcome gates pass.}
   - {source: decision.iteration_v6_freeze, target: compute.nmi_post_n1, type: forbids, claim: No NMI method candidate has cleared non-equivalence.}
   - {source: decision.iteration_v6_freeze, target: compute.ncs_post_c1, type: forbids, claim: No NCS data or identification contract has passed.}
+  - {source: src.v6_eip1559, target: kr.v6_protocol_exactness, type: proves, claim: EIP-1559 specifies the exact execution fee recurrence.}
+  - {source: src.v6_eip4844, target: kr.v6_protocol_exactness, type: proves, claim: EIP-4844 specifies blob excess and fake exponential fee arithmetic.}
+  - {source: src.v6_eip7918, target: kr.v6_mechanical_coupling, type: proves, claim: The reserve branch makes execution-to-blob state coupling mechanical.}
+  - {source: src.v6_eip7999, target: kr.v6_mechanical_coupling, type: covers, claim: Unified multidimensional fee coupling is already an explicit protocol-design direction.}
+  - {source: src.v6_execution_specs, target: bench.exp149_protocol_oracle, type: supports, claim: Official CC0 fixtures provide the conformance oracle.}
+  - {source: src.v6_closed_loop_dslp, target: kr.v6_closed_loop_coverage, type: proves, claim: Known-feedback closed-loop identification is established.}
+  - {source: src.v6_optimal_dynamic_fees, target: kr.v6_closed_loop_coverage, type: covers, claim: Multi-resource cross-effects and dynamic controller design are explicit prior art.}
+  - {source: src.v6_gas_elasticity, target: kr.v6_closed_loop_coverage, type: supports, claim: Gas-demand endogeneity and causal elasticity already have an IV treatment.}
+  - {source: src.v6_xatu, target: data.v6_xatu_free_fields, type: supports, claim: Xatu supplies the free licensed field-reconstruction route.}
+  - {source: src.v6_eip8138, target: data.v6_bpo3_unset, type: supports, claim: The official draft leaves activation and parameters blank.}
+  - {source: src.v6_eip8134, target: decision.iteration_v6_audit, type: supports, claim: BPO1 is a completed development parameter change.}
+  - {source: src.v6_eip8135, target: decision.iteration_v6_audit, type: supports, claim: BPO2 is a completed development parameter change.}
+  - {source: kr.v6_protocol_exactness, target: bench.exp149_protocol_oracle, type: requires, claim: Independent code must match official integer transitions before analysis.}
+  - {source: kr.v6_scale_diagnostics, target: cand.v6.controller_transfer, type: supports, claim: Mechanical state-carryover diagnostics must be removed from any behavioral response.}
+  - {source: decision.iteration_v6_freeze, target: decision.iteration_v6_audit, type: supports, claim: The frozen plan authorized only the pre-outcome audit.}
+  - {source: decision.iteration_v6_audit, target: bench.exp149_protocol_oracle, type: supports, claim: Experiment 149 is the only currently authorized experiment.}
+  - {source: decision.iteration_v6_audit, target: data.sealed_real_interventions, type: forbids, claim: BPO3 and independent replication are not registered so real outcomes remain sealed.}
+  - {source: decision.iteration_v6_audit, target: compute.ncs_post_c1, type: forbids, claim: Remote and GPU scale-up remains locked.}

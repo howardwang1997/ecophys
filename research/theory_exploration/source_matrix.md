@@ -150,3 +150,27 @@ use.
 - All 6,600 primary fits and 1,800 oracle constructions succeeded and all diagnostics passed, so the result is a
   statistical-design failure rather than an implementation failure. Real values, remote workers and GPUs remain
   locked; the final v5 state is `V5_NO_SURVIVOR`.
+
+## V6 exact-controller and adaptive-demand audit
+
+| Primary source | What is established | V6 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559) | Exact integer execution-base-fee recurrence with a target, denominator and minimum upward increment. | Treating the execution controller as learned or novel. | Bit-exact mechanical oracle. |
+| [EIP-4844](https://eips.ethereum.org/EIPS/eip-4844) | Excess blob gas and integer `fake_exponential` define the blob base fee. | Floating-point approximations as protocol truth. | Exact blob-fee oracle and generated controller. |
+| [EIP-7918](https://eips.ethereum.org/EIPS/eip-7918) | Parent execution fee selects a strict reserve branch that prevents blob-excess decreases and uses the current schedule at forks. | Interpreting every cross-resource lag or hysteresis as adaptive demand. | Protocol-only negative control and cross-resource mechanical baseline. |
+| [EIP-8134](https://eips.ethereum.org/EIPS/eip-8134) and [EIP-8135](https://eips.ethereum.org/EIPS/eip-8135) | BPO1/2 changed only target, maximum and update fraction at canonical timestamps. | Unversioned schedules or claims that the changes were inferred. | Development interventions; not untouched replication. |
+| [EIP-8138](https://eips.ethereum.org/EIPS/eip-8138) | BPO3 is a draft prospective parameter-only change, but activation and all parameter cells remain blank. | Treating motivational scaling text as a finalized intervention. | Monitor and freeze only after official finalization. |
+| [EIP-7999](https://eips.ethereum.org/EIPS/eip-7999) | A unified multidimensional fee proposal normalizes resource limits and generalizes fee coupling. | Unified multidimensional controller framing as a new theorem. | Nearest protocol-design comparator. |
+| [Dynamical Analysis of EIP-1559](https://arxiv.org/abs/2102.10567) | Adaptive base-fee stability, convergence and possible chaos already have dynamical analysis. | Generic controller stability as V6 novelty. | Required theory baseline. |
+| [Optimal Dynamic Fees for Blockchain Resources](https://arxiv.org/abs/2309.12735) | Multi-resource demand cross-effects, controller optimization and Ethereum calibration are explicit. | Broad cross-resource Jacobian/control novelty. | Mandatory structural/control baseline. |
+| [Dual system-level closed-loop identification](https://arxiv.org/abs/2304.02379) | Known-feedback closed-loop response identification is an established systems problem. | Exact controller plus response learner as an NMI method. | Direct method oracle. |
+| [Price Elasticity of Gas Demand on L1 and L2](https://arxiv.org/abs/2606.13555) | Wallet-lagged-fee IV targets causal gas-demand elasticity under congestion endogeneity. | Naive demand-on-fee regression and first causal elasticity claims. | Empirical identification baseline. |
+| [Xatu data](https://github.com/ethpandaops/xatu-data) | CC BY 4.0 public Parquet exposes finalized/deduplicated canonical execution and consensus plus blob events. | Claims that basic field reconstruction requires paid data. | Conditional free-data route; attribution/replication still required. |
+
+### V6 synthesis
+
+- G0 has official executable fixtures and is preregistered as Experiment 149; it is not yet passed.
+- NMI has no survivor because every current method statement is a direct composition of occupied results.
+- NCS remains a conditional prospective route. BPO1/2 are development-only; draft BPO3 and an independent
+  replication must be frozen before any corresponding outcomes are opened.
+- No chain outcome, remote worker or GPU has been used.

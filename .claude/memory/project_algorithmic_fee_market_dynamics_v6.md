@@ -24,3 +24,21 @@ Initial authorization is specifications, test vectors, primary literature and ca
 only: <=30 Mac CPU core-hours, no chain outcome values, paid data, remote host, queue or GPU. Current compute remains
 two V100 32 GB plus one RTX2060 and may expand to non-H20 pools; H20 is excluded. Before any outcome, V6 must pass
 exact-controller, novelty, free-data, causal-identification and metadata-scale generated-power gates.
+
+## Pre-outcome audit — 2026-08-13
+
+- Exact mechanism: EIP-1559 execution fee plus EIP-4844/EIP-7918 blob excess and fee. The current schedule applies
+  at a fork, parent excess is inherited without rescaling, the reserve inequality is strict, and parent execution
+  base fee mechanically selects the blob-state recurrence.
+- NMI: `NO_SURVIVOR`. Closed-loop system identification, IV gas-demand elasticity, structural demand and optimal
+  multi-resource dynamic fees cover the proposed method composition. Continuous scale equivariance, inherited-
+  state displacement and reserve-branch one-sided accumulation are negative controls, not new theorems.
+- NCS: `FORMALIZING` as a prospective candidate only. BPO1/2 are development cases whose outcomes are public;
+  BPO1 is close to Fusaka and neither change is an independent replication. Draft BPO3 has unset activation and
+  parameters.
+- Data: Xatu public Parquet is CC BY 4.0 and supplies canonical execution/consensus and blob fields. Rollup
+  attribution and independent replication remain unresolved. No outcome shard was opened.
+- Experiment 149 is preregistered to replay 97 official test cases/107 blocks from execution-specs
+  `tests@v20.0.1`, archive SHA256 `3586193db06d...`. It is a Mac CPU-only G0 conformance gate. A pass unlocks at
+  most a separate generated-identification preregistration, never real data.
+- Two V100 32 GB workers, RTX2060, remote CPU and all GPUs remain idle and unqueued.

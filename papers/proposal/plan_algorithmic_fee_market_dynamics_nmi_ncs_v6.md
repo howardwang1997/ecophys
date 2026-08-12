@@ -275,3 +275,23 @@ These are planning probabilities, not acceptance predictions.
    interventions.
 5. Produce a joint G0/N0/D0/I0 decision. Only a survivor may receive a separate generated-feasibility
    preregistration.
+
+## 13. Pre-outcome audit decision — 2026-08-13
+
+The audit in `research/theory_exploration/algorithmic_fee_market_audit_v6.md` was completed without opening any
+chain outcome. Three distinctions now control the route:
+
+1. EIP-1559, EIP-4844 and EIP-7918 provide an exactly executable integer controller, including a strict
+   execution-fee-dependent blob-state branch and unscaled state carryover at BPO transitions.
+2. Closed-loop identification, IV gas-demand estimation and multi-resource dynamic-fee optimization already
+   occupy the generic NMI method composition. `V6-NMI-1` is retired as `RETIRED_PRIOR_ART`.
+3. The NCS no-refit forecast remains a conditional prospective candidate, but BPO1/2 are development-only and
+   BPO3 has no finalized activation or parameters. No independent replication is registered.
+
+The gate state is G0 `PENDING_EXP149`, N0/NMI `FAIL_NO_SURVIVOR`, N0/NCS `CONDITIONAL_SURVIVOR`, D0
+`CONDITIONAL_PASS_FIELDS`, I0 `BLOCKED_FUTURE_INTERVENTION_REPLICATION`, and P0 locked until G0 passes.
+
+Experiment 149 is separately preregistered to replay 97 official fixture cases and 107 blocks across Osaka,
+Osaka-to-BPO1 and BPO1-to-BPO2. It is an implementation-conformance gate only. A pass may authorize a separate
+generated-identification stress test but cannot unlock real data. The two V100 workers, RTX2060, remote hosts and
+all GPUs remain idle and unqueued.

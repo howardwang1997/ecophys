@@ -1,0 +1,67 @@
+schema_version: ecophys-fee-controller-oracle/v1
+experiment_id: 149_fee_controller_protocol_oracle
+registered_at: "2026-08-13"
+decision_pass: PROTOCOL_ORACLE_CONFORMANCE_PASS
+decision_fail: IMPLEMENTATION_OR_SPEC_FAILURE
+
+archive:
+  release: tests@v20.0.1
+  source_repository: https://github.com/ethereum/execution-specs
+  source_commit: 87aba1a38a476b31f819a2390eb481527e6dc683
+  asset_name: fixtures.tar.gz
+  bytes: 423237039
+  sha256: 3586193db06d4d5745d5e90b3c3008c2255a4e19ccd8f11a3ce887aec8c0b17c
+  license: CC0-1.0
+
+constants:
+  gas_per_blob: 131072
+  blob_base_cost: 8192
+  min_blob_base_fee: 1
+  execution_elasticity_multiplier: 2
+  execution_base_fee_change_denominator: 8
+  bpo_transition_timestamp: 15000
+  blob_base_fee_contract_code: "0x4a600055"
+
+members:
+  - path: fixtures/blockchain_tests/for_osaka/osaka/eip7918_blob_reserve_price/blob_base_fee/reserve_price_boundary.json
+    bytes: 1534652
+    sha256: 366c50b72c4e8297b53bce76197ee1e9dc96163d294fc61908f4ab5ca3ba3824
+    expected_cases: 30
+    expected_blocks: 30
+  - path: fixtures/blockchain_tests/for_osaka/osaka/eip7918_blob_reserve_price/blob_base_fee/reserve_price_various_base_fee_scenarios.json
+    bytes: 2838714
+    sha256: 89c9e000e84eee18f4e7f9d61741e15840dc43bb857060f8b1f30f6902f278fc
+    expected_cases: 56
+    expected_blocks: 56
+  - path: fixtures/blockchain_tests/for_osakatobpo1attime15k/osaka/eip7918_blob_reserve_price/blob_reserve_price_with_bpo/blob_base_fee_with_bpo_transition.json
+    bytes: 47095
+    sha256: 14a44a980967870ffe66dad4790e53b8ff11905af76fb2b2c7196afb9f8d390c
+    expected_cases: 1
+    expected_blocks: 1
+  - path: fixtures/blockchain_tests/for_osakatobpo1attime15k/osaka/eip7918_blob_reserve_price/blob_reserve_price_with_bpo_transitions/reserve_price_at_transition.json
+    bytes: 322650
+    sha256: c70f1af1658fa3b9c0a7836b71124afa10db7155d029f17bc26332ccba1430e4
+    expected_cases: 5
+    expected_blocks: 10
+  - path: fixtures/blockchain_tests/for_bpo1tobpo2attime15k/osaka/eip7918_blob_reserve_price/blob_reserve_price_with_bpo_transitions/reserve_price_at_transition.json
+    bytes: 350172
+    sha256: 83f3b6cbf29d766bcdfd043d54af19879ab44cda5ff8a5b3522906c9d5351765
+    expected_cases: 5
+    expected_blocks: 10
+
+expected_totals:
+  members: 5
+  cases: 97
+  blocks: 107
+  transactions: 132
+  blob_transactions: 122
+
+resources:
+  controller_processes: 1
+  numerical_threads: 1
+  max_cpu_core_hours: 1
+  max_ram_gb: 2
+  network_calls: 0
+  remote_hosts: 0
+  gpu_hours: 0
+  chain_outcome_files: 0

@@ -2,7 +2,8 @@
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** v6 `SCOUT`; v5 remains `V5_NO_SURVIVOR`; all V6 outcomes/scale-up locked
+**Current decision:** v6 NMI `NO_SURVIVOR`; NCS prospective `FORMALIZING`, blocked on BPO3 and independent
+replication; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit and v5 annual-rule-feedback gate. Graph proximity is not evidence of
@@ -120,11 +121,16 @@ flowchart TB
     subgraph V6["v6: exact fee controllers + adaptive demand"]
         EXACT["protocol-exact execution/blob controllers"]
         DEMAND["latent adaptive cross-resource demand"]
-        NCS6["NCS: pre-change no-refit transfer"]
-        NMI6["NMI: non-equivalent identification"]
+        G0["Exp149: 97-case official-fixture gate"]
+        BPO3["BPO3 draft: params/time unset"]
+        REPL["independent replication missing"]
+        NCS6["NCS: prospective no-refit transfer"]
+        NMI6["NMI: retired by closed-loop/IV prior art"]
         EXACT --> NCS6
         DEMAND --> NCS6
-        EXACT --> NMI6
+        EXACT --> G0
+        BPO3 -. "blocks" .-> NCS6
+        REPL -. "blocks" .-> NCS6
         DEMAND --> NMI6
     end
 
@@ -188,13 +194,14 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v5 NCS annual feedback | `RETIRED_FEASIBILITY` | Exp148: 9/16 gated cells pass; rounded null over-rejects; all six 5% effect cells miss 80% power | immutable negative result and design lesson only |
 | v5 cutoff pool | restricted | 80/2,000 share RTS 28 boundaries; 600/9,000 have low-price zero first stages | cutoff 10 plus price-qualified 600 primary |
 | v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
-| v6 NCS controller transfer | `SCOUT` | frozen prospective no-refit joint-response claim; audit not yet run | specifications, literature and metadata only |
-| v6 NMI closed-loop method | `SCOUT` | must differ from system ID, IV and structural demand and transfer outside blockchain | symbolic/prior-art audit only |
+| v6 NCS controller transfer | `FORMALIZING` | exact mechanism/free fields exist; BPO3 parameters and independent replication do not | protocol oracle and prospective metadata only |
+| v6 NMI closed-loop method | `RETIRED_PRIOR_ART` | closed-loop ID, multi-resource dynamic fees and gas-demand IV cover the composition | mandatory baselines only |
+| v6 protocol G0 | preregistered | Exp149 freezes 97 official cases/107 blocks through BPO2 | local CPU conformance only |
 
-The graph has 200 nodes after freezing V6's two candidates, proof obligations, countermodels, oracles and
-data/compute locks. Neither candidate has passed novelty, data or identification. No chain outcome, fee series,
-transaction, FITRS outcome pair, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain
-outside the queue.
+The graph has 220 nodes after the V6 mechanism/prior-art/data audit and Experiment 149 preregistration. NMI has no
+survivor; NCS is not admitted to real data because its prospective intervention and independent replication cells
+are empty. No chain outcome, fee series, transaction, FITRS outcome pair, remote worker or GPU was opened, and both
+V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 
