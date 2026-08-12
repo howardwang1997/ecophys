@@ -337,3 +337,16 @@ pytest, Ruff and strict mypy pass. No Monte Carlo cell has run. The formal runne
 committed and pushed `FREEZE.yaml`; it refuses dirty trees, hash/version mismatches, existing output, exposed GPUs,
 socket activity or resource-limit violations. Its four-process ceiling is one controller plus three single-threaded
 workers. Real values, remote workers and GPUs remain locked.
+
+## 12. Experiment 147 execution decision (appended 2026-08-13)
+
+The implementation freeze was pushed at `2d14357fb`. The one authorized formal attempt then stopped inside the
+`ProcessPoolExecutor` constructor because the managed sandbox denied `os.sysconf("SC_SEM_NSEMS_MAX")`. This was
+before any worker, generated panel, `_fit_task` call or `rdrobust` fit; the raw output is absent. Experiment 147 is
+therefore closed as `IMPLEMENTATION_OR_SPEC_FAILURE`, not a statistical preflight failure. Full evidence is
+`experiments/147_generated_market_rule_feedback_rd/FORMAL_ATTEMPT_FAILURE.md`.
+
+The only admissible continuation is Experiment 148, preregistered and pushed before its runner exists. It may
+replace the process pool with a serial in-process backend, but must reuse the exact Experiment 147 scientific
+configuration and frozen random streams, DGPs, estimator options, gates and failure mappings. Experiment 147 may
+not be rerun. Market values, remote workers and GPUs remain locked.

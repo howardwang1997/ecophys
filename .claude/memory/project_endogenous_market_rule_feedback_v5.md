@@ -45,3 +45,10 @@ per cell, null/effect/diagnostic gates and a Mac-only four-process resource ceil
 13 passing deterministic micro-tests plus Ruff and strict mypy; the 300-replicate suite has not run. A separate
 pushed `FREEZE.yaml` remains mandatory before the single formal run. All FITRS values, prices, UK records, V100s,
 RTX2060 and GPUs remain locked.
+
+Experiment 147 froze at `2d14357fb`. Its single formal attempt failed before task submission when the managed
+sandbox denied the process-pool semaphore query `os.sysconf("SC_SEM_NSEMS_MAX")`. Zero panels and zero fits ran;
+no raw artifact exists. Final state is `IMPLEMENTATION_OR_SPEC_FAILURE`, with evidence in
+`experiments/147_generated_market_rule_feedback_rd/FORMAL_ATTEMPT_FAILURE.md`. Do not rerun 147. Experiment 148
+may repair only the execution backend by using serial in-process execution while inheriting every scientific
+setting and stream exactly. Real data and all remote/GPU gates remain locked.

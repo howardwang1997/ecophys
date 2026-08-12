@@ -1482,6 +1482,12 @@ nodes:
     title: Endogenous market-rule feedback v5 WP0 outcome
     track: both
     claim: NCS_FEASIBILITY_CANDIDATE and NMI_NO_SURVIVOR; proceed only to a frozen generated CPU preflight with all market-value and remote-compute gates locked.
+  - id: decision.exp147_execution_failure
+    type: decision
+    title: Experiment 147 pre-task execution failure
+    track: ncs
+    claim: The sole formal attempt stopped during process-pool construction after a sandbox-denied semaphore query; zero tasks and fits ran, so this is an implementation failure with no statistical evidence.
+    artifact: experiments/147_generated_market_rule_feedback_rd/FORMAL_ATTEMPT_FAILURE.md
 
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
@@ -1702,3 +1708,5 @@ edges:
   - {source: decision.iteration_v5_wp0, target: compute.ncs_post_c1, type: forbids, claim: Real data and model fitting remain locked until the generated design and licence gates pass.}
   - {source: decision.iteration_v5_wp0, target: compute.v5_generated_cpu_only, type: supports, claim: Only the separately frozen generated CPU tier is authorized.}
   - {source: decision.iteration_v5_wp0, target: data.v5_contaminated_isin, type: supports, claim: The protocol deviation is contained by permanent exclusion and disclosure.}
+  - {source: bench.v5_generated_rd_preflight, target: decision.exp147_execution_failure, type: branches_to, claim: The frozen Experiment 147 implementation failed before task dispatch and cannot answer the benchmark.}
+  - {source: decision.exp147_execution_failure, target: compute.v5_generated_cpu_only, type: requires, claim: A separately preregistered serial Experiment 148 repair is required without opening data or remote compute.}
