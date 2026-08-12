@@ -5,6 +5,13 @@ for a later project.
 
 ## Current theory state
 
+`theory-exploration-nmi-ncs-v3` started from integrated `main@490fffe42` on 2026-08-12. The venue targets remain
+NMI/NCS, but the topic is allowed to pivot. V3 replaces the non-identifiable adaptation-attribution question with
+a bounded search over controlled state-closure certificates, task-relevant cross-scale memory repair and
+Poisson-weighted long-horizon operator calibration. Its frozen T0 permits literature, algebra and generated exact
+fixtures with <=50 Mac CPU core-hours; market outcomes, purchases, workers and GPUs remain locked. The protocol is
+`papers/proposal/plan_theory_exploration_nmi_ncs_v3.md`.
+
 `theory-exploration-nmi-ncs-v2` started from integrated `main@648fd96da`, closed on 2026-08-12 and its verified
 result tree `accdbf6d2` was fast-forwarded into `main`. It preserves every v1 retirement and ends NMI
 `NMI_NO_SURVIVOR`, NCS `NCS_C0_FAIL_IDENTIFICATION`. Target
@@ -56,6 +63,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Plan v4 G0 re-entry v1 | R1--R3 process infrastructure complete; no candidate; old G0 FAIL binding | Candidate admission, equivalence attacks and reproducible stop rules | No novelty PASS without new mathematics and human audit |
 | Dual-track theory exploration v1 | NMI no survivor; NCS contraction-envelope conjecture only | Typed knowledge graph, source matrix, exp144 negative controls, event-layer information identity | No theorem/venue claim, hidden-belief identification, real mechanism evidence or compute/data unlock |
 | Dual-track theory exploration v2 | NMI no survivor; NCS C0 identification fail | 108-node exploration graph, target-task prior-art map, exp145 attribution counterexamples and validated rule metadata | No adaptation label, sealed replication, data contract, theorem/venue claim or compute unlock |
+| Dual-track theory exploration v3 | Active bounded topic pivot; T0 only | State-closure, memory-defect and operator-calibration candidates after equation-level audit | No novelty, data or compute claim before a formal survivor and human review |
 
 ## Code inheritance rules
 
