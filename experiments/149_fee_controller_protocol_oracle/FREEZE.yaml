@@ -1,0 +1,52 @@
+schema_version: ecophys-fee-controller-oracle-freeze/v1
+experiment_id: 149_fee_controller_protocol_oracle
+frozen_at: "2026-08-13"
+formal_run_authorized: true
+formal_attempts_before_freeze: 0
+preregistration_commit: 24f1ec2747121f0ef6726ea7a1903ab5c80b7aec
+implementation_commit: 72424d097a5a4ceaea17aabafc9f4a565f231745
+
+files:
+  config:
+    path: experiments/149_fee_controller_protocol_oracle/config.yaml
+    sha256: 8af200161b22754ed892e015c67297f836b1eb6ea89b9c17f13f5fd59343c28e
+  preregistration:
+    path: experiments/149_fee_controller_protocol_oracle/PREREGISTRATION.md
+    sha256: d6a04a4e65bba48501e4c7c8e5e57b72d12f7ba2cd5364cfb5a2b689007a5db2
+  readme:
+    path: experiments/149_fee_controller_protocol_oracle/README.md
+    sha256: 0d94d053e9182abc469b4b78a265c3ce756a5ca519219e3396d8a50217d2c891
+  module:
+    path: ecomd/research/fee_controller_oracle.py
+    sha256: fe23d03518bcc92788e11f368761cfa282563c619d39334e246156846d83b382
+  test:
+    path: tests/test_fee_controller_oracle.py
+    sha256: fad6efcfe189f8ff87a69f88670db8fe51034c79e2606b688fe850524edf370a
+  manifest:
+    path: data/manifests/ethereum_execution_fixtures_tests_v20_0_1.json
+    sha256: f240406db8831f14abaf028dce90561dfcb48af2fbdcf8aba2b4d52ead0c8113
+
+dependencies:
+  python: 3.11.15
+  pyyaml: 6.0.3
+
+formal_command: >-
+  conda run -n ecophys python -m ecomd.research.fee_controller_oracle
+  --config experiments/149_fee_controller_protocol_oracle/config.yaml
+  --fixture-archive /private/tmp/ethereum-execution-fixtures-tests-v20.0.1.tar.gz
+  --output experiments/149_fee_controller_protocol_oracle/artifacts/raw/conformance.json
+
+preconditions:
+  clean_committed_checkout: true
+  pushed_freeze_commit: true
+  remote_head_matches_local: true
+  output_absent: true
+  archive_sha256: 3586193db06d4d5745d5e90b3c3008c2255a4e19ccd8f11a3ce887aec8c0b17c
+  chain_outcome_files: 0
+  network_calls_during_run: 0
+  remote_hosts: 0
+  gpu_hours: 0
+
+interpretation: >-
+  A pass establishes only independent implementation conformance to the selected official protocol fixtures.
+  It cannot establish scientific novelty, demand identification, market behavior, NMI readiness or NCS readiness.
