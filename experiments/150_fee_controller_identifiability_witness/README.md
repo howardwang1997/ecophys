@@ -7,3 +7,6 @@ an explicit latent-dynamics-invariance assumption.
 
 Read `PREREGISTRATION.md` and `config.yaml` first. No implementation, formal freeze or result exists at the
 preregistration commit. No chain outcome, remote worker or GPU is authorized.
+
+Experiment 150 is permanently void because an ad hoc command prematurely executed its formal seed loops before
+implementation and freeze. See `PROTOCOL_DEVIATION_VOID.md`. Do not implement, freeze or rerun it.
