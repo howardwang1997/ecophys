@@ -6,10 +6,15 @@ for a later project.
 ## Active iteration
 
 `theory-exploration-nmi-ncs-v1` starts from `main@fdf0c5f72` as a theorem/mechanism search layer. It does not
-replace or reopen any negative gate. It will maintain a shared source/candidate/counterexample graph, then route
-surviving objects separately: transferable mechanism-conditioned world-model theory toward NMI, and replicated
-real intervention mechanisms toward NCS. Its frozen protocol is
-`papers/proposal/plan_theory_exploration_nmi_ncs_v1.md`. No theorem or venue claim is currently admitted.
+replace or reopen any negative gate. Its frozen protocol is `papers/proposal/plan_theory_exploration_nmi_ncs_v1.md`
+and its canonical source/candidate/counterexample graph is under `research/theory_exploration/`.
+
+The 2026-08-12 iteration retires S1--S5 and the narrowed NMI mechanism-excitation lead. NMI therefore has
+`NO_SURVIVOR`. Exp144 confirms that the easiest rank gain is ordinary stacked observability and that fixed
+non-adaptive stochastic operators generate a `0.075` order effect. The remaining NCS lead is only
+`CONJECTURE_ONLY`: test whether real post-rule persistence exceeds all prevalidated frozen-mechanics contraction
+envelopes, then replicate. It is not a theorem, identified belief, data contract or venue claim; no GPU or paid data
+is authorized.
 
 `ncs-plan-v4-g0-reentry-v1` was the isolated theorem-first re-entry branch for Plan v4 and its verified result tree
 was integrated into `main` on 2026-08-12. It begins at merge
@@ -38,6 +43,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Sim2Science workshop paper | Complete audit-only artifact | Transparent model--reality-gap evidence | EcoMD software/checkpoint release or positive market mechanism |
 | Plan v5 interventional world model | Archived after F1--F3 generated feasibility PASS | Exact exchange, exp141 workflow and worker compatibility | No method, fidelity or real-market claim |
 | Plan v4 G0 re-entry v1 | R1--R3 process infrastructure complete; no candidate; old G0 FAIL binding | Candidate admission, equivalence attacks and reproducible stop rules | No novelty PASS without new mathematics and human audit |
+| Dual-track theory exploration v1 | NMI no survivor; NCS contraction-envelope conjecture only | Typed knowledge graph, source matrix, exp144 negative controls, event-layer information identity | No theorem/venue claim, hidden-belief identification, real mechanism evidence or compute/data unlock |
 
 ## Code inheritance rules
 

@@ -2,7 +2,7 @@
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-12  
-**Iteration decision:** `CONJECTURE_ONLY` — no candidate is ready for human novelty audit
+**Iteration decision:** NMI `NO_SURVIVOR`, NCS `CONJECTURE_ONLY` — no candidate is ready for human novelty audit
 
 The graph is a research-control artifact, not a claim that graph proximity proves equivalence or novelty. Typed
 edges record the present audit judgement and must be revised when equation-level evidence changes. Candidate
@@ -35,17 +35,17 @@ flowchart LR
     PSR -->|covers| S4
     COMP -->|covers| S5
 
-    subgraph active["Narrow leads still under attack"]
-        NMIT["NMI: known-mechanism excitation margin"]
-        NCST["NCS: excess closed-loop adaptation response"]
+    subgraph active["Narrow leads and decisions"]
+        NMIT["NMI: mechanism excitation — retired"]
+        NCST["NCS: relaxation exceedance after rule loop"]
     end
 
     XM --> NMIT
     XM --> NCST
-    CRL -. "ordinary rank/Fisher reduction may kill" .-> NMIT
+    CRL -->|"rank/Fisher + switching-ID coverage"| NMIT
     PUMP -. "order effect without adaptation kills naive certificate" .-> NCST
 
-    NMIT --> NMI["NMI route: theorem + non-market transfer"]
+    NMIT -. "no survivor" .-> NMI["NMI route: restart from a new primitive"]
     NCST --> NCS["NCS route: blind replicated real mechanism"]
 
     CPU["T0-T2: CPU only"] --> NMIT
@@ -75,8 +75,12 @@ flowchart LR
 | S3 fast/slow split | `RETIRED_PRIOR_ART` | Markov perturbation and singular averaging | retain as an empirical estimand, not theorem novelty |
 | S4 predictive quotient | `RETIRED_PRIOR_ART` | PSR, bisimulation and causal abstraction | no new name for predictive equivalence |
 | S5 composition | `RETIRED_PRIOR_ART` | soft-intervention composition, homomorphism and effect invariance | require genuinely adaptive sequence mathematics |
-| NMI mechanism excitation | `ATTACKING` | nearest results already use action/intervention diversity | derive a nonstandard margin or retire as stacked observability |
-| NCS adaptation holonomy | `ATTACKING` | frozen noncommuting systems already create order effects | formalize excess-over-frozen estimand and identify a defensible real loop |
+| NMI mechanism excitation | `RETIRED_PRIOR_ART` | stacked observability, switching-system identification, active intervention design and event-layer information conservation | do not train; restart NMI search from a distinct primitive |
+| NCS relaxation exceedance | `ATTACKING` | raw order effects fail; a frozen Markov contraction envelope gives a stricter null | audit envelope identifiability and identify a defensible real loop |
+
+Experiment 144 made the two kill attacks executable: the complementary-mechanism fixture reduced exactly to
+a stacked Gramian, and fixed non-adaptive operators produced a `0.075` swapped-order response. The immutable raw
+artifact is recorded in the machine graph with SHA-256 `92351520b073d6674c0629380020599273c2beada29faf06437546a421eddcf8`.
 
 ## Validation
 

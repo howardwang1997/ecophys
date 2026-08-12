@@ -14,12 +14,18 @@ share a headline by implication. Each route needs its own admission decision and
 | real evidence | cannot be inherited from inspected periods | at least two independent interventions/environments | development intervention plus sealed independent replication |
 | simulator role | implementation and falsification substrate | one domain among several | counterfactual support; not the discovery itself |
 
-## NMI route from the current lead
+## NMI route after retirement of the current lead
 
-1. **N0 equation audit:** decide whether NMI-T1 is anything beyond stacked observability, Fisher information,
-   persistent excitation, controlled-world-model identification or interventional CRL.
-2. **N1 formal audit:** complete a statement, proof, quotient definition, lower-bound counterexample and a
-   quantitative non-equivalence witness. Current state has not passed this gate.
+NMI-T1 is `RETIRED_PRIOR_ART`. There is currently no admissible NMI theorem/method candidate. The next search may
+focus on prediction-target-conditioned identifiability—what future adaptive target forces a latent to retain—but
+this is only a search direction and must first clear the recent controlled-world-model and physical-parameter
+identifiability literature.
+
+1. **N0 new-primitive audit:** a successor must start from a new symbolic primitive and clear stacked
+   observability, Fisher information, persistent excitation, controlled/switching-world-model identification,
+   interventional CRL and active intervention design. NMI-T1 cannot be resubmitted under another name.
+2. **N1 formal audit:** only a new survivor may receive a statement, proof, quotient definition, lower-bound
+   counterexample and quantitative non-equivalence witness. No candidate currently enters this gate.
 3. **N2 cross-system gate:** generated queue/exchange plus a structurally different public non-market system with
    analytic or high-precision reference. Market-only success stops the NMI route.
 4. **N3 method gate:** compute-matched comparison with controlled WMs, CRL/system-ID, modular and oracle baselines on
@@ -35,10 +41,10 @@ share a headline by implication. Each route needs its own admission decision and
 | N3 screening | generated/public systems, 3–5 seeds | 200–800 V100-equivalent hours | locked |
 | N3/N4 confirmation | expanded cross-domain and real intervention data, 2–10 TB provisional | 4,000–12,000 V100-equivalent hours; 8–16 non-H20 workers | locked |
 
-## NCS route from the current lead
+## NCS route from the current relaxation-exceedance lead
 
-1. **C0 mechanism gap:** determine whether excess closed-loop response has a distinct prediction beyond forward and
-   reverse event studies, response theory, stochastic pumps and fixed noncommuting dynamics.
+1. **C0 mechanism gap:** determine whether replicated response outside a preregistered frozen Markov contraction
+   envelope is distinct from forward/reverse event studies, response theory and stochastic pumps.
 2. **C1 data contract:** identify one development loop/intervention and one sealed independent replication using
    rule metadata, control availability, event coverage and licences only. No confirmatory values may be viewed.
 3. **C2 identification:** generated exact-mechanism tests must show that the proposed residual rejects frozen Markov,
@@ -64,8 +70,10 @@ storage than from a single larger neural model.
 
 ## Current decision
 
-- NMI-T1: continue paper-and-pencil reduction attacks only.
-- NCS-M1: continue counterexample/identification work and metadata-only intervention search only after the estimand
+- Exp144 confirmed that the easiest NMI rank witness is ordinary stacked observability and that a fixed
+  non-adaptive Markov pair produces a `0.075` order effect. It admitted no candidate.
+- NMI-T1: retired; do not benchmark or train it. NMI has `NO_SURVIVOR` in this iteration.
+- NCS-M1: continue contraction-envelope identification work and metadata-only intervention search only after the estimand
   differs from existing forward/reverse studies.
 - Both V100 workers and the RTX2060 remain idle for this iteration. There is no authorized experiment queue.
 - No paid data, sealed period, bulk acquisition or new compute capacity is opened.

@@ -20,6 +20,9 @@
 | [Two-time-scale Markov reduction](https://epubs.siam.org/doi/10.1137/S003613990139756X) | Singular perturbation gives averaged generators and asymptotic expansions for fast and slow states. | Fast/slow architecture or leading-order separation as theorem novelty. | Only a stronger finite-timescale error under market-specific discontinuities could be mathematically distinct. |
 | [Geometric stochastic pumps](https://arxiv.org/abs/0705.2057) | Cyclic changes in a memoryless stochastic kinetic system generate geometric, path-dependent currents. | The naive identity “nonzero intervention-loop/order effect implies adaptation.” | An excess-over-frozen estimand may still be useful if its frozen baseline and confounds are externally identified. |
 | [Interventional Gaussian LTI identification](https://proceedings.mlr.press/v236/rajendran24a.html) | Diverse intervention signals across environments identify system parameters under ICA-style diversity assumptions. | A stacked mechanism-rank witness as sufficient novelty. | A candidate must not reduce to ordinary persistent excitation or stacked observability. |
+| [Identifiability of Switching Dynamical Systems](https://proceedings.mlr.press/v235/balsells-rodas24a.html) | Markov switching models and continuous latent switching dynamics are identified up to stated transformations under temporal and distributional conditions. | Mechanism switching as a new route to latent dynamical-state identification. | A new result would need weaker or structurally different assumptions, not merely known regime labels. |
+| [Active learning for optimal intervention design](https://www.nature.com/articles/s42256-023-00719-0) | A causal Bayesian acquisition rule has information-theoretic bounds and consistency for sequential intervention selection. | Choosing informative known mechanism sequences as a generic NMI method. | A safe adaptive-market design could be an application; novelty requires a distinct objective or theorem. |
+| [Physical-parameter identifiability in world models](https://arxiv.org/abs/2607.27017) | Controlled interventions show that input availability and prediction targets govern what a latent predictive representation retains. Preprint. | Assuming next-state prediction automatically recovers all physical or adaptive parameters. | Prediction-target-conditioned identifiability is a possible search direction, not an admitted candidate. |
 | [SEC Tick Size Pilot study](https://www.sec.gov/about/divisions-offices/division-economic-risk-analysis/staff-papers-analyses/dera_wp_tick_size-market_quality) | Controlled comparisons establish heterogeneous spread, depth, volatility and efficiency effects. | A generic claim that tick-size changes affect market quality. | Event-time adaptation dynamics could be different, but require stronger data and identification. |
 | [Tick Size Pilot imposition and conclusion](https://doi.org/10.1016/j.finmar.2025.101024) | Both forward and reverse windows and depth-of-book heterogeneity are already analyzed. | Treating the start/end pair itself as a new reversal study. | A predeclared adaptation spectrum or excess closed-loop residual must add a distinct prediction and independent replication. |
 | [Economic World Models blueprint](https://arxiv.org/abs/2608.06020) | Provides an executable multiscale systems agenda and taxonomy. Preprint. | Using “multi-scale hybrid architecture” as a theorem or validated mechanism. | It motivates system design and benchmark breadth only. |
@@ -32,3 +35,17 @@
   when computation produces a substantive, replicated scientific result.
 
 These pages route a surviving contribution; they do not reduce its novelty burden.
+
+## Derived identity retained from the audit
+
+For an exact or conditionally independent-noise fast mechanism,
+
+\[
+Q_{n+1}=G_M(Q_n,A_n,\varepsilon_n^G),\qquad
+\varepsilon_n^G\perp Z\mid(Q_n,A_n,M),
+\]
+
+the factorization gives `I(Z;Q_{n+1} | Q_n,A_n,M)=0`. This is a standard conditional-independence/data-processing
+identity, not a novelty claim. It closes the idea that an exact event-layer update directly identifies hidden
+behavior; only later feedback into observed actions can add information, returning the problem to controlled or
+switching system identification and active experiment design.

@@ -14,6 +14,13 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > generated manifests on CPU only. Exp141's generated-data feasibility result is independently archived and is not Plan v4
 > evidence. Paid data, NCS claims and GPU expansion remain locked; H20 is excluded.
 
+> **Dual-track theory result (2026-08-12).** The NMI search has `NO_SURVIVOR`; S1--S5 and the narrowed
+> mechanism-excitation candidate are retired by direct prior art or identifiability. Exp144 confirms that a
+> multi-mechanism rank gain can be ordinary stacked observability and that fixed non-adaptive stochastic operators
+> produce a `0.075` order effect. NCS retains only an `ATTACKING` empirical mechanism: real post-rule persistence
+> beyond all prevalidated frozen Markov/mechanical relaxation envelopes. This is `CONJECTURE_ONLY`, not a Plan v4
+> G0 re-entry, data unlock, compute unlock or identification of beliefs.
+
 > **Historical Plan v4 zero-cost preflight (closed at G0).** The broad estimator novelty claim was
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete
 > single-process API and corrected force/jump semantics now pass CPU and versioned single-V100 mechanics tests,
