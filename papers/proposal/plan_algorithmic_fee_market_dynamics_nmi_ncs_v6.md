@@ -288,10 +288,12 @@ chain outcome. Three distinctions now control the route:
 3. The NCS no-refit forecast remains a conditional prospective candidate, but BPO1/2 are development-only and
    BPO3 has no finalized activation or parameters. No independent replication is registered.
 
-The gate state is G0 `PENDING_EXP149`, N0/NMI `FAIL_NO_SURVIVOR`, N0/NCS `CONDITIONAL_SURVIVOR`, D0
-`CONDITIONAL_PASS_FIELDS`, I0 `BLOCKED_FUTURE_INTERVENTION_REPLICATION`, and P0 locked until G0 passes.
+The gate state after the formal Experiment 149 result is G0 `PASS_EXP149`, N0/NMI `FAIL_NO_SURVIVOR`, N0/NCS
+`CONDITIONAL_SURVIVOR`, D0 `CONDITIONAL_PASS_FIELDS`, I0 `BLOCKED_FUTURE_INTERVENTION_REPLICATION`, and P0 now
+eligible for a separate generated-only preregistration.
 
-Experiment 149 is separately preregistered to replay 97 official fixture cases and 107 blocks across Osaka,
-Osaka-to-BPO1 and BPO1-to-BPO2. It is an implementation-conformance gate only. A pass may authorize a separate
-generated-identification stress test but cannot unlock real data. The two V100 workers, RTX2060, remote hosts and
-all GPUs remain idle and unqueued.
+Experiment 149 replayed 97 official fixture cases and 107 blocks across Osaka, Osaka-to-BPO1 and BPO1-to-BPO2.
+All 107 execution-fee values, all 107 excess-state values and all 86 observable blob-fee values matched exactly;
+raw SHA256 `2a124acc5881204a69b34b0024c4d51387ca4060bf2525c44f1f2ff17ff3873a`. This passes implementation
+conformance only and authorizes at most a separate generated-identification stress test, not real data. The two
+V100 workers, RTX2060, remote hosts and all GPUs remain idle and unqueued.

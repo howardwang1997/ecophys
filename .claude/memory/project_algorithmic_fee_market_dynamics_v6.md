@@ -38,7 +38,9 @@ exact-controller, novelty, free-data, causal-identification and metadata-scale g
   parameters.
 - Data: Xatu public Parquet is CC BY 4.0 and supplies canonical execution/consensus and blob fields. Rollup
   attribution and independent replication remain unresolved. No outcome shard was opened.
-- Experiment 149 is preregistered to replay 97 official test cases/107 blocks from execution-specs
-  `tests@v20.0.1`, archive SHA256 `3586193db06d...`. It is a Mac CPU-only G0 conformance gate. A pass unlocks at
-  most a separate generated-identification preregistration, never real data.
+- Experiment 149 passed: 97/97 official cases, 107/107 execution-fee and excess-state comparisons, 86/86
+  observable blob-fee comparisons and zero mismatch. Raw SHA256
+  `2a124acc5881204a69b34b0024c4d51387ca4060bf2525c44f1f2ff17ff3873a`; 15.0653 s, 0.25061 GB, zero
+  network/remote/GPU/outcome files. This clears G0 only and unlocks at most a separate generated-identification
+  preregistration, never real data.
 - Two V100 32 GB workers, RTX2060, remote CPU and all GPUs remain idle and unqueued.

@@ -386,5 +386,6 @@ one-sided accumulation are protocol reductions/negative controls, not new theore
 BPO1/2 may be used only for development: BPO1 is within six days of the broad Fusaka fork, both outcomes have
 public analyses, and neither is an independently administered replication. Draft EIP-8138 leaves the BPO3
 activation and parameters unset, so it is a prospective sealing opportunity rather than an executable data
-contract. Experiment 149 is preregistered as a Mac CPU-only bit-exact conformance test over official fixtures. All
-chain outcomes, remote workers, the two V100s, RTX2060 and all GPUs remain locked.
+contract. Experiment 149 passed its Mac CPU-only bit-exact conformance gate: 97/97 cases, 107/107 execution-fee
+and excess-state comparisons, 86/86 observable blob-fee comparisons and zero mismatch. This does not change the
+NMI/NCS evidence status. All chain outcomes, remote workers, the two V100s, RTX2060 and all GPUs remain locked.

@@ -165,7 +165,9 @@ closes V6 before outcome inspection.
 - **Data:** Xatu public Parquet provides a free CC BY 4.0 path to canonical execution/consensus and blob fields.
   Rollup attribution, future-intervention freezing and independent replication are unresolved. No outcome shard is
   authorized.
-- **Compute:** Experiment 149 alone is authorized on local CPU to validate the protocol oracle. V100/RTX2060,
+- **Mechanism:** Experiment 149 passed 97 official cases/107 blocks and 86 observable blob-fee checks with zero
+  mismatch. This clears implementation G0 only.
+- **Compute:** a separately preregistered generated identification stress test may now use local CPU. V100/RTX2060,
   remote CPU, real-data reconstruction and GPU work remain unqueued.
 
 Even after G0, a single successful BPO forecast without external replication routes to a specialist venue, not

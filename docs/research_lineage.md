@@ -9,8 +9,9 @@ for a later project.
 execution/blob fee controllers coupled to unknown adaptive demand. Its pre-outcome audit retired the generic NMI
 closed-loop method as prior art and retained only a conditional NCS route: seal a future controller change, issue
 a no-refit joint response forecast, then replicate independently. Official EIP fixtures and free Xatu metadata
-exist, but BPO3 is unset and no external replication is registered. Experiment 149 is preregistered for local
-CPU-only protocol conformance; all chain outcomes, remote workers and GPUs remain locked. Protocol:
+exist, but BPO3 is unset and no external replication is registered. Experiment 149 passed local CPU-only protocol
+conformance with zero mismatch over 97 official cases/107 blocks; this is implementation evidence only. All chain
+outcomes, remote workers and GPUs remain locked. Protocol:
 `papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md`.
 
 `endogenous-market-rule-feedback-v5` started from integrated `main@268050126` on 2026-08-13 and closed

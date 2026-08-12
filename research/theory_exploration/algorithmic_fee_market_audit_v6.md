@@ -2,7 +2,8 @@
 
 **Audit frozen:** 2026-08-13  
 **Outcome access:** none; no chain fee, utilization, transaction, rollup or reliability value was opened  
-**Decision:** `NMI_NO_SURVIVOR`; NCS `PROSPECTIVE_CANDIDATE`, blocked before outcomes by intervention and replication
+**Decision:** G0 `PROTOCOL_ORACLE_CONFORMANCE_PASS`; `NMI_NO_SURVIVOR`; NCS `PROSPECTIVE_CANDIDATE`, blocked
+before outcomes by intervention and replication
 
 ## 1. What was audited
 
@@ -103,16 +104,17 @@ later untouched policy change is mandatory.
 
 | Gate | Decision | Reason |
 |---|---|---|
-| G0 exact mechanism | `PENDING_EXP149` | official specifications and fixtures exist; local oracle is not yet formally validated |
+| G0 exact mechanism | `PASS_EXP149` | 97 official cases/107 blocks and 86 observable blob fees match bit-for-bit; zero mismatch |
 | N0 NMI | `FAIL_NO_SURVIVOR` | direct composition of closed-loop ID, IV, structural demand and multi-resource fee control |
 | N0 NCS | `CONDITIONAL_SURVIVOR` | prospective no-refit response transfer not found as an independently replicated result |
 | D0 fields | `CONDITIONAL_PASS_FIELDS` | free CC BY Xatu path exists; attribution and replication remain unresolved |
 | I0 | `BLOCKED_FUTURE_INTERVENTION_REPLICATION` | BPO3 is unset and no independent replication is sealed |
 | P0 generated feasibility | `LOCKED_UNTIL_G0` | identification simulation is premature before protocol conformance |
 
-Authorized now: Experiment 149, a local CPU-only replay of official controller fixtures. After an exact G0 pass,
-the next permissible work is a separately preregistered generated identifiability attack using no observed chain
-outcomes. Real-data download, V100/RTX2060 contact and GPU work remain locked. If BPO3 is finalized, freeze its
+Experiment 149 passed and is immutable; raw artifact SHA256 is
+`2a124acc5881204a69b34b0024c4d51387ca4060bf2525c44f1f2ff17ff3873a`. The next permissible work is a separately
+preregistered generated identifiability attack using no observed chain outcomes. Real-data download, V100/RTX2060
+contact and GPU work remain locked. If BPO3 is finalized, freeze its
 metadata and forecast protocol before opening any post-activation values; if no independent replication is found,
 route any eventual single-system result below NCS rather than weakening the claim.
 
@@ -131,4 +133,3 @@ route any eventual single-system result below NCS rather than weakening the clai
 - [A Dual System-Level Parameterization for Identification from Closed-Loop Data](https://arxiv.org/abs/2304.02379)
 - [Price Elasticity of Gas Demand on L1 and L2](https://arxiv.org/abs/2606.13555)
 - [Xatu public data catalog](https://github.com/ethpandaops/xatu-data)
-

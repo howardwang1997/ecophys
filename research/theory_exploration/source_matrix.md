@@ -169,7 +169,7 @@ use.
 
 ### V6 synthesis
 
-- G0 has official executable fixtures and is preregistered as Experiment 149; it is not yet passed.
+- G0 passed Experiment 149: 97 official cases/107 blocks, 86 observable blob-fee values and zero mismatch.
 - NMI has no survivor because every current method statement is a direct composition of occupied results.
 - NCS remains a conditional prospective route. BPO1/2 are development-only; draft BPO3 and an independent
   replication must be frozen before any corresponding outcomes are opened.

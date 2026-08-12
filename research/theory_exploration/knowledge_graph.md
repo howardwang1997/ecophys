@@ -121,7 +121,7 @@ flowchart TB
     subgraph V6["v6: exact fee controllers + adaptive demand"]
         EXACT["protocol-exact execution/blob controllers"]
         DEMAND["latent adaptive cross-resource demand"]
-        G0["Exp149: 97-case official-fixture gate"]
+        G0["Exp149 G0 PASS: 97 cases / 0 mismatch"]
         BPO3["BPO3 draft: params/time unset"]
         REPL["independent replication missing"]
         NCS6["NCS: prospective no-refit transfer"]
@@ -196,9 +196,9 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
 | v6 NCS controller transfer | `FORMALIZING` | exact mechanism/free fields exist; BPO3 parameters and independent replication do not | protocol oracle and prospective metadata only |
 | v6 NMI closed-loop method | `RETIRED_PRIOR_ART` | closed-loop ID, multi-resource dynamic fees and gas-demand IV cover the composition | mandatory baselines only |
-| v6 protocol G0 | preregistered | Exp149 freezes 97 official cases/107 blocks through BPO2 | local CPU conformance only |
+| v6 protocol G0 | `PASS_EXP149` | 97 official cases/107 blocks/86 blob-fee observations, zero mismatch | exact implementation baseline only |
 
-The graph has 220 nodes after the V6 mechanism/prior-art/data audit and Experiment 149 preregistration. NMI has no
+The graph has 221 nodes after the V6 mechanism/prior-art/data audit and Experiment 149 result. NMI has no
 survivor; NCS is not admitted to real data because its prospective intervention and independent replication cells
 are empty. No chain outcome, fee series, transaction, FITRS outcome pair, remote worker or GPU was opened, and both
 V100 workers and the RTX2060 remain outside the queue.

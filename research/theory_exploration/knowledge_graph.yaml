@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
 iteration: algorithmic-fee-market-dynamics-v6
-decision: V6_G0_PENDING_NMI_NO_SURVIVOR_NCS_PROSPECTIVE_BLOCKED
+decision: V6_G0_PASS_NMI_NO_SURVIVOR_NCS_PROSPECTIVE_BLOCKED
 
 nodes:
   - id: src.controlled_world_models
@@ -1718,8 +1718,14 @@ nodes:
     type: benchmark
     title: Experiment 149 official protocol-fixture oracle
     track: both
-    claim: The preregistered local CPU replay must match 97 cases and 107 blocks bit-for-bit before any generated identification work.
-    artifact: experiments/149_fee_controller_protocol_oracle/PREREGISTRATION.md
+    claim: The preregistered local CPU replay matched 97 cases 107 blocks and 86 observable blob fees bit-for-bit with zero mismatch.
+    artifact: experiments/149_fee_controller_protocol_oracle/RESULTS.md
+  - id: decision.exp149_protocol_pass
+    type: decision
+    title: Experiment 149 protocol conformance pass
+    track: both
+    claim: G0 passed the selected official fixture suite with zero mismatch and authorizes only a separate generated identification preregistration.
+    artifact: experiments/149_fee_controller_protocol_oracle/RESULTS.md
   - id: decision.iteration_v6_audit
     type: decision
     title: Algorithmic fee-market dynamics v6 pre-outcome audit
@@ -1986,3 +1992,6 @@ edges:
   - {source: decision.iteration_v6_audit, target: bench.exp149_protocol_oracle, type: supports, claim: Experiment 149 is the only currently authorized experiment.}
   - {source: decision.iteration_v6_audit, target: data.sealed_real_interventions, type: forbids, claim: BPO3 and independent replication are not registered so real outcomes remain sealed.}
   - {source: decision.iteration_v6_audit, target: compute.ncs_post_c1, type: forbids, claim: Remote and GPU scale-up remains locked.}
+  - {source: bench.exp149_protocol_oracle, target: decision.exp149_protocol_pass, type: supports, claim: All frozen archive member count and controller comparisons passed exactly.}
+  - {source: decision.exp149_protocol_pass, target: cand.v6.controller_transfer, type: supports, claim: Exact implementation conformance removes one mechanical ambiguity but supplies no behavioral evidence.}
+  - {source: decision.exp149_protocol_pass, target: data.sealed_real_interventions, type: forbids, claim: Protocol conformance does not unlock real outcomes without BPO3 identification and replication.}
