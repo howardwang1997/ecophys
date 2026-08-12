@@ -5,6 +5,14 @@ for a later project.
 
 ## Current theory state
 
+`phenomenon-first-nmi-ncs-v4` started from integrated `main@8283e77f7` on 2026-08-13. NMI/NCS remain the targets,
+but v4 selects a concrete intervention-rich scientific phenomenon before proposing a method. It audits matched
+rule responses across human, classical-algorithmic and agentic-AI populations, causal information lost under
+anonymous aggregation and strategic memory under true randomized causal breaks. Its frozen T0 permits only
+primary literature and official dataset metadata with <=30 Mac CPU core-hours; no outcome values, human
+interaction, API/data purchase, worker contact or GPU use. Protocol:
+`papers/proposal/plan_phenomenon_first_nmi_ncs_v4.md`.
+
 `theory-exploration-nmi-ncs-v3` started from integrated `main@490fffe42` on 2026-08-12 and closed
 `V3_NO_SURVIVOR` on 2026-08-13. Controlled state closure and repair reduce to controlled PSR, operational Markov
 conditions, PSR-f and process-recovery theory; semigroup memory reduces to Mori--Zwanzig; Poisson-weighted
@@ -65,6 +73,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Dual-track theory exploration v1 | NMI no survivor; NCS contraction-envelope conjecture only | Typed knowledge graph, source matrix, exp144 negative controls, event-layer information identity | No theorem/venue claim, hidden-belief identification, real mechanism evidence or compute/data unlock |
 | Dual-track theory exploration v2 | NMI no survivor; NCS C0 identification fail | 108-node exploration graph, target-task prior-art map, exp145 attribution counterexamples and validated rule metadata | No adaptation label, sealed replication, data contract, theorem/venue claim or compute unlock |
 | Dual-track theory exploration v3 | `V3_NO_SURVIVOR`; closed at equation audit | 135-node graph, prior-art map and noisy-XOR missing-state control | No new closure/memory/operator method, experiment, data contract or compute unlock |
+| Phenomenon-first theory exploration v4 | Active metadata/prior-art screen; T0 only | Candidate phenomena across human, algorithmic and agentic populations with explicit S0/D0/I0 gates | No scientific law, commensurability, dataset contract, method novelty or compute unlock before audit |
 
 ## Code inheritance rules
 
