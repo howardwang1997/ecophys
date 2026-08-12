@@ -350,3 +350,17 @@ The only admissible continuation is Experiment 148, preregistered and pushed bef
 replace the process pool with a serial in-process backend, but must reuse the exact Experiment 147 scientific
 configuration and frozen random streams, DGPs, estimator options, gates and failure mappings. Experiment 147 may
 not be rerun. Market values, remote workers and GPUs remain locked.
+
+## 13. Experiment 148 serial-repair state (appended 2026-08-13)
+
+Experiment 148 was preregistered and pushed at `9d05559de` before its runner, focused test, freeze or result
+existed. It references Experiment 147's configuration, preregistration, research module, pure runner helpers and
+failure record by SHA256. The only allowed change is serial in-process scheduling: one controller, zero workers,
+one numerical thread, no executor, multiprocessing, thread pool, subprocess worker, semaphore or task queue.
+
+The implementation computes and verifies exactly 6,600 primary-fit tasks and 1,800 oracle tasks, preserves cell
+then replicate order, and checks that every task stays in the controller PID. Five repeatable deterministic tests
+pass, as do Ruff and strict mypy. One pre-freeze adapter probe executed a single frozen `smooth_null` task and read
+only its success/failure flags; it was removed from the repeatable suite and is not a formal result. The complete
+300-replicate suite remains unrun. A separately pushed `FREEZE.yaml` is still required before the sole formal
+attempt. Real data and remote/GPU compute remain locked.

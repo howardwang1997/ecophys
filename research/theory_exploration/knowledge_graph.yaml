@@ -1454,8 +1454,8 @@ nodes:
     type: benchmark
     title: Generated annual-feedback RD preflight
     track: ncs
-    claim: Experiment 147 was preregistered before implementation; its deterministic checks pass but the formal CPU suite remains unrun until a separate implementation freeze is pushed.
-    artifact: experiments/147_generated_market_rule_feedback_rd/PREREGISTRATION.md
+    claim: Experiment 147 failed before formal task dispatch; Experiment 148 now locks its science by SHA and awaits a separately frozen serial formal run after implementation checks passed.
+    artifact: experiments/148_generated_market_rule_feedback_rd_serial/PREREGISTRATION.md
   - id: bench.v5_rd_oracle
     type: benchmark
     title: Robust multi-cutoff and honest discrete-RD oracle
@@ -1476,7 +1476,7 @@ nodes:
     type: compute_gate
     title: V5 generated CPU-only gate
     track: ncs
-    claim: Experiment 147 permits one controller plus three single-threaded Mac CPU workers only after a pushed implementation freeze; real files remote workers and GPUs remain locked.
+    claim: Experiment 148 permits one serial single-threaded Mac CPU controller only after a pushed implementation freeze; real files remote workers and GPUs remain locked.
   - id: decision.iteration_v5_wp0
     type: decision
     title: Endogenous market-rule feedback v5 WP0 outcome
@@ -1488,6 +1488,12 @@ nodes:
     track: ncs
     claim: The sole formal attempt stopped during process-pool construction after a sandbox-denied semaphore query; zero tasks and fits ran, so this is an implementation failure with no statistical evidence.
     artifact: experiments/147_generated_market_rule_feedback_rd/FORMAL_ATTEMPT_FAILURE.md
+  - id: bench.exp148_serial_repair
+    type: benchmark
+    title: Experiment 148 serial execution repair
+    track: ncs
+    claim: A separately preregistered wrapper inherits 6600 fit and 1800 oracle tasks exactly while replacing only the failed process pool with controller-PID serial execution.
+    artifact: experiments/148_generated_market_rule_feedback_rd_serial/PREREGISTRATION.md
 
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
@@ -1710,3 +1716,5 @@ edges:
   - {source: decision.iteration_v5_wp0, target: data.v5_contaminated_isin, type: supports, claim: The protocol deviation is contained by permanent exclusion and disclosure.}
   - {source: bench.v5_generated_rd_preflight, target: decision.exp147_execution_failure, type: branches_to, claim: The frozen Experiment 147 implementation failed before task dispatch and cannot answer the benchmark.}
   - {source: decision.exp147_execution_failure, target: compute.v5_generated_cpu_only, type: requires, claim: A separately preregistered serial Experiment 148 repair is required without opening data or remote compute.}
+  - {source: decision.exp147_execution_failure, target: bench.exp148_serial_repair, type: branches_to, claim: Experiment 148 is the only authorized orchestration repair and cannot change the scientific contract.}
+  - {source: bench.exp148_serial_repair, target: bench.v5_generated_rd_preflight, type: supports, claim: Serial scheduling preserves frozen tasks and can answer the still-open generated-design benchmark.}

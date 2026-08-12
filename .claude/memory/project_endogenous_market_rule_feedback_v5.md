@@ -52,3 +52,10 @@ no raw artifact exists. Final state is `IMPLEMENTATION_OR_SPEC_FAILURE`, with ev
 `experiments/147_generated_market_rule_feedback_rd/FORMAL_ATTEMPT_FAILURE.md`. Do not rerun 147. Experiment 148
 may repair only the execution backend by using serial in-process execution while inheriting every scientific
 setting and stream exactly. Real data and all remote/GPU gates remain locked.
+
+Experiment 148 preregistration was pushed at `9d05559de`. It locks five Experiment 147 parent objects by SHA and
+permits only serial in-process scheduling. The implementation verifies exactly 6,600 fit and 1,800 oracle tasks,
+one controller PID, zero workers and one numerical thread. Five repeatable tests, Ruff and strict mypy pass; one
+pre-freeze single-task adapter probe inspected only success/failure flags and is logged separately from formal
+results. The full suite has not run and still requires a pushed `FREEZE.yaml`. Real data, V100s, RTX2060 and GPUs
+remain locked.
