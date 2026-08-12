@@ -1,0 +1,233 @@
+schema: exp142-g0-contract-fixtures/v1
+experiment: 142
+suite_id: ncs-g0-reentry-controlled-contract-v1
+contains_real_candidate: false
+base_candidate: &base_candidate
+  schema_version: ecomd-ncs-g0-candidate/v1
+  candidate_id: hypothetical-formal-object
+  version: v1
+  frozen_before_implementation: true
+  mathematical_object: &mathematical_object
+    state_space: Polish state space X
+    transition_law: parameterized Markov kernel P_theta
+    invariant_or_path_measure: unique invariant measure pi_theta
+    target_derivative: d_theta E_pi_theta[f]
+    estimator_or_identity: hypothetical identity H(theta)
+    assumptions:
+      - finite second moment
+      - geometric drift
+    formal_difference_statement: H contains a term absent from every mapped family
+  primitive: &primitive
+    category: cross_parameter_coupling
+    novelty_basis: formal_identity_or_theorem
+    statement: hypothetical cross-parameter identity with an observable correction
+    theorem_obligation: prove unbiasedness and finite variance under assumptions A1-A2
+    proof_sketch: martingale decomposition followed by dominated convergence
+    composition_only: false
+  prior_art: &prior_art
+    - family: persistent_markov_pcd_soul
+      source_id: De Bortoli et al. 2021 SOUL
+      primary_url: https://doi.org/10.1007/s11222-020-09986-y
+      equation_or_theorem: warm-started parameter-dependent kernels and non-asymptotic controls
+      disposition: covered
+      candidate_difference: hypothetical correction is asserted to be absent from SOUL
+    - family: sequential_reweighting_smc_jarzynski
+      source_id: Cuin et al. 2026 SOSMC
+      primary_url: https://arxiv.org/abs/2601.22003
+      equation_or_theorem: Feynman-Kac flow and gradient estimator across evolving targets
+      disposition: covered
+      candidate_difference: hypothetical correction is asserted to differ from recursive importance weights
+    - family: steady_state_lr_pathwise
+      source_id: Glynn and Olvera-Cravioto 2019
+      primary_url: https://doi.org/10.1287/stsy.2018.0023
+      equation_or_theorem: steady-state likelihood-ratio gradient limit
+      disposition: covered
+      candidate_difference: hypothetical term is asserted not to be a centered LR or pathwise term
+    - family: stochastic_adjoint_stochasticad_gge
+      source_id: Wang Blanchet and Glynn 2024
+      primary_url: https://proceedings.neurips.cc/paper_files/paper/2024/hash/a0cd56b91305239e2580dd9440b2e155-Abstract-Conference.html
+      equation_or_theorem: generator gradient estimator for high-dimensional jump SDEs
+      disposition: covered
+      candidate_difference: hypothetical term is asserted not to be a generator or event-gradient term
+    - family: coupled_debiasing_rhee_glynn
+      source_id: Jacob O'Leary and Atchade 2020
+      primary_url: https://doi.org/10.1111/rssb.12336
+      equation_or_theorem: meeting-time coupling and telescoping unbiased estimator
+      disposition: covered
+      candidate_difference: hypothetical term is asserted not to be randomized telescoping
+    - family: long_full_truncated_bptt
+      source_id: Suh et al. 2022
+      primary_url: https://arxiv.org/abs/2202.00817
+      equation_or_theorem: bias-variance and failure analysis for differentiable simulators
+      disposition: covered
+      candidate_difference: hypothetical term is asserted not to arise from a truncation schedule
+  witness: &witness
+    symbolic_difference: H(theta) - H_composed(theta) = R(theta)
+    controlled_problem: two-state parameter-switching chain with analytic invariant law
+    candidate_prediction: non-zero signed R(theta)
+    nearest_composition_prediction: R(theta) equals zero
+    rejection_rule: reject if the signed difference misses the analytic value
+  counterexamples: &counterexamples
+    - counterexample_id: jump-chain
+      family: discontinuous_event
+      construction: parameter-dependent jump with an analytic derivative
+      expected_failure: wrong event term changes the derivative sign
+      rejection_rule: reject on sign mismatch
+    - counterexample_id: slow-chain
+      family: slow_mixing
+      construction: spectral gap tends to zero
+      expected_failure: variance diverges outside the stated assumption
+      rejection_rule: reject if the diagnostic reports resolved
+  benchmark: &benchmark
+    independent_systems:
+      - multivariate OU
+      - reaction network CTMC
+    baselines: &baselines
+      - family: persistent_markov_pcd_soul
+        disposition: included
+        implementation: versioned SOUL or persistent-chain reference
+        justification: nearest changing-parameter persistent-chain comparator
+        compute_match_rule: same simulator-step and wall-time budgets
+      - family: sequential_reweighting_smc_jarzynski
+        disposition: included
+        implementation: versioned SOSMC or Jarzynski-SMC reference
+        justification: nearest evolving-target reweighting comparator
+        compute_match_rule: same simulator-step and wall-time budgets
+      - family: steady_state_lr_pathwise
+        disposition: included
+        implementation: centered LR and pathwise reference
+        justification: nearest invariant-sensitivity comparator
+        compute_match_rule: same simulator-step and wall-time budgets
+      - family: stochastic_adjoint_stochasticad_gge
+        disposition: included
+        implementation: stochastic-adjoint or GGE reference
+        justification: nearest continuous/jump derivative comparator
+        compute_match_rule: same simulator-step and wall-time budgets
+      - family: coupled_debiasing_rhee_glynn
+        disposition: included
+        implementation: coupled unbiased MCMC reference
+        justification: nearest finite-horizon debiasing comparator
+        compute_match_rule: same simulator-step and wall-time budgets
+      - family: long_full_truncated_bptt
+        disposition: included
+        implementation: full and compute-matched truncated BPTT
+        justification: direct differentiable-rollout comparator
+        compute_match_rule: same simulator-step and wall-time budgets
+    metrics:
+      - accuracy
+      - bias
+      - failure_rate
+      - peak_memory
+      - simulator_steps
+      - variance
+      - wall_time
+    compute_matched: true
+  claim_boundary: &claim_boundary
+    not_proved:
+      - market fidelity
+      - universal mixing certificate
+    diagnostic_only:
+      - empirical ESS
+      - fixture admission result
+    stop_rule: stop if the identity reduces to a mapped prior-art composition
+  resources: &resources
+    data_scope: generated_metadata_and_literature
+    uses_market_data: false
+    opens_sealed_data: false
+    gpu_hours: 0.0
+cases:
+  - case_id: review_ready_hypothetical
+    mutations: {}
+    reverse_collections: false
+    semantic_equivalence_group: ready-pair
+    expected_status: READY_FOR_HUMAN_AUDIT
+    expected_reason_codes:
+      - HUMAN_AUDIT_REQUIRED
+    expected_schema_error_contains: null
+  - case_id: review_ready_hypothetical_reordered
+    mutations: {}
+    reverse_collections: true
+    semantic_equivalence_group: ready-pair
+    expected_status: READY_FOR_HUMAN_AUDIT
+    expected_reason_codes:
+      - HUMAN_AUDIT_REQUIRED
+    expected_schema_error_contains: null
+  - case_id: rejected_v0_composition
+    mutations:
+      candidate_id: rejected-v0-composition
+      mathematical_object.estimator_or_identity: persistent chains plus hybrid pathwise-LR plus Rhee-Glynn plus diagnostics
+      mathematical_object.formal_difference_statement: no irreducible difference survives the forward audit
+      primitive.novelty_basis: composition
+      primitive.statement: composition of established estimator and diagnostic components
+      primitive.theorem_obligation: no new theorem was derived
+      primitive.proof_sketch: direct decomposition into prior-art components
+      primitive.composition_only: true
+    reverse_collections: false
+    semantic_equivalence_group: null
+    expected_status: REJECTED_EQUIVALENT
+    expected_reason_codes:
+      - DECLARED_COMPOSITION_ONLY
+      - NOVELTY_BASIS_NOT_FORMAL
+    expected_schema_error_contains: null
+  - case_id: performance_only_ecomd
+    mutations:
+      candidate_id: performance-only-ecomd
+      primitive.novelty_basis: performance
+      benchmark.independent_systems:
+        - EcoMD
+        - EcoMD large
+    reverse_collections: false
+    semantic_equivalence_group: null
+    expected_status: REJECTED_EQUIVALENT
+    expected_reason_codes:
+      - NOVELTY_BASIS_NOT_FORMAL
+    expected_schema_error_contains: null
+  - case_id: incomplete_new_label
+    mutations:
+      candidate_id: incomplete-new-label
+      primitive.theorem_obligation: ""
+      primitive.proof_sketch: ""
+    reverse_collections: false
+    semantic_equivalence_group: null
+    expected_status: INCOMPLETE
+    expected_reason_codes:
+      - PROOF_SKETCH_MISSING
+      - THEOREM_OBLIGATION_MISSING
+    expected_schema_error_contains: null
+  - case_id: ecomd_only_formal_claim
+    mutations:
+      candidate_id: ecomd-only-formal-claim
+      benchmark.independent_systems:
+        - EcoMD
+        - EcoMD large
+    reverse_collections: false
+    semantic_equivalence_group: null
+    expected_status: ECO_MD_ONLY
+    expected_reason_codes:
+      - ECO_MD_ONLY_BENCHMARK
+      - INDEPENDENT_SYSTEMS_INSUFFICIENT
+    expected_schema_error_contains: null
+  - case_id: pre_g0_resource_violation
+    mutations:
+      candidate_id: pre-g0-resource-violation
+      resources.data_scope: real_l2
+      resources.uses_market_data: true
+      resources.opens_sealed_data: true
+      resources.gpu_hours: 0.5
+    reverse_collections: false
+    semantic_equivalence_group: null
+    expected_status: INCOMPLETE
+    expected_reason_codes:
+      - DATA_SCOPE_BEFORE_G0_INVALID
+      - GPU_BEFORE_G0
+      - MARKET_DATA_BEFORE_G0
+      - SEALED_DATA_BEFORE_G0
+    expected_schema_error_contains: null
+  - case_id: unknown_schema_field
+    mutations:
+      paper_claim: true
+    reverse_collections: false
+    semantic_equivalence_group: null
+    expected_status: null
+    expected_reason_codes: []
+    expected_schema_error_contains: paper_claim
