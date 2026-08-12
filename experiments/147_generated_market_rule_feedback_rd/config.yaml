@@ -1,0 +1,97 @@
+schema: exp147-generated-market-rule-feedback-rd/v1
+seed: 14720260813
+seed_float_format: ".12g"
+replicates: 300
+confidence_level: 0.95
+years: [2018, 2019, 2020, 2021, 2022, 2023]
+n_candidates_per_year: 240
+ratio_support: [0.8, 1.2]
+primary_cutoffs: [10.0, 600.0]
+rounding_increment: 0.01
+coarse_rounding_increment: 1.0
+minimum_mass_points_per_side: 10
+fixed_oracle_bandwidth: 0.18
+base_slope: 0.5
+base_quadratic: 0.4
+curved_quadratic: 1.5
+base_noise_sigma: 0.10
+descriptive_noise_sigma: 0.20
+effect_floor: 0.05
+year_effects: [-0.05, -0.03, -0.01, 0.01, 0.03, 0.05]
+mixed_exposure_fractions: [0.74, 0.75, 0.75, 0.75, 0.75, 0.76]
+cluster_random_intercept_sigma: 0.08
+cluster_count: 240
+cluster_repeats: 6
+mcar_attrition_probability: 0.15
+regression_to_mean:
+  latent_log_support: [-0.2231435513142097, 0.1823215567939546]
+  baseline_measurement_sigma: 0.08
+  followup_noise_sigma: 0.10
+  persistence: 0.75
+sorting_right_probability: 0.65
+differential_attrition:
+  base_probability: 0.05
+  right_side_increment: 0.20
+  positive_shock_increment: 0.15
+diagnostic_alpha: 0.01
+estimator:
+  package: rdrobust
+  version: 2.0.0
+  cutoff: 0.0
+  polynomial_order: 1
+  bias_order: 2
+  kernel: triangular
+  bandwidth_selection: mserd
+  confidence_level: 0.95
+  independent_vce: hc3
+  clustered_vce: cr3
+  mass_points: adjust
+null_scenarios:
+  - {name: smooth_null, cutoffs: [10.0, 600.0], rounded: false, quadratic: 0.4, mode: standard, oracle: true}
+  - {name: rounded_null, cutoffs: [10.0, 600.0], rounded: true, quadratic: 0.4, mode: standard, oracle: true}
+  - {name: curved_null, cutoffs: [10.0, 600.0], rounded: true, quadratic: 1.5, mode: standard, oracle: true}
+  - {name: regression_to_mean_null, cutoffs: [10.0, 600.0], rounded: true, mode: regression_to_mean, oracle: false}
+  - {name: mcar_attrition_null, cutoffs: [10.0], rounded: true, quadratic: 0.4, mode: mcar_attrition, oracle: false}
+  - {name: clustered_null, cutoffs: [10.0], rounded: true, quadratic: 0.4, mode: clustered, oracle: false}
+effect_scenarios:
+  - {name: reinforcing, cutoffs: [10.0, 600.0], tau: 0.05, rounded: true, mode: standard}
+  - {name: corrective, cutoffs: [10.0, 600.0], tau: -0.05, rounded: true, mode: standard}
+  - {name: mixed_exposure, cutoffs: [10.0], tau: 0.05, rounded: true, mode: mixed_exposure}
+  - {name: clustered_reinforcing, cutoffs: [10.0], tau: 0.05, rounded: true, mode: clustered}
+descriptive_power_sigmas: [0.10, 0.20]
+diagnostic_scenarios:
+  - sorting
+  - differential_attrition
+  - coarse_mass_points
+  - shared_rule_cutoff
+  - zero_tick_first_stage
+shared_rule_cutoffs: [80.0, 2000.0]
+tick_first_stage_cases:
+  - {cutoff: 10.0, price: 0.05, expected_nonzero: true}
+  - {cutoff: 600.0, price: 0.05, expected_nonzero: false}
+  - {cutoff: 600.0, price: 1.0, expected_nonzero: true}
+  - {cutoff: 9000.0, price: 0.2, expected_nonzero: false}
+  - {cutoff: 9000.0, price: 1.0, expected_nonzero: true}
+gates:
+  null_max_rejection_rate: 0.08
+  null_min_coverage: 0.90
+  null_max_wilson_rejection_upper: 0.11
+  max_fit_failure_rate: 0.02
+  max_median_absolute_bias: 0.01
+  effect_min_power: 0.80
+  effect_min_wilson_power_lower: 0.75
+  effect_min_sign_accuracy: 0.95
+  oracle_min_coverage: 0.94
+  oracle_max_failure_rate: 0.01
+  sorting_min_detection: 0.90
+  attrition_min_detection: 0.90
+  deterministic_guard_accuracy: 1.0
+resources:
+  device: mac_cpu
+  max_processes: 4
+  max_cpu_core_hours: 12.0
+  max_wall_minutes: 90.0
+  max_ram_gb: 8.0
+  gpu_hours: 0.0
+  network_during_formal_run: false
+  remote_workers_contacted: false
