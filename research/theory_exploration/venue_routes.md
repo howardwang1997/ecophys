@@ -228,3 +228,21 @@ The final V7 decision is `V7_NO_SURVIVOR`. The next Nature-level search cannot b
 drift ball or loop statistic. It must add an externally measured state, a verified reset/erasure intervention with
 a manipulation check, or change to a directly observable scientific target whose causal assignment effect is the
 claim rather than evidence for a hidden adaptive ontology.
+
+## V8 causal-memory-transplant closure
+
+- **NMI:** `NO_SURVIVOR`. Explicit memory is a valid intervention surface, but architecture/content
+  transplantation, causal memory perturbation, factorial decomposition and propagation formalisms already exist.
+  The proposed contrast is a standard source-by-capsule factorial interaction, not a new AI method or theorem.
+- **NCS:** `NO_SURVIVOR_PRIOR_ART`. Shachi already transfers memories from economic agents and carries state between
+  stock and social environments; Memory Contagion already transfers source-induced bias to future agents. Adding
+  an exact economic mechanism gives a cleaner aggregate readout but no new signed law or external scientific fact.
+- **Specialist route:** a preregistered economy-cluster experiment with semantic shams, donor-aware inference,
+  transparent sufficient-state oracles and independent implementations could improve the evidence base. It must
+  be presented as replication/benchmark work, not first memory transplantation or universal economic behavior.
+- **Data/compute:** primary papers and rendered PDFs only. No model-generated outcome, API call, human/market data,
+  remote CPU, V100, RTX2060 or GPU was opened or queued.
+
+The final V8 decision is `V8_NO_SURVIVOR_PRIOR_ART`. A Nature-level re-entry needs a causal object outside standard
+factorial memory interventions, a theoretically signed cross-mechanism law with a hard falsifier, or an externally
+measured scientific system. More prompts, models, agents, markets or capsule arms do not meet that condition.

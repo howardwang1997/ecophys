@@ -9,6 +9,9 @@
 **Initial state:** `SCOUT`; primary literature and protocol design only; no generated outcome, model inference,
 remote-host or GPU authorization
 
+**Closed:** 2026-08-13 as `V8_NO_SURVIVOR_PRIOR_ART`; the frozen N0 stop rule fired before F0. See
+`research/theory_exploration/causal_memory_transplant_audit_v8.md`.
+
 ## 1. Why the target changes again
 
 V6 showed that known market feedback does not identify adaptive demand when latent dynamics can change across
@@ -258,3 +261,26 @@ Compute cannot repair prompt confounding, hidden provider state, pseudoreplicati
 - Retire if an explicit regime-label or shortest sufficient-state oracle matches the memory capsule.
 - Close before compute if the candidate reduces to standard mediation/interference or if no signed cross-mechanism
   claim survives the literature audit.
+
+## 13. Post-freeze outcome
+
+The planned audit found direct collisions at every proposed novelty layer:
+
+- *Memory Transplants for LLM Agents* already introduces independent architecture/content transplantation with a
+  `2 x 2` factorial design, seven transplant conditions and preregistered validation gates.
+- *Shachi* already transfers EconAgent/OASIS memory into a new cognitive task and carries agent state between stock
+  and social environments, reporting history-dependent behavioral and aggregate changes.
+- *Causal Intervention-Based Memory Selection* already treats external memory as an editable causal intervention
+  surface with no-memory, with-memory and perturbed-memory comparisons.
+- *Memory Contagion* already studies source-induced behavioral bias propagating through memory to future agents,
+  while *Contagion Networks* studies propagation and network regimes across interacting agents.
+
+Moreover, the frozen scalar `tau_mem` is exactly four times the source-regime by capsule-semantics interaction
+coefficient in a saturated effects-coded factorial model. Economy-level randomization, semantic shams and state
+audits are important rigor improvements, but do not define a new estimand or theorem. The residual “same design in
+an economy” is a specialist application/replication opportunity, not the new cross-mechanism law required for NCS.
+
+Therefore steps 3--5 of the immediate queue are cancelled. No transparent-agent fixture, model inference,
+generated outcome, API call, remote worker or GPU job was opened. Re-entry requires a non-factorial causal object,
+a theoretically signed cross-mechanism law, or an external scientific measurement—not additional prompts, models
+or capsule arms.

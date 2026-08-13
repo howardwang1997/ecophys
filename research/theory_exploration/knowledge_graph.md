@@ -1,15 +1,16 @@
-# Theory-exploration topology v7
+# Theory-exploration topology v8
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** `V7_NO_SURVIVOR`; C1/C2 are `RETIRED_PRIOR_ART`, C3 is
-`RETIRED_IDENTIFIABILITY`; outcomes/scale-up locked
+**Current decision:** `V8_NO_SURVIVOR_PRIOR_ART`; causal memory transplantation is
+`RETIRED_PRIOR_ART`; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate, v6 exact-
 controller identifiability closure and v7 quotient/drift/probe audit. Graph proximity is not evidence of
 novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
-exact counterexample.
+exact counterexample. V8 adds direct memory-transplant, economic-agent carry-over, causal-memory-intervention and
+contagion coverage plus the standard factorial-interaction reduction.
 
 ```mermaid
 flowchart TB
@@ -164,6 +165,22 @@ flowchart TB
     CLOSE6 --> V7
     V7 --> CLOSE7["V7_NO_SURVIVOR"]
     CLOSE7 --> LOCK7["outcomes / workers / GPUs locked"]
+
+    subgraph V8["v8: explicit causal memory transplant"]
+        M8["randomized donor memory capsule"]
+        FACT8["standard source x capsule interaction"]
+        TRANS8["memory transplant + causal perturbation"]
+        SHACHI8["economic cross-environment carry-over"]
+        CONT8["temporal / network contagion"]
+        TRANS8 -->|covers method| M8
+        SHACHI8 -->|covers economic carry-over| M8
+        CONT8 -->|covers propagation| M8
+        FACT8 -->|reduces estimand| M8
+    end
+
+    CLOSE7 --> V8
+    V8 --> CLOSE8["V8_NO_SURVIVOR_PRIOR_ART"]
+    CLOSE8 --> LOCK8["model inference / outcomes / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -219,6 +236,21 @@ Finally, any finite randomized safe-probe tree can be represented by a fixed tim
 hidden state is the reachable history node. Hence randomization identifies controller-path assignment effects
 under causal assumptions, but not adaptation versus fixed hidden memory.
 
+For V8, with effects-coded source regime `Z` and intact-versus-scramble capsule arm `C`, the saturated model
+
+\[
+\mathbb E[Y\mid Z=z,C=c]=\beta_0+\beta_Zz+\beta_Cc+\beta_{ZC}zc
+\]
+
+gives
+
+\[
+\tau_{mem}=\mu_{+,+}-\mu_{-,+}-\mu_{+,-}+\mu_{-,-}=4\beta_{ZC}.
+\]
+
+This is an economy-cluster factorial interaction. It can identify the assigned compound treatment when randomized
+correctly, but it is not a new causal estimand and a semantic sham alone cannot prove a unique semantic carrier.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -250,10 +282,12 @@ under causal assumptions, but not adaptation versus fixed hidden memory.
 | v7 C1 observable quotient | `RETIRED_PRIOR_ART` | invariant functionals factor through complete input--output behavior; realization and PSR theory cover the object | input--output diagnostic only |
 | v7 C2 drift-budget set | `RETIRED_PRIOR_ART` | standard set-membership ellipsoid; width is controlled by excitation and null directions remain unbounded | uncertainty diagnostic only |
 | v7 C3 randomized loop | `RETIRED_IDENTIFIABILITY` | fixed history-state transducer reproduces every finite randomized probe-tree law | causal path-effect design only; no adaptation label |
+| v8 causal memory transplant | `RETIRED_PRIOR_ART` | direct transplant/causal-perturbation protocols, Shachi economic carry-over, memory contagion and standard factorial reduction | specialist replication design only; no Nature-level method or phenomenon |
 
-The graph has 264 nodes after the V7 closure. NMI has no non-equivalent method; NCS has no identified adaptation
-phenomenon or executable prospective data contract. No experiment, chain outcome, fee series, L2 transaction,
-FITRS outcome pair, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside the queue.
+The graph has 286 nodes after the V8 closure. NMI has no non-equivalent method; NCS has no new signed
+cross-mechanism phenomenon or executable prospective data contract. No V8 experiment, model/API call, generated
+action, market/human outcome, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside
+the queue.
 
 ## Validation
 

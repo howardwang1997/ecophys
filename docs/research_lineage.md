@@ -127,7 +127,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Endogenous market-rule feedback v5 | `V5_NO_SURVIVOR`; generated identification preflight failed | Exact rule clock, ESMA/FCA metadata contract, immutable Exp148 artifact and power/type-I lesson | No market effect, method novelty, real-data unlock, worker or GPU authorization |
 | Algorithmic fee-market dynamics v6 | `V6_NO_SURVIVOR_IDENTIFIABILITY`; closed before outcomes | Exact protocol oracle, scale audit, Base topology provenance, Exp151 alias/rank negative control | No identified behavioral response, market outcome, method novelty, data/compute unlock or venue claim |
 | Gauge-invariant controller probes v7 | `V7_NO_SURVIVOR`; closed before experiments/outcomes | Quotient factorization, exact drift-set width, fixed probe-tree transducer and 264-node graph | No method/phenomenon survivor, data contract, outcome or compute unlock |
-| Causal memory transplantation v8 | `SCOUT`; literature/protocol gate only | Explicit state boundary and randomized capsule candidate | No theorem, model inference, generated outcome, human/market claim or compute unlock |
+| Causal memory transplantation v8 | `V8_NO_SURVIVOR_PRIOR_ART`; closed before experiments/model inference | Explicit state/reset audit, factorial-interaction reduction and 286-node prior-art graph | No transplant/contagion novelty, signed economic law, generated outcome, data/compute unlock or venue claim |
 
 ## Code inheritance rules
 

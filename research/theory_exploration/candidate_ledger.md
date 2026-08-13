@@ -1,8 +1,8 @@
-# Candidate ledger — v1 through v7
+# Candidate ledger — v1 through v8
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** `V7_NO_SURVIVOR`; C1/C2 are `RETIRED_PRIOR_ART`, C3 is
-`RETIRED_IDENTIFIABILITY`
+**Current outcome:** `V8_NO_SURVIVOR_PRIOR_ART`; causal memory transplantation is
+`RETIRED_PRIOR_ART` before any experiment or model inference
 
 **Scientific meaning:** quotienting, bounding drift and randomizing a finite controller path do not by themselves
 identify latent adaptation. The next candidate needs an external state measurement/reset or a different target.
@@ -334,6 +334,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v6 scale attack | Proved the declared BPO schedules are nearly scale-equivalent and froze eight Base same-chain parameter interventions without opening response outcomes. | NCS `ATTACKING`; exact scale oracle is mandatory; Base is development-only; I0 still blocked |
 | 2026-08-13 | v6 identifiability closure | Voided premature Exp150, then ran the disjoint-seed frozen Exp151 once; exact single-regime aliases survived, BPO excitation was rank 2, and full-rank generated separation required invariant latent dynamics. | `V6_NO_SURVIVOR_IDENTIFIABILITY`; NCS `RETIRED_IDENTIFIABILITY`; NMI remains retired; outcomes/compute locked |
 | 2026-08-13 | v7 gauge-invariant probe audit | Audited observable quotients, bounded-drift identified sets and randomized loop probes against realization/PSR, set-membership/active control and switchback/pump results; derived one factorization, one exact width formula and one fixed-transducer alias. | `V7_NO_SURVIVOR`; no experiment, outcome, remote worker or GPU use |
+| 2026-08-13 | v8 causal memory transplant audit | Audited explicit memory transplantation, causal memory perturbation, economic-agent carry-over, experience transfer and memory/agent contagion; reduced the proposed contrast to a standard factorial interaction. | `V8_NO_SURVIVOR_PRIOR_ART`; stopped at N0 before any experiment, model inference, outcome or remote/GPU use |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -424,3 +425,30 @@ randomized path cannot decide whether its history dependence came from parameter
 V7 therefore stopped before E0/P0. No generated experiment, market outcome, remote host or GPU was used. Re-entry
 requires an externally observed state, verified physical reset/erasure, or an exact-controller theorem strictly
 outside standard input--output, set-membership and path-randomization results.
+
+## 12. V8 causal memory transplantation
+
+| ID | Proposed object | Decisive audit | Final state |
+|---|---|---|---|
+| V8-C1 | randomized source-regime response carried by an explicit memory capsule into an independently reset artificial economy | direct architecture/content transplant protocol; causal external-memory perturbation; Shachi's EconAgent/OASIS memory carry-over; cross-temporal Memory Contagion; standard factorial interaction reduction | `RETIRED_PRIOR_ART` |
+
+For donor regime `Z in {-1,+1}` and capsule semantics `C in {-1,+1}`, the proposed contrast is
+
+\[
+\tau_{mem}=\mu_{+,+}-\mu_{-,+}-\mu_{+,-}+\mu_{-,-}=4\beta_{ZC}
+\]
+
+under a saturated effects-coded factorial model. Randomizing at the economy level identifies this compound
+treatment interaction, subject to donor-cluster-aware inference. It does not create a new causal estimand or prove
+that semantics are the unique carrier: scrambling also changes retrieval geometry and information content.
+
+The substantive phenomenon is also occupied. Shachi transfers economic-agent memories into a new task and carries
+state between stock and social environments; Memory Contagion transfers source-induced bias through a memory store
+to future agents; Contagion Networks measures preference propagation across agent networks. Applying stronger
+controls inside an exact economic mechanism could make a rigorous specialist replication, but no new signed
+cross-mechanism law or NMI method remains.
+
+V8 therefore stopped at N0. No transparent-agent fixture, generated trajectory, model/API call, market outcome,
+remote worker or GPU was used. The two V100 workers and RTX2060 remain uncontacted and unqueued. Re-entry requires
+a non-factorial estimand/guarantee, a theoretically signed law that survives sufficient-state oracles, or an
+external scientific measurement rather than additional prompts, models or memory arms.

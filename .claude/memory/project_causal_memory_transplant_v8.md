@@ -24,7 +24,22 @@ dynamic-pricing/agent-learning phase-boundary idea was rejected before candidacy
 learners under resource-centric pricing, monotone load-balancing games and safe nonstationary pricing already
 cover it directly.
 
-Current authorization is primary literature, protocol design and hand-derived transparent-agent fixtures on at
-most 30 local Mac CPU core-hours. No model inference, generated outcome, API call, human/market data, remote host,
-V100, RTX2060, GPU job or H20 assumption is authorized until N0/I0/S0 survive and a separate preregistration is
-committed.
+Closed on 2026-08-13 as `V8_NO_SURVIVOR_PRIOR_ART` before F0. The authoritative audit is
+`research/theory_exploration/causal_memory_transplant_audit_v8.md`.
+
+The method collision is direct: *Memory Transplants for LLM Agents* already separates architecture and content
+with a factorial transplant protocol; *Causal Intervention-Based Memory Selection* already treats external memory
+as a manipulable intervention surface. The phenomenon collision is also direct: Shachi transfers EconAgent/OASIS
+memory into a new task and carries state between stock and social environments; *Memory Contagion* propagates
+source-induced bias to future agents through memory; *Contagion Networks* studies cross-agent preference
+propagation.
+
+The frozen contrast is exactly the source-regime by capsule-semantics interaction (`tau_mem = 4 beta_ZC` under
+effects coding). Economy-level randomization, semantic shams, fresh processes and donor-aware clustering remain
+good design discipline, but are not a new causal estimand. An exact economic recipient would be a specialist
+application/replication unless a theoretically signed cross-mechanism law or external scientific measurement is
+added.
+
+No transparent-agent fixture, model inference, generated outcome, API call, human/market data, remote host, V100,
+RTX2060 or GPU job was used. Re-entry cannot be justified by additional prompts, models, markets or capsule arms;
+it needs a non-factorial theorem/estimand, a signed law with a hard falsifier, or external measurement.

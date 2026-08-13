@@ -208,3 +208,29 @@ use.
 - C3 is `RETIRED_IDENTIFIABILITY`: switchbacks identify path assignments, while a fixed history-state transducer
   can reproduce the complete finite randomized probe-tree law.
 - No experiment, outcome, remote worker or GPU was used; the final decision is `V7_NO_SURVIVOR`.
+
+## V8 causal-memory-transplant audit
+
+| Primary source | What is established | V8 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [Memory Transplants for LLM Agents](https://openreview.net/pdf?id=AIJsjIqfsp) | Independently varies memory architecture and content across code-to-math shift with a `2 x 2` factorial design, seven transplant conditions, frozen prompts, canonical export/import and preregistered controls. | Memory transplantation and architecture/content separation as a new protocol or method. | Direct transplant-method oracle. |
+| [Shachi](https://arxiv.org/abs/2509.21862) | Makes Config, Memory, Tools and LLM controllable; transfers OASIS/EconAgent memory into CognitiveBiases and carries agent state between StockAgent and OASIS. | Broad novelty of cross-environment history-dependent behavior via memory, including economic-agent settings. | Economic-domain comparator; its exploratory evidence does not establish a universal law. |
+| [Causal Intervention-Based Memory Selection](https://arxiv.org/abs/2605.17641) | Treats external memory as an editable intervention surface and compares no-memory, with-memory and perturbed-memory outputs. | `do(memory)` notation and perturbed capsules as a new causal primitive. | Memory-perturbation and robustness baseline. |
+| [ExpeTrans](https://aclanthology.org/2025.acl-long.520/) and [Echo](https://arxiv.org/abs/2604.05533) | Transfer accumulated textual or structured experience from source tasks to new target tasks. | General source-to-target experience reuse through explicit memory. | Cross-task transfer baselines. |
+| [Memory Contagion](https://arxiv.org/abs/2606.23195) | Constructs clean and source-biased memory stores, exposes future agents to them, and measures cross-temporal behavioral propagation with controlled memory/retrieval manipulations. | Narrowed “source-induced behavior moves through memory into a fresh agent” phenomenon. | Bias-specific direct comparator and model-specificity warning. |
+| [Contagion Networks](https://arxiv.org/abs/2606.20493) | Defines cross-agent preference propagation coefficients and studies topology-dependent suppression/cascade regimes. | Behavioral-contagion terminology or a propagation matrix as novelty. | Multi-agent network-propagation baseline; requires independent replication. |
+| [G-Memory](https://proceedings.neurips.cc/paper_files/paper/2025/hash/136a45cd9b841bf785625709a19c6508-Abstract-Conference.html) and [Rememberer](https://proceedings.neurips.cc/paper_files/paper/2023/hash/f6b22ac37beb5da61efd4882082c9ecd-Abstract-Conference.html) | Cross-trial multi-agent memory and reuse of episode experience across goals are established agent architectures. | Persistent experience changing later behavior as a new capability. | Architecture/performance oracles. |
+| [Pricing for competitive online learners](https://arxiv.org/abs/1910.09314), [online load balancing](https://proceedings.mlr.press/v139/bistritz21a.html) and [safe nonstationary pricing](https://proceedings.mlr.press/v242/turan24a.html) | Couple online-learning/evolving users to adaptive resource prices and prove constraint, convergence, safety or regret properties. | The rejected dynamic-price-controller gain by agent-learning-rate phase-boundary idea. | Control baselines only. |
+
+### V8 synthesis
+
+- The proposed memory method is `RETIRED_PRIOR_ART`: transplantation, factorial architecture/content separation and
+  causal external-memory perturbation are direct prior art.
+- The proposed phenomenon is `RETIRED_PRIOR_ART`: economic-agent memory carry-over, cross-temporal memory contagion
+  and cross-agent preference propagation already cover the broad and narrowed descriptions.
+- Algebraically, the frozen `tau_mem` is four times the source-regime by capsule-semantics interaction coefficient
+  in a saturated effects-coded factorial model. Its cluster-randomized implementation is rigorous but standard.
+- A stronger exact-economy replication remains a possible specialist project, not an NMI/NCS survivor without a
+  new signed cross-mechanism law or external scientific measurement.
+- The stop rule fired at N0. No experiment, generated outcome, model/API call, remote worker or GPU was used; final
+  decision `V8_NO_SURVIVOR_PRIOR_ART`.
