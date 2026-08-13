@@ -1,13 +1,13 @@
-# Candidate ledger — v1 through v10
+# Candidate ledger — v1 through v11
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; prediction-market coherence dynamics is
-`RETIRED_IDENTIFIABILITY` before any market catalog, live feed or inconsistency outcome
+**Current outcome:** `V11_CONJECTURE_ONLY`; multi-density ambiguity-current novelty is `RETIRED_PRIOR_ART`, while
+the closed-manifold density-ratio immersion obstruction remains `CONJECTURE` without NMI/NCS admission
 
-**Scientific meaning:** a logical-coherence residual is observable, but its proposed topology spectrum depends on
-the chosen constraint/operation basis. Full projection is one-step, local projection is Kaczmarz, and a certified
-nontrivial cross-contract graph is absent. The next candidate needs an intrinsic object and executable information
-source, not a coordinate-dependent spectrum over semantically inferred relationships.
+**Scientific meaning:** multiple stationary densities constrain a common drift only through their induced
+log-density-ratio covectors, not intervention magnitude. Existing inverse-SDE, Fokker--Planck residual and KDS/
+Stein work closes the ordinary estimator route. A density-ratio map cannot be an immersion from a closed
+`d`-manifold into `R^d`, but this blocks uniformly stable pointwise inversion rather than global identification.
 
 ## 1. Shared object and identification target
 
@@ -339,6 +339,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v8 causal memory transplant audit | Audited explicit memory transplantation, causal memory perturbation, economic-agent carry-over, experience transfer and memory/agent contagion; reduced the proposed contrast to a standard factorial interaction. | `V8_NO_SURVIVOR_PRIOR_ART`; stopped at N0 before any experiment, model inference, outcome or remote/GPU use |
 | 2026-08-13 | v9 age-structured liquidity audit | Audited prospective survival-weighted depth against path-dependent queue survival, fleeting/static books, queue-uncertainty overshoot, lifecycle filters, competing hazards and post-shock depth/flow resilience. | `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; stopped before any target aggregate, hazard fit, outcome or remote/GPU use |
 | 2026-08-13 | v10 prediction-market coherence audit | Reduced full coherence correction to one-step projection and local corrections to Kaczmarz; constructed an equivalent-constraint spectrum counterexample; audited logical-arbitrage dynamics and official platform metadata. | `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; stopped before catalog, feed, outcome, collector or remote/GPU use |
+| 2026-08-13 | v11 multi-stationary drift tomography | Froze and ran Exp152 once; proved the ambiguity-current criterion and exact-coframe obstruction; audited DyNoSeD, KDS, interventional SDE identification, ergodic inversion, Jacobi multipliers and Nambu currents. | `V11_CONJECTURE_ONLY`; no admitted NMI/NCS candidate, Exp153 and all remote/GPU work locked |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -515,3 +516,29 @@ V10 therefore stopped before a plan or feasibility run. No catalog record, API c
 trade, outcome, collector, remote host or GPU was opened. Re-entry requires an operation-basis-invariant theorem,
 a platform-certified rank-at-least-two logical system, a signed liquidity-controlled prediction and untouched
 independent replication frozen before any inconsistency value is observed.
+
+## 15. V11 multi-stationary drift tomography
+
+| ID | Proposed object | Decisive audit | Current state |
+|---|---|---|---|
+| V11-C1 | recover a common non-gradient drift from stationary densities under known additive interventions | strong form is direct Fokker--Planck subtraction; weak/local/global estimators are occupied by DyNoSeD, KDS and Stein/Galerkin systems; the exact ambiguity-current intersection composes Liu--Liu, Jacobi multiplier and Nambu facts | `RETIRED_PRIOR_ART` |
+| V11-C2 | topology-dependent minimum number of stationary environments for stable nonparametric drift tomography | score differences are `dR` for the density-ratio map; a closed `d`-manifold cannot immerse into `R^d`, so uniform pointwise recovery needs at least `d+1` ratios; an exact circle example remains globally identifiable despite rank defects | `CONJECTURE`; no venue admission |
+
+For `delta b=b_tilde-b`, `j=rho_0 delta b` and `r_m=rho_m/rho_0`, two common drifts preserve every stationary
+density exactly when
+
+\[
+\nabla\!\cdot j=0,
+\qquad
+j\!\cdot\!\nabla r_m=0\quad\text{for every }m,
+\]
+
+subject to boundary, admissibility and ergodicity conditions. This exact characterization is retained as a
+diagnostic, not novelty. Experiment 152 supplied exact full-rank recovery and rank, invisible-intervention,
+unequal-diffusion and coordinate-change obstructions; raw SHA-256 is
+`ee08eb70ed8551c8b7ff8cd8e98d9e93cda1a50ce1d1419be2210f0718a5862a`.
+
+V11-C2 can advance only after an expert novelty/value audit and a stronger global or minimax consequence, followed
+by a feasible drift-blind perturbation design and a method distinct from DyNoSeD/KDS. Experiment 153 is locked.
+No generated sample, real outcome, remote worker or GPU was opened; both V100 workers and the RTX2060 remain
+uncontacted and unqueued.

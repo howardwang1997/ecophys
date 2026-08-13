@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
-iteration: prediction-market-coherence-v10
-decision: V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART
+iteration: multi-stationary-drift-tomography-v11
+decision: V11_CONJECTURE_ONLY
 
 nodes:
   - id: src.controlled_world_models
@@ -2506,6 +2506,186 @@ nodes:
     claim: V10 has no NMI or NCS survivor because the proposed recovery spectrum is representation-dependent reduces to known projection dynamics lacks a certified nontrivial graph and targets an occupied empirical phenomenon.
     artifact: research/theory_exploration/prediction_market_coherence_audit_v10.md
 
+  - id: src.v11_ergodic_inversion
+    type: source
+    title: Inversions of stochastic processes from ergodic measures of nonlinear SDEs
+    track: both
+    claim: Fixed-diffusion drift ambiguity from one invariant density is exactly a density-weighted divergence-free current in dimension at least two.
+    url: https://arxiv.org/abs/2512.01307
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v11_dynosed
+    type: source
+    title: Identifying Stochastic Dynamics from Non-Sequential Data
+    track: nmi
+    claim: Local score Fokker Planck residuals and global Stein discrepancy identify affine drift parameters under a rank condition and admit Gram sensitivity analysis.
+    url: https://arxiv.org/abs/2502.17690
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v11_stationary_diffusions
+    type: source
+    title: Causal Modeling with Stationary Diffusions
+    track: nmi
+    claim: Kernel deviation from stationarity learns nonlinear stationary diffusions across interventions from generator RKHS identities.
+    url: https://proceedings.mlr.press/v238/lorch24a.html
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v11_interventional_sde
+    type: source
+    title: Towards Identifiability of Interventional Stochastic Differential Equations
+    track: nmi
+    claim: Stationary distributions under known shift interventions yield tight linear intervention counts and nonlinear small-noise recovery bounds in structured SDE families.
+    url: https://arxiv.org/abs/2505.15987
+    primary: true
+    evidence_level: preprint
+  - id: src.v11_lcd
+    type: source
+    title: Latent Causal Diffusions for Single-Cell Perturbation Modeling
+    track: both
+    claim: Latent stationary densities and shared perturbation-conditioned drifts support unseen perturbation prediction and identified linearized effects under assumptions.
+    url: https://arxiv.org/abs/2601.15341
+    primary: true
+    evidence_level: preprint
+  - id: src.v11_inverse_fp_inputs
+    type: source
+    title: Solving the inverse Frobenius Perron problem using stationary densities with input perturbations
+    track: both
+    claim: Linearly independent input distributions and their stationary densities identify a one-dimensional discrete dynamical map.
+    url: https://eprints.whiterose.ac.uk/id/eprint/161682/
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v11_jacobi_multiplier
+    type: source
+    title: Jacobi Last Multiplier and Lie Symmetries
+    track: both
+    claim: A Jacobi multiplier solves a weighted divergence equation and the ratio of two multipliers is a first integral of the flow.
+    url: https://doi.org/10.2991/jnmp.2005.12.2.9
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v11_nambu
+    type: source
+    title: Vector Hamiltonians in Nambu mechanics
+    track: both
+    claim: Divergence-free phase flows admit generalized Nambu representations through integral invariants.
+    url: https://arxiv.org/abs/1802.01037
+    primary: true
+    evidence_level: peer_reviewed
+
+  - id: kr.v11_fp_subtraction
+    type: known_result
+    title: Multi-stationary Fokker Planck subtraction
+    track: both
+    claim: Subtracting stationary equations cancels the unknown drift divergence and gives pointwise linear equations with log-density-ratio covectors.
+  - id: kr.v11_ambiguity_current
+    type: known_result
+    title: Multi-density ambiguity-current intersection
+    track: both
+    claim: Common-drift ambiguity is exactly a baseline-weighted divergence-free current tangent to every stationary density-ratio level set subject to admissibility.
+  - id: kr.v11_method_coverage
+    type: known_result
+    title: Snapshot Fokker Planck and stationary generator method coverage
+    track: nmi
+    claim: DyNoSeD and KDS already cover local score residual global Stein or RKHS fitting affine rank identification and ordinary sensitivity analysis.
+  - id: kr.v11_intrinsic_frame
+    type: known_result
+    title: Diffusion-metric density-ratio frame
+    track: both
+    claim: A diffusion-co-metric frame operator has coordinate-invariant eigenvalues while raw Euclidean singular values of score covectors are chart dependent.
+
+  - id: cand.v11.ambiguity_tomography
+    type: candidate
+    title: Nonparametric common-drift recovery from multiple stationary densities
+    track: both
+    claim: Known additive interventions and their stationary densities might identify a full non-gradient common drift through score-difference tomography.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Selected as a full-noise nonparametric inverse problem and frozen before generated samples or remote computation.
+        evidence: [papers/proposal/plan_multi_stationary_drift_tomography_nmi_ncs_v11.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: FORMALIZING
+        reason: Preregistered and implemented six exact identity and obstruction fixtures without a positive novelty gate.
+        evidence: [experiments/152_multi_stationary_drift_tomography/PREREGISTRATION.md, experiments/152_multi_stationary_drift_tomography/FREEZE.yaml]
+      - date: "2026-08-13"
+        from: FORMALIZING
+        to: ATTACKING
+        reason: The sole formal run confirmed exact recovery and exact rank intervention diffusion and coordinate obstructions.
+        evidence: [ce.v11.exact_obstruction_suite, experiments/152_multi_stationary_drift_tomography/RESULTS.md]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: The pointwise formula is elementary subtraction while DyNoSeD KDS ergodic inversion Jacobi multipliers and Nambu currents occupy the estimator and ambiguity ingredients.
+        evidence: [kr.v11_method_coverage, kr.v11_ambiguity_current, research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md]
+  - id: cand.v11.density_ratio_immersion
+    type: candidate
+    title: Density-ratio immersion obstruction for stable pointwise tomography
+    track: both
+    claim: The Euclidean immersion dimension of a closed state manifold lower-bounds the number of nonbaseline densities that can uniformly condition a pointwise strong inverse.
+    status: CONJECTURE
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Coordinate rescaling and torus aliases motivated a search for an intrinsic excitation object after Experiment 152.
+        evidence: [ce.v11.exact_obstruction_suite, kr.v11_intrinsic_frame]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: FORMALIZING
+        reason: Identified score differences with the differential of the density-ratio map and proved the closed-manifold compactness obstruction.
+        evidence: [research/theory_exploration/formal_cards_v11.md]
+      - date: "2026-08-13"
+        from: FORMALIZING
+        to: ATTACKING
+        reason: Audited interventional SDE snapshot identification and differential-geometric neighbors and constructed a pointwise-versus-global circle counterexample.
+        evidence: [src.v11_interventional_sde, src.v11_dynosed, ce.v11.circle_pointwise_global_separation]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: CONJECTURE
+        reason: The exact statement survived keyword and equation search but remains elementary and lacks a global or minimax consequence feasible design method and human novelty audit.
+        evidence: [po.v11.global_topology_and_design, research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md]
+  - id: po.v11.non_equivalent_estimator
+    type: proof_obligation
+    title: Non-equivalent finite-sample stationary-drift estimator
+    track: nmi
+    claim: A survivor needs a finite-sample or minimax guarantee and algorithm not reducible to DyNoSeD KDS Stein Galerkin or inverse Fokker Planck under the same data.
+  - id: po.v11.global_topology_and_design
+    type: proof_obligation
+    title: Global topological consequence and feasible perturbation design
+    track: both
+    claim: The immersion obstruction must yield a sharp global or minimax result and a drift-blind feasible intervention design before human novelty and venue review.
+  - id: ce.v11.exact_obstruction_suite
+    type: counterexample
+    title: Experiment 152 exact recovery and obstruction suite
+    track: both
+    claim: Full-rank OU recovery coexists with a torus drift alias stationary-invisible rotation unequal-diffusion bias and chart-dependent raw conditioning.
+  - id: ce.v11.circle_pointwise_global_separation
+    type: counterexample
+    title: Circle global uniqueness with pointwise rank defects
+    track: both
+    claim: One nonconstant density ratio on the circle has mandatory score zeros yet eliminates every constant divergence-free ambiguity current and identifies the common drift globally.
+  - id: bench.v11.fp_kds_dynosed
+    type: benchmark
+    title: Inverse Fokker Planck KDS and DyNoSeD oracle
+    track: both
+    claim: Any future method must beat local score residual global Stein or KDS basis inversion trajectory-rich drift estimation and single-density ambiguity controls.
+  - id: data.v11.no_calibrated_stationary_interventions
+    type: dataset
+    title: No admitted calibrated real stationary-intervention data
+    track: ncs
+    claim: Current EcoMD and market data do not provide quantitative additive drift fields verified stationary ensembles and an untouched independent intervention replication.
+  - id: compute.v11_locked_after_exp152
+    type: compute_gate
+    title: V11 post-Experiment-152 compute lock
+    track: both
+    claim: Experiment 153 generated samples real outcomes remote CPU V100 RTX2060 and all GPUs remain locked after the non-positive equation audit.
+  - id: decision.iteration_v11_closure
+    type: decision
+    title: Multi-stationary drift tomography v11 closure
+    track: both
+    claim: V11 closes as CONJECTURE_ONLY because the estimator and ambiguity headlines are occupied while the narrow pointwise immersion obstruction lacks a global statistical or scientific consequence.
+    artifact: research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -2912,3 +3092,32 @@ edges:
   - {source: decision.iteration_v10_closure, target: compute.v10_literature_only, type: supports, claim: The mathematical and prior-art stop rules close V10 before data access computation or fitting.}
   - {source: decision.iteration_v10_closure, target: compute.nmi_post_n1, type: forbids, claim: Projection reduction and non-intrinsic spectra prevent NMI scale-up.}
   - {source: decision.iteration_v10_closure, target: compute.ncs_post_c1, type: forbids, claim: An occupied phenomenon and missing certified graph prevent NCS scale-up.}
+  - {source: decision.iteration_v10_closure, target: cand.v11.ambiguity_tomography, type: branches_to, claim: The search moved from a non-intrinsic market statistic to an exact general inverse-diffusion problem without reopening V10 outcomes.}
+  - {source: src.v11_ergodic_inversion, target: kr.v11_ambiguity_current, type: covers, claim: The single-density weighted divergence-free ambiguity is the baseline intersection factor.}
+  - {source: src.v11_jacobi_multiplier, target: kr.v11_ambiguity_current, type: covers, claim: Density ratios of weighted invariant multipliers are classical first integrals of the ambiguity flow.}
+  - {source: src.v11_nambu, target: kr.v11_ambiguity_current, type: covers, claim: Integral-invariant Nambu currents provide explicit tangent divergence-free ambiguities in rank-deficient cases.}
+  - {source: src.v11_dynosed, target: kr.v11_method_coverage, type: covers, claim: Local score residual global Stein rank identification and sensitivity are jointly occupied.}
+  - {source: src.v11_stationary_diffusions, target: kr.v11_method_coverage, type: covers, claim: Cross-intervention RKHS generator stationarity and unseen-intervention learning are established KDS components.}
+  - {source: src.v11_interventional_sde, target: kr.v11_method_coverage, type: covers, claim: Broad stationary-distribution identification under known interventions and intervention-count bounds are direct current work.}
+  - {source: src.v11_lcd, target: kr.v11_method_coverage, type: supports, claim: A real high-dimensional perturbational application already learns shared stationary diffusion dynamics and linearized effects.}
+  - {source: src.v11_inverse_fp_inputs, target: kr.v11_method_coverage, type: supports, claim: Stationary density inversion under independent input perturbations predates V11 outside continuous SDEs.}
+  - {source: kr.v11_fp_subtraction, target: cand.v11.ambiguity_tomography, type: covers, claim: The population strong formula is an elementary stationary-equation subtraction.}
+  - {source: kr.v11_ambiguity_current, target: cand.v11.ambiguity_tomography, type: covers, claim: The exact multi-density ambiguity is an intersection of occupied weighted-current and first-integral structures.}
+  - {source: cand.v11.ambiguity_tomography, target: po.v11.non_equivalent_estimator, type: requires, claim: NMI admission requires a statistically non-equivalent estimator and guarantee.}
+  - {source: cand.v11.ambiguity_tomography, target: ce.v11.exact_obstruction_suite, type: falsified_by, claim: Exact fixtures falsify intervention-magnitude common-diffusion and coordinate-free raw-conditioning claims.}
+  - {source: cand.v11.ambiguity_tomography, target: bench.v11.fp_kds_dynosed, type: distinguished_by, claim: Every future estimator must beat the nearest local global weak and trajectory-rich oracles.}
+  - {source: cand.v11.ambiguity_tomography, target: kr.v11_method_coverage, type: retired_by, claim: DyNoSeD KDS and established ambiguity geometry remove the current method and theorem novelty.}
+  - {source: decision.iteration_v10_closure, target: cand.v11.density_ratio_immersion, type: branches_to, claim: The next exact search retained topology only after defining a coordinate-invariant diffusion-metric object.}
+  - {source: kr.v11_intrinsic_frame, target: cand.v11.density_ratio_immersion, type: supports, claim: The diffusion-metric frame separates intrinsic pointwise excitation from chart-dependent raw singular values.}
+  - {source: cand.v11.density_ratio_immersion, target: po.v11.global_topology_and_design, type: requires, claim: A paper candidate needs a global or minimax consequence and a feasible drift-blind intervention design.}
+  - {source: cand.v11.density_ratio_immersion, target: ce.v11.circle_pointwise_global_separation, type: falsified_by, claim: The exact circle witness falsifies any promotion from a pointwise rank obstruction to a universal global intervention-count lower bound.}
+  - {source: cand.v11.density_ratio_immersion, target: bench.v11.fp_kds_dynosed, type: distinguished_by, claim: A viable topology method must improve on existing snapshot estimators rather than merely rename their conditioning matrix.}
+  - {source: cand.v11.density_ratio_immersion, target: decision.iteration_v11_closure, type: branches_to, claim: The exact but narrow pointwise obstruction remains conjectural at the research-candidate level and closes without scale-up.}
+  - {source: ce.v11.exact_obstruction_suite, target: decision.iteration_v11_closure, type: supports, claim: Experiment 152 validates the algebra and blocks broad positive claims without supplying novelty evidence.}
+  - {source: ce.v11.circle_pointwise_global_separation, target: decision.iteration_v11_closure, type: supports, claim: Pointwise compactness cannot support a broad global environment-count theorem.}
+  - {source: kr.v11_method_coverage, target: decision.iteration_v11_closure, type: supports, claim: Existing methods close the ordinary NMI estimator route.}
+  - {source: data.v11.no_calibrated_stationary_interventions, target: decision.iteration_v11_closure, type: supports, claim: Missing calibrated real interventions and independent replication close the NCS route.}
+  - {source: decision.iteration_v11_closure, target: compute.v11_locked_after_exp152, type: supports, claim: The conjecture-only outcome locks Experiment 153 and all remote computation.}
+  - {source: decision.iteration_v11_closure, target: data.v11.no_calibrated_stationary_interventions, type: forbids, claim: No real-system outcome is opened without quantitative intervention and stationarity contracts.}
+  - {source: decision.iteration_v11_closure, target: compute.nmi_post_n1, type: forbids, claim: No non-equivalent method or human novelty pass exists for NMI scale-up.}
+  - {source: decision.iteration_v11_closure, target: compute.ncs_post_c1, type: forbids, claim: No calibrated replicated scientific mechanism exists for NCS scale-up.}

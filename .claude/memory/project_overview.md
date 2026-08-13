@@ -1,6 +1,6 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. Plan v4 is authoritative for the conditional NCS route; its old G0 FAIL remains binding. The theorem-first process guard is complete after exp142 FAIL and exp143 repair PASS, but no real candidate exists. Plan v5/exp141 is archived context. Compute is non-H20 and data expansion remains gated.
+description: EcoPhys/EcoMD research overview. Plan v4 remains archival NCS context after G0 failure; the active theory search is v11 CONJECTURE_ONLY with no admitted NMI/NCS candidate. Plan v5/exp141 is archived context. Compute is non-H20 and data expansion remains gated.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
@@ -22,13 +22,13 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > `NCS_C0_FAIL_IDENTIFICATION`: exceedance rejects the model class, not identifies adaptation. Registry v2 has two
 > development-only, eight rejected and zero sealed cases, so no data/compute gate opens.
 
-> **Current theory-search result (2026-08-13, v10 closed).** Prediction-market logical-coherence recovery has
-> `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`. Full correction is coherent projection and local row correction is
-> Kaczmarz; equivalent row bases of the same coherent set have unequal spectra, so the proposed topology-only rate
-> is not intrinsic. Direct work already measures logical misalignment and executable arbitrage dynamics. Free
-> platform metadata certify one simplex equality per complete event, not a nontrivial cross-event payoff graph.
-> No feed/outcome/collector or remote/GPU work was opened. The unchanged NMI/NCS search must move to a different
-> primitive, not another normalization or semantic graph.
+> **Current theory-search result (2026-08-13, v11 closed).** Multi-stationary drift tomography has
+> `V11_CONJECTURE_ONLY`. Exp152 confirmed the exact Fokker--Planck reconstruction identity and rank,
+> stationary-invisible-intervention, unequal-diffusion and coordinate obstructions. DyNoSeD/KDS and established
+> ambiguity-current geometry close the ordinary estimator/theorem route. A closed-manifold density-ratio immersion
+> obstruction survives as a narrow conjecture, but an exact circle witness shows it is not a global environment-
+> count lower bound. Experiment 153, outcomes and all remote/GPU work remain locked. The unchanged NMI/NCS search
+> may adjust topic selection while this conjecture awaits human novelty/value and stronger global/minimax audits.
 
 > **Historical Plan v4 zero-cost preflight (closed at G0).** The broad estimator novelty claim was
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete

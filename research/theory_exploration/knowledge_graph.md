@@ -1,9 +1,9 @@
-# Theory-exploration topology v10
+# Theory-exploration topology v11
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; prediction-market logical-coherence recovery is
-`RETIRED_IDENTIFIABILITY`; outcomes/scale-up locked
+**Current decision:** `V11_CONJECTURE_ONLY`; stationary-drift estimator/ambiguity novelty is
+`RETIRED_PRIOR_ART`; the density-ratio immersion obstruction is `CONJECTURE`; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate, v6 exact-
@@ -14,6 +14,9 @@ contagion coverage plus the standard factorial-interaction reduction. V9 adds or
 resilience coverage, the cancellation-versus-execution sign counterexample and the independent-data boundary. V10
 adds coherent-price projection, Kaczmarz and executable-arbitrage coverage; its equivalent-basis counterexample
 shows that the proposed local-correction spectrum is not intrinsic to the logical payoff set.
+V11 adds inverse-SDE, Fokker--Planck residual, KDS, Jacobi-multiplier and Nambu coverage; its exact circle witness
+separates pointwise rank from global uniqueness, while a closed-manifold immersion obstruction survives only as a
+narrow conjectural research lead.
 
 ```mermaid
 flowchart TB
@@ -218,6 +221,23 @@ flowchart TB
     CLOSE9 --> V10
     V10 --> CLOSE10["V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART"]
     CLOSE10 --> LOCK10["feeds / experiments / workers / GPUs locked"]
+
+    subgraph V11["v11: multi-stationary drift tomography"]
+        FP11["stationary FP subtraction"]
+        CURR11["weighted ambiguity-current intersection"]
+        METHOD11["DyNoSeD + KDS cover estimator"]
+        IMM11["density-ratio immersion obstruction"]
+        CIRCLE11["circle: global unique despite rank defects"]
+        EXP152["Exp152: identity + exact obstructions"]
+        FP11 -->|elementary| CURR11
+        METHOD11 -->|retires method| CURR11
+        EXP152 -->|constrains| IMM11
+        CIRCLE11 -->|blocks global count claim| IMM11
+    end
+
+    CLOSE10 --> V11
+    V11 --> CLOSE11["V11_CONJECTURE_ONLY"]
+    CLOSE11 --> LOCK11["Exp153 / outcomes / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -320,6 +340,21 @@ K'=\begin{bmatrix}3/4&1/4\\1/4&1/4\end{bmatrix}
 has eigenvalues `(1+1/sqrt(2))/2` and `(1-1/sqrt(2))/2`. Any empirical rate therefore needs the actual atomic
 arbitrage operations and their intensities; market logic alone does not identify it.
 
+For V11, let `delta b=b_tilde-b`, `j=rho_0 delta b` and `r_m=rho_m/rho_0`. Equality of all stationary densities
+under the same known interventions is equivalent at the stationary-PDE level to
+
+\[
+\nabla\!\cdot j=0,
+\qquad
+j\!\cdot\!\nabla r_m=0\quad\text{for every }m,
+\]
+
+subject to the declared boundary and admissibility conditions. The score-difference matrix is the differential of
+`R=(log r_1,...,log r_K)`. Hence uniform pointwise full rank is equivalent to `R` being an immersion. A nonempty
+closed `d`-manifold cannot immerse into `R^d`, so `d` ratios never give uniform pointwise inversion. This is not a
+global identification lower bound: on `S^1`, one nonconstant ratio has critical points but removes every constant
+divergence-free ambiguity current.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -354,11 +389,14 @@ arbitrage operations and their intensities; market logic alone does not identify
 | v8 causal memory transplant | `RETIRED_PRIOR_ART` | direct transplant/causal-perturbation protocols, Shachi economic carry-over, memory contagion and standard factorial reduction | specialist replication design only; no Nature-level method or phenomenon |
 | v9 age-structured liquidity | `RETIRED_NO_WITNESS` | path-dependent queue survival, fleeting/static depth, lifecycle filtration, competing hazards and depth/flow resilience occupy the construction; no fixed sign or independent multi-day witness | prospective reconstruction infrastructure for a separately scoped specialist study |
 | v10 prediction-market coherence spectrum | `RETIRED_IDENTIFIABILITY` | full correction is coherent projection; local correction is Kaczmarz; equivalent constraint bases have unequal spectra; certified platform graphs are rank-one per event; direct misalignment/arbitrage measurements exist | future platform replication only after a certified nontrivial payoff graph; no topology-only law |
+| v11 common-drift tomography/estimator | `RETIRED_PRIOR_ART` | strong FP subtraction is elementary; DyNoSeD/KDS cover local/global estimators, rank and sensitivity; ambiguity geometry composes Liu--Liu/Jacobi/Nambu | exact diagnostic and negative controls only |
+| v11 density-ratio immersion | `CONJECTURE` | closed-manifold exact-coframe obstruction is proof-complete, but circle witness blocks a global count claim and no statistical/design consequence exists | human novelty/value audit and global/minimax strengthening only |
+| Exp152 exact audit | `IDENTITY_AND_OBSTRUCTIONS_CONFIRMED` | exact full-rank recovery plus torus alias, invisible intervention, unequal diffusion and chart dependence; raw SHA `ee08eb70...` | immutable algebra/obstruction result only |
 
-The graph has 323 nodes after the V10 closure. NMI has no non-equivalent method; NCS has no new signed replicated
-scientific phenomenon or executable prospective data contract. No V10 catalog row, price, book, trade, outcome,
-collector, experiment, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside the
-queue.
+The graph has 345 nodes after the V11 closure. NMI has no admitted non-equivalent method; NCS has no calibrated
+replicated scientific mechanism or executable prospective data contract. Experiment 152 used analytic constants
+and Mac CPU only. Experiment 153, generated data, real outcomes, remote workers and GPUs remain locked, and both
+V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

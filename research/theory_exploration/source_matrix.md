@@ -285,3 +285,29 @@ use.
   matching and becomes a measurement model rather than exact mechanism knowledge.
 - Candidate `RETIRED_IDENTIFIABILITY`; decision `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`. No market value,
   collector, experiment, remote worker or GPU was opened.
+
+## V11 multi-stationary drift-tomography audit
+
+| Primary source | What is established | V11 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [Inversions of stochastic processes from ergodic measures](https://arxiv.org/abs/2512.01307) | Theorem 3.2 characterizes fixed-diffusion single-density drift ambiguity by a density-weighted divergence-free current and gives a rotational counterexample. | Single-density non-gradient ambiguity, weighted-current form and invisible rotations as new V11 results. | Baseline for intersecting ambiguity spaces across densities. |
+| [DyNoSeD](https://arxiv.org/abs/2502.17690) | Eqs. 7--27 and Theorem 1 give local score-based FP residual fitting, global Stein/KSD fitting, affine-parameter necessary-and-sufficient rank identification and Gram sensitivity. | V11's strong-to-weak estimator, basis least squares, generic conditioning analysis and nonsequential-dynamics claim. | Mandatory local/global method and sensitivity oracle. |
+| [Causal Modeling with Stationary Diffusions](https://proceedings.mlr.press/v238/lorch24a.html) | KDS expresses stationarity in an RKHS and learns nonlinear stationary diffusions across interventions, including unseen-intervention tests. | A cross-environment weak generator objective as a new learning method. | Mandatory stationary-diffusion baseline. |
+| [Towards Identifiability of Interventional SDEs](https://arxiv.org/abs/2505.15987) | Gives tight intervention counts for structured linear SDEs and nonlinear small-noise recovery bounds from stationary distributions under known shifts. | Broad multi-intervention stationary-SDE identifiability and intervention-count novelty. | Parametric/small-noise comparator; V11 topology statement must stay narrower. |
+| [Latent Causal Diffusions](https://arxiv.org/abs/2601.15341) | Fits latent stationary densities and shared perturbation-conditioned dynamics; CLIPR identifies linearized effects, while the score objective restricts drift to a gradient field. | Broad shared stationary-drift learning and perturbational single-cell application. | Non-gradient scope motivation only; DyNoSeD already supplies a general FP route. |
+| [Inverse Frobenius--Perron with input perturbations](https://eprints.whiterose.ac.uk/id/eprint/161682/) | Recovers a one-dimensional discrete map from stationary densities under linearly independent input distributions. | Input diversity and stationary-density inversion as new principles. | Older cross-domain inverse-dynamics comparator. |
+| [Jacobi Last Multiplier and Lie Symmetries](https://doi.org/10.2991/jnmp.2005.12.2.9) | The multiplier PDE is weighted divergence-free flow, and ratios of two multipliers are first integrals. | Density ratios as a wholly new invariant of ambiguity currents. | Classical geometric interpretation of the multi-density intersection. |
+| [Vector Hamiltonians in Nambu mechanics](https://arxiv.org/abs/1802.01037) | Divergence-free phase flows admit generalized Nambu representations with integral invariants. | Wedge-product tangent-current construction as new machinery. | Explicit rank-deficient ambiguity oracle. |
+
+### V11 synthesis
+
+- The frozen pointwise identity is exact but elementary. The weak/local/global estimator and ordinary sensitivity
+  route are `RETIRED_PRIOR_ART` because DyNoSeD and KDS already contain them.
+- The exact ambiguity-current intersection is retained for diagnostics but its ingredients are occupied; V11-C1
+  is `RETIRED_PRIOR_ART`.
+- The density-ratio map links uniform pointwise recovery to Euclidean immersion dimension. On a closed
+  `d`-manifold, `d` ratios cannot span everywhere, but an exact `S^1` witness shows global identification can still
+  hold. V11-C2 therefore remains `CONJECTURE`, not a global environment-count theorem.
+- Experiment 152 returned `IDENTITY_AND_OBSTRUCTIONS_CONFIRMED` with raw SHA
+  `ee08eb70...`; it did not admit a candidate or unlock compute.
+- Final decision `V11_CONJECTURE_ONLY`. No generated data, real outcome, remote worker or GPU was opened.

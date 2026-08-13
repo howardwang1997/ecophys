@@ -107,7 +107,7 @@ endpoint sample is not a stationary sample without an independently validated re
 |---|---|---|
 | [Zweig et al., *Towards Identifiability of Interventional Stochastic Differential Equations*](https://arxiv.org/abs/2505.15987) | Stationary samples under known shift interventions; tight linear identifiability counts and nonlinear small-noise recovery bounds. | Closes the broad interventional-stationary-SDE identifiability claim. V11 must differ at theorem and estimator level. |
 | [Lorch et al., *Causal Modeling with Stationary Diffusions*](https://proceedings.mlr.press/v238/lorch24a.html) | Learns nonlinear SDEs across interventions using an RKHS stationarity condition and kernel deviation from stationarity. | A weak generator loss or cross-environment stationarity objective is not new. |
-| [Wang et al., *Inversions of stochastic processes from their ergodic measures*](https://doi.org/10.1515/jiip-2025-0098) | Characterizes drift/diffusion inversion from invariant measures; proves high-dimensional drift non-identifiability without gradient structure and constructs diffusion counterexamples. | Single-environment ambiguity and its divergence-free component are baselines, not V11 discoveries. |
+| [Liu and Liu, *Inversions of stochastic processes from their ergodic measures*](https://doi.org/10.1515/jiip-2025-0098) | Characterizes drift/diffusion inversion from invariant measures; proves high-dimensional drift non-identifiability without gradient structure and constructs diffusion counterexamples. | Single-environment ambiguity and its divergence-free component are baselines, not V11 discoveries. |
 | [Nie et al., *Solving the inverse Frobenius--Perron problem using stationary densities with input perturbations*](https://doi.org/10.1016/j.cnsns.2020.105302) | Recovers a one-dimensional discrete map from stationary densities under linearly independent input distributions. | Input-diversity rank as an inverse-dynamics principle is occupied outside SDEs. |
 | [Chen et al., *Learning unknown dynamics via inverse Fokker--Planck*](https://arxiv.org/abs/2008.10653) | Uses physics-informed inverse Fokker--Planck learning to infer drift and diffusion from distributional snapshots. | Numerical PDE inversion is a mandatory baseline and cannot be renamed tomography. |
 
@@ -221,3 +221,28 @@ tests first, not to generate more data.
 5. Close as `V11_NO_SURVIVOR_PRIOR_ART`, `V11_NO_SURVIVOR_ILL_POSED`, `V11_CONJECTURE_ONLY` or
    `V11_READY_FOR_HUMAN_AUDIT`. Automation may not issue a novelty pass.
 
+## 11. Completed outcome — 2026-08-13
+
+**Decision:** `V11_CONJECTURE_ONLY`.
+
+Experiment 152 returned `IDENTITY_AND_OBSTRUCTIONS_CONFIRMED` from the sole frozen run, with raw SHA-256
+`ee08eb70ed8551c8b7ff8cd8e98d9e93cda1a50ce1d1419be2210f0718a5862a`. It verified exact full-rank
+nonreversible recovery and exact rank, intervention-invisibility, unequal-diffusion and coordinate-change
+obstructions. It did not issue a novelty, candidate-admission or compute-unlock pass.
+
+The post-result equation audit adds DyNoSeD as a decisive nearest method: it already combines local score-based
+Fokker--Planck residuals, global Stein/KSD fitting, affine-parameter rank identification and sensitivity analysis.
+The weak/Galerkin/regularized estimator route and the multi-density ambiguity-current headline are therefore
+`RETIRED_PRIOR_ART`.
+
+A narrower statement survives only as a research conjecture: score differences are the differential of the
+density-ratio map. On a closed `d`-manifold, `d` nonbaseline density ratios cannot form a global exact coframe, so
+uniformly conditioned pointwise recovery requires at least `d+1` nonbaseline densities (`d+2` total
+environments); the minimal abstract density-family count equals the Euclidean immersion dimension. The proof and
+limitations are in `research/theory_exploration/formal_cards_v11.md`. This does not imply global
+non-identifiability—the exact circle witness is globally unique with unavoidable rank defects—does not construct
+feasible drift-blind interventions and has not passed a human
+novelty/value audit.
+
+Experiment 153, real outcomes and all remote/GPU work remain locked. Detailed closure:
+`research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md`.

@@ -5,6 +5,18 @@ for a later project.
 
 ## Current theory state
 
+`multi-stationary-drift-tomography-audit-v11` started from integrated `main@0ad0d59c2`, froze its plan before
+Experiment 152 and closed `V11_CONJECTURE_ONLY` on 2026-08-13. The sole deterministic run confirmed exact
+full-rank nonreversible recovery plus rank-deficient, invisible-intervention, unequal-diffusion and coordinate-
+dependence obstructions (raw SHA `ee08eb70...`). The ordinary method route is direct DyNoSeD/KDS/Stein prior art;
+the ambiguity-current intersection composes Liu--Liu, Jacobi multiplier and Nambu results. A narrower
+closed-manifold density-ratio immersion obstruction remains `CONJECTURE`: it blocks uniformly stable pointwise
+inversion with only `d` ratios, but an exact circle witness disproves a global environment-count interpretation.
+Experiment 153, real outcomes and remote/GPU use remain locked. Plan, cards and closure:
+`papers/proposal/plan_multi_stationary_drift_tomography_nmi_ncs_v11.md`,
+`research/theory_exploration/formal_cards_v11.md` and
+`research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md`.
+
 `prediction-market-coherence-audit-v10` started from integrated `main@318ec5219` and closed
 `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART` on 2026-08-13 before a plan freeze or experiment. Full coherent
 correction is a one-step projection and normalized local row corrections are Kaczmarz. More decisively, an

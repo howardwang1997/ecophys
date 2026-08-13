@@ -286,3 +286,21 @@ recovery or future-risk statistic is computed.
 The final V10 decision is `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`. Re-entry requires an operation-basis-
 invariant object, a versioned platform-certified rank-at-least-two payoff system, a signed microstructure-controlled
 prediction and sealed independent replication before any outcome access.
+
+## V11 multi-stationary drift-tomography decision
+
+- **NMI:** `NO_ADMITTED_CANDIDATE`. The strong formula is elementary FP subtraction; the weak/local/global
+  estimator, rank condition and sensitivity route are covered by DyNoSeD, KDS and Stein/Galerkin methods. The
+  closed-manifold exact-coframe obstruction remains `CONJECTURE` and has no new statistical method or rate.
+- **NCS:** `NO_ADMITTED_CANDIDATE`. No quantitatively calibrated real perturbation fields, independently verified
+  stationary ensembles, substantive recovered non-gradient mechanism or frozen unseen-intervention replication
+  is available. EcoMD and market regime labels do not meet those semantics.
+- **Topology residual:** a closed `d`-manifold needs at least `d+1` nonbaseline density ratios for uniformly stable
+  pointwise inversion, but an exact circle witness is globally identifiable with only one nonbaseline density.
+  This is not a universal intervention-count lower bound.
+- **Data/compute:** Experiment 152 used analytic constants and `0.02385` s Mac CPU only. Experiment 153, generated
+  samples, real outcomes, paid data, remote CPU, both V100s, RTX2060 and all GPUs remain locked and unqueued.
+
+The final V11 decision is `V11_CONJECTURE_ONLY`. Re-entry requires a human novelty/value audit, a stronger global
+or minimax result, a drift-blind feasible perturbation design and an equation-level method distinction from
+DyNoSeD/KDS before any new experiment or worker contact.

@@ -38,6 +38,12 @@ the data/GPU locks are unchanged. See the [Plan v4 proposal](papers/proposal/pla
 [G0 decision](papers/proposal/ncs_g0_forward_audit_2026-08-10.md), [re-entry plan](papers/proposal/plan_v4_g0_reentry_v1.md),
 and [research lineage](docs/research_lineage.md).
 
+The latest theorem search is V11 multi-stationary drift tomography. Its exact audit confirmed the population
+identity and obstruction suite, but existing DyNoSeD/KDS and inverse-SDE results close the ordinary method claim.
+A narrow closed-manifold density-ratio immersion result remains `CONJECTURE_ONLY`; it has no NMI/NCS admission and
+does not unlock Experiment 153, real outcomes or remote/GPU work. See the
+[V11 closure](research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md).
+
 Plan v5 and experiment 141 are independently archived feasibility context. Exp141 passed generated-data
 mechanism, controlled-identifiability and cross-hardware gates, but its family-conditioned task is not
 real-market or method evidence and is not promoted into Plan v4.
