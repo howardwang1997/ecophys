@@ -332,6 +332,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v6 freeze | Changed the object to exact multi-resource fee controllers coupled to adaptive demand; made pre-change no-refit transfer the NCS target and a non-equivalent closed-loop method the conditional NMI target. | `SCOUT`; specifications/literature/catalog metadata only; no outcome or GPU authorization |
 | 2026-08-13 | v6 audit | Audited exact EIP arithmetic, BPO schedules, closed-loop/multi-resource/IV prior art and Xatu metadata; preregistered official-fixture replay. | NMI `NO_SURVIVOR`; NCS `FORMALIZING` but blocked on BPO3 plus independent replication; Exp149 only |
 | 2026-08-13 | v6 scale attack | Proved the declared BPO schedules are nearly scale-equivalent and froze eight Base same-chain parameter interventions without opening response outcomes. | NCS `ATTACKING`; exact scale oracle is mandatory; Base is development-only; I0 still blocked |
+| 2026-08-13 | v6 identifiability closure | Voided premature Exp150, then ran the disjoint-seed frozen Exp151 once; exact single-regime aliases survived, BPO excitation was rank 2, and full-rank generated separation required invariant latent dynamics. | `V6_NO_SURVIVOR_IDENTIFIABILITY`; NCS `RETIRED_IDENTIFIABILITY`; NMI remains retired; outcomes/compute locked |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -371,7 +372,7 @@ effect floor, opening real signs, adding ordinary years post hoc or increasing G
 
 | ID | Proposed object | Required discriminator | Current state |
 |---|---|---|---|
-| V6-NCS-1 | joint execution/blob resource response under an exact new fee-controller regime | beat an exact scale oracle on non-proportional parameter changes; estimate behavior before the change; predict the full response without refitting; replicate independently | `ATTACKING`; generated nontriviality test next, outcomes blocked |
+| V6-NCS-1 | joint execution/blob resource response under an exact new fee-controller regime | beat an exact scale oracle on non-proportional parameter changes; estimate behavior before the change; predict the full response without refitting; replicate independently | `RETIRED_IDENTIFIABILITY`; Exp151 exposes an unsupported cross-regime latent-invariance requirement and the future/independent cells are empty |
 | V6-NMI-1 | mechanism-constrained identification of adaptive cross-resource demand | distinct estimand, assumptions or guarantee beyond closed-loop system ID, IV and structural demand; validate outside blockchain | `RETIRED_PRIOR_ART`; NMI `NO_SURVIVOR` |
 
 The lead system is a computational resource market, not a cryptocurrency-price series. Exact protocol arithmetic
@@ -395,5 +396,13 @@ The scale attack makes BPO-only transfer insufficient. Prague/Osaka, BPO1 and BP
 `F/T` values differ relatively by at most `3.99384e-8`, and the exact standardized fee spread is at most
 `2.15e-5` over the declared integer grid. The Base deployment registry supplies gain-only, target-preserving and
 joint non-proportional topologies, but all eight interventions share one chain and administrator and several are
-bundled. They are blind historical development stress, not replication. Experiment 150 may now be preregistered
-on generated paths only; passing it would not unlock outcomes or fill the missing future/independent cells.
+bundled. They are blind historical development stress, not replication.
+
+Experiment 150 is permanently `VOID_PREMATURE_FORMAL_CELL_EXECUTION`. Its disjoint-seed, unchanged-gate repair
+Exp151 returned `IDENTIFIABILITY_WITNESS_CONFIRMED` with raw SHA256
+`6b81a0eddac2fc16697382128dff5621b75cb52d1bf8712e4a0f3193f431c649`. BPO's intervention stack had rank 2 and
+minimum singular value 0; the generated non-proportional stack had rank 4 and minimum singular value `0.012` and
+separated every frozen perturbation/seed. The separation requires invariant latent dynamics across regimes; free
+regime-specific dynamics restore the alias. No current market topology supplies a falsifiable invariance contract,
+future non-proportional event and independent replication together. V6 is therefore closed before outcomes; no
+remote worker or GPU is queued.

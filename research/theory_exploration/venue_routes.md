@@ -176,6 +176,8 @@ filled before their outcomes are viewed.
 
 ## V6 scale-attack route decision
 
+This is the historical scale-audit checkpoint and is superseded by the identifiability-closure decision below.
+
 - **NMI:** unchanged `NO_SURVIVOR`; controller normalization is an audit identity, not a learning theorem.
 - **NCS:** `ATTACKING`. BPO1/2 are almost exact scale transformations, so BPO transfer cannot be the headline.
   The method must beat an exact scale oracle on gain, target and saturation changes and fail safely under drift.
@@ -188,3 +190,24 @@ filled before their outcomes are viewed.
 
 A generated pass would show only that the proposed test can distinguish non-proportional controller response in
 known DGPs. It would not identify real behavioral adaptation or raise the route above conditional NCS status.
+
+## V6 identifiability-closure route decision
+
+- **Exp150:** permanently `VOID_PREMATURE_FORMAL_CELL_EXECUTION`; its exposed aggregate values are chronology
+  evidence only and cannot support a venue claim.
+- **Exp151:** `IDENTIFIABILITY_WITNESS_CONFIRMED` on its sole frozen run. BPO's intervention stack is rank 2 with
+  zero minimum singular value and maximum divergence `3.51301e-10`; the generated non-proportional stack is rank
+  4 with minimum singular value `0.012` and separates 128/128 seeds for every perturbation.
+- **NMI:** remains `NO_SURVIVOR`; the alias/rank algebra is an elementary negative control inside established
+  closed-loop identifiability, not a new machine-intelligence theorem.
+- **NCS:** `RETIRED_IDENTIFIABILITY`. Generated separation assumes invariant latent dynamics across regimes, while
+  regime-specific latent dynamics reconstruct the observational alias. BPO is nearly scale-equivalent, Base is
+  same-chain/confounded, BPO3 remains unset and no independent event is sealed.
+- **Other venues:** the exact oracle, scale audit and generated witness are valuable research infrastructure but
+  are not currently a complete specialist paper either. A methods/negative-results venue would still require a
+  broader cross-system theorem or empirical design rather than an Ethereum-only generated example.
+- **Compute/data:** all chain outcomes, remote CPU, both V100s, RTX2060 and GPUs remain locked and unqueued.
+
+The final V6 decision is `V6_NO_SURVIVOR_IDENTIFIABILITY`. Re-entry requires a new preregistration with a future
+non-proportional intervention, independent replication and a falsifiable invariance or partial-identification
+contract fixed before any outcome is read.

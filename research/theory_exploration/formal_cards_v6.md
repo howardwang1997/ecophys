@@ -91,9 +91,55 @@ non-proportional change.
 **Scope.** This follows directly from the published controller and is not new. Integer division, minimum upward
 increments and minimum-base-fee policies must still be evaluated by the exact oracle.
 
-## F5 — what would be irreducible
+## F5 — single-regime alias and intervention-rank boundary
 
-A viable new result must go beyond F1--F4 and established closed-loop identification. Examples of admissible proof
+For
+
+\[
+y_t=Aq_t+h_t,
+\quad q_{t+1}=q_t+K_0y_t,
+\quad h_{t+1}=\Phi h_t+\Gamma q_t+w_t,
+\]
+
+choose any nonzero `Delta` and set
+
+\[
+A'=A-\Delta,
+\quad h'_0=h_0+\Delta q_0,
+\quad \Phi'=\Phi+\Delta K_0,
+\quad \Gamma'=\Gamma-\Phi\Delta+\Delta(I+K_0A').
+\]
+
+Direct substitution gives `q'_t=q_t`, `h'_t=h_t+Delta q_t` and `y'_t=y_t` under `K_0`. After changing the
+controller to `K_r` while holding both latent laws fixed, the alias-relation defect is
+
+\[
+h'_{t+1}-(h_{t+1}+\Delta q_{t+1})=\Delta(K_0-K_r)y_t.
+\]
+
+The controller family therefore acts on `vec(Delta)` through
+
+\[
+S=\operatorname{stack}_r((K_r-K_0)^\top\otimes I_2).
+\]
+
+A rank-deficient `S` leaves a universal nonzero alias subspace. Full column rank removes that particular
+controller-invariant alias, although finite-path separation still requires excitation. If `Phi` and `Gamma` may
+change freely by regime, replacing `K_0` by each `K_r` in the transformed matrices restores the alias, so the
+positive conclusion requires a shared-dynamics or restricted-drift assumption.
+
+**Generated audit.** Experiment 151 found BPO stack rank 2/minimum singular value 0 and maximum observation
+divergence `3.51301e-10`. Its generated non-proportional stack had rank 4/minimum singular value `0.012`; all four
+perturbations separated in 128/128 seeds. Raw SHA256 is
+`6b81a0eddac2fc16697382128dff5621b75cb52d1bf8712e4a0f3193f431c649`.
+
+**Scope.** This is an elementary coordinate-alias construction and a negative-control boundary, not a new
+identifiability theorem. The generated full-rank result does not establish real cross-regime invariance or
+behavioral adaptation.
+
+## F6 — what would be irreducible
+
+A viable new result must go beyond F1--F5 and established closed-loop identification. Examples of admissible proof
 obligations, not claims, are:
 
 1. a partially identified cross-resource response set with a sharp bound that exploits integer controller
@@ -103,5 +149,7 @@ obligations, not claims, are:
 3. a falsifiable stochastic law for reserve-branch occupation and response that survives fixed latent-demand and
    protocol-only countermodels and transfers outside Ethereum.
 
-No such statement survived the present audit. Until one does, NMI is closed and these cards serve only as exact
-oracles for an NCS phenomenon study.
+No such statement survived the present audit. Experiment 151 additionally closes the current NCS design at
+identification: its positive separation assumes cross-regime latent-dynamics invariance, while the available BPO
+and Base topologies cannot establish that assumption prospectively or independently. These cards remain exact
+oracles and negative controls only.

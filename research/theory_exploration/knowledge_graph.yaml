@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
 iteration: algorithmic-fee-market-dynamics-v6
-decision: V6_SCALE_ATTACK_NMI_NO_SURVIVOR_NCS_ATTACKING_BLOCKED
+decision: V6_NO_SURVIVOR_IDENTIFIABILITY
 
 nodes:
   - id: src.controlled_world_models
@@ -1665,13 +1665,18 @@ nodes:
     title: Execution-controller target saturation and gain coordinates
     track: ncs
     claim: The continuous EIP-1559 relative update decomposes into target scale T equals L over E saturation E and gain denominator D.
+  - id: kr.v6_latent_alias_rank_boundary
+    type: known_result
+    title: Single-regime latent alias and intervention-rank boundary
+    track: both
+    claim: A response-matrix change can be absorbed by a latent-coordinate change under one controller; diverse controller gains remove the fixed alias only through the stacked gain-difference rank and under shared latent dynamics.
 
   - id: cand.v6.controller_transfer
     type: candidate
     title: Exact-controller cross-regime response transfer
     track: ncs
     claim: A behavioral response operator estimated before a fee-controller capacity change may predict the signed joint execution and blob resource response under the exact new controller without behavioral refitting.
-    status: ATTACKING
+    status: RETIRED_IDENTIFIABILITY
     history:
       - date: "2026-08-13"
         to: SCOUT
@@ -1687,6 +1692,11 @@ nodes:
         to: ATTACKING
         reason: The BPO sequence is nearly a pure scale family and the Base topology is same-chain development only so nontriviality and independent replication remain under active attack.
         evidence: [research/theory_exploration/fee_controller_scale_and_replication_audit_v6.md, kr.v6_bpo_scale_equivalence, data.v6_base_interventions]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_IDENTIFIABILITY
+        reason: Experiment 151 confirmed exact one-regime aliases and showed that non-proportional separation requires invariant latent dynamics; no current topology supplies that testable contract plus a prospective independent intervention.
+        evidence: [experiments/151_fee_controller_identifiability_witness/RESULTS.md, kr.v6_latent_alias_rank_boundary, ce.v6_regime_specific_alias]
   - id: cand.v6.closed_loop_method
     type: candidate
     title: Mechanism-constrained adaptive-demand identification
@@ -1733,6 +1743,11 @@ nodes:
     title: Multiple interventions without independent replication
     track: ncs
     claim: Repeated parameter operations on one SystemConfig share software governance demand history and administration so intervention count does not create an independent confirmation.
+  - id: ce.v6_regime_specific_alias
+    type: counterexample
+    title: Regime-specific latent dynamics restore the controller alias
+    track: both
+    claim: For every controller gain the latent transition and fee-to-latent maps can be transformed with the response matrix to reproduce the same observed path so intervention diversity does not identify behavior without cross-regime restrictions.
   - id: bench.v6.closed_loop_oracles
     type: benchmark
     title: Closed-loop identification and fixed-demand oracles
@@ -1807,6 +1822,30 @@ nodes:
     track: both
     claim: BPO-only transfer is rejected as a sufficient behavioral result and Base is restricted to same-chain development while generated nontriviality testing is the only next experiment.
     artifact: research/theory_exploration/fee_controller_scale_and_replication_audit_v6.md
+  - id: bench.exp150_identifiability_void
+    type: benchmark
+    title: Experiment 150 void identifiability witness
+    track: both
+    claim: Premature execution exposed every frozen seed loop before implementation and freeze so Experiment 150 is permanently void and supplies chronology evidence only.
+    artifact: experiments/150_fee_controller_identifiability_witness/PROTOCOL_DEVIATION_VOID.md
+  - id: bench.exp151_identifiability_witness
+    type: benchmark
+    title: Experiment 151 clean fee-controller identifiability witness
+    track: both
+    claim: The sole clean run confirmed exact aliases BPO rank deficiency and generated non-proportional separation under invariant latent dynamics with raw SHA256 6b81a0eddac2fc16697382128dff5621b75cb52d1bf8712e4a0f3193f431c649.
+    artifact: experiments/151_fee_controller_identifiability_witness/RESULTS.md
+  - id: decision.exp151_identifiability_confirmed
+    type: decision
+    title: Experiment 151 identifiability witness confirmed
+    track: both
+    claim: All frozen generated gates passed but the result is a negative identification boundary and does not establish real adaptation or unlock outcomes.
+    artifact: experiments/151_fee_controller_identifiability_witness/RESULTS.md
+  - id: decision.iteration_v6_identifiability_closure
+    type: decision
+    title: V6 identifiability closure
+    track: both
+    claim: V6 has no NMI or NCS survivor because real controller transfer lacks a testable latent-invariance contract prospective non-proportional event and independent replication.
+    artifact: research/theory_exploration/fee_controller_identifiability_closure_v6.md
 
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
@@ -2085,3 +2124,14 @@ edges:
   - {source: decision.iteration_v6_scale_attack, target: data.v6_independent_intervention_empty, type: supports, claim: The independent replication cell remains explicitly empty.}
   - {source: decision.iteration_v6_scale_attack, target: data.sealed_real_interventions, type: forbids, claim: Nontriviality and replication failures keep every response outcome sealed.}
   - {source: decision.iteration_v6_scale_attack, target: compute.ncs_post_c1, type: forbids, claim: Remote CPU and GPU scale-up remain locked before generated P0 and identification pass.}
+  - {source: bench.exp150_identifiability_void, target: bench.exp151_identifiability_witness, type: branches_to, claim: The permanent protocol void required a separately preregistered disjoint-seed repair without changing scientific gates.}
+  - {source: kr.v6_latent_alias_rank_boundary, target: bench.exp151_identifiability_witness, type: supports, claim: The exact alias construction and gain-difference rank map define the generated witness quantities.}
+  - {source: bench.exp151_identifiability_witness, target: decision.exp151_identifiability_confirmed, type: supports, claim: The sole frozen run passed every alias geometry count and resource gate.}
+  - {source: ce.v6_regime_specific_alias, target: decision.exp151_identifiability_confirmed, type: supports, claim: The binding assumption audit records that free regime-specific latent dynamics restore observational equivalence.}
+  - {source: decision.exp151_identifiability_confirmed, target: decision.iteration_v6_identifiability_closure, type: supports, claim: The generated pass confirms the identification boundary rather than admitting market outcomes.}
+  - {source: cand.v6.controller_transfer, target: ce.v6_regime_specific_alias, type: falsified_by, claim: The declared observables cannot distinguish behavioral response from a regime-specific latent reparameterization without additional restrictions.}
+  - {source: cand.v6.controller_transfer, target: decision.iteration_v6_identifiability_closure, type: retired_by, claim: Unsupported cross-regime invariance plus empty prospective and independent intervention cells retire the current NCS design.}
+  - {source: data.v6_bpo3_unset, target: decision.iteration_v6_identifiability_closure, type: supports, claim: The official BPO3 registry still lacks finalized activation and parameters.}
+  - {source: data.v6_independent_intervention_empty, target: decision.iteration_v6_identifiability_closure, type: supports, claim: No independently administered untouched intervention has been sealed.}
+  - {source: decision.iteration_v6_identifiability_closure, target: data.sealed_real_interventions, type: forbids, claim: The failed identification and replication gates keep every market response outcome sealed.}
+  - {source: decision.iteration_v6_identifiability_closure, target: compute.ncs_post_c1, type: forbids, claim: Remote and GPU scale-up cannot repair the missing information and remains locked.}

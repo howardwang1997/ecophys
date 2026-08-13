@@ -322,3 +322,30 @@ The revised work queue is:
    remote host or GPU merely while waiting.
 
 Even a generated P0 pass does not satisfy I0, unlock outcomes or restore NMI.
+
+## 15. Identifiability closure — 2026-08-13
+
+Experiment 150 was permanently voided after premature formal-seed execution. Its disclosed replacement,
+Experiment 151, retained the scientific matrices and gates with a disjoint seed root and was executed once from a
+clean, pushed and hash-frozen checkout. It returned `IDENTIFIABILITY_WITNESS_CONFIRMED`; raw SHA256 is
+`6b81a0eddac2fc16697382128dff5621b75cb52d1bf8712e4a0f3193f431c649`.
+
+The result confirms an exact observational alias under one controller regime. The BPO intervention stack has rank
+2 and minimum singular value 0, with maximum generated observation divergence only `3.51301e-10`. A deliberately
+non-proportional stack has rank 4 and minimum singular value `0.012`, separating all four frozen perturbations in
+128/128 seeds. This positive separation is conditional on keeping the latent dynamics invariant across regimes;
+if they may change by regime, the alias can be reconstructed for every new controller.
+
+That conditional is fatal to the current empirical design. No available pre-outcome observable establishes the
+required latent-dynamics invariance. BPO supplies almost no new controller direction; Base is historical,
+same-chain and partly confounded; BPO3 remains unset; and the independent-replication cell is empty. Accordingly:
+
+- V6-NCS-1 is `RETIRED_IDENTIFIABILITY`;
+- V6-NMI-1 remains `RETIRED_PRIOR_ART`;
+- final iteration decision is `V6_NO_SURVIVOR_IDENTIFIABILITY`;
+- all Ethereum/Base response outcomes, remote CPU, V100s, RTX2060 and GPU scale-up remain locked and unqueued.
+
+More generated paths or a larger estimator cannot repair this information deficit. The only reopen path is a new
+preregistered design with a future non-proportional intervention, independent administration/replication and a
+falsifiable invariance or partial-identification contract fixed before outcomes. Full reasoning is preserved in
+`research/theory_exploration/fee_controller_identifiability_closure_v6.md`.

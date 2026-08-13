@@ -1,6 +1,6 @@
 ---
 name: Algorithmic fee-market dynamics v6
-description: Frozen information-first scout of exact multi-resource fee controllers coupled to adaptive demand.
+description: Closed exact-controller and adaptive-demand scout with an identifiability failure before outcomes.
 type: project
 ---
 
@@ -57,5 +57,29 @@ exact-controller, novelty, free-data, causal-identification and metadata-scale g
   executed but the frozen record is absent. Some operations bundle DA scalar or sit near minimum-fee changes.
 - Base is same-chain historical development stress, never independent replication. Its frozen active task
   directory contains only `.gitkeep`. No future independent event is registered.
-- V6-NCS-1 is `ATTACKING`; Exp150 may be preregistered for generated nontriviality/identification tests on Mac CPU.
-  Outcomes, workers and GPUs remain locked. NMI remains `NO_SURVIVOR`.
+- Historical scale-audit checkpoint, superseded by the closure below: V6-NCS-1 moved to `ATTACKING` and Exp150
+  became eligible for a generated Mac-CPU preregistration. Outcomes, workers and GPUs remained locked; NMI had no
+  survivor.
+
+## Identifiability closure — 2026-08-13
+
+- Experiment 150 is permanently `VOID_PREMATURE_FORMAL_CELL_EXECUTION`: its complete formal loops were exposed by
+  an ad hoc command before implementation and freeze. It may never be rerun or used as a formal result.
+- Experiment 151 was preregistered with disjoint seed root `15120260813` and unchanged matrices/gates, implemented
+  and hash-frozen in separate pushed commits, then run exactly once from clean local/remote head
+  `46bca15f0a11b562da44b82ae7c87e18e6918b36`.
+- Exp151 decision is `IDENTIFIABILITY_WITNESS_CONFIRMED`; raw SHA256
+  `6b81a0eddac2fc16697382128dff5621b75cb52d1bf8712e4a0f3193f431c649`. All W1--W4/count/resource gates passed.
+  BPO stack rank is 2/min singular 0/max divergence `3.51301e-10`; generated non-proportional rank is 4/min singular
+  `0.012`, and every perturbation has 128/128 seeds above threshold.
+- Scientific interpretation: one controller regime has exact response/latent coordinate aliases. Full-rank
+  controller diversity separates the frozen aliases only under invariant latent dynamics. If latent dynamics are
+  regime specific, the alias is reconstructed for each regime. This is an elementary negative control, not a new
+  theorem or market result.
+- The official EIP-8138 page was rechecked and remained Draft with activation, target, maximum and update-fraction
+  fields unset. Base remains same-chain/confounded and no independent event is sealed.
+- Final V6 decision is `V6_NO_SURVIVOR_IDENTIFIABILITY`: NCS `RETIRED_IDENTIFIABILITY`, NMI
+  `RETIRED_PRIOR_ART`. All chain outcomes, remote CPU, both V100s, RTX2060 and GPUs remain locked and unqueued.
+- Reopen only with a future non-proportional event, independent administration/replication and a falsifiable
+  invariance or sharp partial-identification contract frozen before outcomes. More seeds, architecture or compute
+  do not qualify.

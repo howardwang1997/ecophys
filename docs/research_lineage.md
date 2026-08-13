@@ -5,14 +5,18 @@ for a later project.
 
 ## Current theory state
 
-`algorithmic-fee-market-dynamics-v6` started from integrated `main@efe14ad44` on 2026-08-13. It studies exact
-execution/blob fee controllers coupled to unknown adaptive demand. Its pre-outcome audit retired the generic NMI
-closed-loop method as prior art and retained only a conditional NCS route: seal a future controller change, issue
-a no-refit joint response forecast, then replicate independently. Official EIP fixtures and free Xatu metadata
-exist, but BPO3 is unset and no external replication is registered. Experiment 149 passed local CPU-only protocol
-conformance with zero mismatch over 97 official cases/107 blocks; this is implementation evidence only. All chain
-outcomes, remote workers and GPUs remain locked. Protocol:
-`papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md`.
+`algorithmic-fee-market-dynamics-v6` started from integrated `main@efe14ad44` and closed
+`V6_NO_SURVIVOR_IDENTIFIABILITY` on 2026-08-13. It studied exact execution/blob fee controllers coupled to unknown
+adaptive demand. Experiment 149 passed local CPU-only protocol conformance with zero mismatch over 97 official
+cases/107 blocks. The scale audit then showed BPO1/2 are nearly normalized-equivalent and Base supplies only
+same-chain historical topology. Experiment 150 was permanently voided for premature formal-seed execution; its
+disjoint-seed unchanged-gate repair Experiment 151 passed the generated alias/rank gates (raw SHA
+`6b81a0ed...`). The positive non-proportional separation requires invariant latent dynamics across regimes, while
+regime-specific dynamics restore exact observational equivalence. Because no falsifiable invariance contract,
+future non-proportional event or independent replication was available, NCS is `RETIRED_IDENTIFIABILITY`; NMI
+remains `RETIRED_PRIOR_ART`. No chain outcome, remote worker or GPU was used or unlocked. Protocol and closure:
+`papers/proposal/plan_algorithmic_fee_market_dynamics_nmi_ncs_v6.md` and
+`research/theory_exploration/fee_controller_identifiability_closure_v6.md`.
 
 `endogenous-market-rule-feedback-v5` started from integrated `main@268050126` on 2026-08-13 and closed
 `V5_NO_SURVIVOR` the same day. It tested the real loop
@@ -105,7 +109,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Dual-track theory exploration v3 | `V3_NO_SURVIVOR`; closed at equation audit | 135-node graph, prior-art map and noisy-XOR missing-state control | No new closure/memory/operator method, experiment, data contract or compute unlock |
 | Phenomenon-first theory exploration v4 | `V4_NO_SURVIVOR`; closed prior-art/witness audit | Prior-art map and explicit no-witness outcomes | No scientific law, commensurability, dataset contract, method novelty or compute unlock |
 | Endogenous market-rule feedback v5 | `V5_NO_SURVIVOR`; generated identification preflight failed | Exact rule clock, ESMA/FCA metadata contract, immutable Exp148 artifact and power/type-I lesson | No market effect, method novelty, real-data unlock, worker or GPU authorization |
-| Algorithmic fee-market dynamics v6 | `SCOUT`; pre-outcome audit only | Exact-controller target, prospective no-refit response claim and information-first gates | No chain outcome, method novelty, data/compute unlock or venue claim |
+| Algorithmic fee-market dynamics v6 | `V6_NO_SURVIVOR_IDENTIFIABILITY`; closed before outcomes | Exact protocol oracle, scale audit, Base topology provenance, Exp151 alias/rank negative control | No identified behavioral response, market outcome, method novelty, data/compute unlock or venue claim |
 
 ## Code inheritance rules
 

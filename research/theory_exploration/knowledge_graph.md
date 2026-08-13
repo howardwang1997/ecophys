@@ -2,11 +2,12 @@
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** v6 NMI `NO_SURVIVOR`; NCS `ATTACKING`, blocked on nontriviality, BPO3 and independent
-replication; outcomes/scale-up locked
+**Current decision:** `V6_NO_SURVIVOR_IDENTIFIABILITY`; NMI has no survivor and NCS is
+`RETIRED_IDENTIFIABILITY`; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
-adds the v3 state-closure/operator attacks, v4 phenomenon-first audit and v5 annual-rule-feedback gate. Graph proximity is not evidence of
+adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate and v6 exact-
+controller identifiability closure. Graph proximity is not evidence of
 novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
 exact counterexample.
 
@@ -126,7 +127,9 @@ flowchart TB
         BASE["Base: 8 same-chain parameter topologies"]
         BPO3["BPO3 draft: params/time unset"]
         REPL["independent replication missing"]
-        NCS6["NCS: prospective no-refit transfer"]
+        ALIAS["Exp151: exact one-regime alias"]
+        RANK["BPO rank 2 / generated rank 4"]
+        NCS6["NCS: retired identifiability"]
         NMI6["NMI: retired by closed-loop/IV prior art"]
         EXACT --> NCS6
         DEMAND --> NCS6
@@ -134,6 +137,8 @@ flowchart TB
         EXACT --> SCALE
         SCALE -. "nontriviality attack" .-> NCS6
         BASE -->|development only| NCS6
+        DEMAND --> ALIAS --> RANK
+        RANK -->|invariance required| NCS6
         BPO3 -. "blocks" .-> NCS6
         REPL -. "blocks" .-> NCS6
         DEMAND --> NMI6
@@ -141,7 +146,8 @@ flowchart TB
 
     RETIRE --> V6
     V6 --> AUDIT["exact mechanics / scale / replication / identification"]
-    AUDIT --> LOCK6["chain outcomes / workers / GPUs locked"]
+    AUDIT --> CLOSE6["V6_NO_SURVIVOR_IDENTIFIABILITY"]
+    CLOSE6 --> LOCK6["chain outcomes / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -199,16 +205,19 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v5 NCS annual feedback | `RETIRED_FEASIBILITY` | Exp148: 9/16 gated cells pass; rounded null over-rejects; all six 5% effect cells miss 80% power | immutable negative result and design lesson only |
 | v5 cutoff pool | restricted | 80/2,000 share RTS 28 boundaries; 600/9,000 have low-price zero first stages | cutoff 10 plus price-qualified 600 primary |
 | v5 data state | conditional | ESMA reusable; FCA documented API/OGL path; price/corporate actions unfrozen | no instrument pairs yet |
-| v6 NCS controller transfer | `ATTACKING` | BPO is nearly scale-equivalent; Base supplies same-chain topology only; BPO3 and independent replication remain empty | generated nontriviality test only |
+| v6 NCS controller transfer | `RETIRED_IDENTIFIABILITY` | Exp151 exact alias; generated full-rank separation needs unsupported latent invariance; BPO3 and independent replication remain empty | design boundary only |
 | v6 NMI closed-loop method | `RETIRED_PRIOR_ART` | closed-loop ID, multi-resource dynamic fees and gas-demand IV cover the composition | mandatory baselines only |
 | v6 protocol G0 | `PASS_EXP149` | 97 official cases/107 blocks/86 blob-fee observations, zero mismatch | exact implementation baseline only |
 | v6 BPO nontriviality | `REJECTED_AS_SUFFICIENT` | `M/T` fixed at 1.5; `F/T` differs at order 1e-8; exact standardized fee spread <=2.15e-5 | mandatory exact scale oracle |
 | v6 Base topology | development only | eight operations share one chain/SystemConfig/administrator and several are bundled | generated/historical attack topology, never replication |
+| Exp150 identifiability witness | `VOID_PREMATURE_FORMAL_CELL_EXECUTION` | every formal seed loop was exposed before implementation/freeze | chronology record only; never rerun |
+| Exp151 identifiability witness | `IDENTIFIABILITY_WITNESS_CONFIRMED` | BPO rank 2/min singular 0; generated rank 4/min singular 0.012; all gates pass | generated negative control only |
 
-The graph has 232 nodes after the V6 mechanism, scale and replication attacks and Experiment 149 result. NMI has
-no survivor; NCS is not admitted to real data because nontriviality, prospective intervention and independent
-replication remain unresolved. No chain outcome, fee series, L2 transaction, FITRS outcome pair, remote worker or
-GPU was opened, and both V100 workers and the RTX2060 remain outside the queue.
+The graph has 238 nodes after the V6 identifiability closure. NMI has no survivor; NCS is retired because the
+declared observations do not identify behavioral response without an unsupported cross-regime latent-dynamics
+restriction, and the prospective/independent intervention cells remain empty. No chain outcome, fee series, L2
+transaction, FITRS outcome pair, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain
+outside the queue.
 
 ## Validation
 

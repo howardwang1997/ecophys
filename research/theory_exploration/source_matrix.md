@@ -175,6 +175,12 @@ use.
 
 - G0 passed Experiment 149: 97 official cases/107 blocks, 86 observable blob-fee values and zero mismatch.
 - NMI has no survivor because every current method statement is a direct composition of occupied results.
-- NCS is under nontriviality attack. BPO schedules are nearly scale-equivalent, while Base supplies only
-  same-chain historical stress. A future change and an independent replication must still be frozen.
+- Exp150 is permanently void after premature formal-cell execution. Its clean, disjoint-seed repair Exp151 passed
+  the frozen generated alias/rank gates: BPO rank 2, generated non-proportional rank 4, raw SHA256
+  `6b81a0eddac2fc16697382128dff5621b75cb52d1bf8712e4a0f3193f431c649`.
+- NCS is `RETIRED_IDENTIFIABILITY`. Full-rank generated separation assumes cross-regime latent-dynamics
+  invariance; regime-specific latent dynamics restore observational equivalence, and no current event topology
+  makes that assumption testable with prospective independent replication.
+- The official EIP-8138 page was rechecked on 2026-08-13 and remained Draft with TODO activation, target, maximum
+  and update-fraction cells. A future change and independent replication therefore remain unregistered.
 - No chain outcome, remote worker or GPU has been used.
