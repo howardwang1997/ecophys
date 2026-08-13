@@ -1,0 +1,65 @@
+schema: exp152-multi-stationary-drift-tomography/v1
+seed: 15220260813
+absolute_tolerance: 1.0e-12
+one_dimensional_sign:
+  kappa: 0.5
+  decay: 2.0
+  intervention: 1.0
+  points: [-1.0, 0.0, 1.0]
+  expected_score_difference: 2.0
+  expected_drift: [2.0, 0.0, -2.0]
+nonreversible_ou:
+  kappa: 1.0
+  drift_decay:
+    - [1.0, -2.0]
+    - [2.0, 1.0]
+  invariant_means:
+    - [0.0, 0.0]
+    - [1.0, 0.0]
+    - [0.0, 1.0]
+  points:
+    - [0.0, 0.0]
+    - [1.0, -1.0]
+    - [-2.0, 0.5]
+  expected_rank: 2
+  expected_minimum_singular_value: 1.0
+torus_rank_alias:
+  kappa: 1.0
+  concentrations: [0.0, 1.0, 2.0]
+  x1_points: [0.0, 1.5707963267948966, 3.141592653589793]
+  baseline_drift: [0.0, 0.0]
+  alternative_drift: [0.0, 1.0]
+  rank_evaluation_x1: 1.5707963267948966
+  expected_rank: 1
+  expected_drift_separation: 1.0
+invisible_rotation:
+  rotation_rate: 3.0
+  evaluation_point: [1.0, 2.0]
+  expected_score_difference_rank: 0
+  expected_intervention_norm_squared: 45.0
+diffusion_misspecification:
+  decay: 1.0
+  intervention: 1.0
+  baseline_kappa: 1.0
+  intervention_kappa: 2.0
+  incorrectly_assumed_kappa: 1.0
+  points: [0.0, 1.0, 2.0]
+  expected_true_drift: [0.0, -1.0, -2.0]
+  expected_wrong_reconstruction: [0.5, -0.5, -1.8333333333333333]
+  expected_wrong_maximum_error: 0.5
+coordinate_transform:
+  affine_scale:
+    - [10.0, 0.0]
+    - [0.0, 1.0]
+  expected_original_rank: 2
+  expected_transformed_rank: 2
+  expected_original_minimum_singular_value: 1.0
+  expected_transformed_minimum_singular_value: 0.1
+  expected_transformed_condition_number: 10.0
+  nonlinear_evaluation_point: [1.0, 0.0]
+  expected_nonlinear_jacobian:
+    - [4.0, 0.0]
+    - [0.0, 1.0]
+  expected_ito_correction: [6.0, 0.0]
+  expected_ito_correction_norm: 6.0
+
