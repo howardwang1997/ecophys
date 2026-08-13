@@ -1,0 +1,33 @@
+schema: exp152-implementation-freeze/v1
+experiment: 152
+preregistration_commit: 4b899285b19997bbbf37265f9ecf91ebc8f431a7
+implementation_commit: aa5f90ba039c7cb4258be12d6d6f8a476ce61eea
+files:
+  config:
+    path: experiments/152_multi_stationary_drift_tomography/config.yaml
+    sha256: 9909bb614f97ed478cc3d1f580bbb8300daa9a3a67afc81245698110cd433157
+  runner:
+    path: experiments/152_multi_stationary_drift_tomography/run_exact_audit.py
+    sha256: 18f58165088916f0b55594d25ef26c676072b259556611d38f11d7d0b901f05b
+  audit_module:
+    path: ecomd/research/stationary_drift_tomography.py
+    sha256: 1e65332632361ef5b04fb54d80888464d2e714713390c39e5e2c43640e6bca99
+  focused_test:
+    path: tests/test_stationary_drift_tomography.py
+    sha256: d02e5a5191769003834fe16b63f98a1ab0779463b61f378c2cb22ffc6eaa5772
+preformal_checks:
+  focused_pytest_passed: 6
+  ruff: pass
+  mypy_strict: pass
+  formal_suite_executed: false
+authorized_resources:
+  environment: ecophys
+  device: mac_cpu
+  analytic_constants_only: true
+  generated_samples: 0
+  market_data_files: 0
+  sealed_periods: 0
+  network_access: false
+  gpu_hours: 0.0
+formal_run_authorized: true
+
