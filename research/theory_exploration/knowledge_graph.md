@@ -1,10 +1,9 @@
-# Theory-exploration topology v13
+# Theory-exploration topology v14
 
 **Canonical machine state:** `knowledge_graph.yaml`  
-**As of:** 2026-08-13
-**Current decision:** `V13_NO_COMMON_OBSERVABLE`; the prospective real algorithmic-market program stops before
-outcomes because pre/post bid clocks, private-information state and independent replication are not identified;
-no NMI/NCS candidate is admitted and scale-up is locked
+**As of:** 2026-08-14
+**Current decision:** `V14_SCOUT_NO_DATA_UNLOCK`; a prospective Lucas test for Economic World Models is open at
+story and metadata audit only. No model, outcome, experiment or compute is admitted and scale-up remains locked.
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate, v6 exact-
@@ -28,6 +27,11 @@ changes and Jito BAM without opening outcomes. The frozen latency/information/co
 the observation interface changes at ePBS, losing payload/private-flow state is unavailable, direct work already
 covers the qualitative channels and no independently governed transition is prospectively sealed. The retained
 self-concealing-action equivalence is a scope control, not an admitted successor.
+V14 demotes that equivalence and asks a larger question: does historical realism select models that can predict
+real adaptive economies after institutional rules change? The proposed sealed experiment measures exact mechanical
+response, action changes among persistent participants and population reallocation. Lucas critique, structural
+transport, ABM validation and market ecology already cover the concepts. V14 can contribute only through a
+prospectively frozen, participant-level, independently replicated result or a genuinely non-equivalent method.
 
 ```mermaid
 flowchart TB
@@ -283,6 +287,21 @@ flowchart TB
     CLOSE12 --> V13
     V13 --> CLOSE13["V13_NO_COMMON_OBSERVABLE"]
     CLOSE13 --> LOCK13["Exp155 / outcomes / workers / GPUs locked"]
+
+    subgraph V14["v14: prospective EWM Lucas test"]
+        PROMISE14["historical realism / policy-sandbox promise"]
+        SEAL14["freeze forecasts before rule change"]
+        LAYERS14["mechanics + persistent agents + population ecology"]
+        DATA14["actions + identities + 2 independent transitions"]
+        SCORE14["proper loss + model-rank reality test"]
+        PROMISE14 --> SEAL14 --> SCORE14
+        LAYERS14 --> SCORE14
+        DATA14 --> SCORE14
+    end
+
+    CLOSE13 --> V14
+    V14 --> SCOUT14["V14_SCOUT_NO_DATA_UNLOCK"]
+    SCOUT14 --> LOCK14["Exp156 / outcomes / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -435,6 +454,19 @@ For every conditional law `p(z)=Pr(E=1|Z=z)`, both a pure strategic model
 `Pr(A=1|Z=z)=p(z), N=0` and a pure failure model `A=0, Pr(N=1|Z=z)=p(z)` induce the same observations. Therefore a
 volatility-signed empty-slot effect cannot by itself identify ePBS free-option exercise.
 
+For V14, model `q` receives a pre-change historical-fit score `F_q` and a strictly proper loss `L_qe` for a
+forecast frozen before event `e`. The first reality-test object is
+
+\[
+\rho_{\mathrm{rank}}=\operatorname{corr}_q
+\left(\operatorname{rank}F_q,\operatorname{rank}(-L_{qe})\right).
+\]
+
+The ambitious hypothesis is not merely `rho_rank<1`. It is that institutional changes expose a reproducible
+hierarchy of exact mechanical response, within-participant behavioral plasticity and population selection that
+reorders model usefulness. Sequential response allocations are order-dependent under interactions and require
+alternate-order plus symmetric/Shapley sensitivity; they are diagnostics rather than a new causal identity.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -482,12 +514,15 @@ volatility-signed empty-slot effect cannot by itself identify ePBS free-option e
 | v13 self-concealing action | scope control only | empty outcome aliases strategic withholding and covariate-dependent failure | new instrument, propagation witness or calibrated sharp bounds before candidacy |
 | v13 independent system | `NO_DATA_CONTRACT` | CoW changes predate freeze and differ in channel; Jito BAM already partly deployed without a complete all-action tape | future independently governed isomorphic transition sealed before outcomes |
 | Exp155 | `NOT_OPENED` | protocol/common-observable/novelty/replication gates stop before preregistration | none under V13 |
+| v14 EWM Lucas test | `SCOUT` | strong policy-sandbox question, but Lucas/ABM-validation/ecology concepts are occupied and no sealed action/identity contract or second transition has passed | metadata-only novelty/data audit |
+| v14 AEMO FTA/IPRR clocks | conditional | official 2026-11-01 and 2027-05-23 dates exist; affected participant actions, identities, adoption, retention and licences remain unaudited | future confirmation only after G1 and preregistration |
+| v14 CoW/AEMO history | development only | outcomes are already known or inspectable | schema, baseline and power development without confirmation claims |
+| Exp156 | `NOT_OPENED` | V14 has not passed G0/G1/G2 | none; do not create or queue |
 
-The graph has 391 nodes after the V13 closure. NMI has no admitted non-equivalent method; NCS has no identified,
-prospectively replicated scientific mechanism or executable outcome contract. V13 used official metadata,
-primary-paper inspection and symbolic observation-equivalence work only. Experiment 155 was not created;
-generated data, endpoint outcomes, remote workers and GPUs remain locked, and both V100 workers and the RTX2060
-remain outside the queue.
+The graph has 406 nodes at the V14 scout. NMI has no admitted non-equivalent method; NCS has no identified,
+prospectively replicated scientific mechanism or executable outcome contract. V14 has used official metadata and
+primary-paper inspection only. Experiment 156 was not created; generated data, endpoint outcomes, remote workers
+and GPUs remain locked, and both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

@@ -1,15 +1,15 @@
-# Candidate ledger — v1 through v13
+# Candidate ledger — v1 through v14
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** `V13_NO_COMMON_OBSERVABLE`; the prospective algorithmic-market mechanism program stops
-before outcomes because its pre/post latency clock, private-information state and independent replication are not
-identified; no NMI/NCS candidate is admitted
+**Current outcome:** `V14_SCOUT_NO_DATA_UNLOCK`; a broader prospective Lucas test for Economic World Models is
+open at story/data audit only. No endpoint outcome, experiment, model project or compute is admitted.
 
-**Scientific meaning:** moving from simulator outputs to real algorithmic agents and exact market rules improves
-the research object but does not make the observation interface invariant. Relay receipt time is jointly produced
-by agent behavior, geography, admission, forwarding and clocks; losing payloads hide private valuation; and an
-empty ePBS slot aliases strategic withholding with correlated physical failure. These are identification lessons,
-not a market-physics finding or a new NMI method. V12's exact/stable inverse-problem results remain preserved below.
+**Scientific meaning:** V13's self-concealing-action equivalence is retained only as an observation warning. The
+larger V14 question is whether a model selected for historical realism can prospectively predict real adaptation
+after an institutional rule change. Its intended scientific object is the hierarchy of mechanical response,
+within-participant plasticity and population reallocation. Lucas critique, structural transport, market ecology
+and ABM validation are established; novelty can come only from a sealed real-world test and a replicated result,
+not from renaming those ideas. V12's exact/stable inverse-problem results remain preserved below.
 
 ## 1. Shared object and identification target
 
@@ -582,3 +582,27 @@ A successor may audit self-concealing mechanism actions only if it adds authenti
 an exogenous penalty/window variation, a physically matched no-option control or independently calibrated failure
 bounds. Standard competing-risk regression is not sufficient novelty. Experiment 155 was not opened; no outcome,
 data feed, remote worker or GPU was used or queued.
+
+## 18. V14 prospective Lucas test for Economic World Models
+
+| ID | Proposed object | Decisive audit | Current state |
+|---|---|---|---|
+| V14-C1 | historical realism may fail to rank models by unseen-rule forecast quality | requires model-selection scores fixed before at least two independently governed real transitions and strictly proper post-event losses | `SCOUT` |
+| V14-C2 | exact mechanics plus adaptive ecology improve unseen-rule prediction | must beat reduced-form, exact-mechanism/frozen-agent, within-only and population-only compute-matched baselines | `SCOUT` |
+| V14-C3 | institutional response separates into mechanical, persistent-participant and ecological components | requires participant-level actions, identity continuity, entry/exit accounting, common support and order-sensitivity analysis | `SCOUT` |
+| V14-C4 | one prospective evaluation protocol transfers across digital economies | the estimand and scoring protocol, rather than only labels and plots, must survive at least two domains | `SCOUT` |
+
+The working headline is *Past Fit Is Not Policy Fidelity: A Prospective Lucas Test for Economic World Models*.
+The potential scientific result is not that models have error. It is that rule changes reveal a hierarchy of
+adaptation that can reorder which models are useful for intervention, and that medium-run population reallocation
+may carry more response than within-participant updating. Both statements remain hypotheses.
+
+CoW solver competitions and completed AEMO reforms are possible development systems. AEMO Flexible Trading
+Arrangements on 2026-11-01 and Integrating Price-Responsive Resources dispatch mode on 2027-05-23 are prospective
+clocks only if official public data expose affected participant actions, identities and outcomes. At least two
+independently governed untouched transitions are required; one historical event study cannot support the flagship
+claim.
+
+G0 is an equation-level novelty audit and G1 is a metadata-only data contract. Until both pass, no outcome row,
+Experiment 156, new model repository, remote worker, V100 or RTX2060 job is opened or queued. EcoMD is not silently
+promoted to the adaptive-ecology model: it may appear only as a disclosed legacy or negative-control architecture.

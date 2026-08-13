@@ -1,6 +1,6 @@
 # Primary-source coverage matrix
 
-**Search date:** 2026-08-13
+**Search date:** 2026-08-14
 **Rule:** theorem/equation coverage blocks claims; venue fit does not establish novelty
 
 | Primary source | Audited result | Candidate statement blocked or constrained | Residual gap, if any |
@@ -368,3 +368,28 @@ use.
 - G5 fails: CoW and Jito are useful development systems but neither is a prospectively sealed independent
   replication of the frozen mechanism channel.
 - Final decision `V13_NO_COMMON_OBSERVABLE`. Experiment 155, outcomes and all workers remain locked.
+
+## V14 prospective Economic World Model Lucas-test scout
+
+| Primary source | What is established | V14 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [Economic World Models blueprint](https://arxiv.org/abs/2608.06020) | Proposes multiscale economic world models, policy sandboxes and sim-to-real economic twins. | Presenting the EWM architecture or policy-sandbox ambition as our discovery. | Motivation for directly testing the advertised use case. |
+| [DSGE as a Structured World Model](https://arxiv.org/abs/2607.03144) | Supplies a synthetic off-policy benchmark in which structural recomposition can outperform reduced-form prediction. | Generic counterfactual generalization or exact-rule separation as new. | Synthetic structural oracle and baseline family. |
+| [A method for agent-based models validation](https://doi.org/10.1016/j.jedc.2017.06.001) | Shows that time-series and stylized-fact fit need not validate causal structure in an ABM. | “Stylized facts do not prove mechanism” as a new finding. | Historical-realism comparator and validation motivation. |
+| [Quantitative agent-based models](https://doi.org/10.1093/oxrep/graf027) | Reviews quantitative ABM calibration, forecasting and policy use and stresses the need for stronger predictive evidence. | Claiming that predictive validation of ABMs is an untouched question. | Standards and baseline inventory for a prospective evaluation. |
+| [The ecology of financial strategies](https://doi.org/10.1073/pnas.2015574118) | Demonstrates empirical market-ecology dynamics and the importance of strategy populations and counterparty identity. | Market ecology, strategy shares or population feedback as a new concept. | Ecological model family and identity-data requirement. |
+| [AEMO NEM dispatch data](https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/data-nem/market-management-system-mms-data/dispatch) | Publishes next-day five-minute unit dispatch, DUID, unit prices, constraints and the bid/offer version used. | Assuming aggregate electricity prices are sufficient for agent adaptation. | Candidate participant/action panel; retention and continuity still require audit. |
+| [AEMO Flexible Trading Arrangements](https://www.aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/flexible-trading-arrangements) | Provides an official implementation program and final-stage date of 2026-11-01. | Treating the date alone as an observable wholesale-market experiment. | Prospective clock only if affected-provider adoption and responses are public. |
+| [AEMO Integrating Price-Responsive Resources](https://aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/integrating-price-responsive-resources-into-the-nem) | Gives the final rule, implementation milestones and dispatch-mode commencement on 2027-05-23 for aggregated consumer resources. | Calling the event admitted before participant/action/identity coverage is verified. | Strongest current prospective clock, conditional on G1. |
+| [CoW solver competition API](https://api.cow.fi/docs/) | Publicly exposes solver competitions, submissions and rankings. | Treating already observed reward changes as blind confirmation. | Historical schema/model-ladder development only. |
+
+### V14 synthesis
+
+- The novelty is not Lucas critique, exact mechanics, ABM validation, multiscale architecture or market ecology.
+- A potentially important contribution is a prospectively sealed real-world test of whether historical model
+  selection predicts unseen institutional response, followed by measured attribution across mechanical,
+  persistent-participant and population scales.
+- CoW and completed AEMO changes can develop the protocol. FTA and IPRR are only candidate future clocks; neither
+  unlocks outcomes until the affected public action/identity panel and an independently governed second event pass
+  G1.
+- V14 remains `SCOUT`. No endpoint, Experiment 156, remote worker or GPU is opened or queued.

@@ -150,6 +150,17 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
     withholding and covariate-dependent physical failure can induce the same empty-outcome law.
 58. A second visible algorithmic market is not replication unless it changes the same scientific channel under a
     prospectively sealed and independently governed rule. Historical reward reforms are development data.
+59. A simulator or world model is justified by intervention use, not historical reconstruction. Realism scores
+    must be tested against forecasts frozen before a rule change; otherwise “policy sandbox” remains a promise.
+60. The Lucas critique, structural policy transport, ABM validation and market ecology are prior art. A larger
+    story does not create novelty unless it delivers a prospective real-world result or a non-equivalent method.
+61. Mechanical, persistent-participant and entry/exit response terms form a useful accounting ladder, not a unique
+    causal decomposition. Interactions make sequential allocations order-dependent, so alternate orderings and a
+    symmetric/Shapley sensitivity are mandatory.
+62. Cross-domain evidence means a common estimand, scoring rule and sealed selection protocol. Reusing an
+    architecture diagram or renaming each domain's outputs does not establish transfer.
+63. A future policy date is not yet a data contract. Affected participant identities, action versions, adoption,
+    outcomes, retention and licences must be public before the date can unlock collection or compute.
 
 ## Gate failures retained
 

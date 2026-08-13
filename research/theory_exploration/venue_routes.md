@@ -345,3 +345,27 @@ mechanism and sealed independent replication.
 The final V13 decision is `V13_NO_COMMON_OBSERVABLE`. It is not merged into Plan v4 as an active archival program.
 A successor must freeze the observation instrument before the mechanism outcome, or change the scientific object
 again; adding more data or GPU capacity to the current estimand is not a remedy.
+
+## V14 prospective EWM Lucas-test scout
+
+- **Scientific headline:** test whether pre-change historical realism selects models that predict real adaptive
+  economies after an institutional rule change, and determine whether forecast error and response arise at the
+  mechanical, persistent-participant or population-reallocation scale.
+- **NCS route:** primary conditional route. It requires a prospectively sealed result replicated across at least
+  two independently governed real transitions, participant-level measurement, a complete model ladder and a
+  reusable computational testbed. A single historical event study or generic benchmark is insufficient. Current
+  unconditional probability is approximately `8--15%`; after data and development gates it may reach `25--40%`.
+- **NMI route:** opens only if a transferable learning/training method materially improves unseen-mechanism
+  prediction in market and non-market multi-agent systems. Exact engines, hybrid architecture and evaluation
+  protocol alone are not NMI method novelty. Current probability is below `10%` before that method exists.
+- **Specialist fallback:** a rigorous one-domain prospective policy-prediction benchmark or event study can target
+  market design, energy systems, computational economics or ML-for-economics venues without preserving a Nature
+  claim by wording.
+- **Data gate:** CoW and historical AEMO transitions are development candidates. AEMO FTA (2026-11-01) and IPRR
+  dispatch mode (2027-05-23) are prospective candidates only after affected actions, identities, entry/exit,
+  adoption, outcomes, retention and licences are verified; a second independent untouched transition is required.
+- **Compute gate:** metadata work is Mac CPU only. Both V100s and the RTX2060 remain idle and unqueued before G1/G2;
+  future scale-out may use additional non-H20 GPU/CPU nodes only after profiling. H20 remains excluded.
+
+The active state is `V14_SCOUT_NO_DATA_UNLOCK`. “Lucas test” and “LucasBench” are working labels pending a naming
+audit; no benchmark brand, repository, Experiment 156 or outcome collector is created at scout stage.

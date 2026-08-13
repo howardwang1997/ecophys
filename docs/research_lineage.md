@@ -5,6 +5,21 @@ for a later project.
 
 ## Current theory state
 
+`economic-world-model-lucas-test-scout-v14` started from integrated `main@67e07971e` on 2026-08-14 after the user
+rejected V13's self-concealing-action equivalence as too trivial. V14 changes the headline to a prospective reality
+test of the policy-sandbox claim: can a model selected for historical realism predict real actions, participation
+and aggregate outcomes after an institutional rule change? The planned model ladder separates exact mechanical
+replay, persistent-participant adaptation and population entry/exit/share reallocation. Those ingredients and the
+Lucas critique are prior art; the possible contribution is a forecast sealed before the rule, strictly proper
+post-event scoring and a replicated real finding across independently governed transitions.
+
+CoW solver competitions and completed AEMO changes are development candidates. AEMO Flexible Trading
+Arrangements (2026-11-01) and Integrating Price-Responsive Resources dispatch mode (2027-05-23) are candidate
+future clocks only if participant actions, identities, adoption, outcomes, retention and licences pass a
+metadata-only contract. V14 is `SCOUT`, not a replacement for Plan v4's archival authority and not an accepted
+NCS/NMI candidate. No endpoint outcome, Experiment 156, new model project, remote worker, V100 or RTX2060 job has
+been opened or queued. Plan: `papers/proposal/plan_economic_world_model_lucas_test_nmi_ncs_v14.md`.
+
 `prospective-agent-market-mechanism-scout-v13` started from integrated `main@4705e3f7a`, froze a metadata-only
 plan before any outcome access and closed `V13_NO_COMMON_OBSERVABLE` on 2026-08-13. The candidate moved to a
 stronger real object--observable algorithmic agents under an executable ePBS mechanism change--but failed before
