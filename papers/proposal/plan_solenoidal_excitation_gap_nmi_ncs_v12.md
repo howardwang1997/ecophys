@@ -221,3 +221,24 @@ novelty pass.
 4. Close as `V12_NO_SURVIVOR_PRIOR_ART`, `V12_NO_SURVIVOR_PROOF`, `V12_THEOREM_ONLY`,
    `V12_CONJECTURE_ONLY` or `V12_READY_FOR_HUMAN_AUDIT`.
 5. Synchronize graph, ledgers, lineage, memory and dated logs before integration into `main`.
+
+## 12. Execution outcome
+
+**Closed:** 2026-08-13 as `V12_THEOREM_ONLY`.
+
+P0--P2 were discharged at the stationary-PDE level. For unrestricted smooth ambiguity currents on a connected
+closed `d`-manifold, fewer than `d` nonbaseline ratios leave an explicit ambiguity; exactly `d` ratios generically
+identify globally but never have a positive unrestricted `L^2` lower modulus; abstract uniform stability begins
+at the immersion dimension. In the two-dimensional standard fold chart, an `H^s` conditional modulus has sharp
+deterministic exponent `2s/(2s+1)`.
+
+P3 did not pass the NMI gate. Localized solenoidal waves, wave-cone separation, redundant internal-data frames and
+Grushin subellipticity are established neighboring machinery. Adding one scalar ratio to lift a fold map is also
+the classical projected-immersion problem, with a kernel-line-bundle obstruction. No non-equivalent stationary-
+sample minimax theorem, estimator or feasible actuator-aware design was established. P4 therefore remained
+closed, and no NCS route exists.
+
+Experiment 154 was not preregistered or run. No generated sample, dataset, remote host or GPU was used; both V100
+workers and the RTX2060 remained uncontacted and unqueued. The exact cards and closest-source audit are
+`research/theory_exploration/formal_cards_v12.md` and
+`research/theory_exploration/solenoidal_excitation_gap_audit_v12.md`.

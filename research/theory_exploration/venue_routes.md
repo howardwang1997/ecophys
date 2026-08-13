@@ -304,3 +304,23 @@ prediction and sealed independent replication before any outcome access.
 The final V11 decision is `V11_CONJECTURE_ONLY`. Re-entry requires a human novelty/value audit, a stronger global
 or minimax result, a drift-blind feasible perturbation design and an equation-level method distinction from
 DyNoSeD/KDS before any new experiment or worker contact.
+
+## V12 solenoidal-excitation-gap decision
+
+- **NMI:** `NO_ADMITTED_CANDIDATE`. V12 proves a clean gap between exact identification and unrestricted stable
+  inversion, plus a sharp deterministic fold modulus. The obvious method is constrained regularization of a
+  Grushin-type inverse problem, and no stationary-sample minimax result, non-equivalent estimator or feasible
+  intervention algorithm was established.
+- **NCS:** `NO_ADMITTED_CANDIDATE`. The theorem concerns abstract stationary density families. No current system
+  supplies known quantitative actuators, independently verified stationarity, a substantive recovered
+  non-gradient mechanism and frozen independent replication. It is not evidence for market physics.
+- **Mathematical fallback:** `THEOREM_ONLY`, pending independent human novelty/value review. The exact three-regime
+  synthesis may support a specialist inverse-problems note, but the local machinery overlaps A-free waves,
+  redundant internal-data frames, Grushin subellipticity and projected immersions.
+- **Data/compute:** Experiment 154 was not preregistered or run. No dataset, generated sample, real outcome, remote
+  CPU, V100, RTX2060 or other GPU was opened or queued; H20 remains excluded.
+
+The final V12 decision is `V12_THEOREM_ONLY`. NMI re-entry requires a statistical theorem and method not obtained
+by composing stationary-density estimation with classical degenerate regularization, or a drift-blind
+actuator-constrained design beyond projected-immersion lifting. NCS additionally requires a controlled real
+mechanism and sealed independent replication.

@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
-iteration: multi-stationary-drift-tomography-v11
-decision: V11_CONJECTURE_ONLY
+iteration: solenoidal-excitation-gap-v12
+decision: V12_THEOREM_ONLY
 
 nodes:
   - id: src.controlled_world_models
@@ -2686,6 +2686,158 @@ nodes:
     claim: V11 closes as CONJECTURE_ONLY because the estimator and ambiguity headlines are occupied while the narrow pointwise immersion obstruction lacks a global statistical or scientific consequence.
     artifact: research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md
 
+  - id: src.v12_a_free_higher_integrability
+    type: source
+    title: Higher integrability for measures satisfying a PDE constraint
+    track: both
+    claim: A-free fields gain regularity when constrained near a convex subset of a subspace disjoint from the operator wave cone.
+    url: https://arxiv.org/abs/2106.03077
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v12_a_free_aperture
+    type: source
+    title: Compensated compactness of A-free measures on cones with quantified aperture
+    track: both
+    claim: Quantified separation of an elliptic subspace from the wave cone controls compactness for A-free measures in narrow convex cones.
+    url: https://arxiv.org/abs/2606.16762
+    primary: true
+    evidence_level: preprint
+  - id: src.v12_hybrid_inverse_pde
+    type: source
+    title: Hybrid inverse problems and redundant systems of partial differential equations
+    track: both
+    claim: Redundant internal measurements give elliptic parametrices and stability while underdetermined inverse systems can retain only subelliptic estimates.
+    url: https://arxiv.org/abs/1210.0265
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v12_internal_diffusion_frames
+    type: source
+    title: Inverse diffusion problems with redundant internal information
+    track: both
+    claim: Uniformly spanning gradients of selected internal solutions form local frames supporting global uniqueness and stability of coefficient reconstruction.
+    url: https://arxiv.org/abs/1106.4277
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v12_grushin_quasimodes
+    type: source
+    title: Sharp resolvent estimate for the Baouendi Grushin operator and applications
+    track: both
+    claim: Grushin degeneracy produces sharp subelliptic resolvent regimes and concentrating quasimodes at anisotropic scales.
+    url: https://arxiv.org/abs/2201.08189
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v12_projected_immersions
+    type: source
+    title: Singularities of projected immersions revisited
+    track: both
+    claim: A Morin map lifts through one extra scalar coordinate to an immersion exactly when its kernel line bundle admits the required trivialization.
+    url: https://doi.org/10.2140/agt.2009.9.1623
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v12_whitney_singularities
+    type: source
+    title: On Singularities of Mappings of Euclidean Spaces I
+    track: both
+    claim: Foundational singularity analysis identifies fold and cusp normal forms and treats critical-rank strata as the generic structure of smooth maps.
+    url: https://doi.org/10.2307/1970070
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v12_ratio_gradient_inverse_pde
+    type: source
+    title: Reconstructions for some coupled-physics inverse problems
+    track: both
+    claim: Ratios of internal solutions and their gradients are established tools for gauge removal coefficient reconstruction and stability in coupled-physics inverse problems.
+    url: https://doi.org/10.1016/j.aml.2012.05.013
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v12_stationary_density_statistics
+    type: source
+    title: Nonparametric estimation of derivatives of the stationary density for stationary processes
+    track: nmi
+    claim: Derivatives of stationary densities already have nonparametric estimation theory under dependence assumptions and are not a free nuisance quantity in drift inversion.
+    url: https://doi.org/10.1051/ps/2011102
+    primary: true
+    evidence_level: peer_reviewed
+
+  - id: kr.v12_solenoidal_stability_immersion
+    type: known_result
+    title: Solenoidal lower modulus equals density-ratio immersion
+    track: both
+    claim: The unrestricted L2 lower modulus of dR on smooth divergence-free currents is positive exactly when the density-ratio map R is an immersion.
+  - id: kr.v12_three_regimes
+    type: known_result
+    title: Nonidentified exact-only and uniformly stable density-count regimes
+    track: both
+    claim: Below d ratios a smooth ambiguity exists; at d ratios generic maps identify exactly but lack uniform L2 stability; abstract stable families begin at the immersion dimension.
+  - id: kr.v12_fold_conditional_modulus
+    type: known_result
+    title: Sharp deterministic fold conditional modulus
+    track: both
+    claim: In the two-dimensional standard fold chart an Hs-bounded divergence-free ambiguity has deterministic modulus exponent 2s divided by 2s plus 1 with a matching anisotropic scaling witness.
+  - id: kr.v12_neighboring_method_coverage
+    type: known_result
+    title: A-free inverse-PDE Grushin and lifting coverage
+    track: both
+    claim: Wave-cone localization redundant internal-data frames Grushin subellipticity and projected-immersion lifting occupy the local analytic and one-extra-coordinate design primitives.
+
+  - id: cand.v12.solenoidal_excitation_gap
+    type: candidate
+    title: Global identification versus solenoidal stability from stationary densities
+    track: both
+    claim: Multiple stationary density ratios may exhibit a topology-controlled gap between exact drift identification subelliptic conditional recovery and uniformly stable inversion.
+    status: CONJECTURE
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: V11's circle witness separated global identification from pointwise rank and motivated an operator-level audit without reopening Experiment 153.
+        evidence: [research/theory_exploration/formal_cards_v11.md, papers/proposal/plan_solenoidal_excitation_gap_nmi_ncs_v12.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: FORMALIZING
+        reason: Exact closed-form and localized stream-function constructions established the subdimension ambiguity and zero-modulus directions.
+        evidence: [research/theory_exploration/formal_cards_v12.md]
+      - date: "2026-08-13"
+        from: FORMALIZING
+        to: ATTACKING
+        reason: The equal-count generic theorem and two-dimensional fold modulus were compared with A-free inverse-PDE Grushin transversality and projected-immersion theory.
+        evidence: [kr.v12_three_regimes, kr.v12_fold_conditional_modulus, bench.v12.afree_grushin_inverse_pde]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: CONJECTURE
+        reason: The displayed theorem package is proof-complete in its narrow setting but human novelty value a non-equivalent stationary-sample method and feasible actuator-aware design remain unestablished.
+        evidence: [po.v12.statistical_or_design_consequence, research/theory_exploration/solenoidal_excitation_gap_audit_v12.md]
+  - id: po.v12.statistical_or_design_consequence
+    type: proof_obligation
+    title: Non-equivalent stationary-sample theorem or feasible intervention design
+    track: both
+    claim: Venue re-entry requires a minimax or computational result not obtained by composing density estimation with Grushin interpolation or an actuator-aware design beyond projected-immersion lifting.
+  - id: ce.v12.localized_fold_quasimode
+    type: counterexample
+    title: Exact identification without a positive L2 stability margin
+    track: both
+    claim: An anisotropically localized exactly divergence-free current has unit L2 norm and vanishing dR observation near any critical point while its Sobolev norm diverges.
+  - id: bench.v12.afree_grushin_inverse_pde
+    type: benchmark
+    title: A-free Grushin and redundant inverse-PDE oracle
+    track: both
+    claim: Any V12 method must improve on wave-cone localization elliptic or subelliptic inverse systems internal gradient frames constrained regularization and stationary-density derivative estimators.
+  - id: data.v12.no_controlled_stationary_system
+    type: dataset
+    title: No admitted controlled stationary real-system data
+    track: ncs
+    claim: No current dataset supplies quantitative perturbation fields independently checked stationary ensembles and a sealed replicated non-gradient mechanism.
+  - id: compute.v12_locked_no_exp154
+    type: compute_gate
+    title: V12 theorem-only compute lock
+    track: both
+    claim: Experiment 154 generated samples remote CPU V100 RTX2060 and every GPU remain locked because no statistical method or scientific mechanism passed admission.
+  - id: decision.iteration_v12_closure
+    type: decision
+    title: Solenoidal excitation gap v12 closure
+    track: both
+    claim: V12 closes as THEOREM_ONLY with exact three-regime and fold conditional results but no human novelty pass non-equivalent NMI method feasible actuator design or NCS evidence.
+    artifact: research/theory_exploration/solenoidal_excitation_gap_audit_v12.md
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -3121,3 +3273,26 @@ edges:
   - {source: decision.iteration_v11_closure, target: data.v11.no_calibrated_stationary_interventions, type: forbids, claim: No real-system outcome is opened without quantitative intervention and stationarity contracts.}
   - {source: decision.iteration_v11_closure, target: compute.nmi_post_n1, type: forbids, claim: No non-equivalent method or human novelty pass exists for NMI scale-up.}
   - {source: decision.iteration_v11_closure, target: compute.ncs_post_c1, type: forbids, claim: No calibrated replicated scientific mechanism exists for NCS scale-up.}
+  - {source: decision.iteration_v11_closure, target: cand.v12.solenoidal_excitation_gap, type: branches_to, claim: The exact circle separation motivated a global identification versus stability audit without reopening the V11 estimator.}
+  - {source: src.v12_a_free_higher_integrability, target: kr.v12_neighboring_method_coverage, type: covers, claim: Rigidity and regularity away from an A-free wave cone are established analytic machinery.}
+  - {source: src.v12_a_free_aperture, target: kr.v12_neighboring_method_coverage, type: covers, claim: Quantitative aperture dependence near elliptic subspaces is already explicit in current A-free theory.}
+  - {source: src.v12_hybrid_inverse_pde, target: kr.v12_neighboring_method_coverage, type: covers, claim: Elliptic versus subelliptic stability under redundant internal measurements is an established inverse-PDE dichotomy.}
+  - {source: src.v12_internal_diffusion_frames, target: kr.v12_neighboring_method_coverage, type: covers, claim: Uniform internal gradient frames already support coefficient reconstruction and stability.}
+  - {source: src.v12_grushin_quasimodes, target: kr.v12_neighboring_method_coverage, type: covers, claim: Anisotropic Grushin scales and concentrating quasimodes are established mechanisms.}
+  - {source: src.v12_projected_immersions, target: kr.v12_neighboring_method_coverage, type: covers, claim: One-extra-coordinate fold removal is the classical projected-immersion lifting problem with a kernel-bundle obstruction.}
+  - {source: src.v12_whitney_singularities, target: kr.v12_three_regimes, type: supports, claim: Generic equal-dimensional maps require rank-stratum transversality and may contain folds cusps and higher singularities rather than being immersions.}
+  - {source: src.v12_ratio_gradient_inverse_pde, target: kr.v12_neighboring_method_coverage, type: covers, claim: Ratio gradients spanning frames and removing inverse-problem gauges are established neighboring machinery.}
+  - {source: src.v12_stationary_density_statistics, target: kr.v12_neighboring_method_coverage, type: supports, claim: Stationary density derivative and quotient-drift estimation are existing statistical components.}
+  - {source: kr.v12_solenoidal_stability_immersion, target: cand.v12.solenoidal_excitation_gap, type: supports, claim: The exact lower-modulus equivalence upgrades V11's pointwise observation to the divergence-free ambiguity space.}
+  - {source: kr.v12_three_regimes, target: cand.v12.solenoidal_excitation_gap, type: supports, claim: The global exact and stable counts supply the candidate theorem synthesis.}
+  - {source: kr.v12_fold_conditional_modulus, target: cand.v12.solenoidal_excitation_gap, type: supports, claim: The fold chart supplies a sharp deterministic smoothness-aware consequence.}
+  - {source: cand.v12.solenoidal_excitation_gap, target: po.v12.statistical_or_design_consequence, type: requires, claim: NMI or NCS re-entry requires a non-compositional statistical theorem or feasible actuator-aware design.}
+  - {source: cand.v12.solenoidal_excitation_gap, target: ce.v12.localized_fold_quasimode, type: falsified_by, claim: The exact localized current falsifies any unconditional stable recovery claim at a critical point.}
+  - {source: cand.v12.solenoidal_excitation_gap, target: bench.v12.afree_grushin_inverse_pde, type: distinguished_by, claim: Human novelty review must separate the synthesis from A-free Grushin redundant inverse-PDE and stationary-density estimation oracles.}
+  - {source: cand.v12.solenoidal_excitation_gap, target: decision.iteration_v12_closure, type: branches_to, claim: The theorem remains a research conjecture only in novelty value and closes below venue admission.}
+  - {source: kr.v12_neighboring_method_coverage, target: decision.iteration_v12_closure, type: supports, claim: Established neighboring analytic and design primitives block automated method admission.}
+  - {source: data.v12.no_controlled_stationary_system, target: decision.iteration_v12_closure, type: supports, claim: Missing controlled real stationary interventions and replication close the NCS route.}
+  - {source: decision.iteration_v12_closure, target: compute.v12_locked_no_exp154, type: supports, claim: The theorem-only outcome leaves Experiment 154 and all workers locked.}
+  - {source: decision.iteration_v12_closure, target: data.v12.no_controlled_stationary_system, type: forbids, claim: No real outcome is opened without a quantitative intervention and stationarity contract.}
+  - {source: decision.iteration_v12_closure, target: compute.nmi_post_n1, type: forbids, claim: No non-equivalent stationary-sample method or human novelty pass exists for NMI scale-up.}
+  - {source: decision.iteration_v12_closure, target: compute.ncs_post_c1, type: forbids, claim: No prospectively replicated scientific mechanism exists for NCS scale-up.}

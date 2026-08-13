@@ -1,13 +1,15 @@
-# Candidate ledger — v1 through v11
+# Candidate ledger — v1 through v12
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** `V11_CONJECTURE_ONLY`; multi-density ambiguity-current novelty is `RETIRED_PRIOR_ART`, while
-the closed-manifold density-ratio immersion obstruction remains `CONJECTURE` without NMI/NCS admission
+**Current outcome:** `V12_THEOREM_ONLY`; the exact identification/stability theorem package is proof-complete in
+its stated setting but remains `CONJECTURE` at the research-novelty level, with no NMI/NCS admission
 
-**Scientific meaning:** multiple stationary densities constrain a common drift only through their induced
-log-density-ratio covectors, not intervention magnitude. Existing inverse-SDE, Fokker--Planck residual and KDS/
-Stein work closes the ordinary estimator route. A density-ratio map cannot be an immersion from a closed
-`d`-manifold into `R^d`, but this blocks uniformly stable pointwise inversion rather than global identification.
+**Scientific meaning:** for unrestricted smooth ambiguity currents on a closed `d`-manifold, fewer than `d`
+nonbaseline density ratios leave a nonzero solenoidal ambiguity; exactly `d` ratios generically identify the
+drift but never give a positive unrestricted `L^2` stability margin; abstract uniform stability begins at the
+Euclidean immersion dimension. A two-dimensional fold has sharp deterministic Sobolev modulus
+`delta^(2s/(2s+1))`. These are inverse-problem results, not market physics, and neighboring A-free, redundant-
+inverse-PDE, Grushin and projected-immersion theory blocks automated novelty admission.
 
 ## 1. Shared object and identification target
 
@@ -340,6 +342,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v9 age-structured liquidity audit | Audited prospective survival-weighted depth against path-dependent queue survival, fleeting/static books, queue-uncertainty overshoot, lifecycle filters, competing hazards and post-shock depth/flow resilience. | `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; stopped before any target aggregate, hazard fit, outcome or remote/GPU use |
 | 2026-08-13 | v10 prediction-market coherence audit | Reduced full coherence correction to one-step projection and local corrections to Kaczmarz; constructed an equivalent-constraint spectrum counterexample; audited logical-arbitrage dynamics and official platform metadata. | `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; stopped before catalog, feed, outcome, collector or remote/GPU use |
 | 2026-08-13 | v11 multi-stationary drift tomography | Froze and ran Exp152 once; proved the ambiguity-current criterion and exact-coframe obstruction; audited DyNoSeD, KDS, interventional SDE identification, ergodic inversion, Jacobi multipliers and Nambu currents. | `V11_CONJECTURE_ONLY`; no admitted NMI/NCS candidate, Exp153 and all remote/GPU work locked |
+| 2026-08-13 | v12 solenoidal excitation gap | Proved the immersion/coercivity equivalence, explicit `K<d` ambiguity, generic equal-count exact-identification gap and sharp standard-fold conditional modulus; audited A-free, redundant inverse-PDE, Grushin and projected-immersion neighbors. | `V12_THEOREM_ONLY`; no admitted NMI/NCS candidate, Exp154 and all remote/GPU work locked |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -542,3 +545,21 @@ V11-C2 can advance only after an expert novelty/value audit and a stronger globa
 by a feasible drift-blind perturbation design and a method distinct from DyNoSeD/KDS. Experiment 153 is locked.
 No generated sample, real outcome, remote worker or GPU was opened; both V100 workers and the RTX2060 remain
 uncontacted and unqueued.
+
+## 16. V12 solenoidal excitation gap
+
+| ID | Proposed object | Decisive audit | Current state |
+|---|---|---|---|
+| V12-T1/T2 | characterize exact identification and unrestricted `L^2` stability from density-ratio maps | `gamma(R)>0` iff `R` is an immersion; a localized exactly divergence-free current destroys coercivity at every critical point; closed-form constructions give ambiguity for every `K<d`; jet transversality gives generic exact identification at `K=d` | theorem proved in the declared smooth closed-manifold setting; research candidate `CONJECTURE` pending human novelty/value audit |
+| V12-T3 | convert fold degeneracy into a publishable statistical method or feasible perturbation design | the standard two-dimensional fold gives sharp deterministic modulus `L^(1/(2s+1)) delta^(2s/(2s+1))`, but stationary-density derivative estimation, Grushin regularization and projected-immersion lifting already occupy the obvious composition | `NO_ADMITTED_NMI_CANDIDATE` |
+| V12-NCS | discover a controlled real-system mechanism using the theorem | no quantitative actuator fields, independently checked stationary ensembles, substantive non-gradient mechanism or sealed independent replication exists | `NO_ADMITTED_NCS_CANDIDATE` |
+
+The theorem package separates three regimes: `K<d` is nonidentified; `K=d` is generically exactly identified but
+never uniformly stable on a closed state space; and some abstract stable density family exists once
+`K>=imm(M)`. For `d<K<imm(M)`, exact identification may occur but uniform stability cannot. This is an abstract
+density-family result, not actuator reachability.
+
+Experiment 154 was never preregistered or run. No generated sample, dataset, outcome, remote worker or GPU was
+opened; both V100 workers and the RTX2060 remain uncontacted and unqueued. Re-entry requires either an independent
+human audit finding a genuinely non-compositional theorem contribution, a stationary-sample minimax/method result
+outside ordinary density estimation plus Grushin regularization, or a drift-blind feasible intervention design.

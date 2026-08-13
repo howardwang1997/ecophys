@@ -1,9 +1,9 @@
-# Theory-exploration topology v11
+# Theory-exploration topology v12
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** `V11_CONJECTURE_ONLY`; stationary-drift estimator/ambiguity novelty is
-`RETIRED_PRIOR_ART`; the density-ratio immersion obstruction is `CONJECTURE`; outcomes/scale-up locked
+**Current decision:** `V12_THEOREM_ONLY`; the exact/stable three-regime package is proved in its declared setting
+but remains `CONJECTURE` at the research-novelty level; no NMI/NCS candidate is admitted and scale-up is locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate, v6 exact-
@@ -17,6 +17,10 @@ shows that the proposed local-correction spectrum is not intrinsic to the logica
 V11 adds inverse-SDE, Fokker--Planck residual, KDS, Jacobi-multiplier and Nambu coverage; its exact circle witness
 separates pointwise rank from global uniqueness, while a closed-manifold immersion obstruction survives only as a
 narrow conjectural research lead.
+V12 adds A-free wave-cone, redundant inverse-PDE, Grushin and projected-immersion coverage. It proves the
+solenoidal lower-modulus equivalence, the exact `K<d` ambiguity, generic equal-count exact identification and the
+sharp standard-fold conditional modulus, but closes below venue admission because no non-equivalent statistical
+method, feasible actuator design or controlled real-system mechanism survives.
 
 ```mermaid
 flowchart TB
@@ -238,6 +242,22 @@ flowchart TB
     CLOSE10 --> V11
     V11 --> CLOSE11["V11_CONJECTURE_ONLY"]
     CLOSE11 --> LOCK11["Exp153 / outcomes / workers / GPUs locked"]
+
+    subgraph V12["v12: solenoidal excitation gap"]
+        COERC12["gamma(R)>0 iff R immersion"]
+        SUB12["K<d: explicit solenoidal ambiguity"]
+        EQUAL12["K=d: generic exact, never stable"]
+        FOLD12["2D fold: sharp conditional modulus"]
+        NEIGH12["A-free + inverse PDE + Grushin + lifting"]
+        COERC12 --> EQUAL12
+        SUB12 --> EQUAL12
+        FOLD12 --> EQUAL12
+        NEIGH12 -->|blocks method admission| FOLD12
+    end
+
+    CLOSE11 --> V12
+    V12 --> CLOSE12["V12_THEOREM_ONLY"]
+    CLOSE12 --> LOCK12["Exp154 / data / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -355,6 +375,26 @@ closed `d`-manifold cannot immerse into `R^d`, so `d` ratios never give uniform 
 global identification lower bound: on `S^1`, one nonconstant ratio has critical points but removes every constant
 divergence-free ambiguity current.
 
+V12 replaces that pointwise statement with the solenoidal operator
+
+\[
+T_Rj=dR(j),\qquad \operatorname{div}_{\mu}j=0,
+\]
+
+and proves
+
+\[
+\gamma(R)=\inf_{j\ne0,\,\operatorname{div}_{\mu}j=0}
+\frac{\lVert T_Rj\rVert_2}{\lVert j\rVert_2}>0
+\quad\Longleftrightarrow\quad R\text{ is an immersion}.
+\]
+
+At a critical point, an anisotropic stream function produces an exactly divergence-free unit current with
+`||T_R j_epsilon||_2=O(epsilon)`. Closed-form differential-form constructions prove nonidentification for every
+`K<d`; standard jet transversality gives generic exact identification for `K=d`, while compactness still forces
+`gamma(R)=0`. In the standard two-dimensional fold, an `H^s` radius `L` gives the sharp deterministic modulus
+`L^(1/(2s+1)) delta^(2s/(2s+1))`. This is not yet a stationary-sample minimax theorem.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -392,11 +432,15 @@ divergence-free ambiguity current.
 | v11 common-drift tomography/estimator | `RETIRED_PRIOR_ART` | strong FP subtraction is elementary; DyNoSeD/KDS cover local/global estimators, rank and sensitivity; ambiguity geometry composes Liu--Liu/Jacobi/Nambu | exact diagnostic and negative controls only |
 | v11 density-ratio immersion | `CONJECTURE` | closed-manifold exact-coframe obstruction is proof-complete, but circle witness blocks a global count claim and no statistical/design consequence exists | human novelty/value audit and global/minimax strengthening only |
 | Exp152 exact audit | `IDENTITY_AND_OBSTRUCTIONS_CONFIRMED` | exact full-rank recovery plus torus alias, invisible intervention, unequal diffusion and chart dependence; raw SHA `ee08eb70...` | immutable algebra/obstruction result only |
+| v12 exact/stable three-regime theorem | `THEOREM_ONLY`; research candidate `CONJECTURE` | explicit `K<d` ambiguity, generic `K=d` exact identification, zero modulus at every critical point and abstract stability at `imm(M)` | specialist theorem scaffold pending independent human novelty/value audit |
+| v12 fold conditional modulus | proved deterministic result; no method admission | sharp exponent `2s/(2s+1)`, but Grushin subellipticity, interpolation and stationary-density derivative estimation occupy the obvious route | comparator for a genuinely new stationary-sample theorem only |
+| v12 actuator/real-system bridge | `NO_DATA_CONTRACT` | projected-immersion lifting is classical; no drift-blind feasible actuator or controlled replicated stationary system exists | new topic or actuator-constrained theorem before data |
+| Exp154 | `NOT_OPENED` | theorem and prior-art gates closed before preregistration | none; do not run post hoc |
 
-The graph has 345 nodes after the V11 closure. NMI has no admitted non-equivalent method; NCS has no calibrated
-replicated scientific mechanism or executable prospective data contract. Experiment 152 used analytic constants
-and Mac CPU only. Experiment 153, generated data, real outcomes, remote workers and GPUs remain locked, and both
-V100 workers and the RTX2060 remain outside the queue.
+The graph has 365 nodes after the V12 closure. NMI has no admitted non-equivalent method; NCS has no calibrated
+replicated scientific mechanism or executable prospective data contract. V12 used source inspection and symbolic
+proof work only. Experiment 154 was not preregistered; generated data, real outcomes, remote workers and GPUs
+remain locked, and both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

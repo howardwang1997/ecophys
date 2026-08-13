@@ -38,11 +38,14 @@ the data/GPU locks are unchanged. See the [Plan v4 proposal](papers/proposal/pla
 [G0 decision](papers/proposal/ncs_g0_forward_audit_2026-08-10.md), [re-entry plan](papers/proposal/plan_v4_g0_reentry_v1.md),
 and [research lineage](docs/research_lineage.md).
 
-The latest theorem search is V11 multi-stationary drift tomography. Its exact audit confirmed the population
-identity and obstruction suite, but existing DyNoSeD/KDS and inverse-SDE results close the ordinary method claim.
-A narrow closed-manifold density-ratio immersion result remains `CONJECTURE_ONLY`; it has no NMI/NCS admission and
-does not unlock Experiment 153, real outcomes or remote/GPU work. See the
-[V11 closure](research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md).
+The latest theorem search is V12 solenoidal excitation gap. It proves that fewer than `d` nonbaseline stationary
+density ratios leave an ambiguity, exactly `d` generically identify but cannot be uniformly `L^2` stable on a
+closed `d`-manifold, and abstract stability begins at the immersion dimension; the standard two-dimensional fold
+also has a sharp deterministic Sobolev modulus. The result closes `V12_THEOREM_ONLY`: neighboring A-free,
+inverse-PDE, Grushin and projected-immersion theory occupies the obvious method route, and there is no controlled
+real-system bridge. It does not unlock Experiment 154, data or remote/GPU work. See the
+[V12 closure](research/theory_exploration/solenoidal_excitation_gap_audit_v12.md). V11 remains preserved as the
+[predecessor audit](research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md).
 
 Plan v5 and experiment 141 are independently archived feasibility context. Exp141 passed generated-data
 mechanism, controlled-identifiability and cross-hardware gates, but its family-conditioned task is not

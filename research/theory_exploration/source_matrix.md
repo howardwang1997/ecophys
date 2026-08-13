@@ -311,3 +311,29 @@ use.
 - Experiment 152 returned `IDENTITY_AND_OBSTRUCTIONS_CONFIRMED` with raw SHA
   `ee08eb70...`; it did not admit a candidate or unlock compute.
 - Final decision `V11_CONJECTURE_ONLY`. No generated data, real outcome, remote worker or GPU was opened.
+
+## V12 solenoidal-excitation-gap audit
+
+| Primary source | What is established | V12 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [Higher integrability for measures satisfying a PDE constraint](https://arxiv.org/abs/2106.03077) | Theorem 1.1 gives regularity for `A`-free measures concentrated near subspaces separated from the wave cone. | Wave-cone separation and localized `A`-free behavior as new analytic principles. | Direct oracle for the solenoidal-localization mechanism. |
+| [Compensated compactness of A-free measures on cones with quantified aperture](https://arxiv.org/abs/2606.16762) | Theorem 1.11 quantifies compactness as a cone approaches or stays separated from an elliptic subspace. | A new generic quantitative aperture principle around the divergence constraint. | Current preprint oracle for quantitative wave-cone geometry. |
+| [Hybrid inverse problems and redundant systems of partial differential equations](https://arxiv.org/abs/1210.0265) | Redundant internal measurements yield elliptic parametrices and optimal stability; underdetermined variants can be subelliptic. | “More environments change an inverse PDE from singular to stable” as a new method concept. | Elliptic/subelliptic inverse-system comparator. |
+| [Inverse diffusion problems with redundant internal information](https://arxiv.org/abs/1106.4277) | A uniformly positive frame of internal gradients gives global reconstruction and stability. | Gradient-frame redundancy and stable inversion as new primitives. | Exact frame and stability oracle. |
+| [Sharp resolvent estimate for the Baouendi--Grushin operator and applications](https://arxiv.org/abs/2201.08189) | Establishes sharp Grushin subelliptic regimes and concentrating quasimodes. | Fold concentration and rate degradation as a wholly new analytic mechanism. | Sharp scaling and quasimode comparator. |
+| [On Singularities of Mappings of Euclidean Spaces I](https://doi.org/10.2307/1970070) | Organizes generic equal-dimensional maps by rank and higher singularity strata. | Replacing a stratified genericity analysis with “generic means fold everywhere.” | Transversality/singularity-theory oracle. |
+| [Reconstructions for some coupled-physics inverse problems](https://doi.org/10.1016/j.aml.2012.05.013) | Uses ratios and gradients of internal solutions to remove gauges and reconstruct coefficients stably. | Ratios, gradient spanning and gauge removal as new inverse-PDE patterns. | Nearby ratio-gradient reconstruction baseline. |
+| [Singularities of projected immersions revisited](https://doi.org/10.2140/agt.2009.9.1623) | A Morin map lifts through one scalar coordinate to an immersion exactly when its kernel line bundle is trivialized. | Adding one density-ratio coordinate as a new generic intervention design. | Global lifting obstruction and design oracle. |
+| [Nonparametric estimation of derivatives of the stationary density for stationary processes](https://doi.org/10.1051/ps/2011102) | Gives nonparametric stationary-density derivative estimation under dependence. | Treating score/density-derivative recovery as an unoccupied statistical component. | Required finite-sample nuisance-rate baseline. |
+
+### V12 synthesis
+
+- `gamma(R)>0` if and only if the density-ratio map is an immersion; the reverse implication uses an exactly
+  divergence-free anisotropic localized current at any critical point.
+- For `K<d`, a global closed-form construction gives a nonzero ambiguity. For `K=d`, jet transversality gives
+  generic exact identification while closedness forces zero unrestricted `L^2` stability. Abstract uniform
+  stability begins at `imm(M)`.
+- In the exact two-dimensional fold chart, the deterministic Sobolev modulus has sharp exponent `2s/(2s+1)`.
+  It is not a stationary-sample minimax rate.
+- The package is mathematically useful but composes occupied A-free, inverse-PDE, Grushin, transversality and
+  projected-immersion mechanisms. Final decision `V12_THEOREM_ONLY`; Experiment 154 and all workers remain locked.

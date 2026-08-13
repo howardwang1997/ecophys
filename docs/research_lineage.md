@@ -5,6 +5,19 @@ for a later project.
 
 ## Current theory state
 
+`global-drift-identifiability-gap-audit-v12` started from integrated `main@1106a3399`, froze its plan before any
+proof artifact or outcome, and closed `V12_THEOREM_ONLY` on 2026-08-13. It proves that `K<d` nonbaseline density
+ratios leave an explicit smooth solenoidal ambiguity, `K=d` ratios generically identify exactly but never give a
+positive unrestricted `L^2` lower modulus on a closed `d`-manifold, and some abstract stable family exists at the
+Euclidean immersion dimension. The exact two-dimensional fold has deterministic conditional exponent
+`2s/(2s+1)`. A-free localization, redundant inverse-PDE frames, Grushin subellipticity and projected-immersion
+lifting occupy the obvious method/design route; no stationary-sample minimax theorem, feasible actuator or real
+controlled mechanism survived. Experiment 154 was not preregistered or run, and no data, worker or GPU was
+opened. Plan, cards and closure:
+`papers/proposal/plan_solenoidal_excitation_gap_nmi_ncs_v12.md`,
+`research/theory_exploration/formal_cards_v12.md` and
+`research/theory_exploration/solenoidal_excitation_gap_audit_v12.md`.
+
 `multi-stationary-drift-tomography-audit-v11` started from integrated `main@0ad0d59c2`, froze its plan before
 Experiment 152 and closed `V11_CONJECTURE_ONLY` on 2026-08-13. The sole deterministic run confirmed exact
 full-rank nonreversible recovery plus rank-deficient, invisible-intervention, unequal-diffusion and coordinate-
@@ -159,6 +172,10 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Algorithmic fee-market dynamics v6 | `V6_NO_SURVIVOR_IDENTIFIABILITY`; closed before outcomes | Exact protocol oracle, scale audit, Base topology provenance, Exp151 alias/rank negative control | No identified behavioral response, market outcome, method novelty, data/compute unlock or venue claim |
 | Gauge-invariant controller probes v7 | `V7_NO_SURVIVOR`; closed before experiments/outcomes | Quotient factorization, exact drift-set width, fixed probe-tree transducer and 264-node graph | No method/phenomenon survivor, data contract, outcome or compute unlock |
 | Causal memory transplantation v8 | `V8_NO_SURVIVOR_PRIOR_ART`; closed before experiments/model inference | Explicit state/reset audit, factorial-interaction reduction and 286-node prior-art graph | No transplant/contagion novelty, signed economic law, generated outcome, data/compute unlock or venue claim |
+| Age-structured liquidity v9 | `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; closed before outcomes | Queue-survival/lifecycle source map and competing-risk design discipline | No signed law, independent multi-day witness, method novelty or compute/data unlock |
+| Prediction-market coherence v10 | `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; closed before collection | Equivalent-basis counterexample and certified-graph data boundary | No intrinsic spectral law, certified nontrivial graph, outcome or compute/data unlock |
+| Multi-stationary drift tomography v11 | `V11_CONJECTURE_ONLY`; Exp152 exact audit complete | Ambiguity-current criterion, obstruction fixtures and density-ratio geometry | No ordinary estimator novelty, global count theorem, data contract or compute unlock |
+| Solenoidal excitation gap v12 | `V12_THEOREM_ONLY`; closed before Exp154 | Exact/stable three-regime theorem, localized current construction and sharp fold modulus | No admitted NMI/NCS method, actuator design, real mechanism, dataset or compute unlock |
 
 ## Code inheritance rules
 
