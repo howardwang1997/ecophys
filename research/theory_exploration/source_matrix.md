@@ -337,3 +337,34 @@ use.
   It is not a stationary-sample minimax rate.
 - The package is mathematically useful but composes occupied A-free, inverse-PDE, Grushin, transversality and
   projected-immersion mechanisms. Final decision `V12_THEOREM_ONLY`; Experiment 154 and all workers remain locked.
+
+## V13 prospective algorithmic-agent mechanism audit
+
+| Primary source | What is established | V13 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [EIP-7732](https://eips.ethereum.org/EIPS/eip-7732) and [consensus specifications](https://github.com/ethereum/consensus-specs) | EIP-7732 is in Review and introduces protocol-native signed builder bids, staked builders, payments and PTC messages; Gloas is an unstable spec with fork epoch TBD. | Treating ePBS as a finalized intervention with a sealable current cutoff. | Versioned protocol clock; wait for a final epoch and implementation hash. |
+| [Ethereum Glamsterdam roadmap](https://ethereum.org/roadmap/glamsterdam/) | ePBS is scheduled for Glamsterdam, removes the need for relay middleware for core fair exchange and lengthens the propagation window, while optional middleware may remain. | Calling the fork a single isolated “relay removal” treatment. | First-party motivation and bundle-of-changes inventory. |
+| [Relay API](https://flashbots.github.io/relay-specs/) | Standard relay endpoints expose relay-held data under CC0, not a centralized all-relay tape. | Assuming endpoint standardization implies full market coverage. | Schema oracle only. |
+| [Ultra Sound data API](https://docs.ultrasound.money/builders/data-api), [builder sequencing](https://docs.ultrasound.money/builders/builder-getting-started) and [bid forwarding](https://docs.ultrasound.money/builders/bid-forwarding) | A global view aggregates one operator's regional receipts; relay `received_at`, optional builder sequence and sharing/forwarding rules define timing. | Interpreting recorded update lag as an agent-only latency trait or comparing it directly with post-ePBS P2P timing. | Selected-clock observation model and coverage diagnostics. |
+| [Who Wins Ethereum Block Building Auctions and Why?](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2024.22) | Measures order-flow, bidding and latency advantages; explicitly reports unavailable losing payloads, incomplete mempool/identity labels and Ultra Sound-only bidding data. | H1/H2 under a complete-bid or complete-private-flow interpretation. | Mandatory development baseline and limitation contract. |
+| [To Compete or To Collude](https://openreview.net/forum?id=XMBR5UEo3f) | Empirical game-theoretic analysis jointly studies latency advantage, private order flow, relay timing enforcement, collusion and auction efficiency. | Broad latency-rent versus information-rent mechanism novelty. | Strategic-bidding oracle. |
+| [Private Order Flows and Builder Bidding Dynamics](https://arxiv.org/abs/2410.12352) | An asymmetric auction model links private order flow to winning, retained profit and concentration. | Private information causing builder concentration as a new qualitative result. | Information-asymmetry comparator; preprint status retained. |
+| [The Free Option Problem of ePBS](https://arxiv.org/abs/2509.24849) | Derives an ePBS withholding option and signed effects of volatility, liquidity, deadline and external-signal value; estimates historical counterfactual exercise. | Claiming first discovery of the option or its signed economic predictions. | Exact target for a future prospective identification test. |
+| [ePBS in the presence of MEV](https://arxiv.org/abs/2601.12989) | Formal and agent-based models already treat ePBS latency, bidding, MEV and long-run builder concentration. | H3 as a new theory or simulator result. | Prospective real-data prediction baseline; preprint. |
+| [Adversarial competition and collusion in algorithmic markets](https://www.nature.com/articles/s42256-023-00646-0) | NMI already studies learning, manipulation and collusion among competing pricing algorithms. | An identity-conditioned learned policy as sufficient NMI novelty. | Venue-level algorithmic-market comparator. |
+| [CoW CIP-85](https://forum.cow.fi/t/cip-85-performance-and-consistency-rewards/3377), [Consistency Metric v2](https://forum.cow.fi/t/consistency-metric-v2/3474) and [competition API](https://api.cow.fi/docs/) | CoW has exact solver-reward changes and public submitted-solution rankings, but Metric v2 began 2026-06-30. | Relabeling an already observed reward reform as untouched replication of relay removal. | Historical development replay only. |
+| [CIP-74 natural experiment preprint](https://arxiv.org/abs/2607.21955) | A July 2026 paper already studies a CoW solver-reward reform and concentration. | A generic solver-reward event study as a new mechanism contribution. | Direct CoW baseline. |
+| [FireBAM rollout](https://bam.dev/blog/introducing-firebam-bam-expands-to-firedancer/) | BAM/FireBAM was already live on part of Solana mainnet by May 2026. | Treating BAM as an unobserved future transition or assuming a complete public scheduler-action panel. | Future metadata scout only. |
+
+### V13 synthesis
+
+- G0 waits: ePBS is scheduled but has no final fork epoch and the reference specification remains unstable.
+- G1 fails: pre-period relay receipts and post-period global P2P bids do not share an invariant measurement
+  operator; losing payloads prevent a direct private-information channel.
+- G2 does not admit adaptation from public-key panels; key multiplicity and selection can mimic within-identity
+  timing change.
+- G3 fails for the frozen broad claim because the latency, private-flow, free-option, efficiency and concentration
+  channels are directly occupied.
+- G5 fails: CoW and Jito are useful development systems but neither is a prospectively sealed independent
+  replication of the frozen mechanism channel.
+- Final decision `V13_NO_COMMON_OBSERVABLE`. Experiment 155, outcomes and all workers remain locked.

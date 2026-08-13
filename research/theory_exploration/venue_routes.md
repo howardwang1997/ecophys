@@ -324,3 +324,24 @@ The final V12 decision is `V12_THEOREM_ONLY`. NMI re-entry requires a statistica
 by composing stationary-density estimation with classical degenerate regularization, or a drift-blind
 actuator-constrained design beyond projected-immersion lifting. NCS additionally requires a controlled real
 mechanism and sealed independent replication.
+
+## V13 prospective algorithmic-agent mechanism decision
+
+- **NMI:** `NO_ADMITTED_CANDIDATE`. Exact-rule replay and an identity-conditioned policy model are established
+  components. The changing-interface problem is real, but V13 supplies only an elementary observation-equivalence
+  warning, not a non-equivalent estimator, sharp bound or learning theorem.
+- **NCS:** `NO_COMMON_OBSERVABLE`. EIP-7732 has no final fork epoch; relay-clocked pre bids are not commensurate
+  with post-ePBS global P2P messages; losing payload/private-flow states are missing; the broad predicted channels
+  are already studied; and no prospectively sealed independent system exists.
+- **Prospective measurement route:** potentially valuable only after a final ePBS clock, authenticated
+  multi-vantage payload/blob propagation, identity ambiguity bounds and independent replication. Confirmation of
+  an already predicted correlation is not enough for a flagship Article.
+- **Retained scout:** self-concealing mechanism actions, where the strategic action suppresses the outcome that
+  would reveal its motive. Re-entry requires an instrument, exogenous deadline/penalty variation or calibrated
+  physical-failure bounds and a method distinct from standard competing-risk/partial-identification composition.
+- **Data/compute:** no endpoint outcome, generated sample or market record was opened. Experiment 155 was not
+  created; both V100s and the RTX2060 remain idle and unqueued; H20 is excluded.
+
+The final V13 decision is `V13_NO_COMMON_OBSERVABLE`. It is not merged into Plan v4 as an active archival program.
+A successor must freeze the observation instrument before the mechanism outcome, or change the scientific object
+again; adding more data or GPU capacity to the current estimand is not a remedy.

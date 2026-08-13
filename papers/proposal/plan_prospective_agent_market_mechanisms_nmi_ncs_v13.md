@@ -236,3 +236,34 @@ is high because the mechanism date, observability and independent replication ar
    identification experiment after a second freeze commit.
 5. Synchronize the knowledge graph, candidate/failure ledgers, research lineage, durable memory and dated log
    before any integration into `main`.
+
+## 12. Execution outcome
+
+**Closed:** 2026-08-13 as `V13_NO_COMMON_OBSERVABLE`.
+
+G0 is waiting rather than passed: EIP-7732 remains in Review, the Gloas consensus specification is unstable and
+its fork epoch is TBD. More decisively, G1 fails for the frozen claim. MEV-Boost bids are selected and timestamped
+by relay-specific observation systems; Ultra Sound's multi-region aggregate is not an all-relay market tape, while
+post-ePBS signed bids would propagate on a global P2P topic. Losing execution payloads and a direct private-order-
+flow state are unavailable, so the latency and information-rent channels have no common pre/post estimand.
+
+G2 does not support adaptation: builder keys are operational aliases and can change or multiply, while relay
+selection and routing can reproduce an apparent within-builder timing response. G3 also fails for the broad claim.
+Latency advantages, private-flow asymmetry, relay timing rules, efficiency and builder concentration are direct
+MEV-Boost prior art; 2026 ePBS work already predicts a short-dated withholding option and persistent or amplified
+builder concentration.
+
+No independent prospective replication passed G5. CoW's 2026 solver-reward changes occurred before this freeze
+and do not reproduce relay removal; Jito BAM was already partially deployed and no complete public all-action
+panel was established. Neither can be relabeled as untouched replication.
+
+The equation audit exposes a narrower future lead: strategic ePBS withholding and correlated physical/network
+failure are observationally equivalent from empty-slot outcomes alone. Re-entry requires multi-vantage
+propagation evidence, an externally assigned penalty/window change or independently calibrated failure bounds.
+This `self-concealing mechanism action` is a possible successor audit, not a V13 survivor or novelty claim.
+
+Experiment 155 was not created or run. No bid, block, price, solver outcome, market share, generated sample,
+remote host or GPU was opened. Both V100 32 GB workers and the RTX2060 remain uncontacted and unqueued; H20 stays
+excluded. Formal cards and the source/data decision are in
+`research/theory_exploration/formal_cards_v13.md` and
+`research/theory_exploration/prospective_agent_market_audit_v13.md`.

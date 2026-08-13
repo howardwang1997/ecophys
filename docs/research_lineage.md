@@ -5,6 +5,20 @@ for a later project.
 
 ## Current theory state
 
+`prospective-agent-market-mechanism-scout-v13` started from integrated `main@4705e3f7a`, froze a metadata-only
+plan before any outcome access and closed `V13_NO_COMMON_OBSERVABLE` on 2026-08-13. The candidate moved to a
+stronger real object--observable algorithmic agents under an executable ePBS mechanism change--but failed before
+experimentation. EIP-7732 remains in Review, Gloas has fork epoch TBD, pre-period bids are relay-selected and
+relay-clocked while post-ePBS bids would use a global P2P topic, and losing payload/private-flow state is missing.
+Direct MEV-Boost/ePBS work already covers latency, private order flow, efficiency, free options and builder
+concentration. CoW changes predate the freeze and Jito BAM is already partially deployed; neither is a sealed
+isomorphic replication. The retained empty-slot equivalence shows strategic withholding and correlated physical
+failure cannot be distinguished from outcomes alone; it is a possible successor scope control, not an NMI/NCS
+candidate. Experiment 155 was not created and no endpoint outcome, data, worker or GPU was opened. Plan, cards and
+closure: `papers/proposal/plan_prospective_agent_market_mechanisms_nmi_ncs_v13.md`,
+`research/theory_exploration/formal_cards_v13.md` and
+`research/theory_exploration/prospective_agent_market_audit_v13.md`.
+
 `global-drift-identifiability-gap-audit-v12` started from integrated `main@1106a3399`, froze its plan before any
 proof artifact or outcome, and closed `V12_THEOREM_ONLY` on 2026-08-13. It proves that `K<d` nonbaseline density
 ratios leave an explicit smooth solenoidal ambiguity, `K=d` ratios generically identify exactly but never give a
@@ -176,6 +190,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Prediction-market coherence v10 | `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; closed before collection | Equivalent-basis counterexample and certified-graph data boundary | No intrinsic spectral law, certified nontrivial graph, outcome or compute/data unlock |
 | Multi-stationary drift tomography v11 | `V11_CONJECTURE_ONLY`; Exp152 exact audit complete | Ambiguity-current criterion, obstruction fixtures and density-ratio geometry | No ordinary estimator novelty, global count theorem, data contract or compute unlock |
 | Solenoidal excitation gap v12 | `V12_THEOREM_ONLY`; closed before Exp154 | Exact/stable three-regime theorem, localized current construction and sharp fold modulus | No admitted NMI/NCS method, actuator design, real mechanism, dataset or compute unlock |
+| Prospective agent-market mechanisms v13 | `V13_NO_COMMON_OBSERVABLE`; closed before Exp155 | Protocol-clock, relay-selection and self-concealing-action identification controls; direct source map | No common pre/post estimand, private-information state, sealed independent replication, outcome or compute unlock |
 
 ## Code inheritance rules
 
