@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
-iteration: causal-memory-transplant-v8
-decision: V8_NO_SURVIVOR_PRIOR_ART
+iteration: age-structured-liquidity-v9
+decision: V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART
 
 nodes:
   - id: src.controlled_world_models
@@ -2223,6 +2223,129 @@ nodes:
     claim: V8 has no NMI or NCS survivor because the method phenomenon and propagation framing are occupied and the proposed scalar is a standard factorial interaction.
     artifact: research/theory_exploration/causal_memory_transplant_audit_v8.md
 
+  - id: src.v9_reality_gap
+    type: source
+    title: Bridging the Reality Gap in Limit Order Book Simulation
+    track: both
+    claim: Equal-sized queues can have different survival times because their formation paths differ and gradually depleted queues may encode greater commitment than recently placed volume.
+    url: https://arxiv.org/abs/2603.24137
+    primary: true
+    evidence_level: preprint
+  - id: src.v9_order_behavior
+    type: source
+    title: Order Behavior in High Frequency Markets
+    track: ncs
+    claim: Order-level reconstruction separates total fleeting and static books and measures their distinct contributions to displayed liquidity.
+    url: https://egrove.olemiss.edu/etd/562/
+    primary: true
+    evidence_level: dissertation
+  - id: src.v9_queue_uncertainty
+    type: source
+    title: Queuing Uncertainty of Limit Orders
+    track: ncs
+    claim: Latency-driven queue uncertainty yields clustered submissions followed by immediate cancellations and rapidly reverting depth overshoot.
+    url: https://ink.library.smu.edu.sg/lkcsb_research/7748/
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v9_order_flow_filtration
+    type: source
+    title: Order-Flow Filtration and Directional Association with Short-Horizon Returns
+    track: both
+    claim: Order messages are filtered by lifetime modification count and modification timing while standing-book lifetime filtration has modest heterogeneous directional effects.
+    url: https://arxiv.org/abs/2507.22712
+    primary: true
+    evidence_level: preprint
+  - id: src.v9_cancellation_hazard
+    type: source
+    title: The determinants of limit order cancellations
+    track: both
+    claim: Competing termination hazards are estimated using time-varying depth and queue-position covariates.
+    url: https://onlinelibrary.wiley.com/doi/10.1111/fire.12363
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v9_depth_resiliency
+    type: source
+    title: Limit-order book resiliency after effective market orders
+    track: ncs
+    claim: Spread depth and order-intensity recovery are measured after effective market-order shocks.
+    url: https://arxiv.org/abs/1602.00731
+    primary: true
+    evidence_level: preprint
+  - id: src.v9_mesoscale_resiliency
+    type: source
+    title: Order Flows and Limit Order Book Resiliency on the Meso-Scale
+    track: ncs
+    claim: Limit flows and relative addition and cancellation rates can predict resilience better than shallow depth snapshots.
+    url: https://arxiv.org/abs/1708.02715
+    primary: true
+    evidence_level: preprint
+  - id: src.v9_queue_conservation
+    type: source
+    title: The order book as a queueing system
+    track: both
+    claim: A birth-death queue model links average depth execution probability and conservation of order flows.
+    url: https://arxiv.org/abs/1311.5661
+    primary: true
+    evidence_level: preprint
+
+  - id: kr.v9_lifecycle_resilience_coverage
+    type: known_result
+    title: Order-lifecycle and resilience coverage
+    track: both
+    claim: Path-dependent queue survival fleeting versus static depth young-liquidity overshoot lifecycle filtering competing hazards and post-shock depth or flow resilience are all established objects.
+  - id: cand.v9.age_structured_liquidity
+    type: candidate
+    title: Age-structured liquidity resilience gap
+    track: both
+    claim: Raw displayed depth may recover before prospectively survival-weighted standing depth after a depletion shock and the gap might predict a second depletion beyond flow and shape baselines.
+    status: RETIRED_NO_WITNESS
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Selected as a real observable-market object distinct from EcoMD residual error and frozen before any target aggregate or model fit.
+        evidence: [research/theory_exploration/age_structured_liquidity_audit_v9.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared the candidate with queue-path lifetime filtration competing-risk and resilience sources and audited the current order-level data contract.
+        evidence: [src.v9_reality_gap, src.v9_order_behavior, src.v9_queue_uncertainty, src.v9_order_flow_filtration, src.v9_cancellation_hazard, src.v9_depth_resiliency, src.v9_mesoscale_resiliency]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_NO_WITNESS
+        reason: The residual statistic composes occupied objects has no fixed sign and lacks multi-day fitting units or independent market and venue replication.
+        evidence: [kr.v9_lifecycle_resilience_coverage, data.v9_free_sample_insufficient, research/theory_exploration/age_structured_liquidity_audit_v9.md]
+  - id: po.v9.signed_gap_and_replication
+    type: proof_obligation
+    title: Signed lifecycle-gap mechanism and independent replication
+    track: both
+    claim: A Nature-level survivor requires either a non-equivalent estimator or a theoretically signed mechanism plus prospective date-split fitting and untouched independent market or venue replication.
+  - id: ce.v9.competing_risk_sign
+    type: counterexample
+    title: Cancellation-execution competing-risk sign reversal
+    track: both
+    claim: Fresh replenishment may be committed and old orders may execute or become stale so combining cancellation and execution survival can reverse the alleged fragility ordering while leaving raw depth unchanged.
+  - id: bench.v9.flow_lifecycle_oracles
+    type: benchmark
+    title: Queue lifecycle flow and resilience oracle
+    track: both
+    claim: Any future gap must beat raw and deeper depth OFI additions cancellations queue position prospective competing hazards and descriptive ex-post lifetime partitions.
+  - id: data.v9_free_sample_insufficient
+    type: dataset
+    title: V9 current free order-level sample boundary
+    track: ncs
+    claim: Four one-day equity streams and one SPY hour support parser development only and cannot provide by-date hazard splits day-level inference or independent venue replication.
+  - id: compute.v9_literature_only
+    type: compute_gate
+    title: V9 literature-only gate
+    track: both
+    claim: V9 stops before target computation and authorizes no local experiment remote-host contact V100 RTX2060 or GPU job.
+  - id: decision.iteration_v9_closure
+    type: decision
+    title: Age-structured liquidity v9 closure
+    track: both
+    claim: V9 has no NMI or NCS survivor because the exact residual composes occupied lifecycle and resilience objects has no fixed sign and lacks an independent data witness.
+    artifact: research/theory_exploration/age_structured_liquidity_audit_v9.md
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -2581,3 +2704,23 @@ edges:
   - {source: decision.iteration_v8_closure, target: data.sealed_real_interventions, type: forbids, claim: Failure at N0 keeps every generated human and market outcome closed.}
   - {source: decision.iteration_v8_closure, target: compute.nmi_post_n1, type: forbids, claim: Direct method prior art prevents NMI scale-up.}
   - {source: decision.iteration_v8_closure, target: compute.ncs_post_c1, type: forbids, claim: No new signed cross-mechanism phenomenon remains to justify remote or GPU scale-up.}
+
+  - {source: src.v9_reality_gap, target: kr.v9_lifecycle_resilience_coverage, type: covers, claim: Direct queue-path dependence occupies the state-completeness motivation.}
+  - {source: src.v9_order_behavior, target: kr.v9_lifecycle_resilience_coverage, type: covers, claim: Fleeting and static depth already instantiate heterogeneous displayed-liquidity durability.}
+  - {source: src.v9_queue_uncertainty, target: kr.v9_lifecycle_resilience_coverage, type: covers, claim: Immediate cancellation after clustered submission supplies a direct young-liquidity overshoot mechanism.}
+  - {source: src.v9_order_flow_filtration, target: kr.v9_lifecycle_resilience_coverage, type: covers, claim: Lifetime and modification filters are explicit empirical objects with a standing-book negative result.}
+  - {source: src.v9_cancellation_hazard, target: kr.v9_lifecycle_resilience_coverage, type: covers, claim: Age depth and queue-position termination hazards belong to established duration analysis.}
+  - {source: src.v9_depth_resiliency, target: kr.v9_lifecycle_resilience_coverage, type: covers, claim: Raw depth and order-intensity shock recovery are established targets.}
+  - {source: src.v9_mesoscale_resiliency, target: kr.v9_lifecycle_resilience_coverage, type: covers, claim: Flow and cancellation resilience are stronger mandatory baselines than shallow depth alone.}
+  - {source: src.v9_queue_conservation, target: kr.v9_lifecycle_resilience_coverage, type: supports, claim: Queue-flow conservation prevents ordinary cohort accounting from serving as a new mechanism by itself.}
+  - {source: kr.v9_lifecycle_resilience_coverage, target: cand.v9.age_structured_liquidity, type: covers, claim: The candidate recombines established lifecycle and resilience objects rather than introducing a distinct method or law.}
+  - {source: cand.v9.age_structured_liquidity, target: po.v9.signed_gap_and_replication, type: requires, claim: A signed non-equivalent mechanism and independent replication are required for Nature-level admission.}
+  - {source: cand.v9.age_structured_liquidity, target: ce.v9.competing_risk_sign, type: falsified_by, claim: Competing cancellation and execution plus heterogeneous replenishment destroy an automatic signed age-fragility prediction.}
+  - {source: cand.v9.age_structured_liquidity, target: bench.v9.flow_lifecycle_oracles, type: distinguished_by, claim: Prospective hazards and direct flow shape and lifecycle baselines define the nearest-composition oracle.}
+  - {source: cand.v9.age_structured_liquidity, target: data.v9_free_sample_insufficient, type: retired_by, claim: The current one-day and one-hour streams cannot support date-split fitting or independent replication of the residual gap.}
+  - {source: kr.v9_lifecycle_resilience_coverage, target: decision.iteration_v9_closure, type: supports, claim: Direct prior art occupies the candidate's mathematical and empirical ingredients.}
+  - {source: ce.v9.competing_risk_sign, target: decision.iteration_v9_closure, type: supports, claim: The cancellation-execution distinction blocks the proposed automatic physical interpretation and signed law.}
+  - {source: data.v9_free_sample_insufficient, target: decision.iteration_v9_closure, type: supports, claim: The available free panel has no independent unit structure for confirmation.}
+  - {source: decision.iteration_v9_closure, target: compute.v9_literature_only, type: supports, claim: The novelty and data gates stop V9 before any target computation or experiment.}
+  - {source: decision.iteration_v9_closure, target: compute.nmi_post_n1, type: forbids, claim: No non-equivalent method or theorem survives for NMI scale-up.}
+  - {source: decision.iteration_v9_closure, target: compute.ncs_post_c1, type: forbids, claim: No signed replicated scientific phenomenon survives for NCS scale-up.}

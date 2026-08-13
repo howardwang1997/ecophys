@@ -1,11 +1,13 @@
-# Candidate ledger — v1 through v8
+# Candidate ledger — v1 through v9
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** `V8_NO_SURVIVOR_PRIOR_ART`; causal memory transplantation is
-`RETIRED_PRIOR_ART` before any experiment or model inference
+**Current outcome:** `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; age-structured liquidity resilience is
+`RETIRED_NO_WITNESS` before any target aggregate, fitted hazard or predictive result
 
-**Scientific meaning:** quotienting, bounding drift and randomizing a finite controller path do not by themselves
-identify latent adaptation. The next candidate needs an external state measurement/reset or a different target.
+**Scientific meaning:** a prospectively estimated order-lifecycle state is observable and may be useful, but
+survival weighting alone is established queueing/duration machinery. The next Nature-level candidate needs a
+signed mechanism or non-equivalent method and independent real-system replication, not another recombination of
+age, depth and shock-recovery statistics.
 
 ## 1. Shared object and identification target
 
@@ -335,6 +337,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v6 identifiability closure | Voided premature Exp150, then ran the disjoint-seed frozen Exp151 once; exact single-regime aliases survived, BPO excitation was rank 2, and full-rank generated separation required invariant latent dynamics. | `V6_NO_SURVIVOR_IDENTIFIABILITY`; NCS `RETIRED_IDENTIFIABILITY`; NMI remains retired; outcomes/compute locked |
 | 2026-08-13 | v7 gauge-invariant probe audit | Audited observable quotients, bounded-drift identified sets and randomized loop probes against realization/PSR, set-membership/active control and switchback/pump results; derived one factorization, one exact width formula and one fixed-transducer alias. | `V7_NO_SURVIVOR`; no experiment, outcome, remote worker or GPU use |
 | 2026-08-13 | v8 causal memory transplant audit | Audited explicit memory transplantation, causal memory perturbation, economic-agent carry-over, experience transfer and memory/agent contagion; reduced the proposed contrast to a standard factorial interaction. | `V8_NO_SURVIVOR_PRIOR_ART`; stopped at N0 before any experiment, model inference, outcome or remote/GPU use |
+| 2026-08-13 | v9 age-structured liquidity audit | Audited prospective survival-weighted depth against path-dependent queue survival, fleeting/static books, queue-uncertainty overshoot, lifecycle filters, competing hazards and post-shock depth/flow resilience. | `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; stopped before any target aggregate, hazard fit, outcome or remote/GPU use |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -452,3 +455,34 @@ V8 therefore stopped at N0. No transparent-agent fixture, generated trajectory, 
 remote worker or GPU was used. The two V100 workers and RTX2060 remain uncontacted and unqueued. Re-entry requires
 a non-factorial estimand/guarantee, a theoretically signed law that survives sufficient-state oracles, or an
 external scientific measurement rather than additional prompts, models or memory arms.
+
+## 13. V9 age-structured liquidity resilience
+
+| ID | Proposed object | Decisive audit | Final state |
+|---|---|---|---|
+| V9-C1 | recovery-time gap between raw displayed depth and prospectively survival-weighted standing depth after a depletion shock | direct path-dependent queue-survival motivation; fleeting/static depth decomposition; equilibrium liquidity overshoot; lifecycle filtering; cancellation/execution hazards; established depth/flow resilience; no fixed sign and no independent multi-day witness | `RETIRED_NO_WITNESS` |
+
+For displayed orders `J_t`, remaining size `q_j` and prospectively estimated survival probability
+`S_j(h | F_t)`, the proposed state was
+
+\[
+D_h(t)=\sum_{j\in J_t}q_jS_j(h\mid\mathcal F_t)
+=\mathbb E\!\left[\sum_{j\in J_t}q_j\mathbf 1\{T_j>t+h\}\middle|\mathcal F_t\right].
+\]
+
+This is conditional-expectation linearity, not a new identity. Because `T_j` ends through either cancellation or
+displayed execution, the statistic is expected future standing volume, not automatically liquidity commitment:
+execution removes an order because it actually supplied liquidity. A valid interpretation therefore needs a
+prospective competing-risk decomposition trained only on earlier dates.
+
+The exact raw-versus-survival-weighted recovery gap was not found verbatim, but all of its ingredients and the
+state-completeness motivation are occupied. Its sign can reverse with replenishment quality and competing exit
+risks, ex-post lifetime filters leak the target, and depletion conditioning is endogenous. The current free LOBSTER
+holdings—one day each for four equities and one SPY hour—cannot supply date-level train/validation/test splits or
+independent day/venue replication.
+
+V9 therefore stopped before a formal plan or experiment. No target recovery curve, fitted hazard, prediction,
+remote host or GPU was opened; the V100 workers and RTX2060 remain uncontacted and unqueued. The reconstruction
+specification survives only as future specialist-market-microstructure infrastructure. Re-entry requires a signed
+mechanism or non-equivalent estimator, multi-day development data, an untouched independent market/venue
+replication and a frozen analysis contract before any target value is computed.

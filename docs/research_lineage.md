@@ -5,13 +5,22 @@ for a later project.
 
 ## Current theory state
 
-`observable-state-mechanism-search-v8` started from integrated `main@132640630` on 2026-08-13. It does not reopen
-V6/V7 or authorize model inference. It asks whether randomized source history moves with an explicit external
-memory capsule into independently restarted computational economies. The sole initial candidate must defeat
-memory-agent, context-ablation, causal-mediation/interference, process-memory and learning-agent-market baselines;
-the economy is the statistical unit and human/real-market claims are excluded. Current authorization is primary
-literature and protocol design only: <=30 local Mac CPU core-hours, zero remote contact and zero GPU-hours.
-Protocol: `papers/proposal/plan_causal_memory_transplant_agentic_economies_nmi_ncs_v8.md`.
+`age-structured-liquidity-audit-v9` started from integrated `main@c41576c84` and closed
+`V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART` on 2026-08-13 before a plan freeze or experiment. It tested whether raw depth
+could recover before prospectively survival-weighted standing depth after depletion. Path-dependent queue
+survival, fleeting/static depth, queue-uncertainty overshoot, lifecycle filtration, competing hazards and
+depth/flow resilience occupy the construction; cancellation versus execution also prevents an automatic signed
+fragility interpretation. The current four one-day equity streams plus one SPY hour cannot provide by-date hazard
+fitting or independent replication. No target aggregate, hazard fit, prediction, remote worker or GPU was opened.
+Audit: `research/theory_exploration/age_structured_liquidity_audit_v9.md`.
+
+`observable-state-mechanism-search-v8` started from integrated `main@132640630` and closed
+`V8_NO_SURVIVOR_PRIOR_ART` on 2026-08-13 before experiments or model inference. Memory transplantation, causal
+memory perturbation and economic-agent carry-over are direct prior art, while the frozen contrast is a standard
+source-by-capsule factorial interaction. Strong shams and economy-level inference survive as specialist design
+discipline, not a Nature-level method or phenomenon. No generated outcome, API, worker or GPU was used. Protocol
+and closure: `papers/proposal/plan_causal_memory_transplant_agentic_economies_nmi_ncs_v8.md` and
+`research/theory_exploration/causal_memory_transplant_audit_v8.md`.
 
 `gauge-invariant-controller-probes-v7` started from integrated `main@d89a2dc59` and closed `V7_NO_SURVIVOR` on
 2026-08-13 before experiments or outcomes. C1's invariant target factors through standard controlled input--output

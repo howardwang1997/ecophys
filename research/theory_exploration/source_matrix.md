@@ -234,3 +234,27 @@ use.
   new signed cross-mechanism law or external scientific measurement.
 - The stop rule fired at N0. No experiment, generated outcome, model/API call, remote worker or GPU was used; final
   decision `V8_NO_SURVIVOR_PRIOR_ART`.
+
+## V9 age-structured-liquidity audit
+
+| Primary source | What is established | V9 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [Bridging the Reality Gap in Limit Order Book Simulation](https://arxiv.org/abs/2603.24137) | Equal-sized queues can have different survival times because their formation paths differ; gradually depleted queues may encode more conviction than recently placed volume. | Path/age-enriched queue state as a new state-completeness motivation. | Direct path-dependent survival oracle. |
+| [Order Behavior in High Frequency Markets](https://egrove.olemiss.edu/etd/562/) | Reconstructs total, fleeting and static books and decomposes their different contributions to displayed liquidity. | Claiming heterogeneous displayed-depth durability or an ex-post lifetime partition as new. | Descriptive oracle; ex-post labels cannot be used prospectively. |
+| [Queuing Uncertainty of Limit Orders](https://ink.library.smu.edu.sg/lkcsb_research/7748/) | Latency-driven queue uncertainty produces clustered new submissions, immediate cancellations and rapidly reverting depth overshoot. | Young replenishment that looks liquid and then disappears as a new mechanism. | Signed equilibrium countermodel and baseline. |
+| [Order-Flow Filtration and Directional Association with Short-Horizon Returns](https://arxiv.org/abs/2507.22712) | Filters messages by lifetime, modification count and timing; standing-book lifetime filtration changes directional association only modestly and heterogeneously. | Simple lifecycle filtering as method novelty or guaranteed predictive gain. | Hard negative lifecycle baseline. |
+| [The determinants of limit order cancellations](https://onlinelibrary.wiley.com/doi/10.1111/fire.12363) | Estimates competing termination hazards with time-varying depth and queue-position covariates. | Age-conditioned cancellation/execution risk as a new statistical method. | Competing-risk and calibration oracle. |
+| [Limit-order book resiliency after effective market orders](https://arxiv.org/abs/1602.00731) | Measures spread, depth and order-intensity recovery after market-order shocks. | Post-depletion raw-depth recovery as a new observable. | Raw resilience baseline. |
+| [Order Flows and Limit Order Book Resiliency on the Meso-Scale](https://arxiv.org/abs/1708.02715) | Limit flows and relative addition/cancellation rates can predict resilience better than shallow depth. | Raw depth as an adequate comparator for a lifecycle statistic. | Flow, cancellation and deeper-shape oracle. |
+| [The order book as a queueing system](https://arxiv.org/abs/1311.5661) | Relates average depth, execution probability and conservation of order flows in a birth--death model. | Cohort mass balance or survival accounting as an irreducible mechanism by itself. | Queue-flow accounting baseline. |
+
+### V9 synthesis
+
+- `D_h(t)=sum_j q_j S_j(h|F_t)` is expected future standing volume by linearity; it is not a new identity or an
+  automatic measure of willingness to trade.
+- No fixed sign survives competing cancellation/execution risk, age-dependent replenishment quality and endogenous
+  shock selection. Ex-post lifetime classes are descriptive oracles and leak a prospective target.
+- The exact recovery-gap phrasing appears residual, but it composes occupied objects and the current free sample has
+  no independent multi-day train/validation/test or venue replication.
+- The candidate is `RETIRED_NO_WITNESS`; final decision `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`. No outcome,
+  experiment, remote worker or GPU was opened.

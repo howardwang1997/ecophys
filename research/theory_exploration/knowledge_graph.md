@@ -1,16 +1,17 @@
-# Theory-exploration topology v8
+# Theory-exploration topology v9
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** `V8_NO_SURVIVOR_PRIOR_ART`; causal memory transplantation is
-`RETIRED_PRIOR_ART`; outcomes/scale-up locked
+**Current decision:** `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; age-structured liquidity resilience is
+`RETIRED_NO_WITNESS`; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate, v6 exact-
 controller identifiability closure and v7 quotient/drift/probe audit. Graph proximity is not evidence of
 novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
 exact counterexample. V8 adds direct memory-transplant, economic-agent carry-over, causal-memory-intervention and
-contagion coverage plus the standard factorial-interaction reduction.
+contagion coverage plus the standard factorial-interaction reduction. V9 adds order-lifecycle, queue-survival and
+resilience coverage, the cancellation-versus-execution sign counterexample and the independent-data boundary.
 
 ```mermaid
 flowchart TB
@@ -181,6 +182,24 @@ flowchart TB
     CLOSE7 --> V8
     V8 --> CLOSE8["V8_NO_SURVIVOR_PRIOR_ART"]
     CLOSE8 --> LOCK8["model inference / outcomes / workers / GPUs locked"]
+
+    subgraph V9["v9: age-structured liquidity resilience"]
+        GAP9["raw vs survival-weighted recovery gap"]
+        PATH9["path-dependent queue survival"]
+        LIFE9["fleeting/static + lifecycle filters"]
+        RISK9["competing cancellation / execution risk"]
+        FLOW9["depth, flow and cancellation resilience"]
+        DATA9["one-day/hour data: no independent witness"]
+        PATH9 -->|covers state motivation| GAP9
+        LIFE9 -->|covers durability objects| GAP9
+        RISK9 -->|no fixed sign| GAP9
+        FLOW9 -->|mandatory oracle| GAP9
+        DATA9 -->|blocks confirmation| GAP9
+    end
+
+    CLOSE8 --> V9
+    V9 --> CLOSE9["V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART"]
+    CLOSE9 --> LOCK9["targets / experiments / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -251,6 +270,18 @@ gives
 This is an economy-cluster factorial interaction. It can identify the assigned compound treatment when randomized
 correctly, but it is not a new causal estimand and a semantic sham alone cannot prove a unique semantic carrier.
 
+For V9, if `J_t` is the displayed order set, `q_j` is remaining size and `S_j(h|F_t)` is a prospectively estimated
+probability that order `j` remains displayed through horizon `h`, then
+
+\[
+D_h(t)=\sum_{j\in J_t}q_jS_j(h\mid\mathcal F_t)
+=\mathbb E\!\left[\sum_{j\in J_t}q_j\mathbf 1\{T_j>t+h\}\middle|\mathcal F_t\right].
+\]
+
+This is conditional-expectation linearity. It gives expected future standing volume, not a new conservation law
+or an automatic commitment measure. Cancellation and displayed execution are competing exits with different
+economic meanings, so the proposed age-fragility ordering has no fixed sign without additional assumptions.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -283,11 +314,11 @@ correctly, but it is not a new causal estimand and a semantic sham alone cannot 
 | v7 C2 drift-budget set | `RETIRED_PRIOR_ART` | standard set-membership ellipsoid; width is controlled by excitation and null directions remain unbounded | uncertainty diagnostic only |
 | v7 C3 randomized loop | `RETIRED_IDENTIFIABILITY` | fixed history-state transducer reproduces every finite randomized probe-tree law | causal path-effect design only; no adaptation label |
 | v8 causal memory transplant | `RETIRED_PRIOR_ART` | direct transplant/causal-perturbation protocols, Shachi economic carry-over, memory contagion and standard factorial reduction | specialist replication design only; no Nature-level method or phenomenon |
+| v9 age-structured liquidity | `RETIRED_NO_WITNESS` | path-dependent queue survival, fleeting/static depth, lifecycle filtration, competing hazards and depth/flow resilience occupy the construction; no fixed sign or independent multi-day witness | prospective reconstruction infrastructure for a separately scoped specialist study |
 
-The graph has 286 nodes after the V8 closure. NMI has no non-equivalent method; NCS has no new signed
-cross-mechanism phenomenon or executable prospective data contract. No V8 experiment, model/API call, generated
-action, market/human outcome, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside
-the queue.
+The graph has 302 nodes after the V9 closure. NMI has no non-equivalent method; NCS has no new signed replicated
+scientific phenomenon or executable prospective data contract. No V9 target aggregate, hazard fit, experiment,
+remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

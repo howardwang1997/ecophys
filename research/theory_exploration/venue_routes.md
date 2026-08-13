@@ -246,3 +246,23 @@ claim rather than evidence for a hidden adaptive ontology.
 The final V8 decision is `V8_NO_SURVIVOR_PRIOR_ART`. A Nature-level re-entry needs a causal object outside standard
 factorial memory interventions, a theoretically signed cross-mechanism law with a hard falsifier, or an externally
 measured scientific system. More prompts, models, agents, markets or capsule arms do not meet that condition.
+
+## V9 age-structured-liquidity closure
+
+- **NMI:** `NO_SURVIVOR`. Order-age features, competing-risk survival estimation and a weighted aggregation are
+  established queueing/survival components. V9 supplies no non-equivalent learning method, theorem or transferable
+  guarantee.
+- **NCS:** `NO_SURVIVOR_SCOPE_AND_PRIOR_ART`. The exact recovery-gap phrase was not found, but path-dependent queue
+  survival, fleeting/static depth, young-liquidity overshoot and depth/flow resilience occupy its ingredients. The
+  proposed gap has no theoretically fixed sign and lacks an independent real-data witness.
+- **Specialist route:** conditional market-microstructure paper. It would require prospectively trained competing
+  hazards, date-level splits, non-overlapping shock rules, day/venue-day inference, raw/deeper depth, OFI, flow,
+  cancellation and queue-position baselines, plus an untouched independent venue/market period. The contribution
+  must be framed as an empirical measurement, not first durable depth or first path-dependent queue state.
+- **Data/compute:** the current four one-day equity streams plus one SPY hour are development-only. No V9 outcome,
+  local experiment, remote CPU, V100, RTX2060 or GPU job was opened or queued; more compute cannot create dates or
+  independent venues.
+
+The final V9 decision is `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`. Re-entry requires a signed mechanism or
+non-equivalent estimator, adequate multi-day data and a sealed independent replication contract before any target
+recovery or future-risk statistic is computed.
