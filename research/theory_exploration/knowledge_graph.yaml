@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
-iteration: age-structured-liquidity-v9
-decision: V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART
+iteration: prediction-market-coherence-v10
+decision: V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART
 
 nodes:
   - id: src.controlled_world_models
@@ -2346,6 +2346,166 @@ nodes:
     claim: V9 has no NMI or NCS survivor because the exact residual composes occupied lifecycle and resilience objects has no fixed sign and lacks an independent data witness.
     artifact: research/theory_exploration/age_structured_liquidity_audit_v9.md
 
+  - id: src.v10_misalignment
+    type: source
+    title: The Extent of Price Misalignment in Prediction Markets
+    track: ncs
+    claim: Related prediction contracts exhibit within-exchange misalignment during rapid information flow cross-exchange lags and shadow liquidity absent from quoted books.
+    url: https://researchdmr.com/files/PriceMisalignment.pdf
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v10_probabilistic_forest
+    type: source
+    title: Unravelling the Probabilistic Forest
+    track: ncs
+    claim: Polymarket market-rebalancing and combinatorial arbitrage are identified using temporal topical and logical relationship matching.
+    url: https://arxiv.org/abs/2508.03474
+    primary: true
+    evidence_level: preprint
+  - id: src.v10_nba_arbitrage
+    type: source
+    title: Arbitrage Analysis in Polymarket NBA Markets
+    track: ncs
+    claim: More than 75 million order-book snapshots support measurements of arbitrage frequency duration profit and executable depth.
+    url: https://arxiv.org/abs/2605.00864
+    primary: true
+    evidence_level: preprint
+  - id: src.v10_ip_projection
+    type: source
+    title: Arbitrage-Free Combinatorial Market Making via Integer Programming
+    track: both
+    claim: Frank-Wolfe Bregman projection onto a coherent combinatorial price set can be implemented with an integer-program oracle.
+    url: https://arxiv.org/abs/1606.02825
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v10_constraint_generation
+    type: source
+    title: A Tractable Combinatorial Market Maker Using Constraint Generation
+    track: both
+    claim: Convex constraints and constraint generation propagate information among logically related securities.
+    url: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/DudikLaPe12.pdf
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v10_geometric_amm
+    type: source
+    title: Designing Automated Market Makers for Combinatorial Securities
+    track: both
+    claim: Set-system geometry characterizes price-query and update complexity for combinatorial securities.
+    url: https://arxiv.org/abs/2411.08972
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v10_randomized_kaczmarz
+    type: source
+    title: A Randomized Kaczmarz Algorithm with Exponential Convergence
+    track: nmi
+    claim: Random row projections have an expected exponential convergence rate controlled by row geometry and conditioning.
+    url: https://arxiv.org/abs/math/0702226
+    primary: true
+    evidence_level: peer_reviewed
+  - id: src.v10_llm_coherence_projection
+    type: source
+    title: Arbitrage-Free Forecasts from Language Models via Coherence Projection
+    track: nmi
+    claim: Language-model forecasts can be projected onto logical coherence polytopes including partition simplexes and Frechet constraints.
+    url: https://openreview.net/pdf?id=Tqos7VqQhH
+    primary: true
+    evidence_level: preprint
+  - id: src.v10_polymarket_neg_risk
+    type: source
+    title: Polymarket negative-risk documentation
+    track: ncs
+    claim: The official negative-risk flag certifies mutually exclusive multi-outcome conversion within one event.
+    url: https://docs.polymarket.com/concepts/negative-risk
+    primary: true
+    evidence_level: official_documentation
+  - id: src.v10_polymarket_realtime
+    type: source
+    title: Polymarket real-time market data documentation
+    track: ncs
+    claim: Public real-time feeds expose books price changes and trades without requiring a trading action.
+    url: https://docs.polymarket.com/market-data/realtime-data
+    primary: true
+    evidence_level: official_documentation
+  - id: src.v10_kalshi_multivariate
+    type: source
+    title: Kalshi multivariate-event API documentation
+    track: ncs
+    claim: Official multivariate metadata expose collections and a mutually-exclusive field but not a complete cross-contract payoff matrix.
+    url: https://docs.kalshi.com/api-reference/events/get-multivariate-events
+    primary: true
+    evidence_level: official_documentation
+  - id: src.v10_kalshi_orderbook
+    type: source
+    title: Kalshi order-book WebSocket documentation
+    track: ncs
+    claim: The order-book stream exposes matching-engine timestamps and requires authenticated WebSocket access.
+    url: https://docs.kalshi.com/websockets/orderbook-updates
+    primary: true
+    evidence_level: official_documentation
+
+  - id: kr.v10_projection_reduction
+    type: known_result
+    title: Coherent projection and Kaczmarz reduction
+    track: both
+    claim: Full coherent projection eliminates inconsistency in one step while normalized local row corrections are standard Kaczmarz iterations governed by the chosen row-operation distribution.
+  - id: kr.v10_empirical_coverage
+    type: known_result
+    title: Prediction-market coherence and arbitrage coverage
+    track: ncs
+    claim: Related-contract misalignment information-flow lags combinatorial arbitrage duration profit depth and shadow liquidity are already directly measured.
+  - id: cand.v10.coherence_spectrum
+    type: candidate
+    title: Topology-governed logical-coherence recovery spectrum
+    track: both
+    claim: Logical-normal price inconsistencies might relax after information shocks in an intrinsic modal order determined by the certified payoff-constraint topology.
+    status: RETIRED_IDENTIFIABILITY
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Selected as an observable real-market candidate outside EcoMD residual error and frozen before any market row price book trade or recovery outcome was opened.
+        evidence: [research/theory_exploration/prediction_market_coherence_audit_v10.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Reduced global and local corrections to coherent projection and Kaczmarz dynamics and audited prediction-market measurement and platform contracts.
+        evidence: [src.v10_misalignment, src.v10_ip_projection, src.v10_randomized_kaczmarz, src.v10_polymarket_neg_risk, src.v10_kalshi_multivariate]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_IDENTIFIABILITY
+        reason: Equivalent row bases of the same coherent set yield different local-projection spectra while certified free platform constraints are rank-one per event and the empirical phenomenon is occupied.
+        evidence: [ce.v10.equivalent_basis_spectrum, kr.v10_projection_reduction, kr.v10_empirical_coverage, data.v10.certified_graph_degenerate]
+  - id: po.v10.intrinsic_spectrum_and_certified_graph
+    type: proof_obligation
+    title: Operation-basis invariance and certified nontrivial graph
+    track: both
+    claim: Re-entry requires an operation-basis-invariant quantity outside projection theory plus a versioned platform-certified rank-at-least-two payoff system and a signed liquidity-robust prediction.
+  - id: ce.v10.equivalent_basis_spectrum
+    type: counterexample
+    title: Equivalent constraint bases with unequal spectra
+    track: both
+    claim: Uniform local projections for the same origin constraint in two dimensions have eigenvalues one-half and one-half under the identity rows but approximately 0.8536 and 0.1464 after an invertible row recombination.
+  - id: bench.v10.projection_arbitrage_oracles
+    type: benchmark
+    title: Coherent-projection Kaczmarz and executable-arbitrage oracles
+    track: both
+    claim: Any future method must beat coherent convex projection randomized or block Kaczmarz combinatorial market making and depth fee latency capital and semantic-match baselines.
+  - id: data.v10.certified_graph_degenerate
+    type: dataset
+    title: Certified prediction-market graph boundary
+    track: ncs
+    claim: Free platform flags certify one simplex equality per complete event while nontrivial cross-event implication and equivalence graphs require semantic or manual matching with measurement error.
+  - id: compute.v10_literature_only
+    type: compute_gate
+    title: V10 literature-and-algebra-only gate
+    track: both
+    claim: V10 stops before collector access target computation and fitting and authorizes no API credential local experiment remote-host contact V100 RTX2060 or GPU job.
+  - id: decision.iteration_v10_closure
+    type: decision
+    title: Prediction-market coherence v10 closure
+    track: both
+    claim: V10 has no NMI or NCS survivor because the proposed recovery spectrum is representation-dependent reduces to known projection dynamics lacks a certified nontrivial graph and targets an occupied empirical phenomenon.
+    artifact: research/theory_exploration/prediction_market_coherence_audit_v10.md
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -2724,3 +2884,31 @@ edges:
   - {source: decision.iteration_v9_closure, target: compute.v9_literature_only, type: supports, claim: The novelty and data gates stop V9 before any target computation or experiment.}
   - {source: decision.iteration_v9_closure, target: compute.nmi_post_n1, type: forbids, claim: No non-equivalent method or theorem survives for NMI scale-up.}
   - {source: decision.iteration_v9_closure, target: compute.ncs_post_c1, type: forbids, claim: No signed replicated scientific phenomenon survives for NCS scale-up.}
+
+  - {source: decision.iteration_v9_closure, target: cand.v10.coherence_spectrum, type: branches_to, claim: The next search moved from an unsupported liquidity statistic to an exact logical-constraint candidate in an independently operated real market.}
+  - {source: src.v10_misalignment, target: kr.v10_empirical_coverage, type: covers, claim: Related-market misalignment information-flow failures cross-exchange lags and shadow liquidity are direct empirical prior art.}
+  - {source: src.v10_probabilistic_forest, target: kr.v10_empirical_coverage, type: covers, claim: Current Polymarket relationship matching and combinatorial arbitrage occupy the broad graph-and-arbitrage target.}
+  - {source: src.v10_nba_arbitrage, target: kr.v10_empirical_coverage, type: covers, claim: High-frequency arbitrage duration profitability and depth are already measured from reconstructed order books.}
+  - {source: src.v10_ip_projection, target: kr.v10_projection_reduction, type: covers, claim: Coherent combinatorial-price projection is established market-design machinery.}
+  - {source: src.v10_constraint_generation, target: kr.v10_projection_reduction, type: covers, claim: Convex constraint generation already performs logical information propagation across securities.}
+  - {source: src.v10_geometric_amm, target: kr.v10_projection_reduction, type: covers, claim: Modern set-system geometry occupies the combinatorial-market topology neighborhood.}
+  - {source: src.v10_randomized_kaczmarz, target: kr.v10_projection_reduction, type: proves, claim: Once one normalized constraint row is corrected at a time the update and expected spectral contraction are randomized Kaczmarz.}
+  - {source: src.v10_llm_coherence_projection, target: kr.v10_projection_reduction, type: covers, claim: Learning followed by logical coherence projection is already an explicit forecast-method design.}
+  - {source: src.v10_polymarket_neg_risk, target: data.v10.certified_graph_degenerate, type: supports, claim: The official flag certifies one mutually exclusive complete-event simplex rather than a nontrivial cross-event constraint graph.}
+  - {source: src.v10_polymarket_realtime, target: data.v10.certified_graph_degenerate, type: supports, claim: A public price and book feed does not itself certify the cross-contract payoff logic required by the theorem.}
+  - {source: src.v10_kalshi_multivariate, target: data.v10.certified_graph_degenerate, type: supports, claim: Collection and mutual-exclusion metadata stop short of a complete versioned cross-contract payoff matrix.}
+  - {source: src.v10_kalshi_orderbook, target: data.v10.certified_graph_degenerate, type: supports, claim: Matching-engine timestamps improve event timing but do not supply the missing payoff-constraint graph.}
+  - {source: kr.v10_projection_reduction, target: cand.v10.coherence_spectrum, type: covers, claim: The proposed full and local correction mechanisms reduce respectively to one-step coherent projection and Kaczmarz.}
+  - {source: kr.v10_empirical_coverage, target: cand.v10.coherence_spectrum, type: covers, claim: The intended information-flow and executable-arbitrage phenomenon is directly occupied.}
+  - {source: cand.v10.coherence_spectrum, target: po.v10.intrinsic_spectrum_and_certified_graph, type: requires, claim: A valid Nature-level candidate needs an intrinsic rate theorem and a certified rank-at-least-two graph.}
+  - {source: cand.v10.coherence_spectrum, target: ce.v10.equivalent_basis_spectrum, type: falsified_by, claim: Equivalent representations of exactly the same coherent set generate unequal local-projection spectra.}
+  - {source: cand.v10.coherence_spectrum, target: bench.v10.projection_arbitrage_oracles, type: distinguished_by, claim: Projection algorithms combinatorial market makers and executable microstructure baselines are mandatory oracles.}
+  - {source: cand.v10.coherence_spectrum, target: data.v10.certified_graph_degenerate, type: requires, claim: Platform-certified nontrivial payoff constraints are required before a graph-modal market claim can be tested.}
+  - {source: cand.v10.coherence_spectrum, target: ce.v10.equivalent_basis_spectrum, type: retired_by, claim: Representation-dependent spectra cannot identify an intrinsic market-logic relaxation law.}
+  - {source: ce.v10.equivalent_basis_spectrum, target: decision.iteration_v10_closure, type: supports, claim: The exact two-dimensional counterexample closes the topology-only spectral claim before outcomes.}
+  - {source: kr.v10_projection_reduction, target: decision.iteration_v10_closure, type: supports, claim: Known coherent-projection and Kaczmarz theory remove the proposed method novelty.}
+  - {source: kr.v10_empirical_coverage, target: decision.iteration_v10_closure, type: supports, claim: Direct prediction-market measurements remove the broad empirical first claim.}
+  - {source: data.v10.certified_graph_degenerate, target: decision.iteration_v10_closure, type: supports, claim: The exact free graph is rank-one per event while richer semantic graphs lack theorem-grade certification.}
+  - {source: decision.iteration_v10_closure, target: compute.v10_literature_only, type: supports, claim: The mathematical and prior-art stop rules close V10 before data access computation or fitting.}
+  - {source: decision.iteration_v10_closure, target: compute.nmi_post_n1, type: forbids, claim: Projection reduction and non-intrinsic spectra prevent NMI scale-up.}
+  - {source: decision.iteration_v10_closure, target: compute.ncs_post_c1, type: forbids, claim: An occupied phenomenon and missing certified graph prevent NCS scale-up.}

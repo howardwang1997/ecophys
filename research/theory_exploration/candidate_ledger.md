@@ -1,13 +1,13 @@
-# Candidate ledger — v1 through v9
+# Candidate ledger — v1 through v10
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; age-structured liquidity resilience is
-`RETIRED_NO_WITNESS` before any target aggregate, fitted hazard or predictive result
+**Current outcome:** `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; prediction-market coherence dynamics is
+`RETIRED_IDENTIFIABILITY` before any market catalog, live feed or inconsistency outcome
 
-**Scientific meaning:** a prospectively estimated order-lifecycle state is observable and may be useful, but
-survival weighting alone is established queueing/duration machinery. The next Nature-level candidate needs a
-signed mechanism or non-equivalent method and independent real-system replication, not another recombination of
-age, depth and shock-recovery statistics.
+**Scientific meaning:** a logical-coherence residual is observable, but its proposed topology spectrum depends on
+the chosen constraint/operation basis. Full projection is one-step, local projection is Kaczmarz, and a certified
+nontrivial cross-contract graph is absent. The next candidate needs an intrinsic object and executable information
+source, not a coordinate-dependent spectrum over semantically inferred relationships.
 
 ## 1. Shared object and identification target
 
@@ -338,6 +338,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v7 gauge-invariant probe audit | Audited observable quotients, bounded-drift identified sets and randomized loop probes against realization/PSR, set-membership/active control and switchback/pump results; derived one factorization, one exact width formula and one fixed-transducer alias. | `V7_NO_SURVIVOR`; no experiment, outcome, remote worker or GPU use |
 | 2026-08-13 | v8 causal memory transplant audit | Audited explicit memory transplantation, causal memory perturbation, economic-agent carry-over, experience transfer and memory/agent contagion; reduced the proposed contrast to a standard factorial interaction. | `V8_NO_SURVIVOR_PRIOR_ART`; stopped at N0 before any experiment, model inference, outcome or remote/GPU use |
 | 2026-08-13 | v9 age-structured liquidity audit | Audited prospective survival-weighted depth against path-dependent queue survival, fleeting/static books, queue-uncertainty overshoot, lifecycle filters, competing hazards and post-shock depth/flow resilience. | `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; stopped before any target aggregate, hazard fit, outcome or remote/GPU use |
+| 2026-08-13 | v10 prediction-market coherence audit | Reduced full coherence correction to one-step projection and local corrections to Kaczmarz; constructed an equivalent-constraint spectrum counterexample; audited logical-arbitrage dynamics and official platform metadata. | `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; stopped before catalog, feed, outcome, collector or remote/GPU use |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -486,3 +487,31 @@ remote host or GPU was opened; the V100 workers and RTX2060 remain uncontacted a
 specification survives only as future specialist-market-microstructure infrastructure. Re-entry requires a signed
 mechanism or non-equivalent estimator, multi-day development data, an untouched independent market/venue
 replication and a frozen analysis contract before any target value is computed.
+
+## 14. V10 prediction-market coherence dynamics
+
+| ID | Proposed object | Decisive audit | Final state |
+|---|---|---|---|
+| V10-C1 | topology-controlled relaxation of logical-normal price inconsistency after information shocks | global projection removes the residual in one step; local row correction is Kaczmarz; equivalent constraint bases change the spectrum; logical propagation failures, durations and liquidity limits are direct prior art; certified platform graphs are rank-one per event or semantic across events | `RETIRED_IDENTIFIABILITY` |
+
+For coherent set `C={p:Ap=b}`, the proposed residual was `r=p-P_C(p)`. If one row is corrected at a time, the
+update is standard Kaczmarz and its rate depends on a weighted normalized row Gram operator. That operator is not
+intrinsic to `C`. For `C={0}` in two dimensions, `A=I_2` gives eigenvalues `{1/2,1/2}` under uniform row selection,
+whereas the equivalent invertible row basis `A'=[[1,0],[1,1]]` gives
+`{(1+1/sqrt(2))/2,(1-1/sqrt(2))/2}`.
+
+The empirical neighborhood is also occupied: logically related prices fail to update together during rapid
+information flow; cross-exchange lags and hidden book support have been measured, including a randomized field
+trial; current Polymarket work measures logical-arbitrage existence, duration, profitability and executable depth.
+Coherent projection, constraint generation and arbitrary-set-system market geometry are established methods.
+
+Polymarket's certified negative-risk grouping supplies one simplex equality per event, hence one normal mode. A
+nontrivial cross-event graph requires semantic or manual implication/equivalence matching, already used in direct
+arbitrage work and capable of manufacturing the target through resolution-rule error. Kalshi metadata exposes
+multivariate groups but not a complete versioned payoff-logic matrix; its full book stream also requires account
+credentials.
+
+V10 therefore stopped before a plan or feasibility run. No catalog record, API credential, WebSocket, price,
+trade, outcome, collector, remote host or GPU was opened. Re-entry requires an operation-basis-invariant theorem,
+a platform-certified rank-at-least-two logical system, a signed liquidity-controlled prediction and untouched
+independent replication frozen before any inconsistency value is observed.

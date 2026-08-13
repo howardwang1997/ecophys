@@ -1,9 +1,9 @@
-# Theory-exploration topology v9
+# Theory-exploration topology v10
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`; age-structured liquidity resilience is
-`RETIRED_NO_WITNESS`; outcomes/scale-up locked
+**Current decision:** `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`; prediction-market logical-coherence recovery is
+`RETIRED_IDENTIFIABILITY`; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
 adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate, v6 exact-
@@ -11,7 +11,9 @@ controller identifiability closure and v7 quotient/drift/probe audit. Graph prox
 novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
 exact counterexample. V8 adds direct memory-transplant, economic-agent carry-over, causal-memory-intervention and
 contagion coverage plus the standard factorial-interaction reduction. V9 adds order-lifecycle, queue-survival and
-resilience coverage, the cancellation-versus-execution sign counterexample and the independent-data boundary.
+resilience coverage, the cancellation-versus-execution sign counterexample and the independent-data boundary. V10
+adds coherent-price projection, Kaczmarz and executable-arbitrage coverage; its equivalent-basis counterexample
+shows that the proposed local-correction spectrum is not intrinsic to the logical payoff set.
 
 ```mermaid
 flowchart TB
@@ -200,6 +202,22 @@ flowchart TB
     CLOSE8 --> V9
     V9 --> CLOSE9["V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART"]
     CLOSE9 --> LOCK9["targets / experiments / workers / GPUs locked"]
+
+    subgraph V10["v10: prediction-market logical coherence"]
+        SPEC10["topology-governed recovery spectrum"]
+        PROJ10["coherent projection + Kaczmarz"]
+        BASIS10["same coherent set, unequal row spectra"]
+        ARB10["misalignment + arbitrage duration/depth"]
+        GRAPH10["certified simplex rank one; rich graph semantic"]
+        PROJ10 -->|covers method| SPEC10
+        BASIS10 -->|non-intrinsic| SPEC10
+        ARB10 -->|covers phenomenon| SPEC10
+        GRAPH10 -->|blocks theorem witness| SPEC10
+    end
+
+    CLOSE9 --> V10
+    V10 --> CLOSE10["V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART"]
+    CLOSE10 --> LOCK10["feeds / experiments / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -282,6 +300,26 @@ This is conditional-expectation linearity. It gives expected future standing vol
 or an automatic commitment measure. Cancellation and displayed execution are competing exits with different
 economic meanings, so the proposed age-fragility ordering has no fixed sign without additional assumptions.
 
+For V10, full coherent projection `p -> p^C` removes every logical-normal residual in one step. If instead one
+normalized constraint row is selected with probability `pi_i`, the update is randomized Kaczmarz and its expected
+contraction is governed by
+
+\[
+K=\sum_i\pi_i\frac{a_i a_i^\top}{\lVert a_i\rVert_2^2}.
+\]
+
+This spectrum is not a property of the coherent set alone. For the same set `C={0}` in two dimensions, uniform
+rows of `A=I_2` give `K=I_2/2`, whereas the invertible row basis
+
+\[
+A'=\begin{bmatrix}1&0\\1&1\end{bmatrix}
+\quad\Longrightarrow\quad
+K'=\begin{bmatrix}3/4&1/4\\1/4&1/4\end{bmatrix}
+\]
+
+has eigenvalues `(1+1/sqrt(2))/2` and `(1-1/sqrt(2))/2`. Any empirical rate therefore needs the actual atomic
+arbitrage operations and their intensities; market logic alone does not identify it.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -315,10 +353,12 @@ economic meanings, so the proposed age-fragility ordering has no fixed sign with
 | v7 C3 randomized loop | `RETIRED_IDENTIFIABILITY` | fixed history-state transducer reproduces every finite randomized probe-tree law | causal path-effect design only; no adaptation label |
 | v8 causal memory transplant | `RETIRED_PRIOR_ART` | direct transplant/causal-perturbation protocols, Shachi economic carry-over, memory contagion and standard factorial reduction | specialist replication design only; no Nature-level method or phenomenon |
 | v9 age-structured liquidity | `RETIRED_NO_WITNESS` | path-dependent queue survival, fleeting/static depth, lifecycle filtration, competing hazards and depth/flow resilience occupy the construction; no fixed sign or independent multi-day witness | prospective reconstruction infrastructure for a separately scoped specialist study |
+| v10 prediction-market coherence spectrum | `RETIRED_IDENTIFIABILITY` | full correction is coherent projection; local correction is Kaczmarz; equivalent constraint bases have unequal spectra; certified platform graphs are rank-one per event; direct misalignment/arbitrage measurements exist | future platform replication only after a certified nontrivial payoff graph; no topology-only law |
 
-The graph has 302 nodes after the V9 closure. NMI has no non-equivalent method; NCS has no new signed replicated
-scientific phenomenon or executable prospective data contract. No V9 target aggregate, hazard fit, experiment,
-remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside the queue.
+The graph has 323 nodes after the V10 closure. NMI has no non-equivalent method; NCS has no new signed replicated
+scientific phenomenon or executable prospective data contract. No V10 catalog row, price, book, trade, outcome,
+collector, experiment, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside the
+queue.
 
 ## Validation
 

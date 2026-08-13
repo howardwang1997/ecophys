@@ -22,6 +22,14 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > `NCS_C0_FAIL_IDENTIFICATION`: exceedance rejects the model class, not identifies adaptation. Registry v2 has two
 > development-only, eight rejected and zero sealed cases, so no data/compute gate opens.
 
+> **Current theory-search result (2026-08-13, v10 closed).** Prediction-market logical-coherence recovery has
+> `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`. Full correction is coherent projection and local row correction is
+> Kaczmarz; equivalent row bases of the same coherent set have unequal spectra, so the proposed topology-only rate
+> is not intrinsic. Direct work already measures logical misalignment and executable arbitrage dynamics. Free
+> platform metadata certify one simplex equality per complete event, not a nontrivial cross-event payoff graph.
+> No feed/outcome/collector or remote/GPU work was opened. The unchanged NMI/NCS search must move to a different
+> primitive, not another normalization or semantic graph.
+
 > **Historical Plan v4 zero-cost preflight (closed at G0).** The broad estimator novelty claim was
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete
 > single-process API and corrected force/jump semantics now pass CPU and versioned single-V100 mechanics tests,

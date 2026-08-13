@@ -258,3 +258,30 @@ use.
   no independent multi-day train/validation/test or venue replication.
 - The candidate is `RETIRED_NO_WITNESS`; final decision `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`. No outcome,
   experiment, remote worker or GPU was opened.
+
+## V10 prediction-market-coherence audit
+
+| Primary source | What is established | V10 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [The Extent of Price Misalignment in Prediction Markets](https://researchdmr.com/files/PriceMisalignment.pdf) | Same- and cross-exchange logical inconsistencies, high-information-flow failure of related contracts to update, cross-exchange lags and hidden price support are measured; the latter uses randomized market entry. | News-linked logical propagation failure, lag and quoted-book undermeasurement as new phenomena. | Direct empirical oracle and warning that passive books understate support. |
+| [Unravelling the Probabilistic Forest](https://arxiv.org/abs/2508.03474) | Finds Polymarket market-rebalancing and combinatorial arbitrage using temporal, topical and combinatorial relation matching. | Cross-contract graph mining and realized logical arbitrage as a new object. | Modern direct Polymarket oracle. |
+| [Arbitrage Analysis in Polymarket NBA Markets](https://arxiv.org/abs/2605.00864) | Uses more than 75 million book snapshots to measure arbitrage frequency, duration, profitability and executable depth. | Seconds-scale coherence recovery and liquidity-limited anomalies as unexplored. | High-frequency duration/depth baseline. |
+| [Arbitrage-Free Combinatorial Market Making via Integer Programming](https://arxiv.org/abs/1606.02825) | Uses Frank--Wolfe and an integer-program oracle for Bregman projection onto an arbitrage-free combinatorial price set. | Coherent price projection as a new computational method. | Projection and feasibility oracle. |
+| [A Tractable Combinatorial Market Maker Using Constraint Generation](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/DudikLaPe12.pdf) | Convex optimization and constraint generation propagate information among logically related securities. | Constraint-mediated logical propagation as a new objective. | Direct combinatorial-market baseline. |
+| [Designing Automated Market Makers for Combinatorial Securities](https://arxiv.org/abs/2411.08972) | Gives a geometric/set-system view of price queries, updates and efficient combinatorial market making. | Logical topology alone as a new market-design primitive. | Modern geometry/complexity oracle. |
+| [A Randomized Kaczmarz Algorithm with Exponential Convergence](https://arxiv.org/abs/math/0702226) | Random row projections converge exponentially with condition-number/spectral rate control. | Local logical-constraint repair as a new spectral theorem. | Exact nearest-composition oracle. |
+| [Arbitrage-Free Forecasts from Language Models via Coherence Projection](https://openreview.net/pdf?id=Tqos7VqQhH) | Projects language-model forecasts onto logical coherence polytopes including partition simplexes and Frechet constraints. | Learning followed by logical projection as a new general NMI method. | Direct forecast-coherence baseline. |
+| [Polymarket negative risk](https://docs.polymarket.com/concepts/negative-risk) and [real-time data](https://docs.polymarket.com/market-data/realtime-data) | Official flags identify mutually exclusive multi-outcome events and a public feed streams books, prices and trades. | Treating a certified event as a nontrivial logical graph: it supplies one simplex equality and one normal mode. | Prospective specialist collection only. |
+| [Kalshi multivariate events](https://docs.kalshi.com/api-reference/events/get-multivariate-events) and [order-book updates](https://docs.kalshi.com/websockets/orderbook-updates) | Official metadata exposes multivariate groups and book deltas with matching-engine timestamps; WebSocket access requires authentication. | Assuming free metadata supplies a complete versioned cross-contract payoff matrix. | Conditional replication metadata only. |
+
+### V10 synthesis
+
+- Full coherence projection removes normal inconsistency in one update; local row correction is standard Kaczmarz.
+- The local-projection spectrum is representation-dependent: `A` and invertible `RA` define the same coherent set
+  but can yield different normalized row-Gram eigenvalues. It is not a topology-intrinsic physical law.
+- Direct empirical work already measures logical propagation failures, high-information-flow illiquidity, lags,
+  arbitrage durations and executable depth.
+- Certified platform metadata is rank-one per multi-outcome event; a nontrivial cross-event graph needs semantic
+  matching and becomes a measurement model rather than exact mechanism knowledge.
+- Candidate `RETIRED_IDENTIFIABILITY`; decision `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`. No market value,
+  collector, experiment, remote worker or GPU was opened.

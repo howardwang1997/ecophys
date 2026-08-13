@@ -5,6 +5,16 @@ for a later project.
 
 ## Current theory state
 
+`prediction-market-coherence-audit-v10` started from integrated `main@318ec5219` and closed
+`V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART` on 2026-08-13 before a plan freeze or experiment. Full coherent
+correction is a one-step projection and normalized local row corrections are Kaczmarz. More decisively, an
+invertible row change preserves the same coherent payoff set while changing the local-correction spectrum, so the
+proposed topology-only recovery rate is not intrinsic to market logic. Direct work already measures related-market
+misalignment, information-flow failures, cross-exchange lags, arbitrage duration and executable depth. Official
+free platform flags certify one event simplex, while richer cross-event graphs require semantic/manual matching.
+No catalog row, price, book, trade, outcome, API credential, collector, experiment, remote worker or GPU was
+opened. Audit: `research/theory_exploration/prediction_market_coherence_audit_v10.md`.
+
 `age-structured-liquidity-audit-v9` started from integrated `main@c41576c84` and closed
 `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART` on 2026-08-13 before a plan freeze or experiment. It tested whether raw depth
 could recover before prospectively survival-weighted standing depth after depletion. Path-dependent queue

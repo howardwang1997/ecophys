@@ -112,8 +112,16 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
     to characterize live depth or predict a subsequent depletion.
 41. Many shocks within one trading day are not independent market replications. Day- or venue-day-level inference
     and by-date model splits cannot be replaced by a larger number of event windows or more GPU compute.
+42. A spectral rate attached to a constraint matrix need not be intrinsic to its solution set. Equivalent
+    invertible row recombinations can preserve coherent prices while changing local-projection eigenvalues.
+43. Full coherence projection has no relaxation spectrum, while row-wise correction is Kaczmarz. The actual
+    operation basis and arrival intensities must be measured before a graph eigenvalue has market meaning.
+44. Platform-certified mutually exclusive outcomes can give only one simplex normal per event. A richer graph
+    inferred from text introduces a semantic measurement model whose errors can manufacture arbitrage residuals.
+45. A free live feed is not by itself a data contract. Exact payoff equivalence, versioned resolution rules,
+    executable fees/depth and independent replication must be available before prospective collection begins.
 
-## V5 gate failures retained
+## Gate failures retained
 
 | Date | Candidate | State | Evidence | Lesson | Re-entry condition |
 |---|---|---|---|---|---|
@@ -134,3 +142,4 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
 | 2026-08-13 | V8 controller-gain by learner-rate phase boundary | `REJECTED_PRIOR_ART_BEFORE_CANDIDACY` | Resource-centric pricing for online learners, load-only online pricing in unknown monotone games and safe dynamic pricing with evolving utilities already couple adaptive users and mechanism updates. | A new phase diagram needs a new coupling or law; changing the application to a market simulator does not create one. | An irreducible interaction, theorem or externally measured phenomenon absent from adaptive-pricing and learning-in-games results. |
 | 2026-08-13 | V8 causal memory transplantation | `RETIRED_PRIOR_ART`; `V8_NO_SURVIVOR_PRIOR_ART` | Architecture/content memory transplantation already has a factorial protocol; Shachi transfers economic-agent memories across tasks/worlds; causal memory intervention perturbs external memory; Memory Contagion propagates source bias to future agents. The frozen scalar is the ordinary source-by-capsule interaction. | A cleaner manipulable state can solve identification while still failing novelty. Stronger shams and cluster randomization improve rigor, not the scientific object. | A causal estimand or guarantee outside standard factorial/memory intervention, a theoretically signed cross-mechanism law, or an external scientific measurement. |
 | 2026-08-13 | V9 age-structured liquidity resilience | `RETIRED_NO_WITNESS`; `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART` | Path-dependent queue survival, fleeting/static depth, queue-uncertainty overshoot, lifecycle filters, competing hazards and depth/flow resilience occupy the construction; cancellation versus execution destroys a fixed sign; the current one-day/one-hour streams cannot supply date-level fitting and independent replication. | An exact unsearched phrase is not a novelty result when its mathematical and empirical ingredients are occupied. Prospective lifecycle state is useful infrastructure, but event counts within a day are not replication. | A predeclared signed mechanism or non-equivalent estimator, multi-day development panel, untouched independent venue/market replication and a frozen competing-risk analysis before any target value is opened. |
+| 2026-08-13 | V10 prediction-market coherence spectrum | `RETIRED_IDENTIFIABILITY`; `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART` | Global projection is one-step; local constraint repair is Kaczmarz; an invertible row change preserves the coherent set while changing the normalized Gram spectrum. Logical propagation failures, high-information-flow illiquidity, arbitrage duration and depth are already measured, while official per-event metadata yields only one simplex normal. | A coordinate-dependent graph spectrum is not a physical law. Rich semantic contract graphs trade exact mechanism knowledge for measurement error and cannot be treated as ground truth. | An operation-basis-invariant object outside projection/Kaczmarz, a platform-certified rank-at-least-two payoff system, signed microstructure controls and prospectively sealed independent replication. |

@@ -266,3 +266,23 @@ measured scientific system. More prompts, models, agents, markets or capsule arm
 The final V9 decision is `V9_NO_SURVIVOR_SCOPE_AND_PRIOR_ART`. Re-entry requires a signed mechanism or
 non-equivalent estimator, adequate multi-day data and a sealed independent replication contract before any target
 recovery or future-risk statistic is computed.
+
+## V10 prediction-market-coherence closure
+
+- **NMI:** `NO_SURVIVOR`. Coherent-polytope projection, convex constraint generation and arbitrary-set-system
+  market geometry are established. Row-wise repair is randomized Kaczmarz, while its spectrum changes under
+  equivalent constraint bases and is not a new invariant representation or theorem.
+- **NCS:** `NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`. Logical-price misalignment during high information flow,
+  cross-exchange lags, shadow liquidity, seconds-scale arbitrage duration and executable-depth limits are already
+  direct empirical results. The residual spectral claim lacks an intrinsic quantity and certified nontrivial graph.
+- **Specialist route:** prospective modern-platform replication remains possible if payoff identities and rule
+  versions are audited, executable prices include fees/depth, semantic-match error is bounded and a genuinely
+  independent platform/event period is untouched. It is not a first logical-propagation or universal spectral-law
+  paper.
+- **Data/compute:** Polymarket public feeds and Kalshi multivariate metadata are potential future inputs, but no
+  catalog row, credential, WebSocket, price, trade or outcome was opened. No collector, remote CPU, V100, RTX2060
+  or GPU job was created; GPU scaling cannot repair a basis-dependent statistic or missing certified graph.
+
+The final V10 decision is `V10_NO_SURVIVOR_NONINTRINSIC_AND_PRIOR_ART`. Re-entry requires an operation-basis-
+invariant object, a versioned platform-certified rank-at-least-two payoff system, a signed microstructure-controlled
+prediction and sealed independent replication before any outcome access.
