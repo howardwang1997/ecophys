@@ -5,6 +5,14 @@ for a later project.
 
 ## Current theory state
 
+`gauge-invariant-controller-probes-v7` started from integrated `main@d89a2dc59` on 2026-08-13. It does not reopen
+V6 or authorize outcomes. It asks whether a gauge-invariant observable quotient, a sharp latent-drift identified
+set or a paired closed-loop probe can constructively escape V6's exact alias. All three candidates begin at
+`SCOUT` and must first defeat transfer-function/minimal-realization, predictive-state, interventional/switching-ID,
+robust set-membership, active-design, switchback and stochastic-pump baselines. Current authorization is primary
+literature and symbolic analysis only: <=20 local Mac CPU core-hours, zero remote contact and zero GPU-hours.
+Protocol: `papers/proposal/plan_gauge_invariant_controller_probes_nmi_ncs_v7.md`.
+
 `algorithmic-fee-market-dynamics-v6` started from integrated `main@efe14ad44` and closed
 `V6_NO_SURVIVOR_IDENTIFIABILITY` on 2026-08-13. It studied exact execution/blob fee controllers coupled to unknown
 adaptive demand. Experiment 149 passed local CPU-only protocol conformance with zero mismatch over 97 official
@@ -110,6 +118,7 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Phenomenon-first theory exploration v4 | `V4_NO_SURVIVOR`; closed prior-art/witness audit | Prior-art map and explicit no-witness outcomes | No scientific law, commensurability, dataset contract, method novelty or compute unlock |
 | Endogenous market-rule feedback v5 | `V5_NO_SURVIVOR`; generated identification preflight failed | Exact rule clock, ESMA/FCA metadata contract, immutable Exp148 artifact and power/type-I lesson | No market effect, method novelty, real-data unlock, worker or GPU authorization |
 | Algorithmic fee-market dynamics v6 | `V6_NO_SURVIVOR_IDENTIFIABILITY`; closed before outcomes | Exact protocol oracle, scale audit, Base topology provenance, Exp151 alias/rank negative control | No identified behavioral response, market outcome, method novelty, data/compute unlock or venue claim |
+| Gauge-invariant controller probes v7 | `SCOUT`; symbolic/literature gate only | V6 alias boundary and three constructive candidate cards | No theorem, data contract, experiment, outcome or compute unlock |
 
 ## Code inheritance rules
 
