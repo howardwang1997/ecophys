@@ -1,11 +1,11 @@
-# Candidate ledger — v1 through v6
+# Candidate ledger — v1 through v7
 
 **Status vocabulary:** `SCOUT -> FORMALIZING -> ATTACKING -> retired / CONJECTURE / READY_FOR_HUMAN_AUDIT`  
-**Current outcome:** v6 NMI `NO_SURVIVOR`; NCS `FORMALIZING` but blocked before outcomes; V5 remains
-`V5_NO_SURVIVOR`
+**Current outcome:** `V7_NO_SURVIVOR`; C1/C2 are `RETIRED_PRIOR_ART`, C3 is
+`RETIRED_IDENTIFIABILITY`
 
-**Scientific meaning:** the exact-controller NCS target remains prospectively sealable, but no real experiment is
-admitted until a future controller change and independent replication exist
+**Scientific meaning:** quotienting, bounding drift and randomizing a finite controller path do not by themselves
+identify latent adaptation. The next candidate needs an external state measurement/reset or a different target.
 
 ## 1. Shared object and identification target
 
@@ -333,6 +333,7 @@ elementary and is not an admitted theorem. With no formal survivor, exp146 was n
 | 2026-08-13 | v6 audit | Audited exact EIP arithmetic, BPO schedules, closed-loop/multi-resource/IV prior art and Xatu metadata; preregistered official-fixture replay. | NMI `NO_SURVIVOR`; NCS `FORMALIZING` but blocked on BPO3 plus independent replication; Exp149 only |
 | 2026-08-13 | v6 scale attack | Proved the declared BPO schedules are nearly scale-equivalent and froze eight Base same-chain parameter interventions without opening response outcomes. | NCS `ATTACKING`; exact scale oracle is mandatory; Base is development-only; I0 still blocked |
 | 2026-08-13 | v6 identifiability closure | Voided premature Exp150, then ran the disjoint-seed frozen Exp151 once; exact single-regime aliases survived, BPO excitation was rank 2, and full-rank generated separation required invariant latent dynamics. | `V6_NO_SURVIVOR_IDENTIFIABILITY`; NCS `RETIRED_IDENTIFIABILITY`; NMI remains retired; outcomes/compute locked |
+| 2026-08-13 | v7 gauge-invariant probe audit | Audited observable quotients, bounded-drift identified sets and randomized loop probes against realization/PSR, set-membership/active control and switchback/pump results; derived one factorization, one exact width formula and one fixed-transducer alias. | `V7_NO_SURVIVOR`; no experiment, outcome, remote worker or GPU use |
 
 ## 8. V4 phenomenon-first candidates
 
@@ -406,3 +407,20 @@ separated every frozen perturbation/seed. The separation requires invariant late
 regime-specific dynamics restore the alias. No current market topology supplies a falsifiable invariance contract,
 future non-proportional event and independent replication together. V6 is therefore closed before outcomes; no
 remote worker or GPU is queued.
+
+## 11. V7 gauge-invariant controller probes
+
+| ID | Proposed object | Decisive audit | Final state |
+|---|---|---|---|
+| V7-C1 | observable response invariant to latent gauge | every invariant functional factors through the controlled input--output behavior, already represented by transfer/Markov/Hankel/minimal-realization or predictive-state objects | `RETIRED_PRIOR_ART` |
+| V7-C2 | sharp response set under bounded latent drift | `b=S delta+e`, `||e||<=rho` yields an ordinary set-membership ellipsoid with diameter controlled by `1/sigma_min(S)` and unbounded null directions | `RETIRED_PRIOR_ART` |
+| V7-C3 | paired randomized loop/curvature probe | switchbacks identify controller-path assignment effects, while a fixed history-state transducer reproduces any finite randomized probe-tree law | `RETIRED_IDENTIFIABILITY` |
+
+The strongest retained equations are useful diagnostics, not new claims. Gauge invariance is exactly factorization
+through the declared behavior. For full-column-rank `S`, the drift-set diameter is
+`2 sqrt(rho^2-||r||^2)/sigma_min(S)`; without full rank it is unbounded absent an external restriction. A finite
+randomized path cannot decide whether its history dependence came from parameter learning or fixed hidden memory.
+
+V7 therefore stopped before E0/P0. No generated experiment, market outcome, remote host or GPU was used. Re-entry
+requires an externally observed state, verified physical reset/erasure, or an exact-controller theorem strictly
+outside standard input--output, set-membership and path-randomization results.

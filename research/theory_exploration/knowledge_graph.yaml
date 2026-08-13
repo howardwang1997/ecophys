@@ -1,7 +1,7 @@
 schema_version: ecophys-theory-graph/v1
 as_of: "2026-08-13"
-iteration: algorithmic-fee-market-dynamics-v6
-decision: V6_NO_SURVIVOR_IDENTIFIABILITY
+iteration: gauge-invariant-controller-probes-v7
+decision: V7_NO_SURVIVOR
 
 nodes:
   - id: src.controlled_world_models
@@ -1847,6 +1847,214 @@ nodes:
     claim: V6 has no NMI or NCS survivor because real controller transfer lacks a testable latent-invariance contract prospective non-proportional event and independent replication.
     artifact: research/theory_exploration/fee_controller_identifiability_closure_v6.md
 
+  - id: src.v7_minimal_lpv_realization
+    type: source
+    title: Minimal Realizations of LPV Input-Output Behaviors
+    track: nmi
+    claim: Minimal affine LPV state-space realizations of the same input-output behavior are isomorphic under the stated observability and reachability conditions.
+    url: https://arxiv.org/abs/2305.08508
+    primary: true
+    evidence_level: preprint
+  - id: src.v7_stable_io_realization
+    type: source
+    title: Stability of Input-Output Maps and Their Minimal Realizations
+    track: nmi
+    claim: Stable finite-dimensional state-linear realization is characterized by finite Hankel rank and uniform response decay and extends through input-forgetting conditions to LPV and switched systems.
+    url: https://arxiv.org/abs/2607.03849
+    primary: true
+    evidence_level: preprint
+  - id: src.v7_set_membership_simulation
+    type: source
+    title: Set Membership Identification with Guaranteed Simulation Accuracy
+    track: both
+    claim: A feasible parameter set contains all bounded-noise-compatible models and supports finite and infinite-horizon worst-case simulation guarantees.
+    url: https://arxiv.org/abs/2001.07628
+    primary: true
+    evidence_level: peer_reviewed_preprint
+  - id: src.v7_active_exploration_mpc
+    type: source
+    title: Active Exploration in Adaptive Model Predictive Control
+    track: both
+    claim: Safe future inputs can be chosen to shrink set-membership parameter uncertainty in performance-relevant directions under robust constraints.
+    url: https://arxiv.org/abs/2003.14120
+    primary: true
+    evidence_level: peer_reviewed_preprint
+  - id: src.v7_dual_set_membership_mpc
+    type: source
+    title: Dual Adaptive MPC Using an Exact Set-Membership Reformulation
+    track: both
+    claim: Future-input-dependent set-membership updates can be embedded exactly in adaptive MPC with robust constraint satisfaction and recursive feasibility.
+    url: https://arxiv.org/abs/2211.16300
+    primary: true
+    evidence_level: preprint
+  - id: src.v7_online_coreset_smi
+    type: source
+    title: Online Coreset Selection for Learning Dynamic Systems
+    track: nmi
+    claim: Persistently exciting samples contract a set-membership feasible set and a mismatched disturbance radius admits an explicit Hausdorff identification-error bound.
+    url: https://arxiv.org/abs/2506.22804
+    primary: true
+    evidence_level: preprint
+  - id: src.v7_switchback_design
+    type: source
+    title: Design and Analysis of Switchback Experiments
+    track: both
+    claim: Randomization points and probabilities can be optimized for time-series treatment effects with exact and asymptotic inference under known or misspecified carryover order.
+    url: https://arxiv.org/abs/2009.00148
+    primary: true
+    evidence_level: peer_reviewed_preprint
+  - id: src.v7_markov_switchback
+    type: source
+    title: Carryover and Reward Autocorrelation in Switchback Experiments
+    track: both
+    claim: Markovian switchback designs and estimators explicitly account for delayed treatment effects and autocorrelated rewards.
+    url: https://arxiv.org/abs/2403.17285
+    primary: true
+    evidence_level: preprint
+
+  - id: kr.v7_behavioral_quotient_factorization
+    type: known_result
+    title: Controlled-behavior quotient factorization
+    track: nmi
+    claim: Every functional constant on equality classes of the complete controlled input-output law factors uniquely through that law and therefore inherits standard realization or predictive-state representations.
+  - id: kr.v7_drift_set_geometry
+    type: known_result
+    title: Sharp linear drift-budget geometry
+    track: both
+    claim: A Euclidean bounded-drift observation equation yields a set-membership ellipsoid whose diameter scales exactly with the inverse minimum singular value and is unbounded along unidentified null directions.
+  - id: kr.v7_randomized_path_scope
+    type: known_result
+    title: Randomized path-effect scope boundary
+    track: both
+    claim: Path randomization can identify assignment effects under support and carryover assumptions but cannot distinguish adaptation from an unrestricted fixed hidden-memory realization.
+
+  - id: cand.v7.observable_quotient
+    type: candidate
+    title: Gauge-invariant observable quotient response
+    track: nmi
+    claim: A controlled-response functional might be invariant to the V6 latent coordinate alias while retaining scientifically meaningful adaptation information.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen before outcomes as a possible observable target constant on the full safe-probe equivalence class.
+        evidence: [papers/proposal/plan_gauge_invariant_controller_probes_nmi_ncs_v7.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Compared the quotient equation with transfer Markov Hankel minimal-realization and predictive-state objects.
+        evidence: [src.v7_minimal_lpv_realization, src.v7_stable_io_realization, src.psr]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: Constancy on the declared equivalence class factors through the complete controlled input-output behavior by definition and supplies no non-equivalent representation.
+        evidence: [kr.v7_behavioral_quotient_factorization, research/theory_exploration/gauge_invariant_probe_audit_v7.md]
+  - id: cand.v7.drift_budget_set
+    type: candidate
+    title: Sharp latent-drift-budget identified set
+    track: both
+    claim: Exact controller structure might yield a sharp response identified set and lower bound under bounded cross-regime latent drift.
+    status: RETIRED_PRIOR_ART
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen as a partial-identification exit from the unsupported invariant-latent-dynamics assumption.
+        evidence: [papers/proposal/plan_gauge_invariant_controller_probes_nmi_ncs_v7.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Derived the sharp linear set and audited bounded-error identification active excitation and disturbance-radius mismatch results.
+        evidence: [src.v7_set_membership_simulation, src.v7_dual_set_membership_mpc, src.v7_online_coreset_smi]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_PRIOR_ART
+        reason: The exact set is ordinary set-membership geometry and the probe criterion is standard minimum-singular-value optimal excitation.
+        evidence: [kr.v7_drift_set_geometry, research/theory_exploration/gauge_invariant_probe_audit_v7.md]
+  - id: cand.v7.loop_probe
+    type: candidate
+    title: Paired randomized controller-loop probe
+    track: ncs
+    claim: A randomized forward-reverse or closed controller path might distinguish adaptive response after exact mechanics are removed.
+    status: RETIRED_IDENTIFIABILITY
+    history:
+      - date: "2026-08-13"
+        to: SCOUT
+        reason: Frozen as a prospective intervention design requiring null validity against all fixed allowed-drift mechanisms.
+        evidence: [papers/proposal/plan_gauge_invariant_controller_probes_nmi_ncs_v7.md]
+      - date: "2026-08-13"
+        from: SCOUT
+        to: ATTACKING
+        reason: Audited switchback carryover and stochastic-pump baselines and constructed the finite probe-tree transducer alias.
+        evidence: [src.v7_switchback_design, src.v7_markov_switchback, ce.v7.fixed_probe_tree_transducer]
+      - date: "2026-08-13"
+        from: ATTACKING
+        to: RETIRED_IDENTIFIABILITY
+        reason: Randomization identifies path assignment effects but a fixed history-state transducer reproduces every finite randomized path law and blocks the adaptation label.
+        evidence: [kr.v7_randomized_path_scope, research/theory_exploration/gauge_invariant_probe_audit_v7.md]
+
+  - id: po.v7.quotient_non_equivalence
+    type: proof_obligation
+    title: Observable-quotient non-equivalence
+    track: nmi
+    claim: Exhibit an estimand or guarantee not representable as a functional of standard controlled input-output behavior while remaining constant on the declared equivalence class.
+  - id: po.v7.controller_specific_drift_bound
+    type: proof_obligation
+    title: Controller-specific drift-set theorem
+    track: both
+    claim: Derive a sharp exact-controller identified set or lower bound strictly tighter than standard set-membership identification under identical observations and drift assumptions.
+  - id: po.v7.adaptation_path_identification
+    type: proof_obligation
+    title: Adaptation-specific path identification
+    track: ncs
+    claim: State testable restrictions under which a randomized loop effect excludes every fixed hidden-memory and stochastic-pump realization rather than only a smaller chosen null.
+  - id: ce.v7.behavior_relabeling
+    type: counterexample
+    title: Input-output behavior relabeling
+    track: nmi
+    claim: Isomorphic hidden-state realizations have the same complete controlled behavior so every admissible quotient functional agrees and cannot recover a distinct latent adaptation coordinate.
+  - id: ce.v7.rank_deficient_drift
+    type: counterexample
+    title: Rank-deficient bounded-drift direction
+    track: both
+    claim: A null vector of the probe-sensitivity stack can be added at arbitrary magnitude without changing the residual so bounded observational drift does not bound that response direction.
+  - id: ce.v7.fixed_probe_tree_transducer
+    type: counterexample
+    title: Fixed finite probe-tree transducer
+    track: ncs
+    claim: A time-homogeneous history-state Markov transducer can reproduce every finite randomized safe-probe path kernel of an alleged adaptive system.
+  - id: bench.v7.io_behavior
+    type: benchmark
+    title: Transfer Hankel minimal-realization and PSR oracle
+    track: nmi
+    claim: Any gauge-invariant response representation must be compared directly with complete input-output behavior minimal realizations and predictive-state tests.
+  - id: bench.v7.set_membership_active_design
+    type: benchmark
+    title: Set-membership and safe active-design oracle
+    track: both
+    claim: Feasible-set geometry disturbance mismatch and safe future-input shrinkage are mandatory direct baselines for any drift-budget claim.
+  - id: bench.v7.switchback_and_pump
+    type: benchmark
+    title: Carryover-aware switchback and fixed-pump oracle
+    track: ncs
+    claim: A controller-loop probe must compare with randomized path-effect inference fixed hidden memory and nonadaptive stochastic-pump order effects.
+  - id: compute.v7_t0_cpu_only
+    type: compute_gate
+    title: V7 literature and symbolic CPU gate
+    track: both
+    claim: V7 authorizes at most twenty local Mac CPU core-hours and zero remote or GPU use before a candidate clears novelty identification and executable-probe gates.
+  - id: decision.iteration_v7_freeze
+    type: decision
+    title: Gauge-invariant controller-probe v7 freeze
+    track: both
+    claim: Three theorem-first candidates entered SCOUT while outcomes experiments remote workers and GPUs remained locked.
+    artifact: papers/proposal/plan_gauge_invariant_controller_probes_nmi_ncs_v7.md
+  - id: decision.iteration_v7_closure
+    type: decision
+    title: Gauge-invariant controller-probe v7 closure
+    track: both
+    claim: V7 has no survivor because observable quotients and drift sets reduce to established systems objects while finite randomized paths do not identify adaptation against fixed hidden memory.
+    artifact: research/theory_exploration/gauge_invariant_probe_audit_v7.md
+
 edges:
   - {source: src.controlled_world_models, target: kr.interventional_identifiability, type: proves, claim: Conditional action excitation governs controlled-transition identification and counterfactual conditioning.}
   - {source: src.policy_interventions, target: kr.structural_policy_transport, type: proves, claim: Sequential policy effects are identified by a causal factorization under explicit assumptions.}
@@ -2135,3 +2343,43 @@ edges:
   - {source: data.v6_independent_intervention_empty, target: decision.iteration_v6_identifiability_closure, type: supports, claim: No independently administered untouched intervention has been sealed.}
   - {source: decision.iteration_v6_identifiability_closure, target: data.sealed_real_interventions, type: forbids, claim: The failed identification and replication gates keep every market response outcome sealed.}
   - {source: decision.iteration_v6_identifiability_closure, target: compute.ncs_post_c1, type: forbids, claim: Remote and GPU scale-up cannot repair the missing information and remains locked.}
+
+  - {source: decision.iteration_v6_identifiability_closure, target: decision.iteration_v7_freeze, type: branches_to, claim: V6's exact alias motivates a quotient partial-identification and prospective-probe search without reopening outcomes.}
+  - {source: decision.iteration_v7_freeze, target: compute.v7_t0_cpu_only, type: supports, claim: Only primary-literature and symbolic work is authorized for V7.}
+  - {source: decision.iteration_v7_freeze, target: data.sealed_real_interventions, type: forbids, claim: V7 begins before any market response or prospective assignment is opened.}
+  - {source: decision.iteration_v7_freeze, target: compute.nmi_post_n1, type: forbids, claim: Remote and GPU scale-up remain locked until a non-equivalent method survives.}
+  - {source: decision.iteration_v7_freeze, target: compute.ncs_post_c1, type: forbids, claim: Remote and GPU scale-up remain locked until an identified phenomenon and executable probe survive.}
+
+  - {source: src.v7_minimal_lpv_realization, target: kr.v7_behavioral_quotient_factorization, type: supports, claim: Minimal realizations of the same LPV input-output behavior are isomorphic.}
+  - {source: src.v7_stable_io_realization, target: kr.v7_behavioral_quotient_factorization, type: supports, claim: Hankel rank and response decay characterize stable input-output realization in multiple system classes.}
+  - {source: src.psr, target: kr.v7_behavioral_quotient_factorization, type: supports, claim: Action-conditional future laws already provide a predictive-state representation of controlled behavior.}
+  - {source: src.v6_closed_loop_dslp, target: kr.v7_behavioral_quotient_factorization, type: supports, claim: Known-feedback responses already have direct closed-loop system-level parameterizations.}
+  - {source: src.v7_set_membership_simulation, target: kr.v7_drift_set_geometry, type: covers, claim: Feasible sets of all bounded-error-compatible models and long-horizon guarantees are established.}
+  - {source: src.v7_active_exploration_mpc, target: kr.v7_drift_set_geometry, type: covers, claim: Safe controls can actively reduce uncertainty in performance-relevant parameter directions.}
+  - {source: src.v7_dual_set_membership_mpc, target: kr.v7_drift_set_geometry, type: covers, claim: Future-input-dependent feasible-set shrinkage can be embedded exactly in robust adaptive control.}
+  - {source: src.v7_online_coreset_smi, target: kr.v7_drift_set_geometry, type: supports, claim: Persistent excitation contracts the feasible set and disturbance-bound mismatch admits an explicit Hausdorff error bound.}
+  - {source: src.v7_switchback_design, target: kr.v7_randomized_path_scope, type: proves, claim: Carryover-aware randomized controller-path effects and design optimization are established switchback estimands.}
+  - {source: src.v7_markov_switchback, target: kr.v7_randomized_path_scope, type: supports, claim: Markovian estimators already handle delayed effects and autocorrelated rewards.}
+  - {source: src.stochastic_pump, target: kr.v7_randomized_path_scope, type: supports, claim: Fixed stochastic mechanisms can generate cyclic path dependence without adaptation.}
+
+  - {source: cand.v7.observable_quotient, target: po.v7.quotient_non_equivalence, type: requires, claim: NMI requires a quotient object or guarantee outside standard input-output behavior.}
+  - {source: cand.v7.observable_quotient, target: ce.v7.behavior_relabeling, type: falsified_by, claim: Hidden-state relabeling leaves every complete behavior functional unchanged.}
+  - {source: cand.v7.observable_quotient, target: bench.v7.io_behavior, type: distinguished_by, claim: Transfer Hankel minimal-realization and PSR objects are direct comparators.}
+  - {source: cand.v7.observable_quotient, target: kr.v7_behavioral_quotient_factorization, type: retired_by, claim: The declared invariance is precisely factorization through occupied controlled input-output behavior.}
+
+  - {source: cand.v7.drift_budget_set, target: po.v7.controller_specific_drift_bound, type: requires, claim: A survivor needs exact-controller geometry unavailable from ordinary set-membership identification.}
+  - {source: cand.v7.drift_budget_set, target: ce.v7.rank_deficient_drift, type: falsified_by, claim: Unexcited null directions remain unbounded even under a finite observational drift radius.}
+  - {source: cand.v7.drift_budget_set, target: bench.v7.set_membership_active_design, type: distinguished_by, claim: Robust feasible sets safe active excitation and mismatch bounds are mandatory oracles.}
+  - {source: cand.v7.drift_budget_set, target: kr.v7_drift_set_geometry, type: retired_by, claim: The sharp linear result is an ordinary set-membership ellipsoid and optimal-excitation modulus.}
+
+  - {source: cand.v7.loop_probe, target: po.v7.adaptation_path_identification, type: requires, claim: Adaptation attribution must exclude every fixed hidden-memory realization under testable restrictions.}
+  - {source: cand.v7.loop_probe, target: ce.v7.fixed_probe_tree_transducer, type: falsified_by, claim: A fixed history-state transducer reproduces the complete finite randomized probe-tree law.}
+  - {source: cand.v7.loop_probe, target: bench.v7.switchback_and_pump, type: distinguished_by, claim: Switchback inference fixed memory and stochastic pumps are direct comparators.}
+  - {source: cand.v7.loop_probe, target: kr.v7_randomized_path_scope, type: retired_by, claim: Randomization identifies assignments rather than the adaptive ontology and the fixed-transducer alias closes the latter.}
+
+  - {source: ce.v7.behavior_relabeling, target: decision.iteration_v7_closure, type: supports, claim: Gauge invariance alone collapses C1 to an observable behavior functional.}
+  - {source: ce.v7.rank_deficient_drift, target: decision.iteration_v7_closure, type: supports, claim: A finite drift radius cannot bound response directions absent excitation or external constraints.}
+  - {source: ce.v7.fixed_probe_tree_transducer, target: decision.iteration_v7_closure, type: supports, claim: Finite randomized probe outcomes do not identify adaptation against unrestricted fixed hidden memory.}
+  - {source: decision.iteration_v7_closure, target: data.sealed_real_interventions, type: forbids, claim: No V7 candidate reached the executable-probe gate so all outcomes remain sealed.}
+  - {source: decision.iteration_v7_closure, target: compute.nmi_post_n1, type: forbids, claim: C1 and C2 failed method non-equivalence and cannot authorize NMI scale-up.}
+  - {source: decision.iteration_v7_closure, target: compute.ncs_post_c1, type: forbids, claim: C3 failed adaptation identification and cannot authorize NCS scale-up.}

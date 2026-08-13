@@ -1,13 +1,13 @@
-# Theory-exploration topology v6
+# Theory-exploration topology v7
 
 **Canonical machine state:** `knowledge_graph.yaml`  
 **As of:** 2026-08-13
-**Current decision:** `V6_NO_SURVIVOR_IDENTIFIABILITY`; NMI has no survivor and NCS is
+**Current decision:** `V7_NO_SURVIVOR`; C1/C2 are `RETIRED_PRIOR_ART`, C3 is
 `RETIRED_IDENTIFIABILITY`; outcomes/scale-up locked
 
 The graph is an append-only research-control artifact. It preserves v1/v2, exp144/145 and every retirement, then
-adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate and v6 exact-
-controller identifiability closure. Graph proximity is not evidence of
+adds the v3 state-closure/operator attacks, v4 phenomenon-first audit, v5 annual-rule-feedback gate, v6 exact-
+controller identifiability closure and v7 quotient/drift/probe audit. Graph proximity is not evidence of
 novelty; each `covers`, `falsified_by` or `retired_by` edge records an equation-level judgement with a source or
 exact counterexample.
 
@@ -148,6 +148,22 @@ flowchart TB
     V6 --> AUDIT["exact mechanics / scale / replication / identification"]
     AUDIT --> CLOSE6["V6_NO_SURVIVOR_IDENTIFIABILITY"]
     CLOSE6 --> LOCK6["chain outcomes / workers / GPUs locked"]
+
+    subgraph V7["v7: quotient + drift set + randomized probes"]
+        Q7["C1 controlled-behavior quotient"]
+        D7["C2 bounded-drift identified set"]
+        P7["C3 paired controller loop"]
+        IO7["minimal realization + PSR"]
+        SM7["set membership + active design"]
+        TR7["fixed probe-tree transducer"]
+        IO7 -->|covers| Q7
+        SM7 -->|covers| D7
+        TR7 -->|falsifies adaptation label| P7
+    end
+
+    CLOSE6 --> V7
+    V7 --> CLOSE7["V7_NO_SURVIVOR"]
+    CLOSE7 --> LOCK7["outcomes / workers / GPUs locked"]
 ```
 
 ## Exact reductions retained
@@ -184,6 +200,25 @@ Bernoulli chain. The three-time parity law is nevertheless correct with probabil
 Thus one-step and invariant-measure calibration can both be perfect while the observed multi-time process is
 wrong. This elementary counterexample is a scope control, not a new theorem.
 
+For the v7 quotient, let `B(m)` be the full controlled input--output behavior and define `m~m'` by
+`B(m)=B(m')`. Every invariant functional factors uniquely as `f=f_bar o B`; this is a set-theoretic identity, not a
+new representation theorem.
+
+For `b=S delta+e`, `||e||_2<=rho`, write `r=(I-SS^dagger)b`. When `S` has full column rank, the sharp feasible-set
+diameter is
+
+\[
+\operatorname{diam}_2(\Theta_\rho)
+=\frac{2\sqrt{\rho^2-\lVert r\rVert_2^2}}{\sigma_{min}(S)}.
+\]
+
+If `S` is rank deficient, feasible null directions are unbounded without an external constraint. This is ordinary
+set-membership geometry and optimal excitation.
+
+Finally, any finite randomized safe-probe tree can be represented by a fixed time-homogeneous transducer whose
+hidden state is the reachable history node. Hence randomization identifies controller-path assignment effects
+under causal assumptions, but not adaptation versus fixed hidden memory.
+
 ## Current cut through the graph
 
 | Object | State | Decisive evidence | Permitted reuse |
@@ -212,12 +247,13 @@ wrong. This elementary counterexample is a scope control, not a new theorem.
 | v6 Base topology | development only | eight operations share one chain/SystemConfig/administrator and several are bundled | generated/historical attack topology, never replication |
 | Exp150 identifiability witness | `VOID_PREMATURE_FORMAL_CELL_EXECUTION` | every formal seed loop was exposed before implementation/freeze | chronology record only; never rerun |
 | Exp151 identifiability witness | `IDENTIFIABILITY_WITNESS_CONFIRMED` | BPO rank 2/min singular 0; generated rank 4/min singular 0.012; all gates pass | generated negative control only |
+| v7 C1 observable quotient | `RETIRED_PRIOR_ART` | invariant functionals factor through complete input--output behavior; realization and PSR theory cover the object | input--output diagnostic only |
+| v7 C2 drift-budget set | `RETIRED_PRIOR_ART` | standard set-membership ellipsoid; width is controlled by excitation and null directions remain unbounded | uncertainty diagnostic only |
+| v7 C3 randomized loop | `RETIRED_IDENTIFIABILITY` | fixed history-state transducer reproduces every finite randomized probe-tree law | causal path-effect design only; no adaptation label |
 
-The graph has 238 nodes after the V6 identifiability closure. NMI has no survivor; NCS is retired because the
-declared observations do not identify behavioral response without an unsupported cross-regime latent-dynamics
-restriction, and the prospective/independent intervention cells remain empty. No chain outcome, fee series, L2
-transaction, FITRS outcome pair, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain
-outside the queue.
+The graph has 264 nodes after the V7 closure. NMI has no non-equivalent method; NCS has no identified adaptation
+phenomenon or executable prospective data contract. No experiment, chain outcome, fee series, L2 transaction,
+FITRS outcome pair, remote worker or GPU was opened, and both V100 workers and the RTX2060 remain outside the queue.
 
 ## Validation
 

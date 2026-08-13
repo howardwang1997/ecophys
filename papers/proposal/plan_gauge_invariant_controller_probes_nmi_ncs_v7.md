@@ -205,3 +205,29 @@ Compute cannot create probe randomization, excitation, invariance or replication
 - Do not choose probe directions after viewing responses.
 - If all three cards reduce to prior art or fail identification, close V7 before data and compute.
 - Preserve negative results, counterexamples and source mappings append-only.
+
+## 11. Closure after the primary-source and symbolic audit
+
+**Closed:** 2026-08-13
+
+**Decision:** `V7_NO_SURVIVOR`
+
+The frozen stop rule fired before E0/P0:
+
+1. C1 is `RETIRED_PRIOR_ART`. A functional constant on V7's equivalence classes factors through the controlled
+   input--output behavior by definition. Linear versions are transfer/Markov/Hankel objects and general
+   action-conditional versions are predictive-state functionals.
+2. C2 is `RETIRED_PRIOR_ART`. Under the local relation `b=S delta+e`, `||e||_2<=rho`, the sharp identified set is
+   an ordinary set-membership ellipsoid. Its full-rank diameter is exactly
+   `2 sqrt(rho^2-||r||_2^2)/sigma_min(S)`; it is unbounded along `ker(S)` without an external restriction.
+   Maximizing the minimum singular value is standard optimal excitation, and active MPC already couples safe
+   future inputs to feasible-set shrinkage.
+3. C3 is `RETIRED_IDENTIFIABILITY`. Every finite randomized safe probe tree can be reproduced pathwise by a fixed
+   history-state transducer. Randomization can identify a controller-path assignment effect under support and
+   carryover assumptions, but cannot identify the response as adaptive rather than fixed hidden memory.
+
+The complete derivations and primary-source matrix are in
+`research/theory_exploration/gauge_invariant_probe_audit_v7.md`. No experiment was created, no outcome or paid data
+was opened, and neither V100 host nor the RTX2060 was contacted or queued. The next iteration must add an external
+state measurement, a verified reset/erasure intervention, or a different scientific target; more simulation of
+the three retired objects cannot change their novelty or identification status.

@@ -211,3 +211,20 @@ known DGPs. It would not identify real behavioral adaptation or raise the route 
 The final V6 decision is `V6_NO_SURVIVOR_IDENTIFIABILITY`. Re-entry requires a new preregistration with a future
 non-proportional intervention, independent replication and a falsifiable invariance or partial-identification
 contract fixed before any outcome is read.
+
+## V7 gauge-invariant probe closure
+
+- **NMI:** `NO_SURVIVOR`. An observable invariant of the complete controlled-law equivalence class is an ordinary
+  input--output/predictive-state functional. A bounded-drift response set is ordinary set-membership geometry, and
+  safe probe selection is standard active/optimal excitation.
+- **NCS:** `NO_SURVIVOR_IDENTIFIABILITY`. A randomized loop can identify the causal effect of assigning one
+  controller path rather than another, but not whether the resulting history dependence is adaptive rather than a
+  fixed hidden-memory realization.
+- **Data:** literature and public metadata only. No market outcome, paid data or prospective assignment was opened.
+- **Compute:** no experiment was created; both V100s, the RTX2060, remote CPU and all GPUs remain uncontacted and
+  unqueued.
+
+The final V7 decision is `V7_NO_SURVIVOR`. The next Nature-level search cannot be another relabeling of quotient,
+drift ball or loop statistic. It must add an externally measured state, a verified reset/erasure intervention with
+a manipulation check, or change to a directly observable scientific target whose causal assignment effect is the
+claim rather than evidence for a hidden adaptive ontology.

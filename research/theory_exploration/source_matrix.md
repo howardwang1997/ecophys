@@ -184,3 +184,27 @@ use.
 - The official EIP-8138 page was rechecked on 2026-08-13 and remained Draft with TODO activation, target, maximum
   and update-fraction cells. A future change and independent replication therefore remain unregistered.
 - No chain outcome, remote worker or GPU has been used.
+
+## V7 gauge-invariant controller-probe audit
+
+| Primary source | What is established | V7 statement blocked or constrained | Remaining admissible role |
+|---|---|---|---|
+| [Minimal LPV input--output realizations](https://arxiv.org/abs/2305.08508) | Minimal state realizations of the same LPV input--output behavior are isomorphic under the stated conditions. | A latent-relabeling-invariant response as a new realization object. | Direct C1 oracle. |
+| [Stable input--output realizations](https://arxiv.org/abs/2607.03849) | Finite Hankel rank plus uniform response decay characterizes stable finite-dimensional realization, with extensions to LPV and switched systems. | Hankel/Markov response stability as V7 novelty. | Stability and finite-representation baseline. |
+| [Predictive State Representations](https://proceedings.neurips.cc/paper_files/paper/2001/hash/1e4d36177d71bbb3558e43af9577d70e-Abstract.html) | Action-conditional future tests form a state without identifying an ontological hidden state. | General stochastic controlled-behavior quotient as a new idea. | Nonlinear/stochastic C1 oracle. |
+| [Set-membership identification with guaranteed simulation accuracy](https://arxiv.org/abs/2001.07628) | The feasible parameter set contains all bounded-noise-compatible models and yields finite/infinite-horizon worst-case guarantees. | Drift-ball intersection as a new identified-set construction. | Direct C2 oracle. |
+| [Active exploration in adaptive MPC](https://arxiv.org/abs/2003.14120) and [exact dual set-membership MPC](https://arxiv.org/abs/2211.16300) | Future safe controls can shrink performance-relevant parameter uncertainty, including an exact predicted set-membership reformulation with robust feasibility. | Safe probe selection for identified-set contraction as a new method. | Active-design and safety oracle. |
+| [Online coreset set-membership identification](https://arxiv.org/abs/2506.22804) | Persistent excitation contracts feasible-set volume; disturbance-bound mismatch receives an explicit Hausdorff error bound. | Drift-radius sensitivity as a standalone new theorem. | Mismatch/convergence oracle. |
+| [Design and Analysis of Switchback Experiments](https://arxiv.org/abs/2009.00148) | Optimizes randomization points/probabilities and supports exact/asymptotic inference under known or misspecified carryover. | Paired controller paths as a new causal design. | Direct C3 path-effect oracle. |
+| [Markov switchback experiments](https://arxiv.org/abs/2403.17285) | Treats delayed effects and autocorrelated rewards with Markov/model-based estimators. | Markovian carryover as the missing distinction. | Carryover/autocorrelation oracle. |
+| [Geometric stochastic pumps](https://arxiv.org/abs/0705.2057) | Fixed stochastic kinetics can yield cyclic, path-dependent current. | Loop curvature/order as an adaptation certificate. | Mandatory fixed-mechanism negative control. |
+
+### V7 synthesis
+
+- C1 is `RETIRED_PRIOR_ART`: constancy on V7's equivalence classes is exactly factorization through controlled
+  input--output behavior.
+- C2 is `RETIRED_PRIOR_ART`: the sharp linear drift set is the standard set-membership ellipsoid, with diameter
+  proportional to `1/sigma_min(S)` and unbounded null directions.
+- C3 is `RETIRED_IDENTIFIABILITY`: switchbacks identify path assignments, while a fixed history-state transducer
+  can reproduce the complete finite randomized probe-tree law.
+- No experiment, outcome, remote worker or GPU was used; the final decision is `V7_NO_SURVIVOR`.

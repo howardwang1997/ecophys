@@ -14,7 +14,7 @@ V7 does not reopen V6. It treats V6's exact one-regime response/latent alias and
 the starting obstruction. It asks whether an admissible target can be constant on the observational gauge class,
 remain informative under bounded latent drift and be refined by safe prospective controller probes.
 
-Three initial `SCOUT` candidates are frozen:
+Three initial `SCOUT` candidates were frozen:
 
 1. an observable quotient response;
 2. a sharp identified set under a latent-drift budget;
@@ -26,5 +26,23 @@ identification, partial-identification sensitivity analysis, switchback/crossove
 pumps. Search failure is not novelty evidence. No experiment may be created until a candidate passes non-
 equivalence, equivalence-class validity and executable-probe gates.
 
-Current authorization is primary literature, symbolic algebra and tiny hand fixtures on at most 20 local Mac CPU
-core-hours. No market outcome, paid data, remote host, V100, RTX2060, GPU job or H20 assumption is authorized.
+## Closure
+
+Closed `V7_NO_SURVIVOR` on 2026-08-13 before any experiment or outcome access.
+
+- C1 `RETIRED_PRIOR_ART`: a functional constant on equality classes of the complete controlled input--output law
+  factors uniquely through that law. Transfer/Markov/Hankel/minimal-realization and PSR objects occupy the target.
+- C2 `RETIRED_PRIOR_ART`: `b=S delta+e`, `||e||<=rho` yields a standard set-membership ellipsoid. Its full-rank
+  diameter is `2 sqrt(rho^2-||r||^2)/sigma_min(S)` and it is unbounded along `ker(S)` absent external constraints.
+  Safe probe selection is standard active/optimal excitation.
+- C3 `RETIRED_IDENTIFIABILITY`: a fixed time-homogeneous history-state transducer reproduces the full law on any
+  finite randomized safe probe tree. Switchbacks identify path assignment effects, not adaptation versus fixed
+  hidden memory.
+
+Primary PDFs for set membership, active dual MPC and switchbacks were rendered and visually checked at the formal
+definitions. Canonical audit:
+`research/theory_exploration/gauge_invariant_probe_audit_v7.md`. The append-only graph has 264 nodes.
+
+No experiment directory, generated trajectory, market outcome, paid data, remote host, V100, RTX2060, GPU job or
+H20 assumption was used. Re-entry requires an external state measurement, verified physical reset/erasure with a
+manipulation check, or a different directly observable scientific target.
