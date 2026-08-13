@@ -361,9 +361,10 @@ again; adding more data or GPU capacity to the current estimand is not a remedy.
 - **Specialist fallback:** a rigorous one-domain prospective policy-prediction benchmark or event study can target
   market design, energy systems, computational economics or ML-for-economics venues without preserving a Nature
   claim by wording.
-- **Data gate:** CoW and historical AEMO transitions are development candidates. AEMO FTA (2026-11-01) and IPRR
-  dispatch mode (2027-05-23) are prospective candidates only after affected actions, identities, entry/exit,
-  adoption, outcomes, retention and licences are verified; a second independent untouched transition is required.
+- **Data gate:** CoW and historical AEMO transitions are development candidates. AEMO FTA (2026-11-01) is
+  watchlist-only because public affected-participant data are not established. IPRR's original 2027-05-23 date is
+  under an official pause/reset. Both need fixed clocks plus verified actions, identities, entry/exit, adoption,
+  outcomes, retention and licences; a second independent untouched transition is also required.
 - **Compute gate:** metadata work is Mac CPU only. Both V100s and the RTX2060 remain idle and unqueued before G1/G2;
   future scale-out may use additional non-H20 GPU/CPU nodes only after profiling. H20 remains excluded.
 

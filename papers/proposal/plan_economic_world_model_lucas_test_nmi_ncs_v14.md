@@ -152,15 +152,17 @@ rules can provide development events. Existing studies and public outcomes preve
 
 ### 6.2 Prospective candidates
 
-**AEMO Flexible Trading Arrangements, 1 November 2026.** The effective date and technical schemas are public, but
+**AEMO Flexible Trading Arrangements, 1 November 2026 — watchlist only.** The effective date and technical schemas are public, but
 the reform concerns retail metering, settlement points and voluntary service-provider participation. It remains a
 candidate only if public data expose adoption and a response vector at the affected participant level. Aggregate
-wholesale prices alone are insufficient.
+wholesale prices alone are insufficient. The current audit has not established public SSP/MSATS transaction or
+affected-customer panels, so FTA is not an admitted confirmation event.
 
-**AEMO Integrating Price-Responsive Resources, 23 May 2027.** The final rule allows aggregated consumer resources,
-virtual power plants, small generators and batteries to enter dispatch mode. AEMO also specifies reporting and
-implementation milestones. This is the strongest current prospective clock, conditional on a versioned public
-panel linking registered/aggregated participants, bids, dispatch, forecast error and market outcomes.
+**AEMO Integrating Price-Responsive Resources — paused clock.** The final rule allows aggregated consumer resources,
+virtual power plants, small generators and batteries to enter dispatch mode. The original commencement date was
+23 May 2027, but AEMO proposed a pause and alternate staged delivery path in April 2026. The old date cannot be
+frozen as a prospective clock. IPRR may re-enter only after a revised official schedule and a versioned public panel
+linking registered/aggregated participants, bids, dispatch, forecast error and market outcomes are final.
 
 **Future independently governed digital-market rule.** A CoW, power-market, auction or protocol change announced
 after the V14 freeze may supply the second confirmation. ePBS is monitoring-only until the protocol version,
@@ -193,6 +195,10 @@ The cross-domain claim concerns forecasting protocol and model-family ordering, 
 | G3 method value | M3/M4 gives a compute-matched development gain not reproduced by M0/M1 or post-hoc tuning | NMI route closes; retain reality-test protocol only |
 | G4 prospective seal | code, hashes, response vectors, forecast distributions, exclusion rules and analysis script are public before event time | event becomes development-only |
 | G5 real confirmation | at least two independent events support the same scoped model-selection conclusion with all nulls and failures reported | no NCS/NMI flagship claim |
+
+**Current gate state (2026-08-14):** `G1 NOT PASSED`. FTA lacks an established public affected-participant panel,
+IPRR has no stable implementation clock after its reset, and no second untouched event is admitted. The detailed
+experiment/resource audit is `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`.
 
 ## 8. Data and compute plan
 

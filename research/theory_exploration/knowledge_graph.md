@@ -515,11 +515,11 @@ alternate-order plus symmetric/Shapley sensitivity; they are diagnostics rather 
 | v13 independent system | `NO_DATA_CONTRACT` | CoW changes predate freeze and differ in channel; Jito BAM already partly deployed without a complete all-action tape | future independently governed isomorphic transition sealed before outcomes |
 | Exp155 | `NOT_OPENED` | protocol/common-observable/novelty/replication gates stop before preregistration | none under V13 |
 | v14 EWM Lucas test | `SCOUT` | strong policy-sandbox question, but Lucas/ABM-validation/ecology concepts are occupied and no sealed action/identity contract or second transition has passed | metadata-only novelty/data audit |
-| v14 AEMO FTA/IPRR clocks | conditional | official 2026-11-01 and 2027-05-23 dates exist; affected participant actions, identities, adoption, retention and licences remain unaudited | future confirmation only after G1 and preregistration |
+| v14 AEMO FTA/IPRR clocks | not admitted | FTA retains a 2026-11-01 date but lacks a public affected panel; IPRR's original 2027-05-23 date is under pause/reset | revised clock and public action/identity contract before G1 |
 | v14 CoW/AEMO history | development only | outcomes are already known or inspectable | schema, baseline and power development without confirmation claims |
 | Exp156 | `NOT_OPENED` | V14 has not passed G0/G1/G2 | none; do not create or queue |
 
-The graph has 406 nodes at the V14 scout. NMI has no admitted non-equivalent method; NCS has no identified,
+The graph has 409 nodes at the V14 experiment/data/compute audit. NMI has no admitted non-equivalent method; NCS has no identified,
 prospectively replicated scientific mechanism or executable outcome contract. V14 has used official metadata and
 primary-paper inspection only. Experiment 156 was not created; generated data, endpoint outcomes, remote workers
 and GPUs remain locked, and both V100 workers and the RTX2060 remain outside the queue.

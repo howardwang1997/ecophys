@@ -34,9 +34,10 @@ A single historical event study is specialist work, not an NCS/NMI flagship.
 ## Candidate systems
 
 - CoW solver competitions and completed AEMO reforms: development only.
-- AEMO Flexible Trading Arrangements, 2026-11-01: candidate only if affected-provider adoption/actions are public.
-- AEMO Integrating Price-Responsive Resources dispatch mode, 2027-05-23: strongest current prospective clock,
-  conditional on a versioned participant/action/identity/outcome panel.
+- AEMO Flexible Trading Arrangements, 2026-11-01: watchlist only; affected-provider adoption/actions are not shown
+  to be public.
+- AEMO Integrating Price-Responsive Resources: the original 2027-05-23 dispatch-mode date is under an official
+  pause/reset and is not a freezeable clock.
 - At least two independently governed untouched transitions are required. ePBS remains monitoring-only.
 
 ## Compute and data lock
@@ -47,3 +48,4 @@ queued. H20 is excluded. EcoMD is not silently treated as the adaptive-ecology m
 or negative-control architecture only.
 
 Canonical plan: `papers/proposal/plan_economic_world_model_lucas_test_nmi_ncs_v14.md`.
+Detailed experiment/data/compute audit: `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`.

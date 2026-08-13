@@ -379,8 +379,10 @@ use.
 | [Quantitative agent-based models](https://doi.org/10.1093/oxrep/graf027) | Reviews quantitative ABM calibration, forecasting and policy use and stresses the need for stronger predictive evidence. | Claiming that predictive validation of ABMs is an untouched question. | Standards and baseline inventory for a prospective evaluation. |
 | [The ecology of financial strategies](https://doi.org/10.1073/pnas.2015574118) | Demonstrates empirical market-ecology dynamics and the importance of strategy populations and counterparty identity. | Market ecology, strategy shares or population feedback as a new concept. | Ecological model family and identity-data requirement. |
 | [AEMO NEM dispatch data](https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/data-nem/market-management-system-mms-data/dispatch) | Publishes next-day five-minute unit dispatch, DUID, unit prices, constraints and the bid/offer version used. | Assuming aggregate electricity prices are sufficient for agent adaptation. | Candidate participant/action panel; retention and continuity still require audit. |
+| [AEMO NEMDE Queue Service](https://www.aemo.com.au/energy-systems/market-it-systems/electricity-system-guides/nemde-queue-service) | Production NEMDE access is participant-only, fee-for-service, and requires formulation documentation whose distribution is copyright-limited. | Calling a public-data reconstruction the exact production mechanism. | Conformance target and disclosure boundary. |
+| [`nempy` dispatch simulator](https://nempy.readthedocs.io/en/stable/intro.html) | Provides an open Python implementation of important NEM dispatch procedures. | Treating an open reconstruction as production NEMDE without replay evidence. | Approximate mechanism baseline subject to E1 conformance. |
 | [AEMO Flexible Trading Arrangements](https://www.aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/flexible-trading-arrangements) | Provides an official implementation program and final-stage date of 2026-11-01. | Treating the date alone as an observable wholesale-market experiment. | Prospective clock only if affected-provider adoption and responses are public. |
-| [AEMO Integrating Price-Responsive Resources](https://aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/integrating-price-responsive-resources-into-the-nem) | Gives the final rule, implementation milestones and dispatch-mode commencement on 2027-05-23 for aggregated consumer resources. | Calling the event admitted before participant/action/identity coverage is verified. | Strongest current prospective clock, conditional on G1. |
+| [AEMO Integrating Price-Responsive Resources](https://aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/integrating-price-responsive-resources-into-the-nem) | The rule originally set dispatch mode for 2027-05-23, but AEMO proposed a pause/reset and alternate staged delivery path in April 2026. | Treating the original date as a freezeable prospective clock. | Watch for a revised final schedule and public participant/action schema. |
 | [CoW solver competition API](https://api.cow.fi/docs/) | Publicly exposes solver competitions, submissions and rankings. | Treating already observed reward changes as blind confirmation. | Historical schema/model-ladder development only. |
 
 ### V14 synthesis
@@ -389,7 +391,7 @@ use.
 - A potentially important contribution is a prospectively sealed real-world test of whether historical model
   selection predicts unseen institutional response, followed by measured attribution across mechanical,
   persistent-participant and population scales.
-- CoW and completed AEMO changes can develop the protocol. FTA and IPRR are only candidate future clocks; neither
-  unlocks outcomes until the affected public action/identity panel and an independently governed second event pass
-  G1.
+- CoW and completed AEMO changes can develop the protocol. FTA is watchlist-only and IPRR has a paused clock;
+  neither unlocks outcomes until a fixed date, affected public action/identity panel and an independently governed
+  second event pass G1.
 - V14 remains `SCOUT`. No endpoint, Experiment 156, remote worker or GPU is opened or queued.

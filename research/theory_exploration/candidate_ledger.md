@@ -598,10 +598,10 @@ adaptation that can reorder which models are useful for intervention, and that m
 may carry more response than within-participant updating. Both statements remain hypotheses.
 
 CoW solver competitions and completed AEMO reforms are possible development systems. AEMO Flexible Trading
-Arrangements on 2026-11-01 and Integrating Price-Responsive Resources dispatch mode on 2027-05-23 are prospective
-clocks only if official public data expose affected participant actions, identities and outcomes. At least two
-independently governed untouched transitions are required; one historical event study cannot support the flagship
-claim.
+Arrangements on 2026-11-01 is watchlist-only because public affected-participant data are not established. The
+original Integrating Price-Responsive Resources dispatch-mode date of 2027-05-23 is under an official pause/reset
+and is no longer a freezeable clock. At least two independently governed untouched transitions are required; none
+is currently admitted and one historical event study cannot support the flagship claim.
 
 G0 is an equation-level novelty audit and G1 is a metadata-only data contract. Until both pass, no outcome row,
 Experiment 156, new model repository, remote worker, V100 or RTX2060 job is opened or queued. EcoMD is not silently

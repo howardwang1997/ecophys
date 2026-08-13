@@ -161,6 +161,11 @@ new mathematical evidence, not a new name, architecture diagram, dataset or benc
     architecture diagram or renaming each domain's outputs does not establish transfer.
 63. A future policy date is not yet a data contract. Affected participant identities, action versions, adoption,
     outcomes, retention and licences must be public before the date can unlock collection or compute.
+64. Public actions and realized allocations do not imply a public exact mechanism. If the production solver or
+    formulation is restricted, an open reconstruction is an approximate simulator until interval-level replay
+    errors pass a frozen conformance gate.
+65. A date in a final rule can cease to be an operational intervention clock when implementation is paused or
+    restaged. Event registries must track current delivery status, not preserve a superseded date as certainty.
 
 ## Gate failures retained
 

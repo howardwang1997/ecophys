@@ -3065,6 +3065,22 @@ nodes:
     url: https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/data-nem/market-management-system-mms-data/dispatch
     primary: true
     evidence_level: official_documentation
+  - id: src.v14_aemo_nemde_service
+    type: source
+    title: AEMO NEM Dispatch Engine Queue Service
+    track: ncs
+    claim: Production NEMDE access is participant-only fee-for-service and depends on formulation documentation with copyright-limited distribution.
+    url: https://www.aemo.com.au/energy-systems/market-it-systems/electricity-system-guides/nemde-queue-service
+    primary: true
+    evidence_level: official_documentation
+  - id: src.v14_nempy
+    type: source
+    title: nempy open NEM dispatch simulator
+    track: ncs
+    claim: The open Python package models important Australian NEM dispatch procedures but is not the restricted production NEMDE service.
+    url: https://nempy.readthedocs.io/en/stable/intro.html
+    primary: true
+    evidence_level: software_documentation
   - id: src.v14_aemo_fta
     type: source
     title: AEMO Flexible Trading Arrangements program
@@ -3077,7 +3093,7 @@ nodes:
     type: source
     title: AEMO Integrating Price-Responsive Resources into the NEM
     track: ncs
-    claim: The final reform program schedules dispatch-mode commencement for 2027-05-23 and creates a route for aggregated consumer resources virtual power plants small generators and batteries to participate.
+    claim: The rule originally scheduled dispatch mode for 2027-05-23 but AEMO proposed a pause reset and alternate staged path in April 2026 so the date is not currently freezeable.
     url: https://aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/integrating-price-responsive-resources-into-the-nem
     primary: true
     evidence_level: official_program
@@ -3092,6 +3108,11 @@ nodes:
     title: Mechanical behavioral and ecological response layers are established structure
     track: both
     claim: Exact rule effects persistent-participant action changes and population-share turnover are useful diagnostic layers but are not a novel identity or unique causal decomposition.
+  - id: kr.v14_aemo_public_replay_is_approximate
+    type: known_result
+    title: Public AEMO data do not supply the production dispatch engine
+    track: ncs
+    claim: Public bids constraints and dispatch outcomes support an approximate reconstruction but an exact-mechanism claim requires frozen interval-level conformance because production NEMDE and its formulation are restricted.
 
   - id: cand.v14.ewm_lucas_test
     type: candidate
@@ -3123,7 +3144,7 @@ nodes:
     type: dataset
     title: Metadata-only CoW and AEMO candidate registry
     track: ncs
-    claim: CoW and historical AEMO transitions are development candidates while FTA and IPRR remain prospective clocks with affected participant action identity retention and licence coverage unaudited.
+    claim: CoW and historical AEMO transitions are development candidates while FTA is watchlist-only IPRR has a paused clock and no prospective confirmation event is admitted.
   - id: compute.v14.locked_pre_g1_g2
     type: compute_gate
     title: V14 story and data-gate compute lock
@@ -3632,8 +3653,11 @@ edges:
   - {source: kr.structural_policy_transport, target: kr.v14_adaptation_hierarchy_is_prior_structure, type: supports, claim: Exact structural recomposition supplies the mechanical layer but not invariant behavior after a rule change.}
   - {source: kr.digital_twin_identification_limits, target: po.v14.prospective_cross_system_contract, type: supports, claim: A finite retrospective validation set cannot certify target counterfactuals without additional structure or a prospective test.}
   - {source: src.v14_aemo_dispatch, target: data.v14.metadata_only_candidate_registry, type: supports, claim: Official unit dispatch metadata make a participant-level electricity-market audit plausible but not yet complete.}
+  - {source: src.v14_aemo_nemde_service, target: kr.v14_aemo_public_replay_is_approximate, type: proves, claim: The official access and copyright conditions block treating public tables as the production executable engine.}
+  - {source: src.v14_nempy, target: kr.v14_aemo_public_replay_is_approximate, type: supports, claim: An open reconstruction is available as a baseline but must pass conformance before receiving an exact-mechanism label.}
+  - {source: kr.v14_aemo_public_replay_is_approximate, target: bench.v14.full_model_ladder, type: supports, claim: The AEMO structural model must be labelled approximate and compared against recorded dispatch until replay conformance passes.}
   - {source: src.v14_aemo_fta, target: data.v14.metadata_only_candidate_registry, type: supports, claim: FTA supplies a future official clock whose affected-participant observation contract remains conditional.}
-  - {source: src.v14_aemo_iprr, target: data.v14.metadata_only_candidate_registry, type: supports, claim: IPRR supplies the strongest current future official clock conditional on public action and identity coverage.}
+  - {source: src.v14_aemo_iprr, target: data.v14.metadata_only_candidate_registry, type: supports, claim: IPRR's original date is not a valid freeze point after the official pause and alternate staged-path proposal.}
   - {source: src.v13_cow_competition_api, target: data.v14.metadata_only_candidate_registry, type: supports, claim: CoW competition records can develop the schema and scoring ladder but already observed reforms cannot confirm it.}
   - {source: kr.v14_past_fit_not_policy_fidelity, target: cand.v14.ewm_lucas_test, type: supports, claim: The known validation gap motivates a sealed real-world test but is not itself the V14 discovery.}
   - {source: kr.v14_adaptation_hierarchy_is_prior_structure, target: cand.v14.ewm_lucas_test, type: supports, claim: The three response scales define diagnostic measurements while novelty must come from their prospective empirical role.}
