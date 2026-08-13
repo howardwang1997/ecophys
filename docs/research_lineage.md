@@ -5,13 +5,21 @@ for a later project.
 
 ## Current theory state
 
-`gauge-invariant-controller-probes-v7` started from integrated `main@d89a2dc59` on 2026-08-13. It does not reopen
-V6 or authorize outcomes. It asks whether a gauge-invariant observable quotient, a sharp latent-drift identified
-set or a paired closed-loop probe can constructively escape V6's exact alias. All three candidates begin at
-`SCOUT` and must first defeat transfer-function/minimal-realization, predictive-state, interventional/switching-ID,
-robust set-membership, active-design, switchback and stochastic-pump baselines. Current authorization is primary
-literature and symbolic analysis only: <=20 local Mac CPU core-hours, zero remote contact and zero GPU-hours.
-Protocol: `papers/proposal/plan_gauge_invariant_controller_probes_nmi_ncs_v7.md`.
+`observable-state-mechanism-search-v8` started from integrated `main@132640630` on 2026-08-13. It does not reopen
+V6/V7 or authorize model inference. It asks whether randomized source history moves with an explicit external
+memory capsule into independently restarted computational economies. The sole initial candidate must defeat
+memory-agent, context-ablation, causal-mediation/interference, process-memory and learning-agent-market baselines;
+the economy is the statistical unit and human/real-market claims are excluded. Current authorization is primary
+literature and protocol design only: <=30 local Mac CPU core-hours, zero remote contact and zero GPU-hours.
+Protocol: `papers/proposal/plan_causal_memory_transplant_agentic_economies_nmi_ncs_v8.md`.
+
+`gauge-invariant-controller-probes-v7` started from integrated `main@d89a2dc59` and closed `V7_NO_SURVIVOR` on
+2026-08-13 before experiments or outcomes. C1's invariant target factors through standard controlled input--output
+behavior; C2 is standard set-membership/optimal-excitation geometry; C3 is defeated by a fixed history-state
+transducer on every finite randomized probe tree. Randomization identifies path assignments, not adaptation versus
+fixed hidden memory. The validated append-only graph has 264 nodes. No worker or GPU was used. Protocol and audit:
+`papers/proposal/plan_gauge_invariant_controller_probes_nmi_ncs_v7.md` and
+`research/theory_exploration/gauge_invariant_probe_audit_v7.md`.
 
 `algorithmic-fee-market-dynamics-v6` started from integrated `main@efe14ad44` and closed
 `V6_NO_SURVIVOR_IDENTIFIABILITY` on 2026-08-13. It studied exact execution/blob fee controllers coupled to unknown
@@ -118,7 +126,8 @@ No Plan v5 artifact is relabelled as Plan v4 confirmation.
 | Phenomenon-first theory exploration v4 | `V4_NO_SURVIVOR`; closed prior-art/witness audit | Prior-art map and explicit no-witness outcomes | No scientific law, commensurability, dataset contract, method novelty or compute unlock |
 | Endogenous market-rule feedback v5 | `V5_NO_SURVIVOR`; generated identification preflight failed | Exact rule clock, ESMA/FCA metadata contract, immutable Exp148 artifact and power/type-I lesson | No market effect, method novelty, real-data unlock, worker or GPU authorization |
 | Algorithmic fee-market dynamics v6 | `V6_NO_SURVIVOR_IDENTIFIABILITY`; closed before outcomes | Exact protocol oracle, scale audit, Base topology provenance, Exp151 alias/rank negative control | No identified behavioral response, market outcome, method novelty, data/compute unlock or venue claim |
-| Gauge-invariant controller probes v7 | `SCOUT`; symbolic/literature gate only | V6 alias boundary and three constructive candidate cards | No theorem, data contract, experiment, outcome or compute unlock |
+| Gauge-invariant controller probes v7 | `V7_NO_SURVIVOR`; closed before experiments/outcomes | Quotient factorization, exact drift-set width, fixed probe-tree transducer and 264-node graph | No method/phenomenon survivor, data contract, outcome or compute unlock |
+| Causal memory transplantation v8 | `SCOUT`; literature/protocol gate only | Explicit state boundary and randomized capsule candidate | No theorem, model inference, generated outcome, human/market claim or compute unlock |
 
 ## Code inheritance rules
 
