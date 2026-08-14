@@ -97,11 +97,14 @@ sources:
   - source_id: elexon_gc0166_bmrs
     owner: Elexon Limited / National Energy System Operator
     domain: Great Britain electricity Balancing Mechanism
-    event_status: priority_g1_audit_not_admitted
+    event_status: g1_partial_5_of_10_not_admitted
     access: public_api_no_key
     cost: no_cost_identified
     event_clock: "2026-11-05"
     event_clock_source: "https://www.neso.energy/news/gc0166-goes-live-enabling-smarter-use-limited-duration-assets"
+    event_contract: data/manifests/gc0166_prospective_event_contract_v1.yaml
+    documentation_probe: data/manifests/gc0166_documentation_probe_2026-08-14.yaml
+    audit_report: papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md
     api_docs: "https://bmrs.elexon.co.uk/api-documentation/"
     developer_portal: "https://developer.data.elexon.co.uk/"
     terms: "https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/"
@@ -118,12 +121,20 @@ sources:
       - schema_and_metadata_only
       - no_candidate_target_endpoint_query
       - five_officially_disclosed_pilot_units_are_development_only
+      - no_live_pilot_row_query
+    verified_rule_semantics:
+      - all_active_bmus_submit_mdo_mdb_or_receive_defined_defaults
+      - initial_mdo_9999_and_mdb_minus_9999_mwh
+      - bmu_specific_copy_forward_or_zero_fill_for_missing_or_partial_day_ahead_data
+      - edl_valid_or_error_acknowledgement_exists_but_public_rejection_stream_not_established
+      - public_exact_boundary_is_validation_defaulting_resubmission_and_energy_caps_not_optimizer_choice
+      - dataset_guidance_supports_superseded_retrieval_and_archive_backfill
     unresolved:
-      - establish complete applicable limited-duration BMU population before target retrieval
-      - verify effective-dated BMU and lead-party identity history rather than current-only reference data
-      - verify retention of superseded and failed or defaulted MDO/MDB submissions
-      - define pilot exclusions and negative controls before outcome collection
-      - separate public rule conformance from non-public dispatch decision logic
+      - freeze the effective-dated active BMU population plus limited-duration and control classification
+      - obtain public effective-dated BMU and lead-party identity history rather than current-only reference data
+      - establish public provenance for participant submissions generated defaults rejections failures late and missing messages
+      - freeze the response vector horizons pilot exclusions negative controls and precision design
+      - admit a second independently governed untouched event
       - measure limited non-target row counts storage and revision semantics after contract freeze
 
 watchlist_metadata:

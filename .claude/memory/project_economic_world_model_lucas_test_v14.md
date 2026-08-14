@@ -4,7 +4,7 @@
 
 - Opened 2026-08-14 from `main@67e07971e` on branch
   `economic-world-model-lucas-test-scout-v14`.
-- State: `V14_SCOUT_NO_DATA_UNLOCK`.
+- State: `V14_SCOUT_GC0166_G1_5_OF_10_NO_DATA_UNLOCK`.
 - V13's self-concealing-action equivalence is a diagnostic warning only; it is not the paper headline.
 - Working title: *Past Fit Is Not Policy Fidelity: A Prospective Lucas Test for Economic World Models*.
 - “Lucas test” and “LucasBench” are provisional labels pending a naming-collision audit.
@@ -34,10 +34,10 @@ A single historical event study is specialist work, not an NCS/NMI flagship.
 ## Candidate systems
 
 - CoW solver competitions and completed AEMO reforms: development only.
-- NESO GC0166, Great Britain, 2026-11-05: highest-priority new G1 metadata audit. Elexon publicly documents BMU
-  identities, MDO/MDB, bids, acceptances and settlement outputs under an open-data licence. Five units/four lead
-  parties are already pilot/development only. Eligibility, identity history, revision retention and public-mechanism
-  boundaries remain unproved, so the event is not admitted.
+- NESO GC0166, Great Britain, 2026-11-05: G1 metadata audit completed at 5/10, not admitted. Clock, licence, action
+  schema, intended superseded-record retrieval and a scoped public-mechanism boundary pass. Five units/four lead
+  parties are already pilot/development only. Effective-dated population/identity, public
+  participant-versus-default/error provenance, response freeze and independent replication remain unresolved.
 - AEMO Flexible Trading Arrangements, 2026-11-01: watchlist only; affected-provider adoption/actions are not shown
   to be public.
 - AEMO Integrating Price-Responsive Resources: the original 2027-05-23 dispatch-mode date is under an official
@@ -56,6 +56,26 @@ Before G1/G2, only official documents, schemas, licences and zero-row availabili
 No endpoint outcomes, Experiment 156, new model repository, remote workers, V100 or RTX2060 jobs are opened or
 queued. H20 is excluded. EcoMD is not silently treated as the adaptive-ecology model; it may be a disclosed legacy
 or negative-control architecture only.
+
+## GC0166 metadata audit boundary
+
+- All BMUs active in the Balancing Mechanism are subject to MDO/MDB. Units able to deliver a full BOA may use
+  defaults; constrained units report an energy limitation. A row is not a limited-duration label or an adoption
+  outcome.
+- Initial values are MDO `9999.000` and MDB `-9999.000` MWh. Missing/partial day-ahead data use a BMU-specific
+  copy-forward (`C`) or zero-fill (`Z`) rule. Public values can therefore be generated without a participant action.
+- MDO/MDB are submitted through EDL. Valid/error acknowledgement and reason codes exist, but public BMRS capture of
+  submitted versus defaulted, rejected, failed, late and missing messages is not established. This is the pivotal
+  behavioral-observable gate.
+- Exact replay is limited to public validation/defaulting, post-gate resubmission constraints and declared-energy
+  caps. NESO optimiser selection, emergency intervention and operator discretion are observed stochastic outcomes,
+  not an exact public engine.
+- Elexon states that dataset endpoints publish data as received and allow superseded retrieval/archive backfill;
+  MDO/MDB expose `publishTime` and `serialNumber`. Intended revision semantics pass G1, while empirical completeness
+  remains G2.
+- Event contract: `data/manifests/gc0166_prospective_event_contract_v1.yaml`.
+- Content-free documentation probe: `data/manifests/gc0166_documentation_probe_2026-08-14.yaml`.
+- Audit report: `papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md`.
 
 ## Source and purchase decision
 

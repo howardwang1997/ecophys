@@ -1,0 +1,261 @@
+schema_version: ecophys-prospective-event-contract/v1
+event_id: gb_neso_gc0166
+as_of: "2026-08-14"
+stage: metadata_only
+
+access_boundary:
+  target_rows_opened: false
+  pilot_rows_opened: false
+  external_workers_used: false
+  paid_data_used: false
+  documentation_examples_visible: true
+
+event:
+  jurisdiction: Great Britain
+  system: NESO Balancing Mechanism
+  rule: GC0166 and consequential BSC Modification P499
+  operational_deadline: "2026-11-05"
+  pilot_policy: Any BMU with an MDO or MDB publication before the V14 freeze is development-only.
+
+sources:
+  - id: neso_go_live
+    kind: official_implementation_update
+    url: https://www.neso.energy/news/gc0166-goes-live-enabling-smarter-use-limited-duration-assets
+    expected_markers:
+      - five units across four lead parties
+      - 5 November 2026
+      - Maximum Delivery Offer
+      - Maximum Delivery Bid
+  - id: neso_rule
+    kind: official_rule_page
+    url: https://www.neso.energy/industry-information/codes/gc/modifications/gc0166-introducing-new-balancing-mechanism-parameters-limited-duration-assets
+    expected_markers:
+      - all Balancing Mechanism Units
+      - Implemented
+      - Electricity Storage Modules
+  - id: neso_final_modification
+    kind: official_final_modification_report
+    url: https://www.neso.energy/document/364346/download
+    evidence_pages: [8, 12, 13, 29, 30]
+    expected_markers:
+      - existing BM Units a default value
+      - previous day's values will be copied
+      - Resubmissions to Maximum Delivery Offer
+  - id: neso_dvcd
+    kind: official_validation_and_defaulting_rules
+    url: https://www.neso.energy/document/381641/download
+    evidence_pages: [4, 8, 27, 28, 37, 38, 39]
+    expected_markers:
+      - Failure to comply
+      - Default Rule for Maximum Delivery Offer
+      - MDO is 9999.000
+      - MDB is -9999.000
+  - id: neso_edl_spec
+    kind: official_message_specification
+    url: https://www.neso.energy/document/33346/download
+    evidence_pages: [24, 25]
+    expected_markers:
+      - Message Data Part for variations for MDO/MDB Messages
+      - Submission Error Codes
+      - Invalid BM Unit
+  - id: neso_best_practice
+    kind: official_best_practice_guidance
+    url: https://www.neso.energy/document/381741/download
+    evidence_pages: [21, 22]
+    expected_markers:
+      - Performance Monitoring
+      - submitted and updated
+      - optimiser will consider
+  - id: elexon_p499
+    kind: official_consequential_rule_page
+    url: https://www.elexon.co.uk/bsc/mod-proposal/p499/
+    expected_markers:
+      - Maximum Delivery Offer
+      - Maximum Delivery Bid
+      - publication
+  - id: elexon_api_guidance
+    kind: official_api_guidance
+    url: https://bmrs.elexon.co.uk/api-documentation/guidance
+    expected_markers:
+      - data published as received
+      - retrieval of superseded data
+      - back-fill archive data
+  - id: elexon_mdo_docs
+    kind: api_documentation
+    url: https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/MDO
+    expected_markers:
+      - Maximum Delivery Offer
+      - publishTime
+      - serialNumber
+  - id: elexon_mdb_docs
+    kind: api_documentation
+    url: https://bmrs.elexon.co.uk/api-documentation/endpoint/datasets/MDB
+    expected_markers:
+      - Maximum Delivery Bid
+      - publishTime
+      - serialNumber
+  - id: elexon_acceptance_docs
+    kind: api_documentation
+    url: https://bmrs.elexon.co.uk/api-documentation/endpoint/balancing/acceptances
+    expected_markers:
+      - Bid-offer acceptances per BMU
+      - acceptanceNumber
+      - storFlag
+  - id: elexon_bmu_docs
+    kind: api_documentation
+    url: https://bmrs.elexon.co.uk/api-documentation/endpoint/reference/bmunits/all
+    expected_markers:
+      - current list of BM units
+      - leadPartyName
+      - fuelType
+  - id: elexon_bscp15
+    kind: official_registration_procedure
+    url: https://bscdocs.elexon.co.uk/bsc-procedures/bscp-15-bm-unit-registration
+    expected_markers:
+      - Status:LIVE
+      - Effective From Date
+      - CRA-I015
+  - id: elexon_licence
+    kind: official_data_licence
+    url: https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/
+    expected_markers:
+      - worldwide
+      - royalty-free
+      - perpetual
+
+interfaces:
+  - id: mdo
+    role: action
+    docs_source_id: elexon_mdo_docs
+    endpoint: /datasets/MDO
+    fields:
+      - dataset
+      - settlementDate
+      - settlementPeriod
+      - timeFrom
+      - timeTo
+      - levelFrom
+      - levelTo
+      - nationalGridBmUnit
+      - bmUnit
+      - publishTime
+      - serialNumber
+    access_after_gate: G1
+  - id: mdb
+    role: action
+    docs_source_id: elexon_mdb_docs
+    endpoint: /datasets/MDB
+    fields:
+      - dataset
+      - settlementDate
+      - settlementPeriod
+      - timeFrom
+      - timeTo
+      - levelFrom
+      - levelTo
+      - nationalGridBmUnit
+      - bmUnit
+      - publishTime
+      - serialNumber
+    access_after_gate: G1
+  - id: boalf
+    role: outcome
+    docs_source_id: elexon_acceptance_docs
+    endpoint: /balancing/acceptances
+    fields:
+      - settlementDate
+      - settlementPeriodFrom
+      - settlementPeriodTo
+      - timeFrom
+      - timeTo
+      - levelFrom
+      - levelTo
+      - nationalGridBmUnit
+      - bmUnit
+      - acceptanceNumber
+      - acceptanceTime
+      - deemedBoFlag
+      - soFlag
+      - storFlag
+      - rrFlag
+    access_after_gate: G1
+  - id: bmu_reference
+    role: identity
+    docs_source_id: elexon_bmu_docs
+    endpoint: /reference/bmunits/all
+    fields:
+      - nationalGridBmUnit
+      - elexonBmUnit
+      - eic
+      - fuelType
+      - leadPartyName
+      - leadPartyId
+      - bmUnitType
+      - bmUnitName
+      - productionOrConsumptionFlag
+    access_after_gate: G1
+
+gates:
+  clock:
+    status: pass
+    reason: NESO states that operational implementation is required by 2026-11-05.
+    source_ids: [neso_go_live, neso_rule]
+  licence:
+    status: pass
+    reason: The BMRS open-data licence is worldwide, royalty-free, perpetual, and permits adaptation and redistribution with attribution.
+    source_ids: [elexon_licence]
+  action_schema:
+    status: pass
+    reason: MDO and MDB documentation exposes BMU, settlement, envelope, publication-time, and serial fields.
+    source_ids: [elexon_mdo_docs, elexon_mdb_docs, elexon_p499]
+  eligible_population:
+    status: unresolved
+    reason: The rule says all active BMUs submit parameters, but the effective-dated active population and the subset required to report non-default limitations are not yet frozen.
+    source_ids: [neso_rule, neso_go_live]
+  identity_history:
+    status: unresolved
+    reason: The documented BMU reference endpoint is explicitly current; effective-dated BMU and Lead Party history is not yet established.
+    source_ids: [elexon_bmu_docs]
+  revision_history:
+    status: pass
+    reason: MDO/MDB expose publishTime and serialNumber, and Elexon states that dataset endpoints publish data as received and support retrieval of superseded data and archive backfill; empirical completeness remains a G2 data-quality check.
+    source_ids: [elexon_api_guidance, elexon_mdo_docs, elexon_mdb_docs]
+  null_failure_capture:
+    status: unresolved
+    reason: Validation, copy-forward or zero defaulting, and private EDL error acknowledgements are specified, but public BMRS provenance for participant submissions versus generated defaults and rejected, failed, late, or missing submissions is not established.
+    source_ids: [neso_dvcd, neso_edl_spec, elexon_mdo_docs, elexon_mdb_docs]
+  mechanism_boundary:
+    status: pass
+    reason: Exact replay is scoped to public MDO/MDB validation, defaulting, post-gate resubmission constraints, and declared-energy limits on proposed instructions; NESO optimiser selection, emergency intervention, and operator discretion remain stochastic observed outcomes and are not claimed as exact replay.
+    source_ids: [neso_final_modification, neso_dvcd, neso_best_practice]
+  response_freeze:
+    status: unresolved
+    reason: A draft response vector and pilot exclusion exist, but primary score, horizons, default-value semantics, and negative controls are not frozen.
+    source_ids: [neso_go_live, elexon_acceptance_docs]
+  independent_replication:
+    status: unresolved
+    reason: No second untouched independently governed event has passed its own contract.
+    source_ids: [neso_rule]
+
+response_draft:
+  status: not_frozen
+  unit: BM Unit by settlement period, with day and Lead Party clustering.
+  pilot_exclusion: Exclude from confirmation every BMU whose first public MDO or MDB predates 2026-08-14; use those units only for schema and historical development.
+  treatment_boundary: Do not equate an MDO/MDB row or change with participant behaviour. Initial values, copy-forward and zero defaults must be separated from authenticated participant submissions; if public provenance cannot do this, GC0166 cannot support the behavioral-plasticity claim.
+  components:
+    - technical onboarding time only if an independently documented onboarding or authenticated-submission clock is public
+    - authenticated MDO/MDB limitation-envelope updates conditional on physical notifications, accepted instructions, reserve commitments, and pre-event state
+    - bid-offer and physical-notification adaptation among persistent BMUs
+    - acceptance probability, instruction feasibility under the contemporaneous declared envelope, and dispatch reliability
+    - entry, exit, Lead Party concentration, and contribution-share reallocation
+  negative_controls:
+    - pre-classified long-duration or conventional BMUs using documented default rules, matched only with pre-event covariates
+    - pre-declared placebo dates before the operational deadline and outside the five-unit pilot start
+
+next_actions:
+  - obtain a written or versioned definition of the applicable active-BMU population and default MDO/MDB values
+  - establish whether system-generated pre-freeze initial values exhaust the untouched confirmation cohort
+  - establish an effective-dated BMU and Lead Party identity source
+  - establish whether public records tag participant submissions, generated defaults, rejections, failures, late messages, and missing submissions
+  - freeze primary forecast components, horizons, pilot exclusions, and negative controls before any target query
+  - identify and contract a second independently governed prospective event

@@ -1,0 +1,107 @@
+schema_version: ecophys-documentation-probe/v1
+recorded_at: "2026-08-14T16:06:08+12:00"
+event_id: gb_neso_gc0166
+stage: metadata_only
+contract_path: data/manifests/gc0166_prospective_event_contract_v1.yaml
+contract_sha256: 763184e7ad13c1f8e06330b1bbf62331306d407bf4608f53257417cb71c8ea07
+command: conda run -n ecophys python -m ecomd.research.prospective_event_contract data/manifests/gc0166_prospective_event_contract_v1.yaml --probe-documentation
+access_boundary:
+  target_rows_opened: false
+  pilot_rows_opened: false
+  external_workers_used: false
+  paid_data_used: false
+  raw_document_content_retained: false
+gate_summary:
+  pass: 5
+  unresolved: 5
+  fail: 0
+  g1_ready: false
+probes:
+  - source_id: neso_go_live
+    status_code: 403
+    byte_count: 5774
+    sha256: 67c80306483a7ffe2930d93a3749aebfa7fff70f0a719ec49178c9ae218cfee4
+    missing_marker_count: 4
+    retrieval_error: http_status_403
+  - source_id: neso_rule
+    status_code: 403
+    byte_count: 6003
+    sha256: 7d635999b7aff45eb7db87796cd9d8e3c180b57226cc918851554a47b28aad9d
+    missing_marker_count: 3
+    retrieval_error: http_status_403
+  - source_id: neso_final_modification
+    status_code: 403
+    byte_count: 5584
+    sha256: 5edffd85c1a2a54799b395312e208938b1cc7a5902c6e78bfc492f35a7257b24
+    missing_marker_count: 3
+    retrieval_error: http_status_403
+  - source_id: neso_dvcd
+    status_code: 403
+    byte_count: 5584
+    sha256: 66742e9a3cbb8a28d4ca823a036d0b23f165c51dbca80b1dc0482eeef5d703f0
+    missing_marker_count: 4
+    retrieval_error: http_status_403
+  - source_id: neso_edl_spec
+    status_code: 403
+    byte_count: 5581
+    sha256: 547f0af953f0d0fc151525255969b822c83a973742910d74461719d121c358ad
+    missing_marker_count: 3
+    retrieval_error: http_status_403
+  - source_id: neso_best_practice
+    status_code: 403
+    byte_count: 5584
+    sha256: 0a6cfdf7e3c9fadf6db6e0d35d6efafc0874134d4dd5a2bf9c97d5fa4aca8041
+    missing_marker_count: 3
+    retrieval_error: http_status_403
+  - source_id: elexon_p499
+    status_code: 403
+    byte_count: 5579
+    sha256: 3df12af406718916ff17a81abed5673c45b6cef63ad6f7c273edd9d2ba1be55e
+    missing_marker_count: 3
+    retrieval_error: http_status_403
+  - source_id: elexon_api_guidance
+    status_code: 200
+    byte_count: 926
+    sha256: bf86cad8dec59c1bd81ddc99c97a2f91c55da1bb5a9b6e4b2778581ca1a6c3a4
+    missing_marker_count: 3
+    retrieval_error: null
+  - source_id: elexon_mdo_docs
+    status_code: 200
+    byte_count: 926
+    sha256: bf86cad8dec59c1bd81ddc99c97a2f91c55da1bb5a9b6e4b2778581ca1a6c3a4
+    missing_marker_count: 3
+    retrieval_error: null
+  - source_id: elexon_mdb_docs
+    status_code: 200
+    byte_count: 926
+    sha256: bf86cad8dec59c1bd81ddc99c97a2f91c55da1bb5a9b6e4b2778581ca1a6c3a4
+    missing_marker_count: 3
+    retrieval_error: null
+  - source_id: elexon_acceptance_docs
+    status_code: 200
+    byte_count: 926
+    sha256: bf86cad8dec59c1bd81ddc99c97a2f91c55da1bb5a9b6e4b2778581ca1a6c3a4
+    missing_marker_count: 3
+    retrieval_error: null
+  - source_id: elexon_bmu_docs
+    status_code: 200
+    byte_count: 926
+    sha256: bf86cad8dec59c1bd81ddc99c97a2f91c55da1bb5a9b6e4b2778581ca1a6c3a4
+    missing_marker_count: 3
+    retrieval_error: null
+  - source_id: elexon_bscp15
+    status_code: 200
+    byte_count: 946589
+    sha256: 1ca5376e856051517713516cee158a4c4e3a979b00c8583346d3234cf8179d44
+    missing_marker_count: 1
+    retrieval_error: null
+  - source_id: elexon_licence
+    status_code: 403
+    byte_count: 5817
+    sha256: fde68545fe81166850a33e56c8b6d6017c5512f75b67233a0d25b635aef73125
+    missing_marker_count: 3
+    retrieval_error: http_status_403
+interpretation:
+  - NESO and www.elexon.co.uk returned bot-protection pages to the reproducible HTTP probe; this is an acquisition limitation, not evidence that the official documents are absent.
+  - BMRS documentation routes returned the same JavaScript application shell, so marker absence in raw HTML does not contradict the separately reviewed official rendered documentation.
+  - The BSCP15 response contained effective-date and CRA-I015 material but not the exact unspaced marker Status:LIVE.

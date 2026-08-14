@@ -22,7 +22,10 @@ The current scouting priority is:
 2. predeclare an event-selection rule for the next qualifying on-chain market mechanism change; and
 3. retain AEMO FTA only if an authorised participant partnership becomes available on acceptable terms.
 
-No event is yet admitted. `G1 NOT PASSED` remains the correct state.
+The first GC0166 metadata audit is complete at `5/10` contract clauses passed. No event is yet admitted and
+`G1 NOT PASSED` remains the correct state. The audit and executable contract are
+`papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md` and
+`data/manifests/gc0166_prospective_event_contract_v1.yaml`.
 
 ## 2. Domain-independent admission contract
 
@@ -70,16 +73,17 @@ Elexon's Insights Solution currently documents public, no-key endpoints for:
 - current BMU, fuel-type and lead-party reference data.
 
 The BMRS open-data licence is worldwide, royalty-free and permits copying, adaptation and redistribution with
-attribution. This removes the main FTA access problem. It does not by itself prove a valid experiment. The next audit
-must establish the full applicable population, historical identity snapshots, first-submission/default semantics,
-late revisions, storage size and whether the dispatch mechanism can be represented honestly without claiming an
-exact proprietary decision engine.
+attribution. This removes the main FTA access problem. The detailed audit additionally verifies public validation,
+defaulting, post-gate resubmission and declared-energy constraints, and Elexon's intended superseded-record
+retrieval. Those clauses define an exact public mechanism boundary without pretending that NESO's optimiser and
+operator discretion are open source.
 
-A promising design is a prospectively sealed staggered-adoption study: define eligible limited-duration BMUs before
-opening target outcomes, use the five pilot units only for schema development, forecast first MDO/MDB submissions,
-bid adaptation, acceptance/reliability and contribution shares for the remaining units, then score fixed horizons
-through and after the compliance date. Unit adoption dates are observations within one reform, not independent
-confirmation events.
+The audit also invalidates a naive staggered-adoption interpretation. All active BMUs are subject to MDO/MDB;
+initial `+9999/-9999` values and BMU-specific copy-forward or zero defaults can generate public values without a new
+participant action. A row or value change is not automatically adoption or behavioral plasticity. Confirmation is
+conditional on a public provenance field or companion log separating authenticated submissions from generated
+defaults, rejections, late and missing messages. If that cannot be obtained, GC0166 becomes a mechanism/state
+development case rather than V14's behavioral confirmation event.
 
 ## 5. On-chain confirmation pipeline
 
@@ -121,8 +125,9 @@ independently governed transitions are still required.
 
 ## 7. Data, compute and collaboration consequence
 
-- GC0166 metadata/schema audit: Mac CPU only, no purchase and no collaboration required. Storage and row budgets
-  must be measured before historical retrieval.
+- GC0166 metadata/schema audit: completed on Mac CPU with 5/10 gates passed, no purchase and no collaboration.
+  Remaining G1 work is official schema/provenance clarification; storage and row budgets must be measured only
+  after a non-target sampling contract is frozen.
 - Later GB historical development: CPU/Parquet workload first; GPU use only for admitted learned models after G1/G2.
 - On-chain events: public archive/RPC or indexed data may require more storage and CPU, but no number is authorised
   until a limited non-target sample is measured.
@@ -135,12 +140,12 @@ The two V100 nodes and RTX2060 remain idle. No H20 is assumed.
 
 ## 8. Immediate gates
 
-1. Perform a zero-row GC0166 schema, retention, eligibility, identity and licence audit.
-2. Write the GC0166 response vector, pilot exclusion and negative-control event before retrieving target rows.
-3. Determine whether public data preserve superseded MDO/MDB, bid and acceptance submissions rather than only final
-   snapshots.
-4. Pre-register the on-chain event-selection rule and maintain a metadata-only proposal watchlist.
-5. Admit neither GC0166 nor any protocol event until its complete event contract passes G1.
+1. Resolve the five open GC0166 gates: effective-dated population, identity history, public submission/default/error
+   provenance, response freeze and independent replication.
+2. Freeze the GC0166 response vector, fixed horizons, pilot exclusions, negative controls and precision design before
+   retrieving target rows.
+3. Pre-register the on-chain event-selection rule and maintain a metadata-only proposal watchlist.
+4. Admit neither GC0166 nor any protocol event until its complete event contract passes G1.
 
 ## 9. Primary evidence
 
@@ -154,3 +159,5 @@ The two V100 nodes and RTX2060 remain idle. No H20 is assumed.
 - [Solana Alpenglow roadmap](https://solana.com/upgrades/alpenglow)
 - [Ethereum 2026 roadmap](https://ethereum.org/roadmap/)
 - [AEMO FTA implementation page](https://www.aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/flexible-trading-arrangements)
+
+Local audit: `papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md`.
