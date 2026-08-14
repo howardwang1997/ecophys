@@ -1,0 +1,151 @@
+schema_version: ecophys-aemo-prefix-headers/v4
+sample_id: aemo-5ms-two-clock-prefix-header-validation-v4
+frozen_at: "2026-08-14T10:35:26Z"
+parent_commit: 2f650ab0753ce4a6f7bd0611dd9c42327f6e0137
+scientific_role: development_only_bounded_prefix_header_validation
+loader_gate:
+  decision: PASS_TWO_CLOCK_LOADER_ENDPOINTS_ONLY
+  result_commit: 2f650ab0753ce4a6f7bd0611dd9c42327f6e0137
+  summary_sha256: 577e1815898acdbd750c7bc5e38c1c588195cc6262ac0144baa509dc427cfa13
+selection:
+  rule: reuse_loader_validated_months_at_new_unopened_zip_prefix_layer
+  no_replacement: true
+  zip_or_csv_previously_accessed_before_freeze: false
+range_contract:
+  request_header: "Range: bytes=0-262143"
+  required_http_status: 206
+  maximum_response_bytes: 262144
+  maximum_uncompressed_prefix_bytes: 65536
+  full_download_fallback_allowed: false
+  data_row_before_information_header_allowed: false
+objects:
+  - object_id: r0-prefix-2020-09-biddayoffer
+    sample_label: r0-prefix-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: BIDDAYOFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDDAYOFFER_202009010000.zip
+    expected_member: PUBLIC_DVD_BIDDAYOFFER_202009010000.CSV
+    expected_package: OFFER
+    expected_table: BIDDAYOFFER
+    expected_version: "2"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, PARTICIPANTID, OFFERDATE, VERSIONNO, ENTRYTYPE, PRICEBAND1, PRICEBAND10]
+  - object_id: r0-prefix-2020-09-bidperoffer
+    sample_label: r0-prefix-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: BIDPEROFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202009010000.zip
+    expected_member: PUBLIC_DVD_BIDPEROFFER_202009010000.CSV
+    expected_package: OFFER
+    expected_table: BIDPEROFFER
+    expected_version: "2"
+    required_fields: [SETTLEMENTDATE, OFFERDATE, PERIODID, VERSIONNO, DUID, BIDTYPE, MAXAVAIL, ROCUP, ROCDOWN, BANDAVAIL1, BANDAVAIL10]
+  - object_id: r0-prefix-2020-09-dispatchoffertrk
+    sample_label: r0-prefix-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: DISPATCHOFFERTRK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHOFFERTRK_202009010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHOFFERTRK_202009010000.CSV
+    expected_package: DISPATCH
+    expected_table: OFFERTRK
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+  - object_id: r0-prefix-2020-09-dispatchload
+    sample_label: r0-prefix-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: DISPATCHLOAD
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHLOAD_202009010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHLOAD_202009010000.CSV
+    expected_package: DISPATCH
+    expected_table: UNIT_SOLUTION
+    expected_version: "2"
+    required_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION, INITIALMW, TOTALCLEARED, AVAILABILITY]
+  - object_id: r0-prefix-2020-09-dudetailsummary
+    sample_label: r0-prefix-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: DUDETAILSUMMARY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202009010000.zip
+    expected_member: PUBLIC_DVD_DUDETAILSUMMARY_202009010000.CSV
+    expected_package: PARTICIPANT_REGISTRATION
+    expected_table: DUDETAILSUMMARY
+    expected_version: "4"
+    required_fields: [DUID, START_DATE, END_DATE, DISPATCHTYPE, REGIONID, PARTICIPANTID, SCHEDULE_TYPE]
+  - object_id: r2-prefix-2022-04-biddayoffer
+    sample_label: r2-prefix-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: BIDDAYOFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDDAYOFFER_202204010000.zip
+    expected_member: PUBLIC_DVD_BIDDAYOFFER_202204010000.CSV
+    expected_package: BIDS
+    expected_table: BIDDAYOFFER
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, PARTICIPANTID, OFFERDATE, VERSIONNO, ENTRYTYPE, REBID_EVENT_TIME, REFERENCE_ID, PRICEBAND1, PRICEBAND10]
+  - object_id: r2-prefix-2022-04-bidperoffer
+    sample_label: r2-prefix-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: BIDPEROFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202204010000.zip
+    expected_member: PUBLIC_DVD_BIDPEROFFER_202204010000.CSV
+    expected_package: BIDS
+    expected_table: BIDOFFERPERIOD
+    expected_version: "1"
+    required_fields: [TRADINGDATE, OFFERDATETIME, PERIODID, DUID, BIDTYPE, MAXAVAIL, RAMPUPRATE, RAMPDOWNRATE, BANDAVAIL1, BANDAVAIL10]
+  - object_id: r2-prefix-2022-04-dispatchoffertrk
+    sample_label: r2-prefix-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: DISPATCHOFFERTRK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHOFFERTRK_202204010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHOFFERTRK_202204010000.CSV
+    expected_package: DISPATCH
+    expected_table: OFFERTRK
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+  - object_id: r2-prefix-2022-04-dispatchload
+    sample_label: r2-prefix-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: DISPATCHLOAD
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHLOAD_202204010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHLOAD_202204010000.CSV
+    expected_package: DISPATCH
+    expected_table: UNIT_SOLUTION
+    expected_version: "2"
+    required_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION, INITIALMW, TOTALCLEARED, AVAILABILITY]
+  - object_id: r2-prefix-2022-04-dudetailsummary
+    sample_label: r2-prefix-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: DUDETAILSUMMARY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202204010000.zip
+    expected_member: PUBLIC_DVD_DUDETAILSUMMARY_202204010000.CSV
+    expected_package: PARTICIPANT_REGISTRATION
+    expected_table: DUDETAILSUMMARY
+    expected_version: "4"
+    required_fields: [DUID, START_DATE, END_DATE, DISPATCHTYPE, REGIONID, PARTICIPANTID, SCHEDULE_TYPE]
+gates:
+  required_http_206: 10
+  required_zip_prefix_parse: 10
+  required_header_contract_pass: 10
+  row_access_allowed_after_pass: false
+  full_archive_download_allowed_after_pass: false
+  gpu_allowed: false
+  replacement_allowed: false
+outputs:
+  summary: experiments/v14_aemo_prefix_header_audit/artifacts/summary.json
