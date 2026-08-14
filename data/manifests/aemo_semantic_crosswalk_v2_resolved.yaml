@@ -1,0 +1,655 @@
+schema_version: ecophys-aemo-semantic-crosswalk/v2
+sample_id: v14-aemo-semantic-crosswalk-heldout-20260814
+frozen_at: '2026-08-14T08:23:22Z'
+parent_commit: 66f47ae8b28b9637a115b7f1c076deea5d31c1cc
+stage: exact_head_metadata_resolved_no_archive_or_row_opened
+scientific_role: development_only_heldout_schema_validation
+discovery:
+  header_contract: data/manifests/aemo_development_headers_v1.yaml
+  header_contract_sha256: 4668132789160bafd2676a8ad8c963c9dfa6c298c608f56bd3c31f9700c6b78b
+  sample_labels:
+  - legacy-2021-03
+  - current-2025-01
+  use: schema_discovery_only
+selection:
+  rule: add_six_calendar_months_to_each_discovery_month_then_use_first_gregorian_tuesday
+  no_replacement: true
+  validation_samples:
+  - sample_label: heldout-legacy-2021-09
+    month: 2021-09
+    market_date: '2021-09-07'
+    naming_regime: legacy_public_dvd
+  - sample_label: heldout-current-2025-07
+    month: 2025-07
+    market_date: '2025-07-01'
+    naming_regime: public_archive_hash_delimited
+crosswalk:
+- logical_role: BIDDAYOFFER_D
+  canonical_fields:
+  - market_day
+  - duid
+  - bid_type
+  - participant_id
+  - offer_time
+  - version_no
+  - price_band_1
+  - price_band_2
+  - price_band_3
+  - price_band_4
+  - price_band_5
+  - price_band_6
+  - price_band_7
+  - price_band_8
+  - price_band_9
+  - price_band_10
+  regimes:
+    legacy_public_dvd:
+      header_package: OFFER
+      header_table: BIDDAYOFFER
+      required_source_fields:
+      - SETTLEMENTDATE
+      - DUID
+      - BIDTYPE
+      - PARTICIPANTID
+      - OFFERDATE
+      - VERSIONNO
+      - PRICEBAND1
+      - PRICEBAND2
+      - PRICEBAND3
+      - PRICEBAND4
+      - PRICEBAND5
+      - PRICEBAND6
+      - PRICEBAND7
+      - PRICEBAND8
+      - PRICEBAND9
+      - PRICEBAND10
+      field_map:
+        market_day:
+          sources:
+          - SETTLEMENTDATE
+          transform: aemo_market_day
+        duid:
+          sources:
+          - DUID
+          transform: identity
+        bid_type:
+          sources:
+          - BIDTYPE
+          transform: identity
+        participant_id:
+          sources:
+          - PARTICIPANTID
+          transform: identity
+        offer_time:
+          sources:
+          - OFFERDATE
+          transform: aemo_timestamp
+        version_no:
+          sources:
+          - VERSIONNO
+          transform: integer
+        price_band_1:
+          sources:
+          - PRICEBAND1
+          transform: decimal
+        price_band_2:
+          sources:
+          - PRICEBAND2
+          transform: decimal
+        price_band_3:
+          sources:
+          - PRICEBAND3
+          transform: decimal
+        price_band_4:
+          sources:
+          - PRICEBAND4
+          transform: decimal
+        price_band_5:
+          sources:
+          - PRICEBAND5
+          transform: decimal
+        price_band_6:
+          sources:
+          - PRICEBAND6
+          transform: decimal
+        price_band_7:
+          sources:
+          - PRICEBAND7
+          transform: decimal
+        price_band_8:
+          sources:
+          - PRICEBAND8
+          transform: decimal
+        price_band_9:
+          sources:
+          - PRICEBAND9
+          transform: decimal
+        price_band_10:
+          sources:
+          - PRICEBAND10
+          transform: decimal
+    public_archive_hash_delimited:
+      header_package: BID
+      header_table: BIDDAYOFFER_D
+      required_source_fields:
+      - SETTLEMENTDATE
+      - DUID
+      - BIDTYPE
+      - PARTICIPANTID
+      - OFFERDATE
+      - VERSIONNO
+      - PRICEBAND1
+      - PRICEBAND2
+      - PRICEBAND3
+      - PRICEBAND4
+      - PRICEBAND5
+      - PRICEBAND6
+      - PRICEBAND7
+      - PRICEBAND8
+      - PRICEBAND9
+      - PRICEBAND10
+      field_map:
+        market_day:
+          sources:
+          - SETTLEMENTDATE
+          transform: aemo_market_day
+        duid:
+          sources:
+          - DUID
+          transform: identity
+        bid_type:
+          sources:
+          - BIDTYPE
+          transform: identity
+        participant_id:
+          sources:
+          - PARTICIPANTID
+          transform: identity
+        offer_time:
+          sources:
+          - OFFERDATE
+          transform: aemo_timestamp
+        version_no:
+          sources:
+          - VERSIONNO
+          transform: integer
+        price_band_1:
+          sources:
+          - PRICEBAND1
+          transform: decimal
+        price_band_2:
+          sources:
+          - PRICEBAND2
+          transform: decimal
+        price_band_3:
+          sources:
+          - PRICEBAND3
+          transform: decimal
+        price_band_4:
+          sources:
+          - PRICEBAND4
+          transform: decimal
+        price_band_5:
+          sources:
+          - PRICEBAND5
+          transform: decimal
+        price_band_6:
+          sources:
+          - PRICEBAND6
+          transform: decimal
+        price_band_7:
+          sources:
+          - PRICEBAND7
+          transform: decimal
+        price_band_8:
+          sources:
+          - PRICEBAND8
+          transform: decimal
+        price_band_9:
+          sources:
+          - PRICEBAND9
+          transform: decimal
+        price_band_10:
+          sources:
+          - PRICEBAND10
+          transform: decimal
+- logical_role: BIDPEROFFER_D
+  canonical_fields:
+  - market_day
+  - interval_end
+  - duid
+  - bid_type
+  - period_id
+  - offer_time
+  - max_avail
+  - band_avail_1
+  - band_avail_2
+  - band_avail_3
+  - band_avail_4
+  - band_avail_5
+  - band_avail_6
+  - band_avail_7
+  - band_avail_8
+  - band_avail_9
+  - band_avail_10
+  regimes:
+    legacy_public_dvd:
+      header_package: OFFER
+      header_table: BIDOFFERPERIOD
+      required_source_fields:
+      - TRADINGDATE
+      - PERIODID
+      - DUID
+      - BIDTYPE
+      - OFFERDATETIME
+      - MAXAVAIL
+      - BANDAVAIL1
+      - BANDAVAIL2
+      - BANDAVAIL3
+      - BANDAVAIL4
+      - BANDAVAIL5
+      - BANDAVAIL6
+      - BANDAVAIL7
+      - BANDAVAIL8
+      - BANDAVAIL9
+      - BANDAVAIL10
+      field_map:
+        market_day:
+          sources:
+          - TRADINGDATE
+          transform: aemo_market_day
+        interval_end:
+          sources:
+          - TRADINGDATE
+          - PERIODID
+          transform: legacy_trading_day_period_to_interval_end
+        duid:
+          sources:
+          - DUID
+          transform: identity
+        bid_type:
+          sources:
+          - BIDTYPE
+          transform: identity
+        period_id:
+          sources:
+          - PERIODID
+          transform: integer
+        offer_time:
+          sources:
+          - OFFERDATETIME
+          transform: aemo_timestamp
+        max_avail:
+          sources:
+          - MAXAVAIL
+          transform: decimal
+        band_avail_1:
+          sources:
+          - BANDAVAIL1
+          transform: decimal
+        band_avail_2:
+          sources:
+          - BANDAVAIL2
+          transform: decimal
+        band_avail_3:
+          sources:
+          - BANDAVAIL3
+          transform: decimal
+        band_avail_4:
+          sources:
+          - BANDAVAIL4
+          transform: decimal
+        band_avail_5:
+          sources:
+          - BANDAVAIL5
+          transform: decimal
+        band_avail_6:
+          sources:
+          - BANDAVAIL6
+          transform: decimal
+        band_avail_7:
+          sources:
+          - BANDAVAIL7
+          transform: decimal
+        band_avail_8:
+          sources:
+          - BANDAVAIL8
+          transform: decimal
+        band_avail_9:
+          sources:
+          - BANDAVAIL9
+          transform: decimal
+        band_avail_10:
+          sources:
+          - BANDAVAIL10
+          transform: decimal
+    public_archive_hash_delimited:
+      header_package: BID
+      header_table: BIDPEROFFER_D
+      required_source_fields:
+      - SETTLEMENTDATE
+      - INTERVAL_DATETIME
+      - PERIODID
+      - DUID
+      - BIDTYPE
+      - OFFERDATE
+      - MAXAVAIL
+      - BANDAVAIL1
+      - BANDAVAIL2
+      - BANDAVAIL3
+      - BANDAVAIL4
+      - BANDAVAIL5
+      - BANDAVAIL6
+      - BANDAVAIL7
+      - BANDAVAIL8
+      - BANDAVAIL9
+      - BANDAVAIL10
+      field_map:
+        market_day:
+          sources:
+          - SETTLEMENTDATE
+          transform: aemo_market_day
+        interval_end:
+          sources:
+          - INTERVAL_DATETIME
+          transform: aemo_timestamp
+        duid:
+          sources:
+          - DUID
+          transform: identity
+        bid_type:
+          sources:
+          - BIDTYPE
+          transform: identity
+        period_id:
+          sources:
+          - PERIODID
+          transform: integer
+        offer_time:
+          sources:
+          - OFFERDATE
+          transform: aemo_timestamp
+        max_avail:
+          sources:
+          - MAXAVAIL
+          transform: decimal
+        band_avail_1:
+          sources:
+          - BANDAVAIL1
+          transform: decimal
+        band_avail_2:
+          sources:
+          - BANDAVAIL2
+          transform: decimal
+        band_avail_3:
+          sources:
+          - BANDAVAIL3
+          transform: decimal
+        band_avail_4:
+          sources:
+          - BANDAVAIL4
+          transform: decimal
+        band_avail_5:
+          sources:
+          - BANDAVAIL5
+          transform: decimal
+        band_avail_6:
+          sources:
+          - BANDAVAIL6
+          transform: decimal
+        band_avail_7:
+          sources:
+          - BANDAVAIL7
+          transform: decimal
+        band_avail_8:
+          sources:
+          - BANDAVAIL8
+          transform: decimal
+        band_avail_9:
+          sources:
+          - BANDAVAIL9
+          transform: decimal
+        band_avail_10:
+          sources:
+          - BANDAVAIL10
+          transform: decimal
+- logical_role: DISPATCHOFFERTRK
+  canonical_fields:
+  - interval_end
+  - duid
+  - bid_type
+  - bid_market_day
+  - bid_offer_time
+  regimes:
+    legacy_public_dvd: &id001
+      header_package: DISPATCH
+      header_table: OFFERTRK
+      required_source_fields:
+      - SETTLEMENTDATE
+      - DUID
+      - BIDTYPE
+      - BIDSETTLEMENTDATE
+      - BIDOFFERDATE
+      field_map:
+        interval_end:
+          sources:
+          - SETTLEMENTDATE
+          transform: aemo_timestamp
+        duid:
+          sources:
+          - DUID
+          transform: identity
+        bid_type:
+          sources:
+          - BIDTYPE
+          transform: identity
+        bid_market_day:
+          sources:
+          - BIDSETTLEMENTDATE
+          transform: aemo_market_day
+        bid_offer_time:
+          sources:
+          - BIDOFFERDATE
+          transform: aemo_timestamp
+    public_archive_hash_delimited: *id001
+- logical_role: DISPATCHLOAD
+  canonical_fields:
+  - interval_end
+  - run_no
+  - duid
+  - intervention
+  - initial_mw
+  - total_cleared
+  - availability
+  regimes:
+    legacy_public_dvd: &id002
+      header_package: DISPATCH
+      header_table: UNIT_SOLUTION
+      required_source_fields:
+      - SETTLEMENTDATE
+      - RUNNO
+      - DUID
+      - INTERVENTION
+      - INITIALMW
+      - TOTALCLEARED
+      - AVAILABILITY
+      field_map:
+        interval_end:
+          sources:
+          - SETTLEMENTDATE
+          transform: aemo_timestamp
+        run_no:
+          sources:
+          - RUNNO
+          transform: integer
+        duid:
+          sources:
+          - DUID
+          transform: identity
+        intervention:
+          sources:
+          - INTERVENTION
+          transform: integer
+        initial_mw:
+          sources:
+          - INITIALMW
+          transform: decimal
+        total_cleared:
+          sources:
+          - TOTALCLEARED
+          transform: decimal
+        availability:
+          sources:
+          - AVAILABILITY
+          transform: decimal
+    public_archive_hash_delimited: *id002
+- logical_role: DUDETAILSUMMARY
+  canonical_fields:
+  - duid
+  - valid_from
+  - valid_to
+  - dispatch_type
+  - region_id
+  - participant_id
+  - schedule_type
+  regimes:
+    legacy_public_dvd: &id003
+      header_package: PARTICIPANT_REGISTRATION
+      header_table: DUDETAILSUMMARY
+      required_source_fields:
+      - DUID
+      - START_DATE
+      - END_DATE
+      - DISPATCHTYPE
+      - REGIONID
+      - PARTICIPANTID
+      - SCHEDULE_TYPE
+      field_map:
+        duid:
+          sources:
+          - DUID
+          transform: identity
+        valid_from:
+          sources:
+          - START_DATE
+          transform: aemo_timestamp
+        valid_to:
+          sources:
+          - END_DATE
+          transform: nullable_aemo_timestamp
+        dispatch_type:
+          sources:
+          - DISPATCHTYPE
+          transform: identity
+        region_id:
+          sources:
+          - REGIONID
+          transform: identity
+        participant_id:
+          sources:
+          - PARTICIPANTID
+          transform: identity
+        schedule_type:
+          sources:
+          - SCHEDULE_TYPE
+          transform: identity
+    public_archive_hash_delimited: *id003
+objects:
+- object_id: heldout-legacy-2021-09-biddayoffer
+  sample_label: heldout-legacy-2021-09
+  logical_role: BIDDAYOFFER_D
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDDAYOFFER_202109010000.zip
+  http_status: 200
+  expected_bytes: 31290981
+  etag: null
+  last_modified: Thu, 16 Apr 2026 01:48:43 GMT
+- object_id: heldout-legacy-2021-09-bidperoffer
+  sample_label: heldout-legacy-2021-09
+  logical_role: BIDPEROFFER_D
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202109010000.zip
+  http_status: 200
+  expected_bytes: 1011035550
+  etag: null
+  last_modified: Thu, 16 Apr 2026 01:49:09 GMT
+- object_id: heldout-legacy-2021-09-dispatchoffertrk
+  sample_label: heldout-legacy-2021-09
+  logical_role: DISPATCHOFFERTRK
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHOFFERTRK_202109010000.zip
+  http_status: 200
+  expected_bytes: 63918282
+  etag: null
+  last_modified: Thu, 16 Apr 2026 01:50:18 GMT
+- object_id: heldout-legacy-2021-09-dispatchload
+  sample_label: heldout-legacy-2021-09
+  logical_role: DISPATCHLOAD
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHLOAD_202109010000.zip
+  http_status: 200
+  expected_bytes: 71662668
+  etag: null
+  last_modified: Thu, 16 Apr 2026 01:50:06 GMT
+- object_id: heldout-legacy-2021-09-dudetailsummary
+  sample_label: heldout-legacy-2021-09
+  logical_role: DUDETAILSUMMARY
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202109010000.zip
+  http_status: 200
+  expected_bytes: 161092
+  etag: null
+  last_modified: Thu, 16 Apr 2026 01:50:47 GMT
+- object_id: heldout-current-2025-07-biddayoffer-d
+  sample_label: heldout-current-2025-07
+  logical_role: BIDDAYOFFER_D
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23BIDDAYOFFER_D%23FILE01%23202507010000.zip
+  http_status: 200
+  expected_bytes: 1927897
+  etag: null
+  last_modified: Fri, 17 Apr 2026 23:34:03 GMT
+- object_id: heldout-current-2025-07-bidperoffer-d
+  sample_label: heldout-current-2025-07
+  logical_role: BIDPEROFFER_D
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23BIDPEROFFER_D%23FILE01%23202507010000.zip
+  http_status: 200
+  expected_bytes: 156489537
+  etag: null
+  last_modified: Sat, 18 Apr 2026 00:01:10 GMT
+- object_id: heldout-current-2025-07-dispatchoffertrk
+  sample_label: heldout-current-2025-07
+  logical_role: DISPATCHOFFERTRK
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DISPATCHOFFERTRK%23FILE01%23202507010000.zip
+  http_status: 200
+  expected_bytes: 103532265
+  etag: null
+  last_modified: Fri, 17 Apr 2026 23:43:57 GMT
+- object_id: heldout-current-2025-07-dispatchload
+  sample_label: heldout-current-2025-07
+  logical_role: DISPATCHLOAD
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DISPATCHLOAD%23FILE01%23202507010000.zip
+  http_status: 200
+  expected_bytes: 116786096
+  etag: null
+  last_modified: Fri, 17 Apr 2026 23:22:15 GMT
+- object_id: heldout-current-2025-07-dudetailsummary
+  sample_label: heldout-current-2025-07
+  logical_role: DUDETAILSUMMARY
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DUDETAILSUMMARY%23FILE01%23202507010000.zip
+  http_status: 200
+  expected_bytes: 345299
+  etag: null
+  last_modified: Fri, 17 Apr 2026 23:26:50 GMT
+resolution:
+  source_manifest_sha256: cd9c00577865cc5452e0311b7a712f778f800c7ec80955d70c79a2b0e8026597
+  resolved_at: '2026-08-14T08:31:56.749173Z'
+  resolver_git_commit: 1d83133ce75b3ef7aa76272b5d17a4f3231a568b
+  all_head_requests_pass: true
+gates:
+  exact_object_count_required: 10
+  head_http_200_rate_required: 1.0
+  crosswalk_header_pass_rate_required: 1.0
+  row_access_before_heldout_header_commit_allowed: false
+  discovery_months_may_count_as_validation: false
+  gpu_allowed: false
+outputs:
+  resolved_manifest: data/manifests/aemo_semantic_crosswalk_v2_resolved.yaml
+  raw_root: artifacts/v14_aemo_semantic_validation
+  request_ledger: artifacts/v14_aemo_semantic_validation/head_ledger.jsonl
+  header_contract: data/manifests/aemo_semantic_crosswalk_v2_headers.yaml
+  summary: experiments/v14_aemo_semantic_validation/artifacts/header_summary.json
