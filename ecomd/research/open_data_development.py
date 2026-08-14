@@ -453,6 +453,9 @@ def resolve_cow_anchor(
     *,
     anchor_payload: Mapping[str, object],
     resolved_at: str,
+    response_sha256: str,
+    response_bytes: int,
+    resolver_git_commit: str,
 ) -> dict[str, object]:
     """Resolve only the permitted CoW anchor field and materialize exact ID lists."""
 
@@ -468,6 +471,12 @@ def resolve_cow_anchor(
     _utc_timestamp(resolved_at, path="resolved_at", errors=timestamp_errors)
     if timestamp_errors:
         raise ValueError(timestamp_errors[0])
+    if SHA256_PATTERN.fullmatch(response_sha256) is None:
+        raise ValueError("response_sha256 must be a lowercase SHA-256 digest")
+    if response_bytes <= 0:
+        raise ValueError("response_bytes must be positive")
+    if SHA1_PATTERN.fullmatch(resolver_git_commit) is None:
+        raise ValueError("resolver_git_commit must be a full lowercase Git SHA")
 
     resolved = copy.deepcopy(dict(contract))
     resolved["stage"] = RESOLVED_STAGE
@@ -477,6 +486,9 @@ def resolve_cow_anchor(
     anchor = cast(dict[str, object], cow["anchor"])
     anchor["resolved_anchor_id"] = anchor_value
     anchor["resolved_at"] = resolved_at
+    anchor["response_sha256"] = response_sha256
+    anchor["response_bytes"] = response_bytes
+    anchor["resolver_git_commit"] = resolver_git_commit
     for key in ("initial_sample", "expansion_sample"):
         sample = cast(dict[str, object], cow[key])
         ids = derive_cow_auction_ids(

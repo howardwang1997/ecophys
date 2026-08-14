@@ -36,6 +36,9 @@ def test_cow_resolution_materializes_nested_exact_samples() -> None:
         contract,
         anchor_payload={"auctionId": 3_000_000, "solutions": [{"outcome": "discarded"}]},
         resolved_at="2026-08-14T06:53:00Z",
+        response_sha256="a" * 64,
+        response_bytes=1234,
+        resolver_git_commit="b" * 40,
     )
 
     assert validate_development_contract(resolved) == ()
@@ -48,6 +51,9 @@ def test_cow_resolution_materializes_nested_exact_samples() -> None:
     assert initial_ids[-1] == 2_801_000
     assert set(initial_ids).issubset(expansion_ids)
     assert initial["auction_ids_sha256"] == auction_ids_sha256(initial_ids)
+    anchor = cast(dict[str, object], cow["anchor"])
+    assert anchor["response_sha256"] == "a" * 64
+    assert "solutions" not in anchor
 
 
 def test_cow_rule_rejects_invalid_range_and_contract_tampering() -> None:
