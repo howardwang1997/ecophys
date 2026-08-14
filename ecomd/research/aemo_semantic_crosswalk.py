@@ -12,7 +12,10 @@ from urllib.parse import urlparse
 
 import yaml
 
+from ecomd.research.aemo_development_audit import inspect_aemo_archive
+
 SCHEMA_VERSION = "ecophys-aemo-semantic-crosswalk/v2"
+HEADER_SCHEMA_VERSION = "ecophys-aemo-semantic-crosswalk-heldout-headers/v2"
 UNRESOLVED_STAGE = "crosswalk_and_exact_urls_frozen_no_validation_request"
 RESOLVED_STAGE = "exact_head_metadata_resolved_no_archive_or_row_opened"
 EXPECTED_SAMPLES = {
@@ -376,6 +379,143 @@ def resolve_head_metadata(
         "all_head_requests_pass": all_pass,
     }
     return result
+
+
+def _sample_regime(manifest: Mapping[str, object], sample_label: str) -> str:
+    selection = cast(Mapping[str, object], manifest["selection"])
+    samples = cast(list[Mapping[str, object]], selection["validation_samples"])
+    for sample in samples:
+        if sample.get("sample_label") == sample_label:
+            return cast(str, sample["naming_regime"])
+    raise KeyError(f"unknown held-out sample label: {sample_label}")
+
+
+def _role_mapping(
+    manifest: Mapping[str, object], logical_role: str, naming_regime: str
+) -> tuple[Mapping[str, object], list[str]]:
+    entries = cast(list[Mapping[str, object]], manifest["crosswalk"])
+    for entry in entries:
+        if entry.get("logical_role") == logical_role:
+            regimes = cast(Mapping[str, Mapping[str, object]], entry["regimes"])
+            return regimes[naming_regime], cast(list[str], entry["canonical_fields"])
+    raise KeyError(f"unknown crosswalk logical role: {logical_role}")
+
+
+def inspect_crosswalk_archive(
+    path: str | Path,
+    spec: Mapping[str, object],
+    manifest: Mapping[str, object],
+) -> dict[str, object]:
+    """Audit one held-out archive against the frozen semantic projection."""
+
+    sample_label = cast(str, spec["sample_label"])
+    logical_role = cast(str, spec["logical_role"])
+    naming_regime = _sample_regime(manifest, sample_label)
+    mapping, canonical_fields = _role_mapping(manifest, logical_role, naming_regime)
+    expected_package = cast(str, mapping["header_package"])
+    expected_table = cast(str, mapping["header_table"])
+    required_fields = cast(list[str], mapping["required_source_fields"])
+    base_spec = dict(spec)
+    base_spec["archive_table"] = expected_table
+    base_spec["minimum_header_fields"] = required_fields
+    audit = inspect_aemo_archive(path, base_spec)
+    errors = cast(list[str], list(cast(list[object], audit["errors"])))
+    if audit.get("header_package") != expected_package:
+        errors.append(f"header package {audit.get('header_package')} != frozen package {expected_package}")
+    audit.update(
+        {
+            "naming_regime": naming_regime,
+            "expected_header_package": expected_package,
+            "expected_header_table": expected_table,
+            "canonical_fields": canonical_fields,
+            "crosswalk_field_map": dict(cast(Mapping[str, object], mapping["field_map"])),
+            "errors": errors,
+            "header_pass": not errors,
+        }
+    )
+    return audit
+
+
+def build_heldout_header_contract(
+    audits: Sequence[Mapping[str, object]],
+    *,
+    source_manifest: str,
+    source_manifest_sha256: str,
+    generated_at: str,
+    generator_git_commit: str,
+) -> dict[str, object]:
+    """Build the held-out header result while retaining the row lock."""
+
+    return {
+        "schema_version": HEADER_SCHEMA_VERSION,
+        "generated_at": generated_at,
+        "generator_git_commit": generator_git_commit,
+        "source_manifest": source_manifest,
+        "source_manifest_sha256": source_manifest_sha256,
+        "scientific_role": "development_only_heldout_schema_validation",
+        "all_headers_pass": len(audits) == 10 and all(audit.get("header_pass") is True for audit in audits),
+        "discovery_samples_count_as_validation": False,
+        "row_counts_opened": False,
+        "row_join_authorized": False,
+        "objects": [dict(audit) for audit in audits],
+        "next_gate": "commit_this_heldout_result_before_any_row_filter_transform_or_join",
+    }
+
+
+def summarize_heldout_header_audit(
+    downloads: Sequence[Mapping[str, object]],
+    audits: Sequence[Mapping[str, object]],
+    *,
+    expected_count: int,
+    download_ledger_sha256: str,
+) -> dict[str, object]:
+    """Summarize transport, integrity and crosswalk-header gates."""
+
+    exact_count = len(downloads) == expected_count and len(audits) == expected_count
+    http_200 = sum(download.get("http_status") == 200 for download in downloads)
+    byte_matches = sum(
+        download.get("observed_bytes") == download.get("expected_bytes") for download in downloads
+    )
+    sha_count = sum(isinstance(download.get("sha256"), str) for download in downloads)
+    crc_passes = sum(audit.get("zip_crc_pass") is True for audit in audits)
+    single_members = sum(audit.get("single_csv_member") is True for audit in audits)
+    package_matches = sum(
+        audit.get("header_package") == audit.get("expected_header_package") for audit in audits
+    )
+    table_matches = sum(audit.get("header_table") == audit.get("expected_header_table") for audit in audits)
+    field_passes = sum(not audit.get("missing_minimum_header_fields") for audit in audits)
+    header_passes = sum(audit.get("header_pass") is True for audit in audits)
+    gates = {
+        "exact_object_count": exact_count,
+        "http_200_rate": http_200 == expected_count,
+        "expected_byte_match_rate": byte_matches == expected_count,
+        "sha256_present_rate": sha_count == expected_count,
+        "zip_crc_pass_rate": crc_passes == expected_count,
+        "single_csv_member_rate": single_members == expected_count,
+        "header_package_match_rate": package_matches == expected_count,
+        "header_table_match_rate": table_matches == expected_count,
+        "crosswalk_source_field_rate": field_passes == expected_count,
+        "all_headers_pass": header_passes == expected_count,
+    }
+    return {
+        "schema": "ecophys-aemo-semantic-crosswalk-header-summary/v2",
+        "scientific_role": "development_only_heldout_schema_validation",
+        "expected_object_count": expected_count,
+        "download_ledger_count": len(downloads),
+        "header_audit_count": len(audits),
+        "http_200_count": http_200,
+        "expected_byte_match_count": byte_matches,
+        "sha256_count": sha_count,
+        "zip_crc_pass_count": crc_passes,
+        "single_csv_member_count": single_members,
+        "header_package_match_count": package_matches,
+        "header_table_match_count": table_matches,
+        "crosswalk_source_field_pass_count": field_passes,
+        "header_pass_count": header_passes,
+        "download_ledger_sha256": download_ledger_sha256,
+        "gates": gates,
+        "pass": all(gates.values()),
+    }
 
 
 def utc_now() -> str:
