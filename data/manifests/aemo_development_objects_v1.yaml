@@ -1,0 +1,117 @@
+schema_version: ecophys-aemo-development-objects/v1
+sample_id: v14-aemo-two-day-schema-20260814
+frozen_at: "2026-08-14T07:29:08Z"
+parent_commit: b2d89e31a904af30e87de373f5081e31618e096d
+stage: exact_objects_frozen_no_aemo_archives_downloaded
+scientific_role: development_only_schema_and_provenance
+selection_contract: data/manifests/open_data_development_sample_v1.yaml
+full_month_bundle_allowed: false
+no_object_replacement: true
+
+source_listings:
+  - sample_label: legacy-2021-03
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_03/MMSDM_Historical_Data_SQLLoader/DATA/
+    naming_regime: legacy_public_dvd
+  - sample_label: current-2025-01
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_01/MMSDM_Historical_Data_SQLLoader/DATA/
+    naming_regime: public_archive_hash_delimited
+
+objects:
+  - object_id: legacy-2021-03-biddayoffer
+    sample_label: legacy-2021-03
+    market_date: "2021-03-02"
+    logical_role: BIDDAYOFFER_D
+    archive_table: BIDDAYOFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDDAYOFFER_202103010000.zip
+    expected_bytes: 21116065
+    minimum_header_fields: [SETTLEMENTDATE, DUID, BIDTYPE]
+  - object_id: legacy-2021-03-bidperoffer
+    sample_label: legacy-2021-03
+    market_date: "2021-03-02"
+    logical_role: BIDPEROFFER_D
+    archive_table: BIDPEROFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202103010000.zip
+    expected_bytes: 667376426
+    minimum_header_fields: [SETTLEMENTDATE, DUID, BIDTYPE]
+  - object_id: legacy-2021-03-dispatchoffertrk
+    sample_label: legacy-2021-03
+    market_date: "2021-03-02"
+    logical_role: DISPATCHOFFERTRK
+    archive_table: DISPATCHOFFERTRK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHOFFERTRK_202103010000.zip
+    expected_bytes: 62553215
+    minimum_header_fields: [SETTLEMENTDATE, DUID, BIDTYPE]
+  - object_id: legacy-2021-03-dispatchload
+    sample_label: legacy-2021-03
+    market_date: "2021-03-02"
+    logical_role: DISPATCHLOAD
+    archive_table: DISPATCHLOAD
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHLOAD_202103010000.zip
+    expected_bytes: 71597649
+    minimum_header_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION]
+  - object_id: legacy-2021-03-dudetailsummary
+    sample_label: legacy-2021-03
+    market_date: "2021-03-02"
+    logical_role: DUDETAILSUMMARY
+    archive_table: DUDETAILSUMMARY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202103010000.zip
+    expected_bytes: 150250
+    minimum_header_fields: [DUID, START_DATE, END_DATE]
+  - object_id: current-2025-01-biddayoffer-d
+    sample_label: current-2025-01
+    market_date: "2025-01-07"
+    logical_role: BIDDAYOFFER_D
+    archive_table: BIDDAYOFFER_D
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23BIDDAYOFFER_D%23FILE01%23202501010000.zip
+    expected_bytes: 1830470
+    minimum_header_fields: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION]
+  - object_id: current-2025-01-bidperoffer-d
+    sample_label: current-2025-01
+    market_date: "2025-01-07"
+    logical_role: BIDPEROFFER_D
+    archive_table: BIDPEROFFER_D
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23BIDPEROFFER_D%23FILE01%23202501010000.zip
+    expected_bytes: 145486352
+    minimum_header_fields: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION, INTERVAL_DATETIME]
+  - object_id: current-2025-01-dispatchoffertrk
+    sample_label: current-2025-01
+    market_date: "2025-01-07"
+    logical_role: DISPATCHOFFERTRK
+    archive_table: DISPATCHOFFERTRK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DISPATCHOFFERTRK%23FILE01%23202501010000.zip
+    expected_bytes: 98454271
+    minimum_header_fields: [SETTLEMENTDATE, DUID, BIDTYPE]
+  - object_id: current-2025-01-dispatchload
+    sample_label: current-2025-01
+    market_date: "2025-01-07"
+    logical_role: DISPATCHLOAD
+    archive_table: DISPATCHLOAD
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DISPATCHLOAD%23FILE01%23202501010000.zip
+    expected_bytes: 108998184
+    minimum_header_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION]
+  - object_id: current-2025-01-dudetailsummary
+    sample_label: current-2025-01
+    market_date: "2025-01-07"
+    logical_role: DUDETAILSUMMARY
+    archive_table: DUDETAILSUMMARY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DUDETAILSUMMARY%23FILE01%23202501010000.zip
+    expected_bytes: 208960
+    minimum_header_fields: [DUID, START_DATE, END_DATE]
+
+gates:
+  exact_object_count_required: 10
+  http_200_rate_required: 1.0
+  expected_byte_match_rate_required: 1.0
+  sha256_required: true
+  zip_crc_pass_rate_required: 1.0
+  single_csv_member_rate_required: 1.0
+  archive_table_match_rate_required: 1.0
+  minimum_header_field_rate_required: 1.0
+  row_join_allowed_before_header_contract_commit: false
+  gpu_allowed: false
+
+outputs:
+  raw_root: artifacts/v14_open_data_feasibility/aemo
+  download_ledger: artifacts/v14_open_data_feasibility/aemo/download_ledger.jsonl
+  header_contract: data/manifests/aemo_development_headers_v1.yaml
+  summary: experiments/v14_open_data_feasibility/artifacts/aemo_header_summary.json

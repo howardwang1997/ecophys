@@ -20,3 +20,14 @@ overwritten. The 1,000-ID expansion remains locked unless the initial retention,
 
 This stage measures retention and schema conformance. It does not yet recompute CoW scores or claim exact mechanism
 replay, participant adaptation, policy prediction or prospective evidence.
+
+## AEMO two-date header sample
+
+`data/manifests/aemo_development_objects_v1.yaml` freezes ten individual table archives: five logical roles for
+2021-03 and 2025-01. `collect_aemo_headers.py` downloads only those objects, verifies their declared byte lengths,
+SHA-256 values, ZIP CRCs, single CSV members, MMSDM information headers, table names and minimum official fields.
+It deliberately does not count, filter, join or replay data records.
+
+Completed archives live under the ignored raw-artifact root. A partial transfer may resume the same object by HTTP
+Range; it cannot substitute a URL, month, date or table. The generated header contract keeps row joins locked and
+must itself be committed before a selected-date row parser is run. This phase uses CPU and no GPU.
