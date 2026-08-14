@@ -263,7 +263,13 @@ Official Data Model v5.00 records and the March SQLLoader control further separa
 rule clock. Emulated reporting entered production on 8 March; the March period control loads the new-shaped export
 into legacy `BIDPEROFFER` while discarding new-only clock/ramp columns. Bidding transition began on 1 April and the
 rule commenced on 1 October. A frozen endpoint test then passed 6/6 untouched controls from 2020-09 and 2022-04,
-using only 9,978 downloaded metadata bytes. No CSV/ZIP, row, remote node or GPU was used.
+  using only 9,978 downloaded metadata bytes. No CSV/ZIP, row, remote node or GPU was used.
+
+A separately frozen range-prefix audit then requested exactly 256 KiB from each of ten endpoint archives. All ten
+HTTP 206, ZIP-prefix parser, member, package, table and required-field checks passed, but the total header gate
+failed at 7/10 because three exact versions advanced or differed. It transferred 2,409,220 bytes, opened no `D`
+row and downloaded no full archive. This is a source-version ontology failure, not a data-volume or compute
+failure.
 
 ## 8. Bottom line
 
@@ -272,6 +278,6 @@ using only 9,978 downloaded metadata bytes. No CSV/ZIP, row, remote node or GPU 
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** freeze a two-clock AEMO archive-header contract after the loader endpoint pass; separately
-  obtain an outcome-blind CoW enumerator. Do not open rows, train models, open target outcomes or buy data until
-  those contracts exist.
+- **Current action:** audit official per-table AEMO version records after the failed 7/10 prefix gate; separately
+  obtain an outcome-blind CoW enumerator. Do not open full archives or rows, train models, open target outcomes or
+  buy data until those contracts exist.

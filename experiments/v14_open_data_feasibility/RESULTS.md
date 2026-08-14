@@ -141,3 +141,12 @@ ramp columns. The observation clock therefore changes before the mechanism clock
 The result is a metadata feasibility pass, not a reversal of either failed archive-header audit. No CSV/ZIP,
 market row, GPU or paid data was opened. Row access remains locked pending a separately frozen two-clock header
 protocol.
+
+The subsequent bounded ZIP-prefix audit preserved another failed gate. All ten exact 2020-09/2022-04 range
+requests and parsers passed, as did every member, package, table and required-field projection, but exact versions
+passed only 7/10. The failures were legacy `BIDPEROFFER` version 1 versus 2 frozen, post-5MS `UNIT_SOLUTION`
+version 3 versus 2, and `DUDETAILSUMMARY` version 5 versus 4. See
+`experiments/v14_aemo_prefix_header_audit/RESULTS.md`.
+
+This establishes that required numerical/key fields may be bridgeable while table-version clocks remain
+source-specific. The failure is not repaired post hoc, and no full archive or market row was opened.

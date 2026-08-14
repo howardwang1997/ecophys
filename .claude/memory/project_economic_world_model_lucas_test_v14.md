@@ -91,6 +91,10 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
   archive or row was opened. Row access remains locked behind a separately frozen two-clock archive-header gate.
   Do not delete the prior package gate or reuse 2021-09 as held-out evidence. Audit:
   `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
+- The bounded prefix-header gate at commit `ee673e126` failed 7/10 exact versions while all ten member, package,
+  table and required-field checks passed. Failures: 2020-09 `BIDPEROFFER` v1 versus v2; 2022-04
+  `UNIT_SOLUTION` v3 versus v2; `DUDETAILSUMMARY` v5 versus v4. No `D` row or full archive was opened. The
+  observation layer must carry source-specific version clocks; 2020-09/2022-04 are now discovery only.
 
 ## GC0166 metadata audit boundary
 

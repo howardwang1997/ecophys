@@ -106,3 +106,9 @@ Before any AEMO data row is opened:
 
 The metadata pass does not authorize CSV/ZIP access by itself. No row parser, model training, paid data or GPU
 allocation is authorized by this audit.
+
+The separately frozen bounded ZIP-prefix gate then failed at 7/10 exact versions while passing 10/10 HTTP 206,
+ZIP-prefix parse, member, package, table and required-field checks. `BIDPEROFFER` was version 1 rather than 2 in
+2020-09; `UNIT_SOLUTION` was version 3 rather than 2 and `DUDETAILSUMMARY` version 5 rather than 4 in 2022-04.
+This adds source-specific version clocks to the ontology. The failure remains immutable; official per-table change
+records must be audited before fresh prefixes are frozen. Full archive and row access remain locked.

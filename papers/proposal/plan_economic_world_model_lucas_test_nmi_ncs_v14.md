@@ -261,6 +261,12 @@ The independently frozen loader endpoint check passed all six controls from 2020
 owner, target table, required fields and non-`FILLER` gates were 6/6. This validates the clean metadata endpoints,
 not rows or effects. Archive headers and day-level joins remain behind a new frozen gate.
 
+The next bounded prefix check failed its stricter header gate at 7/10 exact versions despite passing all ten
+member/package/table/required-field projections. The misses were `BIDPEROFFER` v1 versus v2 in 2020-09,
+`UNIT_SOLUTION` v3 versus v2 and `DUDETAILSUMMARY` v5 versus v4 in 2022-04. Therefore the observation layer is a
+vector of source-specific version clocks, not one global reporting clock. V14 may project stable fields across a
+documented version boundary, but it may not discard version provenance or refit the failed sample.
+
 ## 8. Data and compute plan
 
 ### Before G1
@@ -321,6 +327,7 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    actions and identities.
 5. Preserve the failed v1 and v2 checkpoints. Treat AEMO 5MS as a staged historical development intervention with
    separate action and observation clocks. The 2020-09/2022-04 loader-control gate passed; freeze the next
-   archive-header gate before any ZIP or row access. Obtain an outcome-blind CoW competition enumerator before any
-   new CoW sample.
+   bounded prefix gate failed on three source-version clocks; audit their official change records and freeze fresh
+   prefixes before any full ZIP or row access. Obtain an outcome-blind CoW competition enumerator before any new
+   CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.
