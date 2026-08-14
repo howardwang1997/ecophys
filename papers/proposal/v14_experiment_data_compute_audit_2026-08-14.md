@@ -277,8 +277,9 @@ rule commenced on 1 October. A frozen endpoint test then passed 6/6 untouched co
 A separately frozen range-prefix audit then requested exactly 256 KiB from each of ten endpoint archives. All ten
 HTTP 206, ZIP-prefix parser, member, package, table and required-field checks passed, but the total header gate
 failed at 7/10 because three exact versions advanced or differed. It transferred 2,409,220 bytes, opened no `D`
-row and downloaded no full archive. This is a source-version ontology failure, not a data-volume or compute
-failure.
+row, but a later `Content-Range` audit found that two small identity archives were transferred in full. The
+original collector's full-download flag was hard-coded and wrong. This is both a source-version ontology failure
+and a transfer-guard failure, not a compute failure.
 
 The official follow-up classifies those failures rather than relaxing them. `BIDPEROFFER` v2 was inferred from a
 `NEXT_DAY_OFFER_*` contract and does not document the observed `PUBLIC_DVD` channel. `UNIT_SOLUTION` v3 adds
@@ -288,6 +289,13 @@ key every version by delivery channel/archive family and effective interval, sep
 24 October onward, and retain unknown bid-interface provenance. Audit:
 `papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
 
+The repaired channel-keyed contract was frozen at `39c45dddf` and run once on mechanically selected 2021-02 and
+2021-11. Every one of the ten header, version and required/forbidden-field contracts passed. The overall gate again
+failed because the 256 KiB request transferred both smaller `DUDETAILSUMMARY` objects completely. Total transfer
+was 2,409,465 bytes; no `D` row was parsed, no GPU or paid data was used, and no object will be rerun or replaced.
+The source matrix is empirically supported at header level, but row access remains locked behind a smaller-range
+protocol with automatic complete-object detection.
+
 ## 8. Bottom line
 
 - **Experiment plan:** scientifically sensible, operationally incomplete; E0/E1 must precede model training.
@@ -295,6 +303,6 @@ key every version by delivery channel/archive family and effective interval, sep
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** freeze the channel-keyed AEMO source-contract matrix after the completed official version
-  audit; separately obtain an outcome-blind CoW enumerator. Do not open fresh prefixes, full archives or rows,
-  train models, open target outcomes or buy data until those contracts exist.
+- **Current action:** repair the AEMO complete-transfer guard and freeze a smaller-range protocol on new untouched
+  months; separately obtain an outcome-blind CoW enumerator. Do not open rows, train models, open target outcomes
+  or buy data until those contracts exist.

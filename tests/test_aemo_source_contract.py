@@ -99,7 +99,7 @@ def test_source_response_rejects_pre_v51_dynamic_state_field(tmp_path: Path) -> 
         _spec(),
         http_status=206,
         content=content,
-        response_headers={"Content-Range": f"bytes 0-{len(content) - 1}/{len(content)}"},
+        response_headers={"Content-Range": f"bytes 0-{len(content) - 1}/{len(content) + 10}"},
         retrieved_at="2026-08-14T15:00:00Z",
         transport_error=None,
     )
@@ -130,3 +130,27 @@ def test_source_summary_requires_all_ten_contracts() -> None:
 
     assert summary["pass"] is False
     assert summary["total_response_bytes"] == 900
+
+
+def test_source_summary_fails_when_one_complete_archive_was_transferred() -> None:
+    audits = [
+        {
+            "http_status": 206,
+            "zip_prefix_parse": True,
+            "source_contract_pass": True,
+            "forbidden_fields_present": [],
+            "full_archive_downloaded": index == 0,
+            "response_bytes": 100,
+        }
+        for index in range(10)
+    ]
+    summary = summarize_source_contract_audit(
+        audits,
+        source_manifest="manifest.yaml",
+        source_manifest_sha256="a" * 64,
+        collector_git_commit="b" * 40,
+        generated_at="2026-08-14T15:00:00Z",
+    )
+
+    assert summary["pass"] is False
+    assert summary["full_archive_downloaded"] is True

@@ -89,7 +89,7 @@ def test_prefix_audit_requires_exact_header_contract(tmp_path: Path) -> None:
         _spec(),
         http_status=206,
         content=content,
-        response_headers={"Content-Range": f"bytes 0-{len(content) - 1}/{len(content)}"},
+        response_headers={"Content-Range": f"bytes 0-{len(content) - 1}/{len(content) + 10}"},
         retrieved_at="2026-08-14T10:00:00Z",
         transport_error=None,
     )
@@ -107,13 +107,30 @@ def test_prefix_audit_preserves_wrong_package_failure(tmp_path: Path) -> None:
         spec,
         http_status=206,
         content=content,
-        response_headers={"Content-Range": f"bytes 0-{len(content) - 1}/{len(content)}"},
+        response_headers={"Content-Range": f"bytes 0-{len(content) - 1}/{len(content) + 10}"},
         retrieved_at="2026-08-14T10:00:00Z",
         transport_error=None,
     )
 
     assert audit["header_contract_pass"] is False
     assert "header_package OFFER != BIDS" in audit["errors"]
+
+
+def test_prefix_audit_rejects_range_that_contains_complete_archive(tmp_path: Path) -> None:
+    content = _archive(tmp_path / "complete.zip")
+    audit = audit_prefix_response(
+        _spec(),
+        http_status=206,
+        content=content,
+        response_headers={"Content-Range": f"bytes 0-{len(content) - 1}/{len(content)}"},
+        retrieved_at="2026-08-14T10:00:00Z",
+        transport_error=None,
+    )
+
+    assert audit["zip_prefix_parse"] is True
+    assert audit["full_archive_downloaded"] is True
+    assert audit["header_contract_pass"] is False
+    assert "range response contains the complete archive" in audit["errors"]
 
 
 def test_prefix_summary_requires_all_ten() -> None:
@@ -136,3 +153,26 @@ def test_prefix_summary_requires_all_ten() -> None:
 
     assert summary["pass"] is False
     assert summary["total_response_bytes"] == 900
+
+
+def test_prefix_summary_fails_when_one_complete_archive_was_transferred() -> None:
+    audits = [
+        {
+            "http_status": 206,
+            "zip_prefix_parse": True,
+            "header_contract_pass": True,
+            "full_archive_downloaded": index == 0,
+            "response_bytes": 100,
+        }
+        for index in range(10)
+    ]
+    summary = summarize_prefix_audit(
+        audits,
+        source_manifest="manifest.yaml",
+        source_manifest_sha256="a" * 64,
+        collector_git_commit="b" * 40,
+        generated_at="2026-08-14T10:00:00Z",
+    )
+
+    assert summary["pass"] is False
+    assert summary["full_archive_downloaded"] is True

@@ -128,17 +128,27 @@ For an NMI route, the burden is higher. The observation operator or learning obj
 transfer across independently governed systems. Encoding known release dates in a graph is infrastructure, not
 methodological novelty.
 
-## 6. Next admissible gate
+## 6. Executed gate and next admissible gate
 
-Before any fresh prefix request, freeze a source-contract matrix that:
+The source-contract matrix was frozen at commit `39c45dddf736e418a3e112a5a4689a782e918466`. Its selection rule chose
+2021-02 as the nearest complete month before the reporting bridge and 2021-11 as the nearest complete month after
+the WDR/v5.1 boundary, without checking availability. All ten fresh objects passed HTTP, parsing, exact
+channel/package/table/version and required/forbidden-field projections. This independently confirms the scientific
+header matrix, including `PUBLIC_DVD` bid-period version 1 and the v5.1 state/identity additions.
 
-1. keys expected versions by delivery channel/archive family rather than table name alone;
-2. encodes day-level 5MS and WDR mechanism intervals plus v5.1 observation availability;
-3. marks bid-interface provenance as observed, bounded or unknown without value-based imputation;
-4. declares fast-start and WDR sensitivity populations; and
-5. selects fresh development dates that do not reuse 2021-03, 2021-09, 2020-09, 2022-04, 2025-01 or 2025-07 as
-   held-out evidence.
+The overall protocol nevertheless failed `FAIL_FULL_ARCHIVE_TRANSFER_GUARD`. Each fixed request allowed 256 KiB,
+but the two `DUDETAILSUMMARY` objects were only 150,150 and 162,163 compressed bytes. Their `Content-Range` values
+show that every compressed byte was returned. The parser inflated only its bounded prefix and opened no `D` row,
+but the raw summary's hard-coded `full_archive_downloaded=false` is incorrect. The immutable raw summary and
+separate adjudication are preserved in `experiments/v14_aemo_source_contract_audit/`.
 
-The fresh check remains a bounded metadata-prefix audit. Passing it would authorize only a separately frozen,
-small row-level E1 conformance sample. It would not authorize bulk synchronization, causal claims, paid data,
-prospective outcomes or GPU training.
+The next protocol must:
+
+1. detect a complete-object response from `Content-Range` and fail it automatically;
+2. use a smaller fixed byte range that cannot consume the known small identity objects;
+3. prove header parse sufficiency on synthetic or already consumed material;
+4. select new untouched months mechanically and prohibit rerunning or replacing 2021-02/2021-11; and
+5. retain all mechanism, channel, fast-start, WDR and partial-provenance constraints.
+
+No row-level E1 sample, bulk synchronization, causal claim, paid data, prospective outcome or GPU training is
+authorized.

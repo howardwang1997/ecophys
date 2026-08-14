@@ -592,6 +592,9 @@ def summarize_source_contract_audit(
     parse_count = sum(item.get("zip_prefix_parse") is True for item in audits)
     contract_count = sum(item.get("source_contract_pass") is True for item in audits)
     no_forbidden_count = sum(not item.get("forbidden_fields_present") for item in audits)
+    full_archive_downloaded = any(
+        item.get("full_archive_downloaded") is True for item in audits
+    )
     return {
         "schema_version": SUMMARY_SCHEMA_VERSION,
         "source_manifest": source_manifest,
@@ -613,10 +616,11 @@ def summarize_source_contract_audit(
             and parse_count == expected
             and contract_count == expected
             and no_forbidden_count == expected
+            and not full_archive_downloaded
         ),
         "audits": list(audits),
         "data_row_opened": False,
-        "full_archive_downloaded": False,
+        "full_archive_downloaded": full_archive_downloaded,
         "gpu_used": False,
         "paid_data_used": False,
     }

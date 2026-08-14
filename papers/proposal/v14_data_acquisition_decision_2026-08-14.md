@@ -100,6 +100,14 @@ records show that the `BIDPEROFFER` v2 expectation was scoped to `NEXT_DAY_OFFER
 24 October 2021, so a monthly October extract conflates 5MS-only and 5MS-plus-WDR intervals. Acquisition manifests
 must include delivery channel/archive family and day-level mechanism/observation clocks, not only table and month.
 
+The resulting channel-keyed contract was frozen at commit `39c45dddf` and tested once on mechanically selected
+2021-02 and 2021-11 prefixes. All ten exact channel/package/table/version and required/forbidden-field predictions
+passed. The total gate still failed: the 256 KiB request transferred both smaller `DUDETAILSUMMARY` compressed
+objects in full (150,150 and 162,163 bytes). No `D` row was parsed and no body was retained, but the raw collector's
+hard-coded `full_archive_downloaded=false` was incorrect. The immutable raw output is superseded by a machine-readable
+`FAIL_FULL_ARCHIVE_TRANSFER_GUARD` adjudication. These months are development evidence and cannot be rerun or
+replaced; row acquisition remains locked.
+
 ## 4. What can be acquired now
 
 ### Free and immediately locatable
@@ -150,9 +158,10 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
 4. Maintain the frozen CoW/Uniswap event registry; request competition-history retention, rate-limit and research-
    redistribution clarification only for a post-cutoff candidate that reaches a final package.
 5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
-6. Preserve all failed AEMO header protocols. The March mapping and three later version failures are now
-   classified; build a channel-keyed, piecewise pre-transition/transition/5MS-only/5MS-plus-WDR source contract
-   before freezing fresh prefixes. Independently obtain a valid CoW enumeration rule. No GPU is needed.
+6. Preserve all failed AEMO header protocols. The channel-keyed source matrix passed its ten scientific header
+   checks, but the transfer guard failed on two complete small objects. Use the repaired `Content-Range` detector,
+   prove a smaller range can parse the information header on synthetic or consumed material, and freeze untouched
+   months before any new request. Independently obtain a valid CoW enumeration rule. No GPU is needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator

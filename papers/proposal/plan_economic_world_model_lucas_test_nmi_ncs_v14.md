@@ -278,6 +278,14 @@ from 24 October onward and use a delivery-channel-keyed source-version vector. T
 cannot repair historical action-interface provenance. Detailed audit:
 `papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
 
+The channel-keyed matrix was then frozen before access and tested on mechanically selected 2021-02/2021-11
+prefixes. All ten exact source contracts passed, including absence/presence of `DISPATCHMODETIME` and
+`DISPATCHSUBTYPE`. The total protocol still fails: the 256 KiB Range request transferred both smaller
+`DUDETAILSUMMARY` archives in full (150,150 and 162,163 compressed bytes). No `D` row was parsed, but the raw
+collector's `full_archive_downloaded=false` flag was wrong. The immutable raw summary is overridden by a separate
+`FAIL_FULL_ARCHIVE_TRANSFER_GUARD` adjudication; selected objects are not rerun. Results:
+`experiments/v14_aemo_source_contract_audit/RESULTS.md`.
+
 ## 8. Data and compute plan
 
 ### Before G1
@@ -339,6 +347,7 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
 5. Preserve the failed v1 and v2 checkpoints. Treat AEMO 5MS as a staged historical development intervention with
    separate mechanism, reporting, delivery-channel and table-version clocks. The 2020-09/2022-04 loader-control
    gate passed; the bounded-prefix gate failed on three distinct version classes, and the official change audit is
-   complete. Freeze a channel-keyed source-contract matrix with day-level WDR/v5.1 boundaries before any fresh
-   prefix, full ZIP or row access. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
+   complete. The channel-keyed source subgate passed 10/10 but its transfer guard failed on two small complete
+   objects. Repair `Content-Range` detection and freeze a smaller-range protocol on new untouched months before any
+   row access. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

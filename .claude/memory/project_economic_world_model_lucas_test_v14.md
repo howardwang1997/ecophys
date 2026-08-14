@@ -93,8 +93,10 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
   `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
 - The bounded prefix-header gate at commit `ee673e126` failed 7/10 exact versions while all ten member, package,
   table and required-field checks passed. Failures: 2020-09 `BIDPEROFFER` v1 versus v2; 2022-04
-  `UNIT_SOLUTION` v3 versus v2; `DUDETAILSUMMARY` v5 versus v4. No `D` row or full archive was opened. The
-  observation layer must carry source-specific version clocks; 2020-09/2022-04 are now discovery only.
+  `UNIT_SOLUTION` v3 versus v2; `DUDETAILSUMMARY` v5 versus v4. No `D` row was parsed, but a 2026-08-15 review of
+  the preserved `Content-Range` metadata found that the 2020-09 and 2022-04 `DUDETAILSUMMARY` responses transferred
+  every compressed byte. The original hard-coded no-full-download flag was wrong. The observation layer must carry
+  source-specific version clocks; 2020-09/2022-04 are now discovery only.
 - Official follow-up resolves the failure classes without relaxing the gate. The v2 `BIDPEROFFER` citation is
   scoped to `NEXT_DAY_OFFER_*` participant files and was incorrectly transferred to the observed `PUBLIC_DVD`
   archive. The version key must include delivery channel/file ID or archive family, member, package, table/report,
@@ -110,6 +112,17 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
   choice. Compatibility-report shape is not submission provenance; unknown mode remains partially identified.
 - Canonical official audit:
   `papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
+- The channel-keyed source contract was frozen at commit `39c45dddf736e418a3e112a5a4689a782e918466` before
+  accessing mechanically selected 2021-02 and 2021-11. Its scientific header subgate passed 10/10, including
+  `PUBLIC_DVD` `BIDPEROFFER` v1 and the post-v5.1 `DISPATCHMODETIME`/`DISPATCHSUBTYPE` fields.
+- Its authoritative overall decision is `FAIL_FULL_ARCHIVE_TRANSFER_GUARD`: the 256 KiB requests transferred the
+  complete 150,150-byte and 162,163-byte `DUDETAILSUMMARY` objects. No `D` row was parsed, no body persisted, and no
+  GPU or paid data was used. Raw summary SHA-256 is
+  `e7abbcf530d8d75a0f69c5885dfcbdc74a84f743ff9a7134754e6e8b28d8a239`; preserve it unchanged and use the
+  separate adjudication as authoritative.
+- The generic detector now derives full compressed-object transfer from `Content-Range`. Do not rerun or replace
+  any consumed month. Row access remains locked until a separately frozen smaller-range protocol proves header
+  sufficiency and selects new untouched months mechanically.
 
 ## GC0166 metadata audit boundary
 

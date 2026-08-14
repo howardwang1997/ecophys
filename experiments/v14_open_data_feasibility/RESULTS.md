@@ -149,4 +149,7 @@ version 3 versus 2, and `DUDETAILSUMMARY` version 5 versus 4. See
 `experiments/v14_aemo_prefix_header_audit/RESULTS.md`.
 
 This establishes that required numerical/key fields may be bridgeable while table-version clocks remain
-source-specific. The failure is not repaired post hoc, and no full archive or market row was opened.
+source-specific. The failure is not repaired post hoc and no market row was opened. Post-run safety correction:
+the preserved `Content-Range` metadata shows that the two small `DUDETAILSUMMARY` responses contained every
+compressed byte, despite the original collector's contrary flag. See the authoritative correction in
+`experiments/v14_aemo_prefix_header_audit/RESULTS.md`.

@@ -2,6 +2,8 @@
 
 **Decision:** `FAIL_VERSION_CLOCK_CONTRACT`
 
+**Post-run safety correction (2026-08-15):** `FAIL_FULL_ARCHIVE_TRANSFER_GUARD`
+
 **Frozen protocol commit:** `ee673e12609b6f8dc8b7760f1681f36b2e99df6a`
 
 **Manifest SHA-256:** `2391b145e710ec34eb94d5e09af58837462fa78c04ec77ead0071922588d6527`
@@ -18,11 +20,18 @@
 | Member/package/table/required fields | 10/10 | 10/10 | PASS |
 | Exact package/table/version header contract | 7/10 | 10/10 | **FAIL** |
 | `D` market row opened | 0 | 0 | PASS |
-| Full archive downloaded | 0 | 0 | PASS |
+| Complete compressed archive transferred | 2 | 0 | **FAIL** |
 | GPU or paid data used | 0 | 0 | PASS |
 
 The ten responses total 2,409,220 bytes. Raw prefix bytes were not committed; each response retains its URL,
 `Content-Range`, retrieval time, byte count and prefix SHA-256.
+
+The original frozen collector incorrectly hard-coded `full_archive_downloaded=false`. A later audit of its own
+immutable response metadata found that both small identity objects were transferred in full:
+`r0-prefix-2020-09-dudetailsummary` returned 148,577 bytes with
+`bytes 0-148576/148577`, and `r2-prefix-2022-04-dudetailsummary` returned 163,491 bytes with
+`bytes 0-163490/163491`. No `D` row or full object was decompressed or parsed, but receiving every compressed byte
+violated the declared transfer guard. This correction does not change the already-failing overall decision.
 
 ## Three preserved failures
 
@@ -54,8 +63,7 @@ mechanism identity. Full classification is in
 
 ## Next gate
 
-Freeze a source-contract matrix keyed by delivery channel, file/archive family and effective interval. It must
-represent 1--23 October and 24 October onward separately, mark participant submission interface as partially
-observed, and declare fast-start and WDR sensitivity populations. Treat 2020-09 and 2022-04 as discovery only and
-freeze fresh archive prefixes before another request. This failure does not authorize a full download, row access,
-model training, prospective outcome, paid data or GPU.
+The later channel-keyed source contract validated all ten header/field predictions, but independently repeated the
+complete-transfer error on two small identity objects. Repair the generic `Content-Range` guard and freeze a
+smaller-range protocol on new untouched months. Treat all consumed months as development only. This failure does
+not authorize row access, model training, prospective outcomes, paid data or GPU.

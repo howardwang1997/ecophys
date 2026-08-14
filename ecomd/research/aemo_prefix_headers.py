@@ -372,15 +372,33 @@ def audit_prefix_response(
         (value for key, value in response_headers.items() if key.lower() == "content-range"),
         None,
     )
-    if http_status == 206 and (
-        content_range is None or re.fullmatch(r"bytes 0-\d+/\d+", content_range) is None
-    ):
+    content_range_match = (
+        re.fullmatch(r"bytes 0-(\d+)/(\d+)", content_range)
+        if content_range is not None
+        else None
+    )
+    if http_status == 206 and content_range_match is None:
         errors.append("missing or invalid Content-Range")
-    if http_status == 206 and not errors:
+    parse_eligible = (
+        http_status == 206
+        and transport_error is None
+        and len(content) <= RANGE_BYTES
+        and content_range_match is not None
+    )
+    if parse_eligible:
         try:
             parsed = parse_aemo_zip_prefix(content)
         except ValueError as error:
             errors.append(f"ValueError: {error}")
+    full_archive_downloaded = False
+    if content_range_match is not None:
+        final_byte = int(content_range_match.group(1))
+        total_bytes = int(content_range_match.group(2))
+        full_archive_downloaded = (
+            final_byte + 1 == total_bytes and len(content) == total_bytes
+        )
+        if full_archive_downloaded:
+            errors.append("range response contains the complete archive")
     if parsed is not None:
         comparisons = {
             "member": "expected_member",
@@ -417,7 +435,7 @@ def audit_prefix_response(
         "header_contract_pass": not errors,
         "errors": errors,
         "data_row_opened": False,
-        "full_archive_downloaded": False,
+        "full_archive_downloaded": full_archive_downloaded,
         "gpu_used": False,
     }
 
@@ -436,6 +454,9 @@ def summarize_prefix_audit(
     http_count = sum(item.get("http_status") == 206 for item in audits)
     parse_count = sum(item.get("zip_prefix_parse") is True for item in audits)
     contract_count = sum(item.get("header_contract_pass") is True for item in audits)
+    full_archive_downloaded = any(
+        item.get("full_archive_downloaded") is True for item in audits
+    )
     return {
         "schema_version": SUMMARY_SCHEMA_VERSION,
         "source_manifest": source_manifest,
@@ -455,10 +476,11 @@ def summarize_prefix_audit(
             and http_count == expected
             and parse_count == expected
             and contract_count == expected
+            and not full_archive_downloaded
         ),
         "audits": list(audits),
         "data_row_opened": False,
-        "full_archive_downloaded": False,
+        "full_archive_downloaded": full_archive_downloaded,
         "gpu_used": False,
         "paid_data_used": False,
     }
