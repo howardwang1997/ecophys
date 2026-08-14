@@ -247,7 +247,8 @@ The official 5MS postmortem resolves the main interpretation. AEMO ran a bidding
 30 September 2021 in which legacy 30-minute and new 5-minute submission paths coexisted, then commenced the 5MS
 rule on 1 October. Its v5.00 specification explicitly replaces the old `OFFER` CSV records with `BIDS` records.
 September 2021 is therefore a mechanism-transition regime, not a clean held-out legacy month. V14 must preserve
-submission granularity and regime clocks rather than normalize this change away. Detailed audit:
+submission granularity and regime clocks rather than normalize this change away. Compatibility reports mean the
+public report generation is not, by itself, an observed participant submission interface. Detailed audit:
 `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
 
 A second official clock precedes that mechanism transition. The Data Model v5.00 specification schedules
@@ -266,6 +267,16 @@ member/package/table/required-field projections. The misses were `BIDPEROFFER` v
 `UNIT_SOLUTION` v3 versus v2 and `DUDETAILSUMMARY` v5 versus v4 in 2022-04. Therefore the observation layer is a
 vector of source-specific version clocks, not one global reporting clock. V14 may project stable fields across a
 documented version boundary, but it may not discard version provenance or refit the failed sample.
+
+The official version audit separates the three misses. The `BIDPEROFFER` v2 citation was tied to participant
+`NEXT_DAY_OFFER_*` files and was incorrectly transferred to the `PUBLIC_DVD` archive channel. `UNIT_SOLUTION` v3
+adds the fast-start dynamic-state field `DISPATCHMODETIME`. `DUDETAILSUMMARY` v5 adds `DISPATCHSUBTYPE`, which AEMO
+says is required to distinguish scheduled loads from WDR loads. Data Model v5.1 and the real WDR mechanism both
+went live on 24 October 2021, 23 days after 5MS. The development timeline must therefore separate 1--23 October
+from 24 October onward and use a delivery-channel-keyed source-version vector. The private
+`BIDOFFERFILETRK.SUBMISSION_METHOD` field was explicitly not populated within the WDR release timeline, so it
+cannot repair historical action-interface provenance. Detailed audit:
+`papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
 
 ## 8. Data and compute plan
 
@@ -326,8 +337,8 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
 4. Define one proper forecast vector, fixed horizons and negative-control event only for candidates with auditable
    actions and identities.
 5. Preserve the failed v1 and v2 checkpoints. Treat AEMO 5MS as a staged historical development intervention with
-   separate action and observation clocks. The 2020-09/2022-04 loader-control gate passed; freeze the next
-   bounded prefix gate failed on three source-version clocks; audit their official change records and freeze fresh
-   prefixes before any full ZIP or row access. Obtain an outcome-blind CoW competition enumerator before any new
-   CoW sample.
+   separate mechanism, reporting, delivery-channel and table-version clocks. The 2020-09/2022-04 loader-control
+   gate passed; the bounded-prefix gate failed on three distinct version classes, and the official change audit is
+   complete. Freeze a channel-keyed source-contract matrix with day-level WDR/v5.1 boundaries before any fresh
+   prefix, full ZIP or row access. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

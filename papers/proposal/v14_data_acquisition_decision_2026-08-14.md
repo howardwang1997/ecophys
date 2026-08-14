@@ -93,6 +93,13 @@ expose `BIDDAYOFFER_D` and `BIDPEROFFER_D` under a newer `PUBLIC_ARCHIVE#...` co
 third-party downloader is not evidence that the official raw data are absent. E1 must inspect headers and model
 versions and prove semantic equivalence rather than renaming files blindly.
 
+The bounded-prefix follow-up passed all stable field projections but failed three exact versions. Official release
+records show that the `BIDPEROFFER` v2 expectation was scoped to `NEXT_DAY_OFFER_*`, not the `PUBLIC_DVD` archive;
+`DISPATCH,UNIT_SOLUTION,3` adds fast-start state; and
+`PARTICIPANT_REGISTRATION,DUDETAILSUMMARY,5` adds WDR identity. WDR and Data Model v5.1 both began on
+24 October 2021, so a monthly October extract conflates 5MS-only and 5MS-plus-WDR intervals. Acquisition manifests
+must include delivery channel/archive family and day-level mechanism/observation clocks, not only table and month.
+
 ## 4. What can be acquired now
 
 ### Free and immediately locatable
@@ -143,9 +150,9 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
 4. Maintain the frozen CoW/Uniswap event registry; request competition-history retention, rate-limit and research-
    redistribution clarification only for a post-cutoff candidate that reaches a final package.
 5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
-6. Preserve both failed AEMO header protocols. Build a piecewise pre-transition/transition/post-5MS contract and
-   resolve the republished March archive mapping before freezing another month; independently obtain a valid CoW
-   enumeration rule. No GPU is needed.
+6. Preserve all failed AEMO header protocols. The March mapping and three later version failures are now
+   classified; build a channel-keyed, piecewise pre-transition/transition/5MS-only/5MS-plus-WDR source contract
+   before freezing fresh prefixes. Independently obtain a valid CoW enumeration rule. No GPU is needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator

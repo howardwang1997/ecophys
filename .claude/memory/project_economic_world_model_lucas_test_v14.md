@@ -83,7 +83,7 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
 - Official AEMO 5MS records show that `OFFER` to `BIDS` is part of a staged bidding/action-space migration. From
   2021-04-01 through 2021-09-30, legacy 30-minute and new 5-minute submission paths coexisted; 5MS commenced on
   2021-10-01. September is transition data, not stationary legacy validation.
-- AEMO has two distinct clocks. Emulated reporting compatibility deployed on 2021-03-08; bidding transition began
+- AEMO has asynchronous mechanism and observation clocks. Emulated reporting compatibility deployed on 2021-03-08; bidding transition began
   on 2021-04-01; the 5MS rule commenced on 2021-10-01. The official March control loads a
   `BIDOFFERPERIOD`-shaped export into legacy `BIDPEROFFER` and discards new-only clock/ramp fields. March is a
   measurement bridge, not a clean baseline.
@@ -95,6 +95,21 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
   table and required-field checks passed. Failures: 2020-09 `BIDPEROFFER` v1 versus v2; 2022-04
   `UNIT_SOLUTION` v3 versus v2; `DUDETAILSUMMARY` v5 versus v4. No `D` row or full archive was opened. The
   observation layer must carry source-specific version clocks; 2020-09/2022-04 are now discovery only.
+- Official follow-up resolves the failure classes without relaxing the gate. The v2 `BIDPEROFFER` citation is
+  scoped to `NEXT_DAY_OFFER_*` participant files and was incorrectly transferred to the observed `PUBLIC_DVD`
+  archive. The version key must include delivery channel/file ID or archive family, member, package, table/report,
+  report version and effective interval.
+- Data Model v5.1 went live on 2021-10-24. `DISPATCH,UNIT_SOLUTION,3` adds the non-key fast-start state field
+  `DISPATCHMODETIME`; `PARTICIPANT_REGISTRATION,DUDETAILSUMMARY,5` adds non-key `DISPATCHSUBTYPE`, which AEMO says
+  is required to distinguish scheduled loads from WDR loads.
+- WDR is a real second mechanism that commenced on 2021-10-24, only 23 days after 5MS. Split 2021-10-01--23 from
+  2021-10-24 onward; never code October as one post-5MS month. Excluding WDR rows does not remove market-wide WDR
+  spillovers, and the short first interval is diagnostic rather than a clean causal design.
+- Private `BIDOFFERFILETRK.SUBMISSION_METHOD` was declared but explicitly unpopulated within the WDR release
+  timeline. It records transport rather than legacy/current bid semantics and cannot recover historical interface
+  choice. Compatibility-report shape is not submission provenance; unknown mode remains partially identified.
+- Canonical official audit:
+  `papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
 
 ## GC0166 metadata audit boundary
 

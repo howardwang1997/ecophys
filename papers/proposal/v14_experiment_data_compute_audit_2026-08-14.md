@@ -148,6 +148,15 @@ Known hazards:
 - `DUDETAILSUMMARY` can contain retrospective registration corrections;
 - public bid-table availability has known gaps in common download tooling between 2021 and 2024 and must be
   checked against raw AEMO archives;
+- the public monthly archive, participant next-day files and Data Model tables have distinct delivery/report
+  version identities; a table name alone is not a version key;
+- 1--23 October 2021 is 5MS without live WDR, while WDR and Data Model v5.1 begin together on 24 October;
+  month-level October treatment coding is invalid;
+- `DISPATCHMODETIME` becomes observable with `DISPATCH,UNIT_SOLUTION,3` and must be treated as versioned fast-start
+  state, while `DISPATCHSUBTYPE` becomes necessary to distinguish WDR loads in
+  `PARTICIPANT_REGISTRATION,DUDETAILSUMMARY,5`;
+- `BIDOFFERFILETRK.SUBMISSION_METHOD` was declared private and unpopulated within the WDR release timeline; it is
+  not a historical legacy-versus-five-minute interface label; and
 - production NEMDE is not open. Use `nempy` only as an audited approximate replay and quantify target/price/
   constraint mismatches on E1.
 
@@ -271,6 +280,14 @@ failed at 7/10 because three exact versions advanced or differed. It transferred
 row and downloaded no full archive. This is a source-version ontology failure, not a data-volume or compute
 failure.
 
+The official follow-up classifies those failures rather than relaxing them. `BIDPEROFFER` v2 was inferred from a
+`NEXT_DAY_OFFER_*` contract and does not document the observed `PUBLIC_DVD` channel. `UNIT_SOLUTION` v3 adds
+fast-start dynamic state; `DUDETAILSUMMARY` v5 adds WDR identity. Data Model v5.1 and WDR both went live on
+24 October 2021, so this boundary mixes a real mechanism with new observation fields. The repaired contract must
+key every version by delivery channel/archive family and effective interval, separate 1--23 October from
+24 October onward, and retain unknown bid-interface provenance. Audit:
+`papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
+
 ## 8. Bottom line
 
 - **Experiment plan:** scientifically sensible, operationally incomplete; E0/E1 must precede model training.
@@ -278,6 +295,6 @@ failure.
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** audit official per-table AEMO version records after the failed 7/10 prefix gate; separately
-  obtain an outcome-blind CoW enumerator. Do not open full archives or rows, train models, open target outcomes or
-  buy data until those contracts exist.
+- **Current action:** freeze the channel-keyed AEMO source-contract matrix after the completed official version
+  audit; separately obtain an outcome-blind CoW enumerator. Do not open fresh prefixes, full archives or rows,
+  train models, open target outcomes or buy data until those contracts exist.

@@ -8,6 +8,11 @@
 legacy/current crosswalk with an explicitly regime-aware development design. Do not make the failed test pass by
 allowing both package labels as synonyms.
 
+**Refinement:** the later official version audit shows that report generation does not by itself reveal which
+participant interface generated an action during compatibility emulation, and that WDR plus Data Model v5.1 add a
+second clustered mechanism/observation boundary on 24 October 2021. See
+`papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
+
 ## 1. Question
 
 The held-out header audit found `BIDS,BIDDAYOFFER,1` and `BIDS,BIDOFFERPERIOD,1` in 2021-09 after freezing
@@ -19,8 +24,8 @@ change in the bidding observation process.
 
 | Evidence | Implication |
 |---|---|
-| AEMO's [5MS bidding production page](https://www.aemo.com.au/initiatives/major-programs/past-major-programs/five-minute-settlement/5ms-systems-in-production/bidding) dates the bidding transition from 1 April through 30 September 2021. Participants could remain on the legacy 30-minute interface or submit 5-minute bids; before rule commencement, each six-period profile had to be identical within a half-hour. | The transition window contains two action representations and participant choice of submission mode. It is not a stationary legacy regime. |
-| AEMO's [5MS transition FAQ](https://www.aemo.com.au/-/media/files/electricity/nem/5ms/readiness-workstream/2020/5ms-bidding-transition-plan-faqs.pdf) distinguishes legacy `BIDPEROFFER` from 5-minute `BIDOFFERPERIOD`; it states that the latter contains 5-minute submissions rather than replicated 30-minute bids and that next-day files carried both during transition. | A table/package change can identify action granularity and submission path. A field-presence crosswalk alone cannot recover which mechanism generated a row. |
+| AEMO's [5MS bidding production page](https://www.aemo.com.au/initiatives/major-programs/past-major-programs/five-minute-settlement/5ms-systems-in-production/bidding) dates the bidding transition from 1 April through 30 September 2021. Participants could remain on the legacy 30-minute interface or submit 5-minute bids; before rule commencement, each six-period profile had to be identical within a half-hour. | The transition window contains two eligible bid interfaces, but public report shape alone need not identify which one a participant used. It is not a stationary legacy regime. |
+| AEMO's [5MS transition FAQ](https://www.aemo.com.au/-/media/files/electricity/nem/5ms/readiness-workstream/2020/5ms-bidding-transition-plan-faqs.pdf) distinguishes legacy `BIDPEROFFER` from 5-minute `BIDOFFERPERIOD`; it states that the latter contains 5-minute records and that next-day files carried both during transition. | A table/package change identifies report generation and possible action granularity, but compatibility emulation means it is not sufficient evidence of the participant's underlying submission interface. A field-presence crosswalk cannot recover which mechanism generated a row. |
 | The official [EMMS 5MS Data Model v5.00 technical specification](https://aemo.com.au/-/media/files/electricity/nem/5ms/systems-workstream/2021/emms-technical-specification-5ms-data-model-v500-marked-up.pdf) maps legacy CSV records `OFFER,BIDDAYOFFER,2` and `OFFER,BIDPEROFFER,2` to `BIDS,BIDDAYOFFER,1` and `BIDS,BIDOFFERPERIOD,1`. | `OFFER` and `BIDS` are documented report generations, not arbitrary spelling variants. |
 | The same specification schedules production deployment of replicated dispatch Bid/Offer reports for 8 March 2021, before bidding-transition go-live. It describes an emulated 288-period report accompanying legacy 48-period reports so participant models could remain consistent across `BIDPEROFFER` and `BIDOFFERPERIOD`. | The observation/data-model clock changes before the action/rule clock. March cannot be classified from its market date alone. |
 | AEMO records [5MS rule commencement on 1 October 2021](https://www.aemo.com.au/initiatives/major-programs/past-major-programs/five-minute-settlement), after the six-month transition. | The correct temporal ontology has at least pre-transition, transition and post-commencement regimes. |
@@ -58,17 +63,20 @@ The mechanism/action clock and observation/reporting clock must be encoded separ
 |---|---|---|
 | A0 | before 2021-04-01 | legacy 30-minute bids only |
 | A1 | 2021-04-01 through 2021-09-30 | legacy and 5-minute interfaces coexist, but each six-period profile within a half-hour must be identical |
-| A2 | from 2021-10-01 | native 5-minute profiles under the live 5MS rule |
+| A2 | 2021-10-01 through 2021-10-23 | native 5-minute profiles under the live 5MS rule; WDR not yet live |
+| A3 | from 2021-10-24 | 5MS plus the live Wholesale Demand Response mechanism |
 
 | Observation phase | Clock | Reporting/data-model representation |
 |---|---|---|
 | O0 | before 2021-03-08 | legacy `OFFER/BIDPEROFFER` representation |
 | O1 | 2021-03-08 through 2021-03-31 | production compatibility bridge with emulated 288-period reports; March monthly control loads the new-shaped period report into the legacy table and discards new-only fields |
 | O2 | 2021-04-01 through 2021-09-30 | dual submission/report generations during bidding transition |
-| O3 | from 2021-10-01 | 5-minute reports after legacy 30-minute interfaces/reports discontinue; later `_D` summaries remain derived observation layers |
+| O3 | 2021-10-01 through 2021-10-23 | 5-minute reports after legacy 30-minute interfaces/reports discontinue, before Data Model v5.1 go-live |
+| O4 | from 2021-10-24 | Data Model v5.1 and source-specific report versions; dispatch state and WDR identity observability change |
 
-The exact implementation must use both clocks rather than infer regimes from a monthly file name. Any row whose
-submission mode or source generation is unresolved is retained as unresolved; it is not assigned by its values.
+The exact implementation must use both clocks plus source-specific delivery/version clocks rather than infer
+regimes from a monthly file name. Any row whose participant submission interface or source generation is
+unresolved is retained as unresolved; it is not assigned by its values.
 A whole-month March baseline would mix O0 and O1 while remaining in A0, creating a direct measurement-change
 negative control for any claimed behavioral effect.
 
@@ -79,7 +87,8 @@ data; it is a completed, real mechanism intervention with an explicitly staged a
 historical development event for the Lucas-test architecture:
 
 - M2 must encode the old/transition/new bidding constraints and applied-offer selection;
-- M3 must represent participant choice and adaptation between submission modes during transition; and
+- M3 may represent participant choice and adaptation between submission modes only as latent or partially
+  identified unless independent provenance is obtained; and
 - M4 can test changes in participation, contribution shares and technology/registration composition.
 
 The early reporting deployment also supplies a falsification test: a model that interprets the 8 March observation
@@ -110,5 +119,8 @@ allocation is authorized by this audit.
 The separately frozen bounded ZIP-prefix gate then failed at 7/10 exact versions while passing 10/10 HTTP 206,
 ZIP-prefix parse, member, package, table and required-field checks. `BIDPEROFFER` was version 1 rather than 2 in
 2020-09; `UNIT_SOLUTION` was version 3 rather than 2 and `DUDETAILSUMMARY` version 5 rather than 4 in 2022-04.
-This adds source-specific version clocks to the ontology. The failure remains immutable; official per-table change
-records must be audited before fresh prefixes are frozen. Full archive and row access remain locked.
+The official follow-up classifies these as a delivery-channel-scoped bid version, a fast-start dynamic-state
+observation extension and a WDR mechanism-identity extension. It also establishes that WDR and Data Model v5.1
+went live together on 24 October, so October cannot be one post-5MS bin. The failure remains immutable; the next
+contract must follow the clustered-reform audit before fresh prefixes are frozen. Full archive and row access
+remain locked.

@@ -40,17 +40,22 @@ are now development evidence, not a reusable held-out pair.
 
 The main 5MS action/report endpoints pass: 2020-09 exposes legacy `OFFER/BIDPEROFFER` fields, while 2022-04
 exposes `BIDS/BIDOFFERPERIOD` with the new clock and ramp fields. Applied-offer linkage also passes on both sides.
-The failure shows that a single observation clock is still too coarse. Bid reporting follows the 5MS deployment,
-but dispatch and registration tables evolve on separate version clocks; even the legacy period report version in
-the public archive does not match the version number inferred from the later transition specification.
+The failure shows that a single observation clock is still too coarse. The official follow-up finds that the
+legacy version-2 expectation was scoped to `NEXT_DAY_OFFER_*`, not the observed `PUBLIC_DVD` archive channel;
+`UNIT_SOLUTION` v3 adds fast-start dynamic-state observability; and `DUDETAILSUMMARY` v5 adds the identity required
+for the WDR mechanism that commenced on 24 October 2021. These are three different failure classes, not one global
+schema boundary.
 
-The correct design is therefore not merely “mechanism clock plus observation clock.” It needs a mechanism clock
-and a source-specific observation-version vector. Stable required-field projections may bridge versions, but
-version numbers cannot be silently ignored because added fields can alter observability or key semantics.
+The correct design is therefore not merely “mechanism clock plus observation clock.” It needs mechanism clocks,
+delivery-channel identity and a source-specific observation-version vector. Stable required-field projections may
+bridge versions, but version numbers cannot be silently ignored because added fields can alter observability or
+mechanism identity. Full classification is in
+`papers/proposal/v14_aemo_source_version_and_clustered_reform_audit_2026-08-14.md`.
 
 ## Next gate
 
-Audit official per-table version/change records for `BIDPEROFFER`, `UNIT_SOLUTION` and `DUDETAILSUMMARY`, treating
-2020-09 and 2022-04 as discovery only. Freeze any repaired contract and fresh archive prefixes before another
-request. This failure does not authorize a full download, row access, model training, prospective outcome, paid
-data or GPU.
+Freeze a source-contract matrix keyed by delivery channel, file/archive family and effective interval. It must
+represent 1--23 October and 24 October onward separately, mark participant submission interface as partially
+observed, and declare fast-start and WDR sensitivity populations. Treat 2020-09 and 2022-04 as discovery only and
+freeze fresh archive prefixes before another request. This failure does not authorize a full download, row access,
+model training, prospective outcome, paid data or GPU.
