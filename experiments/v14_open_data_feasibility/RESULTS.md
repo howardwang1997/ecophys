@@ -121,5 +121,8 @@ legacy and current months. Only a committed held-out header pass can unlock sele
 artifacts and failed gates remain immutable.
 
 The separately frozen held-out repair also failed its strict package-namespace gate while passing all ten internal
-table and required-source-field projections. See `experiments/v14_aemo_semantic_validation/RESULTS.md`. This keeps
-row access locked and prevents the discovery months from being relabeled as validation.
+table and required-source-field projections. Official 5MS records subsequently established that the 2021-09
+failure lies inside a real 30-minute/5-minute bidding transition rather than a cosmetic namespace change. See
+`experiments/v14_aemo_semantic_validation/RESULTS.md` and
+`papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`. This keeps row access locked and prevents the
+discovery months from being relabeled as validation.

@@ -81,7 +81,9 @@ The first independent crosswalk validation used mechanically selected 2021-09 an
 internal tables and required source-field projections passed, but the strict package gate failed for the two
 2021-09 bid objects (`BIDS` observed versus `OFFER` frozen). The held-out sample measured 1.557 GB compressed and
 43.677 GB uncompressed. This is evidence that a field-level parser is plausible, but it does not authorize row
-access until official version/change documentation resolves whether the package transition is nominal or semantic.
+access. Official 5MS documentation shows that September 2021 is a mixed 30-minute/5-minute bidding transition and
+that the old `OFFER` report types were formally replaced by `BIDS` types. The package change must therefore remain
+part of the mechanism/action provenance.
 
 ### 3.2 Historical schema hazard
 
@@ -141,8 +143,9 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
 4. Maintain the frozen CoW/Uniswap event registry; request competition-history retention, rate-limit and research-
    redistribution clarification only for a post-cutoff candidate that reaches a final package.
 5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
-6. Preserve both failed AEMO header protocols. Resolve the `OFFER`/`BIDS` transition from official version records
-   before freezing another held-out month; independently obtain a valid CoW enumeration rule. No GPU is needed.
+6. Preserve both failed AEMO header protocols. Build a piecewise pre-transition/transition/post-5MS contract and
+   resolve the republished March archive mapping before freezing another month; independently obtain a valid CoW
+   enumeration rule. No GPU is needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator

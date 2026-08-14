@@ -80,8 +80,12 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
   internal table and required source fields, but package/overall headers passed only 8/10: both 2021-09 bid objects
   expose `BIDS` rather than the discovery-derived `OFFER`. The sample is 1,557,149,667 bytes compressed and
   43,677,147,189 bytes uncompressed. This is a failed namespace gate, not evidence that row semantics differ.
-- Row access remains locked. Audit the official `OFFER`/`BIDS` version transition, then freeze a piecewise contract
-  and a new unopened validation month. Do not delete the package gate and reuse 2021-09 as held-out evidence.
+- Official AEMO 5MS records show that `OFFER` to `BIDS` is part of a staged bidding/action-space migration. From
+  2021-04-01 through 2021-09-30, legacy 30-minute and new 5-minute submission paths coexisted; 5MS commenced on
+  2021-10-01. September is transition data, not stationary legacy validation.
+- Row access remains locked. Resolve the republished March `OFFER,BIDOFFERPERIOD,1` control mapping, then freeze a
+  pre-transition/transition/post-5MS contract and fresh months. Do not delete the package gate or reuse 2021-09 as
+  held-out evidence. Audit: `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
 
 ## GC0166 metadata audit boundary
 

@@ -254,9 +254,10 @@ as a CPU/data node with CUDA hidden; no GPU model job was opened.
 That held-out test was subsequently frozen and executed on 2021-09 and 2025-07. It downloaded 1.557 GB compressed
 (43.677 GB uncompressed) and passed all ten byte, hash, CRC, internal-table and required-source-field projections.
 It nevertheless failed the preregistered total gate: both 2021-09 bid objects use package `BIDS`, not the discovery-
-derived `OFFER`, so package and overall header pass rates were 8/10. This is namespace/version drift, not proof of a
-changed economic meaning. Official change documentation must establish the boundary before a new piecewise
-contract and fresh held-out month are allowed. Row filtering remains locked.
+derived `OFFER`, so package and overall header pass rates were 8/10. AEMO's official 5MS records show that September
+lies inside the 1 April--30 September bidding transition, when legacy 30-minute and new 5-minute paths coexisted;
+the v5.00 specification formally replaces the relevant `OFFER` records with `BIDS` records. This is a staged
+mechanism/action-space transition, not a safe namespace alias. Row filtering remains locked.
 
 ## 8. Bottom line
 
@@ -265,6 +266,6 @@ contract and fresh held-out month are allowed. Row filtering remains locked.
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** resolve the AEMO package/version semantics from official documentation and the CoW sampling
-  frame from an outcome-blind enumerator. Do not open another historical month, train models, open target outcomes
-  or buy data until those contracts exist.
+- **Current action:** build a regime-aware, documentation-grounded AEMO 5MS development contract and resolve the
+  republished March report mapping; separately obtain an outcome-blind CoW enumerator. Do not open another month,
+  train models, open target outcomes or buy data until those contracts exist.

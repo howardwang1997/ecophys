@@ -243,6 +243,13 @@ rather than the frozen `OFFER` namespace. The v2 result therefore also fails and
 the field projection is promising, but the two-regime version model is incomplete; it is not permission to delete
 the failed gate post hoc.
 
+The official 5MS postmortem resolves the main interpretation. AEMO ran a bidding transition from 1 April through
+30 September 2021 in which legacy 30-minute and new 5-minute submission paths coexisted, then commenced the 5MS
+rule on 1 October. Its v5.00 specification explicitly replaces the old `OFFER` CSV records with `BIDS` records.
+September 2021 is therefore a mechanism-transition regime, not a clean held-out legacy month. V14 must preserve
+submission granularity and regime clocks rather than normalize this change away. Detailed audit:
+`papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
+
 ## 8. Data and compute plan
 
 ### Before G1
@@ -301,6 +308,7 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    without viewing candidate outcomes.
 4. Define one proper forecast vector, fixed horizons and negative-control event only for candidates with auditable
    actions and identities.
-5. Preserve the failed v1 and v2 open-data checkpoints. Audit the official AEMO `OFFER`/`BIDS` version transition
-   before freezing any new month, and obtain an outcome-blind CoW competition enumerator before any new sample.
+5. Preserve the failed v1 and v2 checkpoints. Treat AEMO 5MS as a staged historical development intervention,
+   resolve the republished March report/control mapping, and freeze a regime-aware R0--R2 contract before any new
+   month. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

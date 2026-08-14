@@ -47,8 +47,13 @@ This does not prove that bid economics changed between 2021-03 and 2021-09. It p
 which the package token is a fixed semantic identifier is incomplete. Deleting that gate after seeing the result
 would make 2021-09 a tuning sample, not held-out evidence.
 
-The next admissible step is documentation-only: locate the official MMSDM version/change record governing
-`OFFER` to `BIDS`, determine whether the package token is a namespace or a semantic boundary, and freeze a revised
-piecewise contract before selecting another unopened month. The discovery and first held-out months cannot be used
-again as validation. No row was counted, filtered, transformed or joined; no prospective outcome, paid data or GPU
-compute was used.
+The official postmortem identifies a staged 5MS mechanism transition, not a cosmetic alias. From 1 April through
+30 September 2021, legacy 30-minute and new 5-minute submission paths coexisted; AEMO's technical specification
+maps the old `OFFER` report types to the new `BIDS` report types. September is therefore transition data, not a
+stationary legacy validation month. See
+`papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
+
+The next admissible contract must be piecewise across pre-transition, transition and post-5MS regimes and must
+resolve the republished March archive's non-canonical `OFFER,BIDOFFERPERIOD,1` combination before selecting fresh
+months. The discovery and first held-out months cannot be used again as validation. No row was counted, filtered,
+transformed or joined; no prospective outcome, paid data or GPU compute was used.
