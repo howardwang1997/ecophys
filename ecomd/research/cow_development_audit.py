@@ -324,3 +324,39 @@ def canonical_json_sha256(payload: object) -> str:
 
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def parse_block_timestamp_response(
+    raw: bytes,
+    blocks: Sequence[int],
+) -> tuple[dict[int, int], str | None]:
+    """Parse a fixed Ethereum batch response while preserving provider failures."""
+
+    try:
+        payload: object = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as parse_error:
+        return {}, f"invalid JSON: {type(parse_error).__name__}: {parse_error}"
+    if not isinstance(payload, list):
+        if isinstance(payload, dict) and isinstance(payload.get("error"), dict):
+            provider_error = cast(dict[str, object], payload["error"])
+            return {}, (
+                f"provider error code={provider_error.get('code')}: "
+                f"{provider_error.get('message')}"
+            )
+        return {}, "Ethereum batch response is not a list"
+    timestamps: dict[int, int] = {}
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        item_id = item.get("id")
+        result = item.get("result")
+        if isinstance(item_id, int) and 0 <= item_id < len(blocks) and isinstance(result, dict):
+            timestamp = result.get("timestamp")
+            if isinstance(timestamp, str):
+                try:
+                    timestamps[blocks[item_id]] = int(timestamp, 16)
+                except ValueError:
+                    continue
+    missing = len(blocks) - len(timestamps)
+    result_error = None if missing == 0 else f"missing {missing} of {len(blocks)} block timestamps"
+    return timestamps, result_error

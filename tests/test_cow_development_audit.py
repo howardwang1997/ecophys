@@ -3,6 +3,7 @@ from __future__ import annotations
 from ecomd.research.cow_development_audit import (
     audit_competition_payload,
     canonical_json_sha256,
+    parse_block_timestamp_response,
     summarize_initial_sample,
 )
 
@@ -101,3 +102,12 @@ def test_initial_summary_retains_a_missing_request_without_replacement() -> None
 
     assert summary["pass"] is True
     assert summary["http_status_counts"] == {"200": 1, "404": 1}
+
+
+def test_block_timestamp_parser_preserves_provider_batch_failure() -> None:
+    raw = b'{"jsonrpc":"2.0","error":{"code":-32044,"message":"max 10"},"id":null}'
+
+    timestamps, error = parse_block_timestamp_response(raw, [100, 101])
+
+    assert timestamps == {}
+    assert error == "provider error code=-32044: max 10"

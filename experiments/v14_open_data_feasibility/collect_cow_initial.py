@@ -8,6 +8,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
+import subprocess
 import sys
 import time
 from datetime import UTC, datetime
@@ -23,6 +25,7 @@ from ecomd.market_world.provenance import require_clean_repository
 from ecomd.research.cow_development_audit import (
     audit_competition_payload,
     canonical_json_sha256,
+    parse_block_timestamp_response,
     summarize_initial_sample,
 )
 from ecomd.research.open_data_development import (
@@ -83,7 +86,8 @@ def _block_timestamps(
     blocks: list[int],
     *,
     raw_path: Path,
-) -> tuple[dict[int, int], str]:
+    resume: bool,
+) -> tuple[dict[int, int], str, str | None]:
     request_payload = [
         {
             "jsonrpc": "2.0",
@@ -93,31 +97,33 @@ def _block_timestamps(
         }
         for index, block in enumerate(blocks)
     ]
-    response = session.post(
-        ETHEREUM_RPC_URL,
-        json=request_payload,
-        timeout=60.0,
-        allow_redirects=False,
-    )
-    response.raise_for_status()
-    raw = response.content
     if raw_path.exists():
-        raise FileExistsError(f"refusing to overwrite {raw_path}")
-    raw_path.write_bytes(raw)
-    payload: object = response.json()
-    if not isinstance(payload, list):
-        raise RuntimeError("Ethereum batch response is not a list")
-    timestamps: dict[int, int] = {}
-    for item in payload:
-        if not isinstance(item, dict):
-            continue
-        item_id = item.get("id")
-        result = item.get("result")
-        if isinstance(item_id, int) and 0 <= item_id < len(blocks) and isinstance(result, dict):
-            timestamp = result.get("timestamp")
-            if isinstance(timestamp, str):
-                timestamps[blocks[item_id]] = int(timestamp, 16)
-    return timestamps, hashlib.sha256(raw).hexdigest()
+        if not resume:
+            raise FileExistsError(f"refusing to overwrite {raw_path}")
+        raw = raw_path.read_bytes()
+    else:
+        response = session.post(
+            ETHEREUM_RPC_URL,
+            json=request_payload,
+            timeout=60.0,
+            allow_redirects=False,
+        )
+        response.raise_for_status()
+        raw = response.content
+        raw_path.write_bytes(raw)
+    timestamps, error = parse_block_timestamp_response(raw, blocks)
+    return timestamps, hashlib.sha256(raw).hexdigest(), error
+
+
+def _validate_collection_commit(value: str) -> None:
+    if re.fullmatch(r"[0-9a-f]{40}", value) is None:
+        raise ValueError("collection commit must be a full lowercase Git SHA")
+    subprocess.run(
+        ["git", "cat-file", "-e", f"{value}^{{commit}}"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
 
 
 def main() -> None:
@@ -138,6 +144,7 @@ def main() -> None:
         default=ROOT / "experiments/v14_open_data_feasibility/artifacts/cow_initial_summary.json",
     )
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--collection-commit")
     arguments = parser.parse_args()
     if arguments.summary.exists():
         raise FileExistsError(f"refusing to overwrite {arguments.summary}")
@@ -166,6 +173,10 @@ def main() -> None:
     if ledger_path.exists() and not arguments.resume:
         raise FileExistsError(f"ledger already exists; use --resume: {ledger_path}")
     entries = _read_ledger(ledger_path)
+    if entries and arguments.collection_commit is None:
+        raise RuntimeError("resuming a nonempty ledger requires --collection-commit")
+    collection_commit = arguments.collection_commit or commit
+    _validate_collection_commit(collection_commit)
     completed_ids = [entry.get("auction_id") for entry in entries]
     if completed_ids != ids[: len(completed_ids)]:
         raise RuntimeError("existing ledger is not an exact prefix of the frozen ID list")
@@ -247,10 +258,11 @@ def main() -> None:
         }
     )
     block_path = arguments.raw_root / "ethereum_start_blocks.json"
-    block_timestamps, block_sha256 = _block_timestamps(
+    block_timestamps, block_sha256, block_error = _block_timestamps(
         session,
         start_blocks,
         raw_path=block_path,
+        resume=arguments.resume,
     )
     ledger_sha256 = hashlib.sha256(ledger_path.read_bytes()).hexdigest()
     summary = summarize_initial_sample(
@@ -262,13 +274,22 @@ def main() -> None:
         ledger_sha256=ledger_sha256,
         block_response_sha256=block_sha256,
     )
+    summary["block_lookup_error"] = block_error
     summary["ownership"] = {
-        "git_commit": commit,
+        "collection_git_commit": collection_commit,
+        "summary_git_commit": commit,
         "resolved_contract_sha256": contract_sha256(arguments.contract),
         "collected_at_utc": _utc_now(),
         "raw_root": arguments.raw_root.relative_to(ROOT).as_posix(),
         "ethereum_rpc_url": ETHEREUM_RPC_URL,
         "request_set_sha256": canonical_json_sha256(ids),
+        "resume_deviation": (
+            "The frozen 100-request ledger completed under collection_git_commit. The provider rejected the "
+            "single batch timestamp lookup because its maximum batch size is ten. This summary commit reuses "
+            "that immutable error response and makes no sample request."
+            if entries
+            else None
+        ),
     }
     arguments.summary.parent.mkdir(parents=True, exist_ok=True)
     arguments.summary.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
