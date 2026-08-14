@@ -250,6 +250,13 @@ September 2021 is therefore a mechanism-transition regime, not a clean held-out 
 submission granularity and regime clocks rather than normalize this change away. Detailed audit:
 `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
 
+A second official clock precedes that mechanism transition. The Data Model v5.00 specification schedules
+production deployment of emulated 5-minute reporting on 8 March 2021. The March SQLLoader control confirms a
+compatibility bridge: it loads a `BIDOFFERPERIOD`-shaped CSV into legacy `BIDPEROFFER` while discarding the new
+date/time and ramp fields; April controls target `BIDOFFERPERIOD` directly. V14 must therefore encode an action
+clock and an observation clock separately. The 8 March--31 March interval is a measurement-change negative
+control: any inferred participant adaptation there is evidence that the model-to-observation bridge is confounded.
+
 ## 8. Data and compute plan
 
 ### Before G1
@@ -308,7 +315,8 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    without viewing candidate outcomes.
 4. Define one proper forecast vector, fixed horizons and negative-control event only for candidates with auditable
    actions and identities.
-5. Preserve the failed v1 and v2 checkpoints. Treat AEMO 5MS as a staged historical development intervention,
-   resolve the republished March report/control mapping, and freeze a regime-aware R0--R2 contract before any new
-   month. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
+5. Preserve the failed v1 and v2 checkpoints. Treat AEMO 5MS as a staged historical development intervention with
+   separate action and observation clocks. Run the frozen untouched 2020-09/2022-04 loader-control validation,
+   then freeze any archive-header contract only if it passes. Obtain an outcome-blind CoW competition enumerator
+   before any new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

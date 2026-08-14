@@ -1,0 +1,90 @@
+schema_version: ecophys-aemo-loader-controls/v3
+sample_id: aemo-5ms-two-clock-loader-validation-v3
+frozen_at: "2026-08-14T10:13:03Z"
+parent_commit: 52e3b1d5da290efd7d787106d31fa8efb0f2f355
+scientific_role: development_only_loader_metadata_validation
+selection:
+  rule: six_calendar_months_before_2021_03_reporting_deployment_month_and_six_calendar_months_after_2021_10_rule_commencement_month
+  no_replacement: true
+  previously_accessed_before_freeze: false
+phase_clocks:
+  reporting_production_deployment: "2021-03-08"
+  bidding_transition_start: "2021-04-01"
+  rule_commencement: "2021-10-01"
+objects:
+  - object_id: r0-2020-09-biddayoffer
+    sample_label: r0-validation-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: BIDDAYOFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_BIDDAYOFFER_202009.ctl
+    expected_owner: BIDDAYOFFER
+    expected_target_table: BIDDAYOFFER
+    required_columns: [DUID, BIDTYPE, SETTLEMENTDATE, OFFERDATE, VERSIONNO, PARTICIPANTID, ENTRYTYPE, PRICEBAND1, PRICEBAND10]
+    required_non_filler_columns: [DUID, BIDTYPE, SETTLEMENTDATE, OFFERDATE, VERSIONNO, PARTICIPANTID, ENTRYTYPE, PRICEBAND1, PRICEBAND10]
+  - object_id: r0-2020-09-bidperoffer
+    sample_label: r0-validation-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: BIDPEROFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_BIDPEROFFER_202009.ctl
+    expected_owner: BIDPEROFFER
+    expected_target_table: BIDPEROFFER
+    required_columns: [DUID, BIDTYPE, SETTLEMENTDATE, OFFERDATE, PERIODID, VERSIONNO, MAXAVAIL, ROCUP, ROCDOWN, BANDAVAIL1, BANDAVAIL10]
+    required_non_filler_columns: [DUID, BIDTYPE, SETTLEMENTDATE, OFFERDATE, PERIODID, VERSIONNO, MAXAVAIL, ROCUP, ROCDOWN, BANDAVAIL1, BANDAVAIL10]
+  - object_id: r0-2020-09-dispatchoffertrk
+    sample_label: r0-validation-2020-09
+    month: "2020-09"
+    mechanism_phase: A0_30_minute_only
+    observation_phase: O0_legacy_reports
+    logical_role: DISPATCHOFFERTRK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2020/MMSDM_2020_09/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_DISPATCHOFFERTRK_202009.ctl
+    expected_owner: DISPATCHOFFERTRK
+    expected_target_table: DISPATCHOFFERTRK
+    required_columns: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+    required_non_filler_columns: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+  - object_id: r2-2022-04-biddayoffer
+    sample_label: r2-validation-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: BIDDAYOFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_BIDDAYOFFER_202204.ctl
+    expected_owner: BIDDAYOFFER
+    expected_target_table: BIDDAYOFFER
+    required_columns: [DUID, BIDTYPE, SETTLEMENTDATE, OFFERDATE, VERSIONNO, PARTICIPANTID, ENTRYTYPE, REBID_EVENT_TIME, REFERENCE_ID, PRICEBAND1, PRICEBAND10]
+    required_non_filler_columns: [DUID, BIDTYPE, SETTLEMENTDATE, OFFERDATE, VERSIONNO, PARTICIPANTID, ENTRYTYPE, REBID_EVENT_TIME, REFERENCE_ID, PRICEBAND1, PRICEBAND10]
+  - object_id: r2-2022-04-bidperoffer
+    sample_label: r2-validation-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: BIDPEROFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_BIDPEROFFER_202204.ctl
+    expected_owner: BIDOFFERPERIOD
+    expected_target_table: BIDOFFERPERIOD
+    required_columns: [DUID, BIDTYPE, TRADINGDATE, OFFERDATETIME, PERIODID, MAXAVAIL, RAMPUPRATE, RAMPDOWNRATE, BANDAVAIL1, BANDAVAIL10]
+    required_non_filler_columns: [DUID, BIDTYPE, TRADINGDATE, OFFERDATETIME, PERIODID, MAXAVAIL, RAMPUPRATE, RAMPDOWNRATE, BANDAVAIL1, BANDAVAIL10]
+  - object_id: r2-2022-04-dispatchoffertrk
+    sample_label: r2-validation-2022-04
+    month: "2022-04"
+    mechanism_phase: A2_5_minute_rule_live
+    observation_phase: O3_5_minute_reports
+    logical_role: DISPATCHOFFERTRK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2022/MMSDM_2022_04/MMSDM_Historical_Data_SQLLoader/CTL/PUBLIC_DVD_DISPATCHOFFERTRK_202204.ctl
+    expected_owner: DISPATCHOFFERTRK
+    expected_target_table: DISPATCHOFFERTRK
+    required_columns: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+    required_non_filler_columns: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+gates:
+  required_http_200: 6
+  required_parse_pass: 6
+  required_contract_pass: 6
+  row_access_allowed_after_pass: false
+  archive_download_allowed_after_pass: false
+  gpu_allowed: false
+  replacement_allowed: false
+outputs:
+  summary: experiments/v14_aemo_loader_control_audit/artifacts/summary.json
