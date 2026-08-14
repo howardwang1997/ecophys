@@ -198,7 +198,10 @@ The cross-domain claim concerns forecasting protocol and model-family ordering, 
 
 **Current gate state (2026-08-14):** `G1 NOT PASSED`. FTA lacks an established public affected-participant panel,
 IPRR has no stable implementation clock after its reset, and no second untouched event is admitted. The detailed
-experiment/resource audit is `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`.
+experiment/resource audit is `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`. The verified source
+and purchase decision is `papers/proposal/v14_data_acquisition_decision_2026-08-14.md`: free official AEMO and CoW
+sources suffice for historical feasibility, `NO_BUY_NOW`, and FTA confirmation access requires a participant
+partnership rather than a generic market-data purchase.
 
 ## 8. Data and compute plan
 

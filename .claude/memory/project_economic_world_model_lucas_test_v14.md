@@ -47,5 +47,20 @@ No endpoint outcomes, Experiment 156, new model repository, remote workers, V100
 queued. H20 is excluded. EcoMD is not silently treated as the adaptive-ecology model; it may be a disclosed legacy
 or negative-control architecture only.
 
+## Source and purchase decision
+
+- `NO_BUY_NOW` on 2026-08-14. Official AEMO NEMWeb individual-table archives and the CoW solver-competition API
+  are sufficient for E0 and the later limited historical E1 sample.
+- Official 2021-03/2021-10 AEMO archives contain legacy-named bid files; a gap in common tooling is not evidence of
+  source absence. Header/model-version equivalence remains unproved.
+- A selected 2025-01 AEMO panel is about 355 MB compressed for five core files and about 590 MB with principal
+  state/confound tables. Retire the `0.5--2 TB` AEMO-only estimate; provisionally use `20--100 GB` compressed and
+  `0.1--0.5 TB` working storage for two to four years, pending measured manifests.
+- FTA RM29/RM53 and SSP/NMI data are participant-delivered. Confirmation requires an authorised
+  FRMP/NMISP/MDP/MC/DNSP partner and publication rights; no public/off-the-shelf affected panel was found.
+- NEMDE Queue is paid and registered-participant-only and does not fill the action/adoption gap. Do not purchase it
+  before open replay residuals are measured.
+
 Canonical plan: `papers/proposal/plan_economic_world_model_lucas_test_nmi_ncs_v14.md`.
 Detailed experiment/data/compute audit: `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`.
+Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08-14.md`.

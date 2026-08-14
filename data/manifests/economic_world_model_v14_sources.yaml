@@ -1,0 +1,109 @@
+version: 1
+as_of: "2026-08-14"
+state: metadata_only_no_target_outcomes
+purchase_decision: no_buy_now
+
+sources:
+  - source_id: aemo_nemweb_mmsdm
+    owner: Australian Energy Market Operator
+    domain: NEM wholesale electricity
+    access: public_no_authentication
+    cost: no_cost_identified
+    archive_root: "https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/"
+    current_reports: "https://nemweb.com.au/Reports/Current/"
+    recent_archive: "https://nemweb.com.au/Reports/ARCHIVE/"
+    terms: "https://www.aemo.com.au/privacy-and-legal-notices/copyright-permissions"
+    required_tables:
+      - BIDDAYOFFER_D
+      - BIDPEROFFER_D
+      - DISPATCHOFFERTRK
+      - DISPATCHLOAD
+      - DISPATCHPRICE
+      - DISPATCHREGIONSUM
+      - DISPATCH_UNIT_SCADA
+      - DISPATCHCONSTRAINT
+      - NETWORK_OUTAGEDETAIL
+      - PARTICIPANT
+      - DUALLOC
+      - DUDETAIL
+      - DUDETAILSUMMARY
+    verified_directories:
+      - month: "2021-03"
+        naming: legacy_public_dvd
+        biddayoffer_bytes: 21116065
+        bidperoffer_bytes: 667376426
+        dispatchload_bytes: 71597649
+        dispatchoffertrk_bytes: 62553215
+        dudetailsummary_bytes: 150250
+      - month: "2021-10"
+        naming: legacy_public_dvd
+        biddayoffer_bytes: 49313681
+        bidperoffer_bytes: 1487974439
+        dispatchload_bytes: 73809425
+        dispatchoffertrk_bytes: 65236767
+        dudetailsummary_bytes: 161683
+      - month: "2024-08"
+        naming: public_archive_hash_delimited
+        biddayoffer_d_bytes: 1791751
+        bidperoffer_d_bytes: 141256223
+        dispatchload_bytes: 107657403
+        dispatchoffertrk_bytes: 99322582
+        dudetailsummary_bytes: 206500
+      - month: "2025-01"
+        naming: public_archive_hash_delimited
+        biddayoffer_d_bytes: 1830470
+        bidperoffer_d_bytes: 145486352
+        dispatchload_bytes: 108998184
+        dispatchoffertrk_bytes: 98454271
+        dudetailsummary_bytes: 208960
+    unresolved:
+      - inspect headers and data-model versions across naming regimes
+      - quantify replay mismatch against recorded dispatch
+      - confirm redistribution terms for bulk raw files
+
+  - source_id: cow_solver_competitions
+    owner: CoW Protocol
+    domain: solver batch auctions
+    access: public_api_no_purchase_identified
+    api_docs: "https://api.cow.fi/docs/"
+    openapi: "https://raw.githubusercontent.com/cowprotocol/services/main/crates/orderbook/openapi.yml"
+    mechanism_code: "https://github.com/cowprotocol/services"
+    endpoints:
+      - "/api/v2/solver_competition/{auction_id}"
+      - "/api/v2/solver_competition/by_tx_hash/{tx_hash}"
+      - "/api/v2/solver_competition/latest"
+      - "/api/v1/version"
+    required_fields:
+      - auctionId
+      - auctionStartBlock
+      - auctionDeadlineBlock
+      - transactionHashes
+      - auction.orders
+      - auction.prices
+      - solutions.ranking
+      - solutions.solverAddress
+      - solutions.score
+      - solutions.referenceScore
+      - solutions.txHash
+      - solutions.orders
+      - solutions.isWinner
+      - solutions.filteredOut
+    unresolved:
+      - historical retention and completeness
+      - rate limits and permitted collection cadence
+      - data redistribution terms
+      - identity continuity across solver address changes
+
+restricted_or_paid:
+  - source_id: aemo_fta_msats_participant_reports
+    access: eligible_participant_or_authorised_data_sharing
+    public_schema: "https://tech-specs.docs.public.aemo.com.au/Content/TSP_MSATS_Oct2026/MDM_Reports.htm"
+    sharing_process: "https://di-help.docs.public.aemo.com.au/Content/Data_Sharing/2_-Requesting_data_sharing.htm"
+    decision: seek_partner_do_not_buy_generic_feed
+  - source_id: aemo_nemde_queue
+    access: registered_participants_only
+    listed_fee_aud: 18450
+    gst_excluded: true
+    url: "https://www.aemo.com.au/energy-systems/market-it-systems/electricity-system-guides/nemde-queue-service"
+    decision: do_not_purchase_before_open_replay_residual_is_measured
+

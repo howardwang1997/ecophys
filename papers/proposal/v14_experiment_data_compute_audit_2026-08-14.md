@@ -131,10 +131,16 @@ Minimum public tables:
   effective dates;
 - weather, outages and concurrent-rule registry for confounding/sensitivity analysis.
 
-Official documentation reports roughly `40--50k` `DISPATCHLOAD` rows and `250k` `DISPATCHOFFERTRK` rows per day;
-bid-period archives can be multi-GB compressed per month. Plan `0.5--2 TB` for two to four years of selected public
-tables after Parquet conversion, plus raw immutable copies. The estimate must be replaced by a measured one-month
-sample before bulk synchronization.
+Official documentation reports roughly `40--50k` `DISPATCHLOAD` rows and `250k` `DISPATCHOFFERTRK` rows per day.
+The official 2025-01 directory metadata gives about `355 MB` compressed for the five core bid/dispatch/identity
+files and about `590 MB` after adding price, region, dispatch-constraint, SCADA and network-outage files. The
+2024-08 core set is about `350 MB`. A provisional two-to-four-year selected-table budget is therefore `20--100 GB`
+compressed and `0.1--0.5 TB` working storage after expansion, immutable raw copies and derived caches. Do not
+download full monthly MMSDM bundles. Replace the range with measured per-month manifests before bulk synchronization.
+
+Official 2021-03 and 2021-10 directories contain legacy `PUBLIC_DVD_BIDDAYOFFER` and `PUBLIC_DVD_BIDPEROFFER`
+archives even though common tooling reports a bid-table gap. This is not yet proof of semantic continuity: E1 must
+inspect headers and data-model versions across the legacy and newer `_D` naming regimes.
 
 Known hazards:
 
@@ -156,6 +162,12 @@ Known hazards:
 
 The current plan therefore has zero admitted confirmation events. G1 does not pass.
 
+The detailed source and purchase decision is
+`papers/proposal/v14_data_acquisition_decision_2026-08-14.md`; its machine-readable metadata-only registry is
+`data/manifests/economic_world_model_v14_sources.yaml`. Current decision: `NO_BUY_NOW`. Public historical AEMO and
+CoW sources are sufficient for E0/E1, while FTA confirmation data require an authorised participant partnership
+rather than another aggregate commercial feed.
+
 ## 5. Compute requirements
 
 ### 5.1 Current no-GPU phase
@@ -163,7 +175,7 @@ The current plan therefore has zero admitted confirmation events. G1 does not pa
 | Work | CPU/RAM | GPU | Storage |
 |---|---|---|---|
 | E0 metadata/schema/licence audit | Mac, `<=20` core-h, `<16 GB` | `0` | `<5 GB` documents/metadata |
-| E1 1,000-auction + one-day NEM sample and parsers | `50--150` core-h, `32--64 GB` desirable | `0` initially | `20--100 GB` scratch |
+| E1 1,000-auction + one-day NEM sample and parsers | `50--150` core-h, `32--64 GB` desirable | `0` initially | `<20 GB` initially; raise only from measured manifests |
 | mechanism conformance and generated nulls | `100--500` core-h, `32--64 GB` | optional `<=10` V100-eq h | `<200 GB` |
 
 The CPUs on the V100 hosts may run these jobs with CUDA hidden after the data gate and a frozen manifest. Do not
@@ -205,7 +217,7 @@ measured profile shows that seed/model coverage cannot fit the conditional budge
 ## 6. Immediate work order
 
 1. Correct the V14 plan: FTA becomes `WATCHLIST`; IPRR becomes `PAUSED_CLOCK`; G1 is explicitly failed/not passed.
-2. Create a metadata-only event registry and source-contract table. Do not download target outcomes.
+2. Maintain the metadata-only source registry and create the event-contract table. Do not download target outcomes.
 3. Ask AEMO or verify official documentation for public access to SSP/NMISP adoption, participant mapping and IPRR
    revised timing/schema. If affected-level data are private, retire FTA/IPRR as confirmation events.
 4. Build zero/limited-row CoW and AEMO schema parsers plus provenance manifests.
