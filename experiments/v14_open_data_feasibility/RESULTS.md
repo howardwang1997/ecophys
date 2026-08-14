@@ -126,3 +126,18 @@ failure lies inside a real 30-minute/5-minute bidding transition rather than a c
 `experiments/v14_aemo_semantic_validation/RESULTS.md` and
 `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`. This keeps row access locked and prevents the
 discovery months from being relabeled as validation.
+
+## AEMO two-clock loader-control validation
+
+**Decision:** `PASS_TWO_CLOCK_LOADER_ENDPOINTS_ONLY`. Six exact, previously unrequested official SQLLoader
+controls from mechanically selected 2020-09 and 2022-04 months passed HTTP, parse, owner, target-table, required-
+column and non-`FILLER` gates. See `experiments/v14_aemo_loader_control_audit/RESULTS.md`.
+
+This resolves the March anomaly at the loader layer. AEMO deployed an emulated reporting compatibility layer on
+8 March 2021 before bidding transition began on 1 April: the March period export uses the new-shaped
+`BIDOFFERPERIOD` header but its official control appends into legacy `BIDPEROFFER` and discards the new clock and
+ramp columns. The observation clock therefore changes before the mechanism clock.
+
+The result is a metadata feasibility pass, not a reversal of either failed archive-header audit. No CSV/ZIP,
+market row, GPU or paid data was opened. Row access remains locked pending a separately frozen two-clock header
+protocol.

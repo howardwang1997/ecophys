@@ -257,6 +257,10 @@ date/time and ramp fields; April controls target `BIDOFFERPERIOD` directly. V14 
 clock and an observation clock separately. The 8 March--31 March interval is a measurement-change negative
 control: any inferred participant adaptation there is evidence that the model-to-observation bridge is confounded.
 
+The independently frozen loader endpoint check passed all six controls from 2020-09 and 2022-04: HTTP, parser,
+owner, target table, required fields and non-`FILLER` gates were 6/6. This validates the clean metadata endpoints,
+not rows or effects. Archive headers and day-level joins remain behind a new frozen gate.
+
 ## 8. Data and compute plan
 
 ### Before G1
@@ -316,7 +320,7 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
 4. Define one proper forecast vector, fixed horizons and negative-control event only for candidates with auditable
    actions and identities.
 5. Preserve the failed v1 and v2 checkpoints. Treat AEMO 5MS as a staged historical development intervention with
-   separate action and observation clocks. Run the frozen untouched 2020-09/2022-04 loader-control validation,
-   then freeze any archive-header contract only if it passes. Obtain an outcome-blind CoW competition enumerator
-   before any new CoW sample.
+   separate action and observation clocks. The 2020-09/2022-04 loader-control gate passed; freeze the next
+   archive-header gate before any ZIP or row access. Obtain an outcome-blind CoW competition enumerator before any
+   new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

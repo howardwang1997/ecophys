@@ -259,6 +259,12 @@ lies inside the 1 April--30 September bidding transition, when legacy 30-minute 
 the v5.00 specification formally replaces the relevant `OFFER` records with `BIDS` records. This is a staged
 mechanism/action-space transition, not a safe namespace alias. Row filtering remains locked.
 
+Official Data Model v5.00 records and the March SQLLoader control further separate the observation clock from the
+rule clock. Emulated reporting entered production on 8 March; the March period control loads the new-shaped export
+into legacy `BIDPEROFFER` while discarding new-only clock/ramp columns. Bidding transition began on 1 April and the
+rule commenced on 1 October. A frozen endpoint test then passed 6/6 untouched controls from 2020-09 and 2022-04,
+using only 9,978 downloaded metadata bytes. No CSV/ZIP, row, remote node or GPU was used.
+
 ## 8. Bottom line
 
 - **Experiment plan:** scientifically sensible, operationally incomplete; E0/E1 must precede model training.
@@ -266,6 +272,6 @@ mechanism/action-space transition, not a safe namespace alias. Row filtering rem
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** build a regime-aware, documentation-grounded AEMO 5MS development contract and resolve the
-  republished March report mapping; separately obtain an outcome-blind CoW enumerator. Do not open another month,
-  train models, open target outcomes or buy data until those contracts exist.
+- **Current action:** freeze a two-clock AEMO archive-header contract after the loader endpoint pass; separately
+  obtain an outcome-blind CoW enumerator. Do not open rows, train models, open target outcomes or buy data until
+  those contracts exist.

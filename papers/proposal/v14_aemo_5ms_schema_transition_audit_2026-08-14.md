@@ -92,13 +92,17 @@ confirmation, but it is better aligned with the paper than treating AEMO as a ge
 
 ## 6. Next gate
 
+The frozen six-control validation on untouched 2020-09 and 2022-04 controls passed 6/6 HTTP, parse, owner,
+target-table, required-column and non-`FILLER` gates. Its summary SHA-256 is
+`577e1815898acdbd750c7bc5e38c1c588195cc6262ac0144baa509dc427cfa13`; full results are in
+`experiments/v14_aemo_loader_control_audit/RESULTS.md`.
+
 Before any AEMO data row is opened:
 
-1. run the frozen six-control metadata validation on untouched 2020-09 and 2022-04 official controls;
-2. if and only if it passes, freeze a two-clock archive-header contract including action granularity,
-   submission/report generation and applied-offer linkage;
-3. choose fresh day ranges without reusing 2021-03, 2021-09, 2025-01 or 2025-07 as held-out evidence; and
-4. preregister empty-row, mixed-mode, timestamp, identity, information-loss and join-coverage failure rules.
+1. freeze a two-clock archive-header contract including action granularity, submission/report generation and
+   applied-offer linkage;
+2. choose fresh day ranges without reusing 2021-03, 2021-09, 2025-01 or 2025-07 as held-out evidence; and
+3. preregister empty-row, mixed-mode, timestamp, identity, information-loss and join-coverage failure rules.
 
-The loader-control protocol is frozen in `experiments/v14_aemo_loader_control_audit/PREREGISTRATION.md`. No CSV or
-ZIP archive, row parser, model training, paid data or GPU allocation is authorized by this audit.
+The metadata pass does not authorize CSV/ZIP access by itself. No row parser, model training, paid data or GPU
+allocation is authorized by this audit.

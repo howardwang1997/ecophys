@@ -83,9 +83,14 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
 - Official AEMO 5MS records show that `OFFER` to `BIDS` is part of a staged bidding/action-space migration. From
   2021-04-01 through 2021-09-30, legacy 30-minute and new 5-minute submission paths coexisted; 5MS commenced on
   2021-10-01. September is transition data, not stationary legacy validation.
-- Row access remains locked. Resolve the republished March `OFFER,BIDOFFERPERIOD,1` control mapping, then freeze a
-  pre-transition/transition/post-5MS contract and fresh months. Do not delete the package gate or reuse 2021-09 as
-  held-out evidence. Audit: `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
+- AEMO has two distinct clocks. Emulated reporting compatibility deployed on 2021-03-08; bidding transition began
+  on 2021-04-01; the 5MS rule commenced on 2021-10-01. The official March control loads a
+  `BIDOFFERPERIOD`-shaped export into legacy `BIDPEROFFER` and discards new-only clock/ramp fields. March is a
+  measurement bridge, not a clean baseline.
+- The frozen loader endpoint audit passed 6/6 untouched 2020-09 and 2022-04 controls at commit `25560ccde`; no
+  archive or row was opened. Row access remains locked behind a separately frozen two-clock archive-header gate.
+  Do not delete the prior package gate or reuse 2021-09 as held-out evidence. Audit:
+  `papers/proposal/v14_aemo_5ms_schema_transition_audit_2026-08-14.md`.
 
 ## GC0166 metadata audit boundary
 
