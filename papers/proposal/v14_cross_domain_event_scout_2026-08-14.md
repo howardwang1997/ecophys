@@ -1,0 +1,156 @@
+# V14 cross-domain and cross-region event scout
+
+**Date:** 2026-08-14
+
+**State:** metadata and schema audit only; no candidate target endpoint was queried for a research outcome panel.
+
+## 1. Decision
+
+Australia is not a scientific requirement. AEMO FTA was considered because it has a public rule clock, not because
+the paper is about Australia. Its affected-participant panel is private, so it should remain a partner-conditional
+option rather than the default flagship event.
+
+The domain-independent object is a prospective Lucas test: fit and select models before a real mechanism changes,
+seal their probabilistic response forecasts, then test whether they predict mechanical, persistent-participant and
+population responses without post-event refitting. Cross-region and cross-domain confirmation would strengthen the
+claim, provided the same capability ordering and forecast protocol have substantive rather than merely verbal
+meaning in every system.
+
+The current scouting priority is:
+
+1. audit Great Britain's GC0166 transition as the nearest free, public, unit-level prospective electricity event;
+2. predeclare an event-selection rule for the next qualifying on-chain market mechanism change; and
+3. retain AEMO FTA only if an authorised participant partnership becomes available on acceptable terms.
+
+No event is yet admitted. `G1 NOT PASSED` remains the correct state.
+
+## 2. Domain-independent admission contract
+
+A region or field is eligible only if it supplies all of the following before outcomes are examined:
+
+1. a versioned rule and an activation or unit-adoption clock that can be frozen prospectively;
+2. persistent participant or unit identifiers, with declared entry, exit and identity-change handling;
+3. timestamped actions available before their outcomes, including null, rejected and failed actions;
+4. outcomes and a defensible state/confound panel at the same statistical unit;
+5. a legal, reproducible observation route with versioned schemas and retention; and
+6. a response vector for which the same M0--M4 model-capability ladder is meaningful.
+
+Public prices or aggregate traffic alone do not pass. A policy document without affected-agent actions does not
+pass. A software upgrade whose only observable effect is deterministic execution latency may be useful systems
+engineering, but it does not automatically test adaptive economic behaviour.
+
+## 3. Current candidate ranking
+
+| Priority | System and region | Prospective clock | Observable actions/outcomes | Status and principal risk |
+|---|---|---|---|---|
+| A | NESO GC0166, Great Britain electricity Balancing Mechanism | operational implementation required by 2026-11-05; controlled rollout already live | Elexon exposes BMU identities, MDO/MDB, physical/dynamic parameters, bid-offers, acceptances and settlement/cashflow reports through public APIs | `PRIORITY_G1_AUDIT`, not admitted; early-pilot contamination, eligibility completeness and the non-public parts of dispatch decision logic must be resolved |
+| B | next qualifying CoW or Uniswap economic-mechanism change, permissionless networks | exact on-chain execution is available only after a proposal is final | solver/pool/wallet actions, code, governance and settlement are largely public | `EVENT_PIPELINE`; the qualifying-event rule must be committed before the next outcome, and identities/failures require audit |
+| C | Solana Alpenglow, global validator network | official page says Q3 2026, but no frozen activation instant was established | validator, stake, vote, block and latency records are publicly reconstructable | `WATCHLIST_CLOCK_UNFROZEN`; may measure engineering/validator adaptation rather than the same economic object |
+| D | Ethereum Hegotá, global validator/application ecosystem | official roadmap says H2 2026 while proposals remain under discussion | protocol code and on-chain actions are public | `WATCHLIST_CLOCK_UNFROZEN`; treatment is multi-component and could defeat causal interpretation |
+| E | AEMO FTA Release 2, Australia retail electricity | official 2026-11-01 clock | schemas are public, but affected SSP adoption, actions and interval settlement are participant-facing | `PARTNER_CONDITIONAL`; exact clock but no public confirmation panel |
+
+Current CoW CIP-85 and the July 2026 Uniswap v4 fee activation cannot be promoted after observing their public
+rollout. They are historical/development events. BYOS, future fee expansions and future solver-reward changes are
+useful monitoring streams, but only a proposal whose rule, execution time and observation contract are frozen before
+its outcome can become confirmation.
+
+## 4. Why GC0166 moves ahead of FTA
+
+NESO states that GC0166 introduces Maximum Delivery Offer and Maximum Delivery Bid parameters for limited-duration
+assets and requires operational implementation by 2026-11-05. Five units across four lead parties were already in
+the controlled rollout when NESO published its June update. Those early units must be excluded from confirmation or
+used as development only.
+
+Elexon's Insights Solution currently documents public, no-key endpoints for:
+
+- MDO and MDB submissions by BM Unit;
+- bid-offer data and bid-offer acceptances;
+- physical and other dynamic parameters;
+- indicative BMU cashflows and BMU-level settlement reports; and
+- current BMU, fuel-type and lead-party reference data.
+
+The BMRS open-data licence is worldwide, royalty-free and permits copying, adaptation and redistribution with
+attribution. This removes the main FTA access problem. It does not by itself prove a valid experiment. The next audit
+must establish the full applicable population, historical identity snapshots, first-submission/default semantics,
+late revisions, storage size and whether the dispatch mechanism can be represented honestly without claiming an
+exact proprietary decision engine.
+
+A promising design is a prospectively sealed staggered-adoption study: define eligible limited-duration BMUs before
+opening target outcomes, use the five pilot units only for schema development, forecast first MDO/MDB submissions,
+bid adaptation, acceptance/reliability and contribution shares for the remaining units, then score fixed horizons
+through and after the compliance date. Unit adoption dates are observations within one reform, not independent
+confirmation events.
+
+## 5. On-chain confirmation pipeline
+
+Permissionless digital markets are attractive because mechanism code, governance, actions, failures and outcomes
+can often be observed without a data-access partner. They also create serious selection risk because proposals occur
+frequently and outcomes are immediately public.
+
+Before monitoring outcome endpoints, commit an event-selection rule such as: the first post-freeze, independently
+governed proposal that changes solver, liquidity-provider or validator economic payoffs; has a final executable
+specification and activation block at least four weeks after selection; preserves a complete action/failure panel;
+and passes a pre-event precision simulation becomes the event. If the first qualifying proposal is inconvenient or
+produces a null result, it cannot be silently replaced.
+
+The current watchlist contains:
+
+- the next CoW solver-competition or reward-rule change after CIP-85;
+- a future Uniswap fee-controller activation or parameter change not already executed;
+- Solana Alpenglow after an exact mainnet activation clock and estimand are final; and
+- Ethereum Hegotá only if one separable economic mechanism and an exact activation clock emerge.
+
+Protocol teams can clarify schemas and activation semantics, but access need not depend on a private collaboration.
+All model and scoring snapshots should be published independently before the activation block.
+
+## 6. Recommended paper architecture
+
+The stronger NCS story is not “an Australian market simulator predicts Australia.” It is:
+
+> Historical realism is not intervention fidelity; a prospectively sealed model-selection protocol identifies
+> which adaptive world models survive real mechanism changes across computational economies.
+
+A plausible confirmation pair is one power-system institution and one permissionless digital market. The common
+claim concerns the ranking and value of model capabilities under intervention, not equality of physical units,
+welfare measures or numerical effect sizes.
+
+For NMI, geographic breadth does not compensate for a weak method. The paper would still need a new learning or
+calibration principle with theory/identifiability evidence, and the real events would validate that method. For NCS,
+the prospective real-world confirmation and transparent computational protocol carry more of the headline, but two
+independently governed transitions are still required.
+
+## 7. Data, compute and collaboration consequence
+
+- GC0166 metadata/schema audit: Mac CPU only, no purchase and no collaboration required. Storage and row budgets
+  must be measured before historical retrieval.
+- Later GB historical development: CPU/Parquet workload first; GPU use only for admitted learned models after G1/G2.
+- On-chain events: public archive/RPC or indexed data may require more storage and CPU, but no number is authorised
+  until a limited non-target sample is measured.
+- AEMO FTA: continue only through the collaboration contract in
+  `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`.
+- NESO/Elexon or protocol-team conversations are valuable for interpretation and schema validation, but are not
+  assumed to grant private target data.
+
+The two V100 nodes and RTX2060 remain idle. No H20 is assumed.
+
+## 8. Immediate gates
+
+1. Perform a zero-row GC0166 schema, retention, eligibility, identity and licence audit.
+2. Write the GC0166 response vector, pilot exclusion and negative-control event before retrieving target rows.
+3. Determine whether public data preserve superseded MDO/MDB, bid and acceptance submissions rather than only final
+   snapshots.
+4. Pre-register the on-chain event-selection rule and maintain a metadata-only proposal watchlist.
+5. Admit neither GC0166 nor any protocol event until its complete event contract passes G1.
+
+## 9. Primary evidence
+
+- [NESO GC0166 implementation update](https://www.neso.energy/news/gc0166-goes-live-enabling-smarter-use-limited-duration-assets)
+- [Elexon Insights API documentation](https://bmrs.elexon.co.uk/api-documentation/)
+- [Elexon MDO/MDB, bid, acceptance and settlement endpoint index](https://bmrs.elexon.co.uk/api-documentation/endpoint/balancing/acceptances)
+- [Elexon BM Unit reference endpoint](https://bmrs.elexon.co.uk/api-documentation/endpoint/reference/bmunits/all)
+- [Elexon BMRS open-data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/)
+- [CoW CIP-85](https://forum.cow.fi/t/cip-85-performance-and-consistency-rewards/3377)
+- [Uniswap v4 protocol-fee proposal](https://gov.uniswap.org/t/temp-check-activate-v4-protocol-fees/26162)
+- [Solana Alpenglow roadmap](https://solana.com/upgrades/alpenglow)
+- [Ethereum 2026 roadmap](https://ethereum.org/roadmap/)
+- [AEMO FTA implementation page](https://www.aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/flexible-trading-arrangements)

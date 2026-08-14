@@ -152,6 +152,13 @@ rules can provide development events. Existing studies and public outcomes preve
 
 ### 6.2 Prospective candidates
 
+**NESO GC0166, Great Britain, 5 November 2026 — priority G1 audit, not admitted.** Limited-duration assets must
+operationally implement the new MDO/MDB dynamic parameters by this date. Elexon publicly documents BMU identities,
+MDO/MDB, bids, acceptances and settlement/cashflow endpoints under an open-data licence. Five units across four lead
+parties entered a controlled rollout before this scout, so they are development-only. Eligibility completeness,
+superseded-submission retention, identity history and the boundary between public rules and proprietary dispatch
+logic still require a zero-row audit.
+
 **AEMO Flexible Trading Arrangements, 1 November 2026 — watchlist only.** The effective date and technical schemas are public, but
 the reform concerns retail metering, settlement points and voluntary service-provider participation. It remains a
 candidate only if public data expose adoption and a response vector at the affected participant level. Aggregate
@@ -168,6 +175,16 @@ linking registered/aggregated participants, bids, dispatch, forecast error and m
 after the V14 freeze may supply the second confirmation. ePBS is monitoring-only until the protocol version,
 activation time and common observation instrument become final. No event may be selected after its outcomes are
 read.
+
+The current cross-domain watchlist also includes the next qualifying CoW or Uniswap economic-mechanism change,
+Solana Alpenglow after an exact activation clock, and Ethereum Hegotá after a separable mechanism and exact clock.
+Already active CoW CIP-85 and Uniswap v4 fee changes are development-only. The event-selection rule must be sealed
+before a future proposal is chosen; an inconvenient or null first qualifying event cannot be replaced post hoc.
+
+Australia is not a scope requirement. AEMO FTA is retained because of its official clock, but a public GB event or
+permissionless digital market is preferable when it supplies a complete action/failure/outcome panel without access
+negotiation. The current cross-domain audit is
+`papers/proposal/v14_cross_domain_event_scout_2026-08-14.md`.
 
 “Lucas test” and “LucasBench” are working labels only. A naming-collision audit is required before a public
 benchmark or repository is created.
@@ -197,7 +214,8 @@ The cross-domain claim concerns forecasting protocol and model-family ordering, 
 | G5 real confirmation | at least two independent events support the same scoped model-selection conclusion with all nulls and failures reported | no NCS/NMI flagship claim |
 
 **Current gate state (2026-08-14):** `G1 NOT PASSED`. FTA lacks an established public affected-participant panel,
-IPRR has no stable implementation clock after its reset, and no second untouched event is admitted. The detailed
+IPRR has no stable implementation clock after its reset, GC0166 has not passed its eligibility/identity/mechanism
+audit, and no second untouched event is admitted. The detailed
 experiment/resource audit is `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`. The verified source
 and purchase decision is `papers/proposal/v14_data_acquisition_decision_2026-08-14.md`: free official AEMO and CoW
 sources suffice for historical feasibility, `NO_BUY_NOW`, and FTA confirmation access requires a participant

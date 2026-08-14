@@ -94,6 +94,54 @@ sources:
       - data redistribution terms
       - identity continuity across solver address changes
 
+  - source_id: elexon_gc0166_bmrs
+    owner: Elexon Limited / National Energy System Operator
+    domain: Great Britain electricity Balancing Mechanism
+    event_status: priority_g1_audit_not_admitted
+    access: public_api_no_key
+    cost: no_cost_identified
+    event_clock: "2026-11-05"
+    event_clock_source: "https://www.neso.energy/news/gc0166-goes-live-enabling-smarter-use-limited-duration-assets"
+    api_docs: "https://bmrs.elexon.co.uk/api-documentation/"
+    developer_portal: "https://developer.data.elexon.co.uk/"
+    terms: "https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/"
+    endpoints:
+      - "/datasets/MDO"
+      - "/datasets/MDB"
+      - "/balancing/bid-offer"
+      - "/balancing/acceptances"
+      - "/balancing/physical"
+      - "/balancing/dynamic"
+      - "/reference/bmunits/all"
+      - "/i014/bm-unit-level/{settlementDate}/{settlementRunType}"
+    access_boundary:
+      - schema_and_metadata_only
+      - no_candidate_target_endpoint_query
+      - five_officially_disclosed_pilot_units_are_development_only
+    unresolved:
+      - establish complete applicable limited-duration BMU population before target retrieval
+      - verify effective-dated BMU and lead-party identity history rather than current-only reference data
+      - verify retention of superseded and failed or defaulted MDO/MDB submissions
+      - define pilot exclusions and negative controls before outcome collection
+      - separate public rule conformance from non-public dispatch decision logic
+      - measure limited non-target row counts storage and revision semantics after contract freeze
+
+watchlist_metadata:
+  - event_id: next_qualifying_onchain_market_mechanism
+    domains:
+      - cow_solver_competition
+      - uniswap_fee_controller
+    status: event_selection_rule_not_yet_frozen
+    rule: first_post_freeze_qualifying_event_no_posthoc_replacement
+  - event_id: solana_alpenglow
+    official_window: q3_2026
+    status: clock_unfrozen
+    url: "https://solana.com/upgrades/alpenglow"
+  - event_id: ethereum_hegota
+    official_window: h2_2026
+    status: clock_and_mechanism_unfrozen
+    url: "https://ethereum.org/roadmap/"
+
 restricted_or_paid:
   - source_id: aemo_fta_msats_participant_reports
     access: eligible_participant_or_authorised_data_sharing
@@ -106,4 +154,3 @@ restricted_or_paid:
     gst_excluded: true
     url: "https://www.aemo.com.au/energy-systems/market-it-systems/electricity-system-guides/nemde-queue-service"
     decision: do_not_purchase_before_open_replay_residual_is_measured
-

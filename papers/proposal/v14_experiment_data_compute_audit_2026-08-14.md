@@ -155,12 +155,14 @@ Known hazards:
 
 | Candidate | Clock status | Action/identity observability | Current role |
 |---|---|---|---|
+| GB NESO GC0166 | operational implementation required by 2026-11-05; five units/four lead parties were already in controlled rollout | Elexon documents public BMU identity, MDO/MDB, bid, acceptance and settlement endpoints; applicable-population completeness, history and revisions remain unproved | `PRIORITY_G1_AUDIT`, not confirmation |
 | AEMO FTA Release 2 | official page still schedules 2026-11-01 | core SSP, NMI, meter and MSATS transaction/adoption data appear participant/retail-facing; public affected-panel contract not established | `WATCHLIST`, not confirmation |
 | AEMO IPRR dispatch mode | original 2027-05-23 date is subject to an official pause/reset and alternate staged path | wholesale DUID bids/dispatch may eventually be public, but new participant mapping and revised schema/timing are unsettled | `PAUSED_CLOCK`, not confirmation |
 | future CoW rule | no frozen new change | action and competition APIs are promising; identity continuity and complete failed submissions still require audit | `WATCHLIST` |
 | ePBS | specification/activation and common pre/post observation remain unsettled | V13 failures remain | monitoring only |
 
-The current plan therefore has zero admitted confirmation events. G1 does not pass.
+The current plan therefore has zero admitted confirmation events. G1 does not pass. GC0166 is a better public-data
+lead than FTA, but a promising endpoint inventory is not an admitted event contract.
 
 The detailed source and purchase decision is
 `papers/proposal/v14_data_acquisition_decision_2026-08-14.md`; its machine-readable metadata-only registry is

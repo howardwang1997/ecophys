@@ -124,3 +124,8 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator
 or confirmed production SSP operator.
+
+The later cross-domain scout identified Elexon's public, no-key BMRS APIs and open-data licence as a potentially
+superior route for the GB GC0166 event. This reinforces `NO_BUY_NOW`; GC0166 still requires a zero-row
+eligibility/identity/retention audit before any target retrieval. See
+`papers/proposal/v14_cross_domain_event_scout_2026-08-14.md`.

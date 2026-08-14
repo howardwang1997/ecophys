@@ -34,11 +34,21 @@ A single historical event study is specialist work, not an NCS/NMI flagship.
 ## Candidate systems
 
 - CoW solver competitions and completed AEMO reforms: development only.
+- NESO GC0166, Great Britain, 2026-11-05: highest-priority new G1 metadata audit. Elexon publicly documents BMU
+  identities, MDO/MDB, bids, acceptances and settlement outputs under an open-data licence. Five units/four lead
+  parties are already pilot/development only. Eligibility, identity history, revision retention and public-mechanism
+  boundaries remain unproved, so the event is not admitted.
 - AEMO Flexible Trading Arrangements, 2026-11-01: watchlist only; affected-provider adoption/actions are not shown
   to be public.
 - AEMO Integrating Price-Responsive Resources: the original 2027-05-23 dispatch-mode date is under an official
   pause/reset and is not a freezeable clock.
 - At least two independently governed untouched transitions are required. ePBS remains monitoring-only.
+- Australia is not a scientific scope requirement. The preferred confirmation pair is one public power-system
+  transition plus one permissionless digital-market transition, if the same model-capability and scoring claims are
+  substantive in both.
+- The next qualifying CoW/Uniswap economic-mechanism change is an event pipeline, not a selected event. Solana
+  Alpenglow and Ethereum Hegotá remain clock-unfrozen watchlist entries. A deterministic first-qualifying-event rule
+  must be sealed before reading future outcomes.
 
 ## Compute and data lock
 
@@ -81,3 +91,4 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - AEMO consultation participants are only a contact pool, not confirmed FTA operators. AEMO's public page did not
   expose a downloadable NMISP roster on 2026-08-14; any self-described NMISP status requires official confirmation.
 - Collaboration brief: `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`.
+- Cross-domain event scout: `papers/proposal/v14_cross_domain_event_scout_2026-08-14.md`.
