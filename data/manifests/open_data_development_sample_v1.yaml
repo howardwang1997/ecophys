@@ -1,0 +1,145 @@
+schema_version: ecophys-open-data-development-sample/v1
+sample_id: v14-open-data-development-20260814
+frozen_at: "2026-08-14T06:52:14Z"
+parent_commit: 997b750394fa173228acad9840f5c5348e014f98
+stage: rules_frozen_no_historical_rows_opened
+scientific_role: development_only_no_confirmation_claim
+
+access_boundary:
+  paid_data_used: false
+  target_event_rows_opened: false
+  target_event_outcomes_opened: false
+  anchor_metadata_opened: false
+  historical_sample_rows_opened: false
+  prospective_registry_changed: false
+  forbidden_before_separate_activation:
+    - gc0166_mdo_mdb_rows
+    - gc0166_controlled_rollout_rows
+    - post_cutoff_governance_event_responses
+    - experiment_156
+
+synthetic_calibration:
+  protocol: paired-energy-score-block-randomization-v1
+  root_seed: 81415601
+  replicates: 500
+  independent_blocks: 48
+  response_dimension: 4
+  ensemble_size: 48
+  permutation_draws: 511
+  alpha: 0.05
+  null_symmetric_bias: 0.20
+  effect_scale: 0.55
+  forecast_standard_deviation: 1.0
+  outcome_standard_deviation: 1.0
+  clock_shift_blocks: 4
+  structural_cases_per_replicate: 4
+  gates:
+    null_false_positive_rate_maximum: 0.08
+    null_binomial_calibration_p_minimum: 0.01
+    effect_power_minimum: 0.80
+    correct_clock_selection_rate_minimum: 0.80
+    leakage_detection_rate_required: 1.0
+    identity_violation_detection_rate_required: 1.0
+    status_contract_detection_rate_required: 1.0
+
+cow:
+  source_id: cow_solver_competitions
+  network: mainnet
+  base_url: https://api.cow.fi/mainnet
+  openapi_url: https://raw.githubusercontent.com/cowprotocol/services/main/crates/orderbook/openapi.yml
+  version_endpoint: /api/v1/version
+  competition_endpoint_template: /api/v2/solver_competition/{auction_id}
+  anchor:
+    endpoint: /api/v2/solver_competition/latest
+    retained_fields:
+      - auctionId
+    discard_unretained_fields: true
+    resolved_anchor_id: null
+    resolved_at: null
+    resolution_must_be_committed_before_sample_queries: true
+  initial_sample:
+    count: 100
+    first_offset_below_anchor: 100000
+    stride: 1000
+    auction_ids: null
+    auction_ids_sha256: null
+  expansion_sample:
+    count: 1000
+    first_offset_below_anchor: 100000
+    stride: 100
+    auction_ids: null
+    auction_ids_sha256: null
+  selection_formula: auction_id=resolved_anchor_id-first_offset_below_anchor-index*stride
+  initial_is_subset_of_expansion: true
+  no_replacement_for_missing_or_failed_requests: true
+  maximum_requests_per_second: 1.0
+  maximum_transport_retries: 2
+  cutoff_utc: "2026-08-14T07:00:00Z"
+  gates:
+    requested_id_matches_payload_rate_required: 1.0
+    duplicate_payload_ids_maximum: 0
+    parse_rate_among_http_200_required: 1.0
+    initial_http_200_coverage_minimum: 0.80
+    every_sampled_auction_must_precede_cutoff: true
+    every_http_status_and_failure_must_be_retained: true
+
+aemo:
+  source_id: aemo_nemweb_mmsdm
+  archive_root: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/
+  market_clock: fixed_AEST_UTC_plus_10_no_DST
+  interval_convention: period_ending
+  date_selection_rule: first_Gregorian_Tuesday_no_holiday_adjustment_no_replacement
+  samples:
+    - sample_label: legacy-2021-03
+      archive_month: "2021-03"
+      market_date: "2021-03-02"
+      naming_regime: legacy_public_dvd
+    - sample_label: current-2025-01
+      archive_month: "2025-01"
+      market_date: "2025-01-07"
+      naming_regime: public_archive_hash_delimited
+  initial_tables:
+    - BIDDAYOFFER_D
+    - BIDPEROFFER_D
+    - DISPATCHOFFERTRK
+    - DISPATCHLOAD
+    - DUDETAILSUMMARY
+  expansion_tables:
+    - DISPATCHPRICE
+    - DISPATCHREGIONSUM
+    - DISPATCH_UNIT_SCADA
+    - DISPATCHCONSTRAINT
+    - NETWORK_OUTAGEDETAIL
+    - PARTICIPANT
+    - DUALLOC
+    - DUDETAIL
+  raw_archive_policy: download_individual_table_archives_only_never_full_month_bundle
+  row_policy: retain_raw_archive_but_emit_only_the_predeclared_market_date
+  schema_policy: freeze_table_specific_keys_after_header_audit_before_row_join_or_replay
+  no_replacement_for_empty_or_incomplete_dates: true
+  gates:
+    source_object_sha256_required: true
+    zip_crc_pass_required: true
+    header_parse_rate_required: 1.0
+    timestamp_parse_rate_required: 1.0
+    selected_action_and_dispatch_tables_must_be_nonempty: true
+    duplicate_and_revision_policy_must_be_frozen_before_join: true
+    exact_nemde_replay_claim_allowed: false
+
+gates:
+  contract_validation_required_before_network_access: true
+  contract_commit_required_before_network_access: true
+  cow_anchor_commit_required_before_competition_sample_access: true
+  aemo_header_contract_required_before_row_join: true
+  gpu_allowed_before_initial_data_gates: false
+  scale_only_after_initial_gates_pass: true
+
+outputs:
+  artifact_root: artifacts/v14_open_data_feasibility
+  synthetic_summary: experiments/v14_open_data_feasibility/artifacts/synthetic_calibration.json
+  cow_resolved_manifest: data/manifests/open_data_development_sample_v1_resolved.yaml
+  cow_request_ledger: artifacts/v14_open_data_feasibility/cow/request_ledger.jsonl
+  cow_summary: experiments/v14_open_data_feasibility/artifacts/cow_initial_summary.json
+  aemo_source_manifest: artifacts/v14_open_data_feasibility/aemo/source_manifest.json
+  aemo_header_contract: data/manifests/aemo_development_headers_v1.yaml
+  aemo_summary: experiments/v14_open_data_feasibility/artifacts/aemo_initial_summary.json
