@@ -120,3 +120,7 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
    minimum-field and publication-rights request.
 4. Obtain written CoW clarification on competition-history retention, rate limits and research redistribution.
 5. After those contracts are recorded, freeze a non-target E1 sample and implement the parsers. No GPU is needed.
+
+The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
+in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator
+or confirmed production SSP operator.

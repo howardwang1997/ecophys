@@ -64,3 +64,20 @@ or negative-control architecture only.
 Canonical plan: `papers/proposal/plan_economic_world_model_lucas_test_nmi_ncs_v14.md`.
 Detailed experiment/data/compute audit: `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`.
 Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08-14.md`.
+
+## FTA collaboration boundary
+
+- The minimum viable FTA partnership is an SSP-operating FRMP/retailer/aggregator together with its authorised
+  NMISP and MDP/MC chain. AEMO is a clock/schema/facilitation partner; it is not assumed to supply retailer product,
+  invitation, consent or control-action histories.
+- Access must cover the complete eligible cohort, including non-adopters, null/failed actions and exits; it must
+  support stable pseudonyms, effective-dated SSP/role history, product/rule versions, interval outcomes and data
+  quality flags.
+- Preferred form is a prospectively declared rollout with a control or staggered-invitation design and a blind
+  post-seal outcome release. Secure-enclave/code-to-data access is acceptable if audit metadata and
+  disclosure-controlled aggregates can be retained.
+- Non-negotiable terms are pre-outcome sealing, negative-result publication, no result-based partner veto and
+  privacy/ethics governance. One partner portfolio is feasibility evidence, not independent NCS/NMI confirmation.
+- AEMO consultation participants are only a contact pool, not confirmed FTA operators. AEMO's public page did not
+  expose a downloadable NMISP roster on 2026-08-14; any self-described NMISP status requires official confirmation.
+- Collaboration brief: `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`.
