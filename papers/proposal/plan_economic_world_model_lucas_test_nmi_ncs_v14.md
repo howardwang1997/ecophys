@@ -214,7 +214,7 @@ The cross-domain claim concerns forecasting protocol and model-family ordering, 
 | Gate | Requirement | Failure action |
 |---|---|---|
 | G0 story and novelty | equation-level comparison with ABM validation, Lucas/structural transport, DSGE-Gym, causal twins, market ecology and prospective forecasting | retire before a benchmark name or code project |
-| G1 data contract | one development event plus two untouched independent transitions, exact rule/version clocks, public actions/identities/outcomes, licences and common observables | no endpoint collection or experiment |
+| G1 data contract | one development event plus two untouched independent transitions, exact rule/version clocks, public actions/identities/outcomes, licences and common observables | no prospective-target collection or model experiment; only preregistered non-target historical feasibility may continue |
 | G2 historical feasibility | frozen development replay has calibrated type-I error, adequate power/precision and no leakage; model ladder runs end to end | stop or narrow to a non-flagship methods benchmark |
 | G3 method value | M3/M4 gives a compute-matched development gain not reproduced by M0/M1 or post-hoc tuning | NMI route closes; retain reality-test protocol only |
 | G4 prospective seal | code, hashes, response vectors, forecast distributions, exclusion rules and analysis script are public before event time | event becomes development-only |
@@ -229,13 +229,23 @@ and purchase decision is `papers/proposal/v14_data_acquisition_decision_2026-08-
 sources suffice for historical feasibility, `NO_BUY_NOW`, and FTA confirmation access requires a participant
 partnership rather than a generic market-data purchase.
 
+The first preregistered free-data checkpoint has now failed rather than promoted G1/G2. Generated calibration at
+48 independent blocks had 38.6% power and selected the correct clock 56.0% of the time. Arithmetic sampling of 100
+CoW auction IDs returned 33 available competitions, below the 80% frame gate. Ten frozen AEMO archives were all
+available, byte-exact and CRC-valid, but only 5/10 passed the preregistered internal-table contract and 9/10 passed
+the minimum-field contract. These failures are retained in
+`experiments/v14_open_data_feasibility/RESULTS.md`; no scale-up, row join or model ranking is authorized.
+
 ## 8. Data and compute plan
 
 ### Before G1
 
-- Data: official documents, schemas, licences and zero-row availability queries only; no affected outcome values.
-- Compute: Mac CPU only, expected below 20 core-hours and 32 GB RAM.
-- Workers: both V100 32 GB nodes and the RTX2060 remain idle and unqueued.
+- Data: official documents plus explicitly preregistered, non-target historical development samples; no
+  prospective affected outcome values. Failed samples and unavailable IDs cannot be replaced.
+- Compute: CPU only for generated calibration, acquisition, hashing, schema and replay audits. GPU model training
+  remains locked.
+- Workers: a V100 host may be used as a generic CPU/data worker with CUDA hidden after a clean commit and immutable
+  manifest. The GPU itself, the second V100 and the RTX2060 remain unallocated unless a later gate requires them.
 
 ### After G1/G2
 
@@ -284,4 +294,6 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    without viewing candidate outcomes.
 4. Define one proper forecast vector, fixed horizons and negative-control event only for candidates with auditable
    actions and identities.
-5. Open no Experiment 156, collector or GPU job unless the full event contract passes G1.
+5. Preserve the failed v1 open-data checkpoint. Build a new AEMO semantic-crosswalk protocol and validate it on
+   unopened held-out months; obtain an outcome-blind CoW competition enumerator before any new sample is frozen.
+6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

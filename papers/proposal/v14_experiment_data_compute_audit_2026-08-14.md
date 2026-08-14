@@ -223,17 +223,40 @@ measured profile shows that seed/model coverage cannot fit the conditional budge
 2. Maintain the metadata-only source registry and create the event-contract table. Do not download target outcomes.
 3. Ask AEMO or verify official documentation for public access to SSP/NMISP adoption, participant mapping and IPRR
    revised timing/schema. If affected-level data are private, retire FTA/IPRR as confirmation events.
-4. Build zero/limited-row CoW and AEMO schema parsers plus provenance manifests.
-5. Run E1 on 100--1,000 CoW auctions and one to seven non-target AEMO days. Measure data size and replay mismatch.
-6. Only after E1 passes, freeze E2 power/leakage simulations and benchmark one small M1/M3 job on a single V100.
-7. Search continuously for a second independently governed future mechanism change. Without two admitted events,
+4. Preserve the failed initial CoW and AEMO schema audits; do not replace 404 IDs or reinterpret archive file names
+   as internal MMS table identities.
+5. Freeze an outcome-blind CoW competition enumerator and an AEMO field-level semantic crosswalk, then validate
+   both on newly selected historical samples before opening row joins or replay.
+6. Replace the underpowered 48-block E2 design only through a new power protocol with a scientifically justified
+   independent-block count and fresh root seed; do not inflate five-minute rows into independent events.
+7. Only after the repaired E1/E2 gates pass, benchmark one small M1/M3 job on a single V100.
+8. Search continuously for a second independently governed future mechanism change. Without two admitted events,
    pursue a specialist benchmark or stop rather than manufacture a Nature narrative.
 
-## 7. Bottom line
+## 7. Free-data execution checkpoint
+
+The first outcome-blind development package was executed on 2026-08-14 and failed all three promotion decisions:
+
+- generated calibration controlled the null false-positive rate at 5.8%, but power was 38.6% and correct-clock
+  selection was 56.0%; the frozen 48-independent-block design is underpowered;
+- the exact CoW ledger retained all 100 requests and parsed all 33 available responses, but arithmetic auction-ID
+  sampling achieved only 33% HTTP-200 coverage; no 404 was replaced and the 1,000-ID expansion stays locked; and
+- all ten exact AEMO objects downloaded with correct size, SHA-256, one CSV member and passing CRC. They occupy
+  1.178 GB compressed and 31.879 GB uncompressed, but only 5/10 matched the frozen internal-table identity and
+  9/10 contained the frozen minimum fields. No data row was counted or joined.
+
+The AEMO failure exposes a real cross-version mapping problem: archive names `DISPATCHOFFERTRK` and `DISPATCHLOAD`
+contain internal tables `OFFERTRK` and `UNIT_SOLUTION`, while the legacy per-period bid table is
+`OFFER/BIDOFFERPERIOD` with `TRADINGDATE` rather than the current `BID/BIDPEROFFER_D` contract. A new field-level
+crosswalk must be learned from these discovery months and tested on unopened months. The run used a V100 host only
+as a CPU/data node with CUDA hidden; no GPU model job was opened.
+
+## 8. Bottom line
 
 - **Experiment plan:** scientifically sensible, operationally incomplete; E0/E1 must precede model training.
 - **Data:** rich free AEMO wholesale and CoW development data exist, but current prospective confirmation data do
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** do not start V100 experiments. First prove public observability and replay fidelity.
+- **Current action:** repair sampling and schema contracts on fresh historical validation samples using CPU only.
+  Do not train models, open target outcomes or buy data.

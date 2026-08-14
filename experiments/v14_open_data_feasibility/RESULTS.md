@@ -74,3 +74,48 @@ lookup into batches may be a later metadata-only repair, but cannot change the f
 
 This audit establishes schema parseability for available records, not score recomputation or exact mechanism
 replay. It provides no participant-adaptation, policy-effect or prospective evidence.
+
+## AEMO two-regime exact-object and header audit
+
+**Decision:** `FAIL_SCHEMA_CONTRACT`. The immutable archives are obtainable and intact, but the preregistered
+file-name-to-internal-table identity and minimum-field contract is false. Row filtering and joins remain locked.
+
+**Collection and audit commit:** `cd00c7169`
+
+**Header contract:** `data/manifests/aemo_development_headers_v1.yaml`
+
+**Compact artifact:** `artifacts/aemo_header_summary.json`
+
+**Header-contract SHA-256:**
+`4668132789160bafd2676a8ad8c963c9dfa6c298c608f56bd3c31f9700c6b78b`
+
+**Summary SHA-256:**
+`63b5bdc70090d73ebef0d15f876d4a9f1526b3c9bb2a67755621cd7b5a4b345d`
+
+| Gate | Observed | Required | Result |
+|---|---:|---:|---|
+| Exact frozen-object ledger | 10/10 | 10/10 | PASS |
+| HTTP 200 | 10/10 | 10/10 | PASS |
+| Expected byte length | 10/10 | 10/10 | PASS |
+| SHA-256 present | 10/10 | 10/10 | PASS |
+| ZIP CRC | 10/10 | 10/10 | PASS |
+| Exactly one CSV member | 10/10 | 10/10 | PASS |
+| Frozen archive/internal table identity | 5/10 | 10/10 | **FAIL** |
+| Frozen minimum fields | 9/10 | 10/10 | **FAIL** |
+| Overall header contract | 5/10 | 10/10 | **FAIL** |
+
+The ten exact archives total 1,177,771,842 compressed bytes and 31,878,556,073 uncompressed CSV bytes. This
+establishes free acquisition, integrity and bounded streaming feasibility; it does not establish a stable semantic
+panel. The audit ran on the CPU of V100-A with CUDA hidden. It opened information headers and streamed ZIP CRCs,
+but counted no data rows, performed no row join and used no target-event outcome.
+
+The failures are informative rather than transport errors. `DISPATCHOFFERTRK` archives identify their internal MMS
+table as `DISPATCH/OFFERTRK` in both periods, and `DISPATCHLOAD` archives identify it as
+`DISPATCH/UNIT_SOLUTION`. The legacy per-period bid archive is `OFFER/BIDOFFERPERIOD` version 1 and uses
+`TRADINGDATE`, not the frozen `SETTLEMENTDATE`; the current archive is `BID/BIDPEROFFER_D` version 3. Other version
+changes include `UNIT_SOLUTION` 2 to 5 and `DUDETAILSUMMARY` 4 to 7. Renaming files would hide these distinctions.
+
+The clean repair is a new protocol, not an edit to this result: treat these two periods as schema-discovery data,
+freeze an explicit field-level semantic crosswalk, and validate it on separately selected, previously unopened
+legacy and current months. Only a committed held-out header pass can unlock selected-date row filtering. The v1
+artifacts and failed gates remain immutable.

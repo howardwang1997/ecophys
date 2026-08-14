@@ -4,8 +4,8 @@
 
 **Decision:** `NO_BUY_NOW`
 
-**Access boundary:** source metadata, schemas, licences, directory listings and official event documents only. No
-prospective-event outcome row was opened.
+**Access boundary:** source metadata plus preregistered non-target historical development objects. No
+prospective-event outcome row was opened, and no historical AEMO data row was counted or joined.
 
 ## 1. Bottom line
 
@@ -13,6 +13,13 @@ The historical feasibility study does not require a commercial dataset. AEMO exp
 participant, dispatch and constraint tables through official NEMWeb directories at no cost, and CoW exposes solver
 competitions through a public API together with the service implementation. These sources are sufficient to build
 the E0 source contracts and, after the data gate is frozen, the limited E1 replay sample.
+
+The first frozen sample confirms free transport but does not yet pass the scientific data contract. CoW arithmetic
+auction-ID sampling yielded 33/100 available competitions and is not a valid high-coverage sampling frame. All ten
+AEMO archives were available and intact, totaling 1.178 GB compressed and 31.879 GB uncompressed, but the frozen
+file-name/internal-table mapping passed only 5/10 objects and the minimum fields passed 9/10. These failures
+strengthen `NO_BUY_NOW`: the next bottleneck is an auditable enumerator and versioned semantic crosswalk, not a
+commercial price feed.
 
 The unresolved confirmation-data problem cannot currently be solved by buying a conventional market-data feed.
 FTA's affected SSP/NMI standing data and settlement reports are delivered to eligible participant roles through
@@ -63,6 +70,12 @@ A provisional two-to-four-year selected-table budget is therefore `20--100 GB` c
 working storage after CSV expansion, Parquet conversion, raw retention and derived caches. Replace this range with
 measured `Content-Length`, row-count and compression-ratio manifests before bulk synchronization. The earlier
 `0.5--2 TB` estimate for AEMO alone was too conservative and is retired.
+
+The exact two-regime header sample measured 1,177,771,842 compressed bytes and 31,878,556,073 uncompressed bytes
+across ten objects. Transport, byte length, SHA-256, CRC and single-member checks all passed. Semantic identity did
+not: `DISPATCHOFFERTRK` and `DISPATCHLOAD` file names map to internal `OFFERTRK` and `UNIT_SOLUTION` tables, and
+legacy `BIDPEROFFER` maps to `OFFER/BIDOFFERPERIOD` with `TRADINGDATE`. These discovery months cannot also serve as
+the held-out proof of a repaired crosswalk.
 
 ### 3.2 Historical schema hazard
 
@@ -121,7 +134,8 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
 4. Maintain the frozen CoW/Uniswap event registry; request competition-history retention, rate-limit and research-
    redistribution clarification only for a post-cutoff candidate that reaches a final package.
 5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
-6. After those contracts are recorded, freeze a non-target E1 sample and implement the parsers. No GPU is needed.
+6. Preserve the failed initial E1 sample, freeze a field-level AEMO crosswalk and a valid CoW enumeration rule, and
+   validate both on newly selected non-target historical samples before implementing row joins. No GPU is needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator

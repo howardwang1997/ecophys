@@ -4,7 +4,7 @@
 
 - Opened 2026-08-14 from `main@67e07971e` on branch
   `economic-world-model-lucas-test-scout-v14`.
-- State: `V14_SCOUT_GC0166_G1_5_OF_10_NO_DATA_UNLOCK`.
+- State: `V14_SCOUT_GC0166_G1_5_OF_10_OPEN_DATA_FEASIBILITY_FAILED`.
 - V13's self-concealing-action equivalence is a diagnostic warning only; it is not the paper headline.
 - Working title: *Past Fit Is Not Policy Fidelity: A Prospective Lucas Test for Economic World Models*.
 - “Lucas test” and “LucasBench” are provisional labels pending a naming-collision audit.
@@ -55,10 +55,27 @@ A single historical event study is specialist work, not an NCS/NMI flagship.
 
 ## Compute and data lock
 
-Before G1/G2, only official documents, schemas, licences and zero-row availability checks may be used on Mac CPU.
-No endpoint outcomes, Experiment 156, new model repository, remote workers, V100 or RTX2060 jobs are opened or
-queued. H20 is excluded. EcoMD is not silently treated as the adaptive-ecology model; it may be a disclosed legacy
-or negative-control architecture only.
+Before G1/G2, official documents and explicitly preregistered non-target historical development samples may be
+used for CPU-only calibration, transport, schema and replay audits. A V100 host may serve as a generic CPU/data
+worker with CUDA hidden after a clean commit and immutable manifest. No prospective endpoint outcomes,
+Experiment 156 or GPU model job may be opened; failed samples cannot be replaced. H20 is excluded. EcoMD is not
+silently treated as the adaptive-ecology model; it may be a disclosed legacy or negative-control architecture only.
+
+## First free-data feasibility checkpoint
+
+- Generated calibration under the frozen 48-independent-block protocol passed null calibration and structural
+  leakage/identity/status checks but failed power (38.6% versus 80%) and correct-clock selection (56.0% versus 80%).
+- The exact 100-ID CoW ledger returned 33 HTTP 200 and 67 HTTP 404. All 33 available payloads parsed, but arithmetic
+  auction-ID space is not a valid high-coverage competition frame. The 1,000-ID expansion remains locked.
+- The exact ten-object AEMO header audit downloaded 1,177,771,842 compressed bytes, representing 31,878,556,073
+  uncompressed CSV bytes. Availability, byte length, SHA-256, CRC and single-member gates all passed; only 5/10
+  objects passed the frozen internal-table identity and 9/10 passed minimum fields. No row was counted or joined.
+- The main AEMO discrepancies are archive/internal names (`DISPATCHOFFERTRK` to `OFFERTRK`, `DISPATCHLOAD` to
+  `UNIT_SOLUTION`) and legacy `OFFER/BIDOFFERPERIOD` using `TRADINGDATE` versus current
+  `BID/BIDPEROFFER_D`. The two observed periods are schema-discovery data; a new field-level crosswalk must pass
+  unopened held-out months before row filtering.
+- All three initial promotion decisions failed and are preserved in
+  `experiments/v14_open_data_feasibility/RESULTS.md`. No paid data, target row or GPU model run is justified.
 
 ## GC0166 metadata audit boundary
 
