@@ -1,0 +1,105 @@
+schema_version: ecophys-prospective-event-selection/v1
+selection_id: v14_onchain_independent_event
+as_of: "2026-08-14"
+stage: metadata_only
+status: frozen_no_event_selected
+
+access_boundary:
+  candidate_effects_compared: false
+  external_workers_used: false
+  paid_data_used: false
+  target_outcomes_opened: false
+  target_rows_opened: false
+
+freeze:
+  effective_at: "2026-08-14T07:00:00Z"
+  parent_commit: 5778f9b55f51d6920a00e452b3c25a3413017351
+  authority: commit_containing_this_contract
+  proposal_publication_rule: The official proposal's first public timestamp must be strictly after the freeze; edits, renumbering, revived drafts and implementations of pre-freeze proposals do not qualify.
+  outcome_blind_rule: Only governance, rule, code, activation, schema, licence, retention and pre-event precision metadata may be inspected before selection and activation; no realized participant or market response may enter admission, ordering or replacement.
+
+universe:
+  - platform_id: cow_protocol
+    governance_authority: CoW DAO
+    independence_basis: Governance, code, participants and observations are institutionally independent of NESO, Elexon and the GB Balancing Mechanism.
+    status: future_only
+    sources:
+      - id: cow_governance_process
+        role: official_governance_process
+        url: https://forum.cow.fi/t/cow-dao-governance-process/27
+      - id: cow_governance_registry
+        role: official_proposal_registry
+        url: https://forum.cow.fi/c/cow-improvement-proposals-cip/6
+      - id: cow_mechanism_code
+        role: official_mechanism_code
+        url: https://github.com/cowprotocol/services
+  - platform_id: uniswap_protocol
+    governance_authority: Uniswap DAO
+    independence_basis: Governance, executable contracts, liquidity providers and on-chain observations are institutionally independent of NESO, Elexon and the GB Balancing Mechanism.
+    status: future_only
+    sources:
+      - id: uniswap_governance_process
+        role: official_governance_process
+        url: https://gov.uniswap.org/t/community-governance-process-update-jan-2023/19976
+      - id: uniswap_governance_registry
+        role: official_governance_registry
+        url: https://gov.uniswap.org/c/governance-meta/8
+      - id: uniswap_mechanism_code
+        role: official_mechanism_code
+        url: https://github.com/Uniswap/v4-core
+
+qualification:
+  all_required: true
+  minimum_lead_days: 28
+  audit_sla_hours: 72
+  criteria:
+    post_freeze_origin: The first official public proposal timestamp is strictly after the frozen timestamp; a pre-freeze draft, revival, edit, split or implementation does not qualify.
+    economic_treatment: The executable change alters solver, liquidity-provider or other market-participant payoffs, allocation, eligibility or competition rules; pure UI, security, performance, deployment and treasury-transfer changes do not qualify.
+    binding_specification: A final, versioned and executable specification identifies exact parameters, code or calldata, governance authority and activation block or UTC time.
+    minimum_lead_time: Activation is at least 28 full days after the final qualifying package timestamp.
+    observable_actions: A public, versioned panel captures the eligible participant actions used by the mechanism before their outcomes at the declared statistical unit.
+    identity_history: Persistent participant or position identifiers, entry, exit, transfers and known alias limitations are defined prospectively without model-imputed identity.
+    null_failure_capture: The denominator of eligible opportunities and all rejected, filtered, failed or explicitly scoped null actions are observable; conditioning on successful on-chain execution alone is disallowed unless the estimand is explicitly the executed-position population.
+    observable_outcomes: Execution, allocation, reliability and declared cost, surplus or contribution-share outcomes are public at the same unit and clock as the actions.
+    licence_and_retention: Collection, retention, reproducible academic use and derived-result publication are permitted, with a versioned completeness and revision policy.
+    common_response_ladder: Mechanical replay, frozen-policy, persistent-participant adaptation and population-reallocation models are all meaningful and separately scoreable for this event.
+    independent_governance: The rule authority, participants and observation system are independent of GC0166 and are not a second measurement of the same rollout.
+    pre_event_precision_feasible: A frozen simulation using only historical development data and event metadata supports the declared minimum precision without using candidate outcome rows.
+
+ordering:
+  primary_key: official_final_package_timestamp_utc
+  secondary_key: sha256_of_canonical_event_id
+  canonical_event_id: "lower(platform_id + ':' + official_proposal_id)"
+  no_replacement: true
+  late_audit_policy: Every post-freeze proposal entering a final package is audited within 72 hours using its official timestamp; a missed audit is a protocol deviation and cannot justify selecting a later event.
+
+candidate_registry: []
+
+selection:
+  event_id: null
+  selected_at: null
+  evidence_hash: null
+  reason: No post-freeze proposal has yet entered the registry or passed every criterion; all proposals public before the freeze are development-only.
+
+failure_policy:
+  selected_event_failure_counts: true
+  first_event_never_erased: true
+  secondary_event_labelled_separately: true
+  no_inconvenience_replacement: true
+
+monitoring:
+  cadence: Inspect both official governance registries once per UTC day; rank by official timestamps, never local discovery time.
+  permitted_metadata:
+    - proposal identifier, first-publication timestamp and immutable version or content hash
+    - governance stage, voting or execution authority, final code or calldata and activation clock
+    - action, identity, null, failure and outcome schemas without target response rows
+    - licence, retention, revision, expected sample size and pre-event precision diagnostics from development data
+  forbidden_before_activation:
+    - realized post-change price, volume, surplus, participation, concentration, execution or reliability response
+    - dashboards, commentary or forecasts comparing candidate treatment effects
+    - candidate ordering, exclusion or replacement based on convenient, positive or statistically significant outcomes
+
+outputs:
+  - append every post-freeze final-package candidate and its evidence hash to this versioned registry
+  - publish the selected event ID, evidence bundle and frozen response contract before its activation
+  - retain failed audits, null results, data failures and protocol deviations in the headline record

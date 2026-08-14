@@ -13,10 +13,13 @@ public BMU-level action and acceptance schemas, and an open-data licence. The au
 lead to a partially specified experiment, but it did not admit the event. Five of ten G1 clauses pass and five are
 unresolved.
 
-The central risk is now sharper than generic “data access.” Public rules distinguish participant submissions,
-automatic copy-forward or zero defaults, initial values, and rejected EDL messages. The documented BMRS rows expose
-values, publication times and serial numbers, but the public sources reviewed so far do not prove that a researcher
-can distinguish those provenance states. A final MDO/MDB row is therefore not automatically a behavioral action.
+The central risk is now sharper than generic “data access.” The live Elexon IDD proves that effective-dated BMU and
+Lead Party history exists in CRA-I015, and Elexon provides a Service Desk route for non-Party data requests; the
+complete historical extract, terms and retention are not yet delivered. Public rules distinguish participant
+submissions, automatic copy-forward or zero defaults, initial values, and rejected EDL messages. The documented
+BMRS rows expose values, publication times and serial numbers, but the public sources reviewed so far do not prove
+that a researcher can distinguish those provenance states. A final MDO/MDB row is therefore not automatically a
+behavioral action.
 If public records cannot identify authenticated submissions and missing/rejected/default-generated messages,
 GC0166 cannot support V14's behavioral-plasticity claim and should be downgraded to a mechanism/state case study.
 
@@ -24,8 +27,9 @@ GC0166 cannot support V14's behavioral-plasticity claim and should be downgraded
 
 The audit used official NESO and Elexon rule pages, the GC0166 Final Modification Report, Data Validation,
 Consistency and Defaulting Rules, EDL Message Specification, MDO/MDB Best Practice Guidance, BSC Modification P499,
-the Elexon API guidance and endpoint schemas, BSCP15 and the BMRS licence. The source inventory and evidence-page
-references are versioned in `data/manifests/gc0166_prospective_event_contract_v1.yaml`.
+the Elexon API guidance and endpoint schemas, BSCP15, live NETA IDD Part 2 V55.0, the active-BMU page, the non-BSC
+data-request route and the BMRS licence. The source inventory and evidence-page references are versioned in
+`data/manifests/gc0166_prospective_event_contract_v1.yaml`.
 
 A reproducible local probe fetched only allowlisted documentation URLs. It stores response status, byte count,
 SHA-256 and missing-marker names, never page content. NESO and `www.elexon.co.uk` returned HTTP 403 bot-protection
@@ -67,8 +71,8 @@ official documentation were treated as schema evidence only.
 | action schema | pass | MDO/MDB have BMU, settlement, envelope, publication-time and serial fields; acceptances and reference schemas exist |
 | revision history | pass | Elexon documents dataset endpoints as received, with superseded retrieval and backfill; completeness moves to G2 |
 | mechanism boundary | pass, scoped | validation/defaulting/resubmission/energy caps are exact; optimiser selection and discretion are explicitly outside exact replay |
-| eligible population | unresolved | “all active BMUs” is a rule definition, but no frozen effective-dated active population plus limited-duration/control classification has been established |
-| identity history | unresolved | the public reference endpoint is current-only; BSCP15 proves effective-dated CRA records exist but not that a complete historical public extract is available |
+| eligible population | unresolved | “all active BMUs” is a rule definition and a current active list has an official route, but no frozen effective-dated population plus limited-duration/control classification has been delivered |
+| identity history | unresolved | live IDD V55.0 defines CRA-I015 action codes, BMU/Lead Party IDs and effective-from/to dates; access to a complete historical extract, terms and retention remains unconfirmed |
 | null/failure capture | unresolved | EDL rejection and default rules exist, but public provenance for submitted/defaulted/rejected/late/missing messages is unproved |
 | response freeze | unresolved | a defensible response depends on the preceding provenance fields and a pre-event precision calculation |
 | independent replication | unresolved | no second independently governed future event has passed its own contract |
@@ -108,8 +112,9 @@ covariates only. A default MDO/MDB row alone cannot define a control.
 
 ### Required before any target query
 
-1. An effective-dated BMU/Lead Party table with active-from, active-to, transfers, technology, duration/capacity and
-   the BMU-specific `C` or `Z` default rule.
+1. A complete historical CRA-I015 delivery, obtained through the documented non-BSC Service Desk route, with action
+   code, BMU/Lead Party IDs, effective-from/to dates, extraction version, licence, retention and completeness; join
+   other fields for transfers, technology, duration/capacity and the BMU-specific `C` or `Z` default rule as needed.
 2. A public field or companion log that distinguishes participant submissions from initial, copied and zero-filled
    values.
 3. Coverage semantics for rejected, failed, late and missing EDL messages, including whether error reason codes can
@@ -125,9 +130,11 @@ covariates only. A default MDO/MDB row alone cannot define a control.
 - immutable daily shards, source timestamps, schema versions, retrieval manifests and missing-sequence flags; and
 - a limited development sample for row counts, revision multiplicity, storage and pre-event power simulation.
 
-There is no purchase recommendation. The unresolved information is provenance and governance, not a commodity
-price feed. An Elexon/NESO clarification or controlled code-to-data agreement may be needed if the public API omits
-rejection/default origin; buying generic electricity data would not repair that omission.
+There is no purchase recommendation. Elexon's official route allows a non-Party to request specific BSC data, but
+the applicable package, licence and any charge for CRA-I015 are not yet confirmed. The unresolved information is
+provenance and governance, not a commodity price feed. An Elexon/NESO clarification or controlled code-to-data
+agreement may be needed if the public API omits rejection/default origin; buying generic electricity data would not
+repair that omission.
 
 ## 7. Compute requirement and execution state
 
@@ -144,13 +151,16 @@ not yet established.
 
 ## 8. Minimum clarification request
 
-Before external contact, prepare but do not send the following questions without user approval:
+The send-ready but unsent drafts, exact field dictionary and gate mapping are in
+`papers/proposal/v14_gc0166_elexon_neso_clarification_brief_2026-08-14.md`. No contact has been made. The minimum
+questions are:
 
 1. Do public MDO/MDB datasets identify whether each record was a participant submission, initial value, `C`
    copy-forward or `Z` fill?
 2. Are rejected EDL messages, reason codes, late messages and missing expected submissions retained in any public or
    disclosure-controlled dataset?
-3. Which public extract provides effective-dated BMU and Lead Party registration/transfer history?
+3. Can a non-BSC researcher receive complete historical CRA-I015, including action codes and effective dates, and
+   what licence, retention, delivery and fee terms apply?
 4. Can NESO publish the complete controlled-rollout unit list and first-live dates before the confirmation freeze?
 5. What retention and completeness guarantees apply to superseded MDO/MDB serials?
 6. Were system-generated initial MDO/MDB values published for non-pilot BMUs before 2026-08-14, and if so does that

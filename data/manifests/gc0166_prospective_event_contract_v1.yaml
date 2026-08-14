@@ -115,6 +115,29 @@ sources:
       - Status:LIVE
       - Effective From Date
       - CRA-I015
+  - id: elexon_idd_part2
+    kind: official_effective_dated_identity_interface
+    url: https://bscdocs.elexon.co.uk/interface-definition-documents/neta-interface-definition-and-design-document-part-2-interfaces-to-other-service-providers
+    expected_markers:
+      - CRA-I015
+      - Lead Party ID
+      - Effective From Date
+      - Effective To Date
+      - Action Code
+  - id: elexon_active_bmu_route
+    kind: official_active_population_route
+    url: https://www.elexon.co.uk/bsc/operational/balancing-mechanism-units/
+    expected_markers:
+      - complete list of all active BM Units
+      - Elexon Portal
+      - Lead Party
+  - id: elexon_nonparty_data_route
+    kind: official_nonparty_data_request_route
+    url: https://www.elexon.co.uk/bsc/data/key-data-reports/data-flows-available-from-bsc-systems/
+    expected_markers:
+      - non-BSC Party
+      - BSC Service Desk
+      - specific BSC data
   - id: elexon_licence
     kind: official_data_licence
     url: https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/
@@ -210,20 +233,20 @@ gates:
     source_ids: [elexon_mdo_docs, elexon_mdb_docs, elexon_p499]
   eligible_population:
     status: unresolved
-    reason: The rule says all active BMUs submit parameters, but the effective-dated active population and the subset required to report non-default limitations are not yet frozen.
-    source_ids: [neso_rule, neso_go_live]
+    reason: The rule says all active BMUs submit parameters and Elexon exposes a current active-unit route, but the complete effective-dated population and the subset required to report non-default limitations are not yet frozen.
+    source_ids: [neso_rule, neso_go_live, elexon_active_bmu_route]
   identity_history:
     status: unresolved
-    reason: The documented BMU reference endpoint is explicitly current; effective-dated BMU and Lead Party history is not yet established.
-    source_ids: [elexon_bmu_docs]
+    reason: CRA-I015 officially carries action codes, BMU and Lead Party identifiers, and effective-from/to dates, so the history exists in a defined BSC flow; a complete historical extract, access terms, retention and licence for a non-BSC researcher remain unconfirmed.
+    source_ids: [elexon_bmu_docs, elexon_bscp15, elexon_idd_part2, elexon_nonparty_data_route]
   revision_history:
     status: pass
     reason: MDO/MDB expose publishTime and serialNumber, and Elexon states that dataset endpoints publish data as received and support retrieval of superseded data and archive backfill; empirical completeness remains a G2 data-quality check.
     source_ids: [elexon_api_guidance, elexon_mdo_docs, elexon_mdb_docs]
   null_failure_capture:
     status: unresolved
-    reason: Validation, copy-forward or zero defaulting, and private EDL error acknowledgements are specified, but public BMRS provenance for participant submissions versus generated defaults and rejected, failed, late, or missing submissions is not established.
-    source_ids: [neso_dvcd, neso_edl_spec, elexon_mdo_docs, elexon_mdb_docs]
+    reason: Validation, copy-forward or zero defaulting, and private EDL error acknowledgements are specified, but P499 and the public MDO/MDB schemas only establish publication of received parameter values; provenance for participant submissions versus generated defaults and rejected, failed, late, or missing submissions is not established.
+    source_ids: [neso_dvcd, neso_edl_spec, elexon_p499, elexon_mdo_docs, elexon_mdb_docs]
   mechanism_boundary:
     status: pass
     reason: Exact replay is scoped to public MDO/MDB validation, defaulting, post-gate resubmission constraints, and declared-energy limits on proposed instructions; NESO optimiser selection, emergency intervention, and operator discretion remain stochastic observed outcomes and are not claimed as exact replay.
@@ -253,9 +276,9 @@ response_draft:
     - pre-declared placebo dates before the operational deadline and outside the five-unit pilot start
 
 next_actions:
+  - request a complete historical CRA-I015 extract with action codes and effective dates through the Elexon BSC Service Desk, including licence, retention, completeness and any charge
   - obtain a written or versioned definition of the applicable active-BMU population and default MDO/MDB values
   - establish whether system-generated pre-freeze initial values exhaust the untouched confirmation cohort
-  - establish an effective-dated BMU and Lead Party identity source
   - establish whether public records tag participant submissions, generated defaults, rejections, failures, late messages, and missing submissions
   - freeze primary forecast components, horizons, pilot exclusions, and negative controls before any target query
   - identify and contract a second independently governed prospective event

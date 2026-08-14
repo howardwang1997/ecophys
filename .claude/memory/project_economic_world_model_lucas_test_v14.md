@@ -36,8 +36,10 @@ A single historical event study is specialist work, not an NCS/NMI flagship.
 - CoW solver competitions and completed AEMO reforms: development only.
 - NESO GC0166, Great Britain, 2026-11-05: G1 metadata audit completed at 5/10, not admitted. Clock, licence, action
   schema, intended superseded-record retrieval and a scoped public-mechanism boundary pass. Five units/four lead
-  parties are already pilot/development only. Effective-dated population/identity, public
-  participant-versus-default/error provenance, response freeze and independent replication remain unresolved.
+  parties are already pilot/development only. CRA-I015 officially defines action codes, BMU/Lead Party IDs and
+  effective-from/to dates, and Elexon directs non-Parties to its Service Desk; a complete historical extract,
+  access/licence/retention, public participant-versus-default/error provenance, response freeze and independent
+  replication remain unresolved.
 - AEMO Flexible Trading Arrangements, 2026-11-01: watchlist only; affected-provider adoption/actions are not shown
   to be public.
 - AEMO Integrating Price-Responsive Resources: the original 2027-05-23 dispatch-mode date is under an official
@@ -46,9 +48,10 @@ A single historical event study is specialist work, not an NCS/NMI flagship.
 - Australia is not a scientific scope requirement. The preferred confirmation pair is one public power-system
   transition plus one permissionless digital-market transition, if the same model-capability and scoring claims are
   substantive in both.
-- The next qualifying CoW/Uniswap economic-mechanism change is an event pipeline, not a selected event. Solana
-  Alpenglow and Ethereum Hegotá remain clock-unfrozen watchlist entries. A deterministic first-qualifying-event rule
-  must be sealed before reading future outcomes.
+- The next qualifying CoW/Uniswap economic-mechanism change is a frozen empty registry, not a selected event. Its
+  cutoff is 2026-08-14 07:00 UTC; only post-cutoff proposals passing all twelve clauses with 28-day lead qualify.
+  Final packages are audited within 72 hours and ordered by official timestamp, with no replacement for failure or
+  a null. Solana Alpenglow and Ethereum Hegotá remain clock-unfrozen watchlist entries.
 
 ## Compute and data lock
 
@@ -73,9 +76,31 @@ or negative-control architecture only.
 - Elexon states that dataset endpoints publish data as received and allow superseded retrieval/archive backfill;
   MDO/MDB expose `publishTime` and `serialNumber`. Intended revision semantics pass G1, while empirical completeness
   remains G2.
+- Live NETA IDD Part 2 V55.0 defines CRA-I015 action codes, BMU and Lead Party identity, capacity/status fields and
+  effective-from/to dates. The history therefore exists as an official BSC flow; only delivery of a complete
+  historical extract and its terms remain open. Elexon's documented route is the BSC Service Desk for non-Parties.
+- Public P499/MDO/MDB documentation establishes publication of received values but exposes no participant/initial/
+  `C`/`Z`/rejection origin field. This negative schema finding keeps the behavioral gate unresolved.
 - Event contract: `data/manifests/gc0166_prospective_event_contract_v1.yaml`.
 - Content-free documentation probe: `data/manifests/gc0166_documentation_probe_2026-08-14.yaml`.
 - Audit report: `papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md`.
+- Send-ready unsent requests: `papers/proposal/v14_gc0166_elexon_neso_clarification_brief_2026-08-14.md`.
+
+## On-chain first-event freeze
+
+- Machine contract: `data/manifests/onchain_prospective_event_selection_v1.yaml`; validator:
+  `ecomd/research/prospective_event_selection.py`; report:
+  `papers/proposal/v14_onchain_event_selection_freeze_2026-08-14.md`.
+- Eligible universe is future-only CoW Protocol and Uniswap economic-mechanism proposals originating strictly after
+  2026-08-14 07:00 UTC. Every proposal visible before the cutoff remains development-only.
+- All twelve criteria are mandatory: post-freeze origin, economic treatment, binding spec, 28-day lead, actions,
+  identities, null/failures, outcomes, licence/retention, common ladder, independent governance and pre-event
+  precision.
+- Rank by official final-package timestamp, tie-break with the canonical-ID SHA-256, and complete each audit within
+  72 hours. An earlier pending final package blocks selection of a later proposal.
+- The first selected event remains the headline after a null, adverse result, cancellation or data failure. A later
+  event may only be a separately labelled secondary event.
+- Current registry is empty and outcome-blind. No target row, effect comparison, external worker or GPU was used.
 
 ## Source and purchase decision
 

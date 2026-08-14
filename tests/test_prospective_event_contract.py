@@ -105,5 +105,9 @@ def test_documentation_url_allowlist_excludes_live_data_api() -> None:
     assert documentation_url_error(
         "https://bscdocs.elexon.co.uk/bsc-procedures/bscp-15-bm-unit-registration"
     ) is None
+    assert documentation_url_error(
+        "https://bscdocs.elexon.co.uk/interface-definition-documents/"
+        "neta-interface-definition-and-design-document-part-2-interfaces-to-other-service-providers"
+    ) is None
     error = documentation_url_error("https://data.elexon.co.uk/bmrs/api/v1/datasets/MDB")
     assert error is not None and "not allowlisted" in error

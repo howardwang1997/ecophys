@@ -19,13 +19,15 @@ meaning in every system.
 The current scouting priority is:
 
 1. audit Great Britain's GC0166 transition as the nearest free, public, unit-level prospective electricity event;
-2. predeclare an event-selection rule for the next qualifying on-chain market mechanism change; and
+2. maintain the frozen event-selection rule for the next qualifying on-chain market mechanism change; and
 3. retain AEMO FTA only if an authorised participant partnership becomes available on acceptable terms.
 
-The first GC0166 metadata audit is complete at `5/10` contract clauses passed. No event is yet admitted and
-`G1 NOT PASSED` remains the correct state. The audit and executable contract are
+The first GC0166 metadata audit is complete at `5/10` contract clauses passed. The on-chain first-event rule is now
+frozen, but its candidate registry is empty. No event is yet admitted and `G1 NOT PASSED` remains the correct state.
+The audit and executable contracts are
 `papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md` and
-`data/manifests/gc0166_prospective_event_contract_v1.yaml`.
+`data/manifests/gc0166_prospective_event_contract_v1.yaml`, plus
+`data/manifests/onchain_prospective_event_selection_v1.yaml`.
 
 ## 2. Domain-independent admission contract
 
@@ -47,7 +49,7 @@ engineering, but it does not automatically test adaptive economic behaviour.
 | Priority | System and region | Prospective clock | Observable actions/outcomes | Status and principal risk |
 |---|---|---|---|---|
 | A | NESO GC0166, Great Britain electricity Balancing Mechanism | operational implementation required by 2026-11-05; controlled rollout already live | Elexon exposes BMU identities, MDO/MDB, physical/dynamic parameters, bid-offers, acceptances and settlement/cashflow reports through public APIs | `PRIORITY_G1_AUDIT`, not admitted; early-pilot contamination, eligibility completeness and the non-public parts of dispatch decision logic must be resolved |
-| B | next qualifying CoW or Uniswap economic-mechanism change, permissionless networks | exact on-chain execution is available only after a proposal is final | solver/pool/wallet actions, code, governance and settlement are largely public | `EVENT_PIPELINE`; the qualifying-event rule must be committed before the next outcome, and identities/failures require audit |
+| B | next qualifying CoW or Uniswap economic-mechanism change, permissionless networks | exact on-chain execution is available only after a proposal is final | solver/pool/wallet actions, code, governance and settlement are largely public | `FROZEN_EMPTY_REGISTRY`; post-cutoff origin, 28-day lead, identities, failures and ten other clauses are mandatory; no event selected |
 | C | Solana Alpenglow, global validator network | official page says Q3 2026, but no frozen activation instant was established | validator, stake, vote, block and latency records are publicly reconstructable | `WATCHLIST_CLOCK_UNFROZEN`; may measure engineering/validator adaptation rather than the same economic object |
 | D | Ethereum Hegotá, global validator/application ecosystem | official roadmap says H2 2026 while proposals remain under discussion | protocol code and on-chain actions are public | `WATCHLIST_CLOCK_UNFROZEN`; treatment is multi-component and could defeat causal interpretation |
 | E | AEMO FTA Release 2, Australia retail electricity | official 2026-11-01 clock | schemas are public, but affected SSP adoption, actions and interval settlement are participant-facing | `PARTNER_CONDITIONAL`; exact clock but no public confirmation panel |
@@ -73,10 +75,12 @@ Elexon's Insights Solution currently documents public, no-key endpoints for:
 - current BMU, fuel-type and lead-party reference data.
 
 The BMRS open-data licence is worldwide, royalty-free and permits copying, adaptation and redistribution with
-attribution. This removes the main FTA access problem. The detailed audit additionally verifies public validation,
-defaulting, post-gate resubmission and declared-energy constraints, and Elexon's intended superseded-record
-retrieval. Those clauses define an exact public mechanism boundary without pretending that NESO's optimiser and
-operator discretion are open source.
+attribution, so ordinary BMRS observables do not have FTA's main access problem. CRA-I015 officially carries action
+codes, BMU/Lead Party identifiers and effective dates, and Elexon gives non-Parties a Service Desk request route; a
+complete historical extract, licence and any fee remain to be confirmed. The detailed audit additionally verifies
+public validation, defaulting, post-gate resubmission and declared-energy constraints, and Elexon's intended
+superseded-record retrieval. Those clauses define an exact public mechanism boundary without pretending that
+NESO's optimiser and operator discretion are open source.
 
 The audit also invalidates a naive staggered-adoption interpretation. All active BMUs are subject to MDO/MDB;
 initial `+9999/-9999` values and BMU-specific copy-forward or zero defaults can generate public values without a new
@@ -91,11 +95,16 @@ Permissionless digital markets are attractive because mechanism code, governance
 can often be observed without a data-access partner. They also create serious selection risk because proposals occur
 frequently and outcomes are immediately public.
 
-Before monitoring outcome endpoints, commit an event-selection rule such as: the first post-freeze, independently
-governed proposal that changes solver, liquidity-provider or validator economic payoffs; has a final executable
-specification and activation block at least four weeks after selection; preserves a complete action/failure panel;
-and passes a pre-event precision simulation becomes the event. If the first qualifying proposal is inconvenient or
-produces a null result, it cannot be silently replaced.
+The selection rule is now committed in machine-checkable form with an effective cutoff of 2026-08-14 07:00 UTC.
+The first post-cutoff, independently governed proposal that changes solver or liquidity-provider economic payoffs;
+has a final executable specification and activation block at least four weeks after its final package; preserves
+complete action, identity, null/failure and outcome panels; has acceptable licence/retention; supports the common
+model ladder; and passes a pre-event precision simulation becomes the event. Twelve clauses are mandatory.
+
+Each final package must be audited within 72 hours and is ordered by its official timestamp, not local discovery.
+The registry is empty. If the first qualifying proposal is inconvenient, fails operationally or produces a null
+result, it cannot be silently replaced. Exact rules and tests are documented in
+`papers/proposal/v14_onchain_event_selection_freeze_2026-08-14.md`.
 
 The current watchlist contains:
 
@@ -129,8 +138,9 @@ independently governed transitions are still required.
   Remaining G1 work is official schema/provenance clarification; storage and row budgets must be measured only
   after a non-target sampling contract is frozen.
 - Later GB historical development: CPU/Parquet workload first; GPU use only for admitted learned models after G1/G2.
-- On-chain events: public archive/RPC or indexed data may require more storage and CPU, but no number is authorised
-  until a limited non-target sample is measured.
+- On-chain events: the frozen metadata monitor is Mac-CPU-only and negligible in size. Public archive/RPC or
+  indexed data may later require more storage and CPU, but no number is authorised until an event passes and a
+  limited development sample is measured.
 - AEMO FTA: continue only through the collaboration contract in
   `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`.
 - NESO/Elexon or protocol-team conversations are valuable for interpretation and schema validation, but are not
@@ -140,11 +150,12 @@ The two V100 nodes and RTX2060 remain idle. No H20 is assumed.
 
 ## 8. Immediate gates
 
-1. Resolve the five open GC0166 gates: effective-dated population, identity history, public submission/default/error
-   provenance, response freeze and independent replication.
+1. Resolve the five open GC0166 gates: deliver the defined effective-dated population/identity history, establish
+   public submission/default/error provenance, freeze the response and admit independent replication.
 2. Freeze the GC0166 response vector, fixed horizons, pilot exclusions, negative controls and precision design before
    retrieving target rows.
-3. Pre-register the on-chain event-selection rule and maintain a metadata-only proposal watchlist.
+3. Maintain the frozen on-chain event-selection registry daily; inspect metadata only and audit final packages
+   within 72 hours.
 4. Admit neither GC0166 nor any protocol event until its complete event contract passes G1.
 
 ## 9. Primary evidence
@@ -153,6 +164,8 @@ The two V100 nodes and RTX2060 remain idle. No H20 is assumed.
 - [Elexon Insights API documentation](https://bmrs.elexon.co.uk/api-documentation/)
 - [Elexon MDO/MDB, bid, acceptance and settlement endpoint index](https://bmrs.elexon.co.uk/api-documentation/endpoint/balancing/acceptances)
 - [Elexon BM Unit reference endpoint](https://bmrs.elexon.co.uk/api-documentation/endpoint/reference/bmunits/all)
+- [Elexon effective-dated CRA-I015 interface](https://bscdocs.elexon.co.uk/interface-definition-documents/neta-interface-definition-and-design-document-part-2-interfaces-to-other-service-providers)
+- [Elexon non-BSC data-request route](https://www.elexon.co.uk/bsc/data/key-data-reports/data-flows-available-from-bsc-systems/)
 - [Elexon BMRS open-data licence](https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/)
 - [CoW CIP-85](https://forum.cow.fi/t/cip-85-performance-and-consistency-rewards/3377)
 - [Uniswap v4 protocol-fee proposal](https://gov.uniswap.org/t/temp-check-activate-v4-protocol-fees/26162)

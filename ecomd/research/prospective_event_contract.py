@@ -59,7 +59,7 @@ ACCESS_FLAGS = frozenset(
 )
 SAFE_DOCUMENTATION_PATHS: Mapping[str, tuple[str, ...]] = {
     "bmrs.elexon.co.uk": ("/api-documentation/",),
-    "bscdocs.elexon.co.uk": ("/bsc-procedures/",),
+    "bscdocs.elexon.co.uk": ("/bsc-procedures/", "/interface-definition-documents/"),
     "developer.data.elexon.co.uk": ("/",),
     "www.elexon.co.uk": ("/bsc/",),
     "www.neso.energy": ("/document/", "/industry-information/", "/news/"),

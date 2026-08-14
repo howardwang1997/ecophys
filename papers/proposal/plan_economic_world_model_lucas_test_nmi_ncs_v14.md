@@ -156,10 +156,11 @@ rules can provide development events. Existing studies and public outcomes preve
 operationally implement the new MDO/MDB dynamic parameters by this date. Elexon publicly documents BMU identities,
 MDO/MDB, bids, acceptances and settlement/cashflow endpoints under an open-data licence. Five units across four lead
 parties entered a controlled rollout before this scout, so they are development-only. The zero-row audit passes the
-clock, licence, action schema, intended revision-history and scoped mechanism-boundary clauses. Effective-dated
-population/identity, public participant-versus-default/error provenance, response freeze and independent replication
-remain unresolved. All active BMUs are subject to defined MDO/MDB or defaults, so a public row is not automatically
-adoption or behavioral plasticity. Detailed audit:
+clock, licence, action schema, intended revision-history and scoped mechanism-boundary clauses. CRA-I015 defines
+effective-dated BMU/Lead Party history and Elexon provides a non-Party Service Desk request route, but a complete
+historical extract, its terms and participant-versus-default/error provenance remain unconfirmed; response freeze
+and independent replication are also unresolved. All active BMUs are subject to defined MDO/MDB or defaults, so a
+public row is not automatically adoption or behavioral plasticity. Detailed audit:
 `papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md`.
 
 **AEMO Flexible Trading Arrangements, 1 November 2026 — watchlist only.** The effective date and technical schemas are public, but
@@ -181,8 +182,11 @@ read.
 
 The current cross-domain watchlist also includes the next qualifying CoW or Uniswap economic-mechanism change,
 Solana Alpenglow after an exact activation clock, and Ethereum Hegotá after a separable mechanism and exact clock.
-Already active CoW CIP-85 and Uniswap v4 fee changes are development-only. The event-selection rule must be sealed
-before a future proposal is chosen; an inconvenient or null first qualifying event cannot be replaced post hoc.
+Already active CoW and Uniswap changes are development-only. The on-chain first-qualifying-event rule is frozen at
+2026-08-14 07:00 UTC: a proposal must originate after the cutoff, pass twelve metadata clauses, and leave at least
+28 days before activation. It is audited within 72 hours and ordered by its official final-package timestamp; an
+inconvenient, failed or null first event cannot be replaced post hoc. No event is currently selected. Contract:
+`data/manifests/onchain_prospective_event_selection_v1.yaml`.
 
 Australia is not a scope requirement. AEMO FTA is retained because of its official clock, but a public GB event or
 permissionless digital market is preferable when it supplies a complete action/failure/outcome panel without access
@@ -217,9 +221,9 @@ The cross-domain claim concerns forecasting protocol and model-family ordering, 
 | G5 real confirmation | at least two independent events support the same scoped model-selection conclusion with all nulls and failures reported | no NCS/NMI flagship claim |
 
 **Current gate state (2026-08-14):** `G1 NOT PASSED`. FTA lacks an established public affected-participant panel,
-IPRR has no stable implementation clock after its reset, GC0166 passes 5/10 metadata clauses but lacks
-effective-dated population/identity, public action/default/error provenance and a frozen response, and no second
-untouched event is admitted. The detailed
+IPRR has no stable implementation clock after its reset, GC0166 passes 5/10 metadata clauses but lacks a delivered
+complete effective-dated population/identity history, public action/default/error provenance and a frozen response,
+and the frozen on-chain registry contains no second untouched event. The detailed
 experiment/resource audit is `papers/proposal/v14_experiment_data_compute_audit_2026-08-14.md`. The verified source
 and purchase decision is `papers/proposal/v14_data_acquisition_decision_2026-08-14.md`: free official AEMO and CoW
 sources suffice for historical feasibility, `NO_BUY_NOW`, and FTA confirmation access requires a participant
@@ -274,9 +278,10 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
 
 1. Complete a systematic nearest-work audit for prospective real-intervention validation rather than generic ABM
    or world-model validation.
-2. Resolve GC0166's effective-dated BMU/Lead Party population and public submission/default/rejection provenance;
-   do not query live MDO/MDB rows to infer them.
-3. Freeze the on-chain first-qualifying-event rule and continue the metadata-only independent-event registry.
+2. With user approval, send the prepared Elexon/NESO clarification requests for historical CRA-I015 access and
+   submission/default/rejection provenance; do not query live MDO/MDB rows to infer them.
+3. Maintain the frozen on-chain first-qualifying-event registry daily and audit every final package within 72 hours
+   without viewing candidate outcomes.
 4. Define one proper forecast vector, fixed horizons and negative-control event only for candidates with auditable
    actions and identities.
 5. Open no Experiment 156, collector or GPU job unless the full event contract passes G1.

@@ -16,7 +16,11 @@ post-event scoring and a replicated real finding across independently governed t
 CoW solver competitions and completed AEMO changes are development candidates. AEMO Flexible Trading
 Arrangements (2026-11-01) is watchlist-only because its public affected-participant panel is unestablished; the
 original Integrating Price-Responsive Resources dispatch-mode date (2027-05-23) is under an official pause/reset.
-V14 therefore has zero admitted confirmation events and is `SCOUT`, not a replacement for Plan v4's archival
+GC0166 is the leading public candidate but remains 5/10: CRA-I015 defines effective-dated identity history and a
+formal Elexon non-Party request route exists, while the complete extract/terms and participant-versus-default/error
+provenance are unresolved. The CoW/Uniswap first-event selector is frozen for proposals originating after
+2026-08-14 07:00 UTC, with twelve mandatory clauses, a 28-day lead and no outcome-based replacement; its registry is
+empty. V14 therefore has zero admitted confirmation events and is `SCOUT`, not a replacement for Plan v4's archival
 authority or an accepted NCS/NMI candidate. No endpoint outcome, Experiment 156, new model project, remote worker,
 V100 or RTX2060 job has been opened or queued. Plan and resource audit:
 `papers/proposal/plan_economic_world_model_lucas_test_nmi_ncs_v14.md` and

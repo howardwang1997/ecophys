@@ -105,6 +105,7 @@ sources:
     event_contract: data/manifests/gc0166_prospective_event_contract_v1.yaml
     documentation_probe: data/manifests/gc0166_documentation_probe_2026-08-14.yaml
     audit_report: papers/proposal/v14_gc0166_g1_metadata_audit_2026-08-14.md
+    clarification_brief: papers/proposal/v14_gc0166_elexon_neso_clarification_brief_2026-08-14.md
     api_docs: "https://bmrs.elexon.co.uk/api-documentation/"
     developer_portal: "https://developer.data.elexon.co.uk/"
     terms: "https://www.elexon.co.uk/bsc/data/balancing-mechanism-reporting-agent/copyright-licence-bmrs-data/"
@@ -129,9 +130,11 @@ sources:
       - edl_valid_or_error_acknowledgement_exists_but_public_rejection_stream_not_established
       - public_exact_boundary_is_validation_defaulting_resubmission_and_energy_caps_not_optimizer_choice
       - dataset_guidance_supports_superseded_retrieval_and_archive_backfill
+      - cra_i015_defines_action_codes_bmu_and_lead_party_ids_and_effective_from_to_dates
+      - elexon_service_desk_is_the_official_specific_data_request_route_for_non_bsc_organisations
     unresolved:
-      - freeze the effective-dated active BMU population plus limited-duration and control classification
-      - obtain public effective-dated BMU and lead-party identity history rather than current-only reference data
+      - obtain and freeze the complete historical CRA-I015 population and identity extract including licence retention completeness and any fee
+      - join limited-duration control classification and each BMU default-rule assignment without target leakage
       - establish public provenance for participant submissions generated defaults rejections failures late and missing messages
       - freeze the response vector horizons pilot exclusions negative controls and precision design
       - admit a second independently governed untouched event
@@ -142,8 +145,18 @@ watchlist_metadata:
     domains:
       - cow_solver_competition
       - uniswap_fee_controller
-    status: event_selection_rule_not_yet_frozen
+    status: frozen_empty_registry_no_event_selected
     rule: first_post_freeze_qualifying_event_no_posthoc_replacement
+    effective_at: "2026-08-14T07:00:00Z"
+    selection_contract: data/manifests/onchain_prospective_event_selection_v1.yaml
+    freeze_report: papers/proposal/v14_onchain_event_selection_freeze_2026-08-14.md
+    constraints:
+      - proposal_originates_strictly_after_cutoff
+      - all_twelve_qualification_criteria_required
+      - minimum_28_day_final_package_to_activation_lead
+      - audit_every_final_package_within_72_hours
+      - order_by_official_final_package_timestamp_then_canonical_hash
+      - first_qualifying_failure_or_null_cannot_be_replaced
   - event_id: solana_alpenglow
     official_window: q3_2026
     status: clock_unfrozen

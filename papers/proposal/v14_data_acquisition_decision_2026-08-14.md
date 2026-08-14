@@ -118,14 +118,18 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
    active interval, NMISP/FRMP role and interval settlement outcomes after 2026-11-01.
 3. Monitor the accreditation page for a real NMISP roster and approach an eligible partner only with a one-page
    minimum-field and publication-rights request.
-4. Obtain written CoW clarification on competition-history retention, rate limits and research redistribution.
-5. After those contracts are recorded, freeze a non-target E1 sample and implement the parsers. No GPU is needed.
+4. Maintain the frozen CoW/Uniswap event registry; request competition-history retention, rate-limit and research-
+   redistribution clarification only for a post-cutoff candidate that reaches a final package.
+5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
+6. After those contracts are recorded, freeze a non-target E1 sample and implement the parsers. No GPU is needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator
 or confirmed production SSP operator.
 
 The later cross-domain scout identified Elexon's public, no-key BMRS APIs and open-data licence as a potentially
-superior route for the GB GC0166 event. This reinforces `NO_BUY_NOW`; GC0166 still requires a zero-row
-eligibility/identity/retention audit before any target retrieval. See
-`papers/proposal/v14_cross_domain_event_scout_2026-08-14.md`.
+superior route for the GB GC0166 event. This reinforces `NO_BUY_NOW`. CRA-I015 defines the required identity history
+and Elexon supplies a formal request route, but the complete extract/licence/retention and submission/default/error
+provenance still require written confirmation before target retrieval. See
+`papers/proposal/v14_cross_domain_event_scout_2026-08-14.md` and
+`papers/proposal/v14_gc0166_elexon_neso_clarification_brief_2026-08-14.md`.
