@@ -119,3 +119,7 @@ The clean repair is a new protocol, not an edit to this result: treat these two 
 freeze an explicit field-level semantic crosswalk, and validate it on separately selected, previously unopened
 legacy and current months. Only a committed held-out header pass can unlock selected-date row filtering. The v1
 artifacts and failed gates remain immutable.
+
+The separately frozen held-out repair also failed its strict package-namespace gate while passing all ten internal
+table and required-source-field projections. See `experiments/v14_aemo_semantic_validation/RESULTS.md`. This keeps
+row access locked and prevents the discovery months from being relabeled as validation.

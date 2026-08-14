@@ -76,6 +76,12 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
   unopened held-out months before row filtering.
 - All three initial promotion decisions failed and are preserved in
   `experiments/v14_open_data_feasibility/RESULTS.md`. No paid data, target row or GPU model run is justified.
+- A separate v2 crosswalk froze 2021-09 and 2025-07 before access. All 10 held-out objects passed bytes, SHA, CRC,
+  internal table and required source fields, but package/overall headers passed only 8/10: both 2021-09 bid objects
+  expose `BIDS` rather than the discovery-derived `OFFER`. The sample is 1,557,149,667 bytes compressed and
+  43,677,147,189 bytes uncompressed. This is a failed namespace gate, not evidence that row semantics differ.
+- Row access remains locked. Audit the official `OFFER`/`BIDS` version transition, then freeze a piecewise contract
+  and a new unopened validation month. Do not delete the package gate and reuse 2021-09 as held-out evidence.
 
 ## GC0166 metadata audit boundary
 

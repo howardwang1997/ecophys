@@ -77,6 +77,12 @@ not: `DISPATCHOFFERTRK` and `DISPATCHLOAD` file names map to internal `OFFERTRK`
 legacy `BIDPEROFFER` maps to `OFFER/BIDOFFERPERIOD` with `TRADINGDATE`. These discovery months cannot also serve as
 the held-out proof of a repaired crosswalk.
 
+The first independent crosswalk validation used mechanically selected 2021-09 and 2025-07 objects. All ten
+internal tables and required source-field projections passed, but the strict package gate failed for the two
+2021-09 bid objects (`BIDS` observed versus `OFFER` frozen). The held-out sample measured 1.557 GB compressed and
+43.677 GB uncompressed. This is evidence that a field-level parser is plausible, but it does not authorize row
+access until official version/change documentation resolves whether the package transition is nominal or semantic.
+
 ### 3.2 Historical schema hazard
 
 Official 2021-03 and 2021-10 directories do contain public bid, dispatch and identity archives, but their bid files
@@ -92,7 +98,8 @@ versions and prove semantic equivalence rather than renaming files blindly.
 1. AEMO table dictionaries, rule documents, current/archive directory metadata and exact individual-file URLs.
 2. AEMO historical wholesale bids, applied offer versions, DUID identities, dispatch, prices, SCADA, constraints
    and outages for declared non-target dates.
-3. CoW OpenAPI/service versions and, after E0 freeze, 100--1,000 declared historical solver competitions.
+3. CoW OpenAPI/service versions and the retained 100-ID failed audit; any larger historical solver-competition
+   sample requires an outcome-blind eligible-auction enumerator first.
 4. Public AEMO participant/accreditation lists and CoW on-chain settlement references.
 
 ### Available only through application or partnership
@@ -134,8 +141,8 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
 4. Maintain the frozen CoW/Uniswap event registry; request competition-history retention, rate-limit and research-
    redistribution clarification only for a post-cutoff candidate that reaches a final package.
 5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
-6. Preserve the failed initial E1 sample, freeze a field-level AEMO crosswalk and a valid CoW enumeration rule, and
-   validate both on newly selected non-target historical samples before implementing row joins. No GPU is needed.
+6. Preserve both failed AEMO header protocols. Resolve the `OFFER`/`BIDS` transition from official version records
+   before freezing another held-out month; independently obtain a valid CoW enumeration rule. No GPU is needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator

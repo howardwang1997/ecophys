@@ -236,6 +236,13 @@ available, byte-exact and CRC-valid, but only 5/10 passed the preregistered inte
 the minimum-field contract. These failures are retained in
 `experiments/v14_open_data_feasibility/RESULTS.md`; no scale-up, row join or model ranking is authorized.
 
+A separately frozen repair treated those two periods as discovery data and selected 2021-09 and 2025-07 by adding
+six calendar months. All ten held-out objects passed availability, bytes, SHA-256, CRC, internal-table and required-
+source-field gates. The strict header-package gate passed only 8/10 because both 2021-09 bid objects use `BIDS`
+rather than the frozen `OFFER` namespace. The v2 result therefore also fails and remains row-locked. It shows that
+the field projection is promising, but the two-regime version model is incomplete; it is not permission to delete
+the failed gate post hoc.
+
 ## 8. Data and compute plan
 
 ### Before G1
@@ -294,6 +301,6 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    without viewing candidate outcomes.
 4. Define one proper forecast vector, fixed horizons and negative-control event only for candidates with auditable
    actions and identities.
-5. Preserve the failed v1 open-data checkpoint. Build a new AEMO semantic-crosswalk protocol and validate it on
-   unopened held-out months; obtain an outcome-blind CoW competition enumerator before any new sample is frozen.
+5. Preserve the failed v1 and v2 open-data checkpoints. Audit the official AEMO `OFFER`/`BIDS` version transition
+   before freezing any new month, and obtain an outcome-blind CoW competition enumerator before any new sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

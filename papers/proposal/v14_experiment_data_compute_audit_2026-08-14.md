@@ -225,8 +225,8 @@ measured profile shows that seed/model coverage cannot fit the conditional budge
    revised timing/schema. If affected-level data are private, retire FTA/IPRR as confirmation events.
 4. Preserve the failed initial CoW and AEMO schema audits; do not replace 404 IDs or reinterpret archive file names
    as internal MMS table identities.
-5. Freeze an outcome-blind CoW competition enumerator and an AEMO field-level semantic crosswalk, then validate
-   both on newly selected historical samples before opening row joins or replay.
+5. Preserve the failed held-out AEMO crosswalk, resolve its `OFFER`/`BIDS` transition from official version records,
+   and freeze an outcome-blind CoW competition enumerator before selecting any further sample.
 6. Replace the underpowered 48-block E2 design only through a new power protocol with a scientifically justified
    independent-block count and fresh root seed; do not inflate five-minute rows into independent events.
 7. Only after the repaired E1/E2 gates pass, benchmark one small M1/M3 job on a single V100.
@@ -251,6 +251,13 @@ contain internal tables `OFFERTRK` and `UNIT_SOLUTION`, while the legacy per-per
 crosswalk must be learned from these discovery months and tested on unopened months. The run used a V100 host only
 as a CPU/data node with CUDA hidden; no GPU model job was opened.
 
+That held-out test was subsequently frozen and executed on 2021-09 and 2025-07. It downloaded 1.557 GB compressed
+(43.677 GB uncompressed) and passed all ten byte, hash, CRC, internal-table and required-source-field projections.
+It nevertheless failed the preregistered total gate: both 2021-09 bid objects use package `BIDS`, not the discovery-
+derived `OFFER`, so package and overall header pass rates were 8/10. This is namespace/version drift, not proof of a
+changed economic meaning. Official change documentation must establish the boundary before a new piecewise
+contract and fresh held-out month are allowed. Row filtering remains locked.
+
 ## 8. Bottom line
 
 - **Experiment plan:** scientifically sensible, operationally incomplete; E0/E1 must precede model training.
@@ -258,5 +265,6 @@ as a CPU/data node with CUDA hidden; no GPU model job was opened.
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** repair sampling and schema contracts on fresh historical validation samples using CPU only.
-  Do not train models, open target outcomes or buy data.
+- **Current action:** resolve the AEMO package/version semantics from official documentation and the CoW sampling
+  frame from an outcome-blind enumerator. Do not open another historical month, train models, open target outcomes
+  or buy data until those contracts exist.

@@ -1,0 +1,1149 @@
+schema_version: ecophys-aemo-semantic-crosswalk-heldout-headers/v2
+generated_at: '2026-08-14T09:05:51.295211Z'
+generator_git_commit: 16f0a7431fd818a0ea150cc1c4837957460b97a1
+source_manifest: data/manifests/aemo_semantic_crosswalk_v2_resolved.yaml
+source_manifest_sha256: c2afcccc47c680e0687218adc115adbd98641f97acf83f13859edb40afb9cec6
+scientific_role: development_only_heldout_schema_validation
+all_headers_pass: false
+discovery_samples_count_as_validation: false
+row_counts_opened: false
+row_join_authorized: false
+objects:
+- object_id: heldout-legacy-2021-09-biddayoffer
+  sample_label: heldout-legacy-2021-09
+  market_date: null
+  logical_role: BIDDAYOFFER_D
+  archive_table: BIDDAYOFFER
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDDAYOFFER_202109010000.zip
+  expected_bytes: 31290981
+  observed_bytes: 31290981
+  raw_sha256: 66ba49a20551fa88754dbf64b37c04320fc220c8c0d817fe409f0fc2424aabc1
+  zip_members:
+  - PUBLIC_DVD_BIDDAYOFFER_202109010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_DVD_BIDDAYOFFER_202109010000.CSV
+  member_uncompressed_bytes: 244285579
+  member_compressed_bytes: 31290805
+  member_crc32: 6a0aa531
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: BIDS
+  header_table: BIDDAYOFFER
+  header_version: '1'
+  header_fields:
+  - DUID
+  - BIDTYPE
+  - SETTLEMENTDATE
+  - OFFERDATE
+  - VERSIONNO
+  - PARTICIPANTID
+  - DAILYENERGYCONSTRAINT
+  - REBIDEXPLANATION
+  - PRICEBAND1
+  - PRICEBAND2
+  - PRICEBAND3
+  - PRICEBAND4
+  - PRICEBAND5
+  - PRICEBAND6
+  - PRICEBAND7
+  - PRICEBAND8
+  - PRICEBAND9
+  - PRICEBAND10
+  - MINIMUMLOAD
+  - T1
+  - T2
+  - T3
+  - T4
+  - NORMALSTATUS
+  - LASTCHANGED
+  - ENTRYTYPE
+  - REBID_EVENT_TIME
+  - REBID_AWARE_TIME
+  - REBID_DECISION_TIME
+  - REBID_CATEGORY
+  - REFERENCE_ID
+  minimum_header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - PARTICIPANTID
+  - OFFERDATE
+  - VERSIONNO
+  - PRICEBAND1
+  - PRICEBAND2
+  - PRICEBAND3
+  - PRICEBAND4
+  - PRICEBAND5
+  - PRICEBAND6
+  - PRICEBAND7
+  - PRICEBAND8
+  - PRICEBAND9
+  - PRICEBAND10
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: false
+  errors:
+  - header package BIDS != frozen package OFFER
+  naming_regime: legacy_public_dvd
+  expected_header_package: OFFER
+  expected_header_table: BIDDAYOFFER
+  canonical_fields: &id001
+  - market_day
+  - duid
+  - bid_type
+  - participant_id
+  - offer_time
+  - version_no
+  - price_band_1
+  - price_band_2
+  - price_band_3
+  - price_band_4
+  - price_band_5
+  - price_band_6
+  - price_band_7
+  - price_band_8
+  - price_band_9
+  - price_band_10
+  crosswalk_field_map:
+    market_day:
+      sources:
+      - SETTLEMENTDATE
+      transform: aemo_market_day
+    duid:
+      sources:
+      - DUID
+      transform: identity
+    bid_type:
+      sources:
+      - BIDTYPE
+      transform: identity
+    participant_id:
+      sources:
+      - PARTICIPANTID
+      transform: identity
+    offer_time:
+      sources:
+      - OFFERDATE
+      transform: aemo_timestamp
+    version_no:
+      sources:
+      - VERSIONNO
+      transform: integer
+    price_band_1:
+      sources:
+      - PRICEBAND1
+      transform: decimal
+    price_band_2:
+      sources:
+      - PRICEBAND2
+      transform: decimal
+    price_band_3:
+      sources:
+      - PRICEBAND3
+      transform: decimal
+    price_band_4:
+      sources:
+      - PRICEBAND4
+      transform: decimal
+    price_band_5:
+      sources:
+      - PRICEBAND5
+      transform: decimal
+    price_band_6:
+      sources:
+      - PRICEBAND6
+      transform: decimal
+    price_band_7:
+      sources:
+      - PRICEBAND7
+      transform: decimal
+    price_band_8:
+      sources:
+      - PRICEBAND8
+      transform: decimal
+    price_band_9:
+      sources:
+      - PRICEBAND9
+      transform: decimal
+    price_band_10:
+      sources:
+      - PRICEBAND10
+      transform: decimal
+- object_id: heldout-legacy-2021-09-bidperoffer
+  sample_label: heldout-legacy-2021-09
+  market_date: null
+  logical_role: BIDPEROFFER_D
+  archive_table: BIDOFFERPERIOD
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202109010000.zip
+  expected_bytes: 1011035550
+  observed_bytes: 1011035550
+  raw_sha256: cbd09018c6a768da7f388ce7a5f117f620207e8fa56b1cc3f5ec1186219b891c
+  zip_members:
+  - PUBLIC_DVD_BIDPEROFFER_202109010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_DVD_BIDPEROFFER_202109010000.CSV
+  member_uncompressed_bytes: 34740112426
+  member_compressed_bytes: 1011035306
+  member_crc32: 7b1310d7
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: BIDS
+  header_table: BIDOFFERPERIOD
+  header_version: '1'
+  header_fields:
+  - DUID
+  - BIDTYPE
+  - TRADINGDATE
+  - OFFERDATETIME
+  - PERIODID
+  - MAXAVAIL
+  - FIXEDLOAD
+  - RAMPUPRATE
+  - RAMPDOWNRATE
+  - ENABLEMENTMIN
+  - ENABLEMENTMAX
+  - LOWBREAKPOINT
+  - HIGHBREAKPOINT
+  - BANDAVAIL1
+  - BANDAVAIL2
+  - BANDAVAIL3
+  - BANDAVAIL4
+  - BANDAVAIL5
+  - BANDAVAIL6
+  - BANDAVAIL7
+  - BANDAVAIL8
+  - BANDAVAIL9
+  - BANDAVAIL10
+  - PASAAVAILABILITY
+  minimum_header_fields:
+  - TRADINGDATE
+  - PERIODID
+  - DUID
+  - BIDTYPE
+  - OFFERDATETIME
+  - MAXAVAIL
+  - BANDAVAIL1
+  - BANDAVAIL2
+  - BANDAVAIL3
+  - BANDAVAIL4
+  - BANDAVAIL5
+  - BANDAVAIL6
+  - BANDAVAIL7
+  - BANDAVAIL8
+  - BANDAVAIL9
+  - BANDAVAIL10
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: false
+  errors:
+  - header package BIDS != frozen package OFFER
+  naming_regime: legacy_public_dvd
+  expected_header_package: OFFER
+  expected_header_table: BIDOFFERPERIOD
+  canonical_fields: &id002
+  - market_day
+  - interval_end
+  - duid
+  - bid_type
+  - period_id
+  - offer_time
+  - max_avail
+  - band_avail_1
+  - band_avail_2
+  - band_avail_3
+  - band_avail_4
+  - band_avail_5
+  - band_avail_6
+  - band_avail_7
+  - band_avail_8
+  - band_avail_9
+  - band_avail_10
+  crosswalk_field_map:
+    market_day:
+      sources:
+      - TRADINGDATE
+      transform: aemo_market_day
+    interval_end:
+      sources:
+      - TRADINGDATE
+      - PERIODID
+      transform: legacy_trading_day_period_to_interval_end
+    duid:
+      sources:
+      - DUID
+      transform: identity
+    bid_type:
+      sources:
+      - BIDTYPE
+      transform: identity
+    period_id:
+      sources:
+      - PERIODID
+      transform: integer
+    offer_time:
+      sources:
+      - OFFERDATETIME
+      transform: aemo_timestamp
+    max_avail:
+      sources:
+      - MAXAVAIL
+      transform: decimal
+    band_avail_1:
+      sources:
+      - BANDAVAIL1
+      transform: decimal
+    band_avail_2:
+      sources:
+      - BANDAVAIL2
+      transform: decimal
+    band_avail_3:
+      sources:
+      - BANDAVAIL3
+      transform: decimal
+    band_avail_4:
+      sources:
+      - BANDAVAIL4
+      transform: decimal
+    band_avail_5:
+      sources:
+      - BANDAVAIL5
+      transform: decimal
+    band_avail_6:
+      sources:
+      - BANDAVAIL6
+      transform: decimal
+    band_avail_7:
+      sources:
+      - BANDAVAIL7
+      transform: decimal
+    band_avail_8:
+      sources:
+      - BANDAVAIL8
+      transform: decimal
+    band_avail_9:
+      sources:
+      - BANDAVAIL9
+      transform: decimal
+    band_avail_10:
+      sources:
+      - BANDAVAIL10
+      transform: decimal
+- object_id: heldout-legacy-2021-09-dispatchoffertrk
+  sample_label: heldout-legacy-2021-09
+  market_date: null
+  logical_role: DISPATCHOFFERTRK
+  archive_table: OFFERTRK
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHOFFERTRK_202109010000.zip
+  expected_bytes: 63918282
+  observed_bytes: 63918282
+  raw_sha256: 45e48cc3c27196dfe01a6295e0780a51e1038210702ba8492c0a450e601c5aaf
+  zip_members:
+  - PUBLIC_DVD_DISPATCHOFFERTRK_202109010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_DVD_DISPATCHOFFERTRK_202109010000.CSV
+  member_uncompressed_bytes: 1358584064
+  member_compressed_bytes: 63918096
+  member_crc32: bb60e4cc
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: DISPATCH
+  header_table: OFFERTRK
+  header_version: '1'
+  header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - BIDSETTLEMENTDATE
+  - BIDOFFERDATE
+  - LASTCHANGED
+  minimum_header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - BIDSETTLEMENTDATE
+  - BIDOFFERDATE
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: legacy_public_dvd
+  expected_header_package: DISPATCH
+  expected_header_table: OFFERTRK
+  canonical_fields: &id003
+  - interval_end
+  - duid
+  - bid_type
+  - bid_market_day
+  - bid_offer_time
+  crosswalk_field_map:
+    interval_end: &id004
+      sources:
+      - SETTLEMENTDATE
+      transform: aemo_timestamp
+    duid: &id005
+      sources:
+      - DUID
+      transform: identity
+    bid_type: &id006
+      sources:
+      - BIDTYPE
+      transform: identity
+    bid_market_day: &id007
+      sources:
+      - BIDSETTLEMENTDATE
+      transform: aemo_market_day
+    bid_offer_time: &id008
+      sources:
+      - BIDOFFERDATE
+      transform: aemo_timestamp
+- object_id: heldout-legacy-2021-09-dispatchload
+  sample_label: heldout-legacy-2021-09
+  market_date: null
+  logical_role: DISPATCHLOAD
+  archive_table: UNIT_SOLUTION
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHLOAD_202109010000.zip
+  expected_bytes: 71662668
+  observed_bytes: 71662668
+  raw_sha256: e84d364ea9e762a4b1c35a772d52773ee3be22c54f18f8bbb3c500142af63b6e
+  zip_members:
+  - PUBLIC_DVD_DISPATCHLOAD_202109010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_DVD_DISPATCHLOAD_202109010000.CSV
+  member_uncompressed_bytes: 659430552
+  member_compressed_bytes: 71662490
+  member_crc32: f1a4bc96
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: DISPATCH
+  header_table: UNIT_SOLUTION
+  header_version: '2'
+  header_fields:
+  - SETTLEMENTDATE
+  - RUNNO
+  - DUID
+  - TRADETYPE
+  - DISPATCHINTERVAL
+  - INTERVENTION
+  - CONNECTIONPOINTID
+  - DISPATCHMODE
+  - AGCSTATUS
+  - INITIALMW
+  - TOTALCLEARED
+  - RAMPDOWNRATE
+  - RAMPUPRATE
+  - LOWER5MIN
+  - LOWER60SEC
+  - LOWER6SEC
+  - RAISE5MIN
+  - RAISE60SEC
+  - RAISE6SEC
+  - DOWNEPF
+  - UPEPF
+  - MARGINAL5MINVALUE
+  - MARGINAL60SECVALUE
+  - MARGINAL6SECVALUE
+  - MARGINALVALUE
+  - VIOLATION5MINDEGREE
+  - VIOLATION60SECDEGREE
+  - VIOLATION6SECDEGREE
+  - VIOLATIONDEGREE
+  - LASTCHANGED
+  - LOWERREG
+  - RAISEREG
+  - AVAILABILITY
+  - RAISE6SECFLAGS
+  - RAISE60SECFLAGS
+  - RAISE5MINFLAGS
+  - RAISEREGFLAGS
+  - LOWER6SECFLAGS
+  - LOWER60SECFLAGS
+  - LOWER5MINFLAGS
+  - LOWERREGFLAGS
+  - RAISEREGAVAILABILITY
+  - RAISEREGENABLEMENTMAX
+  - RAISEREGENABLEMENTMIN
+  - LOWERREGAVAILABILITY
+  - LOWERREGENABLEMENTMAX
+  - LOWERREGENABLEMENTMIN
+  - RAISE6SECACTUALAVAILABILITY
+  - RAISE60SECACTUALAVAILABILITY
+  - RAISE5MINACTUALAVAILABILITY
+  - RAISEREGACTUALAVAILABILITY
+  - LOWER6SECACTUALAVAILABILITY
+  - LOWER60SECACTUALAVAILABILITY
+  - LOWER5MINACTUALAVAILABILITY
+  - LOWERREGACTUALAVAILABILITY
+  - SEMIDISPATCHCAP
+  minimum_header_fields:
+  - SETTLEMENTDATE
+  - RUNNO
+  - DUID
+  - INTERVENTION
+  - INITIALMW
+  - TOTALCLEARED
+  - AVAILABILITY
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: legacy_public_dvd
+  expected_header_package: DISPATCH
+  expected_header_table: UNIT_SOLUTION
+  canonical_fields: &id009
+  - interval_end
+  - run_no
+  - duid
+  - intervention
+  - initial_mw
+  - total_cleared
+  - availability
+  crosswalk_field_map:
+    interval_end: &id010
+      sources:
+      - SETTLEMENTDATE
+      transform: aemo_timestamp
+    run_no: &id011
+      sources:
+      - RUNNO
+      transform: integer
+    duid: &id012
+      sources:
+      - DUID
+      transform: identity
+    intervention: &id013
+      sources:
+      - INTERVENTION
+      transform: integer
+    initial_mw: &id014
+      sources:
+      - INITIALMW
+      transform: decimal
+    total_cleared: &id015
+      sources:
+      - TOTALCLEARED
+      transform: decimal
+    availability: &id016
+      sources:
+      - AVAILABILITY
+      transform: decimal
+- object_id: heldout-legacy-2021-09-dudetailsummary
+  sample_label: heldout-legacy-2021-09
+  market_date: null
+  logical_role: DUDETAILSUMMARY
+  archive_table: DUDETAILSUMMARY
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202109010000.zip
+  expected_bytes: 161092
+  observed_bytes: 161092
+  raw_sha256: 02ad1b678af3e55608ea2654f78d178e0cde5b8f2bd503d62b8cc10ca5c996f9
+  zip_members:
+  - PUBLIC_DVD_DUDETAILSUMMARY_202109010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_DVD_DUDETAILSUMMARY_202109010000.CSV
+  member_uncompressed_bytes: 2256821
+  member_compressed_bytes: 160908
+  member_crc32: 1d46d0da
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: PARTICIPANT_REGISTRATION
+  header_table: DUDETAILSUMMARY
+  header_version: '4'
+  header_fields:
+  - DUID
+  - START_DATE
+  - END_DATE
+  - DISPATCHTYPE
+  - CONNECTIONPOINTID
+  - REGIONID
+  - STATIONID
+  - PARTICIPANTID
+  - LASTCHANGED
+  - TRANSMISSIONLOSSFACTOR
+  - STARTTYPE
+  - DISTRIBUTIONLOSSFACTOR
+  - MINIMUM_ENERGY_PRICE
+  - MAXIMUM_ENERGY_PRICE
+  - SCHEDULE_TYPE
+  - MIN_RAMP_RATE_UP
+  - MIN_RAMP_RATE_DOWN
+  - MAX_RAMP_RATE_UP
+  - MAX_RAMP_RATE_DOWN
+  - IS_AGGREGATED
+  minimum_header_fields:
+  - DUID
+  - START_DATE
+  - END_DATE
+  - DISPATCHTYPE
+  - REGIONID
+  - PARTICIPANTID
+  - SCHEDULE_TYPE
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: legacy_public_dvd
+  expected_header_package: PARTICIPANT_REGISTRATION
+  expected_header_table: DUDETAILSUMMARY
+  canonical_fields: &id017
+  - duid
+  - valid_from
+  - valid_to
+  - dispatch_type
+  - region_id
+  - participant_id
+  - schedule_type
+  crosswalk_field_map:
+    duid: &id018
+      sources:
+      - DUID
+      transform: identity
+    valid_from: &id019
+      sources:
+      - START_DATE
+      transform: aemo_timestamp
+    valid_to: &id020
+      sources:
+      - END_DATE
+      transform: nullable_aemo_timestamp
+    dispatch_type: &id021
+      sources:
+      - DISPATCHTYPE
+      transform: identity
+    region_id: &id022
+      sources:
+      - REGIONID
+      transform: identity
+    participant_id: &id023
+      sources:
+      - PARTICIPANTID
+      transform: identity
+    schedule_type: &id024
+      sources:
+      - SCHEDULE_TYPE
+      transform: identity
+- object_id: heldout-current-2025-07-biddayoffer-d
+  sample_label: heldout-current-2025-07
+  market_date: null
+  logical_role: BIDDAYOFFER_D
+  archive_table: BIDDAYOFFER_D
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23BIDDAYOFFER_D%23FILE01%23202507010000.zip
+  expected_bytes: 1927897
+  observed_bytes: 1927897
+  raw_sha256: f625af0c8e95f6286487496ea2f528580e9d39a0c684f11dece65c43b67ca5ab
+  zip_members:
+  - PUBLIC_ARCHIVE#BIDDAYOFFER_D#FILE01#202507010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_ARCHIVE#BIDDAYOFFER_D#FILE01#202507010000.CSV
+  member_uncompressed_bytes: 14137567
+  member_compressed_bytes: 1927679
+  member_crc32: 4ae1b426
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: BID
+  header_table: BIDDAYOFFER_D
+  header_version: '3'
+  header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - DIRECTION
+  - BIDSETTLEMENTDATE
+  - OFFERDATE
+  - VERSIONNO
+  - PARTICIPANTID
+  - DAILYENERGYCONSTRAINT
+  - REBIDEXPLANATION
+  - PRICEBAND1
+  - PRICEBAND2
+  - PRICEBAND3
+  - PRICEBAND4
+  - PRICEBAND5
+  - PRICEBAND6
+  - PRICEBAND7
+  - PRICEBAND8
+  - PRICEBAND9
+  - PRICEBAND10
+  - MINIMUMLOAD
+  - T1
+  - T2
+  - T3
+  - T4
+  - NORMALSTATUS
+  - LASTCHANGED
+  - MR_FACTOR
+  - ENTRYTYPE
+  minimum_header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - PARTICIPANTID
+  - OFFERDATE
+  - VERSIONNO
+  - PRICEBAND1
+  - PRICEBAND2
+  - PRICEBAND3
+  - PRICEBAND4
+  - PRICEBAND5
+  - PRICEBAND6
+  - PRICEBAND7
+  - PRICEBAND8
+  - PRICEBAND9
+  - PRICEBAND10
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: public_archive_hash_delimited
+  expected_header_package: BID
+  expected_header_table: BIDDAYOFFER_D
+  canonical_fields: *id001
+  crosswalk_field_map:
+    market_day:
+      sources:
+      - SETTLEMENTDATE
+      transform: aemo_market_day
+    duid:
+      sources:
+      - DUID
+      transform: identity
+    bid_type:
+      sources:
+      - BIDTYPE
+      transform: identity
+    participant_id:
+      sources:
+      - PARTICIPANTID
+      transform: identity
+    offer_time:
+      sources:
+      - OFFERDATE
+      transform: aemo_timestamp
+    version_no:
+      sources:
+      - VERSIONNO
+      transform: integer
+    price_band_1:
+      sources:
+      - PRICEBAND1
+      transform: decimal
+    price_band_2:
+      sources:
+      - PRICEBAND2
+      transform: decimal
+    price_band_3:
+      sources:
+      - PRICEBAND3
+      transform: decimal
+    price_band_4:
+      sources:
+      - PRICEBAND4
+      transform: decimal
+    price_band_5:
+      sources:
+      - PRICEBAND5
+      transform: decimal
+    price_band_6:
+      sources:
+      - PRICEBAND6
+      transform: decimal
+    price_band_7:
+      sources:
+      - PRICEBAND7
+      transform: decimal
+    price_band_8:
+      sources:
+      - PRICEBAND8
+      transform: decimal
+    price_band_9:
+      sources:
+      - PRICEBAND9
+      transform: decimal
+    price_band_10:
+      sources:
+      - PRICEBAND10
+      transform: decimal
+- object_id: heldout-current-2025-07-bidperoffer-d
+  sample_label: heldout-current-2025-07
+  market_date: null
+  logical_role: BIDPEROFFER_D
+  archive_table: BIDPEROFFER_D
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23BIDPEROFFER_D%23FILE01%23202507010000.zip
+  expected_bytes: 156489537
+  observed_bytes: 156489537
+  raw_sha256: 9af625df4e660bad6eb672abb397d0ad49ce29bc0ce6d5eef0197bedb42399fd
+  zip_members:
+  - PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202507010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_ARCHIVE#BIDPEROFFER_D#FILE01#202507010000.CSV
+  member_uncompressed_bytes: 3460779462
+  member_compressed_bytes: 156489319
+  member_crc32: e55e8232
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: BID
+  header_table: BIDPEROFFER_D
+  header_version: '4'
+  header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - DIRECTION
+  - INTERVAL_DATETIME
+  - BIDSETTLEMENTDATE
+  - OFFERDATE
+  - PERIODID
+  - VERSIONNO
+  - MAXAVAIL
+  - FIXEDLOAD
+  - ROCUP
+  - ROCDOWN
+  - ENABLEMENTMIN
+  - ENABLEMENTMAX
+  - LOWBREAKPOINT
+  - HIGHBREAKPOINT
+  - BANDAVAIL1
+  - BANDAVAIL2
+  - BANDAVAIL3
+  - BANDAVAIL4
+  - BANDAVAIL5
+  - BANDAVAIL6
+  - BANDAVAIL7
+  - BANDAVAIL8
+  - BANDAVAIL9
+  - BANDAVAIL10
+  - LASTCHANGED
+  - PASAAVAILABILITY
+  - MR_CAPACITY
+  - ENERGYLIMIT
+  minimum_header_fields:
+  - SETTLEMENTDATE
+  - INTERVAL_DATETIME
+  - PERIODID
+  - DUID
+  - BIDTYPE
+  - OFFERDATE
+  - MAXAVAIL
+  - BANDAVAIL1
+  - BANDAVAIL2
+  - BANDAVAIL3
+  - BANDAVAIL4
+  - BANDAVAIL5
+  - BANDAVAIL6
+  - BANDAVAIL7
+  - BANDAVAIL8
+  - BANDAVAIL9
+  - BANDAVAIL10
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: public_archive_hash_delimited
+  expected_header_package: BID
+  expected_header_table: BIDPEROFFER_D
+  canonical_fields: *id002
+  crosswalk_field_map:
+    market_day:
+      sources:
+      - SETTLEMENTDATE
+      transform: aemo_market_day
+    interval_end:
+      sources:
+      - INTERVAL_DATETIME
+      transform: aemo_timestamp
+    duid:
+      sources:
+      - DUID
+      transform: identity
+    bid_type:
+      sources:
+      - BIDTYPE
+      transform: identity
+    period_id:
+      sources:
+      - PERIODID
+      transform: integer
+    offer_time:
+      sources:
+      - OFFERDATE
+      transform: aemo_timestamp
+    max_avail:
+      sources:
+      - MAXAVAIL
+      transform: decimal
+    band_avail_1:
+      sources:
+      - BANDAVAIL1
+      transform: decimal
+    band_avail_2:
+      sources:
+      - BANDAVAIL2
+      transform: decimal
+    band_avail_3:
+      sources:
+      - BANDAVAIL3
+      transform: decimal
+    band_avail_4:
+      sources:
+      - BANDAVAIL4
+      transform: decimal
+    band_avail_5:
+      sources:
+      - BANDAVAIL5
+      transform: decimal
+    band_avail_6:
+      sources:
+      - BANDAVAIL6
+      transform: decimal
+    band_avail_7:
+      sources:
+      - BANDAVAIL7
+      transform: decimal
+    band_avail_8:
+      sources:
+      - BANDAVAIL8
+      transform: decimal
+    band_avail_9:
+      sources:
+      - BANDAVAIL9
+      transform: decimal
+    band_avail_10:
+      sources:
+      - BANDAVAIL10
+      transform: decimal
+- object_id: heldout-current-2025-07-dispatchoffertrk
+  sample_label: heldout-current-2025-07
+  market_date: null
+  logical_role: DISPATCHOFFERTRK
+  archive_table: OFFERTRK
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DISPATCHOFFERTRK%23FILE01%23202507010000.zip
+  expected_bytes: 103532265
+  observed_bytes: 103532265
+  raw_sha256: 5f4043b32e9788a570c00582ea76ae0cc2cfe88fe96ba2d1ab2d970d9f88c7c3
+  zip_members:
+  - PUBLIC_ARCHIVE#DISPATCHOFFERTRK#FILE01#202507010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_ARCHIVE#DISPATCHOFFERTRK#FILE01#202507010000.CSV
+  member_uncompressed_bytes: 2132258634
+  member_compressed_bytes: 103532041
+  member_crc32: 56cc7a85
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: DISPATCH
+  header_table: OFFERTRK
+  header_version: '1'
+  header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - BIDSETTLEMENTDATE
+  - BIDOFFERDATE
+  - LASTCHANGED
+  minimum_header_fields:
+  - SETTLEMENTDATE
+  - DUID
+  - BIDTYPE
+  - BIDSETTLEMENTDATE
+  - BIDOFFERDATE
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: public_archive_hash_delimited
+  expected_header_package: DISPATCH
+  expected_header_table: OFFERTRK
+  canonical_fields: *id003
+  crosswalk_field_map:
+    interval_end: *id004
+    duid: *id005
+    bid_type: *id006
+    bid_market_day: *id007
+    bid_offer_time: *id008
+- object_id: heldout-current-2025-07-dispatchload
+  sample_label: heldout-current-2025-07
+  market_date: null
+  logical_role: DISPATCHLOAD
+  archive_table: UNIT_SOLUTION
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DISPATCHLOAD%23FILE01%23202507010000.zip
+  expected_bytes: 116786096
+  observed_bytes: 116786096
+  raw_sha256: 134b33fb799810d1b9677a0917f3884c796540860982f3a67579d260c7d3cabe
+  zip_members:
+  - PUBLIC_ARCHIVE#DISPATCHLOAD#FILE01#202507010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_ARCHIVE#DISPATCHLOAD#FILE01#202507010000.CSV
+  member_uncompressed_bytes: 1060493421
+  member_compressed_bytes: 116785880
+  member_crc32: 26169b6a
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: DISPATCH
+  header_table: UNIT_SOLUTION
+  header_version: '5'
+  header_fields:
+  - SETTLEMENTDATE
+  - RUNNO
+  - DUID
+  - TRADETYPE
+  - DISPATCHINTERVAL
+  - INTERVENTION
+  - CONNECTIONPOINTID
+  - DISPATCHMODE
+  - AGCSTATUS
+  - INITIALMW
+  - TOTALCLEARED
+  - RAMPDOWNRATE
+  - RAMPUPRATE
+  - LOWER5MIN
+  - LOWER60SEC
+  - LOWER6SEC
+  - RAISE5MIN
+  - RAISE60SEC
+  - RAISE6SEC
+  - DOWNEPF
+  - UPEPF
+  - MARGINAL5MINVALUE
+  - MARGINAL60SECVALUE
+  - MARGINAL6SECVALUE
+  - MARGINALVALUE
+  - VIOLATION5MINDEGREE
+  - VIOLATION60SECDEGREE
+  - VIOLATION6SECDEGREE
+  - VIOLATIONDEGREE
+  - LASTCHANGED
+  - LOWERREG
+  - RAISEREG
+  - AVAILABILITY
+  - RAISE6SECFLAGS
+  - RAISE60SECFLAGS
+  - RAISE5MINFLAGS
+  - RAISEREGFLAGS
+  - LOWER6SECFLAGS
+  - LOWER60SECFLAGS
+  - LOWER5MINFLAGS
+  - LOWERREGFLAGS
+  - RAISEREGAVAILABILITY
+  - RAISEREGENABLEMENTMAX
+  - RAISEREGENABLEMENTMIN
+  - LOWERREGAVAILABILITY
+  - LOWERREGENABLEMENTMAX
+  - LOWERREGENABLEMENTMIN
+  - RAISE6SECACTUALAVAILABILITY
+  - RAISE60SECACTUALAVAILABILITY
+  - RAISE5MINACTUALAVAILABILITY
+  - RAISEREGACTUALAVAILABILITY
+  - LOWER6SECACTUALAVAILABILITY
+  - LOWER60SECACTUALAVAILABILITY
+  - LOWER5MINACTUALAVAILABILITY
+  - LOWERREGACTUALAVAILABILITY
+  - SEMIDISPATCHCAP
+  - DISPATCHMODETIME
+  - CONFORMANCE_MODE
+  - UIGF
+  - RAISE1SEC
+  - RAISE1SECFLAGS
+  - LOWER1SEC
+  - LOWER1SECFLAGS
+  - RAISE1SECACTUALAVAILABILITY
+  - LOWER1SECACTUALAVAILABILITY
+  - INITIAL_ENERGY_STORAGE
+  - ENERGY_STORAGE
+  - MIN_AVAILABILITY
+  minimum_header_fields:
+  - SETTLEMENTDATE
+  - RUNNO
+  - DUID
+  - INTERVENTION
+  - INITIALMW
+  - TOTALCLEARED
+  - AVAILABILITY
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: public_archive_hash_delimited
+  expected_header_package: DISPATCH
+  expected_header_table: UNIT_SOLUTION
+  canonical_fields: *id009
+  crosswalk_field_map:
+    interval_end: *id010
+    run_no: *id011
+    duid: *id012
+    intervention: *id013
+    initial_mw: *id014
+    total_cleared: *id015
+    availability: *id016
+- object_id: heldout-current-2025-07-dudetailsummary
+  sample_label: heldout-current-2025-07
+  market_date: null
+  logical_role: DUDETAILSUMMARY
+  archive_table: DUDETAILSUMMARY
+  url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2025/MMSDM_2025_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DUDETAILSUMMARY%23FILE01%23202507010000.zip
+  expected_bytes: 345299
+  observed_bytes: 345299
+  raw_sha256: d9a0a1be9bf72cc80e37edcf41934b1e85dd094a59ff071745b098880de47671
+  zip_members:
+  - PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202507010000.CSV
+  single_csv_member: true
+  selected_member: PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202507010000.CSV
+  member_uncompressed_bytes: 4808663
+  member_compressed_bytes: 345077
+  member_crc32: 0cee7f12
+  bad_crc_member: null
+  zip_crc_pass: true
+  header_package: PARTICIPANT_REGISTRATION
+  header_table: DUDETAILSUMMARY
+  header_version: '7'
+  header_fields:
+  - DUID
+  - START_DATE
+  - END_DATE
+  - DISPATCHTYPE
+  - CONNECTIONPOINTID
+  - REGIONID
+  - STATIONID
+  - PARTICIPANTID
+  - LASTCHANGED
+  - TRANSMISSIONLOSSFACTOR
+  - STARTTYPE
+  - DISTRIBUTIONLOSSFACTOR
+  - MINIMUM_ENERGY_PRICE
+  - MAXIMUM_ENERGY_PRICE
+  - SCHEDULE_TYPE
+  - MIN_RAMP_RATE_UP
+  - MIN_RAMP_RATE_DOWN
+  - MAX_RAMP_RATE_UP
+  - MAX_RAMP_RATE_DOWN
+  - IS_AGGREGATED
+  - DISPATCHSUBTYPE
+  - ADG_ID
+  - LOAD_MINIMUM_ENERGY_PRICE
+  - LOAD_MAXIMUM_ENERGY_PRICE
+  - LOAD_MIN_RAMP_RATE_UP
+  - LOAD_MIN_RAMP_RATE_DOWN
+  - LOAD_MAX_RAMP_RATE_UP
+  - LOAD_MAX_RAMP_RATE_DOWN
+  - SECONDARY_TLF
+  minimum_header_fields:
+  - DUID
+  - START_DATE
+  - END_DATE
+  - DISPATCHTYPE
+  - REGIONID
+  - PARTICIPANTID
+  - SCHEDULE_TYPE
+  missing_minimum_header_fields: []
+  row_count_opened: false
+  header_pass: true
+  errors: []
+  naming_regime: public_archive_hash_delimited
+  expected_header_package: PARTICIPANT_REGISTRATION
+  expected_header_table: DUDETAILSUMMARY
+  canonical_fields: *id017
+  crosswalk_field_map:
+    duid: *id018
+    valid_from: *id019
+    valid_to: *id020
+    dispatch_type: *id021
+    region_id: *id022
+    participant_id: *id023
+    schedule_type: *id024
+next_gate: commit_this_heldout_result_before_any_row_filter_transform_or_join
