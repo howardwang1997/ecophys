@@ -340,3 +340,15 @@ The post-hoc diagnostic supports a precise correction: all 43,200 ambiguous rela
 `{GEN, LOAD}` bundles for effective bidirectional units, restricted to energy and regulation FCAS. No dispatch
 sign selector is admissible. The next E1b confirmation remains a small CPU/data job on one fresh day; model/GPU
 work stays locked.
+
+### Frozen E1b resource contract
+
+E1b uses the mechanically selected 7 July 2026 daily pair plus the July identity snapshot: 18,244,129 compressed
+bytes, at most 1,107,296,256 uncompressed bytes and at most 4,000,000 MMSDM data rows. Required compute is local
+CPU only and expected runtime is minutes. Required V100/RTX 2060 hours, paid-data budget, purchased storage and
+remote-worker capacity are all zero.
+
+The 25 frozen gates cover exact acquisition/R2 retention, archive integrity, schemas, timestamps, primary keys,
+base joins and the prospective one-or-exact-`{GEN, LOAD}` relation. The GPUs remain idle regardless of E1b outcome.
+A pass unlocks only a new protocol for a limited multi-day development panel; a failure ends this bridge attempt
+unless a genuinely new, independently frozen source contract is justified.

@@ -247,3 +247,10 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   choose an ex-ante leg. The result is post-hoc and does not override E1a; freeze the exact relation contract and
   confirm on one fresh date. Diagnostic SHA:
   `d8b4bb0ffe6ede3fadf00cdac68c6851568fab132b6e2c94162c8bb4317cfaa2`.
+- Fresh E1b is frozen before source access. A metadata-only rule selects 2026-07-07: the first Tuesday of the first
+  complete calendar month after the June development month, with a fresh July identity snapshot. Three exact
+  public objects total 18,244,129 compressed bytes and must be R2-verified before parsing.
+- The frozen relation permits one candidate or exactly one unique `{GEN, LOAD}` pair. Each pair requires one
+  effective `BIDIRECTIONAL` identity, bid type in `ENERGY`/`LOWERREG`/`RAISEREG`, and a nonempty pair count.
+  Realized dispatch cannot select a leg. This is CPU-only confirmation; multi-day data, Exp156 and GPUs remain
+  locked until a full pass. Protocol: `experiments/v14_aemo_bundle_confirmation/PREREGISTRATION.md`.

@@ -1,0 +1,178 @@
+schema_version: ecophys-aemo-bundle-confirmation/v1
+sample_id: aemo-fresh-direction-bundle-confirmation-2026-07-07-v1
+frozen_at: "2026-08-15T04:08:43Z"
+parent_commit: 2063146c395a1c0104166d6d4ef03604a385e499
+scientific_role: confirmation_only_modern_set_valued_applied_offer_bridge
+
+development_provenance:
+  e1a_decision: FAIL_MODERN_ROW_CONFORMANCE_SMOKE
+  e1a_summary_sha256: fc422654de5c64a91e71b8dcceb22612f406092cdf6a36900859072041a6668b
+  diagnostic_status: POST_HOC_DEVELOPMENT_DIAGNOSTIC_NO_GATE_DECISION
+  diagnostic_summary_sha256: d8b4bb0ffe6ede3fadf00cdac68c6851568fab132b6e2c94162c8bb4317cfaa2
+  development_market_date: "2026-06-16"
+  observed_bundle_rule: one_candidate_or_exact_unique_GEN_LOAD_pair
+  e1a_failure_overridden: false
+
+selection:
+  rule: first_tuesday_of_first_complete_calendar_month_after_development_month
+  development_month: "2026-06"
+  first_complete_later_month: "2026-07"
+  selected_market_date: "2026-07-07"
+  selection_inputs: directory_metadata_only_no_zip_or_market_row
+  target_event: false
+  causal_outcome: false
+  no_replacement: true
+  identity_snapshot_not_reused_from_development: true
+
+source_metadata:
+  audited_at: "2026-08-15T04:08:43Z"
+  bidmove_listing: https://www.nemweb.com.au/Reports/CURRENT/Bidmove_Complete/
+  bidmove_listing_sha256: 37885534285a2039fc8bfea5f1b3592204358467c6d363557c713d8d5980c97f
+  next_day_dispatch_listing: https://www.nemweb.com.au/Reports/CURRENT/Next_Day_Dispatch/
+  next_day_dispatch_listing_sha256: a527bbbdebff3a54993b4aaed019cee96f9a9233019ba00bbb06302ff524ed4e
+  monthly_identity_listing: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2026/MMSDM_2026_07/MMSDM_Historical_Data_SQLLoader/DATA/
+  monthly_identity_listing_sha256: 79beb058dde1c30616036b21fcd5efa875e93f2f961a0d7f7496b2ae063b5721
+  official_bdu_participant_impact: https://tech-specs.docs.public.aemo.com.au/Content/TSP_EMMSDM53_April2024/Participant_Impact.htm
+  official_bidding_dispatch: https://tech-specs.docs.public.aemo.com.au/Content/TSP_EMMS_June2024/Bidding_and_Dispatch.htm
+
+objects:
+  - object_id: bidmove-complete-2026-07-07
+    source_role: BIDMOVE_COMPLETE
+    url: https://www.nemweb.com.au/Reports/CURRENT/Bidmove_Complete/PUBLIC_BIDMOVE_COMPLETE_20260707_0000000526370718.zip
+    expected_filename: PUBLIC_BIDMOVE_COMPLETE_20260707_0000000526370718.zip
+    expected_bytes: 9224570
+    maximum_uncompressed_bytes: 536870912
+    required_table_roles: [BIDDAYOFFER_D, BIDPEROFFER_D]
+    r2_key: raw/aemo/v14_bundle_confirmation/market_date=2026-07-07/PUBLIC_BIDMOVE_COMPLETE_20260707_0000000526370718.zip
+  - object_id: next-day-dispatch-2026-07-07
+    source_role: NEXT_DAY_DISPATCH
+    url: https://www.nemweb.com.au/Reports/CURRENT/Next_Day_Dispatch/PUBLIC_NEXT_DAY_DISPATCH_20260707_0000000526367103.zip
+    expected_filename: PUBLIC_NEXT_DAY_DISPATCH_20260707_0000000526367103.zip
+    expected_bytes: 8641259
+    maximum_uncompressed_bytes: 536870912
+    required_table_roles: [DISPATCHOFFERTRK, DISPATCHLOAD]
+    r2_key: raw/aemo/v14_bundle_confirmation/market_date=2026-07-07/PUBLIC_NEXT_DAY_DISPATCH_20260707_0000000526367103.zip
+  - object_id: dudetailsummary-2026-07
+    source_role: DUDETAILSUMMARY_MONTHLY_SNAPSHOT
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2026/MMSDM_2026_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DUDETAILSUMMARY%23FILE01%23202607010000.zip
+    expected_filename: PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202607010000.zip
+    expected_bytes: 378300
+    maximum_uncompressed_bytes: 33554432
+    required_table_roles: [DUDETAILSUMMARY]
+    r2_key: raw/aemo/v14_bundle_confirmation/market_date=2026-07-07/PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202607010000.zip
+
+table_contracts:
+  - logical_role: BIDDAYOFFER_D
+    source_object_id: bidmove-complete-2026-07-07
+    expected_package: BID
+    expected_table: BIDDAYOFFER_D
+    expected_version: "3"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION, BIDSETTLEMENTDATE, OFFERDATE, PARTICIPANTID]
+    primary_key: [SETTLEMENTDATE, BIDTYPE, DUID, DIRECTION]
+  - logical_role: BIDPEROFFER_D
+    source_object_id: bidmove-complete-2026-07-07
+    expected_package: BID
+    expected_table: BIDPEROFFER_D
+    expected_version: "4"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION, INTERVAL_DATETIME, BIDSETTLEMENTDATE, OFFERDATE, VERSIONNO, MAXAVAIL]
+    primary_key: [SETTLEMENTDATE, BIDTYPE, DUID, DIRECTION, INTERVAL_DATETIME]
+  - logical_role: DISPATCHOFFERTRK
+    source_object_id: next-day-dispatch-2026-07-07
+    expected_package: DISPATCH
+    expected_table: OFFERTRK
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+    primary_key: [SETTLEMENTDATE, DUID, BIDTYPE]
+  - logical_role: DISPATCHLOAD
+    source_object_id: next-day-dispatch-2026-07-07
+    expected_package: DISPATCH
+    expected_table: UNIT_SOLUTION
+    expected_version: "6"
+    required_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION, INITIALMW, TOTALCLEARED]
+    primary_key: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION]
+  - logical_role: DUDETAILSUMMARY
+    source_object_id: dudetailsummary-2026-07
+    expected_package: PARTICIPANT_REGISTRATION
+    expected_table: DUDETAILSUMMARY
+    expected_version: "7"
+    required_fields: [DUID, START_DATE, END_DATE, DISPATCHTYPE, REGIONID, PARTICIPANTID, DISPATCHSUBTYPE]
+    primary_key: [DUID, START_DATE]
+
+time_contract:
+  timezone_semantics: AEMO_MARKET_TIME_AS_PUBLISHED_NO_UTC_CONVERSION
+  market_date_field_value: "2026-07-07"
+  dispatch_interval_start_inclusive: "2026-07-07T04:05:00"
+  dispatch_interval_end_inclusive: "2026-07-08T04:00:00"
+  identity_interval: START_DATE <= SETTLEMENTDATE < END_DATE
+
+relation_contract:
+  tracker_period_key:
+    - SETTLEMENTDATE=INTERVAL_DATETIME
+    - DUID=DUID
+    - BIDTYPE=BIDTYPE
+    - BIDSETTLEMENTDATE=BIDSETTLEMENTDATE
+    - BIDOFFERDATE=OFFERDATE
+  allowed_candidate_cardinalities: [1, 2]
+  allowed_single_directions: [BIDIRECTIONAL, GEN, LOAD]
+  exact_pair_directions: [GEN, LOAD]
+  exact_pair_identity_dispatchtype: BIDIRECTIONAL
+  allowed_pair_bidtypes: [ENERGY, LOWERREG, RAISEREG]
+  pair_must_be_nonempty: true
+  realized_dispatch_may_select_offer_leg: false
+  action_representation: set_valued_applied_offer_version_bundle
+
+base_join_contract:
+  bid_period_to_day_parent: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION]
+  tracker_to_physical_dispatch: [SETTLEMENTDATE, DUID]
+  physical_dispatch_filter: {RUNNO: 1, INTERVENTION: 0}
+  dispatch_to_identity: [DUID, effective_half_open_interval]
+
+resource_contract:
+  exact_compressed_bytes: 18244129
+  maximum_total_uncompressed_bytes: 1107296256
+  maximum_total_data_rows: 4000000
+  cpu_only: true
+  gpu_allowed: false
+  paid_data_allowed: false
+  remote_worker_required: false
+
+retention_contract:
+  bucket: ecophys
+  prefix: raw/aemo/v14_bundle_confirmation/market_date=2026-07-07/
+  upload_before_any_csv_row_parse: true
+  remote_sha256_metadata_required: true
+  overwrite_mismatched_remote_object_allowed: false
+  raw_rows_committed_to_git: false
+
+gates:
+  required_object_count: 3
+  required_r2_verified_count: 3
+  required_archive_crc_count: 3
+  required_table_count: 5
+  required_nonempty_table_count: 5
+  maximum_total_data_rows: 4000000
+  timestamp_parse_rate_min: 1.0
+  primary_key_duplicate_count_max: 0
+  bid_market_date_rate_min: 1.0
+  dispatch_window_rate_min: 1.0
+  bid_period_parent_match_rate_min: 1.0
+  tracker_offer_reference_rate_min: 1.0
+  tracker_relation_coverage_rate_min: 1.0
+  tracker_dispatch_match_rate_min: 1.0
+  dispatch_identity_match_rate_min: 1.0
+  dispatch_identity_overlap_count_max: 0
+  invalid_candidate_cardinality_count_max: 0
+  invalid_single_direction_count_max: 0
+  invalid_pair_direction_count_max: 0
+  duplicate_pair_direction_count_max: 0
+  invalid_pair_identity_count_max: 0
+  invalid_pair_bidtype_count_max: 0
+  minimum_pair_count: 1
+  causal_claim_allowed: false
+  model_claim_allowed: false
+
+outputs:
+  raw_root: artifacts/v14_aemo_bundle_confirmation/raw
+  download_receipt: experiments/v14_aemo_bundle_confirmation/artifacts/download_receipt.json
+  retention_receipt: experiments/v14_aemo_bundle_confirmation/artifacts/retention_receipt.json
+  summary: experiments/v14_aemo_bundle_confirmation/artifacts/summary.json

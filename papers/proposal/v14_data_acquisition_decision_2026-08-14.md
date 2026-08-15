@@ -208,3 +208,16 @@ The post-hoc retained-day diagnostic found an exact bundle structure rather than
 ambiguous relation was one `{GEN, LOAD}` pair for an effective BDU, across energy and regulation FCAS only. This
 supports one additional free daily confirmation sample under a new frozen E1b relation contract. It does not
 justify commercial data, bulk history or model training.
+
+### Frozen E1b acquisition
+
+The fresh confirmation is mechanically selected as 7 July 2026, the first Tuesday of the first complete month
+after the June development month. Directory metadata alone identified one `BIDMOVE_COMPLETE`, one
+`NEXT_DAY_DISPATCH` and the fresh July `DUDETAILSUMMARY` snapshot: 18,244,129 compressed bytes in total. No ZIP
+member or market row was inspected before freeze.
+
+The exact three URLs, byte counts and R2 keys are immutable in
+`data/manifests/aemo_bundle_confirmation_v1.yaml`. Acquisition remains free and requires exactly one GET per
+object, no replacement, and verified R2 retention before parsing. `NO_BUY_NOW` therefore remains the correct
+decision. Even a full E1b pass licenses only design of a limited multi-day development sample; it does not license
+a data purchase, bulk panel acquisition, prospective outcome access or model training.

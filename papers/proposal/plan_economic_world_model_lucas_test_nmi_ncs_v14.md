@@ -355,9 +355,10 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    separate mechanism, reporting, delivery-channel and table-version clocks. The 2020-09/2022-04 loader-control
    gate passed; the bounded-prefix gate failed on three distinct version classes, and the official change audit is
    complete. The channel-keyed source subgate passed 10/10 but its transfer guard failed on two small complete
-   objects. The 64 KiB repair then passed 10/10 on untouched 2021-01/2021-12 with zero complete transfers. Design,
-   but do not yet execute, a minimal row-level timestamp/key/join conformance protocol that avoids the 1.61 GB
-   monthly bid-period object. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
+   objects. The 64 KiB repair then passed 10/10 on untouched 2021-01/2021-12 with zero complete transfers. Preserve
+   the failed E1a unique-direction gate and its post-hoc bundle diagnosis. Execute only the separately frozen,
+   cross-month E1b set-valued relation confirmation before designing a multi-day panel. Obtain an outcome-blind
+   CoW competition enumerator before any new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.
 
 ### 11.1 Modern AEMO row-conformance gate frozen on 15 August 2026
@@ -413,3 +414,20 @@ fitted further. Freeze an E1b relation-level contract and test one fresh mechani
 maps a tracker to either one bid row or the complete two-leg `{GEN, LOAD}` bundle; realized dispatch may be joined
 as an outcome but may never choose the ex-ante leg. Diagnostic result:
 `experiments/v14_aemo_direction_bundle_diagnostic/RESULTS.md`.
+
+### 11.3 Fresh cross-month bundle confirmation frozen on 15 August 2026
+
+E1b is frozen before any selected ZIP or market row is accessed. The outcome-blind selection rule takes the first
+Tuesday of the first complete calendar month after the June development month, giving 7 July 2026 and a fresh July
+identity snapshot. The three exact public objects total 18,244,129 compressed bytes. They must be downloaded once,
+retained with size/SHA verification in R2 and only then parsed.
+
+The prospective relation allows either one period-bid candidate or exactly one `{GEN, LOAD}` pair. Every pair must
+belong to exactly one effective `BIDIRECTIONAL` DUID and have bid type `ENERGY`, `LOWERREG` or `RAISEREG`; at least
+one pair must occur. All base schema, timestamp, primary-key and join gates require exact conformance. Realized
+dispatch is never permitted to select an ex-ante leg.
+
+This is a free local CPU confirmation with zero GPU-hours. A pass validates only the modern set-valued observation
+bridge on one fresh day and unlocks design—not execution—of a limited multi-day development panel. A failure keeps
+that panel, Experiment 156 and all GPU/model work closed. Protocol:
+`experiments/v14_aemo_bundle_confirmation/PREREGISTRATION.md`.
