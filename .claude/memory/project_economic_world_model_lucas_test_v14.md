@@ -634,3 +634,10 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - D0b uses one request/s with 600-attempt, 256-MiB, 200k-node and 64-MiB trace-input caps. It is CPU/network only;
   the full ordered provider/method/parameter vector is checked at runtime. Pass authorizes D1 exposure count/cost
   protocol design, never account acquisition or GPU work.
+- D0b v1 at protocol commit `2ee8a87442b6e5a912354362bddcef572876eb59` is an infrastructure failure, not a
+  candidate-mechanics result. After ten preceding logical operations, PublicNode returned JSON-RPC `-32601` for
+  `debug_traceTransaction` on all three allowed attempts at the first candidate. No trace result, slot, code,
+  getter, later candidate, account or response row was opened, and no artifact exists. Never rerun or mutate v1.
+- V1's completion-only writer did not durably retain the ten prior response hashes/bytes/retry counts. Any v2 must
+  preserve bounded partial failure evidence and may repair only trace transport while keeping the exact 14 rows,
+  order, mechanics gates, access boundary and resource limits. D1, `G1` and every GPU queue remain locked.

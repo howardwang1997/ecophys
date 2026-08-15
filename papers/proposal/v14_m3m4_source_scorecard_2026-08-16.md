@@ -266,3 +266,8 @@ The finality evidence combines the execution `finalized` tag, Beacon light-clien
 execution-header hash match and candidate header replication. It remains provider-reported because no local BLS/
 Merkle verification is performed. A pass licenses D1 exposure-count/cost protocol *design only*. Protocol:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION.md`.
+
+V1 did not reach a scientific decision. At the first candidate, PublicNode returned JSON-RPC `-32601` on all three
+frozen `debug_traceTransaction` attempts. No trace result, slot/getter evidence or later candidate was opened, so
+none of the 14 rows can be called conforming or nonconforming. D1 remains locked. Result:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V1.md`.

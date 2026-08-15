@@ -678,9 +678,10 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     前不启动新 GPU 生产训练、不购买 L2；
 12. **当前免费真实系统线：** Uniswap 仅保留为 exact M2；Compound III 的 D0 governance-log inventory
     已按提交 `db26bbe91` 完成并通过：339 次单次成功调用、886 条治理日志、184 个 eligible updates 中
-    14 个 provisional atomic candidates。全部 14 个候选的 D0b receipt、calldata、call-path、getter、
-    24 小时污染与 provider-reported consensus-finality 预检现已冻结为 188 次网络操作；提交后只运行
-    一次，避免挑选最方便的历史事件。G1、账户/行为/响应数据和全部 GPU 生产作业继续锁定。
+    14 个 provisional atomic candidates。D0b v1 已按提交 `2ee8a8744` 运行一次，但 PublicNode 对首个
+    候选的 `debug_traceTransaction` 三次返回 `-32601`，因此这是 trace transport infrastructure
+    failure，不是机制筛选结果。v2 只能修复 trace transport 与失败证据持久化，并保持 14 个候选、
+    顺序、科学门槛和访问边界不变；G1、账户/行为/响应数据和全部 GPU 生产作业继续锁定。
 
 ---
 

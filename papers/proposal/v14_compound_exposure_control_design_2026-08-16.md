@@ -287,3 +287,8 @@ That all-candidate substage is now frozen as 187 JSON-RPC calls plus one Beacon 
 receipts, stateful call cones, exact T-1/T getter/slot transitions, D0-derived contamination neighbors and
 provider-reported finality for every row before filtering. Protocol:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION.md`.
+
+V1 produced no mechanics result: PublicNode returned JSON-RPC `-32601` for all three allowed
+`debug_traceTransaction` attempts at the first candidate. No trace result or later state/getter query was opened,
+and D1 remains locked. Immutable result:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V1.md`.

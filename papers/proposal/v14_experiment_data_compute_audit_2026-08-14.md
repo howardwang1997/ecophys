@@ -644,3 +644,11 @@ normalization/hashing. Expected durable output is small to moderate JSON, depend
 
 This is CPU/network work only. Paid data, remote workers and GPU-hours remain zero; both V100s and the RTX 2060
 stay idle. A pass permits only D1 exposure-count/cost protocol design, not account collection or training.
+
+### Compound D0b v1 actual resource result
+
+V1 stopped after about 15.2 seconds at the first candidate's trace request. Ten earlier logical operations
+completed; PublicNode then returned `-32601` for each of three allowed `debug_traceTransaction` attempts. No trace,
+slot, code, getter, later candidate or participant/response request succeeded. No durable artifact was emitted, so
+response bytes and prior retry counts are unavailable rather than estimated. Actual paid-data, remote-worker and
+GPU use remained zero. This infrastructure failure unlocks no D1 work.
