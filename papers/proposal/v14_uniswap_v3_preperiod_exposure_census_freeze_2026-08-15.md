@@ -33,3 +33,14 @@ M2 mechanism execution but not the current M3/M4 behavioral route.
 All response variables, controls, transaction senders, token IDs and transfer histories remain closed. The
 experiment is free, local CPU/network-only and authorizes zero GPU-hours. Full protocol:
 `experiments/v14_uniswap_v3_preperiod_exposure_census/PREREGISTRATION.md`.
+
+## Result
+
+U1R completed cleanly but failed one conjunctive gate. It found 89 swap-active pools, 25 position-active pools,
+8,722 swaps and 353 position actions; NPM covered 212/353 actions. Both fee classes met their support minima. The
+largest pool, however, supplied 2,625/8,722 swaps (30.096%), above the frozen 25% event-count concentration cap.
+
+The 1,009 responses all succeeded on one attempt, and all 16 U1a pool counts reproduced exactly. This is therefore
+a scientific design failure rather than a transport failure. Do not remove the dominant pool or relax the gate.
+Uniswap remains exact M2; M3/M4 moves to another system or a genuinely new prospective frame. Full result:
+`experiments/v14_uniswap_v3_preperiod_exposure_census/RESULTS.md`.

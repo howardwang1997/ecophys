@@ -499,3 +499,17 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   amounts and retains no raw response or non-NPM manager address. Transaction envelopes, token histories,
   controls, post-treatment responses, paid data and GPUs remain locked. Protocol:
   `experiments/v14_uniswap_v3_preperiod_exposure_census/PREREGISTRATION.md`.
+- U1R result is `FAIL_FULL_PREPERIOD_EXPOSURE_SUPPORT_KEEP_UNISWAP_M2_ONLY`. It completed all 1,000 pools and
+  passed ten of eleven gates: 89 swap-active, 25 position-active, 91 event-active, 8,722 swaps, 353 position
+  actions and 212 NPM actions. Both fee classes met support minima.
+- The sole failure is frozen swap event-count concentration: pool `0x919f...af79` contributes 2,625/8,722 =
+  30.096%, above 25%. Its position share is 102/353 = 28.895%, below the separate 50% cap. These are event counts,
+  not volume/liquidity shares; do not drop the pool or relax the gate.
+- Integrity is clean: 1,009/1,009 one-attempt responses, 10,463,695 bytes, 9,075 events, one deterministic
+  saturation tree, zero duplicates/conflicts and exact six-count agreement for all 16 U1a pools. Census SHA
+  `677483727bfd7d1537640221bb3b7441f2227e5907a5abfa4b5d67370c5bf72f`; summary SHA
+  `3ddff9cd49570a85f3c658533266a05539068624cf9385dd008147237adf0d6c`.
+- Uniswap is now fixed as exact M2 for this route. Controls/U2/model/GPU access stays locked; move M3/M4 to another
+  real system or a genuinely new prospective frame. Post-hoc description of consumed counts may inform an
+  exposure-routing module but cannot repair U1R. Result:
+  `experiments/v14_uniswap_v3_preperiod_exposure_census/RESULTS.md`.

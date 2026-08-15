@@ -926,3 +926,21 @@ least 0.50 and bounded single-pool concentration. A pass licenses only separate 
 design; a failure fixes Uniswap at M2 for this route. The unsaturated path is about 1,003 requests and 8.4 minutes,
 with 5,000-request/512-MiB/1,000,000-event hard caps. It needs no paid data, remote worker or GPU. Protocol:
 `experiments/v14_uniswap_v3_preperiod_exposure_census/PREREGISTRATION.md`.
+
+### 11.31 U1R reveals support but fails the frozen concentration gate
+
+The clean protocol-commit run covered all 1,000 pools and passed every integrity, count, fee-class, position-
+support and NPM gate. It found 89 swap-active and 25 position-active pools, with 8,722 swaps, 353 position actions
+and 212 NPM-managed actions. Only 91 pools had any frozen event; event support is therefore sparse within this
+specific propagation prefix.
+
+U1R nevertheless fails conjunctively. One pool contributed 2,625 swaps, 30.096% of all swap events, above the
+frozen 25% cap. It also contributed 102/353 position actions, but that 28.895% share passed the separate 50% cap.
+These are event-count concentrations, not volume or liquidity shares. All 16 U1a counts reproduced exactly, and
+1,009/1,009 HTTP responses succeeded on one attempt, so transport cannot explain the decision.
+
+Do not drop the dominant pool, relax the cap or open outcomes. For the active V14 route, Uniswap is now fixed as
+the exact-M2 mechanism case; participant response M3/M4 must come from another real system or a genuinely new
+prospective event/control frame. Post-hoc analysis of already consumed preperiod counts may inform an exposure-
+routing module, but cannot repair this gate or support a causal claim. Result:
+`experiments/v14_uniswap_v3_preperiod_exposure_census/RESULTS.md`.

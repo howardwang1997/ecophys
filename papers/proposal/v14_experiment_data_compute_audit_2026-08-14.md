@@ -496,3 +496,15 @@ decoded amounts/prices/liquidity, non-NPM manager addresses, identity histories,
 are not retained. Expected local work remains under one CPU core-hour with negligible durable storage. Paid-data,
 remote-worker and GPU requirements are zero; both V100s and the RTX 2060 remain idle, and H20 is excluded. A pass
 can unlock only separate control/identity protocol design, not acquisition or training.
+
+### Uniswap v3 U1R compute result
+
+U1R completed in about 9.2 minutes between its first and final recorded responses. It used 1,009 successful
+one-attempt requests and 10,463,695 response bytes: three chain/header calls, 1,000 base pool calls and six child
+calls for one saturated pool. It normalized 9,075 events and retained about 1.8 MiB across the census, response-
+hash manifest and summary.
+
+The run failed only the predeclared swap-count concentration gate, not a compute or transport gate. Additional
+CPU/GPU cannot repair the decision, and excluding the dominant pool post hoc is prohibited. Paid-data spend,
+remote-worker use and GPU-hours were zero. Both V100s and the RTX 2060 remain idle; no Uniswap response/model job
+is queued.
