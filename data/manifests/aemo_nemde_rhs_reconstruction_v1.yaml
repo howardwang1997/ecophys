@@ -1,0 +1,122 @@
+schema_version: ecophys-aemo-nemde-rhs-reconstruction/v1
+sample_id: aemo-consumed-interval-144-input-rhs-reconstruction-v1
+frozen_at: "2026-08-15T06:58:00Z"
+parent_commit: eb53bfa4eb02f9b80ebe53c4b876fdd3e927a61f
+scientific_role: development_only_input_side_dynamic_rhs_reconstructibility
+
+prior_xml_result:
+  protocol_commit: 9f44bb4431b57564608848cb5b577b7b1e58fa9b
+  result_commit: a203661f93c1a1c4684652e551ad015455f5d948
+  decision: PASS_NEMDE_XML_CONFORMANCE
+  source_manifest_sha256: 25e06b7049f662edc21e1f74c5b0c3d676de9c8a4b3f3b4309a3ab3d1ac40cb5
+  retention_receipt_sha256: b36f59936deddf927957308a32a4cf150b6dfe1c7c71c78dfbeaea7e43b07609
+  summary_sha256: f48d86b8f7837956fa5813e8719a712d543ade3e795fa1ad691036bd096bb7cd
+
+selection:
+  rule: exact_two_consumed_interval_144_cases_from_prior_conformance
+  dates: ["2021-01-01", "2021-12-01"]
+  held_out_status: development_consumed_not_eligible_for_confirmation
+  replacement_allowed: false
+
+source_access_contract:
+  new_aemo_request_count: 0
+  r2_bucket: ecophys
+  exact_r2_object_count: 2
+  exact_total_materialized_bytes: 2097152
+  mismatched_remote_overwrite_allowed: false
+  source_fallback_allowed: false
+  raw_ranges_or_xml_committed_to_git: false
+
+objects:
+  - object_id: pre-5ms-nemde-xml-2021-01-01-144
+    market_date: "2021-01-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    r2_key: raw/aemo/v14_nemde_xml_conformance/NEMSPDOutputs_2021010114400.loaded.range-57637442-58686017.bin
+    expected_filename: NEMSPDOutputs_2021010114400.loaded.range-57637442-58686017.bin
+    range_sha256: 200ecb76f773bfdb227d69a3197cd32d5b7f34829631616892df8ce24d618d63
+    range_bytes: 1048576
+    member_name: NEMSPDOutputs_2021010114400.loaded
+    member_flags: 0
+    compression_method: 8
+    crc32: 11f971a8
+    compressed_bytes: 404030
+    uncompressed_bytes: 7851704
+    xml_sha256: 63f5af1d9cce6b4cd6503bb4e7e86564ea9ab9a576c3556f96fe31d3a75d0bff
+  - object_id: post-5ms-nemde-xml-2021-12-01-144
+    market_date: "2021-12-01"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    r2_key: raw/aemo/v14_nemde_xml_conformance/NEMSPDOutputs_2021120114400.loaded.range-65590506-66639081.bin
+    expected_filename: NEMSPDOutputs_2021120114400.loaded.range-65590506-66639081.bin
+    range_sha256: 9b7f027a2e79128e1eb45309d112b16d74217cf6cd14caa72318616e1254e042
+    range_bytes: 1048576
+    member_name: NEMSPDOutputs_2021120114400.loaded
+    member_flags: 0
+    compression_method: 8
+    crc32: ebbea93d
+    compressed_bytes: 459136
+    uncompressed_bytes: 8895016
+    xml_sha256: 18b7a9f4ae4627a51241a03869533b12b94afc3589a1a02269e34dfe929bd5e0
+
+engine_contract:
+  repository: https://github.com/UNSW-CEEM/nempy.git
+  commit: 2d3cef0e5545c820067fecddfa2e2fd984ac5583
+  package_version: 3.0.3
+  license: BSD-3-Clause
+  clean_checkout_required: true
+  source_files:
+    src/nempy/historical_inputs/rhs_calculator.py: eac0760c8c139a307355e229bfe2c6387a0daa50b87177aa8c3faa6eab8dd18a
+    src/nempy/historical_inputs/xml_cache.py: e9233ed62dbc5f59bb0496f3abe20faf480c54768b5b45da46aacda70a0eff76
+  runtime:
+    python: "3.11"
+    xmltodict: "0.12.0"
+    mathematical_solver_required: false
+
+reference_contract:
+  section: NemSpdOutputs/ConstraintSolution
+  intervention: "0"
+  duplicate_constraint_id_allowed: false
+  nonfinite_rhs_allowed: false
+  reference_access_role: scoring_only_after_predictions
+  individual_rhs_values_committed_to_git: false
+
+sentinel_contract:
+  field: NemSpdOutputs/ConstraintSolution/@RHS
+  sentinel_a: "-1e100"
+  sentinel_b: "1e100"
+  replace_all_output_constraint_rhs: true
+  input_document_mutation_allowed: false
+  equation_selection: all_input_dynamic_rhs_equations_sorted_by_constraint_id
+  exception_filtering_allowed: false
+  retry_or_equation_repair_allowed: false
+  exact_success_value_match_required: true
+  matching_success_or_error_outcome_required: true
+
+metrics:
+  normalized_error: abs_prediction_minus_reference_over_max_one_abs_reference
+  quantile_method: linear_type_7
+  per_case_gates:
+    minimum_dynamic_equation_count: 1
+    minimum_reference_coverage: 1.0
+    minimum_evaluation_coverage: 0.95
+    minimum_sentinel_outcome_match_rate: 1.0
+    minimum_sentinel_success_value_match_rate: 1.0
+    maximum_median_normalized_error: 1.0e-8
+    maximum_p95_normalized_error: 1.0e-3
+  aggregate_rule: both_cases_must_pass_every_gate
+  maximum_error_is_report_only: true
+
+claim_locks:
+  input_side_dynamic_rhs_component_claim_allowed_on_pass: true
+  full_input_only_replay_claim_allowed: false
+  counterfactual_mechanism_claim_allowed: false
+  participant_adaptation_claim_allowed: false
+  causal_claim_allowed: false
+  experiment_156_allowed: false
+  gpu_allowed: false
+  paid_data_allowed: false
+  raw_redistribution_allowed: false
+
+outputs:
+  raw_root: artifacts/v14_aemo_nemde_rhs_reconstruction/raw
+  materialization_receipt: experiments/v14_aemo_nemde_rhs_reconstruction/artifacts/materialization_receipt.json
+  summary: experiments/v14_aemo_nemde_rhs_reconstruction/artifacts/summary.json

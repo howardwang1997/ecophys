@@ -347,3 +347,9 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   for scoring, replace them with two sentinels during computation, require sentinel invariance, and report all
   unsupported equations. It needs zero new AEMO bytes, zero paid data and zero GPU. A pass unlocks only one-day
   alignment and paired assisted/input-only solver design; participant adaptation and Experiment 156 stay locked.
+- RHS protocol frozen at manifest SHA
+  `b56f40999518a7e2df657ea7480a85f0f855a9d8ee8151b6f7cf4f76c99ab7cd`: two consumed interval-144 cases,
+  zero new AEMO requests, exact Nempy commit/source hashes, dual output sentinels `-1e100/+1e100`, all dynamic
+  equations retained. Per-case gates are reference coverage 100%, evaluated coverage >=95%, sentinel outcomes and
+  successful values 100% invariant, normalized median <=1e-8 and p95 <=1e-3. Both cases must pass. Even a pass is
+  only an input-side dynamic-RHS component result.

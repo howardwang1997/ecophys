@@ -634,3 +634,23 @@ permits a one-day temporal-schema/output-alignment gate and the design of paired
 input-only solver arms. An accurate assisted replay is never evidence of participant adaptation. Experiment 156,
 counterfactual claims and GPU training remain locked. Audit:
 `papers/proposal/v14_aemo_open_replay_engine_audit_2026-08-15.md`.
+
+### 11.16 Two-case input-side RHS protocol frozen on 15 August 2026
+
+The first solver-component gate is now frozen without reopening either target. It reuses only the two exact 1 MiB
+ranges already retained by the XML protocol; new AEMO request count is fixed at zero. The R2 materializer must
+reproduce remote metadata, local size/SHA, member metadata, deflate EOF, CRC and the prior XML SHA before the
+analyzer runs. Neither date may be replaced or promoted to confirmation.
+
+The engine is fixed to clean Nempy commit `2d3cef0e5545c820067fecddfa2e2fd984ac5583` with exact source hashes and
+`xmltodict==0.12.0`. For each case, intervention-zero production RHS is sealed for scoring, then **all** output
+constraint RHS fields are replaced in two deep copies by `-1e100` and `1e100`. Every input dynamic equation is
+attempted once under both sentinels. Exceptions cannot be filtered or repaired; both outcomes and every successful
+float must match across sentinels.
+
+Each case requires 100% reference coverage, at least 95% evaluated coverage, exact sentinel invariance, median
+normalized error at most `1e-8` and p95 at most `1e-3`; both cases must pass. Manifest SHA-256:
+`b56f40999518a7e2df657ea7480a85f0f855a9d8ee8151b6f7cf4f76c99ab7cd`. A pass validates only this dynamic-RHS
+component and unlocks one-day alignment design—not a full replay, counterfactual, behavior, EcoMD or Experiment
+156 claim. The protocol is CPU-only with 2 MiB of R2 reads, zero paid data and zero GPU-hours. Protocol:
+`experiments/v14_aemo_nemde_rhs_reconstruction/PREREGISTRATION.md`.

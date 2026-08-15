@@ -112,3 +112,11 @@ The first can be validated against production NEMDE cases. The second is where L
 larger economic story live. A simulator that conflates them can obtain good in-regime fit by borrowing realized
 mechanical state while failing exactly when the rule changes. Measuring that separation is potentially useful for
 NCS; merely cloning historical dispatch is not.
+
+## Protocol freeze update
+
+The R2-only two-case gate is frozen at
+`experiments/v14_aemo_nemde_rhs_reconstruction/PREREGISTRATION.md`, manifest SHA-256
+`b56f40999518a7e2df657ea7480a85f0f855a9d8ee8151b6f7cf4f76c99ab7cd`. It fixes dual sentinels, all-equation
+retention, exact engine hashes and per-case coverage/error gates before any production RHS value is reopened for
+this experiment. No full-day download or solver install is authorized by the freeze.
