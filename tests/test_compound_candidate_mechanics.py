@@ -10,21 +10,23 @@ from ecomd.research.compound_candidate_mechanics import (
     PROXY_UPGRADE_SELECTORS,
     SETTER_SELECTORS,
     _beacon_finalized_execution,
+    _failure_artifact,
     _getter_conformance,
     _receipt_matches_d0,
     _receipt_record,
     analyze_mechanism_trace,
+    build_http_transport,
     decode_asset_info,
     derive_d0_candidates,
     expected_operation_plan,
     load_candidate_mechanics,
-    normalize_call_trace,
+    normalize_blockscout_raw_trace,
     validate_candidate_mechanics,
     validate_parent_evidence,
 )
 from ecomd.research.compound_governance_inventory import EVENT_CONTRACT
 
-MANIFEST_PATH = Path("data/manifests/compound_v3_candidate_mechanics_preflight_v1.yaml")
+MANIFEST_PATH = Path("data/manifests/compound_v3_candidate_mechanics_preflight_v2.yaml")
 D0_SUMMARY_PATH = Path("experiments/v14_compound_v3_governance_log_inventory/artifacts/summary.json")
 D0_INVENTORY_PATH = Path(
     "experiments/v14_compound_v3_governance_log_inventory/artifacts/governance_logs.json"
@@ -55,22 +57,24 @@ def _raw_call(
     from_address: str,
     to_address: str,
     input_data: str,
-    calls: list[dict[str, object]] | None = None,
-    call_type: str = "CALL",
+    trace_address: list[int],
+    subtraces: int = 0,
+    call_type: str = "call",
 ) -> dict[str, object]:
-    value: dict[str, object] = {
-        "type": call_type,
-        "from": from_address,
-        "to": to_address,
-        "value": "0x0",
-        "gas": "0x100000",
-        "gasUsed": "0x1000",
-        "input": input_data,
-        "output": "0x",
+    return {
+        "action": {
+            "callType": call_type,
+            "from": from_address,
+            "to": to_address,
+            "value": "0x0",
+            "gas": "0x100000",
+            "input": input_data,
+        },
+        "result": {"gasUsed": "0x1000", "output": "0x"},
+        "subtraces": subtraces,
+        "traceAddress": trace_address,
+        "type": "call",
     }
-    if calls is not None:
-        value["calls"] = calls
-    return value
 
 
 def _candidate() -> dict[str, object]:
@@ -105,43 +109,49 @@ def _clean_trace() -> tuple[list[dict[str, object]], dict[str, object]]:
     )
     upgrade_input = _static_call(PROXY_UPGRADE_SELECTORS[0], _address_word(IMPLEMENTATION))
     root_input = "0x12345678" + _word(7)
-    raw = _raw_call(
-        from_address=SENDER,
-        to_address=GOVERNOR,
-        input_data=root_input,
-        calls=[
-            _raw_call(
-                from_address=GOVERNOR,
-                to_address=CONFIGURATOR,
-                input_data=setter_input,
-            ),
-            _raw_call(
-                from_address=GOVERNOR,
-                to_address=ADMIN,
-                input_data=admin_input,
-                calls=[
-                    _raw_call(
-                        from_address=ADMIN,
-                        to_address=CONFIGURATOR,
-                        input_data=deploy_input,
-                    ),
-                    _raw_call(
-                        from_address=ADMIN,
-                        to_address=PROXY,
-                        input_data=upgrade_input,
-                    ),
-                ],
-            ),
-            _raw_call(
-                from_address=GOVERNOR,
-                to_address="0x4444444444444444444444444444444444444444",
-                input_data="0xabcdef01",
-                call_type="STATICCALL",
-            ),
-        ],
-    )
+    raw = [
+        _raw_call(
+            from_address=SENDER,
+            to_address=GOVERNOR,
+            input_data=root_input,
+            trace_address=[],
+            subtraces=3,
+        ),
+        _raw_call(
+            from_address=GOVERNOR,
+            to_address=CONFIGURATOR,
+            input_data=setter_input,
+            trace_address=[0],
+        ),
+        _raw_call(
+            from_address=GOVERNOR,
+            to_address=ADMIN,
+            input_data=admin_input,
+            trace_address=[1],
+            subtraces=2,
+        ),
+        _raw_call(
+            from_address=ADMIN,
+            to_address=CONFIGURATOR,
+            input_data=deploy_input,
+            trace_address=[1, 0],
+        ),
+        _raw_call(
+            from_address=ADMIN,
+            to_address=PROXY,
+            input_data=upgrade_input,
+            trace_address=[1, 1],
+        ),
+        _raw_call(
+            from_address=GOVERNOR,
+            to_address="0x4444444444444444444444444444444444444444",
+            input_data="0xabcdef01",
+            trace_address=[2],
+            call_type="staticcall",
+        ),
+    ]
     transaction = {"from": SENDER, "to": GOVERNOR, "value": 0, "input": root_input}
-    nodes = normalize_call_trace(raw, maximum_nodes=100, maximum_input_bytes=10_000)
+    nodes = normalize_blockscout_raw_trace(raw, maximum_nodes=100, maximum_input_bytes=10_000)
     return nodes, transaction
 
 
@@ -229,6 +239,75 @@ def test_clean_trace_has_exact_required_calls_and_no_stateful_sibling() -> None:
     assert analysis["payload_call_cone_isolated"] is True
 
 
+def test_raw_trace_requires_complete_unique_parent_child_topology() -> None:
+    nodes, _ = _clean_trace()
+    assert nodes[0]["path"] == []
+    assert nodes[0]["source_subtraces"] == 3
+
+    raw = [
+        _raw_call(
+            from_address=SENDER,
+            to_address=GOVERNOR,
+            input_data="0x12345678",
+            trace_address=[],
+            subtraces=1,
+        ),
+        _raw_call(
+            from_address=GOVERNOR,
+            to_address=CONFIGURATOR,
+            input_data="0xabcdef01",
+            trace_address=[0],
+        ),
+    ]
+    duplicate = [*raw, deepcopy(raw[1])]
+    with pytest.raises(ValueError, match="unique"):
+        normalize_blockscout_raw_trace(
+            duplicate,
+            maximum_nodes=100,
+            maximum_input_bytes=10_000,
+        )
+
+    missing_parent = deepcopy(raw)
+    missing_parent[1]["traceAddress"] = [0, 0]
+    with pytest.raises(ValueError, match=r"parent|subtrace"):
+        normalize_blockscout_raw_trace(
+            missing_parent,
+            maximum_nodes=100,
+            maximum_input_bytes=10_000,
+        )
+
+    wrong_subtraces = deepcopy(raw)
+    wrong_subtraces[0]["subtraces"] = 2
+    with pytest.raises(ValueError, match="subtrace"):
+        normalize_blockscout_raw_trace(
+            wrong_subtraces,
+            maximum_nodes=100,
+            maximum_input_bytes=10_000,
+        )
+
+    selfdestruct = deepcopy(raw[:1])
+    selfdestruct[0]["subtraces"] = 1
+    selfdestruct.append(
+        {
+            "action": {
+                "address": GOVERNOR,
+                "balance": "0x1",
+                "refundAddress": "0x7777777777777777777777777777777777777777",
+            },
+            "subtraces": 0,
+            "traceAddress": [0],
+            "type": "selfdestruct",
+        }
+    )
+    normalized_selfdestruct = normalize_blockscout_raw_trace(
+        selfdestruct,
+        maximum_nodes=100,
+        maximum_input_bytes=10_000,
+    )
+    assert normalized_selfdestruct[1]["type"] == "SELFDESTRUCT"
+    assert normalized_selfdestruct[1]["value"] == 1
+
+
 def test_required_calls_must_be_calls_with_proxy_admin_topology() -> None:
     nodes, transaction = _clean_trace()
     deploy = next(node for node in nodes if node["selector"] == DEPLOY_SELECTOR)
@@ -290,6 +369,44 @@ def test_successful_stateful_sibling_fails_call_cone_isolation() -> None:
 
     assert analysis["exact_required_calls"] is True
     assert len(analysis["unclassified_successful_stateful_calls"]) == 1
+    assert analysis["payload_call_cone_isolated"] is False
+
+
+def test_selfdestruct_sibling_is_conservatively_stateful() -> None:
+    nodes, transaction = _clean_trace()
+    nodes.append(
+        {
+            "path": [3],
+            "type": "SELFDESTRUCT",
+            "source_type": "selfdestruct",
+            "source_subtraces": 0,
+            "from": GOVERNOR,
+            "to": "0x7777777777777777777777777777777777777777",
+            "value": 1,
+            "gas": 0,
+            "gas_used": 0,
+            "input": "0x",
+            "input_byte_count": 0,
+            "input_sha256": "0" * 64,
+            "selector": None,
+            "output_byte_count": 0,
+            "output_sha256": "0" * 64,
+            "own_success": True,
+            "success": True,
+            "error": None,
+            "revert_reason": None,
+        }
+    )
+
+    analysis = analyze_mechanism_trace(
+        nodes,
+        transaction=transaction,
+        candidate=_candidate(),
+        admin_address=ADMIN,
+    )
+
+    assert analysis["exact_required_calls"] is True
+    assert analysis["unclassified_successful_stateful_calls"][0]["type"] == "SELFDESTRUCT"
     assert analysis["payload_call_cone_isolated"] is False
 
 
@@ -419,13 +536,55 @@ def test_finality_getter_and_exact_ordered_operation_plan() -> None:
     assert len(plan) == 188
     assert Counter(item["provider"] for item in plan) == {
         "blockscout": 156,
-        "publicnode_execution": 31,
+        "blockscout_raw_trace": 14,
+        "publicnode_execution": 17,
         "publicnode_beacon": 1,
     }
     assert plan[0]["label"] == "chain_id"
     assert plan[2]["label"] == "beacon_finality_update"
     assert plan[6]["label"] == "borrow_cf_22273296_0080d1f7:transaction"
+    assert plan[10] == {
+        "operation_type": "blockscout_raw_trace_rest",
+        "provider": "blockscout_raw_trace",
+        "label": "borrow_cf_22273296_0080d1f7:raw_trace",
+        "path": (
+            "/api/v2/transactions/"
+            "0x0080d1f75c7193799b5e1f00028f51239da8da0d0e3192db1f0af5f1edc7bfda/"
+            "raw-trace"
+        ),
+    }
     assert plan[-1]["label"] == "supply_cap_25148942_be6aa6fa:asset_info_post"
+
+
+def test_failure_artifact_bounds_error_and_retains_attempt_ledgers() -> None:
+    manifest = load_candidate_mechanics(MANIFEST_PATH)
+    transport = build_http_transport(manifest)
+    transport.http_attempts = 1
+    transport.response_bytes = 17
+    transport.records.append({"label": "chain_id", "response_body_sha256": "a" * 64})
+    transport.attempt_records.append(
+        {
+            "label": "chain_id",
+            "outcome": "success",
+            "response_body_sha256": "a" * 64,
+        }
+    )
+
+    artifact = _failure_artifact(
+        manifest=manifest,
+        manifest_sha256="b" * 64,
+        collection_commit="c" * 40,
+        transport=transport,
+        error=RuntimeError("x" * 2_100),
+    )
+
+    assert artifact["decision"] == "INFRASTRUCTURE_FAILURE_NO_CANDIDATE_MECHANICS_RESULT"
+    assert artifact["scientific_gate_decision_reached"] is False
+    assert artifact["successful_operation_count"] == 1
+    assert artifact["http_attempt_count"] == artifact["http_attempt_record_count"] == 1
+    assert len(artifact["exception"]["message"]) == 2_000
+    assert artifact["exception"]["message_truncated"] is True
+    assert "raw_response" not in artifact
 
 
 def test_validator_rejects_participant_access_candidate_replacement_and_cap_drift() -> None:

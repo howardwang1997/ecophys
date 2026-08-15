@@ -292,3 +292,12 @@ V1 produced no mechanics result: PublicNode returned JSON-RPC `-32601` for all t
 `debug_traceTransaction` attempts at the first candidate. No trace result or later state/getter query was opened,
 and D1 remains locked. Immutable result:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V1.md`.
+
+V2 now freezes the only permitted repair before any further candidate query. It hash-pins the v1 protocol/result,
+keeps every candidate and scientific check unchanged, and replaces only the unavailable debug RPC with the
+documented Blockscout unpaginated raw-trace endpoint. Flat paths must have a unique root, all parents and exact
+`subtraces`; `SELFDESTRUCT` is conservatively stateful. The exact plan is 173 RPC, 14 raw-trace REST and one Beacon
+request. A bounded failure artifact retains every attempted-response hash/outcome without raw payloads, so another
+transport failure cannot erase provenance. Protocol:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION_V2.md`. D1 remains locked until one
+complete v2 execution passes all unchanged gates.

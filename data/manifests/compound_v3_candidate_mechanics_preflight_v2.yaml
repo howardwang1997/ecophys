@@ -1,0 +1,146 @@
+schema_version: ecophys-compound-v3-candidate-mechanics-preflight/v2
+audit_id: compound_v3_mainnet_candidate_mechanics_preflight_v2
+as_of: "2026-08-16"
+stage: receipt_payload_blockscout_raw_trace_getter_finality_only
+
+base_protocol:
+  manifest_path: data/manifests/compound_v3_candidate_mechanics_preflight_v1.yaml
+  manifest_sha256: c4631c71e22092c72276b9a52d9e7d186db84892b283b06c4e81bfb4288ac1e9
+  protocol_commit: 2ee8a87442b6e5a912354362bddcef572876eb59
+  result_path: experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V1.md
+  result_sha256: 17ca4439933b230f97751972d90c0edfad13326a32a8b4f77d6791ece20eba27
+  result_commit: 2681d224fc08ce75cecfd58a4c4e7a4ef0d4a2e2
+  failure_decision: INFRASTRUCTURE_FAILURE_PUBLICNODE_DEBUG_TRACE_UNAVAILABLE_NO_CANDIDATE_MECHANICS_RESULT
+
+repair_contract:
+  replace_only:
+    - publicnode_debug_traceTransaction_with_blockscout_raw_trace_rest
+    - completion_only_artifacts_with_bounded_failure_ledger
+    - classify_selfdestruct_as_stateful
+  candidates_values_order_and_scientific_gates_unchanged: true
+  account_participant_price_and_response_access_unchanged_locked: true
+  no_candidate_capability_probe_before_protocol_commit: true
+  endpoint_substitution_after_v2_freeze: false
+
+sources:
+  blockscout_rpc_url: https://eth.blockscout.com/api/eth-rpc
+  blockscout_raw_trace_base_url: https://eth.blockscout.com
+  blockscout_documentation_url: https://docs.blockscout.com/devs/apis/rpc/eth-rpc
+  blockscout_raw_trace_documentation_url: https://docs.blockscout.com/api-reference/get-transaction-raw-trace
+  blockscout_rate_limit_documentation_url: https://docs.blockscout.com/devs/apis/requests-and-limits
+  blockscout_node_tracing_documentation_url: https://docs.blockscout.com/setup/requirements/node-tracing-json-rpc-requirements
+  blockscout_terms_url: https://eaas.blockscout.com/terms-and-conditions
+  blockscout_backend_commit: 40349b01f1d50e73a6d2bb7517f98351b4ff0e0a
+  blockscout_transaction_controller_sha256: fc858eb7322f27160c53dd0805bea748d16ce2323d8529a08c3ba241fb9a7430
+  blockscout_chain_module_sha256: 0651b34fdc4f617d4ac18be05aed53f8cac6dfb728b62b2a4020002f7e03da14
+  blockscout_swagger_commit: bfc604de6484caa5566962d6ef22c23168c69de6
+  blockscout_swagger_sha256: b1475f813acacb165a02dcd42a34d28153932b3ce5184914175fcf3bac68943f
+  publicnode_rpc_url: https://ethereum-rpc.publicnode.com
+  publicnode_beacon_url: https://ethereum-beacon-api.publicnode.com
+  publicnode_documentation_url: https://ethereum.publicnode.dev/
+  beacon_api_specification_url: https://github.com/ethereum/beacon-APIs
+  maximum_requests_per_second_across_sources: 1
+  maximum_transport_retries: 2
+  maximum_http_attempts: 600
+  maximum_response_bytes: 268435456
+  maximum_trace_nodes: 200000
+  maximum_trace_input_bytes: 67108864
+  maximum_receipt_logs: 100000
+  raw_response_payloads_retained: false
+  endpoint_substitution_after_freeze: false
+  allowed_rpc_methods:
+    - eth_chainId
+    - eth_getBlockByNumber
+    - eth_getTransactionByHash
+    - eth_getTransactionReceipt
+    - eth_getStorageAt
+    - eth_getCode
+    - eth_call
+  allowed_beacon_paths:
+    - /eth/v1/beacon/light_client/finality_update
+  allowed_rest_path_templates:
+    - /api/v2/transactions/{transaction_hash}/raw-trace
+  user_agent: EcoPhys-V14-Compound-candidate-mechanics-preflight/2.0
+
+trace_contract:
+  format: blockscout_parity_flat_raw_trace
+  unpaginated_complete_array_required: true
+  unique_trace_addresses_required: true
+  one_empty_trace_address_root_required: true
+  every_nonroot_parent_required: true
+  direct_child_indexes_and_subtrace_counts_must_match: true
+  root_must_match_transaction_envelope: true
+  accepted_action_types:
+    - call
+    - create
+    - selfdestruct
+  accepted_call_types:
+    - call
+    - callcode
+    - delegatecall
+    - staticcall
+  selfdestruct_is_stateful: true
+  required_successful_calls:
+    - exact_configurator_setter
+    - exact_configurator_deploy
+    - exact_proxy_admin_deploy_and_upgrade
+    - exact_target_proxy_upgrade
+  required_call_type: CALL
+  deploy_and_upgrade_strictly_descend_from_proxy_admin_call: true
+  deploy_and_upgrade_callers_equal_proxy_admin: true
+  allow_static_calls_outside_mechanism_cone: true
+  reject_stateful_calls_outside_required_ancestor_descendant_cone: true
+  failed_internal_calls_do_not_count_as_state_changes: true
+
+expected_request_contract:
+  candidate_count: 14
+  json_rpc_success_count_without_retry: 173
+  beacon_success_count_without_retry: 1
+  blockscout_raw_trace_success_count_without_retry: 14
+  network_operation_count_without_retry: 188
+  method_counts:
+    eth_chainId: 1
+    eth_getBlockByNumber: 32
+    eth_getTransactionByHash: 14
+    eth_getTransactionReceipt: 14
+    eth_getStorageAt: 56
+    eth_getCode: 28
+    eth_call: 28
+  rest_path_template_counts:
+    /api/v2/transactions/{transaction_hash}/raw-trace: 14
+  provider_counts:
+    blockscout: 156
+    blockscout_raw_trace: 14
+    publicnode_execution: 17
+    publicnode_beacon: 1
+
+failure_artifact_contract:
+  schema_version: ecophys-compound-v3-candidate-mechanics-failure/v2
+  write_on_any_caught_collection_exception: true
+  retain_successful_operation_hash_ledger: true
+  retain_every_http_attempt_hash_and_outcome: true
+  retain_exception_class_and_bounded_message: true
+  maximum_exception_message_characters: 2000
+  raw_response_payloads_retained: false
+  success_outputs_absent_on_failure: true
+  failure_output_absent_on_success: true
+  failure_is_not_a_scientific_gate_decision: true
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_CANDIDATE_MECHANICS_AUTHORIZE_D1_EXPOSURE_PROTOCOL_DESIGN_ONLY
+  fail: FAIL_CANDIDATE_MECHANICS_KEEP_ACCOUNT_AND_RESPONSE_ROWS_LOCKED
+  infrastructure_failure: INFRASTRUCTURE_FAILURE_NO_CANDIDATE_MECHANICS_RESULT
+  authorized_next_stage: separately_frozen_d1_exposure_count_and_cost_protocol_design
+
+limitations:
+  - Blockscout raw traces are provider-returned records; this audit does not independently replay EVM execution.
+  - The raw-trace controller obtains traces through Blockscout's configured execution node, so backend trace availability remains an infrastructure dependency.
+  - The public per-instance Blockscout API is documented but scheduled for deprecation; v2 permits no endpoint substitution after freeze.
+  - The documented flat trace schema does not distinguish CREATE from CREATE2, so both are conservatively normalized as stateful CREATE.
+  - Historical implementation bytecode is hashed but not yet matched to verified source or a reproducible build.
+  - Finality is reported by two provider interfaces; Beacon BLS signatures and Merkle branches are not locally verified.
+  - Governance-neighborhood contamination is limited to the complete frozen D0 Configurator and proxy-log inventory.
+  - No account, participant-action, liquidation, price, oracle or realized-response row is opened, so exposure and causal response remain untested.
+  - V1 failed before any trace result; v2 changes only trace transport, failure evidence and SELFDESTRUCT classification.
+  - The candidate universe is fourteen historical Ethereum mainnet parameter changes and cannot establish cross-market universality.

@@ -10,6 +10,7 @@ import subprocess
 import time
 from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
@@ -31,12 +32,14 @@ from ecomd.research.compound_v3_chain_metadata import (
     canonical_json_sha256,
 )
 
-SCHEMA_VERSION = "ecophys-compound-v3-candidate-mechanics-preflight/v1"
-ARTIFACT_SCHEMA_VERSION = "ecophys-compound-v3-candidate-mechanics-audit/v1"
-AUDIT_ID = "compound_v3_mainnet_candidate_mechanics_preflight_v1"
+SCHEMA_VERSION = "ecophys-compound-v3-candidate-mechanics-preflight/v2"
+ARTIFACT_SCHEMA_VERSION = "ecophys-compound-v3-candidate-mechanics-audit/v2"
+FAILURE_SCHEMA_VERSION = "ecophys-compound-v3-candidate-mechanics-failure/v2"
+AUDIT_ID = "compound_v3_mainnet_candidate_mechanics_preflight_v2"
 AS_OF = "2026-08-16"
-STAGE = "receipt_payload_trace_getter_finality_only"
+STAGE = "receipt_payload_blockscout_raw_trace_getter_finality_only"
 BEACON_PATH = "/eth/v1/beacon/light_client/finality_update"
+RAW_TRACE_PATH_TEMPLATE = "/api/v2/transactions/{transaction_hash}/raw-trace"
 GET_ASSET_INFO_SELECTOR = "0x3b3bec2e"
 DEPLOY_SELECTOR = "0x4c96a389"
 SETTER_SELECTORS = {
@@ -46,11 +49,6 @@ SETTER_SELECTORS = {
 }
 ADMIN_DEPLOY_SELECTORS = ("0x9627816f", "0xc7d20733")
 PROXY_UPGRADE_SELECTORS = ("0x3659cfe6", "0x4f1ef286")
-TRACE_CONFIG: dict[str, object] = {
-    "tracer": "callTracer",
-    "timeout": "60s",
-    "tracerConfig": {"onlyTopCall": False, "withLog": False},
-}
 EVENT_PRIORITY = (
     "update_asset_borrow_collateral_factor",
     "update_asset_liquidate_collateral_factor",
@@ -65,6 +63,12 @@ MARKET_BY_PROXY = {
     "0x3d0bb1ccab520a66e607822fc55bc921738fafe3": "mainnet_wsteth",
 }
 FROZEN_PARENTS = {
+    "base_v1_manifest_path": "data/manifests/compound_v3_candidate_mechanics_preflight_v1.yaml",
+    "base_v1_manifest_sha256": "c4631c71e22092c72276b9a52d9e7d186db84892b283b06c4e81bfb4288ac1e9",
+    "base_v1_protocol_commit": "2ee8a87442b6e5a912354362bddcef572876eb59",
+    "v1_result_path": "experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V1.md",
+    "v1_result_sha256": "17ca4439933b230f97751972d90c0edfad13326a32a8b4f77d6791ece20eba27",
+    "v1_result_commit": "2681d224fc08ce75cecfd58a4c4e7a4ef0d4a2e2",
     "d0_summary_path": "experiments/v14_compound_v3_governance_log_inventory/artifacts/summary.json",
     "d0_summary_sha256": "e03161118ac4cd7aea56f92f40aabdd49348d3170ce256ff42896291c1470b7f",
     "d0_inventory_path": "experiments/v14_compound_v3_governance_log_inventory/artifacts/governance_logs.json",
@@ -73,7 +77,7 @@ FROZEN_PARENTS = {
     "exposure_design_sha256": "ec329243f9fd071405112f4598b3f7e982d56683beec742e15b920c667e4b85e",
     "chain_summary_path": "experiments/v14_compound_v3_chain_metadata_preflight/artifacts_v2/summary.json",
     "chain_summary_sha256": "14f5b044d8c51e4323419b901a7f037c84c4af45083464e0daaefc561256c944",
-    "result_commit": "b07935a5e182cdc4682a1392879291ee8d59136e",
+    "d0_result_commit": "b07935a5e182cdc4682a1392879291ee8d59136e",
     "source_commit": "f766f51583c23acc33b2a7824654ef2029a96804",
 }
 ALLOWED_RPC_METHODS = frozenset(
@@ -82,7 +86,6 @@ ALLOWED_RPC_METHODS = frozenset(
         "eth_getBlockByNumber",
         "eth_getTransactionByHash",
         "eth_getTransactionReceipt",
-        "debug_traceTransaction",
         "eth_getStorageAt",
         "eth_getCode",
         "eth_call",
@@ -121,6 +124,23 @@ TOP_LEVEL_KEYS = frozenset(
         "expected_request_contract",
         "candidates",
         "gates",
+        "decision_policy",
+        "limitations",
+        "failure_artifact_contract",
+    }
+)
+OVERLAY_TOP_LEVEL_KEYS = frozenset(
+    {
+        "schema_version",
+        "audit_id",
+        "as_of",
+        "stage",
+        "base_protocol",
+        "repair_contract",
+        "sources",
+        "trace_contract",
+        "expected_request_contract",
+        "failure_artifact_contract",
         "decision_policy",
         "limitations",
     }
@@ -207,12 +227,95 @@ def _safe_relative_path(value: object) -> bool:
 
 
 def load_candidate_mechanics(path: str | Path) -> dict[str, object]:
-    """Load one frozen candidate-mechanics manifest."""
+    """Load the v2 transport overlay and materialize its hash-pinned v1 scientific base."""
 
     value: object = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
     if not isinstance(value, dict):
         raise ValueError("candidate mechanics root must be a mapping")
-    return cast(dict[str, object], value)
+    overlay = cast(dict[str, object], value)
+    overlay_errors: list[str] = []
+    if set(overlay) != OVERLAY_TOP_LEVEL_KEYS:
+        overlay_errors.append(f"v2 overlay must contain exactly {sorted(OVERLAY_TOP_LEVEL_KEYS)}")
+    for key, expected in {
+        "schema_version": SCHEMA_VERSION,
+        "audit_id": AUDIT_ID,
+        "as_of": AS_OF,
+        "stage": STAGE,
+    }.items():
+        if overlay.get(key) != expected:
+            overlay_errors.append(f"v2 overlay {key} must equal {expected}")
+    expected_base = {
+        "manifest_path": FROZEN_PARENTS["base_v1_manifest_path"],
+        "manifest_sha256": FROZEN_PARENTS["base_v1_manifest_sha256"],
+        "protocol_commit": FROZEN_PARENTS["base_v1_protocol_commit"],
+        "result_path": FROZEN_PARENTS["v1_result_path"],
+        "result_sha256": FROZEN_PARENTS["v1_result_sha256"],
+        "result_commit": FROZEN_PARENTS["v1_result_commit"],
+        "failure_decision": (
+            "INFRASTRUCTURE_FAILURE_PUBLICNODE_DEBUG_TRACE_UNAVAILABLE_NO_CANDIDATE_MECHANICS_RESULT"
+        ),
+    }
+    base_protocol = _mapping(overlay.get("base_protocol"))
+    if base_protocol is None or dict(base_protocol) != expected_base:
+        overlay_errors.append("v2 base_protocol differs from the frozen v1 parent")
+    expected_repair = {
+        "replace_only": [
+            "publicnode_debug_traceTransaction_with_blockscout_raw_trace_rest",
+            "completion_only_artifacts_with_bounded_failure_ledger",
+            "classify_selfdestruct_as_stateful",
+        ],
+        "candidates_values_order_and_scientific_gates_unchanged": True,
+        "account_participant_price_and_response_access_unchanged_locked": True,
+        "no_candidate_capability_probe_before_protocol_commit": True,
+        "endpoint_substitution_after_v2_freeze": False,
+    }
+    repair = _mapping(overlay.get("repair_contract"))
+    if repair is None or dict(repair) != expected_repair:
+        overlay_errors.append("v2 repair_contract differs from the frozen narrow repair")
+    for key in (
+        "sources",
+        "trace_contract",
+        "expected_request_contract",
+        "failure_artifact_contract",
+        "decision_policy",
+    ):
+        if _mapping(overlay.get(key)) is None:
+            overlay_errors.append(f"v2 overlay {key} must be a mapping")
+    if _strings(overlay.get("limitations")) is None:
+        overlay_errors.append("v2 overlay limitations must be a string list")
+    if overlay_errors:
+        raise ValueError("invalid candidate mechanics v2 overlay: " + "; ".join(sorted(overlay_errors)))
+
+    base_path = Path(FROZEN_PARENTS["base_v1_manifest_path"])
+    if not base_path.is_file():
+        raise FileNotFoundError(f"v1 base manifest is missing: {base_path}")
+    if hashlib.sha256(base_path.read_bytes()).hexdigest() != FROZEN_PARENTS["base_v1_manifest_sha256"]:
+        raise ValueError("v1 base manifest hash differs from the frozen value")
+    base_value: object = yaml.safe_load(base_path.read_text(encoding="utf-8"))
+    if not isinstance(base_value, dict):
+        raise ValueError("v1 base manifest must be a mapping")
+    base = cast(dict[str, object], base_value)
+    if (
+        base.get("schema_version") != "ecophys-compound-v3-candidate-mechanics-preflight/v1"
+        or base.get("audit_id") != "compound_v3_mainnet_candidate_mechanics_preflight_v1"
+        or len(cast(list[object], base.get("candidates", []))) != 14
+    ):
+        raise ValueError("v1 base manifest identity or candidate count is invalid")
+
+    effective = deepcopy(base)
+    for key in ("schema_version", "audit_id", "as_of", "stage"):
+        effective[key] = overlay[key]
+    effective["parents"] = dict(FROZEN_PARENTS)
+    for key in (
+        "sources",
+        "trace_contract",
+        "expected_request_contract",
+        "failure_artifact_contract",
+        "decision_policy",
+        "limitations",
+    ):
+        effective[key] = deepcopy(overlay[key])
+    return effective
 
 
 def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
@@ -257,8 +360,27 @@ def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
     sources = _mapping(manifest.get("sources"))
     required_source_values: dict[str, object] = {
         "blockscout_rpc_url": "https://eth.blockscout.com/api/eth-rpc",
+        "blockscout_raw_trace_base_url": "https://eth.blockscout.com",
         "blockscout_documentation_url": "https://docs.blockscout.com/devs/apis/rpc/eth-rpc",
+        "blockscout_raw_trace_documentation_url": (
+            "https://docs.blockscout.com/api-reference/get-transaction-raw-trace"
+        ),
+        "blockscout_rate_limit_documentation_url": (
+            "https://docs.blockscout.com/devs/apis/requests-and-limits"
+        ),
+        "blockscout_node_tracing_documentation_url": (
+            "https://docs.blockscout.com/setup/requirements/node-tracing-json-rpc-requirements"
+        ),
         "blockscout_terms_url": "https://eaas.blockscout.com/terms-and-conditions",
+        "blockscout_backend_commit": "40349b01f1d50e73a6d2bb7517f98351b4ff0e0a",
+        "blockscout_transaction_controller_sha256": (
+            "fc858eb7322f27160c53dd0805bea748d16ce2323d8529a08c3ba241fb9a7430"
+        ),
+        "blockscout_chain_module_sha256": (
+            "0651b34fdc4f617d4ac18be05aed53f8cac6dfb728b62b2a4020002f7e03da14"
+        ),
+        "blockscout_swagger_commit": "bfc604de6484caa5566962d6ef22c23168c69de6",
+        "blockscout_swagger_sha256": ("b1475f813acacb165a02dcd42a34d28153932b3ce5184914175fcf3bac68943f"),
         "publicnode_rpc_url": "https://ethereum-rpc.publicnode.com",
         "publicnode_beacon_url": "https://ethereum-beacon-api.publicnode.com",
         "publicnode_documentation_url": "https://ethereum.publicnode.dev/",
@@ -272,9 +394,13 @@ def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
         "maximum_receipt_logs": 100_000,
         "raw_response_payloads_retained": False,
         "endpoint_substitution_after_freeze": False,
-        "user_agent": "EcoPhys-V14-Compound-candidate-mechanics-preflight/1.0",
+        "user_agent": "EcoPhys-V14-Compound-candidate-mechanics-preflight/2.0",
     }
-    expected_source_keys = set(required_source_values) | {"allowed_rpc_methods", "allowed_beacon_paths"}
+    expected_source_keys = set(required_source_values) | {
+        "allowed_rpc_methods",
+        "allowed_beacon_paths",
+        "allowed_rest_path_templates",
+    }
     if sources is None or set(sources) != expected_source_keys:
         errors.append(f"sources must contain exactly {sorted(expected_source_keys)}")
         sources = {}
@@ -286,7 +412,6 @@ def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
         "eth_getBlockByNumber",
         "eth_getTransactionByHash",
         "eth_getTransactionReceipt",
-        "debug_traceTransaction",
         "eth_getStorageAt",
         "eth_getCode",
         "eth_call",
@@ -294,6 +419,8 @@ def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
         errors.append("sources.allowed_rpc_methods differs from the frozen order")
     if _strings(sources.get("allowed_beacon_paths")) != (BEACON_PATH,):
         errors.append("sources.allowed_beacon_paths differs from the frozen path")
+    if _strings(sources.get("allowed_rest_path_templates")) != (RAW_TRACE_PATH_TEMPLATE,):
+        errors.append("sources.allowed_rest_path_templates differs from the frozen path")
 
     expected_selection = {
         "audit_every_d0_provisional_candidate": True,
@@ -333,11 +460,16 @@ def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
         errors.append("contracts differ from the frozen ABI/slot contract")
 
     expected_trace = {
-        "tracer": "callTracer",
-        "timeout": "60s",
-        "only_top_call": False,
-        "with_log": False,
+        "format": "blockscout_parity_flat_raw_trace",
+        "unpaginated_complete_array_required": True,
+        "unique_trace_addresses_required": True,
+        "one_empty_trace_address_root_required": True,
+        "every_nonroot_parent_required": True,
+        "direct_child_indexes_and_subtrace_counts_must_match": True,
         "root_must_match_transaction_envelope": True,
+        "accepted_action_types": ["call", "create", "selfdestruct"],
+        "accepted_call_types": ["call", "callcode", "delegatecall", "staticcall"],
+        "selfdestruct_is_stateful": True,
         "required_successful_calls": [
             "exact_configurator_setter",
             "exact_configurator_deploy",
@@ -381,28 +513,46 @@ def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
 
     expected_requests = {
         "candidate_count": 14,
-        "json_rpc_success_count_without_retry": 187,
+        "json_rpc_success_count_without_retry": 173,
         "beacon_success_count_without_retry": 1,
+        "blockscout_raw_trace_success_count_without_retry": 14,
         "network_operation_count_without_retry": 188,
         "method_counts": {
             "eth_chainId": 1,
             "eth_getBlockByNumber": 32,
             "eth_getTransactionByHash": 14,
             "eth_getTransactionReceipt": 14,
-            "debug_traceTransaction": 14,
             "eth_getStorageAt": 56,
             "eth_getCode": 28,
             "eth_call": 28,
         },
+        "rest_path_template_counts": {RAW_TRACE_PATH_TEMPLATE: 14},
         "provider_counts": {
             "blockscout": 156,
-            "publicnode_execution": 31,
+            "blockscout_raw_trace": 14,
+            "publicnode_execution": 17,
             "publicnode_beacon": 1,
         },
     }
     requests = _mapping(manifest.get("expected_request_contract"))
     if requests is None or dict(requests) != expected_requests:
         errors.append("expected_request_contract differs from the frozen plan")
+
+    expected_failure = {
+        "schema_version": FAILURE_SCHEMA_VERSION,
+        "write_on_any_caught_collection_exception": True,
+        "retain_successful_operation_hash_ledger": True,
+        "retain_every_http_attempt_hash_and_outcome": True,
+        "retain_exception_class_and_bounded_message": True,
+        "maximum_exception_message_characters": 2_000,
+        "raw_response_payloads_retained": False,
+        "success_outputs_absent_on_failure": True,
+        "failure_output_absent_on_success": True,
+        "failure_is_not_a_scientific_gate_decision": True,
+    }
+    failure_contract = _mapping(manifest.get("failure_artifact_contract"))
+    if failure_contract is None or dict(failure_contract) != expected_failure:
+        errors.append("failure_artifact_contract differs from the frozen contract")
 
     candidates = _mapping_list(manifest.get("candidates"))
     if candidates is None or len(candidates) != 14:
@@ -454,14 +604,15 @@ def validate_candidate_mechanics(manifest: Mapping[str, object]) -> list[str]:
         "all_gates_required": True,
         "pass": "PASS_CANDIDATE_MECHANICS_AUTHORIZE_D1_EXPOSURE_PROTOCOL_DESIGN_ONLY",
         "fail": "FAIL_CANDIDATE_MECHANICS_KEEP_ACCOUNT_AND_RESPONSE_ROWS_LOCKED",
+        "infrastructure_failure": "INFRASTRUCTURE_FAILURE_NO_CANDIDATE_MECHANICS_RESULT",
         "authorized_next_stage": "separately_frozen_d1_exposure_count_and_cost_protocol_design",
     }
     policy = _mapping(manifest.get("decision_policy"))
     if policy is None or dict(policy) != expected_policy:
         errors.append("decision_policy differs from the frozen contract")
     limitations = _strings(manifest.get("limitations"))
-    if limitations is None or len(limitations) < 6:
-        errors.append("limitations must contain at least six strings")
+    if limitations is None or len(limitations) < 8:
+        errors.append("limitations must contain at least eight strings")
     return sorted(errors)
 
 
@@ -546,6 +697,8 @@ def validate_parent_evidence(manifest: Mapping[str, object], root: str | Path) -
     root_path = Path(root)
     parents = cast(Mapping[str, object], manifest["parents"])
     for path_key, hash_key in (
+        ("base_v1_manifest_path", "base_v1_manifest_sha256"),
+        ("v1_result_path", "v1_result_sha256"),
         ("d0_summary_path", "d0_summary_sha256"),
         ("d0_inventory_path", "d0_inventory_sha256"),
         ("exposure_design_path", "exposure_design_sha256"),
@@ -560,6 +713,12 @@ def validate_parent_evidence(manifest: Mapping[str, object], root: str | Path) -
         return sorted(errors)
     summary = _read_json_mapping(root_path / cast(str, parents["d0_summary_path"]))
     inventory = _read_json_mapping_list(root_path / cast(str, parents["d0_inventory_path"]))
+    v1_result = (root_path / cast(str, parents["v1_result_path"])).read_text(encoding="utf-8")
+    if cast(str, parents["base_v1_protocol_commit"]) not in v1_result or (
+        "INFRASTRUCTURE_FAILURE_PUBLICNODE_DEBUG_TRACE_UNAVAILABLE_NO_CANDIDATE_MECHANICS_RESULT"
+        not in v1_result
+    ):
+        errors.append("v1 result does not record the frozen protocol failure")
     if summary.get("decision") != "PASS_GOVERNANCE_LOG_INVENTORY_AUTHORIZE_RECEIPT_PAYLOAD_PREFLIGHT_ONLY":
         errors.append("D0 parent decision is not the frozen pass")
     derived = derive_d0_candidates(summary, inventory)
@@ -638,7 +797,7 @@ def decode_asset_info(value: object, *, expected_asset: str) -> dict[str, object
 
 
 class HttpTransport:
-    """Globally rate-limited RPC/Beacon transport retaining hashes and normalized requests."""
+    """Globally rate-limited transport retaining logical requests and every attempt hash."""
 
     def __init__(
         self,
@@ -660,6 +819,7 @@ class HttpTransport:
         self.http_attempts = 0
         self.response_bytes = 0
         self.records: list[dict[str, object]] = []
+        self.attempt_records: list[dict[str, object]] = []
 
     def _wait(self) -> None:
         if self._last_start is not None:
@@ -670,6 +830,46 @@ class HttpTransport:
         self.response_bytes += len(body)
         if self.response_bytes > self._maximum_response_bytes:
             raise RuntimeError("maximum response-byte cap exceeded")
+
+    @staticmethod
+    def _bounded_error(value: object) -> str:
+        return str(value)[:2_000]
+
+    def _record_attempt(
+        self,
+        *,
+        operation_type: str,
+        provider: str,
+        label: str,
+        request_sha256: str,
+        logical_attempt: int,
+        outcome: str,
+        error: str | None,
+        response_body: bytes | None,
+        response_json: object | None,
+        http_status: int | None,
+    ) -> None:
+        self.attempt_records.append(
+            {
+                "http_attempt_index": self.http_attempts - 1,
+                "operation_type": operation_type,
+                "provider": provider,
+                "label": label,
+                "request_sha256": request_sha256,
+                "logical_attempt": logical_attempt,
+                "outcome": outcome,
+                "error": None if error is None else self._bounded_error(error),
+                "http_status": http_status,
+                "response_body_sha256": (
+                    None if response_body is None else hashlib.sha256(response_body).hexdigest()
+                ),
+                "response_canonical_json_sha256": (
+                    None if response_json is None else canonical_json_sha256(response_json)
+                ),
+                "response_byte_count": 0 if response_body is None else len(response_body),
+                "retrieved_at_utc": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+            }
+        )
 
     def rpc_call(
         self,
@@ -687,31 +887,77 @@ class HttpTransport:
         request_id = self._next_rpc_id
         self._next_rpc_id += 1
         request = {"jsonrpc": "2.0", "id": request_id, "method": method, "params": list(params)}
+        request_sha256 = canonical_json_sha256(request)
         prior_errors: list[str] = []
         for attempt in range(self._maximum_transport_retries + 1):
             if self.http_attempts >= self._maximum_http_attempts:
                 raise RuntimeError("maximum HTTP-attempt cap reached")
             self._wait()
             self.http_attempts += 1
+            body: bytes | None = None
+            envelope_value: object | None = None
+            http_status: int | None = None
+            error: str | None = None
             try:
                 response = self._session.post(url, json=request, timeout=120.0)
                 body = response.content
+                http_status = response.status_code
                 self._consume(body)
                 response.raise_for_status()
-                envelope_value: object = response.json()
-            except RuntimeError:
+                envelope_value = response.json()
+            except RuntimeError as exc:
+                self._record_attempt(
+                    operation_type="json_rpc",
+                    provider=provider,
+                    label=label,
+                    request_sha256=request_sha256,
+                    logical_attempt=attempt + 1,
+                    outcome="resource_cap_error",
+                    error=str(exc),
+                    response_body=body,
+                    response_json=envelope_value,
+                    http_status=http_status,
+                )
                 raise
             except (requests.RequestException, ValueError) as exc:
-                prior_errors.append(f"{type(exc).__name__}: {exc}")
+                error = f"{type(exc).__name__}: {exc}"
+                prior_errors.append(self._bounded_error(error))
+                self._record_attempt(
+                    operation_type="json_rpc",
+                    provider=provider,
+                    label=label,
+                    request_sha256=request_sha256,
+                    logical_attempt=attempt + 1,
+                    outcome="transport_or_decode_error",
+                    error=error,
+                    response_body=body,
+                    response_json=envelope_value,
+                    http_status=http_status,
+                )
             else:
                 envelope = _mapping(envelope_value)
                 if envelope is None:
-                    prior_errors.append("RPC response is not a mapping")
+                    error = "RPC response is not a mapping"
                 elif envelope.get("error") is not None:
-                    prior_errors.append(f"RPC error: {envelope['error']}")
+                    error = f"RPC error: {envelope['error']}"
                 elif "result" not in envelope or envelope.get("result") is None:
-                    prior_errors.append("RPC result is missing or null")
+                    error = "RPC result is missing or null"
                 else:
+                    error = None
+                self._record_attempt(
+                    operation_type="json_rpc",
+                    provider=provider,
+                    label=label,
+                    request_sha256=request_sha256,
+                    logical_attempt=attempt + 1,
+                    outcome="success" if error is None else "rpc_envelope_error",
+                    error=error,
+                    response_body=body,
+                    response_json=envelope_value,
+                    http_status=http_status,
+                )
+                if error is None:
+                    assert envelope is not None
                     result = envelope["result"]
                     self.records.append(
                         {
@@ -721,7 +967,7 @@ class HttpTransport:
                             "provider": provider,
                             "method": method,
                             "params": list(params),
-                            "request_sha256": canonical_json_sha256(request),
+                            "request_sha256": request_sha256,
                             "response_body_sha256": hashlib.sha256(body).hexdigest(),
                             "response_canonical_json_sha256": canonical_json_sha256(envelope_value),
                             "response_byte_count": len(body),
@@ -731,45 +977,96 @@ class HttpTransport:
                         }
                     )
                     return result
+                prior_errors.append(self._bounded_error(error))
             if attempt < self._maximum_transport_retries:
                 time.sleep(float(attempt + 1))
         raise RuntimeError(f"{label} failed after all attempts: {prior_errors}")
 
-    def beacon_get(self, *, base_url: str, path: str, label: str) -> object:
-        """Issue the single frozen Beacon API request."""
-
-        if path != BEACON_PATH:
-            raise ValueError(f"forbidden Beacon API path: {path}")
+    def _rest_get(
+        self,
+        *,
+        base_url: str,
+        path: str,
+        label: str,
+        provider: str,
+        operation_type: str,
+        require_mapping: bool,
+    ) -> object:
         url = base_url.rstrip("/") + path
+        request_record = {"method": "GET", "url": url, "accept": "application/json"}
+        request_sha256 = canonical_json_sha256(request_record)
         prior_errors: list[str] = []
         for attempt in range(self._maximum_transport_retries + 1):
             if self.http_attempts >= self._maximum_http_attempts:
                 raise RuntimeError("maximum HTTP-attempt cap reached")
             self._wait()
             self.http_attempts += 1
+            body: bytes | None = None
+            value: object | None = None
+            http_status: int | None = None
+            error: str | None = None
             try:
                 response = self._session.get(url, headers={"Accept": "application/json"}, timeout=120.0)
                 body = response.content
+                http_status = response.status_code
                 self._consume(body)
                 response.raise_for_status()
-                value: object = response.json()
-            except RuntimeError:
+                value = response.json()
+            except RuntimeError as exc:
+                self._record_attempt(
+                    operation_type=operation_type,
+                    provider=provider,
+                    label=label,
+                    request_sha256=request_sha256,
+                    logical_attempt=attempt + 1,
+                    outcome="resource_cap_error",
+                    error=str(exc),
+                    response_body=body,
+                    response_json=value,
+                    http_status=http_status,
+                )
                 raise
             except (requests.RequestException, ValueError) as exc:
-                prior_errors.append(f"{type(exc).__name__}: {exc}")
+                error = f"{type(exc).__name__}: {exc}"
+                prior_errors.append(self._bounded_error(error))
+                self._record_attempt(
+                    operation_type=operation_type,
+                    provider=provider,
+                    label=label,
+                    request_sha256=request_sha256,
+                    logical_attempt=attempt + 1,
+                    outcome="transport_or_decode_error",
+                    error=error,
+                    response_body=body,
+                    response_json=value,
+                    http_status=http_status,
+                )
             else:
-                if _mapping(value) is None:
-                    prior_errors.append("Beacon response is not a mapping")
+                valid_shape = _mapping(value) is not None if require_mapping else isinstance(value, list)
+                error = None if valid_shape else "REST response has the wrong top-level shape"
+                self._record_attempt(
+                    operation_type=operation_type,
+                    provider=provider,
+                    label=label,
+                    request_sha256=request_sha256,
+                    logical_attempt=attempt + 1,
+                    outcome="success" if error is None else "rest_schema_error",
+                    error=error,
+                    response_body=body,
+                    response_json=value,
+                    http_status=http_status,
+                )
+                if error is not None:
+                    prior_errors.append(error)
                 else:
-                    request_record = {"method": "GET", "url": url, "accept": "application/json"}
                     self.records.append(
                         {
                             "operation_index": len(self.records),
-                            "operation_type": "beacon_rest",
+                            "operation_type": operation_type,
                             "label": label,
-                            "provider": "publicnode_beacon",
+                            "provider": provider,
                             "path": path,
-                            "request_sha256": canonical_json_sha256(request_record),
+                            "request_sha256": request_sha256,
                             "response_body_sha256": hashlib.sha256(body).hexdigest(),
                             "response_canonical_json_sha256": canonical_json_sha256(value),
                             "response_byte_count": len(body),
@@ -782,6 +1079,34 @@ class HttpTransport:
             if attempt < self._maximum_transport_retries:
                 time.sleep(float(attempt + 1))
         raise RuntimeError(f"{label} failed after all attempts: {prior_errors}")
+
+    def beacon_get(self, *, base_url: str, path: str, label: str) -> object:
+        """Issue the single frozen Beacon API request."""
+
+        if path != BEACON_PATH:
+            raise ValueError(f"forbidden Beacon API path: {path}")
+        return self._rest_get(
+            base_url=base_url,
+            path=path,
+            label=label,
+            provider="publicnode_beacon",
+            operation_type="beacon_rest",
+            require_mapping=True,
+        )
+
+    def raw_trace_get(self, *, base_url: str, transaction_hash: str, label: str) -> object:
+        """Issue one frozen Blockscout raw-trace REST request."""
+
+        normalized_hash = normalize_hash(transaction_hash, path="raw_trace.transaction_hash")
+        path = RAW_TRACE_PATH_TEMPLATE.format(transaction_hash=normalized_hash)
+        return self._rest_get(
+            base_url=base_url,
+            path=path,
+            label=label,
+            provider="blockscout_raw_trace",
+            operation_type="blockscout_raw_trace_rest",
+            require_mapping=False,
+        )
 
 
 def _block_record(value: object, *, expected_number: int | None, path: str) -> dict[str, object]:
@@ -971,6 +1296,153 @@ def normalize_call_trace(
     return records
 
 
+def normalize_blockscout_raw_trace(
+    value: object, *, maximum_nodes: int, maximum_input_bytes: int
+) -> list[dict[str, object]]:
+    """Strictly normalize one complete flat Blockscout/Parity transaction trace."""
+
+    raw_records = _mapping_list(value)
+    if raw_records is None or not raw_records:
+        raise ValueError("Blockscout raw trace must be a nonempty list of mappings")
+    if len(raw_records) > maximum_nodes:
+        raise RuntimeError("maximum trace-node cap exceeded")
+    normalized: list[dict[str, object]] = []
+    input_bytes_total = 0
+    paths: set[tuple[int, ...]] = set()
+    source_subtraces: dict[tuple[int, ...], int] = {}
+    for raw in raw_records:
+        path_value = raw.get("traceAddress")
+        if not isinstance(path_value, list) or any(
+            not isinstance(item, int) or isinstance(item, bool) or item < 0 for item in path_value
+        ):
+            raise ValueError("raw traceAddress must be a list of nonnegative integers")
+        path = tuple(cast(list[int], path_value))
+        if path in paths:
+            raise ValueError("raw traceAddress values must be unique")
+        paths.add(path)
+        subtraces = raw.get("subtraces")
+        if not isinstance(subtraces, int) or isinstance(subtraces, bool) or subtraces < 0:
+            raise ValueError("raw trace subtraces must be a nonnegative integer")
+        source_subtraces[path] = subtraces
+        source_type = raw.get("type")
+        if not isinstance(source_type, str):
+            raise ValueError("raw trace type must be a string")
+        action = _mapping(raw.get("action"))
+        if action is None:
+            raise ValueError("raw trace action must be a mapping")
+        error = raw.get("error")
+        if error is not None and not isinstance(error, str):
+            raise ValueError("raw trace error must be a string when present")
+        result = _mapping(raw.get("result"))
+        source_type_lower = source_type.lower()
+        if source_type_lower == "call":
+            call_type = action.get("callType")
+            if not isinstance(call_type, str) or call_type.lower() not in {
+                "call",
+                "callcode",
+                "delegatecall",
+                "staticcall",
+            }:
+                raise ValueError("raw trace callType is not a frozen EVM call type")
+            normalized_type = call_type.upper()
+            from_address = normalize_address(action.get("from"), path="raw_trace.action.from")
+            to_address: str | None = normalize_address(action.get("to"), path="raw_trace.action.to")
+            input_bytes = _hex_bytes(action.get("input"), path="raw_trace.action.input")
+            gas = decode_quantity(action.get("gas"), path="raw_trace.action.gas")
+            call_value = decode_quantity(action.get("value"), path="raw_trace.action.value")
+            if error is None and result is None:
+                raise ValueError("successful raw call trace must have a result")
+            output_bytes = (
+                b"" if result is None else _hex_bytes(result.get("output"), path="raw_trace.result.output")
+            )
+            gas_used = (
+                0
+                if result is None
+                else decode_quantity(result.get("gasUsed"), path="raw_trace.result.gasUsed")
+            )
+        elif source_type_lower == "create":
+            normalized_type = "CREATE"
+            from_address = normalize_address(action.get("from"), path="raw_trace.create.from")
+            input_bytes = _hex_bytes(action.get("init"), path="raw_trace.create.init")
+            gas = decode_quantity(action.get("gas"), path="raw_trace.create.gas")
+            call_value = decode_quantity(action.get("value"), path="raw_trace.create.value")
+            if error is None and result is None:
+                raise ValueError("successful raw create trace must have a result")
+            to_address = (
+                None
+                if result is None
+                else normalize_address(result.get("address"), path="raw_trace.create.address")
+            )
+            output_bytes = (
+                b"" if result is None else _hex_bytes(result.get("code"), path="raw_trace.create.code")
+            )
+            gas_used = (
+                0
+                if result is None
+                else decode_quantity(result.get("gasUsed"), path="raw_trace.create.gasUsed")
+            )
+        elif source_type_lower == "selfdestruct":
+            if result is not None:
+                raise ValueError("selfdestruct raw trace must not contain a result")
+            if subtraces != 0:
+                raise ValueError("selfdestruct raw trace cannot contain subtraces")
+            normalized_type = "SELFDESTRUCT"
+            from_address = normalize_address(action.get("address"), path="raw_trace.selfdestruct.address")
+            to_address = normalize_address(
+                action.get("refundAddress"), path="raw_trace.selfdestruct.refundAddress"
+            )
+            input_bytes = b""
+            output_bytes = b""
+            gas = 0
+            gas_used = 0
+            call_value = decode_quantity(action.get("balance"), path="raw_trace.selfdestruct.balance")
+        else:
+            raise ValueError("raw trace type is outside the frozen call/create/selfdestruct schema")
+        input_bytes_total += len(input_bytes)
+        if input_bytes_total > maximum_input_bytes:
+            raise RuntimeError("maximum trace-input byte cap exceeded")
+        normalized.append(
+            {
+                "path": list(path),
+                "type": normalized_type,
+                "source_type": source_type_lower,
+                "source_subtraces": subtraces,
+                "from": from_address,
+                "to": to_address,
+                "value": call_value,
+                "gas": gas,
+                "gas_used": gas_used,
+                "input": "0x" + input_bytes.hex(),
+                "input_byte_count": len(input_bytes),
+                "input_sha256": hashlib.sha256(input_bytes).hexdigest(),
+                "selector": "0x" + input_bytes[:4].hex() if len(input_bytes) >= 4 else None,
+                "output_byte_count": len(output_bytes),
+                "output_sha256": hashlib.sha256(output_bytes).hexdigest(),
+                "own_success": error is None,
+                "success": error is None,
+                "error": error,
+                "revert_reason": None,
+            }
+        )
+    if () not in paths:
+        raise ValueError("raw trace must contain one empty traceAddress root")
+    for path in paths:
+        if path and path[:-1] not in paths:
+            raise ValueError("every nonroot raw trace must have an explicit parent")
+        children = sorted(child[-1] for child in paths if len(child) == len(path) + 1 and child[:-1] == path)
+        if children != list(range(source_subtraces[path])):
+            raise ValueError("raw trace child indexes or subtrace count are incomplete")
+    normalized.sort(key=lambda item: tuple(cast(list[int], item["path"])))
+    by_path = {tuple(cast(list[int], item["path"])): item for item in normalized}
+    for item in normalized:
+        path = tuple(cast(list[int], item["path"]))
+        if path:
+            item["success"] = item["own_success"] is True and by_path[path[:-1]]["success"] is True
+    if normalized[0]["path"] != [] or normalized[0]["type"] != "CALL":
+        raise ValueError("raw trace root must be the top-level CALL")
+    return normalized
+
+
 def _input_bytes(node: Mapping[str, object]) -> bytes:
     return _hex_bytes(node["input"], path="normalized_trace.input")
 
@@ -1075,7 +1547,14 @@ def analyze_mechanism_trace(
         "exact_target_proxy_upgrade": upgrade_matches,
     }
     required_paths = [tuple(cast(list[int], node["path"])) for matches in groups.values() for node in matches]
-    stateful_types = {"CALL", "CALLCODE", "DELEGATECALL", "CREATE", "CREATE2"}
+    stateful_types = {
+        "CALL",
+        "CALLCODE",
+        "DELEGATECALL",
+        "CREATE",
+        "CREATE2",
+        "SELFDESTRUCT",
+    }
     unclassified: list[dict[str, object]] = []
     for node in nodes:
         if node.get("success") is not True or node.get("type") not in stateful_types:
@@ -1303,11 +1782,13 @@ def expected_operation_plan(
             "eth_getBlockByNumber",
             [hex(block_number), False],
         )
-        rpc(
-            "publicnode_execution",
-            f"{candidate_id}:call_trace",
-            "debug_traceTransaction",
-            [transaction_hash, TRACE_CONFIG],
+        plan.append(
+            {
+                "operation_type": "blockscout_raw_trace_rest",
+                "provider": "blockscout_raw_trace",
+                "label": f"{candidate_id}:raw_trace",
+                "path": RAW_TRACE_PATH_TEMPLATE.format(transaction_hash=transaction_hash),
+            }
         )
         for suffix, slot, height in (
             ("implementation_pre", IMPLEMENTATION_SLOT, pre_block),
@@ -1364,9 +1845,25 @@ def _observed_operation_plan(records: Sequence[Mapping[str, object]]) -> list[di
     return plan
 
 
+def build_http_transport(manifest: Mapping[str, object]) -> HttpTransport:
+    """Construct the single bounded transport used by collection and failure evidence."""
+
+    sources = cast(Mapping[str, object], manifest["sources"])
+    return HttpTransport(
+        user_agent=cast(str, sources["user_agent"]),
+        maximum_requests_per_second=float(cast(int, sources["maximum_requests_per_second_across_sources"])),
+        maximum_transport_retries=cast(int, sources["maximum_transport_retries"]),
+        maximum_http_attempts=cast(int, sources["maximum_http_attempts"]),
+        maximum_response_bytes=cast(int, sources["maximum_response_bytes"]),
+    )
+
+
 def collect_candidate_mechanics(
-    manifest: Mapping[str, object], *, root: str | Path = "."
-) -> tuple[dict[str, object], list[dict[str, object]], list[dict[str, object]]]:
+    manifest: Mapping[str, object],
+    *,
+    root: str | Path = ".",
+    transport: HttpTransport | None = None,
+) -> tuple[dict[str, object], list[dict[str, object]], dict[str, object]]:
     """Execute the frozen all-candidate mechanics audit."""
 
     errors = validate_candidate_mechanics(manifest)
@@ -1381,15 +1878,11 @@ def collect_candidate_mechanics(
         d0_by_tx[cast(str, row["transaction_hash"])].append(row)
 
     sources = cast(Mapping[str, object], manifest["sources"])
-    transport = HttpTransport(
-        user_agent=cast(str, sources["user_agent"]),
-        maximum_requests_per_second=float(cast(int, sources["maximum_requests_per_second_across_sources"])),
-        maximum_transport_retries=cast(int, sources["maximum_transport_retries"]),
-        maximum_http_attempts=cast(int, sources["maximum_http_attempts"]),
-        maximum_response_bytes=cast(int, sources["maximum_response_bytes"]),
-    )
+    if transport is None:
+        transport = build_http_transport(manifest)
     public_url = cast(str, sources["publicnode_rpc_url"])
     blockscout_url = cast(str, sources["blockscout_rpc_url"])
+    raw_trace_url = cast(str, sources["blockscout_raw_trace_base_url"])
     beacon_url = cast(str, sources["publicnode_beacon_url"])
     chain_id = transport.rpc_call(
         url=public_url,
@@ -1496,13 +1989,11 @@ def collect_candidate_mechanics(
             expected_number=block_number,
             path=f"{candidate_id}:publicnode_header",
         )
-        trace_nodes = normalize_call_trace(
-            transport.rpc_call(
-                url=public_url,
-                provider="publicnode_execution",
-                label=f"{candidate_id}:call_trace",
-                method="debug_traceTransaction",
-                params=[transaction_hash, TRACE_CONFIG],
+        trace_nodes = normalize_blockscout_raw_trace(
+            transport.raw_trace_get(
+                base_url=raw_trace_url,
+                transaction_hash=transaction_hash,
+                label=f"{candidate_id}:raw_trace",
             ),
             maximum_nodes=maximum_nodes - consumed_trace_nodes,
             maximum_input_bytes=maximum_input_bytes - consumed_trace_input_bytes,
@@ -1696,8 +2187,12 @@ def collect_candidate_mechanics(
     )
     rpc_records = [record for record in transport.records if record["operation_type"] == "json_rpc"]
     beacon_records = [record for record in transport.records if record["operation_type"] == "beacon_rest"]
+    raw_trace_records = [
+        record for record in transport.records if record["operation_type"] == "blockscout_raw_trace_rest"
+    ]
     method_counts = dict(sorted(Counter(cast(str, item["method"]) for item in rpc_records).items()))
     provider_counts = dict(sorted(Counter(cast(str, item["provider"]) for item in transport.records).items()))
+    rest_path_template_counts = {RAW_TRACE_PATH_TEMPLATE: len(raw_trace_records)}
     expected = cast(Mapping[str, object], manifest["expected_request_contract"])
     implementation_addresses = {
         cast(str, candidate["candidate_id"]): (
@@ -1715,10 +2210,13 @@ def collect_candidate_mechanics(
     exact_requests = (
         len(rpc_records) == expected["json_rpc_success_count_without_retry"]
         and len(beacon_records) == expected["beacon_success_count_without_retry"]
+        and len(raw_trace_records) == expected["blockscout_raw_trace_success_count_without_retry"]
         and len(transport.records) == expected["network_operation_count_without_retry"]
         and method_counts == expected["method_counts"]
+        and rest_path_template_counts == expected["rest_path_template_counts"]
         and provider_counts == expected["provider_counts"]
         and operation_order_matches
+        and len(transport.attempt_records) == transport.http_attempts
     )
     total_trace_nodes = sum(len(cast(Sequence[object], item["trace_nodes"])) for item in candidate_results)
     total_trace_input_bytes = sum(
@@ -1814,9 +2312,12 @@ def collect_candidate_mechanics(
         "request_summary": {
             "successful_json_rpc_count": len(rpc_records),
             "successful_beacon_count": len(beacon_records),
+            "successful_blockscout_raw_trace_count": len(raw_trace_records),
             "http_attempt_count": transport.http_attempts,
+            "http_attempt_record_count": len(transport.attempt_records),
             "response_byte_count": transport.response_bytes,
             "method_counts": method_counts,
+            "rest_path_template_counts": rest_path_template_counts,
             "provider_counts": provider_counts,
             "operation_order_matches_frozen_plan": operation_order_matches,
             "all_one_attempt": all(item["attempt_count"] == 1 for item in transport.records),
@@ -1831,7 +2332,14 @@ def collect_candidate_mechanics(
         "authorized_next_stage": policy["authorized_next_stage"] if passed else None,
         "limitations": manifest["limitations"],
     }
-    return summary, candidate_results, transport.records
+    return (
+        summary,
+        candidate_results,
+        {
+            "successful_operations": transport.records,
+            "http_attempts": transport.attempt_records,
+        },
+    )
 
 
 def _git_value(root: Path, args: Sequence[str]) -> str:
@@ -1843,12 +2351,51 @@ def _write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _failure_artifact(
+    *,
+    manifest: Mapping[str, object],
+    manifest_sha256: str,
+    collection_commit: str,
+    transport: HttpTransport | None,
+    error: Exception,
+) -> dict[str, object]:
+    failure_contract = cast(Mapping[str, object], manifest["failure_artifact_contract"])
+    maximum_characters = cast(int, failure_contract["maximum_exception_message_characters"])
+    successful_operations = [] if transport is None else transport.records
+    http_attempts = [] if transport is None else transport.attempt_records
+    return {
+        "schema_version": FAILURE_SCHEMA_VERSION,
+        "audit_id": manifest["audit_id"],
+        "as_of": manifest["as_of"],
+        "collection_commit": collection_commit,
+        "manifest_sha256": manifest_sha256,
+        "parents": manifest["parents"],
+        "access_boundary": manifest["access_boundary"],
+        "exception": {
+            "class": type(error).__name__,
+            "message": str(error)[:maximum_characters],
+            "message_truncated": len(str(error)) > maximum_characters,
+        },
+        "successful_operation_count": len(successful_operations),
+        "http_attempt_count": 0 if transport is None else transport.http_attempts,
+        "http_attempt_record_count": len(http_attempts),
+        "response_byte_count": 0 if transport is None else transport.response_bytes,
+        "successful_operations": successful_operations,
+        "http_attempts": http_attempts,
+        "raw_response_payloads_retained": False,
+        "scientific_gate_decision_reached": False,
+        "decision": cast(Mapping[str, object], manifest["decision_policy"])["infrastructure_failure"],
+        "authorized_next_stage": None,
+    }
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manifest", type=Path)
     parser.add_argument("--summary", type=Path, required=True)
     parser.add_argument("--candidates", type=Path, required=True)
     parser.add_argument("--response-hashes", type=Path, required=True)
+    parser.add_argument("--failure", type=Path, required=True)
     parser.add_argument("--collection-commit")
     return parser
 
@@ -1857,7 +2404,8 @@ def main() -> None:
     """Run the frozen candidate-mechanics audit from a clean exact worktree."""
 
     args = _build_parser().parse_args()
-    for output in (args.summary, args.candidates, args.response_hashes):
+    success_outputs = (args.summary, args.candidates, args.response_hashes)
+    for output in (*success_outputs, args.failure):
         if output.exists():
             raise FileExistsError(f"refusing to overwrite {output}")
     root = Path.cwd()
@@ -1867,10 +2415,31 @@ def main() -> None:
     if args.collection_commit is not None and args.collection_commit != current_commit:
         raise ValueError("collection commit must equal the clean worktree HEAD")
     manifest = load_candidate_mechanics(args.manifest)
-    summary, candidates, responses = collect_candidate_mechanics(manifest, root=root)
+    manifest_sha256 = hashlib.sha256(args.manifest.read_bytes()).hexdigest()
+    transport: HttpTransport | None = None
+    try:
+        transport = build_http_transport(manifest)
+        summary, candidates, responses = collect_candidate_mechanics(
+            manifest,
+            root=root,
+            transport=transport,
+        )
+    except Exception as error:
+        args.failure.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(
+            args.failure,
+            _failure_artifact(
+                manifest=manifest,
+                manifest_sha256=manifest_sha256,
+                collection_commit=current_commit,
+                transport=transport,
+                error=error,
+            ),
+        )
+        raise
     summary["collection_commit"] = current_commit
-    summary["manifest_sha256"] = hashlib.sha256(args.manifest.read_bytes()).hexdigest()
-    for output in (args.summary, args.candidates, args.response_hashes):
+    summary["manifest_sha256"] = manifest_sha256
+    for output in success_outputs:
         output.parent.mkdir(parents=True, exist_ok=True)
     _write_json(args.candidates, candidates)
     _write_json(args.response_hashes, responses)
@@ -1882,7 +2451,7 @@ def main() -> None:
                 "fully_conforming_candidates": cast(Mapping[str, object], summary["candidate_summary"])[
                     "fully_conforming_count"
                 ],
-                "network_operations": len(responses),
+                "network_operations": len(cast(Sequence[object], responses["successful_operations"])),
             },
             sort_keys=True,
         )

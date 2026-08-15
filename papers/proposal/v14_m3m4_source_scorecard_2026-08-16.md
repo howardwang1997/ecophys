@@ -271,3 +271,11 @@ V1 did not reach a scientific decision. At the first candidate, PublicNode retur
 frozen `debug_traceTransaction` attempts. No trace result, slot/getter evidence or later candidate was opened, so
 none of the 14 rows can be called conforming or nonconforming. D1 remains locked. Result:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V1.md`.
+
+V2 is frozen as a transport-only repair: the v1 scientific base and its result are hash-pinned, while the 14 trace
+operations use Blockscout's documented raw-trace REST response. Completeness requires unique paths, an explicit
+root, every parent and exact child/subtrace counts; successful out-of-cone `SELFDESTRUCT` is stateful. The total
+plan remains 188 operations (173 RPC, 14 raw trace, one Beacon), and both success and bounded failure paths retain
+every HTTP-attempt hash/outcome. No candidate trace may be probed before the v2 protocol is pushed and no endpoint
+may be substituted afterward. Protocol:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION_V2.md`.

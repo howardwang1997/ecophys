@@ -641,3 +641,15 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - V1's completion-only writer did not durably retain the ten prior response hashes/bytes/retry counts. Any v2 must
   preserve bounded partial failure evidence and may repair only trace transport while keeping the exact 14 rows,
   order, mechanics gates, access boundary and resource limits. D1, `G1` and every GPU queue remain locked.
+- D0b v2 is frozen as that narrow repair. It hash-pins the v1 manifest/result, replaces only the 14 unavailable
+  debug RPC calls with Blockscout's documented unpaginated raw-trace REST endpoint, and keeps the total at 188
+  operations: 173 RPC, 14 raw trace and one Beacon. No candidate capability probe is allowed before the v2
+  protocol commit, and no endpoint substitution is allowed afterward.
+- V2 requires a unique empty trace root, every explicit parent and exact direct-child/subtrace counts. Accepted
+  actions are call/create/selfdestruct; CREATE2 is not separately exposed and is conservatively CREATE, while a
+  successful out-of-cone SELFDESTRUCT is stateful. Missing or malformed trace structure yields no scientific
+  result.
+- V2 records every HTTP attempt's outcome and response hashes. Full completion writes three success artifacts;
+  any caught collection exception writes only a bounded failure artifact with prior successful-operation and
+  attempt ledgers. It remains public CPU/network-only with zero paid/worker/GPU use; D1 and `G1` stay locked until
+  a complete v2 pass.

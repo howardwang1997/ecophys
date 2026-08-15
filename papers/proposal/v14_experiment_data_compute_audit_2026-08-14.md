@@ -652,3 +652,15 @@ completed; PublicNode then returned `-32601` for each of three allowed `debug_tr
 slot, code, getter, later candidate or participant/response request succeeded. No durable artifact was emitted, so
 response bytes and prior retry counts are unavailable rather than estimated. Actual paid-data, remote-worker and
 GPU use remained zero. This infrastructure failure unlocks no D1 work.
+
+### Frozen Compound D0b v2 transport-repair budget
+
+V2 preserves the 188-operation lower bound but changes its composition to 173 JSON-RPC calls, 14 Blockscout
+raw-trace REST calls and one Beacon REST request. At the unchanged global rate of one operation per second, the
+mechanical lower bound remains about 3.2 minutes; the runbook still budgets 15 minutes. Existing hard caps remain
+600 HTTP attempts, 256 MiB total responses, 200,000 flat trace nodes, 64 MiB trace inputs and 100,000 receipt logs.
+
+The successful path writes summary, candidates and a bounded HTTP evidence ledger. Any caught collection exception
+writes only a failure artifact with all successful-operation hashes and every attempt outcome/hash; raw response
+bodies are never retained. V2 uses only local CPU and public network access. Paid data, remote-worker hours and GPU
+hours are zero; the two V100s and RTX 2060 remain idle. D1 and model training are still unauthorized.

@@ -680,8 +680,12 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     已按提交 `db26bbe91` 完成并通过：339 次单次成功调用、886 条治理日志、184 个 eligible updates 中
     14 个 provisional atomic candidates。D0b v1 已按提交 `2ee8a8744` 运行一次，但 PublicNode 对首个
     候选的 `debug_traceTransaction` 三次返回 `-32601`，因此这是 trace transport infrastructure
-    failure，不是机制筛选结果。v2 只能修复 trace transport 与失败证据持久化，并保持 14 个候选、
-    顺序、科学门槛和访问边界不变；G1、账户/行为/响应数据和全部 GPU 生产作业继续锁定。
+    failure，不是机制筛选结果。D0b v2 已按这个窄边界预注册：哈希固定 v1 manifest/result，用官方
+    Blockscout raw-trace REST 替换 14 次 debug RPC，并把每一次 HTTP attempt 的 response hash/outcome
+    在成功或失败路径持久化；173 RPC + 14 raw-trace + 1 Beacon 的总数仍为 188。14 个候选、顺序、
+    科学门槛和访问边界不变；`SELFDESTRUCT` 保守计作 stateful，缺父节点/路径重复/subtrace 不完整会
+    终止且只形成 infrastructure-failure artifact。协议提交并推送前禁止候选 capability probe，提交后
+    只运行一次；G1、D1 账户/行为/响应数据和全部 GPU 生产作业继续锁定。
 
 ---
 
