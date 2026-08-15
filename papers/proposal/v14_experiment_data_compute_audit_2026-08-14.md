@@ -472,3 +472,14 @@ Only counts, manager addresses, selected transaction senders, NPM token IDs, bou
 response hashes are retained. Amount/price/liquidity fields and all post-treatment events remain undecoded. The
 run needs local CPU/network and under one core-hour in the expected path. Paid data, remote workers and GPU-hours
 remain zero; both V100s and the RTX 2060 stay idle. A pass does not itself justify compute expansion.
+
+### Uniswap v3 U1a compute result
+
+U1a used 75 successful one-attempt HTTP responses and 405,836 response bytes. All 64 base pool/event queries were
+unsaturated; only three transaction-log pages and two token-transfer queries were needed because the sample had
+six position actions. The run used local CPU/network, zero paid data, zero remote workers and zero GPU-hours.
+
+The failure is support/identification, not compute: 3/16 pools were swap-active, 1/16 position-active and only
+three identity transactions existed. More GPU cannot repair this. The V100/RTX 2060 queues remain empty. A future
+full-population preperiod census, if separately justified, is still CPU/network work and must be budgeted before
+launch; post-treatment acquisition and model training remain unauthorized.

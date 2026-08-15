@@ -473,3 +473,15 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - U1a does not construct controls. A pass unlocks only U1b preperiod expansion plus a separate outcome-blind
   control-source audit; U2 responses and GPUs remain locked. Protocol:
   `experiments/v14_uniswap_v3_preperiod_support/PREREGISTRATION.md`.
+- U1a failed at protocol commit `961266c72bae34fc4a9470dd5f6ed16f95ded6fb`: only 3/16 sampled pools were
+  swap-active and 1/16 position-active in the frozen preperiod. There were 374 swaps but only six position actions
+  (zero mint, three burn, three collect) and three eligible NPM transactions.
+- NPM share was 6/6 but is not meaningful as a broad coverage estimate. Exact pool-to-token pairing was 4/6;
+  owner-after-transaction resolution was 4/4 conditional on pairing. Do not diagnose the two unmatched burns by
+  re-querying; raw responses were intentionally not retained.
+- Durable model change: distinguish governance authorization, adapter configuration, contract activation,
+  economic exposure and participant response clocks. U0 validates the first three; U1a shows activation need not
+  imply exposure. The 1,000-pool prefix is not a ready-made behavioral panel.
+- Do not top up/extend U1a or launch U1b. Keep Uniswap as exact M2 unless a separately frozen full-population
+  pre-treatment eligibility census is approved as a route reset; controls remain independently unresolved. U2 and
+  GPUs stay locked. Result: `experiments/v14_uniswap_v3_preperiod_support/RESULTS.md`.

@@ -887,3 +887,22 @@ Transport was preflighted only on already consumed U0 mechanism transactions; no
 opened. A pass unlocks only expanded preperiod U1b and a separately frozen control-source audit. U2, all
 post-treatment variables and all GPU/model work remain locked. Protocol:
 `experiments/v14_uniswap_v3_preperiod_support/PREREGISTRATION.md`.
+
+### 11.29 U1a fails: contract activation is not economic exposure
+
+The clean run at protocol commit `961266c72bae34fc4a9470dd5f6ed16f95ded6fb` completed all 64 pool/event queries
+without saturation or transport error, but failed the frozen support gates. Only 3/16 pools had a preperiod swap;
+only 1/16 had a position action. The window contained 374 swaps but just six position actions—zero mints, three
+burns and three collects—across three eligible NPM transactions. Exact pool-to-token pairing was 4/6. Conditional
+owner resolution was 4/4, and NPM action share was 6/6, but both have tiny denominators.
+
+This is a substantive modeling result, not merely a data inconvenience. Governance authorization, adapter
+configuration, pool contract activation, economic exposure and participant response are distinct clocks. U0
+validated the first three; U1a shows that contract activation does not imply active economic exposure in this
+small hash-stratified sample. The 1,000-pool propagation prefix is therefore not a ready-made agent panel.
+
+Do not top up the sample, extend its window or launch the planned U1b. Uniswap remains a valid exact-M2 case. To
+retain participant-level M3/M4, either move that layer to another real system or separately preregister a
+full-population pre-treatment eligibility census as a route reset, followed by an independent control-source
+gate. No post-treatment data or GPU/model run is unlocked. Result:
+`experiments/v14_uniswap_v3_preperiod_support/RESULTS.md`.

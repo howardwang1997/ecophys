@@ -48,3 +48,11 @@ representativeness or causal response. U1b must expand coverage; a separate prot
 treatment status, immutable metadata and preperiod data alone. Post-treatment access remains prohibited.
 
 Required compute is local CPU/network. GPUs and paid data remain unnecessary and unauthorized.
+
+## Result
+
+U1a failed the support/identity gate despite complete transport and exact scope. Only 3/16 pools had swaps and
+1/16 had position actions; six position actions supplied three NPM transactions. Pairing was 4/6 and conditional
+owner resolution 4/4. This blocks the planned U1b and confirms that contract activation must be separated from
+economic exposure in the model. Full result:
+`experiments/v14_uniswap_v3_preperiod_support/RESULTS.md`.
