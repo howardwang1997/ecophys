@@ -518,3 +518,12 @@ network requests. Expected work is seconds on one local CPU core with negligible
 This is explicitly post hoc and has no gate; more compute cannot increase its evidential status. Paid data,
 remote workers and GPU-hours are zero. V100/RTX 2060 queues remain empty, and no response/model access is
 authorized by the output.
+
+### Exposure-routing exploratory compute result
+
+The clean committed run completed in about one second on local CPU and wrote one small JSON artifact. Independent
+scalar recomputation reproduced HHI, effective count, top-10 share, total variation, fee/batch totals and the
+aggregation identity to floating-point precision.
+
+No network, new data, paid service, remote worker or GPU was used. The output is architectural description only;
+V100/RTX 2060 queues remain empty until a new M3/M4 source and identification gate pass.

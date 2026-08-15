@@ -962,3 +962,21 @@ The computation reads only the committed 1,000 count rows, runs locally in secon
 data and GPU. Its purpose is to constrain architecture and the next source gate, not to generate a causal result.
 Plan: `experiments/v14_uniswap_v3_exposure_routing_exploratory/EXPLORATORY_PLAN.md`; topology:
 `papers/proposal/v14_exposure_routing_topology_2026-08-15.md`.
+
+### 11.33 Exposure routing is sparse, heavy and channel-specific
+
+The frozen descriptive computation confirms that one dense exposure vector is the wrong architectural default.
+Swap and position measures have only 89 and 25 active pools, inverse-HHI effective counts 8.28 and 6.69, and
+top-ten shares 73.0% and 85.0%. Full-population Gini exceeds 0.98 for both because of extensive zeros; active-only
+Gini remains 0.824 and 0.639.
+
+The two channel weights differ materially: total variation is 0.415 and normalized Jensen-Shannon divergence is
+0.269. Position support is nearly nested in swap support (23/25), but only 23/89 swap-active pools have a position
+action. The architecture hypothesis is therefore a shared latent activity state plus channel-specific support
+and conditional-intensity heads, between fixed M2 transitions and learned M3 behavior.
+
+Batch one carries 88.3% of swaps despite half the contracts; packed `0x44` carries 23.0% of swaps despite 10.7% of
+contracts. These post-hoc associations make propagation order and fee class mandatory candidate confounders in a
+new source/frame, not causal findings. No U1R gate changes, response access or model training follows. Artifact
+SHA-256: `964b809c186894146961f0f2cbc64f8d0e77fdd91eec9cd79edba4b632adf5dc`; result:
+`experiments/v14_uniswap_v3_exposure_routing_exploratory/RESULTS.md`.

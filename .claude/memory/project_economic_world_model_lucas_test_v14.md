@@ -520,3 +520,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   exposure router before M3/M4. For uniform contracts `u`, event weights `p`, and `g=Np`, the exact identity is
   `E_p[r]-E_u[r]=Cov_u(g,r)` and `Var_u(g)=N*HHI(p)-1`. This is elementary algebra, not a novel theorem or response
   evidence. Topology: `papers/proposal/v14_exposure_routing_topology_2026-08-15.md`.
+- Routing geometry result: swap/position active counts are 89/25; inverse-HHI effective counts 8.28/6.69;
+  top-ten shares 73.0%/85.0%; uniform-contract TV 0.938/0.975. Extensive zeros plus active-only Gini 0.824/0.639
+  motivate a support gate followed by conditional intensity, not one dense router.
+- Swap-position support intersects on 23 pools (Jaccard 0.253); 23/25 position-active pools swap, but only 23/89
+  swap-active pools have position actions. Weight TV is 0.415 and normalized JS is 0.269, motivating a shared
+  latent state with channel-specific heads rather than a universal exposure measure.
+- Batch one carries 88.3% of swaps; packed `0x44` has 10.7% of contracts but 23.0% of swaps and 30.0% of position
+  actions. These are post-hoc count associations and candidate selection/confounding variables, not effects.
+  Artifact SHA `964b809c186894146961f0f2cbc64f8d0e77fdd91eec9cd79edba4b632adf5dc`; U1R remains failed and GPUs locked.

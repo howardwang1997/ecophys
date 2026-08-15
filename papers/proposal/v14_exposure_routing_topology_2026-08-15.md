@@ -63,3 +63,20 @@ NMI would require a method showing that an explicit router improves intervention
 beats simpler activity-weighted baselines. NCS would additionally require the router to transfer across domains,
 connect exact mechanisms to validated observations and yield frozen real-data prediction. The current identity
 and one Uniswap census satisfy neither bar; they only make the missing operator explicit.
+
+## Exploratory geometry result
+
+The frozen post-hoc computation supports a hurdle-style architectural hypothesis. Only 89/1,000 pools have swaps
+and 25/1,000 have position actions, while inverse-HHI effective counts are only 8.28 and 6.69. Even among active
+pools, Gini is 0.824 for swaps and 0.639 for position actions. The router should therefore model channel-specific
+support and conditional intensity separately.
+
+The channels share 23 active pools, but their normalized weights have total variation 0.415. Position support is
+almost nested in swap support (23/25), while swap support is much broader (23/89). A useful design candidate is a
+shared latent activity state with channel-specific heads and explicit zero mass, not one universal exposure
+vector.
+
+Propagation batch and packed fee strongly partition counts, but both are descriptive and potentially selected:
+batch one carries 88.3% of swaps, and the 10.7% `0x44` contract share carries 23.0% of swaps. Treat these as
+candidate confounders/routing covariates in a new frame, never as effects in U1R. Full result:
+`experiments/v14_uniswap_v3_exposure_routing_exploratory/RESULTS.md`.
