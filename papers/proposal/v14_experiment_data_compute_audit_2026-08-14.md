@@ -664,3 +664,15 @@ The successful path writes summary, candidates and a bounded HTTP evidence ledge
 writes only a failure artifact with all successful-operation hashes and every attempt outcome/hash; raw response
 bodies are never retained. V2 uses only local CPU and public network access. Paid data, remote-worker hours and GPU
 hours are zero; the two V100s and RTX 2060 remain idle. D1 and model training are still unauthorized.
+
+### Compound D0b v2 actual resource result
+
+The one sealed run completed all 188 logical operations in 191 HTTP attempts. Three transient HTTP 500 responses
+succeeded on the next attempt. The response ledger spans 240.472 seconds and accounts for 3,711,152 bytes, 599
+normalized trace nodes, 532,327 trace-input bytes and 129 receipt logs. All 12 gates passed and four candidates
+survived. Actual paid-data, remote-worker and GPU use was zero.
+
+The next authorized work is protocol design, not an account-scale census. Because every survivor is a supply-cap
+increase, first budget a four-candidate aggregate cap-activation/estimand preflight using fixed historical getters
+only. This remains tens of RPC calls, seconds-to-minutes of CPU/network, and zero GPU. Account enumeration, action
+traces and response construction remain unbudgeted and locked until that gate is frozen and passes.

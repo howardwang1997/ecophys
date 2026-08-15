@@ -653,3 +653,16 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   any caught collection exception writes only a bounded failure artifact with prior successful-operation and
   attempt ledgers. It remains public CPU/network-only with zero paid/worker/GPU use; D1 and `G1` stay locked until
   a complete v2 pass.
+- D0b v2 passed 12/12 at protocol commit `c7f770a938abe9f0e8452c9bda84bb8ed69f2e5e`: 188 logical
+  operations in 191 HTTP attempts, 3,711,152 bytes, 599 trace nodes, 532,327 trace-input bytes and 129 receipt logs.
+  Three transient HTTP 500s succeeded on the next attempt. Artifact SHAs are summary `83e32d0e...`, candidates
+  `553055da...` and HTTP evidence `814e66af...`; independent offline reconstruction passed.
+- Four of 14 rows fully conform: supply-cap changes at blocks 16,133,171; 16,520,572; 16,549,206; and 16,668,519.
+  Eight rows fail stateful-sibling isolation and three fail 24-hour contamination, with one overlap. All other
+  candidate checks pass for all 14. The four survivors are all 2022-12--2023-02 cap increases; two repeat one
+  WETH-market asset, so they are not four independent replications.
+- This exposes a new estimand blocker. A cap increase does not alter existing accounts' balance, CF or liquidation
+  threshold; generic nonzero positions are not directly treated, while thwarted would-be suppliers lack a
+  pre-event on-chain denominator. D1 is authorized for design only and must begin with a zero-account-row aggregate
+  cap-binding/estimand gate. Slack caps or no defensible market-level entrant/flow control retire Compound M3.
+  Account/actions/responses, `G1` and every GPU remain locked.

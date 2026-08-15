@@ -279,3 +279,16 @@ plan remains 188 operations (173 RPC, 14 raw trace, one Beacon), and both succes
 every HTTP-attempt hash/outcome. No candidate trace may be probed before the v2 protocol is pushed and no endpoint
 may be substituted afterward. Protocol:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION_V2.md`.
+
+V2 passed 12/12 at commit `c7f770a938abe9f0e8452c9bda84bb8ed69f2e5e`: 188 logical operations, 191 HTTP
+attempts and four fully conforming rows. Eight rows fail call-cone isolation and three fail the 24-hour rule, with
+one overlap. The four survivors are all supply-cap increases in December 2022--February 2023; two repeat the same
+WETH-market asset. This is enough to design the next gate but not to call Compound's participant-response route
+viable.
+
+A supply-cap increase relaxes a market constraint; it does not directly perturb existing accounts' collateral
+factors or liquidation thresholds. The generic nonzero-position population is not a treated cohort, and would-be
+suppliers blocked by the old cap have no pre-event on-chain denominator. Before any account row, freeze an
+aggregate T-1 cap-utilization/estimand gate and a market-level entrant/flow estimand. Slack caps or an indefensible
+control retire the causal M3 route. Result:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V2.md`.

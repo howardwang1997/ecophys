@@ -301,3 +301,16 @@ request. A bounded failure artifact retains every attempted-response hash/outcom
 transport failure cannot erase provenance. Protocol:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION_V2.md`. D1 remains locked until one
 complete v2 execution passes all unchanged gates.
+
+V2 subsequently passed all 12 gates at protocol commit `c7f770a938abe9f0e8452c9bda84bb8ed69f2e5e` and retained
+four mechanics-conforming candidates. All four are supply-cap increases; no borrow-factor row survives the
+call-cone rule. This invalidates direct reuse of the generic nonzero-position denominator for the next stage: a
+cap expansion does not alter an existing account's collateral factor, liquidation threshold or current balance,
+and would-be constrained suppliers are not a pre-event enumerable cohort.
+
+Accordingly, the authorized D1 design must start with a zero-account-row activation/estimand subgate. It must
+preregister how `totalsCollateral(asset).totalSupplyAsset` at T-1 relates to the old supply cap, what constitutes a
+binding constraint, which market-level entrant/flow estimand remains identifiable, and what result stops M3. No
+account census may begin merely because D0b passed. If the cap was slack or the estimand/control is not defensible,
+Compound remains mechanics evidence only. Immutable result:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V2.md`.

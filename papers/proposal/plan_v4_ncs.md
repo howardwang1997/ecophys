@@ -685,7 +685,13 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     在成功或失败路径持久化；173 RPC + 14 raw-trace + 1 Beacon 的总数仍为 188。14 个候选、顺序、
     科学门槛和访问边界不变；`SELFDESTRUCT` 保守计作 stateful，缺父节点/路径重复/subtrace 不完整会
     终止且只形成 infrastructure-failure artifact。协议提交并推送前禁止候选 capability probe，提交后
-    只运行一次；G1、D1 账户/行为/响应数据和全部 GPU 生产作业继续锁定。
+    只运行一次。v2 已在提交 `c7f770a93` 上完成：188 个逻辑操作、191 个 HTTP attempts、12/12 gates，
+    4/14 个候选通过，均为 2022-12 至 2023-02 的 supply-cap increases；八个候选因 call-cone sibling
+    失败、三个因 24h contamination 失败，重叠一个。这个 PASS 只允许设计 D1。由于 cap increase 不会
+    直接改变已有账户的 balance/CF/liquidation threshold，原来“任一非零仓位”的 generic denominator
+    不是 treated cohort；下一步必须先做零账户行的 cap-activation/estimand gate，不能直接采集账户。
+    若旧 cap 不 binding，或无法事前定义可识别的 market-level entrant/flow estimand，Compound M3 因果
+    路线应停止。G1、D1 账户/行为/响应数据和全部 GPU 生产作业继续锁定。
 
 ---
 
