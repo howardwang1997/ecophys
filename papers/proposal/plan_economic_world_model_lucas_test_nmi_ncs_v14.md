@@ -1051,3 +1051,23 @@ All twelve gates are conjunctive. A pass licenses only exposure/control *protoco
 a failure leaves all participant and model work locked without dropping a market or substituting an endpoint.
 Expected work is about 31 seconds of local CPU/network, under 8 MiB, no paid data and zero GPU. Protocol:
 `experiments/v14_compound_v3_chain_metadata_preflight/PREREGISTRATION.md`.
+
+### 11.39 Compound v1 endpoint failure preserved; v2 confirmation-depth repair frozen
+
+At pushed protocol commit `ba40179d2a0a18d6c8bc9859d98646a68e5be665`, v1 succeeded on `eth_chainId`
+but the same Blockscout endpoint returned JSON-RPC `Invalid block number` for
+`eth_getBlockByNumber("finalized", false)` on all three allowed attempts. Collection stopped before any proxy,
+slot, getter, Configurator or historical query. No artifact exists. This is an endpoint-capability failure, not a
+scientific gate result, and v1 must not be rerun.
+
+V2 is a transport/finality-semantics repair, not a relaxed gate. It reads `latest` once, derives `head - 64`, reads
+that explicit block header, and fixes every current query to the returned explicit block. The exact vector becomes
+62 calls: 24 getters, one chain ID, three headers, 18 code and 16 storage queries. The new conjunctive header gate
+requires the observed block-number gap to equal 64 and ordered timestamps.
+
+The 64-block lag is only a confirmation-depth convention; it is not Ethereum consensus finality, and both headers
+come from one provider. A real intervention/response protocol must separately freeze consensus-finality and
+provider-replication checks. Endpoint, markets, getters, archive block, 80-attempt/8-MiB caps and all participant,
+response and GPU locks remain unchanged. V1 result:
+`experiments/v14_compound_v3_chain_metadata_preflight/RESULTS_V1.md`; v2 protocol:
+`experiments/v14_compound_v3_chain_metadata_preflight/PREREGISTRATION_V2.md`.

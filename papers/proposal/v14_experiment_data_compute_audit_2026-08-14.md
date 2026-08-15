@@ -571,3 +571,15 @@ discarded after hashing and bounded decoding.
 Expected runtime is about 31 seconds plus local parsing; durable output is two small JSON files. Required paid
 data, remote workers and GPU-hours are zero. Neither V100 nor RTX 2060 should be queued. Even a pass unlocks only
 the design of an account-exposure/control protocol, not its execution.
+
+### Compound chain-metadata v1 endpoint failure and v2 budget
+
+V1 made one successful chain-ID call, then used its three allowed attempts on an unsupported `finalized` header
+tag and stopped before all contract and historical calls. It created no artifact and used no paid data, remote
+worker or GPU. Additional compute cannot repair an endpoint method/tag capability mismatch.
+
+V2 keeps the endpoint and caps but adds one header call: latest head, explicit `head - 64` snapshot and fixed
+historical block yield exactly 62 successful calls on the expected path. Runtime remains about 31 seconds at two
+requests per second, retained output remains two small JSON files and the hard limits remain 80 HTTP attempts and
+8 MiB. The 64-block lag is not consensus finality. Required V100, RTX 2060 and paid-data budgets remain zero;
+the GPU queues stay empty even after a pass because only exposure/control protocol design could be unlocked.

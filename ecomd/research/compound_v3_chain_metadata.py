@@ -17,8 +17,12 @@ from typing import cast
 import requests
 import yaml
 
-MANIFEST_SCHEMA_VERSION = "ecophys-compound-v3-chain-metadata-preflight/v1"
-ARTIFACT_SCHEMA_VERSION = "ecophys-compound-v3-chain-metadata-audit/v1"
+MANIFEST_SCHEMA_V1 = "ecophys-compound-v3-chain-metadata-preflight/v1"
+MANIFEST_SCHEMA_V2 = "ecophys-compound-v3-chain-metadata-preflight/v2"
+ARTIFACT_SCHEMA_BY_MANIFEST = {
+    MANIFEST_SCHEMA_V1: "ecophys-compound-v3-chain-metadata-audit/v1",
+    MANIFEST_SCHEMA_V2: "ecophys-compound-v3-chain-metadata-audit/v2",
+}
 STAGE = "chain_deployment_metadata_only"
 IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
 ADMIN_SLOT = "0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103"
@@ -31,14 +35,23 @@ GETTER_CONTRACT = {
 ALLOWED_METHODS = frozenset(
     {"eth_chainId", "eth_getBlockByNumber", "eth_getCode", "eth_getStorageAt", "eth_call"}
 )
-EXPECTED_METHOD_COUNTS = {
-    "eth_call": 24,
-    "eth_chainId": 1,
-    "eth_getBlockByNumber": 2,
-    "eth_getCode": 18,
-    "eth_getStorageAt": 16,
+EXPECTED_METHOD_COUNTS_BY_SCHEMA = {
+    MANIFEST_SCHEMA_V1: {
+        "eth_call": 24,
+        "eth_chainId": 1,
+        "eth_getBlockByNumber": 2,
+        "eth_getCode": 18,
+        "eth_getStorageAt": 16,
+    },
+    MANIFEST_SCHEMA_V2: {
+        "eth_call": 24,
+        "eth_chainId": 1,
+        "eth_getBlockByNumber": 3,
+        "eth_getCode": 18,
+        "eth_getStorageAt": 16,
+    },
 }
-REQUIRED_GATES = frozenset(
+COMMON_REQUIRED_GATES = frozenset(
     {
         "access_boundary",
         "chain_id",
@@ -47,13 +60,16 @@ REQUIRED_GATES = frozenset(
         "current_getters",
         "current_implementation_code",
         "current_proxy_code",
-        "finalized_header",
         "historical_archive_state",
         "historical_header",
         "request_caps",
         "source_artifact",
     }
 )
+REQUIRED_GATES_BY_SCHEMA = {
+    MANIFEST_SCHEMA_V1: COMMON_REQUIRED_GATES | {"finalized_header"},
+    MANIFEST_SCHEMA_V2: COMMON_REQUIRED_GATES | {"confirmed_snapshot_headers"},
+}
 ACCESS_FLAGS = frozenset(
     {
         "account_balance_calls_used",
@@ -90,7 +106,7 @@ TOP_LEVEL_KEYS = frozenset(
     }
 )
 SOURCE_RESULT_KEYS = frozenset({"path", "sha256", "source_commit"})
-RPC_KEYS = frozenset(
+RPC_KEYS_V1 = frozenset(
     {
         "url",
         "documentation_url",
@@ -103,6 +119,7 @@ RPC_KEYS = frozenset(
         "snapshot_block_tag",
     }
 )
+RPC_KEYS_V2 = RPC_KEYS_V1 | {"confirmation_depth_blocks"}
 MARKET_KEYS = frozenset(
     {
         "market_id",
@@ -192,8 +209,10 @@ def validate_chain_metadata_preflight(manifest: Mapping[str, object]) -> list[st
     errors: list[str] = []
     if set(manifest) != TOP_LEVEL_KEYS:
         errors.append(f"top level must contain exactly {sorted(TOP_LEVEL_KEYS)}")
-    if manifest.get("schema_version") != MANIFEST_SCHEMA_VERSION:
-        errors.append(f"schema_version must equal {MANIFEST_SCHEMA_VERSION}")
+    schema_version = manifest.get("schema_version")
+    if schema_version not in ARTIFACT_SCHEMA_BY_MANIFEST:
+        errors.append(f"schema_version must equal one of {sorted(ARTIFACT_SCHEMA_BY_MANIFEST)}")
+    schema = schema_version if schema_version in ARTIFACT_SCHEMA_BY_MANIFEST else MANIFEST_SCHEMA_V2
     audit_id = _string(manifest.get("audit_id"))
     if audit_id is None or ID_PATTERN.fullmatch(audit_id) is None:
         errors.append("audit_id must be a stable lowercase identifier")
@@ -227,9 +246,10 @@ def validate_chain_metadata_preflight(manifest: Mapping[str, object]) -> list[st
     if source_commit is None or GIT_SHA_PATTERN.fullmatch(source_commit) is None:
         errors.append("source_result.source_commit must be a full lowercase Git SHA")
 
+    expected_rpc_keys = RPC_KEYS_V1 if schema == MANIFEST_SCHEMA_V1 else RPC_KEYS_V2
     rpc = _mapping(manifest.get("rpc"))
-    if rpc is None or set(rpc) != RPC_KEYS:
-        errors.append(f"rpc must contain exactly {sorted(RPC_KEYS)}")
+    if rpc is None or set(rpc) != expected_rpc_keys:
+        errors.append(f"rpc must contain exactly {sorted(expected_rpc_keys)}")
         rpc = {}
     if rpc.get("url") != "https://eth.blockscout.com/api/eth-rpc":
         errors.append("rpc.url must equal the frozen no-key Ethereum endpoint")
@@ -240,9 +260,10 @@ def validate_chain_metadata_preflight(manifest: Mapping[str, object]) -> list[st
     rate = rpc.get("maximum_requests_per_second")
     if not isinstance(rate, (int, float)) or isinstance(rate, bool) or not (0 < float(rate) <= 2):
         errors.append("rpc.maximum_requests_per_second must be in (0, 2]")
+    minimum_http_attempts = sum(EXPECTED_METHOD_COUNTS_BY_SCHEMA[schema].values())
     for key, minimum, maximum in (
         ("maximum_transport_retries", 0, 2),
-        ("maximum_http_attempts", 61, 80),
+        ("maximum_http_attempts", minimum_http_attempts, 80),
         ("maximum_response_bytes", 1, 8 * 1024 * 1024),
     ):
         value = rpc.get(key)
@@ -251,8 +272,11 @@ def validate_chain_metadata_preflight(manifest: Mapping[str, object]) -> list[st
     allowed_methods = set(_string_list(rpc.get("allowed_methods"), path="rpc.allowed_methods", errors=errors))
     if allowed_methods != ALLOWED_METHODS:
         errors.append(f"rpc.allowed_methods must equal {sorted(ALLOWED_METHODS)}")
-    if rpc.get("snapshot_block_tag") != "finalized":
-        errors.append("rpc.snapshot_block_tag must equal finalized")
+    expected_snapshot_tag = "finalized" if schema == MANIFEST_SCHEMA_V1 else "latest"
+    if rpc.get("snapshot_block_tag") != expected_snapshot_tag:
+        errors.append(f"rpc.snapshot_block_tag must equal {expected_snapshot_tag}")
+    if schema == MANIFEST_SCHEMA_V2 and rpc.get("confirmation_depth_blocks") != 64:
+        errors.append("rpc.confirmation_depth_blocks must equal 64")
 
     slots = _mapping(manifest.get("proxy_slots"))
     if slots is None or set(slots) != {"implementation", "admin"}:
@@ -320,9 +344,10 @@ def validate_chain_metadata_preflight(manifest: Mapping[str, object]) -> list[st
     if not set(archive_ids).issubset(market_ids):
         errors.append("archive_check.market_ids must reference declared markets")
 
+    required_gates = REQUIRED_GATES_BY_SCHEMA[schema]
     gates = _string_list(manifest.get("gates"), path="gates", errors=errors)
-    if set(gates) != REQUIRED_GATES or len(gates) != len(REQUIRED_GATES):
-        errors.append(f"gates must contain exactly {sorted(REQUIRED_GATES)}")
+    if set(gates) != required_gates or len(gates) != len(required_gates):
+        errors.append(f"gates must contain exactly {sorted(required_gates)}")
     policy = _mapping(manifest.get("decision_policy"))
     if policy is None or set(policy) != DECISION_KEYS:
         errors.append(f"decision_policy must contain exactly {sorted(DECISION_KEYS)}")
@@ -506,15 +531,19 @@ def evaluate_chain_metadata(
     *,
     source_artifact_matches: bool,
     chain_id: object,
-    finalized_block: Mapping[str, object],
+    snapshot_block: Mapping[str, object],
     market_records: Sequence[Mapping[str, object]],
     configurator_record: Mapping[str, object],
     archive_block: Mapping[str, object],
     archive_records: Sequence[Mapping[str, object]],
     request_summary: Mapping[str, object],
+    head_block: Mapping[str, object] | None = None,
 ) -> dict[str, bool]:
     """Evaluate the twelve frozen conjunctive gates from normalized metadata."""
 
+    schema = cast(str, manifest["schema_version"])
+    expected_method_counts = EXPECTED_METHOD_COUNTS_BY_SCHEMA[schema]
+    expected_request_count = sum(expected_method_counts.values())
     markets = cast(Sequence[Mapping[str, object]], manifest["markets"])
     expected_by_id = {cast(str, market["market_id"]): market for market in markets}
     current_proxy_code = len(market_records) == len(markets) and all(
@@ -568,19 +597,18 @@ def evaluate_chain_metadata(
     rpc = cast(Mapping[str, object], manifest["rpc"])
     request_caps = (
         isinstance(request_summary.get("successful_request_count"), int)
-        and request_summary["successful_request_count"] == 61
+        and request_summary["successful_request_count"] == expected_request_count
         and cast(int, request_summary["http_attempt_count"]) <= cast(int, rpc["maximum_http_attempts"])
         and cast(int, request_summary["response_byte_count"]) <= cast(int, rpc["maximum_response_bytes"])
-        and request_summary["method_counts"] == EXPECTED_METHOD_COUNTS
+        and request_summary["method_counts"] == expected_method_counts
     )
     boundary = cast(Mapping[str, object], manifest["access_boundary"])
     access_ok = boundary.get("chain_rpc_used") is True and all(
         value is False for key, value in boundary.items() if key != "chain_rpc_used"
     )
-    return {
+    gates = {
         "source_artifact": source_artifact_matches,
         "chain_id": chain_id == "0x1",
-        "finalized_header": cast(int, finalized_block.get("number", 0)) > 17_000_000,
         "current_proxy_code": current_proxy_code,
         "current_implementation_code": current_implementation,
         "current_admin_slots": current_admin,
@@ -588,11 +616,27 @@ def evaluate_chain_metadata(
         "configurator_proxy": configurator_ok,
         "historical_header": archive_block.get("number") == 17_000_000
         and cast(int, archive_block.get("timestamp_unix", 0))
-        < cast(int, finalized_block.get("timestamp_unix", 0)),
+        < cast(int, snapshot_block.get("timestamp_unix", 0)),
         "historical_archive_state": archive_ok,
         "request_caps": request_caps,
         "access_boundary": access_ok,
     }
+    snapshot_number = cast(int, snapshot_block.get("number", 0))
+    if schema == MANIFEST_SCHEMA_V1:
+        gates["finalized_header"] = snapshot_number > 17_000_000
+    else:
+        confirmation_depth = cast(int, rpc["confirmation_depth_blocks"])
+        head_number = cast(int, head_block.get("number", 0)) if head_block is not None else 0
+        head_timestamp = (
+            cast(int, head_block.get("timestamp_unix", 0)) if head_block is not None else 0
+        )
+        gates["confirmed_snapshot_headers"] = (
+            head_block is not None
+            and snapshot_number > 17_000_000
+            and head_number - snapshot_number == confirmation_depth
+            and cast(int, snapshot_block.get("timestamp_unix", 0)) <= head_timestamp
+        )
+    return gates
 
 
 def collect_chain_metadata(manifest: Mapping[str, object]) -> tuple[dict[str, object], list[dict[str, object]]]:
@@ -617,12 +661,40 @@ def collect_chain_metadata(manifest: Mapping[str, object]) -> tuple[dict[str, ob
         maximum_http_attempts=cast(int, rpc_config["maximum_http_attempts"]),
         maximum_response_bytes=cast(int, rpc_config["maximum_response_bytes"]),
     )
+    schema = cast(str, manifest["schema_version"])
     chain_id = rpc.call("chain_id", "eth_chainId", [])
-    finalized_block = _block_record(
-        rpc.call("finalized_block", "eth_getBlockByNumber", [rpc_config["snapshot_block_tag"], False]),
-        path="finalized_block",
-    )
-    block_hex = cast(str, finalized_block["number_hex"])
+    head_block: dict[str, object] | None = None
+    if schema == MANIFEST_SCHEMA_V1:
+        snapshot_block = _block_record(
+            rpc.call(
+                "finalized_block",
+                "eth_getBlockByNumber",
+                [rpc_config["snapshot_block_tag"], False],
+            ),
+            path="finalized_block",
+        )
+    else:
+        head_block = _block_record(
+            rpc.call(
+                "latest_head_block",
+                "eth_getBlockByNumber",
+                [rpc_config["snapshot_block_tag"], False],
+            ),
+            path="latest_head_block",
+        )
+        confirmation_depth = cast(int, rpc_config["confirmation_depth_blocks"])
+        snapshot_number = cast(int, head_block["number"]) - confirmation_depth
+        if snapshot_number <= 17_000_000:
+            raise RuntimeError("confirmed snapshot would not postdate the frozen archive block")
+        snapshot_block = _block_record(
+            rpc.call(
+                "confirmed_snapshot_block",
+                "eth_getBlockByNumber",
+                [hex(snapshot_number), False],
+            ),
+            path="confirmed_snapshot_block",
+        )
+    block_hex = cast(str, snapshot_block["number_hex"])
     slots = cast(Mapping[str, object], manifest["proxy_slots"])
     getters = cast(Mapping[str, Mapping[str, object]], manifest["getters"])
     markets = cast(Sequence[Mapping[str, object]], manifest["markets"])
@@ -673,7 +745,7 @@ def collect_chain_metadata(manifest: Mapping[str, object]) -> tuple[dict[str, ob
             {
                 "market_id": market_id,
                 "proxy": proxy,
-                "snapshot_block": finalized_block["number"],
+                "snapshot_block": snapshot_block["number"],
                 "proxy_code": proxy_code,
                 "implementation": implementation,
                 "implementation_code": implementation_code,
@@ -714,7 +786,7 @@ def collect_chain_metadata(manifest: Mapping[str, object]) -> tuple[dict[str, ob
     )
     configurator_record = {
         "proxy": configurator_proxy,
-        "snapshot_block": finalized_block["number"],
+        "snapshot_block": snapshot_block["number"],
         "proxy_code": configurator_code,
         "implementation": configurator_implementation,
         "implementation_code": configurator_implementation_code,
@@ -776,17 +848,24 @@ def collect_chain_metadata(manifest: Mapping[str, object]) -> tuple[dict[str, ob
         manifest,
         source_artifact_matches=source_matches,
         chain_id=chain_id,
-        finalized_block=finalized_block,
+        snapshot_block=snapshot_block,
         market_records=market_records,
         configurator_record=configurator_record,
         archive_block=archive_block,
         archive_records=archive_records,
         request_summary=request_summary,
+        head_block=head_block,
     )
     policy = cast(Mapping[str, object], manifest["decision_policy"])
-    passed = set(gates) == REQUIRED_GATES and all(gates.values())
+    required_gates = REQUIRED_GATES_BY_SCHEMA[schema]
+    passed = set(gates) == required_gates and all(gates.values())
+    block_summary = (
+        {"finalized_block": snapshot_block}
+        if schema == MANIFEST_SCHEMA_V1
+        else {"head_block": head_block, "snapshot_block": snapshot_block}
+    )
     summary = {
-        "schema_version": ARTIFACT_SCHEMA_VERSION,
+        "schema_version": ARTIFACT_SCHEMA_BY_MANIFEST[schema],
         "audit_id": manifest["audit_id"],
         "as_of": manifest["as_of"],
         "source_result": {"path": source["path"], "sha256": source_hash},
@@ -796,7 +875,7 @@ def collect_chain_metadata(manifest: Mapping[str, object]) -> tuple[dict[str, ob
             "raw_payloads_retained": False,
         },
         "chain_id": chain_id,
-        "finalized_block": finalized_block,
+        **block_summary,
         "markets": market_records,
         "market_totals": {
             "market_count": len(market_records),

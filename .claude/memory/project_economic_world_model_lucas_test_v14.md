@@ -563,3 +563,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Forbidden: account mappings/balances, arbitrary storage, logs, transactions/receipts, totals, prices/oracles,
   liquidations and responses. All twelve gates are conjunctive; pass unlocks exposure/control protocol design only,
   not execution. Budget is about 31 seconds, under 8 MiB, no paid data/remote worker/GPU.
+- Compound chain metadata v1 at protocol commit `ba40179d2a0a18d6c8bc9859d98646a68e5be665` is an endpoint-
+  capability failure, not a scientific result. `eth_chainId` succeeded; `eth_getBlockByNumber("finalized")`
+  returned `Invalid block number` on all three allowed attempts. No contract, historical or participant query ran
+  and no artifact exists. Never rerun or mutate v1.
+- Chain metadata v2 keeps the same Blockscout endpoint and every scientific/access lock. It reads `latest`, derives
+  and explicitly reads `head - 64`, then pins all current queries to that numeric snapshot. Exact method vector:
+  62 total = 24 call + 1 chain ID + 3 headers + 18 code + 16 storage. The observed head/snapshot gap must be 64.
+- `head - 64` is a confirmation-depth convention, not Ethereum consensus finality; both headers are one-provider
+  observations. Any later intervention/response protocol needs separately frozen consensus-finality and provider-
+  replication checks. V2 still uses zero paid data/remote workers/GPUs and can unlock design only.
