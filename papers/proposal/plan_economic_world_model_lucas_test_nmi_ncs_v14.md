@@ -573,3 +573,21 @@ separately frozen two-member conformance protocol using these exact names, offse
 bytes before parsing, require input/output/price-setting sections and report rather than post-hoc select fields.
 Historical model training, Experiment 156 and all GPUs remain locked. Result:
 `experiments/v14_aemo_nemde_tail_inventory/RESULTS.md`.
+
+### 11.13 Two-interval NEMDE XML conformance frozen on 15 August 2026
+
+The passed inventory fixes the exact interval-144 names, local-header offsets, compressed/uncompressed sizes and
+CRCs before any XML access. The next protocol requests exactly 1 MiB beginning at each frozen offset: one
+pre-5MS case on 1 January 2021 and one post-5MS/WDR case on 1 December 2021. Both opaque ranges must be retained
+and verified in R2 before parsing. Retry, extension, replacement, full download and parsing a following member are
+prohibited.
+
+Each member must reproduce the frozen ZIP metadata, decode to exact size/CRC without DTD/entity declarations and
+parse as XML. Both regimes require exactly one `NemSpdInputs`, `NemSpdOutputs` and `SolutionAnalysis`, the six
+officially documented input group families, the six output solution families and a nonempty price-analysis
+section. Attribute names are inventoried without values; action-like spelling is descriptive, not a gate.
+
+A pass licenses only a one-day alignment/replay design. It does not run the exact engine, validate raw
+submission/rejection history, or unlock a model, causal claim or Experiment 156. Data are 2 MiB and CPU-only;
+V100/2060 and paid resources remain unused. Protocol:
+`experiments/v14_aemo_nemde_xml_conformance/PREREGISTRATION.md`.

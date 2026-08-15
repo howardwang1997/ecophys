@@ -1,0 +1,121 @@
+schema_version: ecophys-aemo-nemde-xml-conformance/v1
+sample_id: aemo-consumed-date-interval-144-xml-conformance-v1
+frozen_at: "2026-08-15T06:31:08Z"
+parent_commit: a20d778626523eb6546fce9629680ab1fed7fc53
+scientific_role: development_only_nemde_xml_section_conformance
+
+prior_inventory:
+  protocol_commit: 0787be5f04f7d66e80c497f85051ce2b742bcc11
+  result_commit: a20d778626523eb6546fce9629680ab1fed7fc53
+  decision: PASS_NEMDE_TAIL_INVENTORY
+  summary_sha256: 9fca06c5e627960499f0e045dbbf77de174ac8a99b3f5fe46d975dfdbb1e1bb8
+
+selection:
+  rule: exact_unique_interval_144_members_from_frozen_tail_inventory
+  dates: ["2021-01-01", "2021-12-01"]
+  interval_id: 144
+  held_out_status: development_consumed_not_eligible_for_confirmation
+  replacement_allowed: false
+
+range_contract:
+  exact_response_bytes_per_object: 1048576
+  maximum_total_response_bytes: 2097152
+  request_starts_at_frozen_local_header_offset: true
+  full_download_fallback_allowed: false
+  retry_allowed: false
+  range_extension_allowed: false
+  parse_before_r2_retention_allowed: false
+  following_member_parse_allowed: false
+
+objects:
+  - object_id: pre-5ms-nemde-xml-2021-01-01-144
+    market_date: "2021-01-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/NEMDE/2021/NEMDE_2021_01/NEMDE_Market_Data/NEMDE_Files/NemSpdOutputs_20210101_loaded.zip
+    expected_archive_bytes: 116002085
+    range_start: 57637442
+    range_end: 58686017
+    expected_filename: NEMSPDOutputs_2021010114400.loaded.range-57637442-58686017.bin
+    member_name: NEMSPDOutputs_2021010114400.loaded
+    member_flags: 0
+    compression_method: 8
+    crc32: 11f971a8
+    compressed_bytes: 404030
+    uncompressed_bytes: 7851704
+    r2_key: raw/aemo/v14_nemde_xml_conformance/NEMSPDOutputs_2021010114400.loaded.range-57637442-58686017.bin
+  - object_id: post-5ms-nemde-xml-2021-12-01-144
+    market_date: "2021-12-01"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/NEMDE/2021/NEMDE_2021_12/NEMDE_Market_Data/NEMDE_Files/NemSpdOutputs_20211201_loaded.zip
+    expected_archive_bytes: 132455595
+    range_start: 65590506
+    range_end: 66639081
+    expected_filename: NEMSPDOutputs_2021120114400.loaded.range-65590506-66639081.bin
+    member_name: NEMSPDOutputs_2021120114400.loaded
+    member_flags: 0
+    compression_method: 8
+    crc32: ebbea93d
+    compressed_bytes: 459136
+    uncompressed_bytes: 8895016
+    r2_key: raw/aemo/v14_nemde_xml_conformance/NEMSPDOutputs_2021120114400.loaded.range-65590506-66639081.bin
+
+retention_contract:
+  bucket: ecophys
+  prefix: raw/aemo/v14_nemde_xml_conformance/
+  upload_before_local_header_or_xml_parse: true
+  remote_sha256_metadata_required: true
+  overwrite_mismatched_remote_object_allowed: false
+  raw_ranges_or_xml_committed_to_git: false
+
+xml_contract:
+  prohibited_tokens: ["<!DOCTYPE", "<!ENTITY"]
+  required_sections: [NemSpdInputs, NemSpdOutputs, SolutionAnalysis]
+  required_occurrences_per_section: 1
+  required_input_groups:
+    - Case
+    - RegionCollection
+    - TraderCollection
+    - PeriodCollection
+    - InterconnectorCollection
+    - GenericConstraintCollection
+  required_output_groups:
+    - CaseSolution
+    - PeriodSolution
+    - RegionSolution
+    - InterconnectorSolution
+    - TraderSolution
+    - ConstraintSolution
+  price_section_min_descendants: 1
+  action_attribute_vocabulary:
+    - PriceBand1
+    - BandAvail1
+    - MaxAvail
+    - RampUpRate
+    - RampDnRate
+  action_attribute_presence_is_gate: false
+
+gates:
+  required_object_count: 2
+  required_r2_verified_count: 2
+  required_local_header_count: 2
+  required_deflate_eof_count: 2
+  required_crc_count: 2
+  required_xml_parse_count: 2
+  required_section_contract_count: 2
+  required_input_group_contract_count: 2
+  required_output_group_contract_count: 2
+  required_nonempty_price_section_count: 2
+  licence_clarification_required_before_raw_redistribution: true
+  raw_submission_claim_allowed: false
+  exact_solver_replay_claim_allowed: false
+  participant_adaptation_claim_allowed: false
+  causal_claim_allowed: false
+  model_claim_allowed: false
+  gpu_allowed: false
+  paid_data_allowed: false
+
+outputs:
+  raw_root: artifacts/v14_aemo_nemde_xml_conformance/raw
+  download_receipt: experiments/v14_aemo_nemde_xml_conformance/artifacts/download_receipt.json
+  retention_receipt: experiments/v14_aemo_nemde_xml_conformance/artifacts/retention_receipt.json
+  summary: experiments/v14_aemo_nemde_xml_conformance/artifacts/summary.json

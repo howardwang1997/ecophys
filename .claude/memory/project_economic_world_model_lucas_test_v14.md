@@ -322,3 +322,8 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - This pass makes one interval per regime cheaply addressable and supersedes bulk monthly-prefix extraction as the
   next source route. It does not validate XML sections, solver replay or behavior. Freeze exact member-range and
   XML conformance gates before requesting content; raw redistribution and GPUs remain locked.
+- The two-member XML protocol is now frozen from the committed inventory. It requests exactly 1 MiB at each
+  interval-144 local-header offset, requires R2 retention before parsing, validates header/deflate/size/CRC and
+  requires the three official sections plus documented input/output group families in both regimes. Attributes
+  are inventoried without values. No retry, following-member parse or raw Git artifact is allowed. A pass unlocks
+  only one-day replay design; GPUs, exact-replay claims and raw redistribution remain locked.
