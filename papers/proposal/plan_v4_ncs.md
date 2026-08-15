@@ -678,9 +678,9 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     前不启动新 GPU 生产训练、不购买 L2；
 12. **当前免费真实系统线：** Uniswap 仅保留为 exact M2；Compound III 的 D0 governance-log inventory
     已按提交 `db26bbe91` 完成并通过：339 次单次成功调用、886 条治理日志、184 个 eligible updates 中
-    14 个 provisional atomic candidates。下一步先对全部 14 个候选冻结 receipt、calldata、call-path、
-    getter、24 小时污染与 consensus-finality 预检，避免挑选最方便的历史事件；G1、账户/行为/响应数据
-    和全部 GPU 生产作业继续锁定。
+    14 个 provisional atomic candidates。全部 14 个候选的 D0b receipt、calldata、call-path、getter、
+    24 小时污染与 provider-reported consensus-finality 预检现已冻结为 188 次网络操作；提交后只运行
+    一次，避免挑选最方便的历史事件。G1、账户/行为/响应数据和全部 GPU 生产作业继续锁定。
 
 ---
 

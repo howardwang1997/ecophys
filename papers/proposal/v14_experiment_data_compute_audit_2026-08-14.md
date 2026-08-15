@@ -629,3 +629,18 @@ The pass yields 14 provisional log-level candidates but does not create a GPU qu
 getter/finality preflight is still a small CPU/network task over all 14 candidates and must be separately budgeted
 and frozen. Paid-data, remote-worker and GPU use were zero; both V100s and the RTX 2060 remain idle. Account
 acquisition, trace-scale indexing and model training remain unauthorized.
+
+### Frozen Compound D0b all-candidate mechanics budget
+
+D0b fixes 187 JSON-RPC calls and one Beacon REST request over all 14 provisional candidates. The method vector is
+32 headers, 14 each of transaction/receipt/call trace, 56 proxy-slot reads, 28 implementation-code reads, 28
+asset-info calls and one chain ID. The full ordered provider/method/parameter vector is a runtime gate. At one
+operation per second, the mechanical lower bound is about 3.2 minutes; the runbook budgets up to 15 minutes for
+callTracer latency.
+
+Hard ceilings are 600 HTTP attempts, 256 MiB of responses, 200,000 normalized call nodes, 64 MiB of retained
+governance-call inputs and 100,000 receipt logs. Raw response envelopes, code and trace outputs are discarded after
+normalization/hashing. Expected durable output is small to moderate JSON, depending on governance call-tree size.
+
+This is CPU/network work only. Paid data, remote workers and GPU-hours remain zero; both V100s and the RTX 2060
+stay idle. A pass permits only D1 exposure-count/cost protocol design, not account collection or training.

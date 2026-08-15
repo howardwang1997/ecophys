@@ -620,3 +620,17 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - The top-priority rows are mainnet-USDS wstETH borrow CF 0.82->0.80 at block 22,273,296 and mainnet-WETH rsETH
   0->0.80 at block 25,571,051. Neither is selected. Freeze the next receipt/calldata/call-path/getter/finality
   preflight over all 14, then filter deterministically before any participant row. `G1` and GPU queues remain locked.
+- D0b is now frozen over all 14 in event-priority then block/hash order. Exact expected transport is 187 JSON-RPC
+  calls plus one Beacon finality request: transactions/receipts, two-provider headers, callTracer, four proxy-slot
+  reads, two code hashes and two asset getters per candidate, plus fixed finality/neighbor calls.
+- Candidate payload isolation requires one exact `CALL` for setter/deploy/proxy-admin/target-upgrade, with deploy
+  and upgrade strict descendants called by that proxy admin, and rejects successful stateful siblings outside the
+  required ancestor/descendant cone. Receipt rows re-decode all retained indexed/value fields against D0. T-1/T
+  getters must change only the declared field and match D0 old/new values. All failures stay in the 14-row audit;
+  at least one full survivor is required.
+- D0-derived 24-hour screening needs only two extra block headers; one candidate is already same-block
+  contaminated. Finality combines an execution `finalized` tag, Beacon finality update and explicit execution hash
+  replica, but remains provider-reported because local BLS/Merkle verification is not implemented.
+- D0b uses one request/s with 600-attempt, 256-MiB, 200k-node and 64-MiB trace-input caps. It is CPU/network only;
+  the full ordered provider/method/parameter vector is checked at runtime. Pass authorizes D1 exposure count/cost
+  protocol design, never account acquisition or GPU work.

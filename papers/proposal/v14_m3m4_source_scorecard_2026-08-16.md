@@ -247,3 +247,22 @@ preflight should audit all 14 candidates before applying deterministic filters, 
 calldata/call paths, getters, block/finality evidence and governance-neighborhood metadata. `G1`, participant rows
 and GPUs remain locked. Result:
 `experiments/v14_compound_v3_governance_log_inventory/RESULTS.md`.
+
+## 15. Frozen all-candidate mechanics preflight
+
+D0b audits all 14 provisional rows before filtering, in the pre-existing event priority and deterministic block/
+transaction order. The exact no-retry plan is 187 JSON-RPC calls plus one Beacon finality request. It requires
+complete transactions/receipts, two-provider headers, callTracer trees, T-1/T implementation/admin/code and exact
+eight-word asset getters.
+
+Payload isolation is a call-cone test: one exact Configurator setter, deploy, proxy-admin deploy/upgrade and target-
+proxy upgrade `CALL` must exist; deploy and upgrade must descend from and be sent by that proxy admin. Successful
+stateful calls outside their ancestor/descendant cone fail that candidate. Receipt logs are also re-decoded against
+all D0-retained indexed/value fields rather than matched on topic0 alone.
+Every candidate is retained with its check vector; at least one must survive. The 24-hour neighbor plan is derived
+from D0 rather than inspected ad hoc.
+
+The finality evidence combines the execution `finalized` tag, Beacon light-client finality update, an explicit
+execution-header hash match and candidate header replication. It remains provider-reported because no local BLS/
+Merkle verification is performed. A pass licenses D1 exposure-count/cost protocol *design only*. Protocol:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION.md`.

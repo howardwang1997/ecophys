@@ -1,0 +1,359 @@
+schema_version: ecophys-compound-v3-candidate-mechanics-preflight/v1
+audit_id: compound_v3_mainnet_candidate_mechanics_preflight_v1
+as_of: "2026-08-16"
+stage: receipt_payload_trace_getter_finality_only
+
+parents:
+  d0_summary_path: experiments/v14_compound_v3_governance_log_inventory/artifacts/summary.json
+  d0_summary_sha256: e03161118ac4cd7aea56f92f40aabdd49348d3170ce256ff42896291c1470b7f
+  d0_inventory_path: experiments/v14_compound_v3_governance_log_inventory/artifacts/governance_logs.json
+  d0_inventory_sha256: 0435a55b652f5b6a6419f22b296b72184aed25c0073a132c232de55f741fd9e2
+  exposure_design_path: data/manifests/compound_v3_exposure_control_design_v1.yaml
+  exposure_design_sha256: ec329243f9fd071405112f4598b3f7e982d56683beec742e15b920c667e4b85e
+  chain_summary_path: experiments/v14_compound_v3_chain_metadata_preflight/artifacts_v2/summary.json
+  chain_summary_sha256: 14f5b044d8c51e4323419b901a7f037c84c4af45083464e0daaefc561256c944
+  result_commit: b07935a5e182cdc4682a1392879291ee8d59136e
+  source_commit: f766f51583c23acc33b2a7824654ef2029a96804
+
+access_boundary:
+  chain_rpc_used: true
+  beacon_api_used: true
+  governance_log_parent_opened: true
+  governance_transaction_rows_opened: true
+  governance_receipt_rows_opened: true
+  governance_payload_rows_opened: true
+  governance_call_trace_rows_opened: true
+  configuration_getter_rows_opened: true
+  proxy_slot_rows_opened: true
+  implementation_code_opened_for_hashing: true
+  account_state_rows_opened: false
+  participant_action_rows_opened: false
+  participant_call_trace_rows_opened: false
+  liquidation_rows_opened: false
+  price_or_oracle_rows_opened: false
+  realized_response_rows_opened: false
+  raw_rpc_payloads_retained: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+
+sources:
+  blockscout_rpc_url: https://eth.blockscout.com/api/eth-rpc
+  blockscout_documentation_url: https://docs.blockscout.com/devs/apis/rpc/eth-rpc
+  blockscout_terms_url: https://eaas.blockscout.com/terms-and-conditions
+  publicnode_rpc_url: https://ethereum-rpc.publicnode.com
+  publicnode_beacon_url: https://ethereum-beacon-api.publicnode.com
+  publicnode_documentation_url: https://ethereum.publicnode.dev/
+  beacon_api_specification_url: https://github.com/ethereum/beacon-APIs
+  maximum_requests_per_second_across_sources: 1
+  maximum_transport_retries: 2
+  maximum_http_attempts: 600
+  maximum_response_bytes: 268435456
+  maximum_trace_nodes: 200000
+  maximum_trace_input_bytes: 67108864
+  maximum_receipt_logs: 100000
+  raw_response_payloads_retained: false
+  endpoint_substitution_after_freeze: false
+  allowed_rpc_methods:
+    - eth_chainId
+    - eth_getBlockByNumber
+    - eth_getTransactionByHash
+    - eth_getTransactionReceipt
+    - debug_traceTransaction
+    - eth_getStorageAt
+    - eth_getCode
+    - eth_call
+  allowed_beacon_paths:
+    - /eth/v1/beacon/light_client/finality_update
+  user_agent: EcoPhys-V14-Compound-candidate-mechanics-preflight/1.0
+
+selection_contract:
+  audit_every_d0_provisional_candidate: true
+  event_priority:
+    - update_asset_borrow_collateral_factor
+    - update_asset_liquidate_collateral_factor
+    - update_asset_supply_cap
+  within_class_tie_break: ascending_block_then_transaction_hash
+  candidate_replacement_after_freeze: false
+  selection_uses_participant_or_response_data: false
+  minimum_fully_conforming_candidates: 1
+
+contracts:
+  configurator_proxy: "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3"
+  implementation_slot: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+  admin_slot: "0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103"
+  get_asset_info_selector: "0x3b3bec2e"
+  setter_selectors:
+    update_asset_borrow_collateral_factor: "0xb73585f1"
+    update_asset_liquidate_collateral_factor: "0x77a7dafd"
+    update_asset_supply_cap: "0xa2ced7fd"
+  deploy_selector: "0x4c96a389"
+  proxy_admin_deploy_selectors:
+    - "0x9627816f"
+    - "0xc7d20733"
+  proxy_upgrade_selectors:
+    - "0x3659cfe6"
+    - "0x4f1ef286"
+  asset_info_fields:
+    - offset_uint8
+    - asset_address
+    - price_feed_address
+    - scale_uint64
+    - borrow_collateral_factor_uint64
+    - liquidate_collateral_factor_uint64
+    - liquidation_factor_uint64
+    - supply_cap_uint128
+  only_declared_asset_field_may_change: true
+
+trace_contract:
+  tracer: callTracer
+  timeout: 60s
+  only_top_call: false
+  with_log: false
+  root_must_match_transaction_envelope: true
+  required_successful_calls:
+    - exact_configurator_setter
+    - exact_configurator_deploy
+    - exact_proxy_admin_deploy_and_upgrade
+    - exact_target_proxy_upgrade
+  required_call_type: CALL
+  deploy_and_upgrade_strictly_descend_from_proxy_admin_call: true
+  deploy_and_upgrade_callers_equal_proxy_admin: true
+  allow_static_calls_outside_mechanism_cone: true
+  reject_stateful_calls_outside_required_ancestor_descendant_cone: true
+  failed_internal_calls_do_not_count_as_state_changes: true
+
+finality_contract:
+  require_publicnode_finalized_tag: true
+  require_beacon_light_client_finality_update: true
+  require_beacon_execution_header_match_explicit_rpc_header: true
+  require_both_finalized_numbers_after_every_candidate: true
+  require_candidate_header_match_publicnode_and_blockscout: true
+  local_bls_signature_verification_performed: false
+
+contamination_contract:
+  window_seconds: 86400
+  post_merge_block_radius: 7200
+  derive_neighbors_from_complete_d0_inventory: true
+  same_transaction_is_candidate_mechanics_not_neighbor: true
+  any_other_configurator_or_frozen_proxy_log_inside_window_fails_candidate: true
+  unique_neighbor_blocks_requiring_headers:
+    - 20721442
+    - 21237796
+
+expected_request_contract:
+  candidate_count: 14
+  json_rpc_success_count_without_retry: 187
+  beacon_success_count_without_retry: 1
+  network_operation_count_without_retry: 188
+  method_counts:
+    eth_chainId: 1
+    eth_getBlockByNumber: 32
+    eth_getTransactionByHash: 14
+    eth_getTransactionReceipt: 14
+    debug_traceTransaction: 14
+    eth_getStorageAt: 56
+    eth_getCode: 28
+    eth_call: 28
+  provider_counts:
+    blockscout: 156
+    publicnode_execution: 31
+    publicnode_beacon: 1
+
+candidates:
+  - candidate_id: borrow_cf_22273296_0080d1f7
+    priority_rank: 1
+    block_number: 22273296
+    transaction_hash: "0x0080d1f75c7193799b5e1f00028f51239da8da0d0e3192db1f0af5f1edc7bfda"
+    market_id: mainnet_usds
+    comet_proxy: "0x5d409e56d886231adaf00c8775665ad0f9897b56"
+    asset: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+    event_type: update_asset_borrow_collateral_factor
+    old_value: 820000000000000000
+    new_value: 800000000000000000
+    implementation: "0xb7dabef05ab656123d0274c4c39e4ce4eb894b89"
+    nearby_other_governance_blocks: []
+  - candidate_id: borrow_cf_25571051_fdbdc6fc
+    priority_rank: 2
+    block_number: 25571051
+    transaction_hash: "0xfdbdc6fc0f46864658d90fa4d20109cc2436446ef9059b3e2d0a58303224c69b"
+    market_id: mainnet_weth
+    comet_proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    asset: "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7"
+    event_type: update_asset_borrow_collateral_factor
+    old_value: 0
+    new_value: 800000000000000000
+    implementation: "0xb75df0913b27e2e72a78c843fda2d419adfd2704"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_16133171_5c9dacfa
+    priority_rank: 3
+    block_number: 16133171
+    transaction_hash: "0x5c9dacfaa936f03f433272655a47d6288df233a09124513f25e21de645b6a8f9"
+    market_id: mainnet_usdc
+    comet_proxy: "0xc3d688b66703497daa19211eedff47f25384cdc3"
+    asset: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    event_type: update_asset_supply_cap
+    old_value: 75000000000000000000000
+    new_value: 150000000000000000000000
+    implementation: "0x9a759bc2d5248b1da689c642ad2ca3383657361c"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_16520572_f626c068
+    priority_rank: 4
+    block_number: 16520572
+    transaction_hash: "0xf626c068c89b0c32f7475a86a373e801bc2538fbe04250c8f8308ccb3cb4d475"
+    market_id: mainnet_usdc
+    comet_proxy: "0xc3d688b66703497daa19211eedff47f25384cdc3"
+    asset: "0xc00e94cb662c3520282e6f5717214004a7f26888"
+    event_type: update_asset_supply_cap
+    old_value: 600000000000000000000000
+    new_value: 900000000000000000000000
+    implementation: "0x77708e0fee45cb9d177174b260a04beda47d0495"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_16549206_b96f2c61
+    priority_rank: 5
+    block_number: 16549206
+    transaction_hash: "0xb96f2c61b10b63a8197fe5cd3333597b2ad0b5cf5202fd644c8ffb91ef07d56a"
+    market_id: mainnet_weth
+    comet_proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    asset: "0xbe9895146f7af43049ca1c1ae358b0541ea49704"
+    event_type: update_asset_supply_cap
+    old_value: 7100000000000000000000
+    new_value: 20000000000000000000000
+    implementation: "0x9c1213b63a587658aa46647226068e68dfae5e1e"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_16668519_f803c13b
+    priority_rank: 6
+    block_number: 16668519
+    transaction_hash: "0xf803c13b5eac09e15b2f9aed4409a7a099f70ef9fda754d8084be33a09cd13ea"
+    market_id: mainnet_weth
+    comet_proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    asset: "0xbe9895146f7af43049ca1c1ae358b0541ea49704"
+    event_type: update_asset_supply_cap
+    old_value: 20000000000000000000000
+    new_value: 30000000000000000000000
+    implementation: "0xbf1f8be5405b184b0cc5ec0fb74839442c6fa1a1"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_16826903_65471793
+    priority_rank: 7
+    block_number: 16826903
+    transaction_hash: "0x6547179307e966c81eca2f6430453a9cc2da4fadd9fdfa14568c949192aec7e9"
+    market_id: mainnet_weth
+    comet_proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    asset: "0xbe9895146f7af43049ca1c1ae358b0541ea49704"
+    event_type: update_asset_supply_cap
+    old_value: 30000000000000000000000
+    new_value: 40000000000000000000000
+    implementation: "0x075e51fc759f38cb4c52136048a86c3b3e9a1d02"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_20521296_c38f6ef7
+    priority_rank: 8
+    block_number: 20521296
+    transaction_hash: "0xc38f6ef72d46b10ddd19adf91a93da0ecbe419f383febe955a9468152f30624b"
+    market_id: mainnet_weth
+    comet_proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    asset: "0xbf5495efe5db9ce00f80364c8b423567e58d2110"
+    event_type: update_asset_supply_cap
+    old_value: 8000000000000000000000
+    new_value: 12000000000000000000000
+    implementation: "0x5440255a35d97fefe1efae99233b3576d10890d9"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_20619825_773f0d35
+    priority_rank: 9
+    block_number: 20619825
+    transaction_hash: "0x773f0d35bbbf284b982d333a3ced98049a660dabef6d7eb950601f8f6b3d2436"
+    market_id: mainnet_usdt
+    comet_proxy: "0x3afdc9bca9213a35503b077a6072f3d0d5ab0840"
+    asset: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+    event_type: update_asset_supply_cap
+    old_value: 9000000000000000000000
+    new_value: 15000000000000000000000
+    implementation: "0x951a0dd867387c4caf111bf6e9beed6dc40c8919"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_20720177_ee0c1da4
+    priority_rank: 10
+    block_number: 20720177
+    transaction_hash: "0xee0c1da479377d64dbc009c37018b19694946f8bb82d420ea95a2b651c80de7a"
+    market_id: mainnet_usdc
+    comet_proxy: "0xc3d688b66703497daa19211eedff47f25384cdc3"
+    asset: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+    event_type: update_asset_supply_cap
+    old_value: 15000000000000000000000
+    new_value: 25000000000000000000000
+    implementation: "0x35b5de07f859e7b57104be206d314c111da7428a"
+    nearby_other_governance_blocks: [20721442]
+  - candidate_id: supply_cap_20878779_ca4bfe09
+    priority_rank: 11
+    block_number: 20878779
+    transaction_hash: "0xca4bfe09e01af04a4f0574cbbbd19f5ec5088dd64df804289f1650493315ada8"
+    market_id: mainnet_usdc
+    comet_proxy: "0xc3d688b66703497daa19211eedff47f25384cdc3"
+    asset: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+    event_type: update_asset_supply_cap
+    old_value: 25000000000000000000000
+    new_value: 40000000000000000000000
+    implementation: "0x2dc3c7642acba6fc16dfc52479e9dc11e7fffc89"
+    nearby_other_governance_blocks: [20878779]
+  - candidate_id: supply_cap_21237694_13cb76a1
+    priority_rank: 12
+    block_number: 21237694
+    transaction_hash: "0x13cb76a1fd239b517458397e60bdb1937362aaa64783813df281d56b75e253da"
+    market_id: mainnet_weth
+    comet_proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    asset: "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7"
+    event_type: update_asset_supply_cap
+    old_value: 10000000000000000000000
+    new_value: 37000000000000000000000
+    implementation: "0xa4ac3f3c85019d932245737f62882fb372ebef0c"
+    nearby_other_governance_blocks: [21237796]
+  - candidate_id: supply_cap_21363714_c2de4b9a
+    priority_rank: 13
+    block_number: 21363714
+    transaction_hash: "0xc2de4b9a9778dfc5083cb17928eaabd8dd90262e1dea1d3c6ab9ee926f9e3732"
+    market_id: mainnet_usdt
+    comet_proxy: "0x3afdc9bca9213a35503b077a6072f3d0d5ab0840"
+    asset: "0xa663b02cf0a4b149d2ad41910cb81e23e1c41c32"
+    event_type: update_asset_supply_cap
+    old_value: 10000000000000000000000000
+    new_value: 20000000000000000000000000
+    implementation: "0xb469951558fc196efe3ff2fd94dd92022a67184d"
+    nearby_other_governance_blocks: []
+  - candidate_id: supply_cap_25148942_be6aa6fa
+    priority_rank: 14
+    block_number: 25148942
+    transaction_hash: "0xbe6aa6fa5f65be96dd5b90a1992b1a42e8422a0a1e1849d13d50d511509ca63f"
+    market_id: mainnet_weth
+    comet_proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    asset: "0xbf5495efe5db9ce00f80364c8b423567e58d2110"
+    event_type: update_asset_supply_cap
+    old_value: 33163000000000000000000
+    new_value: 500000000000000000000
+    implementation: "0x23bf07c30eb83c46d5940af186703079f66fd0a9"
+    nearby_other_governance_blocks: []
+
+gates:
+  - parent_hashes_and_exact_candidate_derivation
+  - ethereum_chain_and_finality_sources
+  - exact_complete_request_plan
+  - all_receipts_and_d0_logs_conform
+  - cross_provider_candidate_headers
+  - complete_call_traces
+  - candidate_mechanism_call_cones_evaluated
+  - pre_post_getter_and_proxy_state_evaluated
+  - contamination_windows_evaluated
+  - at_least_one_fully_conforming_candidate
+  - request_trace_and_byte_caps
+  - participant_data_access_boundary
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_CANDIDATE_MECHANICS_AUTHORIZE_D1_EXPOSURE_PROTOCOL_DESIGN_ONLY
+  fail: FAIL_CANDIDATE_MECHANICS_KEEP_ACCOUNT_AND_RESPONSE_ROWS_LOCKED
+  authorized_next_stage: separately_frozen_d1_exposure_count_and_cost_protocol_design
+
+limitations:
+  - The Beacon light-client finality response is provider-reported; this preflight does not locally verify its BLS signature or Merkle branches.
+  - A callTracer tree can establish the provider-returned call surface but not independently prove node execution correctness.
+  - Mechanism-cone isolation permits descendants of the exact Configurator and proxy-admin calls; historical deployed-source conformance remains a later hard gate.
+  - A clean governance neighborhood covers the Configurator and six frozen proxies only, not unrelated market-wide news or price shocks.
+  - Historical candidates are development events and cannot replace prospective first-event/no-replacement confirmation.
+  - No account, participant action, liquidation, price, response or model row is authorized by this preflight.

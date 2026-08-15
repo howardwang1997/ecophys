@@ -282,3 +282,8 @@ convenience selection, the next D0 substage must freeze and audit all 14 receipt
 getters, 24-hour governance neighborhoods and finality evidence before applying a deterministic filter. The D1
 exposure census, all participant actions/responses and all GPU work remain locked. Result:
 `experiments/v14_compound_v3_governance_log_inventory/RESULTS.md`.
+
+That all-candidate substage is now frozen as 187 JSON-RPC calls plus one Beacon request. It audits complete
+receipts, stateful call cones, exact T-1/T getter/slot transitions, D0-derived contamination neighbors and
+provider-reported finality for every row before filtering. Protocol:
+`experiments/v14_compound_v3_candidate_mechanics_preflight/PREREGISTRATION.md`.
