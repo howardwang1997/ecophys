@@ -172,3 +172,17 @@ Primary sources:
 3. Preserve failure or pass without removing a market or marker.
 4. On pass, freeze a separate chain-deployment/archive metadata audit; do not open account or response rows.
 5. Keep Aave as the predetermined fallback and the GC0166 request unsent unless the user authorizes contact.
+
+## 10. Source-preflight result
+
+The v2 run at pushed protocol commit `0245e6ebcd11e263e13bdeb98ff2d66cb1498b6c` passed all nine source-
+conformance gates. Six of six mainnet market manifests were structurally complete, with six unique Comet roots,
+22 collateral configurations and 56 migration filenames. All frozen action, state, Configurator and licence
+markers were present; 16 file hashes were independently verified. Artifact SHA-256:
+`643edb6750ab5567528a9754bdf92b84143deaa82a9225a9c8ea9730e0d81e11`.
+
+This does not change the scorecard to G1. All six markets share one Configurator address in the source roots, which
+makes bundled treatment and shared-authority spillover an explicit control risk. Repository configurations remain
+non-authoritative until code/storage/execution metadata conform on chain. The next admissible protocol is chain
+deployment/archive *metadata only*; accounts, actions, prices, responses and GPUs stay locked. Result:
+`experiments/v14_compound_v3_metadata_preflight/RESULTS.md`.

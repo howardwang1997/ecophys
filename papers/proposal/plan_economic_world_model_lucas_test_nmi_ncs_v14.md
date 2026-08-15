@@ -1022,3 +1022,18 @@ permitted files, implementation, manifest, all nine gates and every chain/accoun
 Commit and push v2 before execution; another runner failure is terminal for that version. V1 result:
 `experiments/v14_compound_v3_metadata_preflight/RESULTS_V1.md`; v2 protocol:
 `experiments/v14_compound_v3_metadata_preflight/PREREGISTRATION_V2.md`.
+
+### 11.37 Compound source metadata passes; shared authority sharpens the next gate
+
+The clean v2 run at protocol commit `0245e6ebcd11e263e13bdeb98ff2d66cb1498b6c` passed all nine frozen
+source gates. All six mainnet market configuration/root pairs are complete; Comet roots are unique; the source
+contains 22 collateral configurations and 56 migration filenames; and every frozen action, state, Configurator and
+licence marker is present. Sixteen file records independently reproduce their hashes. Artifact SHA-256:
+`643edb6750ab5567528a9754bdf92b84143deaa82a9225a9c8ea9730e0d81e11`.
+
+The pass only says the official source tree can support the next audit. It does not prove effective on-chain
+configuration or execution, archive completeness, account support or controls. All six source roots share one
+Configurator address, so parallel markets cannot be presumed untreated when governance payloads may bundle
+changes. Freeze a chain-deployment/archive metadata protocol next; forbid account mappings, participant events,
+liquidations, prices and responses. `G1 NOT PASSED`, and model/GPU work remains locked. Result:
+`experiments/v14_compound_v3_metadata_preflight/RESULTS.md`.

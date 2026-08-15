@@ -1,0 +1,274 @@
+{
+  "access_boundary": {
+    "account_state_rows_opened": false,
+    "chain_rpc_used": false,
+    "external_workers_used": false,
+    "governance_payload_rows_opened": false,
+    "gpu_used": false,
+    "official_code_blobs_opened": true,
+    "paid_data_used": false,
+    "participant_action_rows_opened": false,
+    "realized_response_rows_opened": false
+  },
+  "as_of": "2026-08-16",
+  "audit_id": "compound_v3_mainnet_source_metadata_v1",
+  "authorized_next_stage": "separately_frozen_chain_deployment_and_archive_metadata_preflight",
+  "contract_surface": {
+    "action_markers": {
+      "event AbsorbCollateral(address indexed absorber, address indexed borrower, address indexed asset, uint collateralAbsorbed, uint usdValue);": true,
+      "event AbsorbDebt(address indexed absorber, address indexed borrower, uint basePaidOut, uint usdValue);": true,
+      "event Supply(address indexed from, address indexed dst, uint amount);": true,
+      "event SupplyCollateral(address indexed from, address indexed dst, address indexed asset, uint amount);": true,
+      "event Withdraw(address indexed src, address indexed to, uint amount);": true,
+      "event WithdrawCollateral(address indexed src, address indexed to, address indexed asset, uint amount);": true,
+      "function absorb(address absorber, address[] calldata accounts) virtual external;": true,
+      "function supply(address asset, uint amount) virtual external;": true,
+      "function withdraw(address asset, uint amount) virtual external;": true
+    },
+    "configurator_markers": {
+      "event CometDeployed(address indexed cometProxy, address indexed newComet);": true,
+      "event SetBorrowKink(address indexed cometProxy,uint64 oldKink, uint64 newKink);": true,
+      "event SetSupplyKink(address indexed cometProxy,uint64 oldKink, uint64 newKink);": true,
+      "event UpdateAssetBorrowCollateralFactor(address indexed cometProxy, address indexed asset, uint64 oldBorrowCF, uint64 newBorrowCF);": true,
+      "event UpdateAssetSupplyCap(address indexed cometProxy, address indexed asset, uint128 oldSupplyCap, uint128 newSupplyCap);": true
+    },
+    "storage_markers": {
+      "mapping(address => UserBasic) public userBasic;": true,
+      "mapping(address => mapping(address => UserCollateral)) public userCollateral;": true,
+      "mapping(address => mapping(address => bool)) public isAllowed;": true,
+      "struct UserBasic {": true
+    }
+  },
+  "decision": "PASS_SOURCE_METADATA_AUTHORIZE_CHAIN_METADATA_ONLY",
+  "gate_counts": {
+    "fail": 0,
+    "pass": 9
+  },
+  "gates": {
+    "action_surface": true,
+    "configuration_surface": true,
+    "license_provenance": true,
+    "market_files": true,
+    "market_schema": true,
+    "source_clean": true,
+    "source_commit": true,
+    "state_surface": true,
+    "unique_comet_roots": true
+  },
+  "license_provenance": {
+    "markers": {
+      "Business Source License 1.1": true,
+      "Change Date:          The earlier of 2025-12-31": true,
+      "Change License:       GNU General Public License v2.0 or later": true
+    },
+    "path": "LICENSE"
+  },
+  "limitations": [
+    "Repository configurations and migration filenames are source metadata, not proof of on-chain execution or current effective state.",
+    "Address-level accounts are statistical units, not identified beneficial people; managers and Bulker operators are separate layers.",
+    "Absence of a successful state-changing transaction is not absence of private intent, a reverted transaction or an off-chain plan.",
+    "No control market, intervention, response vector, archive provider, sample-size gate or finality rule is selected by this audit.",
+    "Passing this audit cannot authorize account, action, liquidation, price or post-change response collection."
+  ],
+  "market_totals": {
+    "collateral_asset_count": 22,
+    "complete_schema_count": 6,
+    "market_count": 6,
+    "migration_file_count": 56,
+    "unique_comet_count": 6
+  },
+  "markets": [
+    {
+      "base_token": "USDC",
+      "collateral_asset_count": 5,
+      "comet": "0xc3d688b66703497daa19211eedff47f25384cdc3",
+      "configuration_path": "deployments/mainnet/usdc/configuration.json",
+      "configurator": "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3",
+      "files_exist": true,
+      "first_migration": "1659582050_raise_supply_caps_and_seed_reserves.ts",
+      "last_migration": "1779114960_update_supply_caps_on_l2.ts",
+      "market_id": "mainnet_usdc",
+      "migration_count": 17,
+      "name": "Compound USDC",
+      "parse_error": null,
+      "roots_path": "deployments/mainnet/usdc/roots.json",
+      "schema_ok": true,
+      "symbol": "cUSDCv3"
+    },
+    {
+      "base_token": "USDS",
+      "collateral_asset_count": 5,
+      "comet": "0x5d409e56d886231adaf00c8775665ad0f9897b56",
+      "configuration_path": "deployments/mainnet/usds/configuration.json",
+      "configurator": "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3",
+      "files_exist": true,
+      "first_migration": "1729069465_configurate_and_ens.ts",
+      "last_migration": "1777297641_update_supply_caps_on_mainnet.ts",
+      "market_id": "mainnet_usds",
+      "migration_count": 4,
+      "name": "Compound USDS",
+      "parse_error": null,
+      "roots_path": "deployments/mainnet/usds/roots.json",
+      "schema_ok": true,
+      "symbol": "cUSDSv3"
+    },
+    {
+      "base_token": "USDT",
+      "collateral_asset_count": 6,
+      "comet": "0x3afdc9bca9213a35503b077a6072f3d0d5ab0840",
+      "configuration_path": "deployments/mainnet/usdt/configuration.json",
+      "configurator": "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3",
+      "files_exist": true,
+      "first_migration": "1717664323_configurate_and_ens.ts",
+      "last_migration": "1777297641_update_supply_caps_on_mainnet.ts",
+      "market_id": "mainnet_usdt",
+      "migration_count": 9,
+      "name": "Compound USDT",
+      "parse_error": null,
+      "roots_path": "deployments/mainnet/usdt/roots.json",
+      "schema_ok": true,
+      "symbol": "cUSDTv3"
+    },
+    {
+      "base_token": "WBTC",
+      "collateral_asset_count": 2,
+      "comet": "0xe85dc543813b8c2cfeaac371517b925a166a9293",
+      "configuration_path": "deployments/mainnet/wbtc/configuration.json",
+      "configurator": "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3",
+      "files_exist": true,
+      "first_migration": "1737396251_configurate_and_ens.ts",
+      "last_migration": "1777625885_update_supply_caps_on_mainnet.ts",
+      "market_id": "mainnet_wbtc",
+      "migration_count": 2,
+      "name": "Compound WBTC",
+      "parse_error": null,
+      "roots_path": "deployments/mainnet/wbtc/roots.json",
+      "schema_ok": true,
+      "symbol": "cWBTCv3"
+    },
+    {
+      "base_token": "WETH",
+      "collateral_asset_count": 2,
+      "comet": "0xa17581a9e3356d9a858b789d68b4d866e593ae94",
+      "configuration_path": "deployments/mainnet/weth/configuration.json",
+      "configurator": "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3",
+      "files_exist": true,
+      "first_migration": "1666906000_configurate_seed_reserves_and_rewards.ts",
+      "last_migration": "1779099097_return_rseth_pricefeeds_on_weth_and_wsteth.ts",
+      "market_id": "mainnet_weth",
+      "migration_count": 18,
+      "name": "Compound WETH",
+      "parse_error": null,
+      "roots_path": "deployments/mainnet/weth/roots.json",
+      "schema_ok": true,
+      "symbol": "cWETHv3"
+    },
+    {
+      "base_token": "wstETH",
+      "collateral_asset_count": 2,
+      "comet": "0x3d0bb1ccab520a66e607822fc55bc921738fafe3",
+      "configuration_path": "deployments/mainnet/wsteth/configuration.json",
+      "configurator": "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3",
+      "files_exist": true,
+      "first_migration": "1723732097_configurate_and_ens.ts",
+      "last_migration": "1779099097_return_rseth_pricefeeds_on_weth_and_wsteth.ts",
+      "market_id": "mainnet_wsteth",
+      "migration_count": 6,
+      "name": "Compound wstETH",
+      "parse_error": null,
+      "roots_path": "deployments/mainnet/wsteth/roots.json",
+      "schema_ok": true,
+      "symbol": "cWstETHv3"
+    }
+  ],
+  "schema_version": "ecophys-compound-v3-metadata-audit/v1",
+  "source": {
+    "clean": true,
+    "commit": "f766f51583c23acc33b2a7824654ef2029a96804",
+    "examined_file_count": 16,
+    "examined_file_inventory_sha256": "8365b2855c1d25fee27cacb17b7627844b0331e32a95f8dbb6e045e6e03aead8",
+    "files": [
+      {
+        "bytes": 4426,
+        "path": "LICENSE",
+        "sha256": "8a5f4b7c46a14f9a2fa407b1695a56e348e60c2d2b40bc1818152abe384582c3"
+      },
+      {
+        "bytes": 7469,
+        "path": "contracts/CometMainInterface.sol",
+        "sha256": "8dab837c9ef1d3805413b2d5c948d8c1f5b009da4e4f9505795b2a1535ec0d1b"
+      },
+      {
+        "bytes": 2315,
+        "path": "contracts/CometStorage.sol",
+        "sha256": "7475e03d2945a35e9bbd93fa96ba8bc18d50f60cdb9ea992e6742efbc199850c"
+      },
+      {
+        "bytes": 18689,
+        "path": "contracts/Configurator.sol",
+        "sha256": "cfbd5dcc1184fcc64e9ba5a808f46f405bd2084795efd8a3ba0bcce040c65572"
+      },
+      {
+        "bytes": 2301,
+        "path": "deployments/mainnet/usdc/configuration.json",
+        "sha256": "28825ee92d6b91d0f3d3bbfbf6d8b39f2761f464722bffe629288f7efd69e6f8"
+      },
+      {
+        "bytes": 2003,
+        "path": "deployments/mainnet/usdc/roots.json",
+        "sha256": "689cf0e940bfdc440eba854201d8ed738be5a442802ee5723a05a4b2d16f6c57"
+      },
+      {
+        "bytes": 2278,
+        "path": "deployments/mainnet/usds/configuration.json",
+        "sha256": "bd45cc57382712267a9cdf75c2da38198a135153555ad694c88f2afd0f3cffea"
+      },
+      {
+        "bytes": 306,
+        "path": "deployments/mainnet/usds/roots.json",
+        "sha256": "a6964f5b9b1869cea0a7d41379df9d20366ad02004fb38b51427650e33beec21"
+      },
+      {
+        "bytes": 2500,
+        "path": "deployments/mainnet/usdt/configuration.json",
+        "sha256": "2a1b3215ed24f50405f4e0817629f7bfc597482015b57ca7581ffb3fe6c49d71"
+      },
+      {
+        "bytes": 306,
+        "path": "deployments/mainnet/usdt/roots.json",
+        "sha256": "f9bdf169737ca52454101128f6f637779e89564ef78b0ac8b7384cf4494c3dde"
+      },
+      {
+        "bytes": 1386,
+        "path": "deployments/mainnet/wbtc/configuration.json",
+        "sha256": "bdb8e499f8e36d5c062fd08fee277a206d543e261b2204f1a3e8aee761580195"
+      },
+      {
+        "bytes": 360,
+        "path": "deployments/mainnet/wbtc/roots.json",
+        "sha256": "d57988e6bcd6c638c7f7fa47389ddde20ee6d88434ba17d23363f2e64fa08fd4"
+      },
+      {
+        "bytes": 1309,
+        "path": "deployments/mainnet/weth/configuration.json",
+        "sha256": "09be60277f5d4a39a99ca33b7934d4fd57cdd0f1e4c1ec622a85b623ff48f782"
+      },
+      {
+        "bytes": 248,
+        "path": "deployments/mainnet/weth/roots.json",
+        "sha256": "9ddf2ad2ad3b50683aa4f5017eaf26f50f257f7b9fa80d27da892585a8a1e5d6"
+      },
+      {
+        "bytes": 1282,
+        "path": "deployments/mainnet/wsteth/configuration.json",
+        "sha256": "4ea051680860ea4ecada2785539ad230bedeb5f5e6f539f07f8f689330f77130"
+      },
+      {
+        "bytes": 248,
+        "path": "deployments/mainnet/wsteth/roots.json",
+        "sha256": "96feabf84423687a0b50ceaf29c2ecd2d3dc80972906110bb89e57d748569631"
+      }
+    ],
+    "repo_url": "https://github.com/compound-finance/comet.git"
+  }
+}

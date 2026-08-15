@@ -550,3 +550,13 @@ used. The sparse-materialization setup and import-path failure do not change the
 
 V2 invokes the same committed collector as a package module. It retains the seconds-scale local CPU budget, one
 small JSON output, zero network/RPC and zero GPU-hours. No compute worker should be queued for this repair.
+
+### Compound source-metadata v2 compute result
+
+V2 completed in about one second on local CPU and wrote an 11,318-byte artifact. It audited 16 official source
+files, six mainnet market pairs, 22 collateral configurations and 56 migration filenames. Nine gates and all
+independent file-hash checks passed. It used no network/RPC, paid data, remote worker or GPU.
+
+The next bottleneck is on-chain deployment/archive provenance and control design, not compute. A separately frozen
+metadata-only RPC audit will need only tens to low hundreds of read calls and local CPU. Do not queue either V100
+or the RTX 2060; account/action/response data and model training remain unauthorized.

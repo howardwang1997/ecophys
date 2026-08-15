@@ -548,3 +548,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - V2 is invocation-only: run the identical committed collector as
   `python -m ecomd.research.compound_v3_metadata` from the repository root. All source, market, marker, gate and
   access contracts remain unchanged; commit/push before execution.
+- Compound metadata v2 at protocol commit `0245e6ebcd11e263e13bdeb98ff2d66cb1498b6c` passes 9/9 source
+  gates: six complete mainnet market pairs, six unique Comet roots, 22 collateral configurations, 56 migration
+  filenames and all frozen action/state/Configurator/licence markers. Sixteen source-file hashes reproduce.
+  Artifact SHA `643edb6750ab5567528a9754bdf92b84143deaa82a9225a9c8ea9730e0d81e11`.
+- All six roots share one Configurator address. Treat cross-market controls as unproved because one governance
+  payload can bundle changes or create shared-authority spillovers. Source files are not authoritative deployed
+  state or execution evidence.
+- The pass unlocks only a separately frozen chain deployment/code/configuration and archive-provider metadata
+  audit. `G1 NOT PASSED`; account mappings, actions, liquidations, prices, responses and GPUs remain locked.

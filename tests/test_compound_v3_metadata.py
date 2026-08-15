@@ -10,6 +10,7 @@ from ecomd.research.compound_v3_metadata import (
 )
 
 MANIFEST_PATH = Path("data/manifests/compound_v3_metadata_preflight_v1.yaml")
+RESULT_PATH = Path("experiments/v14_compound_v3_metadata_preflight/artifacts/summary.json")
 
 
 def _write_fixture(root: Path, manifest: dict[str, object]) -> None:
@@ -137,3 +138,28 @@ def test_manifest_rejects_chain_access_and_unpinned_source() -> None:
 
     assert any("chain_rpc_used must be false" in error for error in errors)
     assert any("40-character Git SHA" in error for error in errors)
+
+
+def test_committed_source_result_passes_only_metadata_stage() -> None:
+    result = json.loads(RESULT_PATH.read_text(encoding="utf-8"))
+
+    assert result["decision"] == "PASS_SOURCE_METADATA_AUTHORIZE_CHAIN_METADATA_ONLY"
+    assert result["gate_counts"] == {"fail": 0, "pass": 9}
+    assert all(result["gates"].values())
+    assert result["market_totals"] == {
+        "collateral_asset_count": 22,
+        "complete_schema_count": 6,
+        "market_count": 6,
+        "migration_file_count": 56,
+        "unique_comet_count": 6,
+    }
+    assert len(result["source"]["files"]) == 16
+    assert result["source"]["clean"] is True
+    boundary = result["access_boundary"]
+    assert boundary["chain_rpc_used"] is False
+    assert boundary["account_state_rows_opened"] is False
+    assert boundary["participant_action_rows_opened"] is False
+    assert boundary["realized_response_rows_opened"] is False
+    assert result["authorized_next_stage"] == (
+        "separately_frozen_chain_deployment_and_archive_metadata_preflight"
+    )
