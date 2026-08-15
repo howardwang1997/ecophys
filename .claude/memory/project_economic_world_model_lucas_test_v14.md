@@ -278,3 +278,10 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   `resource_contract.maximum_total_data_rows=4000000` to derived day manifests, plus a parser-entry integration
   preflight and R2-only materializer. New AEMO request count is fixed at zero; 28 combined AEMO tests pass. The
   repair remains unexecuted, CPU-only and unable to unlock historical/model claims by itself.
+- Repair commit `59540001a5ce9ee6a340ea346e5755609c4bdd77` materialized all ten R2 objects with zero AEMO
+  requests and passed all four unchanged panel days. Aggregate: 2,382,192 trackers, 2,203,632 singletons, 178,560
+  exact `{GEN, LOAD}` bundles, 18,255,035 timestamps and zero relation violations. Summary SHA:
+  `d939fffd8bc7673eb0aac78e06ae2abf38b1ea27e81cba67d03c355bec77ec88`.
+- Modern within-version bridge stability is now supported across six Tuesdays/two monthly identity snapshots.
+  Additional same-version days have low value. Next freeze a minimal historical schema/source bridge audit; raw
+  action provenance, prospective G1, Exp156 and GPU/model work remain locked.

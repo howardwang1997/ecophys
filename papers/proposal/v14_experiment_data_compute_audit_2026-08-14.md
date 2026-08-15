@@ -386,3 +386,10 @@ and all model/GPU locks are unchanged.
 The repair adds one parser-entry preflight and the missing per-day row cap, then runs the same sequential CPU
 analysis on R2-materialized bytes. New source transfer is zero; maximum staged/computation budgets are unchanged.
 Twenty-eight combined AEMO tests pass before execution. Required GPU-hours and paid-data spend remain zero.
+
+### Repaired panel compute result
+
+The four sequential CPU analyses passed on 5,697,359 target rows and 18,255,035 contracted timestamps. No GPU,
+remote worker, paid data or model run was used. More same-version sampling is not compute-efficient: the next work
+is historical schema/source reconnaissance and small CPU preflights. V100/RTX 2060 queues remain empty until a
+separate model experiment is scientifically unlocked.

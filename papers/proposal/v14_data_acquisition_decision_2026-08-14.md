@@ -256,3 +256,14 @@ No additional source acquisition or purchase is justified; `NO_BUY_NOW` remains 
 The repair performs zero AEMO source requests. It freezes all ten existing R2 keys, exact sizes and SHA-256 values
 and materializes only those bytes. New acquisition is therefore 0 bytes; staged bytes remain 71,350,764. Any R2
 mismatch fails the repair. This is provenance reuse, not a replacement sample, and leaves `NO_BUY_NOW` unchanged.
+
+### Repaired panel result and next data gate
+
+All ten R2 objects re-materialized exactly with zero AEMO requests. Four of four dates then passed the unchanged
+relation contract. Modern daily acquisition is now adequate for within-version bridge stability; collecting more
+days from the same versions has sharply diminishing value.
+
+Do not buy data or bulk-download more modern days. The next data question is historical portability: identify a
+minimal public source combination that supplies the same five logical roles across declared schema regimes, then
+freeze a header/time/key bridge before any large historical object is fetched. Raw submission/rejection provenance
+and prospective-event data remain separate blockers. `NO_BUY_NOW` remains unchanged.

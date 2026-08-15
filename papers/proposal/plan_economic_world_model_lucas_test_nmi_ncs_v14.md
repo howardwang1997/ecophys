@@ -489,3 +489,18 @@ Execution must materialize 10/10 bytes from R2 before content access, then apply
 decision. The repair is unexecuted and CPU-only. Even a pass remains a within-version observation-bridge result;
 historical portability, Experiment 156 and GPU/model work stay locked. Protocol:
 `experiments/v14_aemo_bundle_stability_panel_repair/PREREGISTRATION.md`.
+
+### 11.8 Repaired stability-panel result
+
+Repair commit `59540001a` materialized 10/10 exact R2 objects with zero AEMO source requests, then ran the unchanged
+four-day decision. Every date passed all 25 gates. Across 2,382,192 tracker records there were 2,203,632 singletons
+and 178,560 exact `{GEN, LOAD}` bundles; all direction, duplicate, identity and bid-type violation counts were zero.
+The day-level pair rate ranged from 7.3017% to 7.5992%. Summary SHA-256:
+`d939fffd8bc7673eb0aac78e06ae2abf38b1ea27e81cba67d03c355bec77ec88`.
+
+This closes modern within-version temporal stability: the relation is supported on the development day, fresh E1b
+day and four prospectively frozen panel days across June/July identity snapshots. It does not close historical
+version portability or actual-action provenance. The next free gate is a separately frozen historical source/
+schema bridge audit; only after it passes should a bounded historical action panel be designed. Experiment 156,
+causal claims and GPU/model work remain locked. Result:
+`experiments/v14_aemo_bundle_stability_panel_repair/RESULTS.md`.
