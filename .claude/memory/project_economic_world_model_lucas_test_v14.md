@@ -225,3 +225,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - At freeze, those three ZIPs and all selected rows were unaccessed. Exact bytes must be retained and SHA-256
   verified in R2 before parsing. The smoke is CPU-only and cannot validate raw submissions, rejected actions,
   NEMDE replay, historical equivalence, causality or model prediction.
+- Frozen commit `5645990496065b0f812db4c969e152a7b7198c7d` was pushed before access. All three downloads and
+  R2 size/SHA checks passed, so rows were opened once. All five schemas, 4,535,925 timestamps, primary keys,
+  market windows, bid parentage, tracker-to-dispatch and dispatch-to-identity gates passed.
+- Authoritative decision is `FAIL_MODERN_ROW_CONFORMANCE_SMOKE`: 43,200/592,560 tracker rows matched more than one
+  period-bid direction (`7.290400972% > 5%`). Preserve the threshold and failure. Never impute a direction from
+  the two-table join. E1a, multi-day acquisition, Exp156 and GPUs remain locked.
+- Next admissible work is a post-hoc development audit of official `DISPATCHLOAD` direction semantics plus the
+  already-retained 2026-06-16 rows. A proposed three-table bridge needs a separately frozen fresh-day confirmation.
+  Summary SHA: `fc422654de5c64a91e71b8dcceb22612f406092cdf6a36900859072041a6668b`.

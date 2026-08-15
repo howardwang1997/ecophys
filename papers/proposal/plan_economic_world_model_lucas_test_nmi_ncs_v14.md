@@ -378,3 +378,20 @@ participant actions, NEMDE replay, historical regime equivalence, causality or m
 separately frozen multi-day development design. Protocol:
 `experiments/v14_aemo_row_conformance/PREREGISTRATION.md`. Source inventory:
 `papers/proposal/v14_aemo_row_conformance_source_inventory_2026-08-15.md`.
+
+### 11.2 Immutable row-conformance result
+
+The protocol was pushed at `564599049`, then executed once. Exact download, R2 retention, CRC, five schemas,
+4,535,925 timestamp parses, all primary keys, market windows, bid parentage, tracker-to-dispatch and
+dispatch-to-effective-identity gates passed. Applied-offer references also matched at least one period bid for all
+592,560 tracker rows.
+
+The overall decision is nevertheless `FAIL_MODERN_ROW_CONFORMANCE_SMOKE`: 43,200 tracker rows had multiple
+direction candidates because `DISPATCHOFFERTRK` omits direction, an ambiguity rate of 7.2904% versus the frozen 5%
+maximum. Do not relax the threshold or choose a candidate post hoc. E1a remains failed; no multi-day panel,
+Experiment 156 or GPU job is unlocked.
+
+The next zero-cost step is a post-hoc development audit of official `DISPATCHLOAD` direction semantics and the
+retained selected-day rows. Only if that establishes a legitimate three-table bridge should a new rule be frozen
+and tested on a fresh mechanically selected date. Result:
+`experiments/v14_aemo_row_conformance/RESULTS.md`.

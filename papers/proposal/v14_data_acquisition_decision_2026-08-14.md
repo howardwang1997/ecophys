@@ -195,3 +195,11 @@ access. At freeze, no selected row had been opened.
 This preserves `NO_BUY_NOW`: the experiment is free and CPU-only. It tests modern parser, time, key and join
 conformance, not raw submission/rejection provenance, historical comparability or policy effects. Full source
 inventory: `papers/proposal/v14_aemo_row_conformance_source_inventory_2026-08-15.md`.
+
+### Executed result
+
+All 18,085,971 exact bytes were downloaded once and verified under the frozen R2 prefix before parsing. Five
+schemas, timestamps, primary keys and all non-direction joins passed, but the overall smoke failed: 43,200 of
+592,560 `DISPATCHOFFERTRK` rows had multiple period-bid direction matches (`7.2904% > 5%`). The public data are
+sufficient to investigate a three-table direction bridge at zero purchase cost, but the current two-table bridge
+is not admissible for reconstructing unique applied actions. `NO_BUY_NOW` remains unchanged.

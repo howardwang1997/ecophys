@@ -324,3 +324,14 @@ joins. Expected compute is minutes of Mac CPU time and less than about 1.11 GB m
 Required GPU-hours are zero; both V100s and the RTX 2060 remain idle. Required paid data and purchased storage are
 zero. A pass unlocks only the design of a multi-day historical development protocol, not model training or a
 prospective claim. See `experiments/v14_aemo_row_conformance/PREREGISTRATION.md`.
+
+### Executed result and next compute gate
+
+The one-day smoke used 18.1 MB compressed input and CPU only. Eighteen of nineteen gates passed; the unique-action
+bridge failed because 7.2904% of applied-offer tracker rows had more than one direction candidate. This failure is
+preserved and does not unlock the proposed multi-day E1 panel or any GPU training.
+
+The next diagnostic still needs zero GPU-hours, no new purchase and no new source data: inspect official
+`DISPATCHLOAD` direction semantics and characterize the ambiguity on the already-retained development day. If a
+principled three-table bridge exists, confirmation requires one fresh frozen daily sample. V100/RTX 2060 resources
+stay idle until the corrected E1 gate passes.

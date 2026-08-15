@@ -65,3 +65,11 @@ non-event development sample. It cannot establish historical schema equivalence 
 If the smoke passes, the next decision is whether the derived public reports support a multi-day replay-like
 development panel. That requires a separate sampling/power protocol. A one-day parser pass is not permission to
 train EcoMD or claim mechanism prediction.
+
+## 5. Execution addendum
+
+The exact protocol was pushed at `564599049` and executed once. All source, byte, R2, CRC, schema, timestamp,
+primary-key, bid-parent, tracker-dispatch and identity gates passed. The overall decision failed only because
+43,200/592,560 applied-offer tracker rows had multiple direction candidates (`7.2904%`, frozen maximum `5%`). The
+retained inputs now close the prior raw-retention gap for this modern day, but they do not make the applied-action
+bridge unique. See `experiments/v14_aemo_row_conformance/RESULTS.md`.
