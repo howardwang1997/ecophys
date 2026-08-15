@@ -461,3 +461,15 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - U0 unlocks only U1 pre-treatment support/identity/control design. No LP response, U2 event study, model training
   or GPU allocation is authorized. Result:
   `experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V2.md`.
+- U1a freezes a 16-pool treated sample by salted address hash, eight per `0x44`/`0x66` fee class; sample SHA
+  `902312be995fd514e39c368d4d1170b3d0d1ca64426dc278787e2c94cfc9529a`. It reads only blocks
+  24,548,777--24,599,176, strictly before first treatment.
+- U1a counts preperiod `Swap/Mint/Burn/Collect` and manager-owner layers without decoding amount/price/liquidity
+  fields. It hash-samples at most 64 NPM action transactions, pairs pool logs to NPM token IDs, and resolves NFT
+  transfer ownership only through action blocks. Sender, manager, token owner and beneficiary must remain distinct.
+- Blockscout's 1,000-log cap is handled by frozen recursive block bisection. Run caps: 2,000 HTTP attempts, 128 MiB
+  and 250,000 normalized events; no endpoint substitution. Transport preflights used only consumed U0 mechanism
+  data and no sampled-pool preperiod log.
+- U1a does not construct controls. A pass unlocks only U1b preperiod expansion plus a separate outcome-blind
+  control-source audit; U2 responses and GPUs remain locked. Protocol:
+  `experiments/v14_uniswap_v3_preperiod_support/PREREGISTRATION.md`.

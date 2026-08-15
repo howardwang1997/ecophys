@@ -460,3 +460,15 @@ Additional compute is not the next bottleneck. U1 is a CPU/network-only, pre-tre
 must first benchmark log volume and identity mapping before any larger acquisition. Both V100s and the RTX 2060
 remain idle; no model queue is authorized. The absence of within-frame controls is an identification issue, not a
 reason to allocate more compute.
+
+### Uniswap v3 U1a frozen resource budget
+
+U1a is a 16-pool, 50,400-block preperiod-only audit. The unsaturated expected path is roughly 259 successful HTTP
+responses: 64 pool/event log queries, three chain/header calls, and at most 64 each of transaction, transaction-log
+and token-transfer-history queries. Exactly-1,000-log responses add deterministic block bisections. Hard ceilings
+are 2,000 HTTP attempts, 128 MiB response bytes and 250,000 normalized pool events.
+
+Only counts, manager addresses, selected transaction senders, NPM token IDs, bounded transfer histories and
+response hashes are retained. Amount/price/liquidity fields and all post-treatment events remain undecoded. The
+run needs local CPU/network and under one core-hour in the expected path. Paid data, remote workers and GPU-hours
+remain zero; both V100s and the RTX 2060 stay idle. A pass does not itself justify compute expansion.

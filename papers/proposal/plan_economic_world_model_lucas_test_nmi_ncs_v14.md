@@ -863,3 +863,27 @@ support, identity-coverage and control-candidate construction. Controls cannot b
 liquidity, volume, price or LP actions; overlap/positivity must be evaluated before response access. No U2 event
 study, learned model or GPU job is yet authorized. Result:
 `experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V2.md`.
+
+### 11.28 U1a preperiod support and NPM identity gate frozen
+
+U0 does not authorize response access: all 1,000 pools were newly activated, so a natural within-frame control is
+absent. U1a first tests whether free data can support a defensible observation layer. It hash-selects exactly 16
+treated pools from the committed U0 ledger—eight per packed fee class—without preperiod behavior. Sample SHA-256:
+`902312be995fd514e39c368d4d1170b3d0d1ca64426dc278787e2c94cfc9529a`.
+
+The only opened pool window will be blocks 24,548,777--24,599,176, the 50,400 blocks immediately preceding the
+first treatment block. Per pool, query `Swap`, `Mint`, `Burn` and `Collect` separately; count events and manager
+owners but do not decode amount, price, tick, liquidity or token-amount fields. Blockscout's documented 1,000-log
+limit is handled by deterministic inclusive-interval bisection, with single-block saturation, 128 MiB, 2,000 HTTP
+attempts or 250,000 normalized events all causing a stop.
+
+For NPM-managed position actions, hash-sample at most 64 unique preperiod transactions. Retain the transaction
+sender, pair pool actions to following NPM token-ID events, and recover ERC-721 transfer history only through the
+action block. These are separate observable identity layers, not a beneficial-owner ontology. Gates require
+activity in at least eight pools of each support type, 64 position actions, NPM action-count share at least 0.50,
+32 eligible identity transactions, 0.80 exact token pairing and 0.95 post-transaction owner resolution.
+
+Transport was preflighted only on already consumed U0 mechanism transactions; no sampled-pool preperiod log was
+opened. A pass unlocks only expanded preperiod U1b and a separately frozen control-source audit. U2, all
+post-treatment variables and all GPU/model work remain locked. Protocol:
+`experiments/v14_uniswap_v3_preperiod_support/PREREGISTRATION.md`.
