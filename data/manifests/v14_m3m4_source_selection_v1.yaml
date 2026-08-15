@@ -1,0 +1,276 @@
+schema_version: ecophys-m3m4-source-selection/v1
+selection_id: v14_m3m4_replacement_source
+as_of: "2026-08-16"
+stage: metadata_only
+
+access_boundary:
+  chain_rpc_used: false
+  external_workers_used: false
+  gpu_used: false
+  paid_data_used: false
+  participant_action_rows_opened: false
+  private_data_used: false
+  realized_response_rows_opened: false
+  source_code_metadata_opened: true
+
+criteria:
+  exact_executable_mechanism: A versioned executable rule and its operative authority, state and local execution transition can be pinned without inferring the rule from outcomes.
+  exposure_denominator: The complete pre-event population economically exposed to the changed rule can be enumerated before any response is opened.
+  observable_null_action: A scientifically meaningful no-adjustment state is observed for every eligible unit, with failed intent distinguished or explicitly excluded from the estimand.
+  stable_action_unit: The response unit persists across the pre/post window, and delegation, transfer, entry, exit and alias limitations are declared.
+  same_unit_action_outcome: Actions, state and outcomes are joinable at the same declared unit and clock without future information.
+  outcome_blind_controls: Untreated, not-yet-treated or orthogonal controls and overlap can be chosen entirely from mechanism metadata and pre-event state.
+  treatment_clock: The economically operative local execution block or timestamp is exact, including bridge and timelock delays.
+  independent_interventions: At least one development and two independently governed confirmation changes can be selected without comparing realized responses.
+  revision_failure_completeness: Reorgs, revisions, reverts, rejected actions, missing observations and retention are handled by a frozen protocol.
+  licence_and_retention: Source code and observation data may be retained, analysed, attributed and released at the level required for independent review.
+  state_reconstruction: A conformance test can recover pre-event account state and the changed mechanism from authoritative records rather than naive event sums.
+  sample_size_concentration: Pre-event support, effective sample size, concentration and positivity pass fixed gates before response access.
+
+kill_switches:
+  - exposure_denominator
+  - outcome_blind_controls
+  - treatment_clock
+  - licence_and_retention
+  - state_reconstruction
+
+candidates:
+  - candidate_id: compound_v3
+    system: Compound III Comet lending markets
+    current_disposition: priority_zero_row_metadata_preflight
+    rationale: A single-base-asset market has a smaller state surface than multi-reserve alternatives; pre-event positions can define exposure and observable successful adjustment versus no successful adjustment, while governance and account state are public and executable.
+    sources:
+      - id: compound_governance
+        role: official_governance_and_configuration_specification
+        url: https://docs.compound.finance/governance/
+      - id: compound_accounts
+        role: official_account_state_and_action_specification
+        url: https://docs.compound.finance/collateral-and-borrowing/
+      - id: compound_helpers
+        role: official_state_view_specification
+        url: https://docs.compound.finance/helper-functions/
+      - id: compound_account_management
+        role: official_delegation_specification
+        url: https://docs.compound.finance/account-management/
+      - id: compound_liquidation
+        role: official_liquidation_specification
+        url: https://docs.compound.finance/liquidation/
+      - id: compound_comet_repo
+        role: official_versioned_code_and_deployment_source
+        url: https://github.com/compound-finance/comet
+    criteria:
+      exact_executable_mechanism:
+        state: pass
+        reason: Configurator setters, Comet deployment and proxy upgrade semantics are executable and versioned; the operative local transaction remains to be pinned per event.
+      exposure_denominator:
+        state: partial
+        reason: Signed base principal and per-asset collateral state define exposed positions, but archive-complete enumeration and a minimum economic-exposure rule have not been tested.
+      observable_null_action:
+        state: partial
+        reason: No successful state-changing action is observable for a frozen pre-event position; reverted or private intent is not, so the estimand must not claim intention.
+      stable_action_unit:
+        state: pass
+        reason: The scoped unit can be the Comet account address, while manager and Bulker delegation must remain separate from beneficial-person identity.
+      same_unit_action_outcome:
+        state: pass
+        reason: Supply, withdrawal, transfer, borrow/repay-by-signed-balance and liquidation state are address-indexed and joinable to account views.
+      outcome_blind_controls:
+        state: unresolved
+        reason: Candidate unaffected markets and assets exist, but bundled governance, shared collateral shocks and pre-event overlap have not been audited.
+      treatment_clock:
+        state: pass
+        reason: The treatment can be the successful local Configurator/proxy execution, not proposal publication or mainnet bridge dispatch.
+      independent_interventions:
+        state: partial
+        reason: The repository records multiple parameter-change families and chains, but no prospective first-event registry or independent confirmation pair is frozen.
+      revision_failure_completeness:
+        state: partial
+        reason: Canonical-chain events support successful transitions, but finality, reorg, archive RPC and reverted-transaction treatment are not frozen.
+      licence_and_retention:
+        state: partial
+        reason: The official repository has an explicit Business Source License change clause; chain-data provider terms, raw redistribution and exact code-use interpretation still need a written provenance audit.
+      state_reconstruction:
+        state: pass
+        reason: Principal plus global indexes and collateral mappings specify reconstructable state; conformance against on-chain views is still required before account rows.
+      sample_size_concentration:
+        state: unresolved
+        reason: No account state or action row has been opened, so support, concentration and positivity are unknown.
+
+  - candidate_id: aave_v3
+    system: Aave V3 multi-reserve lending pools
+    current_disposition: secondary_after_compound
+    rationale: Public governance payloads, address books and account actions are strong, but multi-reserve debt tokens, eMode, delegation, position managers and cross-chain payloads create a larger reconstruction surface than Comet.
+    sources:
+      - id: aave_overview
+        role: official_protocol_action_overview
+        url: https://aave.com/help/aave-101/introduction-to-aave
+      - id: aave_core_repo
+        role: official_versioned_core_code
+        url: https://github.com/aave-dao/aave-v3-origin
+      - id: aave_address_book
+        role: official_deployment_address_registry
+        url: https://github.com/aave-dao/aave-address-book
+      - id: aave_governance
+        role: official_multichain_governance_code
+        url: https://github.com/aave-dao/aave-governance-v3
+      - id: aave_proposals
+        role: official_payload_and_state_diff_repository
+        url: https://github.com/aave-dao/aave-proposals-v3
+    criteria:
+      exact_executable_mechanism:
+        state: pass
+        reason: Governance payloads, target-chain controllers, core code and state diffs are versioned and executable.
+      exposure_denominator:
+        state: partial
+        reason: Reserve balances and debts can define exposed accounts, but multi-reserve position reconstruction and archive completeness are untested.
+      observable_null_action:
+        state: partial
+        reason: Successful adjustment versus no successful adjustment is observable for frozen accounts; private intent and reverts require a scoped estimand.
+      stable_action_unit:
+        state: pass
+        reason: Account addresses persist, with delegation and position-manager semantics requiring explicit separation from people.
+      same_unit_action_outcome:
+        state: pass
+        reason: Pool state and actions can be joined at address and reserve level.
+      outcome_blind_controls:
+        state: unresolved
+        reason: Unaffected reserves or pools are plausible but bundled payloads and shared risk shocks have not been screened.
+      treatment_clock:
+        state: pass
+        reason: Target-chain payload execution can define the operative clock once delivery and executor delays are pinned.
+      independent_interventions:
+        state: partial
+        reason: Many historical payloads exist, but the prospective no-replacement event rule has not been frozen for this route.
+      revision_failure_completeness:
+        state: partial
+        reason: Chain finality and successful execution are public; archive, reorg and reverted-intent handling remain unfrozen.
+      licence_and_retention:
+        state: partial
+        reason: Address-book tooling is MIT while core and governance repositories use BUSL terms; chain-data redistribution remains unresolved.
+      state_reconstruction:
+        state: partial
+        reason: Official code and address registries exist, but the larger multi-reserve version surface has not passed conformance.
+      sample_size_concentration:
+        state: unresolved
+        reason: No participant row has been opened.
+
+  - candidate_id: gc0166
+    system: Great Britain Balancing Mechanism GC0166
+    current_disposition: clarification_conditional
+    rationale: The clock and public schemas are strong, but public rows do not yet distinguish authenticated submissions from defaults, missing messages and private rejections.
+    sources:
+      - id: gc0166_neso
+        role: official_rule_and_clock
+        url: https://www.neso.energy/news/gc0166-goes-live-enabling-smarter-use-limited-duration-assets
+      - id: gc0166_bmrs
+        role: official_public_schema
+        url: https://bmrs.elexon.co.uk/api-documentation/
+      - id: gc0166_identity
+        role: official_effective_dated_identity_interface
+        url: https://bscdocs.elexon.co.uk/interface-definition-documents/neta-interface-definition-and-design-document-part-2-interfaces-to-other-service-providers
+    criteria:
+      exact_executable_mechanism: {state: partial, reason: "Validation, defaulting and energy caps are exact, while optimiser selection and operator discretion are not public executable code."}
+      exposure_denominator: {state: unresolved, reason: "A complete effective-dated active-BMU population with treatment-relevant classification has not been delivered."}
+      observable_null_action: {state: unresolved, reason: "Public provenance does not yet separate submission, default, rejection, late and missing-message states."}
+      stable_action_unit: {state: unresolved, reason: "CRA-I015 defines the history but complete non-Party access and retention are unconfirmed."}
+      same_unit_action_outcome: {state: partial, reason: "BMU actions and acceptances share keys, conditional on provenance and identity delivery."}
+      outcome_blind_controls: {state: unresolved, reason: "Pilot exclusions and an untreated or orthogonal comparison frame remain unfrozen."}
+      treatment_clock: {state: pass, reason: "The operational deadline is official, although individual rollout clocks must be resolved."}
+      independent_interventions: {state: unresolved, reason: "No second independently governed qualifying event is admitted."}
+      revision_failure_completeness: {state: pass, reason: "Public schemas document publication serials and superseded retrieval; empirical completeness remains a later gate."}
+      licence_and_retention: {state: pass, reason: "BMRS documents a royalty-free attribution licence for ordinary public data."}
+      state_reconstruction: {state: partial, reason: "Public rule-state replay is possible inside a scoped boundary, not exact dispatch optimisation."}
+      sample_size_concentration: {state: unresolved, reason: "No target or pilot row was opened."}
+
+  - candidate_id: uniswap_v3_proposal94
+    system: Uniswap V3 Proposal 94 protocol-fee propagation prefix
+    current_disposition: fixed_exact_m2_only
+    rationale: U0 passed exact treatment reconstruction, but the full frozen preperiod panel failed its concentration gate and lacks an outcome-blind control source.
+    sources:
+      - id: uniswap_v3_core
+        role: official_executable_pool_code
+        url: https://github.com/Uniswap/v3-core
+      - id: uniswap_governance
+        role: official_governance_record
+        url: https://gov.uniswap.org/
+    criteria:
+      exact_executable_mechanism: {state: pass, reason: "The exact 1000-pool activation ledger passed chain-calldata and event conformance."}
+      exposure_denominator: {state: fail, reason: "The frozen full-prefix census failed the preregistered swap concentration cap."}
+      observable_null_action: {state: partial, reason: "No successful position action is observable, but economic exposure is sparse and beneficial intent is not."}
+      stable_action_unit: {state: partial, reason: "Pool and NPM token identities exist, while beneficial ownership and non-NPM positions are incomplete."}
+      same_unit_action_outcome: {state: partial, reason: "Pool events are joinable, but the intended participant panel did not pass support."}
+      outcome_blind_controls: {state: fail, reason: "All 1000 pools were activated and no admissible control source passed."}
+      treatment_clock: {state: pass, reason: "Successful per-pool setFeeProtocol transitions are exact."}
+      independent_interventions: {state: unresolved, reason: "No future independent protocol event is selected."}
+      revision_failure_completeness: {state: pass, reason: "Canonical transaction, receipt, block and event pairing passed the frozen U0 audit."}
+      licence_and_retention: {state: partial, reason: "Code and chain sources are public but a full derived/raw redistribution contract was not the binding U1R issue."}
+      state_reconstruction: {state: pass, reason: "The exact mechanism transition was reconstructed for every prefix pool."}
+      sample_size_concentration: {state: fail, reason: "One pool carried 30.096 percent of swaps against a frozen 25 percent maximum."}
+
+  - candidate_id: cow_protocol
+    system: CoW Protocol solver competitions
+    current_disposition: blocked_enumerator
+    rationale: The public lookup and service code do not currently provide an admissible complete competition sampling frame; the frozen HEAD enumeration missed its sample-size gate.
+    sources:
+      - id: cow_services
+        role: official_service_and_database_semantics
+        url: https://github.com/cowprotocol/services
+      - id: cow_governance
+        role: official_governance_registry
+        url: https://forum.cow.fi/
+    criteria:
+      exact_executable_mechanism: {state: pass, reason: "Versioned solver scoring and settlement service code are available for development."}
+      exposure_denominator: {state: fail, reason: "The public ID lookup is not a historical enumerator and the frozen HEAD frame produced only 93 eligible IDs."}
+      observable_null_action: {state: fail, reason: "Empty, fast-path and regular auction IDs share a sequence without a public complete history endpoint."}
+      stable_action_unit: {state: partial, reason: "Solver addresses are public conditional on observing a valid competition."}
+      same_unit_action_outcome: {state: partial, reason: "Valid competition payloads join submissions and rankings but the population frame is blocked."}
+      outcome_blind_controls: {state: unresolved, reason: "No independent control construction is frozen."}
+      treatment_clock: {state: partial, reason: "Future execution can be exact only after a qualifying proposal is selected."}
+      independent_interventions: {state: unresolved, reason: "The prospective candidate registry is empty."}
+      revision_failure_completeness: {state: partial, reason: "Public lookup semantics omit some auction classes from the competition table."}
+      licence_and_retention: {state: unresolved, reason: "Service code is licensed but API data retention and redistribution require confirmation."}
+      state_reconstruction: {state: pass, reason: "Competition scoring code and payload fields can support exact development replay once a valid frame exists."}
+      sample_size_concentration: {state: fail, reason: "The sealed 384-ID frame missed its minimum eligible-count gate and cannot be topped up."}
+
+  - candidate_id: aemo_fta
+    system: Australian Flexible Trading Arrangements Release 2
+    current_disposition: partner_conditional
+    rationale: The clock is exact, but the affected SSP/NMI action and outcome panel is participant-facing and has no established public route.
+    sources:
+      - id: aemo_fta_page
+        role: official_rule_clock_and_schema_index
+        url: https://www.aemo.com.au/initiatives/major-programs/nem-reform-program/nem-reform-program-initiatives/flexible-trading-arrangements
+    criteria:
+      exact_executable_mechanism: {state: partial, reason: "Procedures and schemas are official, while participant processing and settlement are not a fully public executable engine."}
+      exposure_denominator: {state: fail, reason: "The affected SSP/NMI population is not publicly available."}
+      observable_null_action: {state: fail, reason: "Participant-facing channels are required to observe non-adoption and failed actions."}
+      stable_action_unit: {state: partial, reason: "NMI and participant identifiers exist inside authorised systems."}
+      same_unit_action_outcome: {state: partial, reason: "Participant reports can join actions and settlement only through an authorised partner."}
+      outcome_blind_controls: {state: unresolved, reason: "A partner-delivered untreated frame has not been contracted."}
+      treatment_clock: {state: pass, reason: "The official Release 2 date is 2026-11-01."}
+      independent_interventions: {state: unresolved, reason: "No independent confirmation pair is admitted."}
+      revision_failure_completeness: {state: partial, reason: "Authorised system reports may contain revisions and errors, but access and retention are unconfirmed."}
+      licence_and_retention: {state: unresolved, reason: "Private participant data require a data-sharing and publication agreement."}
+      state_reconstruction: {state: partial, reason: "Public schemas specify the state surface, but no authorised row-level conformance has occurred."}
+      sample_size_concentration: {state: unresolved, reason: "No affected-participant row was opened."}
+
+ordering:
+  - compound_v3
+  - aave_v3
+  - gc0166
+  - uniswap_v3_proposal94
+  - cow_protocol
+  - aemo_fta
+
+selection:
+  candidate_id: compound_v3
+  authorized_stage: zero_row_metadata_preflight
+  g1_admitted: false
+  decision: AUTHORIZE_COMPOUND_V3_ZERO_ROW_METADATA_PREFLIGHT_ONLY
+  rationale: Compound has the smallest credible account-state surface and the best ex ante exposure-denominator hypothesis, but three kill switches remain non-pass and no chain participant row may be opened.
+
+next_actions:
+  - Pin the official Comet repository commit, licence, contract event/state surface and six Ethereum-mainnet deployment manifests without chain RPC.
+  - If that audit passes, freeze a chain-metadata-only deployment and archive-provider conformance protocol before any account or action event query.
+  - Define account-level exposure, successful adjustment, manager delegation, control markets and finality before opening a participant row.
+  - Retain Aave as a secondary route and do not send the prepared GC0166 clarification request without user approval.

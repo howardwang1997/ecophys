@@ -529,3 +529,16 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Batch one carries 88.3% of swaps; packed `0x44` has 10.7% of contracts but 23.0% of swaps and 30.0% of position
   actions. These are post-hoc count associations and candidate selection/confounding variables, not effects.
   Artifact SHA `964b809c186894146961f0f2cbc64f8d0e77fdd91eec9cd79edba4b632adf5dc`; U1R remains failed and GPUs locked.
+- After U1R, replacement M3/M4 sources are ranked under twelve common criteria and five kill switches. Compound III
+  is first for `zero_row_metadata_preflight` only; Aave V3 is the predetermined fallback, GC0166 remains official-
+  clarification conditional, Uniswap stays exact M2, CoW is enumerator-blocked and FTA is partner-conditional.
+- Compound's candidate unit is `(chain, Comet market, account address)`, not a beneficial person. Pre-event nonzero
+  account state may define exposure; the null is no successful state-changing action, not no intent or no revert.
+  Sender, manager/Bulker, account and beneficiary layers must remain distinct, and liquidation is a separate
+  competing-risk channel.
+- Compound currently has five pass, five partial and two unresolved criteria. Exposure denominator,
+  outcome-blind controls and licence/retention are non-pass kill switches, so `G1 NOT PASSED` and no account,
+  action, response or model data are authorized.
+- The frozen source audit pins official Comet commit `f766f51583c23acc33b2a7824654ef2029a96804`, six Ethereum-
+  mainnet configuration/root pairs, action/state/configuration markers and licence provenance. It reads a clean
+  local checkout with zero RPC/network/GPU. A pass can unlock only a separately frozen chain-metadata audit.

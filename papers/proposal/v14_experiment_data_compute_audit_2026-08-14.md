@@ -527,3 +527,17 @@ aggregation identity to floating-point precision.
 
 No network, new data, paid service, remote worker or GPU was used. The output is architectural description only;
 V100/RTX 2060 queues remain empty until a new M3/M4 source and identification gate pass.
+
+### M3/M4 source-selection and Compound metadata budget — 16 August 2026
+
+The cross-domain scorecard uses official documentation and versioned source metadata only. It opens zero chain,
+account, participant-action or realized-response rows and requires no purchase, remote worker or GPU. Compound III
+ranks first for a bounded metadata preflight because its address-level position state may provide an ex ante
+exposure denominator and explicit successful-adjustment null; it is not G1-admitted.
+
+The frozen preflight reads one clean official Git checkout at commit
+`f766f51583c23acc33b2a7824654ef2029a96804`: six mainnet configuration/root pairs, migration filenames,
+three contract-source files and LICENSE. Expected runtime is seconds on local CPU and durable output is one small
+JSON artifact. Required V100, RTX 2060 and H20 hours are zero; the GPU queues remain empty. A pass can unlock only
+chain deployment/code/configuration and archive-provider *metadata* design under a new freeze. Account-state,
+action, price, liquidation, response and model work remain locked.

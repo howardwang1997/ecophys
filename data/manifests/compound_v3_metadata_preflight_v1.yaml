@@ -1,0 +1,130 @@
+schema_version: ecophys-compound-v3-metadata-preflight/v1
+audit_id: compound_v3_mainnet_source_metadata_v1
+as_of: "2026-08-16"
+stage: official_source_metadata_only
+
+access_boundary:
+  account_state_rows_opened: false
+  chain_rpc_used: false
+  external_workers_used: false
+  gpu_used: false
+  governance_payload_rows_opened: false
+  official_code_blobs_opened: true
+  paid_data_used: false
+  participant_action_rows_opened: false
+  realized_response_rows_opened: false
+
+source:
+  repo_url: https://github.com/compound-finance/comet.git
+  commit: f766f51583c23acc33b2a7824654ef2029a96804
+  reconnaissance_disclosure: Before freeze, the official repository tree, LICENSE and README, the mainnet USDC configuration and roots files, and required event, function, storage and Configurator marker lines were inspected. No chain RPC, governance payload row, account state, participant action or response was opened. This audit is source conformance, not blind confirmation.
+
+markets:
+  - market_id: mainnet_usdc
+    configuration_path: deployments/mainnet/usdc/configuration.json
+    roots_path: deployments/mainnet/usdc/roots.json
+    migrations_path: deployments/mainnet/usdc/migrations
+  - market_id: mainnet_usds
+    configuration_path: deployments/mainnet/usds/configuration.json
+    roots_path: deployments/mainnet/usds/roots.json
+    migrations_path: deployments/mainnet/usds/migrations
+  - market_id: mainnet_usdt
+    configuration_path: deployments/mainnet/usdt/configuration.json
+    roots_path: deployments/mainnet/usdt/roots.json
+    migrations_path: deployments/mainnet/usdt/migrations
+  - market_id: mainnet_wbtc
+    configuration_path: deployments/mainnet/wbtc/configuration.json
+    roots_path: deployments/mainnet/wbtc/roots.json
+    migrations_path: deployments/mainnet/wbtc/migrations
+  - market_id: mainnet_weth
+    configuration_path: deployments/mainnet/weth/configuration.json
+    roots_path: deployments/mainnet/weth/roots.json
+    migrations_path: deployments/mainnet/weth/migrations
+  - market_id: mainnet_wsteth
+    configuration_path: deployments/mainnet/wsteth/configuration.json
+    roots_path: deployments/mainnet/wsteth/roots.json
+    migrations_path: deployments/mainnet/wsteth/migrations
+
+contracts:
+  action_interface: contracts/CometMainInterface.sol
+  configurator: contracts/Configurator.sol
+  storage: contracts/CometStorage.sol
+
+required_configuration_keys:
+  - name
+  - symbol
+  - baseToken
+  - baseTokenAddress
+  - governor
+  - pauseGuardian
+  - rates
+  - assets
+
+required_rate_keys:
+  - supplyKink
+  - supplySlopeLow
+  - supplySlopeHigh
+  - supplyBase
+  - borrowKink
+  - borrowSlopeLow
+  - borrowSlopeHigh
+  - borrowBase
+
+required_root_keys:
+  - comet
+  - configurator
+
+required_action_markers:
+  - event Supply(address indexed from, address indexed dst, uint amount);
+  - event Withdraw(address indexed src, address indexed to, uint amount);
+  - event SupplyCollateral(address indexed from, address indexed dst, address indexed asset, uint amount);
+  - event WithdrawCollateral(address indexed src, address indexed to, address indexed asset, uint amount);
+  - event AbsorbDebt(address indexed absorber, address indexed borrower, uint basePaidOut, uint usdValue);
+  - event AbsorbCollateral(address indexed absorber, address indexed borrower, address indexed asset, uint collateralAbsorbed, uint usdValue);
+  - function supply(address asset, uint amount) virtual external;
+  - function withdraw(address asset, uint amount) virtual external;
+  - function absorb(address absorber, address[] calldata accounts) virtual external;
+
+required_configurator_markers:
+  - event CometDeployed(address indexed cometProxy, address indexed newComet);
+  - event SetSupplyKink(address indexed cometProxy,uint64 oldKink, uint64 newKink);
+  - event SetBorrowKink(address indexed cometProxy,uint64 oldKink, uint64 newKink);
+  - event UpdateAssetBorrowCollateralFactor(address indexed cometProxy, address indexed asset, uint64 oldBorrowCF, uint64 newBorrowCF);
+  - event UpdateAssetSupplyCap(address indexed cometProxy, address indexed asset, uint128 oldSupplyCap, uint128 newSupplyCap);
+
+required_storage_markers:
+  - struct UserBasic {
+  - mapping(address => UserBasic) public userBasic;
+  - mapping(address => mapping(address => UserCollateral)) public userCollateral;
+  - mapping(address => mapping(address => bool)) public isAllowed;
+
+license_contract:
+  path: LICENSE
+  expected_markers:
+    - Business Source License 1.1
+    - "Change Date:          The earlier of 2025-12-31"
+    - "Change License:       GNU General Public License v2.0 or later"
+
+gates:
+  - source_commit
+  - source_clean
+  - market_files
+  - market_schema
+  - unique_comet_roots
+  - action_surface
+  - configuration_surface
+  - state_surface
+  - license_provenance
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_SOURCE_METADATA_AUTHORIZE_CHAIN_METADATA_ONLY
+  fail: FAIL_SOURCE_METADATA_KEEP_COMPOUND_UNADMITTED
+  authorized_next_stage: separately_frozen_chain_deployment_and_archive_metadata_preflight
+
+limitations:
+  - Repository configurations and migration filenames are source metadata, not proof of on-chain execution or current effective state.
+  - Address-level accounts are statistical units, not identified beneficial people; managers and Bulker operators are separate layers.
+  - Absence of a successful state-changing transaction is not absence of private intent, a reverted transaction or an off-chain plan.
+  - No control market, intervention, response vector, archive provider, sample-size gate or finality rule is selected by this audit.
+  - Passing this audit cannot authorize account, action, liquidation, price or post-change response collection.

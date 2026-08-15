@@ -980,3 +980,31 @@ contracts. These post-hoc associations make propagation order and fee class mand
 new source/frame, not causal findings. No U1R gate changes, response access or model training follows. Artifact
 SHA-256: `964b809c186894146961f0f2cbc64f8d0e77fdd91eec9cd79edba4b632adf5dc`; result:
 `experiments/v14_uniswap_v3_exposure_routing_exploratory/RESULTS.md`.
+
+### 11.34 M3/M4 replacement-source gate selects Compound for zero-row audit only
+
+The replacement source must repair the methodological failure revealed by U1R: define the economically exposed
+population and its null action before response access, rather than treating configured contracts as agents. A new
+twelve-criterion scorecard compares Compound III, Aave V3, GC0166, the failed Uniswap frame, CoW and AEMO FTA.
+Exposure denominator, outcome-blind controls, local treatment clock, licence/retention and state reconstruction
+are kill switches.
+
+Compound ranks first because a Comet account position can potentially be enumerated from signed base principal,
+global indices and per-asset collateral state, and successful adjustments are address-indexed. Its scoped unit is
+an account address, not a person; no successful transaction is not no intent; manager/Bulker identity is separate.
+It has five pass, five partial and two unresolved criteria, with exposure, controls and licence still non-pass.
+Therefore `G1 NOT PASSED`: only a zero-row official-source metadata preflight is authorized. Aave is the frozen
+fallback; GC0166 remains clarification-conditional. Scorecard:
+`papers/proposal/v14_m3m4_source_scorecard_2026-08-16.md`.
+
+### 11.35 Compound official-source metadata preflight frozen
+
+The first Compound step pins official Comet commit `f766f51583c23acc33b2a7824654ef2029a96804`, its licence,
+six Ethereum-mainnet configuration/root pairs and exact action, storage and Configurator source markers. All nine
+source-conformance gates are conjunctive. Repository configuration and migration filenames are explicitly not
+treated as on-chain execution or current state.
+
+The runner reads only a clean local checkout, makes no RPC or network request and opens no governance payload,
+account, action or response row. A pass licenses only a separately frozen chain deployment/code/configuration and
+archive-capability metadata audit; it cannot open participant data or start model/GPU work. Protocol:
+`experiments/v14_compound_v3_metadata_preflight/PREREGISTRATION.md`.
