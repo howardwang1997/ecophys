@@ -746,3 +746,23 @@ and structural counters. It is development-only and has no pass/fail decision. S
 and strict mypy pass. After the code/plan commit, execute once from a clean detached worktree with the existing
 local 2 MiB, zero network requests and zero GPU. Plan:
 `experiments/v14_aemo_nemde_rpn_repair_development/DEVELOPMENT_PLAN.md`.
+
+### 11.22 RPN tree candidate rejected; free input-only NEMDE replay stops
+
+The clean development run reproduced both committed baselines and preserved exact dual-sentinel invariance. The
+identifier tree recovered all four exceptions and achieved 100% evaluation coverage, but it was semantically
+destructive. Pre-5MS normalized p95 changed from `0.00416664` to `0.50073642`; post-change p95 changed from
+`0.00194488` to `0.31578724`. Across jointly scored equations there were 57/63 strict regressions, zero/one strict
+improvements and 42/59 new crossings above `1e-3`. Artifact SHA-256:
+`07298146e9bc1075fbdb0b9fa010cc837ac6d1d0709b56e23a9771b6d178ff19`.
+
+Reject the candidate and do not take it to fresh intervals. The public AEMO group rule determines independent-stack
+mathematics but not enough of the nested XML grammar; SCADA selection is independently unresolved. No
+exception-family patch may be chosen from these production errors. The original partial decision remains.
+
+For V14, AEMO can still supply synchronized applied cases and a declared solution-assisted mechanical baseline,
+but free public inputs plus current open code do not support exact M2 counterfactual replay. If exact NEMDE is
+essential, it requires authoritative formulation/Queue access through collaboration. Otherwise the exact-mechanism
+leg should move to a domain with public executable rules, while AEMO is retained only within its observed-state
+claim boundary. Full-day acquisition, model training and GPUs remain locked pending that route decision. Result:
+`experiments/v14_aemo_nemde_rpn_repair_development/RESULTS.md`.

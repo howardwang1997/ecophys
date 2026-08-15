@@ -128,3 +128,16 @@ of dynamic equations were scored in both cases, with exact dual-sentinel invaria
 below `5e-10`. But the pre-registered p95 ceiling failed in both regimes (`0.00416664` and `0.00194488` versus
 `0.001`). This confirms the audit's warning: default production-RHS assistance can hide a sparse but material
 mechanical tail. The original gate is not relaxed; only a post-hoc tail-mechanism diagnostic is next.
+
+## Repair-path disposition
+
+The subsequent official-rule and development audits did not unlock input-only replay. An identifier-tree
+interpretation of nested `GroupTerm` relations recovered the four evaluation exceptions but worsened normalized
+p95 from `0.00416664/0.00194488` to `0.50073642/0.31578724`, with 57/63 strict regressions. It is rejected without
+fresh validation. Public sources also did not specify SCADA duplicate/quality/default selection.
+
+The free open-source boundary is now explicit: Nempy remains a useful solution-assisted engineering baseline and
+production RHS may be treated as a declared observed state, but it is not a validated input-only counterfactual
+engine. Exact NEMDE mechanism replay requires additional authoritative formulation access rather than more
+target-conditioned patches. Development result:
+`experiments/v14_aemo_nemde_rpn_repair_development/RESULTS.md`.

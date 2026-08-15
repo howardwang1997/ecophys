@@ -392,3 +392,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   generic expansion are untouched; structural inconsistencies remain errors. The consumed run must reproduce the
   parent baseline exactly and is development-only. Plan:
   `experiments/v14_aemo_nemde_rpn_repair_development/DEVELOPMENT_PLAN.md`.
+- Identifier-tree development result is rejected, artifact SHA
+  `07298146e9bc1075fbdb0b9fa010cc837ac6d1d0709b56e23a9771b6d178ff19`. It recovered all four exceptions and
+  achieved full sentinel-invariant coverage, but pre/post normalized p95 worsened from
+  `0.00416664/0.00194488` to `0.50073642/0.31578724`; strict regressions were 57/63 versus improvements 0/1.
+  Do not run fresh intervals, tune exception families or use the retained adapter as a validated evaluator.
+- Public AEMO material specifies independent group-stack mathematics but not enough nested XML grammar; SCADA
+  selection is also unresolved. Free NEMDE replay remains solution-assisted with production RHS declared as
+  observed state. Exact counterfactual NEMDE requires authoritative formulation/Queue collaboration. For V14,
+  prioritize a fully public executable domain for exact M2 mechanics. Result:
+  `experiments/v14_aemo_nemde_rpn_repair_development/RESULTS.md`.

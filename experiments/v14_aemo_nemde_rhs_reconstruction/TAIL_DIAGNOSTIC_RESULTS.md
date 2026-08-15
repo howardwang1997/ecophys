@@ -90,3 +90,11 @@ is never overwritten.
 This diagnostic identifies plausible software/input mechanisms. It validates no repair and changes no scientific
 decision. It made zero AEMO/R2 requests, reused 2 MiB already materialized locally, used no solver, GPU or paid
 data and retained no individual RHS/SCADA value.
+
+## Subsequent development disposition
+
+The later identifier-tree RPN candidate recovered the four exceptions but caused 57/63 strict error regressions
+and raised normalized p95 to `0.500736/0.315787`. It is rejected without fresh validation. The descriptive 2-by-2
+repair suggestion is therefore superseded: neither the nested-group encoding nor the SCADA-selection rule is
+fully determined by the audited public sources. Result:
+`experiments/v14_aemo_nemde_rpn_repair_development/RESULTS.md`.

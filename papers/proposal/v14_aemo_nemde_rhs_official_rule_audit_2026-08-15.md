@@ -151,3 +151,14 @@ all group-free numerical operations to the unchanged pinned evaluator. Self-mark
 the documented first-member-removal case. This is a refinement of implementation topology, not an empirical
 threshold change or repair validation. Plan:
 `experiments/v14_aemo_nemde_rpn_repair_development/DEVELOPMENT_PLAN.md`.
+
+## Executed development outcome
+
+The identifier-tree candidate is rejected. It recovered all four exceptions with exact sentinel invariance and
+full coverage, but normalized p95 deteriorated from `0.00416664` to `0.50073642` pre-5MS and from `0.00194488` to
+`0.31578724` post-change. There were 57 and 63 strict regressions versus zero and one strict improvements.
+
+The official independent-stack statement is therefore insufficient to define the production XML nesting grammar.
+It supports a mathematical invariant, not the proposed parser. No fresh validation or exception-specific tuning
+is allowed. Both nested-group encoding and SCADA resolution now sit outside the verified public-rule boundary.
+Result: `experiments/v14_aemo_nemde_rpn_repair_development/RESULTS.md`.

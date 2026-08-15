@@ -1,4 +1,8 @@
-"""Specification-grounded group-tree adapter for the pinned Nempy RHS evaluator."""
+"""Rejected NEMDE group-tree candidate retained for reproducible negative evidence.
+
+The consumed-case development run showed severe tail regressions. Do not use this adapter as a validated AEMO
+evaluator; see the experiment result before importing it into any replay path.
+"""
 
 from __future__ import annotations
 
