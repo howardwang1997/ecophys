@@ -353,3 +353,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   equations retained. Per-case gates are reference coverage 100%, evaluated coverage >=95%, sentinel outcomes and
   successful values 100% invariant, normalized median <=1e-8 and p95 <=1e-3. Both cases must pass. Even a pass is
   only an input-side dynamic-RHS component result.
+- RHS execution at protocol commit `8a26320a3b2c1755e873d9c96d06a5196cf45ede` is
+  `PARTIAL_INPUT_SIDE_DYNAMIC_RHS_RECONSTRUCTION`, summary SHA
+  `704b20a54e8232eda57ebdc4525182c8586b104f400dbdddb0a9aa29c6e57119`. Integrity and exact dual-sentinel
+  invariance passed. Coverage was 772/774 (99.7416%) pre-5MS and 882/884 (99.7738%) post-5MS/WDR; reference
+  coverage was 100%. Median normalized errors were `4.11e-10`/`1.34e-10`, but p95 errors
+  `0.00416664`/`0.00194488` exceeded the frozen `0.001` gate. Two equations per case raised sentinel-invariant
+  `IndexError`. Do not relax the threshold or drop tails. Whole-day alignment/full solver/GPU remain locked;
+  next is a post-hoc descriptive tail-operation audit, followed by a separately frozen fresh-interval repair if
+  justified.

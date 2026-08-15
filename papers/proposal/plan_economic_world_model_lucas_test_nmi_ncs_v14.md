@@ -654,3 +654,22 @@ normalized error at most `1e-8` and p95 at most `1e-3`; both cases must pass. Ma
 component and unlocks one-day alignment design—not a full replay, counterfactual, behavior, EcoMD or Experiment
 156 claim. The protocol is CPU-only with 2 MiB of R2 reads, zero paid data and zero GPU-hours. Protocol:
 `experiments/v14_aemo_nemde_rhs_reconstruction/PREREGISTRATION.md`.
+
+### 11.17 Input-side RHS result: high coverage but frozen tail-error failure
+
+Protocol commit `8a26320a3` reproduced both exact R2 objects and the pinned Nempy engine, then passed every leakage
+integrity gate. Under `-1e100/+1e100` output-RHS sentinels, success/error outcomes and all successful floats were
+100% identical. The evaluator scored 772/774 pre-5MS and 882/884 post-5MS/WDR dynamic equations, with 100%
+reference coverage and 99.74%/99.77% evaluation coverage. Median normalized errors were
+`4.11e-10`/`1.34e-10`, below the frozen `1e-8` gate.
+
+Both cases nevertheless failed the headline tail criterion: normalized p95 was `0.00416664` and `0.00194488`,
+above the frozen `0.001`. The immutable decision is `PARTIAL_INPUT_SIDE_DYNAMIC_RHS_RECONSTRUCTION`; summary
+SHA-256 `704b20a54e8232eda57ebdc4525182c8586b104f400dbdddb0a9aa29c6e57119`. Two equations per case also raised
+sentinel-invariant `IndexError` and remain in the denominator.
+
+Do not relax the p95 gate, delete tail equations or proceed to a whole-day/full-solver claim. The admissible next
+step is a post-hoc descriptive classification of tail equations on these consumed cases. A concrete repair, if
+found, must be frozen and tested on fresh deterministic intervals. One-day alignment, Experiment 156 and all GPU
+model work remain locked. Result:
+`experiments/v14_aemo_nemde_rhs_reconstruction/RESULTS.md`.

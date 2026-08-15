@@ -120,3 +120,11 @@ The R2-only two-case gate is frozen at
 `b56f40999518a7e2df657ea7480a85f0f855a9d8ee8151b6f7cf4f76c99ab7cd`. It fixes dual sentinels, all-equation
 retention, exact engine hashes and per-case coverage/error gates before any production RHS value is reopened for
 this experiment. No full-day download or solver install is authorized by the freeze.
+
+## Executed gate update
+
+The gate returned `PARTIAL_INPUT_SIDE_DYNAMIC_RHS_RECONSTRUCTION`. Leakage integrity passed and more than 99.7%
+of dynamic equations were scored in both cases, with exact dual-sentinel invariance and median normalized error
+below `5e-10`. But the pre-registered p95 ceiling failed in both regimes (`0.00416664` and `0.00194488` versus
+`0.001`). This confirms the audit's warning: default production-RHS assistance can hide a sparse but material
+mechanical tail. The original gate is not relaxed; only a post-hoc tail-mechanism diagnostic is next.
