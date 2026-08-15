@@ -906,3 +906,23 @@ retain participant-level M3/M4, either move that layer to another real system or
 full-population pre-treatment eligibility census as a route reset, followed by an independent control-source
 gate. No post-treatment data or GPU/model run is unlocked. Result:
 `experiments/v14_uniswap_v3_preperiod_support/RESULTS.md`.
+
+### 11.30 Full-population preperiod census frozen as a disclosed route reset
+
+The next admissible free test is not a U1a top-up. U1R changes the estimand to every pool in the exact committed U0
+ledger and applies one uniform query to all 1,000 rows, including the 16 already consumed in U1a. Its canonical
+population hash is `bdfad0b57a8873bbb3ff95c28598d4b3869a019284163ca269c0d9f0adafbcd9`. The scope remains
+the first two propagation batches, not all Uniswap v3 pools.
+
+For the same strictly pre-treatment 50,400-block window, U1R opens only `Swap/Mint/Burn/Collect` event existence,
+counts and position-manager class. It does not decode amount, price, tick, liquidity or token amounts; raw payloads
+and non-NPM manager addresses are discarded. Transaction envelopes, token histories, controls and every
+post-treatment field remain closed. A one-address/four-topic-OR Blockscout query is frozen after preflights on
+consumed U0 mechanism data showed that the deployed endpoint supports topic OR but rejects address arrays.
+
+U1a informed the thresholds, so this is explicitly development rather than pristine confirmation. Gates require
+50 swap-active pools, 20 position-active pools, 200 position actions, support in both fee classes, NPM share at
+least 0.50 and bounded single-pool concentration. A pass licenses only separate outcome-blind control and identity
+design; a failure fixes Uniswap at M2 for this route. The unsaturated path is about 1,003 requests and 8.4 minutes,
+with 5,000-request/512-MiB/1,000,000-event hard caps. It needs no paid data, remote worker or GPU. Protocol:
+`experiments/v14_uniswap_v3_preperiod_exposure_census/PREREGISTRATION.md`.

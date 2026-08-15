@@ -483,3 +483,16 @@ The failure is support/identification, not compute: 3/16 pools were swap-active,
 three identity transactions existed. More GPU cannot repair this. The V100/RTX 2060 queues remain empty. A future
 full-population preperiod census, if separately justified, is still CPU/network work and must be budgeted before
 launch; post-treatment acquisition and model training remain unauthorized.
+
+### Uniswap v3 U1R full-population census budget
+
+U1R is now frozen as a new full-population development estimand, not a top-up of failed U1a. It queries each of
+the exact 1,000 U0 pools once over the same 50,400-block preperiod using four topic-0 values in one request. Three
+chain/header calls make the expected unsaturated path 1,003 successful responses. At the frozen two requests per
+second this is about 8.4 minutes plus deterministic interval splits and transport overhead.
+
+Hard ceilings are 5,000 HTTP attempts, 512 MiB response bytes and 1,000,000 normalized events. Raw payloads,
+decoded amounts/prices/liquidity, non-NPM manager addresses, identity histories, controls and post-treatment data
+are not retained. Expected local work remains under one CPU core-hour with negligible durable storage. Paid-data,
+remote-worker and GPU requirements are zero; both V100s and the RTX 2060 remain idle, and H20 is excluded. A pass
+can unlock only separate control/identity protocol design, not acquisition or training.

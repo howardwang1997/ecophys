@@ -19,6 +19,7 @@ from ecomd.research.uniswap_v3_fee_treatment import (
 )
 
 SCHEMA_VERSION = "ecophys-uniswap-v3-preperiod-support/v1"
+CENSUS_SCHEMA_VERSION = "ecophys-uniswap-v3-preperiod-exposure-census/v1"
 FROZEN_STAGE = "frozen_before_sample_pool_preperiod_log_access"
 SWAP_TOPIC = "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67"
 MINT_TOPIC = "0x7a53080ba414158be7ec69b987b5fb7d07dee101fe85488f0853ae16239d0bde"
@@ -680,5 +681,397 @@ def summarize_preperiod_support(
         "duplicate_log_count": duplicate_log_count,
         "conflicting_log_count": conflicting_log_count,
         "control_source_status": "UNRESOLVED_NOT_PART_OF_U1A",
+        "gates": gates,
+    }
+
+
+def census_population_rows(
+    treatment_rows: Sequence[Mapping[str, object]],
+) -> list[dict[str, object]]:
+    """Project the exact U0 ledger into the frozen exposure-census population."""
+
+    return [
+        {
+            "pool_address": normalize_address(row.get("pool_address"), path="treatment.pool_address"),
+            "packed_fee_value": _integer(row.get("packed_fee_value"), path="treatment.packed_fee_value"),
+            "treatment_transaction_hash": normalize_hash(
+                row.get("transaction_hash"), path="treatment.transaction_hash"
+            ),
+            "calldata_index": _integer(row.get("calldata_index"), path="treatment.calldata_index"),
+        }
+        for row in treatment_rows
+    ]
+
+
+def validate_exposure_census_contract(
+    contract: Mapping[str, object],
+    treatment_rows: Sequence[Mapping[str, object]],
+    *,
+    treatment_ledger_sha256: str,
+    u1a_summary_sha256: str,
+) -> tuple[str, ...]:
+    """Validate the full-population route reset and its response locks."""
+
+    errors: list[str] = []
+    if contract.get("schema_version") != CENSUS_SCHEMA_VERSION:
+        errors.append(f"schema_version must be {CENSUS_SCHEMA_VERSION}")
+    if contract.get("stage") != "frozen_before_full_population_preperiod_log_access":
+        errors.append("census stage changed")
+    if contract.get("result") is not None:
+        errors.append("census result must be null before full-population access")
+    try:
+        parents = _mapping(contract.get("parents"), path="parents")
+        population = _mapping(contract.get("population"), path="population")
+        window = _mapping(contract.get("window"), path="window")
+        events = _mapping(contract.get("events"), path="events")
+        sources = _mapping(contract.get("sources"), path="sources")
+        preflight = _mapping(contract.get("transport_preflight"), path="transport_preflight")
+        gates = _mapping(contract.get("gates"), path="gates")
+        access = _mapping(contract.get("access_boundary"), path="access_boundary")
+    except ValueError as error:
+        errors.append(str(error))
+        return tuple(errors)
+
+    if parents.get("u0_treatment_ledger_sha256") != treatment_ledger_sha256:
+        errors.append("census U0 ledger hash differs from local parent")
+    if parents.get("u1a_summary_sha256") != u1a_summary_sha256:
+        errors.append("census U1a summary hash differs from local parent")
+    if parents.get("u1a_decision") != "FAIL_PREPERIOD_SUPPORT_OR_IDENTITY_FEASIBILITY_NO_RESPONSE_ACCESS":
+        errors.append("census U1a parent decision changed")
+    if parents.get("thresholds_informed_by_u1a_pilot") is not True:
+        errors.append("census must disclose pilot-informed thresholds")
+    if parents.get("development_not_pristine_confirmation") is not True:
+        errors.append("census must remain development, not pristine confirmation")
+
+    try:
+        rows = census_population_rows(treatment_rows)
+        if len(rows) != 1000 or len({row["pool_address"] for row in rows}) != 1000:
+            errors.append("census parent must contain exactly 1,000 unique pools")
+        if population.get("population_rows_sha256") != canonical_json_sha256(rows):
+            errors.append("population_rows_sha256 differs from exact U0 population")
+        if population.get("pool_count") != 1000 or population.get("unique_pool_count") != 1000:
+            errors.append("population count must remain exactly 1,000")
+        fee_counts = Counter(int(cast(int, row["packed_fee_value"])) for row in rows)
+        if fee_counts != Counter({68: 107, 102: 893}):
+            errors.append("census population fee counts changed")
+        if population.get("packed_fee_value_counts") != {"68": 107, "102": 893}:
+            errors.append("population.packed_fee_value_counts changed")
+        if {row.get("transition") for row in treatment_rows} != {"activated_from_zero"}:
+            errors.append("census parent transition class changed")
+    except ValueError as error:
+        errors.append(str(error))
+
+    if (
+        window.get("from_block"),
+        window.get("to_block"),
+        window.get("treatment_block_excluded"),
+    ) != (24548777, 24599176, 24599177):
+        errors.append("census window must remain the exact U1a preperiod")
+    if window.get("inclusive_block_count") != 50400:
+        errors.append("census window length changed")
+    if window.get("treatment_timestamp_utc") != "2026-03-06T15:01:11Z":
+        errors.append("census treatment timestamp changed")
+    expected_topics = {
+        "swap": SWAP_TOPIC,
+        "mint": MINT_TOPIC,
+        "burn": BURN_TOPIC,
+        "collect": POOL_COLLECT_TOPIC,
+    }
+    for event_name, topic in expected_topics.items():
+        if events.get(event_name) != topic:
+            errors.append(f"events.{event_name} changed")
+    if events.get("position_manager_owner_topic_index") != 1:
+        errors.append("position manager owner topic index changed")
+    try:
+        if (
+            normalize_address(events.get("nonfungible_position_manager"), path="events.npm")
+            != "0xc36442b4a4522e871399cd717abdd847ab11fe88"
+        ):
+            errors.append("NonfungiblePositionManager address changed")
+    except ValueError as error:
+        errors.append(str(error))
+    if list(_sequence(events.get("topic0_or_order"), path="events.topic0_or_order")) != [
+        "swap",
+        "mint",
+        "burn",
+        "collect",
+    ]:
+        errors.append("topic0 OR order changed")
+
+    expected_source_limits: dict[str, object] = {
+        "blockscout_eth_rpc_url": "https://eth.blockscout.com/api/eth-rpc",
+        "publicnode_rpc_url": "https://ethereum-rpc.publicnode.com",
+        "maximum_requests_per_second_across_sources": 2.0,
+        "maximum_transport_retries": 2,
+        "log_response_limit": 1000,
+        "maximum_http_attempts": 5000,
+        "maximum_response_bytes": 536870912,
+        "maximum_normalized_events": 1000000,
+        "raw_response_payloads_retained": False,
+        "saturated_response_rule": ("recursively_bisect_inclusive_block_interval_until_below_limit"),
+        "user_agent": "EcoPhys-uniswap-U1R-exposure-census/1.0",
+    }
+    for key, expected_value in expected_source_limits.items():
+        if sources.get(key) != expected_value:
+            errors.append(f"sources.{key} changed")
+    expected_preflight: dict[str, object] = {
+        "single_address_topic_query_sha256": (
+            "fb17b4f618a95738ac6f86da86cdf3180f2f82a2ec521aa63e4c81e6c0e0a5d6"
+        ),
+        "address_array_supported": False,
+        "address_array_response_sha256": ("7b321448e48353551f8709c054bd75f911dec664bd53a4dbf391a1303cc2ca4a"),
+        "topic0_or_supported": True,
+        "topic0_or_response_sha256": ("92afa3ef96c1a3fafb467d1b5305992540aa2886710aa1d3c95f8d92c4735306"),
+        "full_window_empty_adapter_query_supported": True,
+        "full_window_empty_adapter_query_count": 0,
+        "full_window_empty_adapter_query_request_sha256": (
+            "fd8c7639e72e019232606f143f93739221ca1493ac6f645c17f54d76adf6cd39"
+        ),
+        "full_window_empty_adapter_query_response_sha256": (
+            "1d407881e1579aec62be88c0d44de3bd55bd15007b937e53903e60223785c886"
+        ),
+    }
+    for key, expected_value in expected_preflight.items():
+        if preflight.get(key) != expected_value:
+            errors.append(f"transport_preflight.{key} changed")
+    if preflight.get("used_only_already_consumed_u0_mechanism_data") is not True:
+        errors.append("census transport preflight scope changed")
+    if preflight.get("sampled_or_remaining_pool_preperiod_opened_by_preflight") is not False:
+        errors.append("census transport preflight accessed forbidden pool preperiod")
+    expected_wide_attempts = [
+        {
+            "from_block": 24548713,
+            "to_block": 24599176,
+            "request_sha256": "25f4f48a248bc83d84a243f1905bc40b3762623d65500f3393d0cc0285743ea5",
+            "response_count": 0,
+            "response_sha256": "1d407881e1579aec62be88c0d44de3bd55bd15007b937e53903e60223785c886",
+            "note": "disclosed_initial_lower_bound_hex_transcription_error_adapter_only",
+        },
+        {
+            "from_block": 24548777,
+            "to_block": 24599176,
+            "request_sha256": "fd8c7639e72e019232606f143f93739221ca1493ac6f645c17f54d76adf6cd39",
+            "response_count": 0,
+            "response_sha256": "1d407881e1579aec62be88c0d44de3bd55bd15007b937e53903e60223785c886",
+            "note": "exact_frozen_window_adapter_only",
+        },
+    ]
+    if list(_sequence(preflight.get("wide_interval_probe_attempts"), path="wide attempts")) != (
+        expected_wide_attempts
+    ):
+        errors.append("transport_preflight.wide_interval_probe_attempts changed")
+
+    expected_gates: dict[str, object] = {
+        "exact_population_membership": True,
+        "exact_pre_treatment_window": True,
+        "complete_unsaturated_partitions": True,
+        "duplicate_or_conflicting_log_count_max": 0,
+        "minimum_swap_active_pools": 50,
+        "minimum_position_active_pools": 20,
+        "minimum_position_action_logs": 200,
+        "minimum_swap_active_pools_per_fee_value": 5,
+        "minimum_position_active_pools_per_fee_value": 2,
+        "minimum_npm_position_action_share": 0.50,
+        "maximum_single_pool_swap_count_share": 0.25,
+        "maximum_single_pool_position_action_count_share": 0.50,
+    }
+    for key, expected_value in expected_gates.items():
+        if gates.get(key) != expected_value:
+            errors.append(f"gates.{key} changed")
+    required_false = (
+        "swap_amount_or_price_fields_decoded",
+        "liquidity_or_token_amount_fields_decoded",
+        "transaction_sender_or_calldata_opened",
+        "non_npm_manager_addresses_retained",
+        "token_id_or_transfer_history_opened",
+        "control_pool_behavior_opened",
+        "post_treatment_pool_events_opened",
+        "post_treatment_responses_opened",
+        "outcome_model_training_authorized",
+    )
+    for key in required_false:
+        if access.get(key) is not False:
+            errors.append(f"access_boundary.{key} must remain false")
+    if access.get("full_u0_population_preperiod_pool_events_opened") is not True:
+        errors.append("full U0 population preperiod access disclosure changed")
+    if list(_sequence(access.get("event_types_opened"), path="access event types")) != [
+        "swap",
+        "mint",
+        "burn",
+        "collect",
+    ]:
+        errors.append("access_boundary.event_types_opened changed")
+    if access.get("indexed_pool_participant_fields_transferred_but_discarded") is not True:
+        errors.append("indexed pool participant fields must be disclosed as transferred and discarded")
+    if access.get("gpu_hours_authorized") != 0 or access.get("paid_data_authorized") is not False:
+        errors.append("census GPU and paid-data access must remain unauthorized")
+    return tuple(errors)
+
+
+def normalize_rpc_pool_log(
+    raw: Mapping[str, object],
+    *,
+    expected_pool: str,
+    allowed_topics: Mapping[str, str],
+    from_block: int,
+    to_block: int,
+) -> dict[str, object]:
+    """Normalize one standard JSON-RPC pool log without decoding numerical event data."""
+
+    pool = normalize_address(raw.get("address"), path="rpc_log.address")
+    if pool != normalize_address(expected_pool, path="expected_pool"):
+        raise ValueError("RPC log address differs from requested pool")
+    topics = _topics(raw.get("topics"), path="rpc_log.topics")
+    topic_to_event = {normalize_hash(topic): name for name, topic in allowed_topics.items()}
+    event_type = topic_to_event.get(topics[0])
+    if event_type is None:
+        raise ValueError("RPC log topic0 is outside the frozen event set")
+    block_number = decode_quantity(raw.get("blockNumber"), path="rpc_log.blockNumber")
+    if not from_block <= block_number <= to_block:
+        raise ValueError("RPC log falls outside its requested interval")
+    if raw.get("removed") is not False:
+        raise ValueError("RPC log must be finalized and not removed")
+    data = raw.get("data")
+    if not isinstance(data, str) or not data.startswith("0x"):
+        raise ValueError("RPC log data must be 0x-prefixed")
+    manager_owner: str | None = None
+    if event_type in {"mint", "burn", "collect"}:
+        if len(topics) < 2:
+            raise ValueError("position action is missing its manager-owner topic")
+        manager_owner = _topic_address(topics[1], path="rpc_log.manager_owner")
+    return {
+        "pool_address": pool,
+        "event_type": event_type,
+        "block_number": block_number,
+        "block_hash": normalize_hash(raw.get("blockHash"), path="rpc_log.blockHash"),
+        "transaction_index": decode_quantity(raw.get("transactionIndex"), path="rpc_log.transactionIndex"),
+        "log_index": decode_quantity(raw.get("logIndex"), path="rpc_log.logIndex"),
+        "transaction_hash": normalize_hash(raw.get("transactionHash"), path="rpc_log.transactionHash"),
+        "manager_owner": manager_owner,
+        "data_sha256": hashlib.sha256(data.encode()).hexdigest(),
+    }
+
+
+def build_exposure_census_row(
+    population_row: Mapping[str, object],
+    events: Sequence[Mapping[str, object]],
+    *,
+    npm_address: str,
+) -> dict[str, object]:
+    """Aggregate one pool's preperiod economic-exposure evidence."""
+
+    pool = normalize_address(population_row.get("pool_address"), path="population.pool_address")
+    if any(event.get("pool_address") != pool for event in events):
+        raise ValueError("census row received an event from another pool")
+    counts = Counter(str(event.get("event_type")) for event in events)
+    position_events = [event for event in events if event.get("event_type") in {"mint", "burn", "collect"}]
+    owners = Counter(str(event.get("manager_owner")) for event in position_events)
+    npm = normalize_address(npm_address, path="npm_address")
+    position_count = len(position_events)
+    return {
+        **dict(population_row),
+        "swap_count": counts["swap"],
+        "mint_count": counts["mint"],
+        "burn_count": counts["burn"],
+        "collect_count": counts["collect"],
+        "position_action_count": position_count,
+        "swap_active": counts["swap"] > 0,
+        "position_active": position_count > 0,
+        "economically_exposed_preperiod": counts["swap"] > 0 or position_count > 0,
+        "npm_position_action_count": owners[npm],
+        "npm_position_action_share": owners[npm] / position_count if position_count else None,
+        "distinct_manager_owner_count": len(owners),
+        "pool_event_identity_sha256": canonical_json_sha256(events),
+    }
+
+
+def summarize_exposure_census(
+    census_rows: Sequence[Mapping[str, object]],
+    *,
+    duplicate_log_count: int,
+    conflicting_log_count: int,
+    complete_unsaturated_partitions: bool,
+    minimum_swap_active_pools: int,
+    minimum_position_active_pools: int,
+    minimum_position_action_logs: int,
+    minimum_swap_active_pools_per_fee_value: int,
+    minimum_position_active_pools_per_fee_value: int,
+    minimum_npm_position_action_share: float,
+    maximum_single_pool_swap_count_share: float,
+    maximum_single_pool_position_action_count_share: float,
+) -> dict[str, object]:
+    """Apply full-population exposure-support gates."""
+
+    swap_counts = [int(cast(int, row.get("swap_count"))) for row in census_rows]
+    position_counts = [int(cast(int, row.get("position_action_count"))) for row in census_rows]
+    total_swaps = sum(swap_counts)
+    total_positions = sum(position_counts)
+    swap_active = sum(count > 0 for count in swap_counts)
+    position_active = sum(count > 0 for count in position_counts)
+    exposed = sum(bool(row.get("economically_exposed_preperiod")) for row in census_rows)
+    npm_actions = sum(int(cast(int, row.get("npm_position_action_count"))) for row in census_rows)
+    npm_share = npm_actions / total_positions if total_positions else 0.0
+    largest_swap_share = max(swap_counts, default=0) / total_swaps if total_swaps else 1.0
+    largest_position_share = max(position_counts, default=0) / total_positions if total_positions else 1.0
+    by_fee: dict[str, dict[str, int]] = {}
+    for fee_value in (68, 102):
+        fee_rows = [row for row in census_rows if row.get("packed_fee_value") == fee_value]
+        by_fee[str(fee_value)] = {
+            "pool_count": len(fee_rows),
+            "swap_active_pool_count": sum(bool(row.get("swap_active")) for row in fee_rows),
+            "position_active_pool_count": sum(bool(row.get("position_active")) for row in fee_rows),
+            "economically_exposed_pool_count": sum(
+                bool(row.get("economically_exposed_preperiod")) for row in fee_rows
+            ),
+            "swap_count": sum(int(cast(int, row.get("swap_count"))) for row in fee_rows),
+            "position_action_count": sum(
+                int(cast(int, row.get("position_action_count"))) for row in fee_rows
+            ),
+        }
+    gates = {
+        "exact_population_count": len(census_rows) == 1000,
+        "complete_unsaturated_partitions": complete_unsaturated_partitions,
+        "no_duplicate_or_conflicting_logs": duplicate_log_count == 0 and conflicting_log_count == 0,
+        "minimum_swap_active_pools": swap_active >= minimum_swap_active_pools,
+        "minimum_position_active_pools": position_active >= minimum_position_active_pools,
+        "minimum_position_action_logs": total_positions >= minimum_position_action_logs,
+        "minimum_swap_active_pools_each_fee": all(
+            values["swap_active_pool_count"] >= minimum_swap_active_pools_per_fee_value
+            for values in by_fee.values()
+        ),
+        "minimum_position_active_pools_each_fee": all(
+            values["position_active_pool_count"] >= minimum_position_active_pools_per_fee_value
+            for values in by_fee.values()
+        ),
+        "minimum_npm_position_action_share": npm_share >= minimum_npm_position_action_share,
+        "maximum_single_pool_swap_count_share": (largest_swap_share <= maximum_single_pool_swap_count_share),
+        "maximum_single_pool_position_action_count_share": (
+            largest_position_share <= maximum_single_pool_position_action_count_share
+        ),
+    }
+    passed = all(gates.values())
+    return {
+        "schema_version": "ecophys-uniswap-v3-preperiod-exposure-census-result/v1",
+        "decision": (
+            "PASS_FULL_PREPERIOD_EXPOSURE_SUPPORT_FREEZE_CONTROL_AND_IDENTITY_DESIGN"
+            if passed
+            else "FAIL_FULL_PREPERIOD_EXPOSURE_SUPPORT_KEEP_UNISWAP_M2_ONLY"
+        ),
+        "pass": passed,
+        "population_pool_count": len(census_rows),
+        "swap_active_pool_count": swap_active,
+        "position_active_pool_count": position_active,
+        "economically_exposed_pool_count": exposed,
+        "swap_count": total_swaps,
+        "position_action_count": total_positions,
+        "npm_position_action_count": npm_actions,
+        "npm_position_action_share": npm_share,
+        "largest_pool_swap_count_share": largest_swap_share,
+        "largest_pool_position_action_count_share": largest_position_share,
+        "by_packed_fee_value": by_fee,
+        "duplicate_log_count": duplicate_log_count,
+        "conflicting_log_count": conflicting_log_count,
+        "identity_status": "NOT_OPENED_IN_EXPOSURE_CENSUS",
+        "control_source_status": "UNRESOLVED_SEPARATE_GATE_REQUIRED",
         "gates": gates,
     }

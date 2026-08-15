@@ -485,3 +485,17 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Do not top up/extend U1a or launch U1b. Keep Uniswap as exact M2 unless a separately frozen full-population
   pre-treatment eligibility census is approved as a route reset; controls remain independently unresolved. U2 and
   GPUs stay locked. Result: `experiments/v14_uniswap_v3_preperiod_support/RESULTS.md`.
+- U1R is frozen as that explicit route reset. It uniformly covers all exact 1,000 U0 ledger pools, including the
+  16 consumed U1a pools, over the unchanged 50,400-block preperiod. Population SHA:
+  `bdfad0b57a8873bbb3ff95c28598d4b3869a019284163ca269c0d9f0adafbcd9`. This is not a sample top-up and still
+  estimates only the first two propagation batches.
+- U1R thresholds were informed by the negative pilot and are development, not pristine confirmation: at least 50
+  swap-active pools, 20 position-active pools, 200 position actions, minimum support in both fee classes, NPM
+  share >=0.50 and bounded single-pool concentration. A pass only unlocks separate control/identity design.
+- The deployed Blockscout Ethereum JSON-RPC supports four-value topic-0 OR but rejected address arrays in
+  preflights restricted to consumed U0 data. Freeze one pool per request plus recursive exact-1,000 saturation
+  splits. Expected path is 1,003 responses; caps are 5,000 attempts, 512 MiB and 1,000,000 events.
+- RPC payloads necessarily transfer indexed participant and event-data fields, but U1R decodes no economic
+  amounts and retains no raw response or non-NPM manager address. Transaction envelopes, token histories,
+  controls, post-treatment responses, paid data and GPUs remain locked. Protocol:
+  `experiments/v14_uniswap_v3_preperiod_exposure_census/PREREGISTRATION.md`.
