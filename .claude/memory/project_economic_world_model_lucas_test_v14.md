@@ -300,3 +300,17 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Do not extend these prefixes. The next gate is provenance/licence/partition auditing for a free queryable mirror
   or official interface. If none passes, freeze the cost and semantics of a complete sequential compressed stream
   separately. Untouched confirmation months, Exp156 and all GPUs remain locked.
+- Official source audit found a better date-partitioned route: the historical NEMDE archive exposes daily
+  production format-file ZIPs, with one combined input/output/price-setting XML per five-minute interval. This
+  corrects the earlier conflation between public production audit files and the restricted executable/Queue.
+- The files expose the applied solver case and production solution, not raw submission/rejection history or
+  participant rationale. They can ground replay error and mechanism/action decomposition but cannot establish
+  adaptation alone. Exact counterfactual solving remains unavailable without Queue access or a validated open
+  reconstruction.
+- Licensing is not treated as settled: AEMO's current permission allows attributed use of public material, while
+  the archive's old DVD notice is more restrictive. Do not redistribute raw NEMDE bytes until written
+  clarification. Retained private R2 bytes, hashes and derived summaries remain the working boundary.
+- A metadata-only tail protocol is frozen on the already consumed 2021-01-01 and 2021-12-01 development dates.
+  It permits exactly two 1 MiB suffix requests and no XML access. Both ZIP central directories must cover
+  intervals 001--288 and place deterministic interval 144 within a conservative 2 MiB later range. No GPU or
+  paid data is required; pass unlocks only a separately frozen two-XML conformance audit.

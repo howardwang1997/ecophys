@@ -1,5 +1,5 @@
-version: 1
-as_of: "2026-08-14"
+version: 2
+as_of: "2026-08-15"
 state: metadata_only_no_target_outcomes
 purchase_decision: no_buy_now
 
@@ -60,6 +60,33 @@ sources:
       - inspect headers and data-model versions across naming regimes
       - quantify replay mismatch against recorded dispatch
       - confirm redistribution terms for bulk raw files
+
+  - source_id: aemo_nemde_historical_audit_files
+    owner: Australian Energy Market Operator
+    domain: NEM production dispatch cases
+    access: public_no_authentication
+    cost: no_cost_identified
+    archive_root: "https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/NEMDE/"
+    official_guide: "https://www.aemo.com.au/-/media/files/electricity/nem/it-systems-and-change/nemde-queue/nemde_queue_users_guide.pdf?la=en"
+    terms: "https://www.aemo.com.au/privacy-and-legal-notices/copyright-permissions"
+    archive_specific_notice: "https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/NEMDE/2021/NEMDE_2021_12/NEMDE_Market_Data/disclaimer.htm"
+    observable_sections:
+      - NemSpdInputs
+      - NemSpdOutputs
+      - SolutionAnalysis
+    granularity: one_production_format_file_per_five_minute_dispatch_interval
+    partitioning: daily_zip
+    access_boundary:
+      - applied_solver_input_not_raw_submission_history
+      - production_output_not_open_solver_executable
+      - no_rejected_submission_or_adaptation_rationale
+      - raw_redistribution_blocked_pending_terms_clarification
+    frozen_preflight: data/manifests/aemo_nemde_tail_inventory_v1.yaml
+    unresolved:
+      - validate_two_interval_xml_schema_before_any_daily_download
+      - quantify_open_replay_mismatch_against_production_outputs
+      - obtain_written_terms_clarification_before_raw_redistribution
+      - join_effective_dated_participant_identity_without_future_corrections
 
   - source_id: cow_solver_competitions
     owner: CoW Protocol

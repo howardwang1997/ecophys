@@ -1,0 +1,84 @@
+schema_version: ecophys-aemo-nemde-tail-inventory/v1
+sample_id: aemo-consumed-month-nemde-tail-inventory-v1
+frozen_at: "2026-08-15T06:14:35Z"
+parent_commit: c208f199da24338b9a61dae6cdd1c8967108cab1
+scientific_role: development_only_nemde_archive_addressability
+
+source_contract:
+  official_archive_role: production_nemde_input_output_and_price_setter_files_per_dispatch_interval
+  archive_access: public_unauthenticated_no_charge_at_freeze
+  current_general_permission_url: https://www.aemo.com.au/privacy-and-legal-notices/copyright-permissions
+  current_general_permission_requires_attribution: true
+  archive_specific_notice_url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/NEMDE/2021/NEMDE_2021_12/NEMDE_Market_Data/disclaimer.htm
+  archive_specific_notice_is_more_restrictive: true
+  redistribution_status: ambiguous_pending_written_clarification
+  raw_redistribution_allowed_by_this_protocol: false
+  solver_executable_or_queue_access_implied: false
+
+selection:
+  rule: first_daily_nemde_output_archive_in_each_consumed_development_month
+  months: ["2021-01", "2021-12"]
+  dates: ["2021-01-01", "2021-12-01"]
+  held_out_status: development_consumed_not_eligible_for_confirmation
+  replacement_allowed: false
+  target_interval_id_for_later_protocol: 144
+
+range_contract:
+  request_header: "Range: bytes=-1048576"
+  exact_response_bytes_per_object: 1048576
+  maximum_total_response_bytes: 2097152
+  full_download_fallback_allowed: false
+  range_extension_allowed: false
+  parse_before_r2_retention_allowed: false
+  xml_member_access_allowed: false
+
+objects:
+  - object_id: pre-5ms-nemde-tail-2021-01-01
+    sample_label: consumed-development-pre-5ms-2021-01-01
+    market_date: "2021-01-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/NEMDE/2021/NEMDE_2021_01/NEMDE_Market_Data/NEMDE_Files/NemSpdOutputs_20210101_loaded.zip
+    expected_archive_bytes: 116002085
+    expected_filename: NemSpdOutputs_20210101_loaded.tail-1048576.bin
+    expected_member_date: "20210101"
+    r2_key: raw/aemo/v14_nemde_tail_inventory/NemSpdOutputs_20210101_loaded.tail-1048576.bin
+  - object_id: post-5ms-nemde-tail-2021-12-01
+    sample_label: consumed-development-post-5ms-2021-12-01
+    market_date: "2021-12-01"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/NEMDE/2021/NEMDE_2021_12/NEMDE_Market_Data/NEMDE_Files/NemSpdOutputs_20211201_loaded.zip
+    expected_archive_bytes: 132455595
+    expected_filename: NemSpdOutputs_20211201_loaded.tail-1048576.bin
+    expected_member_date: "20211201"
+    r2_key: raw/aemo/v14_nemde_tail_inventory/NemSpdOutputs_20211201_loaded.tail-1048576.bin
+
+retention_contract:
+  bucket: ecophys
+  prefix: raw/aemo/v14_nemde_tail_inventory/
+  upload_before_zip_metadata_parse: true
+  remote_sha256_metadata_required: true
+  overwrite_mismatched_remote_object_allowed: false
+  raw_tails_committed_to_git: false
+
+gates:
+  required_object_count: 2
+  required_r2_verified_count: 2
+  required_eocd_count: 2
+  required_complete_central_directory_count: 2
+  required_interval_set: {start: 1, end: 288}
+  encrypted_member_count_max: 0
+  allowed_compression_methods: [0, 8]
+  later_member_range_cap_bytes: 2097152
+  licence_clarification_required_before_raw_redistribution: true
+  exact_solver_replay_claim_allowed: false
+  participant_adaptation_claim_allowed: false
+  causal_claim_allowed: false
+  model_claim_allowed: false
+  gpu_allowed: false
+  paid_data_allowed: false
+
+outputs:
+  raw_root: artifacts/v14_aemo_nemde_tail_inventory/raw
+  download_receipt: experiments/v14_aemo_nemde_tail_inventory/artifacts/download_receipt.json
+  retention_receipt: experiments/v14_aemo_nemde_tail_inventory/artifacts/retention_receipt.json
+  summary: experiments/v14_aemo_nemde_tail_inventory/artifacts/summary.json

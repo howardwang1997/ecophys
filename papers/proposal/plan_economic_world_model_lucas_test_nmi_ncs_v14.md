@@ -537,3 +537,24 @@ The next source gate must compare free queryable/date-partitioned interfaces by 
 identity, licence and temporal coverage. Only if none passes may a separately frozen complete sequential-stream
 budget be considered. Historical joins, action semantics, Experiment 156 and GPU/model work remain locked.
 Result: `experiments/v14_aemo_historical_prefix_reachability/RESULTS.md`.
+
+### 11.11 Date-partitioned production NEMDE source gate frozen on 15 August 2026
+
+The source audit corrects an earlier conflation. AEMO's exact executable and paid Queue remain restricted, but its
+historical archive publicly exposes date-partitioned production NEMDE format files. The official guide says every
+five-minute file combines the applied input state, production output and price-setting analysis; one day contains
+288 interval files. This is a potentially stronger synchronized mechanism source than joining the failed monthly
+period-offer stream to separate dispatch tables.
+
+The next protocol is metadata-only. It reuses the first daily archive in the already consumed January and
+December 2021 development months, requests exactly the final 1 MiB of each ZIP and retains both suffixes in R2
+before parsing. Both central directories must cover interval IDs `001..288`, contain no encrypted or unsupported
+members and place a deterministic interval-144 member within a conservative 2 MiB future range cap. No XML byte
+may be opened. Total data are 2 MiB; GPU-hours and paid-data spend are zero.
+
+A pass permits only a separately frozen two-interval XML schema audit. It does not expose raw submission/rejection
+history, make the solver executable, validate replay, or unlock Experiment 156. The current general AEMO
+permission and an older archive-specific personal-use notice also conflict; raw redistribution stays prohibited
+until written clarification. Source audit:
+`papers/proposal/v14_aemo_nemde_source_audit_2026-08-15.md`. Protocol:
+`experiments/v14_aemo_nemde_tail_inventory/PREREGISTRATION.md`.

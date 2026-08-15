@@ -157,8 +157,9 @@ Known hazards:
   `PARTICIPANT_REGISTRATION,DUDETAILSUMMARY,5`;
 - `BIDOFFERFILETRK.SUBMISSION_METHOD` was declared private and unpopulated within the WDR release timeline; it is
   not a historical legacy-versus-five-minute interface label; and
-- production NEMDE is not open. Use `nempy` only as an audited approximate replay and quantify target/price/
-  constraint mismatches on E1.
+- the production NEMDE executable and Queue are not open. Historical production input/output/price-setting audit
+  files are publicly downloadable by day, but they do not make the exact solver independently runnable. Use
+  `nempy` only as an audited approximate replay and quantify target/price/constraint mismatches on E1.
 
 ### 4.4 Prospective event status on 2026-08-14
 
