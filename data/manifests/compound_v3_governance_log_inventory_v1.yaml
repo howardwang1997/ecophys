@@ -1,0 +1,137 @@
+schema_version: ecophys-compound-v3-governance-log-inventory/v1
+audit_id: compound_v3_mainnet_governance_log_inventory_v1
+as_of: "2026-08-16"
+stage: governance_configuration_logs_only
+
+parents:
+  exposure_design_path: data/manifests/compound_v3_exposure_control_design_v1.yaml
+  exposure_design_sha256: ec329243f9fd071405112f4598b3f7e982d56683beec742e15b920c667e4b85e
+  chain_summary_path: experiments/v14_compound_v3_chain_metadata_preflight/artifacts_v2/summary.json
+  chain_summary_sha256: 14f5b044d8c51e4323419b901a7f037c84c4af45083464e0daaefc561256c944
+  source_commit: f766f51583c23acc33b2a7824654ef2029a96804
+
+access_boundary:
+  chain_rpc_used: true
+  governance_log_rows_opened: true
+  governance_payload_rows_opened: false
+  governance_transaction_or_receipt_rows_opened: false
+  governance_call_trace_rows_opened: false
+  account_state_rows_opened: false
+  participant_action_rows_opened: false
+  participant_call_trace_rows_opened: false
+  liquidation_rows_opened: false
+  price_or_oracle_rows_opened: false
+  realized_response_rows_opened: false
+  raw_rpc_payloads_retained: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+
+sources:
+  blockscout_rpc_url: https://eth.blockscout.com/api/eth-rpc
+  blockscout_documentation_url: https://docs.blockscout.com/devs/apis/rpc/eth-rpc
+  blockscout_terms_url: https://eaas.blockscout.com/terms-and-conditions
+  publicnode_rpc_url: https://ethereum-rpc.publicnode.com
+  publicnode_documentation_url: https://ethereum.publicnode.dev/
+  maximum_requests_per_second_across_sources: 2
+  maximum_transport_retries: 2
+  maximum_http_attempts: 2000
+  maximum_response_bytes: 268435456
+  log_response_limit: 1000
+  maximum_normalized_logs: 100000
+  root_partition_block_count: 250000
+  raw_response_payloads_retained: false
+  allowed_methods:
+    - eth_chainId
+    - eth_getBlockByNumber
+    - eth_getLogs
+  endpoint_substitution_after_freeze: false
+  user_agent: EcoPhys-V14-Compound-governance-log-inventory/1.0
+
+window:
+  from_block: 14000000
+  to_block: 25760572
+  to_block_hash: "0xd2bb500d88a2c0fa956e04af3e6df36f8e60c4cd82307bcf71180cde466a4ca4"
+  expected_root_interval_count_per_address: 48
+  expected_log_address_count: 7
+  expected_root_log_query_count: 336
+
+configurator:
+  proxy: "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3"
+
+markets:
+  - market_id: mainnet_usdc
+    proxy: "0xc3d688b66703497daa19211eedff47f25384cdc3"
+  - market_id: mainnet_usds
+    proxy: "0x5d409e56d886231adaf00c8775665ad0f9897b56"
+  - market_id: mainnet_usdt
+    proxy: "0x3afdc9bca9213a35503b077a6072f3d0d5ab0840"
+  - market_id: mainnet_wbtc
+    proxy: "0xe85dc543813b8c2cfeaac371517b925a166a9293"
+  - market_id: mainnet_weth
+    proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+  - market_id: mainnet_wsteth
+    proxy: "0x3d0bb1ccab520a66e607822fc55bc921738fafe3"
+
+events:
+  update_asset_borrow_collateral_factor:
+    signature: UpdateAssetBorrowCollateralFactor(address,address,uint64,uint64)
+    topic0: "0x14bba7d3df0797b2f5143e4f2087f29fcd3ee3ec3197d38a7f77f85dc0d0ec63"
+    value_bits: 64
+  update_asset_liquidate_collateral_factor:
+    signature: UpdateAssetLiquidateCollateralFactor(address,address,uint64,uint64)
+    topic0: "0xbdfea73f1d581ded04f608d47cd124146963b03795e30c9f9e16d57bb1fed652"
+    value_bits: 64
+  update_asset_supply_cap:
+    signature: UpdateAssetSupplyCap(address,address,uint128,uint128)
+    topic0: "0x561b42b6b7ded5005c55634f0a6bd24d306cb04b04533bab7e1a644b67245486"
+    value_bits: 128
+  comet_deployed:
+    signature: CometDeployed(address,address)
+    topic0: "0x3da528dfe78562a1f409134989443b5f21ee92023a64b90dedeb2002415189b6"
+  upgraded:
+    signature: Upgraded(address)
+    topic0: "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b"
+
+partition_rule:
+  root_intervals_are_inclusive_disjoint_and_complete: true
+  exactly_limit_response_is_saturated: true
+  saturated_interval_action: recursively_bisect_inclusive_interval
+  saturated_single_block_action: fail
+  discard_saturated_parent_logs: true
+
+candidate_rule:
+  require_one_eligible_configurator_log_in_transaction: true
+  require_one_comet_deployed_log_for_same_proxy_in_transaction: true
+  require_one_upgraded_log_for_same_proxy_and_implementation_in_transaction: true
+  require_no_other_configurator_state_change_log_in_transaction: true
+  require_no_other_frozen_market_upgrade_in_transaction: true
+  require_old_value_differs_from_new_value: true
+  existing_collateral_conformance_deferred: true
+  receipt_payload_spillover_audit_deferred: true
+
+gates:
+  - parent_hashes
+  - ethereum_chain_id
+  - fixed_window_headers
+  - exact_root_partition_plan
+  - complete_unsaturated_partitions
+  - strict_log_decoding
+  - no_duplicate_or_conflicting_logs
+  - at_least_one_provisional_atomic_candidate
+  - request_and_byte_caps
+  - governance_only_access_boundary
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_GOVERNANCE_LOG_INVENTORY_AUTHORIZE_RECEIPT_PAYLOAD_PREFLIGHT_ONLY
+  fail: FAIL_GOVERNANCE_LOG_INVENTORY_KEEP_ACCOUNT_AND_RESPONSE_ROWS_LOCKED
+  authorized_next_stage: separately_frozen_candidate_receipt_payload_and_finality_preflight
+
+limitations:
+  - The inventory scans Configurator and six Comet proxy logs only; it cannot exclude payload actions in other contracts.
+  - A same-transaction log triple is provisional until the transaction receipt, calldata and governance call path are audited.
+  - Existing-collateral status, parameter getter conformance and the 24-hour contamination window are deferred.
+  - The fixed end block was previously observed at 64-block depth and is not thereby consensus-finalized.
+  - No participant address, state, action, liquidation, price, trace or response is opened.
+  - Provider access and retention terms remain a separate unresolved gate for bulk account data.

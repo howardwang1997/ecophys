@@ -673,9 +673,13 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
 10. exp127 已留下同一冻结配置的 V100 `N=10,000`/fp32 training probe 与两个 bitwise-identical
    `T=8,000` rollout anchors；在新的 state-complete production config 冻结前不重复耗费 GPU，冻结后
    再排 canonical re-benchmark，且不抢占其他正式任务；
-11. **当前下一步：** 冻结 EcoMD state-to-message observation map，明确只能支持 aggregate 还是
+11. **EcoMD 方法线仍待完成：** 冻结 state-to-message observation map，明确只能支持 aggregate 还是
     individual-order 语义；完成 fallback simulator-audit claim/experiment plan；在这两个文档通过
-    前不启动新 GPU 生产训练、不购买 L2。
+    前不启动新 GPU 生产训练、不购买 L2；
+12. **当前免费真实系统线：** Uniswap 仅保留为 exact M2；Compound III 的 source 与 chain-metadata
+    gates 已通过，零行 exposure/control design 已冻结。下一步只执行已提交的 D0 governance-log
+    inventory，寻找单市场、单既有资产的 provisional atomic event。即使 D0 通过，也只解锁 receipt、
+    calldata、call-path 与 consensus-finality 预检；G1、账户/行为/响应数据和全部 GPU 生产作业继续锁定。
 
 ---
 

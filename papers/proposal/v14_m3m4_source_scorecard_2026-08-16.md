@@ -127,23 +127,25 @@ Historical proposals may be used for development, but confirmation needs a new f
 
 - exact official Git commit, licence and named source-file hashes;
 - six Ethereum-mainnet configuration/root pairs;
-- action, storage and Configurator source markers; and
-- migration filenames as repository metadata only.
+- action, storage and Configurator source markers;
+- migration filenames as repository metadata only;
+- passing deployed proxy/implementation/configuration and fixed archive metadata; and
+- one sealed D0 scan of Configurator logs and six proxy `Upgraded` logs in the fixed block window.
 
-This takes seconds of local CPU, negligible storage, no RPC, no paid data, no remote worker and zero GPU-hours.
+The D0 scan uses bounded public RPC plus local CPU, no paid data, no remote worker and zero GPU-hours. It retains
+normalized governance/configuration rows only and cannot be expanded in place.
 
 ### Still locked
 
-- deployment transaction, bytecode or storage RPC;
-- governance payload rows;
+- governance transaction/receipt rows, payloads and call traces;
 - account-state snapshots, action events, reverts, liquidations, oracle prices and market outcomes;
 - historical bulk indexing, model fitting and GPU work; and
 - any prospective response collection.
 
-If source metadata passes, the next protocol may inspect only deployment/code/configuration metadata and archive
-capability. Account rows require a later frozen exposure/state-conformance protocol. GPUs become relevant only
-after the data contract, controls and independent intervention clock pass; neither the two V100s nor the RTX 2060
-is currently queued.
+Even if D0 finds a provisional atomic candidate, the next protocol may inspect only that candidate's receipt,
+calldata, governance call path and finality evidence. Account rows require a later frozen exposure/state-
+conformance protocol. GPUs become relevant only after the data contract, controls and independent intervention
+clock pass; neither the two V100s nor the RTX 2060 is currently queued.
 
 ## 8. Evidence and licence caution
 
@@ -167,11 +169,11 @@ Primary sources:
 
 ## 9. Immediate sequence
 
-1. Commit and push this scorecard and the Compound source-metadata preregistration.
-2. Run the preflight once from the pushed commit against the exact clean official checkout.
-3. Preserve failure or pass without removing a market or marker.
-4. On pass, freeze a separate chain-deployment/archive metadata audit; do not open account or response rows.
-5. Keep Aave as the predetermined fallback and the GC0166 request unsent unless the user authorizes contact.
+1. Commit and push the D0 governance-log manifest, collector, tests and preregistration before network access.
+2. Run D0 once from its exact pushed commit and preserve failure or pass without changing window, event or market.
+3. On pass, freeze a separate candidate receipt/payload/call-path/finality audit; do not open account rows.
+4. On failure, keep Compound outside G1 and audit Aave only under a new source protocol.
+5. Keep the GC0166 request unsent unless the user authorizes contact.
 
 ## 10. Source-preflight result
 
@@ -210,3 +212,19 @@ Controls and retention remain unresolved, and complete action data becomes a new
 event logs do not cover every debt-changing base transfer. The next stage is a sealed governance metadata inventory
 only. No account, trace or response access follows from the design. Full protocol:
 `papers/proposal/v14_compound_exposure_control_design_2026-08-16.md`.
+
+## 13. Frozen D0 governance-log inventory
+
+D0 fixes blocks 14,000,000--25,760,572, one Configurator and six deployed Comet proxies. It makes 336 root
+`eth_getLogs` requests in 250,000-block inclusive partitions, plus chain ID and two cross-provider headers. An
+exactly 1,000-row response is discarded and recursively bisected; single-block saturation fails. The expected
+unsaturated path is 339 calls at two requests per second.
+
+Only three existing-asset parameter events are eligible. A provisional event requires exactly one eligible
+Configurator log, exactly one same-proxy `CometDeployed`, exactly one matching proxy `Upgraded`, no other
+Configurator log, no other frozen-market upgrade and `old != new` in the same transaction. The `Upgraded` log is
+the operative clock. This is log-level screening, not payload isolation or treatment validity.
+
+Every account/action/response row remains forbidden. A pass authorizes only a separately frozen receipt, calldata,
+governance-call-path and consensus-finality preflight. Protocol:
+`experiments/v14_compound_v3_governance_log_inventory/PREREGISTRATION.md`.

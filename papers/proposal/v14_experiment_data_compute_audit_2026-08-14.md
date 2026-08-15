@@ -606,3 +606,15 @@ event logs, unique candidate accounts and active collateral assets, and first ne
 M3 additionally requires historical successful call traces; if no free reproducible source exists, the resource
 choice is a terms-reviewed provider or a self-managed archive/trace index with substantial SSD and CPU/RAM. This is
 not GPU work. Both V100s and the RTX 2060 remain idle through D2.
+
+### Frozen Compound D0 governance-log inventory budget
+
+D0 scans a fixed 11,760,573-block window through 48 inclusive root partitions at one Configurator and six Comet
+proxy addresses. The expected unsaturated path is 339 public RPC calls: chain ID, two fixed headers and 336 log
+queries. Exactly 1,000 returned logs trigger deterministic recursive bisection. Hard ceilings are 2,000 HTTP
+attempts, 256 MiB of response bytes and 100,000 normalized logs at two requests per second.
+
+Expected wall time is about three minutes plus parsing, with small JSON outputs. It uses local CPU/network, zero
+paid data, zero remote-worker time and zero GPU-hours. No V100 or RTX 2060 job is queued. Even a pass unlocks only
+a separately frozen single-candidate receipt/payload/call-path/finality preflight; D1 account acquisition and all
+model training remain unauthorized.

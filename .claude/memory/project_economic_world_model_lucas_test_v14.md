@@ -600,3 +600,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Zero-row design manifest passes 21 relevant tests and authorizes only a separately frozen governance metadata
   inventory. No governance/account/trace/response query or GPU job is yet authorized. Design:
   `papers/proposal/v14_compound_exposure_control_design_2026-08-16.md`.
+- Compound D0 is frozen as a governance-log-only inventory over blocks 14,000,000--25,760,572. The exact root
+  plan is 48 inclusive 250,000-block partitions at one Configurator plus six Comet proxies: 336 log roots and
+  three chain/header calls on the unsaturated path. A 1,000-row response is discarded and recursively bisected.
+- Eligible events are existing-asset borrow-CF, liquidate-CF and supply-cap updates. A provisional atomic event
+  requires one eligible Configurator log, one same-proxy `CometDeployed`, one matching proxy `Upgraded`, no other
+  Configurator/frozen-market upgrade and `old != new` in one transaction. This cannot rule out payload/call-path
+  spillovers; a pass unlocks only a separate receipt/calldata/finality preflight.
+- D0 retains normalized public governance logs and hashes only. Governance payloads/receipts/traces, accounts,
+  participant actions, liquidations, prices and responses remain locked. Expected resource use is about three
+  minutes of local CPU/network, zero paid data/worker/GPU; all V100/RTX 2060 queues remain empty.
