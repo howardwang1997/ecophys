@@ -1,0 +1,117 @@
+schema_version: ecophys-compound-v3-chain-metadata-preflight/v1
+audit_id: compound_v3_mainnet_chain_metadata_v1
+as_of: "2026-08-16"
+stage: chain_deployment_metadata_only
+
+access_boundary:
+  account_balance_calls_used: false
+  account_mapping_storage_used: false
+  chain_rpc_used: true
+  eth_get_logs_used: false
+  external_workers_used: false
+  gpu_used: false
+  governance_transaction_or_receipt_used: false
+  paid_data_used: false
+  participant_action_rows_opened: false
+  price_or_oracle_calls_used: false
+  raw_rpc_payloads_retained: false
+  realized_response_rows_opened: false
+
+source_result:
+  path: experiments/v14_compound_v3_metadata_preflight/artifacts/summary.json
+  sha256: 643edb6750ab5567528a9754bdf92b84143deaa82a9225a9c8ea9730e0d81e11
+  source_commit: f766f51583c23acc33b2a7824654ef2029a96804
+
+rpc:
+  url: https://eth.blockscout.com/api/eth-rpc
+  documentation_url: https://docs.blockscout.com/devs/apis/rpc/eth-rpc
+  user_agent: EcoPhys-V14-Compound-chain-metadata-audit/1.0
+  maximum_requests_per_second: 2
+  maximum_transport_retries: 2
+  maximum_http_attempts: 80
+  maximum_response_bytes: 8388608
+  allowed_methods:
+    - eth_chainId
+    - eth_getBlockByNumber
+    - eth_getCode
+    - eth_getStorageAt
+    - eth_call
+  snapshot_block_tag: finalized
+
+proxy_slots:
+  implementation: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+  admin: "0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103"
+
+getters:
+  base_token: {selector: "0xc55dae63", return_type: address}
+  governor: {selector: "0x0c340a24", return_type: address}
+  pause_guardian: {selector: "0x24a3d622", return_type: address}
+  num_assets: {selector: "0xa46fe83b", return_type: uint}
+
+markets:
+  - market_id: mainnet_usdc
+    proxy: "0xc3d688b66703497daa19211eedff47f25384cdc3"
+    expected_base_token: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    expected_governor: "0x6d903f6003cca6255d85cca4d3b5e5146dc33925"
+    expected_pause_guardian: "0xbbf3f1421d886e9b2c5d716b5192ac998af2012c"
+  - market_id: mainnet_usds
+    proxy: "0x5d409e56d886231adaf00c8775665ad0f9897b56"
+    expected_base_token: "0xdc035d45d973e3ec169d2276ddab16f1e407384f"
+    expected_governor: "0x6d903f6003cca6255d85cca4d3b5e5146dc33925"
+    expected_pause_guardian: "0xbbf3f1421d886e9b2c5d716b5192ac998af2012c"
+  - market_id: mainnet_usdt
+    proxy: "0x3afdc9bca9213a35503b077a6072f3d0d5ab0840"
+    expected_base_token: "0xdac17f958d2ee523a2206206994597c13d831ec7"
+    expected_governor: "0x6d903f6003cca6255d85cca4d3b5e5146dc33925"
+    expected_pause_guardian: "0xbbf3f1421d886e9b2c5d716b5192ac998af2012c"
+  - market_id: mainnet_wbtc
+    proxy: "0xe85dc543813b8c2cfeaac371517b925a166a9293"
+    expected_base_token: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+    expected_governor: "0x6d903f6003cca6255d85cca4d3b5e5146dc33925"
+    expected_pause_guardian: "0xbbf3f1421d886e9b2c5d716b5192ac998af2012c"
+  - market_id: mainnet_weth
+    proxy: "0xa17581a9e3356d9a858b789d68b4d866e593ae94"
+    expected_base_token: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    expected_governor: "0x6d903f6003cca6255d85cca4d3b5e5146dc33925"
+    expected_pause_guardian: "0xbbf3f1421d886e9b2c5d716b5192ac998af2012c"
+  - market_id: mainnet_wsteth
+    proxy: "0x3d0bb1ccab520a66e607822fc55bc921738fafe3"
+    expected_base_token: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+    expected_governor: "0x6d903f6003cca6255d85cca4d3b5e5146dc33925"
+    expected_pause_guardian: "0xbbf3f1421d886e9b2c5d716b5192ac998af2012c"
+
+configurator:
+  proxy: "0x316f9708bb98af7da9c68c1c3b5e79039cd336e3"
+
+archive_check:
+  block_number: 17000000
+  market_ids:
+    - mainnet_usdc
+    - mainnet_weth
+
+gates:
+  - source_artifact
+  - chain_id
+  - finalized_header
+  - current_proxy_code
+  - current_implementation_code
+  - current_admin_slots
+  - current_getters
+  - configurator_proxy
+  - historical_header
+  - historical_archive_state
+  - request_caps
+  - access_boundary
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_CHAIN_METADATA_AUTHORIZE_EXPOSURE_PROTOCOL_DESIGN_ONLY
+  fail: FAIL_CHAIN_METADATA_KEEP_ACCOUNT_AND_RESPONSE_ACCESS_LOCKED
+  authorized_next_stage: separately_frozen_pre_event_exposure_and_control_protocol_design
+
+limitations:
+  - The Blockscout endpoint is a transport provider, not an independent authority over Ethereum consensus or a complete licence for redistributing bulk chain data.
+  - Only a finalized snapshot and one fixed historical block are tested; this does not prove continuous archive completeness.
+  - Getter equality covers base token, governor and pause guardian only; it does not reconstruct every executed migration or current collateral configuration.
+  - Shared proxy admin or Configurator state does not establish an untreated control market.
+  - No account mapping, balance, action event, transaction, receipt, log, liquidation, oracle price or realized response may be inferred from this audit.

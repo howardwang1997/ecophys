@@ -560,3 +560,14 @@ independent file-hash checks passed. It used no network/RPC, paid data, remote w
 The next bottleneck is on-chain deployment/archive provenance and control design, not compute. A separately frozen
 metadata-only RPC audit will need only tens to low hundreds of read calls and local CPU. Do not queue either V100
 or the RTX 2060; account/action/response data and model training remain unauthorized.
+
+### Frozen Compound chain-metadata budget
+
+The next audit permits exactly 61 public Ethereum metadata calls at at most two requests per second: finalized and
+fixed historical headers, proxy/implementation code, ERC-1967 implementation/admin slots and four non-account
+configuration getters. Hard ceilings are 80 HTTP attempts and 8 MiB response bytes. Raw bodies and code are
+discarded after hashing and bounded decoding.
+
+Expected runtime is about 31 seconds plus local parsing; durable output is two small JSON files. Required paid
+data, remote workers and GPU-hours are zero. Neither V100 nor RTX 2060 should be queued. Even a pass unlocks only
+the design of an account-exposure/control protocol, not its execution.

@@ -1037,3 +1037,17 @@ Configurator address, so parallel markets cannot be presumed untreated when gove
 changes. Freeze a chain-deployment/archive metadata protocol next; forbid account mappings, participant events,
 liquidations, prices and responses. `G1 NOT PASSED`, and model/GPU work remains locked. Result:
 `experiments/v14_compound_v3_metadata_preflight/RESULTS.md`.
+
+### 11.38 Compound chain-deployment metadata audit frozen before RPC access
+
+The next gate uses exactly 61 no-key Ethereum RPC calls and retains no raw response or bytecode. At one finalized
+block it checks six Comet proxies, their implementation/admin slots and four non-account getters, plus the shared
+Configurator. A fixed block-17,000,000 check on the two oldest source-listed markets tests bounded historical
+code/storage capability. The method vector is fixed at 24 calls, one chain-ID call, two block headers, 18 code
+queries and 16 storage-slot queries.
+
+Account mappings, balances, logs, transactions, receipts, prices, totals, liquidations and responses are forbidden.
+All twelve gates are conjunctive. A pass licenses only exposure/control *protocol design*, not account acquisition;
+a failure leaves all participant and model work locked without dropping a market or substituting an endpoint.
+Expected work is about 31 seconds of local CPU/network, under 8 MiB, no paid data and zero GPU. Protocol:
+`experiments/v14_compound_v3_chain_metadata_preflight/PREREGISTRATION.md`.

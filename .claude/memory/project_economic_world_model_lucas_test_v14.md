@@ -557,3 +557,9 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   state or execution evidence.
 - The pass unlocks only a separately frozen chain deployment/code/configuration and archive-provider metadata
   audit. `G1 NOT PASSED`; account mappings, actions, liquidations, prices, responses and GPUs remain locked.
+- Compound chain metadata v1 is frozen before RPC: exactly 61 calls (24 fixed non-account getters, one chain ID,
+  two headers, 18 code and 16 ERC-1967 storage queries) at one finalized block plus fixed block 17,000,000 for
+  source-oldest USDC/WETH. Raw bodies/code are discarded after hashing.
+- Forbidden: account mappings/balances, arbitrary storage, logs, transactions/receipts, totals, prices/oracles,
+  liquidations and responses. All twelve gates are conjunctive; pass unlocks exposure/control protocol design only,
+  not execution. Budget is about 31 seconds, under 8 MiB, no paid data/remote worker/GPU.
