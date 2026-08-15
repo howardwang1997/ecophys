@@ -541,3 +541,12 @@ three contract-source files and LICENSE. Expected runtime is seconds on local CP
 JSON artifact. Required V100, RTX 2060 and H20 hours are zero; the GPU queues remain empty. A pass can unlock only
 chain deployment/code/configuration and archive-provider *metadata* design under a new freeze. Account-state,
 action, price, liquidation, response and model work remain locked.
+
+### Compound metadata v1 runner failure and v2 budget
+
+V1 used seconds of local CPU for nine passing tests, then failed at the direct-script import before reading the
+manifest or any Compound source file. No artifact, network request, chain row, paid data, remote worker or GPU was
+used. The sparse-materialization setup and import-path failure do not change the scientific resource estimate.
+
+V2 invokes the same committed collector as a package module. It retains the seconds-scale local CPU budget, one
+small JSON output, zero network/RPC and zero GPU-hours. No compute worker should be queued for this repair.

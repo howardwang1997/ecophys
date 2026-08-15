@@ -1008,3 +1008,17 @@ The runner reads only a clean local checkout, makes no RPC or network request an
 account, action or response row. A pass licenses only a separately frozen chain deployment/code/configuration and
 archive-capability metadata audit; it cannot open participant data or start model/GPU work. Protocol:
 `experiments/v14_compound_v3_metadata_preflight/PREREGISTRATION.md`.
+
+### 11.36 Compound metadata v1 runner fails before source access; v2 repair sealed
+
+At protocol commit `aa501def3`, nine focused tests passed. The inherited sparse checkout first omitted the new
+experiment directory; after materializing that committed path, the frozen direct-script entry point failed on its
+first import because the experiment directory—not the repository root—was on Python's import path. The collector
+never parsed arguments or read a Compound file, and no artifact exists. This is an infrastructure failure, not a
+source-gate result.
+
+V2 changes only the command to package-module execution from the repository root. Source commit, six markets,
+permitted files, implementation, manifest, all nine gates and every chain/account/response/GPU lock are unchanged.
+Commit and push v2 before execution; another runner failure is terminal for that version. V1 result:
+`experiments/v14_compound_v3_metadata_preflight/RESULTS_V1.md`; v2 protocol:
+`experiments/v14_compound_v3_metadata_preflight/PREREGISTRATION_V2.md`.

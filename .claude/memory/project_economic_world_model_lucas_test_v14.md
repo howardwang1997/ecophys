@@ -542,3 +542,9 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - The frozen source audit pins official Comet commit `f766f51583c23acc33b2a7824654ef2029a96804`, six Ethereum-
   mainnet configuration/root pairs, action/state/configuration markers and licence provenance. It reads a clean
   local checkout with zero RPC/network/GPU. A pass can unlock only a separately frozen chain-metadata audit.
+- Compound metadata v1 at commit `aa501def3` is an infrastructure failure before source access. Tests passed; the
+  inherited sparse worktree first omitted the experiment path, then the frozen direct-script wrapper failed its
+  first `ecomd.research` import. No manifest/source file was read by the collector and no artifact exists.
+- V2 is invocation-only: run the identical committed collector as
+  `python -m ecomd.research.compound_v3_metadata` from the repository root. All source, market, marker, gate and
+  access contracts remain unchanged; commit/push before execution.
