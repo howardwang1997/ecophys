@@ -408,3 +408,13 @@ The CPU parser processed 15,505,469 rows and hit both 1 GiB uncompressed caps wh
 counts. It used 128 MiB of R2-backed compressed input, no GPU, remote worker or paid data. The scientific decision
 failed because dates were not contiguous, not because of inadequate compute. Adding CPU/GPU capacity cannot repair
 that source-layout failure; the next work is a source/provenance audit. GPU queues remain empty.
+
+### CoW HEAD-enumeration compute checkpoint
+
+The previous 33/100 CoW result has been reclassified as a shared-ID-space sampling failure, not 33% retention.
+The repair first sends exactly 384 HEAD requests at at most one request per second, retaining only status and zero
+body bytes. Expected wall time is about 6.5 minutes plus bounded retries; memory and storage are negligible. It
+uses zero GPU-hours, no paid data and no remote worker.
+
+At least 100 HTTP-200 IDs and complete 200/404 terminal coverage are required. Only a passing, committed resolved
+ID list can unlock a separately frozen payload and score-replay audit. V100 and RTX 2060 queues remain empty.

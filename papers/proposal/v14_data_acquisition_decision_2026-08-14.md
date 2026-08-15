@@ -288,3 +288,14 @@ two consumed prefixes and do not select replacement months post hoc.
 The next acquisition decision is source-based, not size-based: audit free queryable/date-partitioned mirrors or an
 official interface for exact AEMO provenance, licensing, field versions and reproducible snapshots. Only if none
 is admissible should a complete 1.7 GB two-object sequential-stream design be costed. `NO_BUY_NOW` remains in force.
+
+### CoW enumerator repair frozen on 15 August 2026
+
+The required CoW rule is now identified without buying data. Official code shows that regular auctions, fast-path
+quotes and empty auctions share the integer sequence, so 404s in the old arithmetic sample are not a retention
+estimate. The deployed competition lookup supports body-free HEAD classification. A disjoint contiguous 384-ID
+frame is frozen; only status codes may be retained, and the exact HTTP-200 list must be committed before any GET.
+
+This requires public metadata traffic and local CPU only. It does not authorize commercial data, payload access,
+model training or GPU use. `NO_BUY_NOW` remains unchanged. Protocol:
+`experiments/v14_cow_competition_head_enumeration/PREREGISTRATION.md`.

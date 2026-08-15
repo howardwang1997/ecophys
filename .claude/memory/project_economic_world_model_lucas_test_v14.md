@@ -402,3 +402,14 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   observed state. Exact counterfactual NEMDE requires authoritative formulation/Queue collaboration. For V14,
   prioritize a fully public executable domain for exact M2 mechanics. Result:
   `experiments/v14_aemo_nemde_rpn_repair_development/RESULTS.md`.
+- CoW enumerator audit (2026-08-15): the old 33/100 HTTP-200 result is not a retention estimate. Official code
+  shows one PostgreSQL auction-ID sequence is consumed by regular auctions, fast-path quote competitions and
+  empty auctions, while only valid solver competitions back the lookup route. The public OpenAPI has no list
+  endpoint.
+- The deployed CoW lookup supports HEAD. Previously consumed 200/404 controls preserved their status without a
+  body. A fresh, disjoint 384-ID contiguous frame is now frozen for status-only enumeration; all headers and body
+  lengths are discarded, no ID is replaced, and at least 100 HTTP-200 records are required. Candidate-list SHA:
+  `ea4ad29d44185999c18d89338147a9394324d664c7c3280637266798787bbf35`.
+- No fresh CoW body may be opened until the HEAD run passes and its exact HTTP-200 ID list is committed and pushed.
+  This is a CPU/network metadata gate with zero GPU and no paid data. Protocol:
+  `experiments/v14_cow_competition_head_enumeration/PREREGISTRATION.md`.

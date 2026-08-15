@@ -1,0 +1,94 @@
+schema_version: ecophys-cow-competition-head-enumeration/v1
+stage: frozen_before_head_enumeration
+scientific_role: development_only_no_confirmation_claim
+sample_id: cow-mainnet-contiguous-head-frame-20260815-v1
+frozen_at: "2026-08-15T08:22:00Z"
+
+source:
+  network: mainnet
+  base_url: https://api.cow.fi/mainnet
+  endpoint_template: /api/v2/solver_competition/{auction_id}
+  openapi_url: https://raw.githubusercontent.com/cowprotocol/services/main/crates/orderbook/openapi.yml
+  openapi_sha256: 264d4d906c64329664e90b093b1e597ca1dbdeb76b1564c624f53b36538e3e3b
+  deployed_version_response: v2.374.3@b2de49bf955eca9976b5b9465d8be173b545db6f
+  deployed_git_commit: b2de49bf955eca9976b5b9465d8be173b545db6f
+  deployed_openapi_url: https://raw.githubusercontent.com/cowprotocol/services/v2.374.3/crates/orderbook/openapi.yml
+  deployed_openapi_sha256: 264d4d906c64329664e90b093b1e597ca1dbdeb76b1564c624f53b36538e3e3b
+  audited_main_git_commit: 20b3a62f222ad278502fb7e85cae4938e7f26f65
+  request_method: HEAD
+  retained_response_fields:
+    - http_status
+  discard_all_response_headers: true
+  maximum_requests_per_second: 1.0
+  maximum_transport_retries: 2
+  user_agent: EcoPhys-cow-head-enumerator/1.0
+
+anchor:
+  source_manifest: data/manifests/open_data_development_sample_v1_resolved.yaml
+  resolved_manifest_sha256: f29fe8475d150a3681193c1297cfd3d8969c13ce078bf45694e770245a74b090
+  resolved_anchor_id: 13583706
+  resolved_at: "2026-08-14T07:08:51.639044Z"
+  cutoff_utc: "2026-08-14T07:00:00Z"
+
+candidate_frame:
+  selection_formula: candidate_id=resolved_anchor_id-first_offset_below_anchor-index*stride
+  first_offset_below_anchor: 210000
+  count: 384
+  stride: 1
+  candidate_id_maximum: 13373706
+  candidate_id_minimum: 13373323
+  candidate_ids_sha256: ea4ad29d44185999c18d89338147a9394324d664c7c3280637266798787bbf35
+  previous_expansion_id_minimum: 13383806
+  no_replacement: true
+  sizing_basis: prior_consumed_33_of_100_status_only_development_rate
+  scientific_scope: local_contiguous_frame_feasibility_not_population_prevalence
+
+method_controls:
+  controls_use_only_previously_consumed_ids: true
+  known_http_200_id: 13481706
+  known_http_404_id: 13483706
+  observed_head_statuses:
+    "13481706": 200
+    "13483706": 404
+  retained_control_fields:
+    - http_status
+  fresh_candidate_ids_opened_during_control: 0
+
+eligibility_rule:
+  eligible_status: 200
+  interpretation: persisted_solver_competition_record_exposed_by_public_api
+  noneligible_status: 404
+  noneligible_interpretation: shared_sequence_slot_without_exposed_solver_competition_record
+  do_not_infer_404_cause: true
+  no_filter_on_scores_ranks_winners_transactions_orders_prices_or_body_size: true
+
+access_boundary:
+  head_only_before_resolution_commit: true
+  response_body_bytes_read_must_be_zero: true
+  resolved_manifest_commit_required_before_get: true
+  retain_every_request_outcome: true
+  competition_bodies_opened: false
+  no_gpu: true
+  no_paid_data: true
+
+gates:
+  minimum_eligible_count: 100
+  eligible_http_status: 200
+  allowed_terminal_http_statuses:
+    - 200
+    - 404
+  exact_candidate_order_required: true
+  exact_request_count_required: 384
+  zero_body_bytes_required: true
+  no_headers_retained_required: true
+  no_transport_or_unexpected_status_allowed: true
+
+enumeration_result: null
+
+artifacts:
+  preregistration: experiments/v14_cow_competition_head_enumeration/PREREGISTRATION.md
+  runbook: experiments/v14_cow_competition_head_enumeration/RUNBOOK.md
+  request_ledger: experiments/v14_cow_competition_head_enumeration/artifacts/head_request_ledger.jsonl
+  summary: experiments/v14_cow_competition_head_enumeration/artifacts/head_enumeration_summary.json
+  resolved_manifest: data/manifests/cow_competition_head_enumeration_v1_resolved.yaml
+  source_audit: papers/proposal/v14_cow_competition_enumerator_audit_2026-08-15.md

@@ -766,3 +766,24 @@ essential, it requires authoritative formulation/Queue access through collaborat
 leg should move to a domain with public executable rules, while AEMO is retained only within its observed-state
 claim boundary. Full-day acquisition, model training and GPUs remain locked pending that route decision. Result:
 `experiments/v14_aemo_nemde_rpn_repair_development/RESULTS.md`.
+
+### 11.23 CoW outcome-blind competition enumeration frozen
+
+The earlier 33/100 CoW HTTP-200 result is not a historical-retention estimate. Official service code shows that
+regular auctions, fast-path quote competitions and empty auctions draw from the same PostgreSQL auction-ID
+sequence, while only valid solver competitions enter the table behind the public lookup route. The OpenAPI has no
+historical list endpoint. Integer-space 404s therefore cannot be interpreted as deleted competitions.
+
+The deployed lookup route does support HEAD. On two previously consumed controls it returned the same known
+200/404 existence classes without a response body. Before accessing any fresh ID, a new two-stage protocol freezes
+exactly 384 contiguous, non-overlapping candidate IDs (`13,373,706` down to `13,373,323`; candidate-list SHA-256
+`ea4ad29d44185999c18d89338147a9394324d664c7c3280637266798787bbf35`). Stage one stores only HEAD status,
+request order and transport attempts; every header, body length and body field is discarded. Stage two may open
+only the exact HTTP-200 list, and only after that resolved list is committed and pushed.
+
+The HEAD stage requires all 384 requests in order, zero body bytes, terminal statuses only in `{200,404}`, no
+replacement and at least 100 eligible IDs. The threshold is a feasibility/sample-size gate, not a prevalence or
+representativeness claim. This route is public, CPU/network-only, free and uses zero GPU-hours. If it passes, the
+next protocol can audit payload schema and exact score/ranking replay on the sealed set. If it fails, GET remains
+forbidden and the exact-mechanism leg moves to another public executable system. Protocol:
+`experiments/v14_cow_competition_head_enumeration/PREREGISTRATION.md`.
