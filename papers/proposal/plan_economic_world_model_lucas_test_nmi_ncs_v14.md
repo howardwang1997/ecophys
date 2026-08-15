@@ -591,3 +591,24 @@ A pass licenses only a one-day alignment/replay design. It does not run the exac
 submission/rejection history, or unlock a model, causal claim or Experiment 156. Data are 2 MiB and CPU-only;
 V100/2060 and paid resources remain unused. Protocol:
 `experiments/v14_aemo_nemde_xml_conformance/PREREGISTRATION.md`.
+
+### 11.14 NEMDE XML conformance result and research pivot
+
+Protocol commit `9f44bb443` passed every frozen gate in both regimes. The two exact members reproduced their ZIP
+metadata, deflate EOF, uncompressed size and CRC, then parsed into valid production cases with all three sections,
+all twelve documented input/output group families and nonempty price-setting analysis. The input exposes applied
+offer price/availability bands, maximum availability, ramp rates, participant/unit IDs, offer version/times,
+SCADA, demand and constraints. The output exposes solver version/status/objective, prices, targets, flows,
+marginal values and violations. Summary SHA-256:
+`f48d86b8f7837956fa5813e8719a712d543ade3e795fa1ad691036bd096bb7cd`.
+
+Across the two cases, input tag and attribute sets are identical. Output tag and price-setting attribute sets are
+also identical; only `FSTargetModeTime` is post-change-only, independently matching the known fast-start state
+extension. This makes production-case replay/alignment the preferred historical source route. Monthly
+`BIDPEROFFER` bulk extraction is no longer next.
+
+The next gate should mechanically sample one complete development day, verify within-day schema/solver-version
+stability and align production outputs to public dispatch tables before attempting an open replay. It must not
+call applied offers raw submission history or infer strategy from one solver case. Exact replay, Experiment 156
+and GPU training remain locked. Result:
+`experiments/v14_aemo_nemde_xml_conformance/RESULTS.md`.

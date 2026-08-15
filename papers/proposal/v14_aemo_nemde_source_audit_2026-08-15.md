@@ -89,3 +89,15 @@ The frozen metadata-only audit is
 `experiments/v14_aemo_nemde_tail_inventory/PREREGISTRATION.md`. If it passes, freeze exact member names, offsets,
 compressed sizes and CRCs in a new manifest before requesting XML bytes. Do not inspect an interval ad hoc and do
 not replace a failed date.
+
+## Executed conformance update
+
+The tail and XML gates subsequently passed on interval 144 in both selected regimes. The applied inputs expose
+participant/unit identifiers, offer dates/version, price bands, band availability, maximum availability, ramp
+rates, SCADA/initial conditions and full constraint families in the same case as production outputs. Output fields
+cover solver version/status/objective, prices, unit targets, flows, marginal values and violations.
+
+The input tag and attribute sets are identical across the two sampled cases. Output structure is also identical
+except that the post-5MS case adds `FSTargetModeTime`, consistent with the independent fast-start state-version
+audit. This materially reduces historical bridge risk, but two cases do not prove daily stability or exact replay.
+Summary SHA-256: `f48d86b8f7837956fa5813e8719a712d543ade3e795fa1ad691036bd096bb7cd`.

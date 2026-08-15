@@ -327,3 +327,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   requires the three official sections plus documented input/output group families in both regimes. Attributes
   are inventoried without values. No retry, following-member parse or raw Git artifact is allowed. A pass unlocks
   only one-day replay design; GPUs, exact-replay claims and raw redistribution remain locked.
+- XML protocol commit `9f44bb4431b57564608848cb5b577b7b1e58fa9b` passed all gates. Both cases contain
+  synchronized input, output and price-setting sections. Applied inputs expose ParticipantID, DUID/TraderID,
+  offer dates/version, price/availability bands, MaxAvail, ramp rates, SCADA, demand and constraints; outputs expose
+  SolverVersion/status/objective, prices, targets, flows, marginal values and violations.
+- Input tag/attribute sets are identical across the sampled pre/post cases. Output tags and price attributes are
+  identical; the only post-only output attribute is `FSTargetModeTime`, matching the independent v5.1 fast-start
+  observation audit. Summary SHA: `f48d86b8f7837956fa5813e8719a712d543ade3e795fa1ad691036bd096bb7cd`.
+- This pivots the historical development route to production NEMDE cases. Next mechanically sample a complete day,
+  validate temporal schema and align outputs to public dispatch tables, then benchmark an open solver. Do not call
+  applied cases raw submission history. Exact replay/model/GPU and raw redistribution remain locked.
