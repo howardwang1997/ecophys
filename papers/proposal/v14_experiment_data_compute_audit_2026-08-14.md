@@ -616,5 +616,16 @@ attempts, 256 MiB of response bytes and 100,000 normalized logs at two requests 
 
 Expected wall time is about three minutes plus parsing, with small JSON outputs. It uses local CPU/network, zero
 paid data, zero remote-worker time and zero GPU-hours. No V100 or RTX 2060 job is queued. Even a pass unlocks only
-a separately frozen single-candidate receipt/payload/call-path/finality preflight; D1 account acquisition and all
+a separately frozen all-candidate receipt/payload/call-path/finality preflight; D1 account acquisition and all
 model training remain unauthorized.
+
+### Compound D0 governance-log compute result
+
+D0 completed the exact 339-call unsaturated path in about 188.9 seconds. All calls succeeded on their first
+attempt; total response traffic was 605,863 bytes. It normalized 886 public governance/configuration logs and wrote
+about 1.1 MiB across the summary, inventory and response-hash ledger. No raw RPC body was retained.
+
+The pass yields 14 provisional log-level candidates but does not create a GPU queue. The next receipt/payload/
+getter/finality preflight is still a small CPU/network task over all 14 candidates and must be separately budgeted
+and frozen. Paid-data, remote-worker and GPU use were zero; both V100s and the RTX 2060 remain idle. Account
+acquisition, trace-scale indexing and model training remain unauthorized.

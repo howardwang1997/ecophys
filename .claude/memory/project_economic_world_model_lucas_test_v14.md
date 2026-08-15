@@ -610,3 +610,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - D0 retains normalized public governance logs and hashes only. Governance payloads/receipts/traces, accounts,
   participant actions, liquidations, prices and responses remain locked. Expected resource use is about three
   minutes of local CPU/network, zero paid data/worker/GPU; all V100/RTX 2060 queues remain empty.
+- D0 passed 10/10 at protocol commit `db26bbe91111b6a71f6a4083231927574dd2b188`: 339 one-attempt requests,
+  605,863 response bytes, 886 normalized logs, zero duplicates/conflicts and 14 provisional atomic candidates out
+  of 184 eligible parameter updates. Summary SHA is
+  `e03161118ac4cd7aea56f92f40aabdd49348d3170ce256ff42896291c1470b7f`.
+- The 14 candidates contain twelve supply-cap and two borrow-factor changes. Bundling is common: 170/184 have an
+  extra Configurator log, 167/184 another eligible update and 126/184 another frozen-market upgrade; counts
+  overlap. Shared authority is therefore an observed spillover problem.
+- The top-priority rows are mainnet-USDS wstETH borrow CF 0.82->0.80 at block 22,273,296 and mainnet-WETH rsETH
+  0->0.80 at block 25,571,051. Neither is selected. Freeze the next receipt/calldata/call-path/getter/finality
+  preflight over all 14, then filter deterministically before any participant row. `G1` and GPU queues remain locked.

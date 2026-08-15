@@ -266,5 +266,19 @@ official source + chain metadata PASS
 
 The denominator problem now has a rigorous and cheap falsification test. The two binding risks are more serious:
 complete call traces and credible controls under shared authority. This is progress because it localizes failure.
-It is not a reason to start training. The scientifically correct next experiment is a sealed D0 governance-
-configuration metadata inventory with zero participant rows.
+It is not a reason to start training. The first D0 governance-log substage is now complete; the scientifically
+correct next experiment is its separately frozen receipt/payload/getter/finality substage with zero participant
+rows.
+
+## 13. D0 log-inventory update
+
+The first D0 substage deliberately split governance logs from receipts/payloads and passed all ten gates at commit
+`db26bbe91111b6a71f6a4083231927574dd2b188`. It found 14 provisional atomic rows among 184 eligible updates. This
+is enough to proceed, but it also quantifies the shared-authority risk: 170 eligible rows have another Configurator
+log and 126 have another frozen-market upgrade in the same transaction.
+
+The two highest-priority log candidates are borrow-factor changes, but neither is selected. To avoid post-hoc
+convenience selection, the next D0 substage must freeze and audit all 14 receipts, calldata/call paths, pre/post
+getters, 24-hour governance neighborhoods and finality evidence before applying a deterministic filter. The D1
+exposure census, all participant actions/responses and all GPU work remain locked. Result:
+`experiments/v14_compound_v3_governance_log_inventory/RESULTS.md`.

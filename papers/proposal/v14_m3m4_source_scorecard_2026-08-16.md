@@ -228,3 +228,22 @@ the operative clock. This is log-level screening, not payload isolation or treat
 Every account/action/response row remains forbidden. A pass authorizes only a separately frozen receipt, calldata,
 governance-call-path and consensus-finality preflight. Protocol:
 `experiments/v14_compound_v3_governance_log_inventory/PREREGISTRATION.md`.
+
+## 14. D0 governance-log result
+
+D0 passed all ten gates at protocol commit `db26bbe91111b6a71f6a4083231927574dd2b188`. The exact unsaturated path
+used 339 one-attempt requests and 605,863 response bytes, normalizing 886 logs with zero duplicate or conflict.
+Among 184 eligible parameter updates, 14 satisfy the provisional atomic log rule: twelve supply-cap and two borrow-
+collateral-factor changes across 14 distinct blocks.
+
+Bundling is the rule rather than the exception. Of the 184 eligible rows, 170 share a transaction with another
+Configurator log, 167 with another eligible parameter update and 126 with another frozen-market upgrade; counts
+overlap. This confirms that shared authority is a material spillover problem, not merely a design caveat.
+
+The already frozen event priority leaves two borrow-factor candidates at the top. The older is a mainnet-USDS
+wstETH change from 0.82 to 0.80 at block 22,273,296; the later mainnet-WETH rsETH change is 0 to 0.80 and therefore
+needs especially strict pre-existing-collateral/exposure checks. Neither is selected or valid yet. The next
+preflight should audit all 14 candidates before applying deterministic filters, and may open only receipts,
+calldata/call paths, getters, block/finality evidence and governance-neighborhood metadata. `G1`, participant rows
+and GPUs remain locked. Result:
+`experiments/v14_compound_v3_governance_log_inventory/RESULTS.md`.
