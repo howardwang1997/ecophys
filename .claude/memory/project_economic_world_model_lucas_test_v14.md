@@ -679,3 +679,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   thwarted suppliers are not a pre-event enumerable cohort.
 - The D1a no-retry budget is 141 public reads: 134 RPC plus seven verified-source REST requests, one request/s,
   bounded failure ledger, local CPU/network, free data and zero GPU. Both V100s and the RTX 2060 remain idle.
+- D1a v1 is an immutable infrastructure failure at protocol commit
+  `1dfdecf47d60b3f78a1076d2a09ed60f7ad5fc7f`. Two chain IDs and all seven Blockscout source metadata requests
+  succeeded, then the first historical PublicNode `eth_getCode` returned HTTP 403 on all three allowed attempts.
+- The v1 failure ledger records nine successful operations, 12 attempts, 1,370,203 bytes and a 14.878-second span;
+  SHA-256 is `225266d3fb1e394f0714ceed60000ca42c84476ac8bd1641b4eacb8da30c40c8`. An independent
+  offline request/hash/accounting verifier passed. No normalized source result is durable, and no historical code,
+  getter, aggregate total, account or response row was opened.
+- Never rerun v1. Any v2 may repair only documented historical-state transport and partial source-evidence
+  durability while preserving the exact four candidates, six lookbacks, source semantics, exact T−1 saturation,
+  decisions and access locks. D1b, `G1` and GPU queues remain locked.

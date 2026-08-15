@@ -309,3 +309,10 @@ account-level estimand is retired regardless because would-be blocked suppliers 
 
 The plan is 141 public read-only operations, local CPU/network, no paid data and zero GPU. Protocol:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION.md`.
+
+D1a v1 reached no scientific decision. The two chain IDs and seven source endpoints succeeded, but PublicNode
+returned HTTP 403 on all three attempts for the first historical code read, so no historical code/getter/aggregate
+result exists. The independently checked failure ledger is immutable. A new protocol may repair only the
+documented historical-state transport and failure evidence; it may not change selection, lookbacks, activation
+thresholds or access. Result:
+`experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V1.md`.

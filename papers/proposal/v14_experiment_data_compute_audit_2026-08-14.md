@@ -695,3 +695,15 @@ This remains local CPU/network work with zero paid data, remote-worker hours and
 2060 stay idle. The protocol forbids accounts, actions, logs/traces, prices, liquidations, post-event aggregate
 state and realized responses. Even an exact-saturation pass budgets only a separate market-level D1b design; no
 participant-data or training job is queued.
+
+### Compound D1a v1 actual resource result
+
+V1 stopped after 14.878 seconds. Nine logical operations succeeded—two chain IDs and seven Blockscout source-
+metadata GETs—before PublicNode returned HTTP 403 on all three allowed attempts for the first historical
+`eth_getCode`. The failure ledger contains 12 attempts and 1,370,203 response bytes. Only `failure.json` exists;
+the three success artifacts are absent.
+
+No historical code result, configuration getter, aggregate total or participant/response row was opened. Actual
+paid-data, external-worker and GPU use was zero. Extra GPU capacity cannot repair this endpoint capability. Any v2
+budget must remain CPU/network-only and freeze a documented historical-state transport before another candidate
+request; D1b and training remain unqueued.

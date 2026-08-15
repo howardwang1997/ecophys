@@ -329,3 +329,10 @@ account-level route is retired for every outcome because thwarted potential supp
 no-retry run is exactly 134 RPC plus seven verified-source REST operations and requires no paid data, worker or
 GPU. Protocol:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION.md`.
+
+D1a v1 produced no activation result. After two chain IDs and seven source-metadata HTTP 200 responses, the first
+historical PublicNode `eth_getCode` operation returned HTTP 403 on all three frozen attempts. The run stopped
+before any code result, configuration, aggregate total or participant/response row. The bounded failure ledger was
+independently verified; v1 is immutable and must not be rerun. A v2 may repair only documented historical-state
+transport and partial normalized-source evidence while preserving every scientific and access rule. Result:
+`experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V1.md`.

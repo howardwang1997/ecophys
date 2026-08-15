@@ -697,7 +697,12 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     `totalsCollateral`。只有 T−1 的精确整数饱和能通过；90/95/99% 仅为诊断，不能移动门槛，且不查询
     event/post-event aggregate response。精确计划为 134 RPC + 7 source REST = 141 个只读操作，本地
     CPU/network、免费数据、零 GPU。即使通过也只允许另行冻结 market-level collateral-flow D1b 设计；
-    account-level estimand 已结构性退休。G1、D1 账户/行为/响应数据和全部 GPU 生产作业继续锁定。
+    account-level estimand 已结构性退休。D1a v1 已在提交 `1dfdecf47` 上只运行一次，但在两次 chain ID
+    和七次 source metadata 成功后，首个历史 PublicNode `eth_getCode` 的三次冻结尝试均返回 HTTP 403；
+    因此这是 transport infrastructure failure，不是 cap activation 结果。没有 code/getter/aggregate 或
+    participant/response 行被打开。v1 不重跑；任何 v2 只能基于官方文档修复历史状态 transport，并保留
+    四候选、六 lookbacks、精确饱和规则及全部 access locks。G1、D1 账户/行为/响应数据和全部 GPU
+    生产作业继续锁定。
 
 ---
 
