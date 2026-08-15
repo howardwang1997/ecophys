@@ -10,6 +10,7 @@ from ecomd.research.uniswap_v3_fee_treatment import (
     OWNER_CHANGED_TOPIC,
     SET_FEE_PROTOCOL_TOPIC,
     canonical_json_sha256,
+    contract_sha256,
     decode_batch_trigger_calldata,
     parse_batch_treatment,
     summarize_treatment_conformance,
@@ -218,16 +219,40 @@ def test_summary_requires_new_treatments_in_both_fee_groups() -> None:
     assert gates["minimum_activated_fee_0x66"] is False
 
 
-def test_repository_frozen_contract_is_valid() -> None:
+@pytest.mark.parametrize("version", ["v1", "v2"])
+def test_repository_frozen_contract_is_valid(version: str) -> None:
     root = Path(__file__).resolve().parents[1]
     import yaml
 
-    payload = yaml.safe_load(
-        (root / "data/manifests/uniswap_v3_fee_treatment_conformance_v1.yaml").read_text(encoding="utf-8")
-    )
+    contract_path = root / f"data/manifests/uniswap_v3_fee_treatment_conformance_{version}.yaml"
+    payload = yaml.safe_load(contract_path.read_text(encoding="utf-8"))
     assert isinstance(payload, dict)
     assert validate_frozen_contract(payload) == ()
     hashes = payload["propagation_frame"]["batch_transaction_hashes"]
     assert payload["propagation_frame"]["batch_transaction_hashes_sha256"] == canonical_json_sha256(
         [value.lower() for value in hashes]
     )
+    if version == "v2":
+        parent = root / payload["transport_repair"]["parent_contract"]
+        assert payload["transport_repair"]["parent_contract_sha256"] == contract_sha256(parent)
+
+
+def test_v2_changes_only_transport_and_bookkeeping_fields() -> None:
+    root = Path(__file__).resolve().parents[1]
+    import yaml
+
+    v1 = yaml.safe_load(
+        (root / "data/manifests/uniswap_v3_fee_treatment_conformance_v1.yaml").read_text(encoding="utf-8")
+    )
+    v2 = yaml.safe_load(
+        (root / "data/manifests/uniswap_v3_fee_treatment_conformance_v2.yaml").read_text(encoding="utf-8")
+    )
+    for key in ("deployment", "mechanism", "propagation_frame", "reconnaissance_disclosure", "gates"):
+        assert v2[key] == v1[key]
+    assert v2["access_boundary"] == v1["access_boundary"]
+    source_v1 = dict(v1["source"])
+    source_v2 = dict(v2["source"])
+    assert source_v1.pop("runtime_bytecode_block") == 24599177
+    assert source_v2.pop("runtime_bytecode_block") == "latest"
+    assert source_v2.pop("runtime_code_query_role") == "provenance_only_not_treatment_clock"
+    assert source_v2 == source_v1

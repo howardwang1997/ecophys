@@ -12,7 +12,9 @@ from typing import cast
 
 import yaml
 
-SCHEMA_VERSION = "ecophys-uniswap-v3-fee-treatment-conformance/v1"
+CONTRACT_SCHEMA_V1 = "ecophys-uniswap-v3-fee-treatment-conformance/v1"
+CONTRACT_SCHEMA_V2 = "ecophys-uniswap-v3-fee-treatment-conformance/v2"
+RESULT_SCHEMA_VERSION = "ecophys-uniswap-v3-fee-treatment-conformance-result/v1"
 FROZEN_STAGE = "frozen_before_old_new_fee_transition_decoding"
 BATCH_TRIGGER_SELECTOR = "0x08f4779e"
 EXECUTE_SELECTOR = "0xfe0d94c1"
@@ -409,7 +411,7 @@ def summarize_treatment_conformance(
     }
     passed = all(gates.values())
     return {
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": RESULT_SCHEMA_VERSION,
         "scientific_role": "historical_development_treatment_metadata_only",
         "decision": (
             "PASS_EXACT_TREATMENT_FRAME_FREEZE_PREPERIOD_DESIGN"
@@ -435,8 +437,9 @@ def validate_frozen_contract(contract: Mapping[str, object]) -> tuple[str, ...]:
     """Validate the immutable pre-transition-decoding contract."""
 
     errors: list[str] = []
-    if contract.get("schema_version") != SCHEMA_VERSION:
-        errors.append(f"schema_version must be {SCHEMA_VERSION}")
+    schema_version = contract.get("schema_version")
+    if schema_version not in (CONTRACT_SCHEMA_V1, CONTRACT_SCHEMA_V2):
+        errors.append(f"schema_version must be {CONTRACT_SCHEMA_V1} or {CONTRACT_SCHEMA_V2}")
     if contract.get("stage") != FROZEN_STAGE:
         errors.append(f"stage must be {FROZEN_STAGE}")
     if contract.get("scientific_role") != "historical_development_treatment_metadata_only":
@@ -456,8 +459,10 @@ def validate_frozen_contract(contract: Mapping[str, object]) -> tuple[str, ...]:
         errors.append("source must remain Ethereum mainnet chain 1")
     if source.get("expected_rpc_request_count") != 11:
         errors.append("source.expected_rpc_request_count must remain 11")
-    if source.get("runtime_bytecode_block") != 24599177:
-        errors.append("source.runtime_bytecode_block must remain the first propagation block")
+    if schema_version == CONTRACT_SCHEMA_V1 and source.get("runtime_bytecode_block") != 24599177:
+        errors.append("v1 source.runtime_bytecode_block must remain the first propagation block")
+    if schema_version == CONTRACT_SCHEMA_V2 and source.get("runtime_bytecode_block") != "latest":
+        errors.append("v2 source.runtime_bytecode_block must remain latest")
     for key in ("rpc_url", "verified_source_url", "proposal_url"):
         value = source.get(key)
         if not isinstance(value, str) or not value.startswith("https://"):
@@ -470,6 +475,30 @@ def validate_frozen_contract(contract: Mapping[str, object]) -> tuple[str, ...]:
         value = source.get(key)
         if not isinstance(value, str) or GIT_SHA.fullmatch(value) is None:
             errors.append(f"source.{key} must be a full Git SHA")
+
+    if schema_version == CONTRACT_SCHEMA_V2:
+        try:
+            repair = _mapping(contract.get("transport_repair"), path="transport_repair")
+        except ValueError as error:
+            errors.append(str(error))
+        else:
+            expected_repair = {
+                "parent_contract": "data/manifests/uniswap_v3_fee_treatment_conformance_v1.yaml",
+                "parent_contract_sha256": (
+                    "3bf8d454f1c2fa8ef091c4ac4fc00e8d6c9c99d7084e52314a925a121d194279"
+                ),
+                "parent_protocol_commit": "647da77a3987f3009af1c5a9462d574c1ce353d4",
+                "parent_decision": ("FAIL_RPC_HISTORICAL_STATE_FORBIDDEN_BEFORE_TRANSITION_ACCESS"),
+                "parent_successful_rpc_calls": 1,
+                "parent_failed_method": "eth_getCode",
+                "parent_failed_http_status": 403,
+                "parent_failed_attempt_count": 3,
+                "governance_or_propagation_receipts_accessed_by_parent_run": False,
+                "only_changed_scientific_input": "none",
+                "only_changed_transport_field": "source.runtime_bytecode_block",
+            }
+            if dict(repair) != expected_repair:
+                errors.append("v2 transport repair must preserve the exact v1 failure and repair scope")
 
     try:
         if mechanism.get("governance_proposal_id") != 94:

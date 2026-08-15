@@ -437,3 +437,14 @@ Required paid-data spend, remote workers and GPU-hours are zero. Both V100s and 
 excluded. The run may retain exact treatment transitions but cannot open LP actions, swaps, liquidity, price,
 volume or any post-treatment response. Only a passing, committed U0 result can unlock design—not execution—of a
 separately frozen pre-treatment U1 identity/support audit. Model training and GPU allocation remain locked.
+
+### Uniswap v3 U0 v1 transport result and v2 budget
+
+V1 used one successful `eth_chainId` call and three failed HTTP-403 historical-code attempts, then stopped before
+any governance or propagation receipt. No artifact, fee transition or market response was produced. This was an
+RPC capability failure; more CPU/GPU cannot repair it.
+
+V2 retains the same 11-successful-call ceiling and all data/compute locks, changing only the provenance code query
+to `latest`. Its expected retained volume remains below 20 MB and local work below one CPU core-hour. Paid-data,
+remote-worker and GPU budgets remain zero; the V100s and RTX 2060 stay idle. If the sealed v2 transport fails,
+there is no within-protocol endpoint substitution.

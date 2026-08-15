@@ -832,3 +832,18 @@ A pass authorizes only a separately frozen U1 pre-treatment support/identity aud
 collection without batch replacement or threshold repair. U0 uses 11 read-only RPC calls, less than 20 MB, under
 one local CPU core-hour, no paid data and zero GPU-hours. Protocol:
 `experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION.md`.
+
+### 11.26 Uniswap U0 v1 transport failure and sealed v2 repair
+
+The clean v1 run at protocol commit `647da77a3987f3009af1c5a9462d574c1ce353d4` verified chain ID, then the
+public endpoint returned HTTP 403 on all three allowed historical `eth_getCode` attempts. It stopped before the
+governance or propagation transaction/receipt calls. Thus no old/new fee argument, activation class or market
+response was opened, and the event-conformance question remains unanswered rather than failed.
+
+V2 changes only the bytecode provenance query from historical block `24,599,177` to `latest`. The frozen runtime
+hash remains identical, and code provenance does not define governance or per-pool treatment time. Proposal,
+batches, gates, thresholds, non-representative scope, reconnaissance disclosure and every outcome lock remain
+unchanged. The v2 manifest pins the exact v1 contract hash/failure and writes to a disjoint artifact directory.
+After the v2 protocol is committed and pushed, execute it once; another transport substitution is not permitted
+inside that protocol. V1 result: `experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V1.md`. V2 protocol:
+`experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION_V2.md`.

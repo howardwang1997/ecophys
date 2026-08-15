@@ -159,27 +159,28 @@ def main() -> None:
     parser.add_argument(
         "--contract",
         type=Path,
-        default=ROOT / "data/manifests/uniswap_v3_fee_treatment_conformance_v1.yaml",
+        default=ROOT / "data/manifests/uniswap_v3_fee_treatment_conformance_v2.yaml",
     )
     parser.add_argument(
         "--ledger",
         type=Path,
         default=(
-            ROOT / "experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts/treatment_ledger.jsonl"
+            ROOT / "experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts_v2/treatment_ledger.jsonl"
         ),
     )
     parser.add_argument(
         "--response-hashes",
         type=Path,
         default=(
-            ROOT / "experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts/rpc_response_hashes.json"
+            ROOT
+            / "experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts_v2/rpc_response_hashes.json"
         ),
     )
     parser.add_argument(
         "--summary",
         type=Path,
         default=(
-            ROOT / "experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts/treatment_summary.json"
+            ROOT / "experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts_v2/treatment_summary.json"
         ),
     )
     parser.add_argument("--collection-commit")
@@ -213,8 +214,13 @@ def main() -> None:
     if chain_id != "0x1":
         raise RuntimeError(f"RPC endpoint returned unexpected chain ID: {chain_id}")
     adapter = normalize_address(mechanism["executed_adapter_address"], path="executed_adapter_address")
-    runtime_code_block = cast(int, source["runtime_bytecode_block"])
-    runtime_code = rpc.call("eth_getCode", [adapter, _quantity(runtime_code_block)])
+    runtime_code_block = source["runtime_bytecode_block"]
+    runtime_code_block_tag = (
+        _quantity(runtime_code_block) if isinstance(runtime_code_block, int) else runtime_code_block
+    )
+    if not isinstance(runtime_code_block_tag, str):
+        raise RuntimeError("runtime bytecode block must be an integer or block tag")
+    runtime_code = rpc.call("eth_getCode", [adapter, runtime_code_block_tag])
     if not isinstance(runtime_code, str) or not runtime_code.startswith("0x"):
         raise RuntimeError("eth_getCode returned malformed runtime bytecode")
     runtime_bytes = bytes.fromhex(runtime_code[2:])
@@ -365,6 +371,7 @@ def main() -> None:
         "summary_git_commit": current_commit,
         "collected_at_utc": _utc_now(),
         "runtime_bytecode_sha256": runtime_sha256,
+        "runtime_bytecode_block_tag": runtime_code_block_tag,
         "lp_action_events_opened": 0,
         "swap_events_opened": 0,
         "liquidity_outcomes_opened": 0,

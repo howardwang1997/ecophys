@@ -442,3 +442,10 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   post-treatment responses remain unopened. A pass unlocks only a separately frozen U1 pre-treatment
   support/identity audit; it does not authorize an event study, learned model or GPU job. Protocol:
   `experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION.md`.
+- U0 v1 at commit `647da77a3987f3009af1c5a9462d574c1ce353d4` is an infrastructure failure, not a scientific
+  failure: chain ID succeeded, then historical-block `eth_getCode` returned HTTP 403 for all three allowed
+  attempts. No governance/propagation receipt or fee transition was accessed and no artifact was written.
+- V2 is a sealed transport-only repair: query the already frozen runtime-code hash at `latest`, retain every
+  scientific field/gate/access lock, write disjoint `artifacts_v2`, and permit no endpoint substitution after
+  execution. V1 result: `experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V1.md`; v2 protocol:
+  `experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION_V2.md`.

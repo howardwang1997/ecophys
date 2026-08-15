@@ -165,3 +165,11 @@ Proceed with U0. If it passes, Uniswap replaces CoW/AEMO as the free exact-M2 **
 future on-chain event registry remains the prospective confirmation route. If U1 cannot recover a defensible
 identity-covered action panel, narrow the scientific object instead of imputing behavior: retain Uniswap for exact
 mechanics and seek another real system for M3/M4.
+
+## 10. U0 v1 transport disposition
+
+The first frozen run did not reach the scientific gate. Chain ID succeeded, but the endpoint rejected the
+historical-block `eth_getCode` query with HTTP 403 on all three allowed attempts. No governance/propagation receipt
+or old/new fee transition was accessed. V2 therefore changes only this provenance query to `latest`; treatment
+clocks, batch hashes, thresholds and response locks are unchanged. This repair must be committed before execution
+and is not evidence for or against the mechanism hypothesis.
