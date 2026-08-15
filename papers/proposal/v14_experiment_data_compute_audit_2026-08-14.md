@@ -723,3 +723,17 @@ decision.
 This is again free local CPU/network work with zero remote workers and GPU-hours. Both V100s and the RTX 2060 stay
 idle. The weaker single-provider historical-state provenance is a scientific limitation, not a compute need; a
 later confirmatory study would require independent archive state or verified state proofs.
+
+### Compound D1a v2 actual resource result
+
+The sole sealed run completed all 105 logical operations in exactly 105 HTTP attempts: 98 JSON-RPC calls and seven
+verified-source REST reads. It transferred 1,961,938 response bytes over 107.202 seconds between the first and last
+recorded response. Seven source implementations, four candidates, 24 two-provider historical-header pairs and 48
+Blockscout historical state calls all conformed; all ten integrity gates passed.
+
+Actual paid-data, external-worker and GPU consumption was zero. Both V100s and the RTX 2060 remained idle. No
+account, action, trace, price, liquidation, post-event aggregate or realized-response row was opened. Because none
+of the four candidates was exactly saturated at T−1, the frozen decision retires the Compound M3 causal route.
+Consequently no Compound D1b, participant census or training budget exists. The next budget may cover only a new
+source's zero-row identification/source audit; GPU allocation remains locked until that route independently
+passes its data and identification gates.

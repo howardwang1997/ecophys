@@ -2,30 +2,29 @@
 
 **Date:** 2026-08-16
 
-**Decision:** `AUTHORIZE_COMPOUND_V3_ZERO_ROW_METADATA_PREFLIGHT_ONLY`
+**Current decision:** `RETIRE_COMPOUND_M3_CAUSAL_ROUTE_AUTHORIZE_NEW_SOURCE_ZERO_ROW_DESIGN_ONLY`
 
-**Admission state:** no candidate has passed G1; no participant action, account state, realized response or chain
-RPC row was opened for this decision.
+**Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
+opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
 
 ## 1. Bottom line
 
-Compound III is the best next *feasibility* route for participant adaptation, not yet the selected empirical event.
-Its advantage is structural: a pre-event set of nonzero Comet account positions can potentially define the exposed
-population before a rule change, and every member can then be classified as having a successful state adjustment
-or no successful state adjustment. That supplies the denominator and explicit null that the current Uniswap and
-CoW frames lack.
+Compound III was the best next *feasibility* route at initial source selection, not a selected empirical event.
+The complete audit subsequently found that all four mechanics survivors were supply-cap increases, for which the
+pre-event nonzero-position population is not a directly treated cohort. The zero-account D1a gate then found no
+exactly saturated T−1 state. Under its frozen rule, the Compound M3 causal route is retired.
 
 The scoped unit is an on-chain account address, not a person. “No action” means no successful state-changing
 transaction in the frozen channel and window; it does not mean no intent, no reverted attempt or no off-chain
 plan. Managers, Bulker operators, transaction senders and account addresses must remain distinct identity layers.
 
-Compound presently has five `pass`, five `partial` and two `unresolved` criteria. Three mandatory kill switches
-remain non-pass: exposure-denominator conformance, outcome-blind controls, and licence/retention. The only
-authorized work is an official-source metadata audit. Aave is the second route; GC0166 remains conditional on
-official identity/provenance clarification. Uniswap Proposal 94 stays the exact-M2 case and cannot be rehabilitated
-as M3/M4 by changing its failed concentration gate.
+At initial selection Compound had five `pass`, five `partial` and two `unresolved` criteria. The later mechanics
+and activation audits resolve the relevant denominator/activation route negatively rather than repairing it.
+Aave is now the first candidate for a fresh zero-row source and effect-class audit; it is not automatically
+admitted to G1. GC0166 remains conditional on official identity/provenance clarification. Uniswap Proposal 94
+stays the exact-M2 case and cannot be rehabilitated as M3/M4 by changing its failed concentration gate.
 
-Machine-readable decision:
+Initial machine-readable decision (historical and immutable):
 `data/manifests/v14_m3m4_source_selection_v1.yaml`.
 
 ## 2. Common source gate
@@ -52,8 +51,8 @@ A candidate with a partial or unresolved kill switch may receive a bounded metad
 
 | Rank | Candidate | Strongest property | Binding issue | Disposition |
 |---:|---|---|---|---|
-| 1 | Compound III Comet | executable single-base-market state plus address-level positions and actions | denominator/archive conformance, controls and licence/retention not passed | zero-row metadata preflight only |
-| 2 | Aave V3 | rich public payload, address-book and state-diff ecosystem | larger multi-reserve/eMode/delegation/version surface | audit only if Compound fails or proves too sparse |
+| 1 | Aave V3 | rich public payload, address-book and state-diff ecosystem | larger multi-reserve/eMode/delegation/version surface | fresh zero-row source/effect-class audit design only |
+| 2 | Compound III Comet | exact mechanics and near-boundary aggregate states | no exact T−1 saturation; no observable treated-account denominator for cap increases | M3 causal route retired; mechanics/exploration only |
 | 3 | GB GC0166 | future official clock, public BMU schemas and BMRS licence | submission versus default/reject/missing provenance and identity history | wait for official clarification; do not send without approval |
 | 4 | Uniswap V3 Proposal 94 | exact 1,000-pool treatment ledger | U1R concentration failure and no outcome-blind controls | fixed M2 only |
 | 5 | CoW Protocol | versioned scoring/service mechanism | no admissible complete historical competition enumerator | blocked unless an official list/snapshot appears |
@@ -167,13 +166,16 @@ Primary sources:
 - [official Aave address book](https://github.com/aave-dao/aave-address-book)
 - [official Aave proposal repository](https://github.com/aave-dao/aave-proposals-v3)
 
-## 9. Immediate sequence
+## 9. Initial sequence and current handoff
 
-1. Commit and push the D0 governance-log manifest, collector, tests and preregistration before network access.
-2. Run D0 once from its exact pushed commit and preserve failure or pass without changing window, event or market.
-3. On pass, freeze a separate candidate receipt/payload/call-path/finality audit; do not open account rows.
-4. On failure, keep Compound outside G1 and audit Aave only under a new source protocol.
-5. Keep the GC0166 request unsent unless the user authorizes contact.
+The initial Compound steps are complete through D1a. The current sequence is:
+
+1. preserve the complete negative D1a result without changing exact saturation into a near-cap threshold;
+2. keep Compound account/action/response rows, D1b, G1 and GPU work locked;
+3. design an Aave zero-row source/effect-class audit without inspecting participant responses or selecting events;
+4. require an observable treatment denominator, local execution clock, unbundled effect class and outcome-blind
+   control support before any candidate can progress; and
+5. keep the GC0166 request unsent unless the user authorizes contact.
 
 ## 10. Source-preflight result
 
@@ -324,3 +326,21 @@ not independently replicated. Four candidates, seven source implementations, six
 kill decisions and zero-account locks are unchanged. The exact budget is 105 public reads, and partial failure
 evidence is now durable. Protocol:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION_V2.md`.
+
+## 17. D1a v2 result: Compound M3 route retired
+
+The one sealed v2 run at protocol commit `a9af33e9c1e519a1b670f5700bf627655ff053fa` completed all 105 operations
+on first attempts. Seven of seven source implementations, four of four candidate state records and all ten global
+integrity gates conformed. Blockscout and PublicNode agreed on all 24 historical headers; Blockscout alone supplied
+historical state, so this remains a free feasibility result rather than independent state replication.
+
+No T−1 raw integer equalled its cap. Utilization was approximately 99.860059%, 73.530680%, 99.999622% and
+99.999949%; no other fixed lookback was exactly saturated. The frozen decision therefore retires the Compound M3
+causal route and authorizes no D1b. Very small positive headroom in the cbETH rows is exploratory evidence that a
+hard cap may still reject orders larger than the residual, but attempted orders and would-be suppliers were not
+observed. It cannot justify a post-hoc cutoff or an account census.
+
+Compound now supplies audited mechanics and development evidence only. A distinct cross-protocol hard-constraint
+boundary-layer hypothesis would need new events and untouched confirmation data. For the current M3/M4 program,
+the next allowed work is a fresh Aave zero-row source/effect-class audit design. Full result:
+`experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V2.md`.

@@ -707,7 +707,16 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     是唯一历史 configuration/aggregate state provider，并与 PublicNode 对每个 lookback 的 block
     number/hash/timestamp 完全一致。这个设计不冒充 cross-provider state replication。v2 保留全部科学
     规则，去掉 8 个冗余 code 和 4 个冗余 post-config 请求，精确计划为 98 RPC + 7 source REST = 105；
-    partial failure 会保留已规范化证据但不形成科学结论。
+    partial failure 会保留已规范化证据但不形成科学结论。v2 已在提交 `a9af33e9c` 上只运行一次并完整
+    结束：105/105 operations 均一次成功、1,961,938 response bytes、10/10 integrity gates、7/7 source
+    implementations 和 4/4 candidates 均 conformance。四个事件在 T−1 的 cap utilization 分别约为
+    99.860059%、73.530680%、99.999622% 和 99.999949%，但 raw integer 都未与 cap 精确相等；24 个
+    lookback snapshot 也无精确饱和。因此冻结决策是
+    `FAIL_NO_EXACT_T_MINUS_ONE_SATURATION_RETIRE_COMPOUND_M3_CAUSAL_ROUTE`：不启动 D1b，不采集 Compound
+    account/action/response，不解锁 G1 或 GPU。近边界值只能作为已见 exploratory evidence，不能事后
+    移动门槛；若探索 hard-constraint boundary layer / endogenous governance，必须另立 hypothesis、扩展
+    cross-protocol events 并保留全新 held-out confirmation。当前下一步回到新 M3/M4 source 的零行
+    identification/source audit（Aave 为首个候选），而不是继续 Compound participant census。
 
 ---
 

@@ -349,3 +349,22 @@ bytecode hashes are immutable parents. The v2 plan is 98 RPC plus seven source R
 failure now retains completed normalized source/candidate evidence without turning it into a scientific result.
 Protocol:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION_V2.md`.
+
+## D1a v2 complete result and route disposition
+
+V2 was executed exactly once at pushed protocol commit
+`a9af33e9c1e519a1b670f5700bf627655ff053fa`. All 105 operations succeeded on their first attempt, all ten
+integrity gates passed, and all seven implementation-source plus four candidate-state records conformed. No
+infrastructure fallback or threshold change was used.
+
+No candidate met exact T−1 integer saturation. T−1 utilization was approximately 99.860059%, 73.530680%,
+99.999622% and 99.999949%; none of the other 20 fixed lookbacks was exactly saturated either. The preregistered
+decision is therefore `FAIL_NO_EXACT_T_MINUS_ONE_SATURATION_RETIRE_COMPOUND_M3_CAUSAL_ROUTE`, with no authorized
+next stage. D1b, account/action/response collection, G1 and GPU work are not queued.
+
+The near-boundary cbETH states do not overturn the decision. Because the contract rejects a deposit whose
+post-deposit total exceeds the cap, residual headroom can still be economically binding for a larger attempted
+order. But attempted/reverted orders and would-be suppliers were outside the frozen zero-account audit, and a
+post-hoc near-cap threshold would not identify them. A future constraint-boundary study must be separately
+preregistered across new protocols/events and must treat these four observed rows as development data. Full
+result: `experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V2.md`.

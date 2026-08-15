@@ -699,3 +699,23 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   It removes eight redundant PublicNode code reads and four redundant post-config reads, yielding 98 RPC + seven
   source REST = 105 operations. Partial failure now preserves completed normalized source/candidate evidence while
   remaining non-scientific. CPU/free network only; all GPUs stay idle.
+- D1a v2 was frozen and pushed at `a9af33e9c1e519a1b670f5700bf627655ff053fa`, then executed exactly once from
+  a clean detached worktree. All 105 logical operations succeeded in 105 HTTP attempts; the ledger accounts for
+  1,961,938 response bytes over 107.202 seconds. Seven source implementations, four candidate records and all ten
+  integrity gates conformed. No paid data, external worker or GPU was used.
+- None of the four T−1 aggregate totals exactly equalled its contemporaneous supply cap. T−1 utilization was about
+  99.860059%, 73.530680%, 99.999622% and 99.999949%, and none of all 24 lookback snapshots was exactly saturated.
+  The immutable decision is `FAIL_NO_EXACT_T_MINUS_ONE_SATURATION_RETIRE_COMPOUND_M3_CAUSAL_ROUTE`; D1b,
+  Compound participant data, `G1` and GPU training are not authorized.
+- The near-boundary WETH/cbETH values are exploratory only. Positive headroom can still block a deposit larger
+  than that headroom, so the result does not prove behavioral irrelevance; attempted orders and would-be suppliers
+  are unobserved. Never rescue the confirmatory route by moving the threshold. A future hard-constraint boundary-
+  layer/endogenous-governance study needs a new cross-protocol protocol and untouched confirmation events.
+- D1a v2 artifact SHA-256 values are summary `e5f4ef20a3561d75cd8b13007fcd2b0e23e518c13aa20f7d0cd1fd4b1f5caa66`,
+  candidates `e452a2fcd00a238f5d44fb9b9c04eab294979fd93b3f6be2490f5845f26e5707` and HTTP evidence
+  `cf62cf400b243e9883e4d97d69d47b12339f2da2ee312a1437351a6cb03069ad`. The independent verifier passes but
+  explicitly cannot replay raw-response parsing because the frozen retention contract stores hashes, not bodies.
+- The current M3/M4 handoff is a fresh Aave zero-row source/effect-class audit design. Aave is not admitted to G1:
+  it must first demonstrate a complete pre-event denominator, exact local execution clock, unbundled effect class,
+  authoritative state reconstruction and outcome-blind control support. Compound remains mechanics/development
+  evidence only.
