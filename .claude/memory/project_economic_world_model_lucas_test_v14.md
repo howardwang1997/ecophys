@@ -384,3 +384,11 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   against production RHS. Next repair validation is paired baseline/RPN only; SCADA is blocked until an
   authoritative rule or outcome-blind identification with fresh confirmation. Audit:
   `papers/proposal/v14_aemo_nemde_rhs_official_rule_audit_2026-08-15.md`.
+- Structure-only inspection of the four known exceptions rejected a literal bounds/`pop(0)` patch before repaired
+  execution. Nested sibling `G` anchors are misbound when the adjacency heuristic runs after outer-group
+  annotations are stripped. The semantic relation is `child/@GroupTerm == anchor/@TermID`.
+- The frozen development adapter builds that identifier tree, evaluates nested independent stacks, handles
+  self-marked leading anchors and delegates every group-free operator to pinned Nempy unchanged. SCADA/default and
+  generic expansion are untouched; structural inconsistencies remain errors. The consumed run must reproduce the
+  parent baseline exactly and is development-only. Plan:
+  `experiments/v14_aemo_nemde_rpn_repair_development/DEVELOPMENT_PLAN.md`.

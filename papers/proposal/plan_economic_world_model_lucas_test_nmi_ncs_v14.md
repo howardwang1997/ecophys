@@ -726,3 +726,23 @@ Development may reuse the two consumed intervals for known-answer and non-claim 
 mechanically selected members with dual sentinels, unchanged denominators and pre-registered improvement plus
 non-degradation gates. Expected new data are only 2--4 MiB and CPU minutes; paid data, solver runs and all GPUs
 remain locked. Audit: `papers/proposal/v14_aemo_nemde_rhs_official_rule_audit_2026-08-15.md`.
+
+### 11.21 Identifier-tree RPN development frozen before repaired execution
+
+A structure-only inspection of the four known exceptions falsified a literal three-line bounds patch. In nested
+equations, sibling `G` anchors can become adjacent to another sibling's members after an outer `GroupTerm` is
+stripped. Nempy's adjacency heuristic then binds the wrong anchor and leaves the true terminal anchor without a
+value. The explicit XML relation is instead `child/@GroupTerm == anchor/@TermID`.
+
+The development adapter is fixed before execution: build that identifier tree, preserve direct-child source order,
+treat `G` with `TermID == GroupTerm` as a self-marked leading anchor, evaluate every group on an independent stack,
+then delegate the group-free equation to the unchanged pinned numerical operators. Missing/duplicate anchors,
+cycles, empty groups and unreachable terms remain errors. SCADA, defaults, generic expansion and non-group
+operators are untouched.
+
+The consumed two-case run must first reproduce the committed baseline exactly, then report both sentinels,
+coverage/error tails, all failure transitions, strict paired improvements/worsenings, `1e-3` boundary crossings
+and structural counters. It is development-only and has no pass/fail decision. Sixteen relevant tests pass; Ruff
+and strict mypy pass. After the code/plan commit, execute once from a clean detached worktree with the existing
+local 2 MiB, zero network requests and zero GPU. Plan:
+`experiments/v14_aemo_nemde_rpn_repair_development/DEVELOPMENT_PLAN.md`.

@@ -136,3 +136,18 @@ Production RHS may be used only after prediction for scoring. It cannot select a
 
 Even a clean RPN pass validates only a bounded parser/evaluator component. It does not establish an independent
 NEMDE replay, exact counterfactual engine, participant behavior model, EcoMD validity or the NCS/NMI headline.
+
+## Development topology update
+
+A structure-only inspection of the four already known failed equations was performed after this audit and before
+running any repaired arm. It showed that a literal bounds/`pop(0)` patch is insufficient. When Nempy recursively
+collects an outer group, nested sibling `G` anchors lose their outer `GroupTerm`; the adjacency heuristic can then
+assign the following sibling's members to the preceding anchor and strand the actual terminal anchor. This is the
+observed path to the boundary exception.
+
+The implemented development adapter therefore follows the explicit identifiers instead of adjacency:
+`child/@GroupTerm == anchor/@TermID`. It recursively evaluates direct children on independent stacks and delegates
+all group-free numerical operations to the unchanged pinned evaluator. Self-marked leading anchors are handled as
+the documented first-member-removal case. This is a refinement of implementation topology, not an empirical
+threshold change or repair validation. Plan:
+`experiments/v14_aemo_nemde_rpn_repair_development/DEVELOPMENT_PLAN.md`.
