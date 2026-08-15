@@ -1,0 +1,276 @@
+schema_version: ecophys-aemo-source-contract-repair/v2
+sample_id: aemo-channel-source-contract-transfer-repair-v2
+frozen_at: "2026-08-15T02:45:00Z"
+parent_commit: 1bf6b734eb4c607095a64f43107930fe85fb22c8
+scientific_role: development_only_transfer_repair_confirmation
+prior_gate:
+  frozen_protocol_commit: 39c45dddf736e418a3e112a5a4689a782e918466
+  result_commit: 1bf6b734eb4c607095a64f43107930fe85fb22c8
+  manifest_sha256: 42cc9a940b68847aba1719c1f9568b3c1f9ee07785061080ba286be9e9e60296
+  raw_summary_sha256: e7abbcf530d8d75a0f69c5885dfcbdc74a84f743ff9a7134754e6e8b28d8a239
+  adjudication_sha256: 4111fd31ed2f55a29aa34bf2c6538b2970d0a064565a4b56471ed40201ecb743
+  scientific_subgate: PASS_SOURCE_CONTRACT_10_OF_10
+  authoritative_decision: FAIL_FULL_ARCHIVE_TRANSFER_GUARD
+  complete_archive_transfer_count: 2
+offline_prefix_proof:
+  path: experiments/v14_aemo_source_contract_repair/artifacts/prefix_budget_proof.json
+  sha256: 0be682973ed75bc65c630c8ac650cb839cffc60baa3fa4d256d5a4816ca3c8d5
+  decision: PASS_64_KIB_PREFIX_BUDGET
+  prior_object_count: 20
+  range_bytes: 65536
+  network_used: false
+selection:
+  rule: nearest_complete_calendar_month_outside_boundary_not_previously_consumed
+  anchors:
+    - sample_label: pre-bridge-repair-prefix-2021-01
+      boundary: "2021-03-08"
+      side: before
+      selected_month: "2021-01"
+    - sample_label: post-v51-repair-prefix-2021-12
+      boundary: "2021-10-24"
+      side: after
+      selected_month: "2021-12"
+  consumed_months: ["2020-09", "2021-02", "2021-03", "2021-09", "2021-11", "2022-04", "2025-01", "2025-07"]
+  no_replacement: true
+  selected_zip_prefix_or_csv_previously_accessed_before_freeze: false
+  mixed_boundary_month_allowed: false
+timeline:
+  mechanism_intervals:
+    - phase: A0_30_MINUTE_ONLY
+      start: null
+      end_exclusive: "2021-04-01"
+    - phase: A1_DUAL_INTERFACE_EQUALITY_CONSTRAINED
+      start: "2021-04-01"
+      end_exclusive: "2021-10-01"
+    - phase: A2_5MS_ONLY_PRE_WDR
+      start: "2021-10-01"
+      end_exclusive: "2021-10-24"
+    - phase: A3_5MS_PLUS_WDR
+      start: "2021-10-24"
+      end_exclusive: null
+  observation_intervals:
+    - phase: O0_LEGACY_REPORTS
+      start: null
+      end_exclusive: "2021-03-08"
+    - phase: O1_COMPATIBILITY_BRIDGE
+      start: "2021-03-08"
+      end_exclusive: "2021-04-01"
+    - phase: O2_DUAL_REPORT_GENERATIONS
+      start: "2021-04-01"
+      end_exclusive: "2021-10-01"
+    - phase: O3_5MS_PRE_V51
+      start: "2021-10-01"
+      end_exclusive: "2021-10-24"
+    - phase: O4_V51_CLUSTERED_RELEASE
+      start: "2021-10-24"
+      end_exclusive: null
+provenance_limits:
+  participant_bid_interface_during_transition: PARTIALLY_IDENTIFIED
+  public_report_shape_as_interface_proxy_allowed: false
+  submission_method_visibility: PRIVATE_DECLARED_BUT_UNPOPULATED
+  value_based_interface_imputation_allowed: false
+range_contract:
+  request_header: "Range: bytes=0-65535"
+  required_http_status: 206
+  exact_response_bytes: 65536
+  required_final_byte: 65535
+  required_total_strictly_greater_than_response_bytes: true
+  maximum_uncompressed_prefix_bytes: 65536
+  smallest_known_complete_archive_bytes: 148577
+  known_archive_safety_margin_bytes: 83041
+  full_download_fallback_allowed: false
+  data_row_before_information_header_allowed: false
+objects:
+  - object_id: pre-bridge-repair-prefix-2021-01-biddayoffer
+    sample_label: pre-bridge-repair-prefix-2021-01
+    month: "2021-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    observation_phase: O0_LEGACY_REPORTS
+    version_basis: PRE_REPORTING_BRIDGE
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_BIDDAYOFFER
+    logical_role: BIDDAYOFFER
+    sensitivity_class: DELIVERY_CHANNEL_VERSION
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDDAYOFFER_202101010000.zip
+    expected_member: PUBLIC_DVD_BIDDAYOFFER_202101010000.CSV
+    expected_package: OFFER
+    expected_table: BIDDAYOFFER
+    expected_version: "2"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, PARTICIPANTID, OFFERDATE, VERSIONNO, ENTRYTYPE, PRICEBAND1, PRICEBAND10]
+    forbidden_fields: []
+  - object_id: pre-bridge-repair-prefix-2021-01-bidperoffer
+    sample_label: pre-bridge-repair-prefix-2021-01
+    month: "2021-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    observation_phase: O0_LEGACY_REPORTS
+    version_basis: PRE_REPORTING_BRIDGE
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_BIDPEROFFER
+    logical_role: BIDPEROFFER
+    sensitivity_class: DELIVERY_CHANNEL_VERSION
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202101010000.zip
+    expected_member: PUBLIC_DVD_BIDPEROFFER_202101010000.CSV
+    expected_package: OFFER
+    expected_table: BIDPEROFFER
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, OFFERDATE, PERIODID, VERSIONNO, DUID, BIDTYPE, MAXAVAIL, ROCUP, ROCDOWN, BANDAVAIL1, BANDAVAIL10]
+    forbidden_fields: []
+  - object_id: pre-bridge-repair-prefix-2021-01-dispatchoffertrk
+    sample_label: pre-bridge-repair-prefix-2021-01
+    month: "2021-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    observation_phase: O0_LEGACY_REPORTS
+    version_basis: PRE_REPORTING_BRIDGE
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_DISPATCHOFFERTRK
+    logical_role: DISPATCHOFFERTRK
+    sensitivity_class: STABLE_APPLIED_OFFER_LINK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHOFFERTRK_202101010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHOFFERTRK_202101010000.CSV
+    expected_package: DISPATCH
+    expected_table: OFFERTRK
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+    forbidden_fields: []
+  - object_id: pre-bridge-repair-prefix-2021-01-dispatchload
+    sample_label: pre-bridge-repair-prefix-2021-01
+    month: "2021-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    observation_phase: O0_LEGACY_REPORTS
+    version_basis: PRE_REPORTING_BRIDGE
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_DISPATCHLOAD
+    logical_role: DISPATCHLOAD
+    sensitivity_class: FAST_START_STATE_OBSERVABILITY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHLOAD_202101010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHLOAD_202101010000.CSV
+    expected_package: DISPATCH
+    expected_table: UNIT_SOLUTION
+    expected_version: "2"
+    required_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION, INITIALMW, TOTALCLEARED, AVAILABILITY]
+    forbidden_fields: [DISPATCHMODETIME]
+  - object_id: pre-bridge-repair-prefix-2021-01-dudetailsummary
+    sample_label: pre-bridge-repair-prefix-2021-01
+    month: "2021-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    observation_phase: O0_LEGACY_REPORTS
+    version_basis: PRE_REPORTING_BRIDGE
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_DUDETAILSUMMARY
+    logical_role: DUDETAILSUMMARY
+    sensitivity_class: WDR_IDENTITY_OBSERVABILITY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202101010000.zip
+    expected_member: PUBLIC_DVD_DUDETAILSUMMARY_202101010000.CSV
+    expected_package: PARTICIPANT_REGISTRATION
+    expected_table: DUDETAILSUMMARY
+    expected_version: "4"
+    required_fields: [DUID, START_DATE, END_DATE, DISPATCHTYPE, REGIONID, PARTICIPANTID, SCHEDULE_TYPE]
+    forbidden_fields: [DISPATCHSUBTYPE]
+  - object_id: post-v51-repair-prefix-2021-12-biddayoffer
+    sample_label: post-v51-repair-prefix-2021-12
+    month: "2021-12"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    observation_phase: O4_V51_CLUSTERED_RELEASE
+    version_basis: POST_V51_WDR
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_BIDDAYOFFER
+    logical_role: BIDDAYOFFER
+    sensitivity_class: DELIVERY_CHANNEL_VERSION
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDDAYOFFER_202112010000.zip
+    expected_member: PUBLIC_DVD_BIDDAYOFFER_202112010000.CSV
+    expected_package: BIDS
+    expected_table: BIDDAYOFFER
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, PARTICIPANTID, OFFERDATE, VERSIONNO, ENTRYTYPE, REBID_EVENT_TIME, REFERENCE_ID, PRICEBAND1, PRICEBAND10]
+    forbidden_fields: []
+  - object_id: post-v51-repair-prefix-2021-12-bidperoffer
+    sample_label: post-v51-repair-prefix-2021-12
+    month: "2021-12"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    observation_phase: O4_V51_CLUSTERED_RELEASE
+    version_basis: POST_V51_WDR
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_BIDPEROFFER
+    logical_role: BIDPEROFFER
+    sensitivity_class: DELIVERY_CHANNEL_VERSION
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202112010000.zip
+    expected_member: PUBLIC_DVD_BIDPEROFFER_202112010000.CSV
+    expected_package: BIDS
+    expected_table: BIDOFFERPERIOD
+    expected_version: "1"
+    required_fields: [TRADINGDATE, OFFERDATETIME, PERIODID, DUID, BIDTYPE, MAXAVAIL, RAMPUPRATE, RAMPDOWNRATE, BANDAVAIL1, BANDAVAIL10]
+    forbidden_fields: []
+  - object_id: post-v51-repair-prefix-2021-12-dispatchoffertrk
+    sample_label: post-v51-repair-prefix-2021-12
+    month: "2021-12"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    observation_phase: O4_V51_CLUSTERED_RELEASE
+    version_basis: POST_V51_WDR
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_DISPATCHOFFERTRK
+    logical_role: DISPATCHOFFERTRK
+    sensitivity_class: STABLE_APPLIED_OFFER_LINK
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHOFFERTRK_202112010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHOFFERTRK_202112010000.CSV
+    expected_package: DISPATCH
+    expected_table: OFFERTRK
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+    forbidden_fields: []
+  - object_id: post-v51-repair-prefix-2021-12-dispatchload
+    sample_label: post-v51-repair-prefix-2021-12
+    month: "2021-12"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    observation_phase: O4_V51_CLUSTERED_RELEASE
+    version_basis: POST_V51_WDR
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_DISPATCHLOAD
+    logical_role: DISPATCHLOAD
+    sensitivity_class: FAST_START_STATE_OBSERVABILITY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DISPATCHLOAD_202112010000.zip
+    expected_member: PUBLIC_DVD_DISPATCHLOAD_202112010000.CSV
+    expected_package: DISPATCH
+    expected_table: UNIT_SOLUTION
+    expected_version: "3"
+    required_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION, INITIALMW, TOTALCLEARED, AVAILABILITY, DISPATCHMODETIME]
+    forbidden_fields: []
+  - object_id: post-v51-repair-prefix-2021-12-dudetailsummary
+    sample_label: post-v51-repair-prefix-2021-12
+    month: "2021-12"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    observation_phase: O4_V51_CLUSTERED_RELEASE
+    version_basis: POST_V51_WDR
+    delivery_channel: PUBLIC_MONTHLY_ARCHIVE
+    archive_family: MMSDM_Historical_Data_SQLLoader/PUBLIC_DVD
+    archive_file_id: PUBLIC_DVD_DUDETAILSUMMARY
+    logical_role: DUDETAILSUMMARY
+    sensitivity_class: WDR_IDENTITY_OBSERVABILITY
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_DUDETAILSUMMARY_202112010000.zip
+    expected_member: PUBLIC_DVD_DUDETAILSUMMARY_202112010000.CSV
+    expected_package: PARTICIPANT_REGISTRATION
+    expected_table: DUDETAILSUMMARY
+    expected_version: "5"
+    required_fields: [DUID, START_DATE, END_DATE, DISPATCHTYPE, DISPATCHSUBTYPE, REGIONID, PARTICIPANTID, SCHEDULE_TYPE]
+    forbidden_fields: []
+gates:
+  required_http_206: 10
+  required_exact_range_contract_pass: 10
+  required_zip_prefix_parse: 10
+  required_source_header_contract_pass: 10
+  required_complete_archive_transfer_count: 0
+  row_access_allowed_after_pass: false
+  full_archive_download_allowed_after_pass: false
+  gpu_allowed: false
+  paid_data_allowed: false
+  replacement_allowed: false
+outputs:
+  summary: experiments/v14_aemo_source_contract_repair/artifacts/summary.json

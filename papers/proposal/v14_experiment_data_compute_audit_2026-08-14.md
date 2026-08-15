@@ -303,6 +303,6 @@ protocol with automatic complete-object detection.
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** repair the AEMO complete-transfer guard and freeze a smaller-range protocol on new untouched
-  months; separately obtain an outcome-blind CoW enumerator. Do not open rows, train models, open target outcomes
-  or buy data until those contracts exist.
+- **Current action:** commit and push the offline-proven 64 KiB AEMO repair on untouched 2021-01/2021-12, then
+  execute it once without replacement; separately obtain an outcome-blind CoW enumerator. Do not open rows, train
+  models, open target outcomes or buy data.

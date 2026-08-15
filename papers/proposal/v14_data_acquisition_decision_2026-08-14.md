@@ -159,9 +159,9 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
    redistribution clarification only for a post-cutoff candidate that reaches a final package.
 5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
 6. Preserve all failed AEMO header protocols. The channel-keyed source matrix passed its ten scientific header
-   checks, but the transfer guard failed on two complete small objects. Use the repaired `Content-Range` detector,
-   prove a smaller range can parse the information header on synthetic or consumed material, and freeze untouched
-   months before any new request. Independently obtain a valid CoW enumeration rule. No GPU is needed.
+   checks, but the transfer guard failed on two complete small objects. The repaired detector and deterministic
+   64 KiB proof now pass offline; freeze and push the exact 2021-01/2021-12 no-replacement protocol before its one
+   execution. Independently obtain a valid CoW enumeration rule. No GPU is needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator

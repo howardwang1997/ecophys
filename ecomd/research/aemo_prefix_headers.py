@@ -379,6 +379,15 @@ def audit_prefix_response(
     )
     if http_status == 206 and content_range_match is None:
         errors.append("missing or invalid Content-Range")
+    final_byte: int | None = None
+    total_bytes: int | None = None
+    if content_range_match is not None:
+        final_byte = int(content_range_match.group(1))
+        total_bytes = int(content_range_match.group(2))
+        if final_byte + 1 != len(content):
+            errors.append("Content-Range final byte does not match response length")
+        if total_bytes < final_byte + 1:
+            errors.append("Content-Range total is smaller than its final byte")
     parse_eligible = (
         http_status == 206
         and transport_error is None
@@ -391,9 +400,7 @@ def audit_prefix_response(
         except ValueError as error:
             errors.append(f"ValueError: {error}")
     full_archive_downloaded = False
-    if content_range_match is not None:
-        final_byte = int(content_range_match.group(1))
-        total_bytes = int(content_range_match.group(2))
+    if final_byte is not None and total_bytes is not None:
         full_archive_downloaded = (
             final_byte + 1 == total_bytes and len(content) == total_bytes
         )

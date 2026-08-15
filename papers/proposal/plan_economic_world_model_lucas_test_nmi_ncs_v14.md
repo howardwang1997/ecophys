@@ -286,6 +286,13 @@ collector's `full_archive_downloaded=false` flag was wrong. The immutable raw su
 `FAIL_FULL_ARCHIVE_TRANSFER_GUARD` adjudication; selected objects are not rerun. Results:
 `experiments/v14_aemo_source_contract_audit/RESULTS.md`.
 
+The separately frozen repair uses an exact 64 KiB partial response. A deterministic offline stress archive passes
+the parser budget while dominating the 20 preserved prefixes in data offset and header-field count. The mechanical
+unconsumed-month rule selects 2021-01 and 2021-12. Before its protocol commit, neither selected URL has been
+requested. Overall pass requires 10/10 exact partial transfers as well as 10/10 scientific source headers; even a
+pass keeps row access locked. Protocol:
+`experiments/v14_aemo_source_contract_repair/PREREGISTRATION.md`.
+
 ## 8. Data and compute plan
 
 ### Before G1
@@ -348,6 +355,7 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    separate mechanism, reporting, delivery-channel and table-version clocks. The 2020-09/2022-04 loader-control
    gate passed; the bounded-prefix gate failed on three distinct version classes, and the official change audit is
    complete. The channel-keyed source subgate passed 10/10 but its transfer guard failed on two small complete
-   objects. Repair `Content-Range` detection and freeze a smaller-range protocol on new untouched months before any
-   row access. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
+   objects. The 64 KiB repair is offline-proven and frozen on untouched 2021-01/2021-12; commit and push it before a
+   single execution, and keep row access locked regardless. Obtain an outcome-blind CoW competition enumerator
+   before any new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.

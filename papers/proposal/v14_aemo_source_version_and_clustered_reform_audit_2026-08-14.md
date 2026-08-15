@@ -152,3 +152,8 @@ The next protocol must:
 
 No row-level E1 sample, bulk synchronization, causal claim, paid data, prospective outcome or GPU training is
 authorized.
+
+The network-unexecuted repair is now specified at
+`experiments/v14_aemo_source_contract_repair/PREREGISTRATION.md`. Its offline proof supports an exact 64 KiB cap,
+and its exclusion rule selects 2021-01/2021-12. These are development confirmation months, not new held-out causal
+events. The protocol must be committed and pushed before one no-replacement execution.

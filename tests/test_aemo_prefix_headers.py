@@ -133,6 +133,22 @@ def test_prefix_audit_rejects_range_that_contains_complete_archive(tmp_path: Pat
     assert "range response contains the complete archive" in audit["errors"]
 
 
+def test_prefix_audit_rejects_content_range_length_mismatch(tmp_path: Path) -> None:
+    content = _archive(tmp_path / "mismatch.zip")
+    audit = audit_prefix_response(
+        _spec(),
+        http_status=206,
+        content=content,
+        response_headers={"Content-Range": f"bytes 0-{len(content)}/{len(content) + 10}"},
+        retrieved_at="2026-08-14T10:00:00Z",
+        transport_error=None,
+    )
+
+    assert audit["zip_prefix_parse"] is True
+    assert audit["header_contract_pass"] is False
+    assert "Content-Range final byte does not match response length" in audit["errors"]
+
+
 def test_prefix_summary_requires_all_ten() -> None:
     audits = [
         {
