@@ -299,3 +299,10 @@ frame is frozen; only status codes may be retained, and the exact HTTP-200 list 
 This requires public metadata traffic and local CPU only. It does not authorize commercial data, payload access,
 model training or GPU use. `NO_BUY_NOW` remains unchanged. Protocol:
 `experiments/v14_cow_competition_head_enumeration/PREREGISTRATION.md`.
+
+### CoW enumerator execution result
+
+The 384-ID status-only frame completed without transport or access-integrity failure, but returned 93 eligible
+HTTP-200 records against the frozen minimum of 100. No response body was opened and no resolved payload manifest
+was generated. Do not buy a substitute dataset, lower the gate or top up seven IDs. CoW payload acquisition is
+blocked pending an official list/snapshot or separately justified collaboration; `NO_BUY_NOW` remains unchanged.

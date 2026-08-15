@@ -787,3 +787,20 @@ representativeness claim. This route is public, CPU/network-only, free and uses 
 next protocol can audit payload schema and exact score/ranking replay on the sealed set. If it fails, GET remains
 forbidden and the exact-mechanism leg moves to another public executable system. Protocol:
 `experiments/v14_cow_competition_head_enumeration/PREREGISTRATION.md`.
+
+### 11.24 CoW HEAD frame misses the sealed sample-size gate
+
+The protocol-commit run completed all 384 HEAD requests in exact order with 384/384 terminal 200/404 statuses,
+zero transport errors, one attempt per ID, zero response-body bytes and no retained header/body field. The
+enumeration mechanism itself therefore behaved cleanly.
+
+Only 93 IDs returned 200, below the sealed minimum of 100; 291 returned 404. Decision:
+`FAIL_MINIMUM_ELIGIBLE_COUNT_NO_GET`. Ledger SHA-256:
+`2f9ae3e94aae1cb02e23d2e85eba44914b45f450e6414475ecc8b3137749dcd9`; summary SHA-256:
+`4c52b570dcef855e686eb39997f30fcc7703c58b60598da3328c48133579176b`.
+
+Do not lower the gate, append seven IDs, combine a post-hoc top-up or open the 93 bodies. No resolved manifest was
+created. CoW can reopen only through a new non-top-up source such as an official list/snapshot or collaboration.
+The immediate free exact-M2 route should move to a public on-chain system with a complete event index and
+executable state transition. GPUs, learned models and AEMO full-day acquisition remain locked. Result:
+`experiments/v14_cow_competition_head_enumeration/RESULTS.md`.

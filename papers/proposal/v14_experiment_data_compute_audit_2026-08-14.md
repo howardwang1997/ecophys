@@ -418,3 +418,10 @@ uses zero GPU-hours, no paid data and no remote worker.
 
 At least 100 HTTP-200 IDs and complete 200/404 terminal coverage are required. Only a passing, committed resolved
 ID list can unlock a separately frozen payload and score-replay audit. V100 and RTX 2060 queues remain empty.
+
+### CoW HEAD-enumeration result
+
+The run used about 6.5 minutes of local CPU/network time and returned 93 HTTP 200 plus 291 HTTP 404 statuses. All
+integrity gates passed, but the eligible-count gate failed by seven. No GET, GPU, remote worker or paid data was
+used, and no payload experiment is queued. Additional compute cannot repair the sealed sampling decision; use an
+official list/snapshot or move exact-mechanism development to a fully indexed on-chain system.

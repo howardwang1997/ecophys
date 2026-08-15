@@ -50,3 +50,13 @@ representativeness and mechanism replay require separate protocols.
 - Shared auction sequence: https://github.com/cowprotocol/services/blob/v2.374.3/crates/database/src/auction.rs
 - Fast-path quote ID allocation: https://github.com/cowprotocol/services/blob/v2.374.3/crates/shared/src/order_quoting.rs
 - Autopilot empty-auction skip: https://github.com/cowprotocol/services/blob/v2.374.3/crates/autopilot/src/run_loop.rs
+
+## Executed disposition
+
+The committed HEAD frame returned 93 HTTP 200 and 291 HTTP 404 statuses. Every integrity condition passed: exact
+order, one attempt per ID, no transport error, zero body bytes and no retained response field beyond status. The
+predeclared minimum was 100 eligible records, so the decision is `FAIL_MINIMUM_ELIGIBLE_COUNT_NO_GET`.
+
+No resolved GET manifest was generated. The 93 IDs cannot be promoted, topped up or combined with a post-hoc
+extension. HEAD remains a valid technical enumerator, but this particular scientific frame failed its sample-size
+contract. Result: `experiments/v14_cow_competition_head_enumeration/RESULTS.md`.

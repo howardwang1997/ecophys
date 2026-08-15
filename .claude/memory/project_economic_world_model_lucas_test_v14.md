@@ -413,3 +413,11 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - No fresh CoW body may be opened until the HEAD run passes and its exact HTTP-200 ID list is committed and pushed.
   This is a CPU/network metadata gate with zero GPU and no paid data. Protocol:
   `experiments/v14_cow_competition_head_enumeration/PREREGISTRATION.md`.
+- CoW HEAD result: `FAIL_MINIMUM_ELIGIBLE_COUNT_NO_GET`. All integrity gates passed—384/384 exact HEAD requests,
+  one attempt each, statuses only in `{200,404}`, zero transport errors, zero body bytes and no retained headers.
+  Eligible count was 93 versus the sealed minimum 100; 291 were 404. Ledger SHA
+  `2f9ae3e94aae1cb02e23d2e85eba44914b45f450e6414475ecc8b3137749dcd9`; summary SHA
+  `4c52b570dcef855e686eb39997f30fcc7703c58b60598da3328c48133579176b`.
+- No resolved manifest exists. Do not lower the gate, append seven IDs, top up another frame or open the 93
+  competition bodies. CoW payload development requires an official list/snapshot or collaboration. Move the free
+  exact-M2 scout to a fully indexed on-chain mechanism; keep all GPUs/models locked.
