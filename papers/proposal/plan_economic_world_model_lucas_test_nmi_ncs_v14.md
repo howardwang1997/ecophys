@@ -847,3 +847,19 @@ unchanged. The v2 manifest pins the exact v1 contract hash/failure and writes to
 After the v2 protocol is committed and pushed, execute it once; another transport substitution is not permitted
 inside that protocol. V1 result: `experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V1.md`. V2 protocol:
 `experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION_V2.md`.
+
+### 11.27 Uniswap U0 passes exact treatment reconstruction; natural control is absent
+
+The v2 run at pushed protocol commit `2ad540a99131595cb131d425dc8885f5eff3ba5f` passed every frozen gate. Both
+500-pool batches paired exactly in calldata order, yielding 1,000 unique successful pool transitions. All 1,000
+were zero-to-nonzero activations: 107 packed `0x44` and 893 packed `0x66`. Runtime code, governance owner change,
+transaction/receipt/block hashes, timestamps and the 27,672-second governance-to-first-pool delay all conformed.
+Ledger SHA-256: `8d3c4c1137f2ad6abfe1c0fc8326bd3845d269275c8fc6b00eac857ac1a6ae08`.
+
+This establishes the first free, answer-free exact-M2 treatment ledger in V14, but only for a disclosed
+non-representative development prefix. It also removes a hoped-for identification shortcut: there are zero
+same-fee reapplications and thus no within-batch always-treated control. U1 must freeze a pre-treatment-only pool
+support, identity-coverage and control-candidate construction. Controls cannot be chosen from post-treatment
+liquidity, volume, price or LP actions; overlap/positivity must be evaluated before response access. No U2 event
+study, learned model or GPU job is yet authorized. Result:
+`experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V2.md`.

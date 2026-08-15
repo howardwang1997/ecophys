@@ -449,3 +449,15 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   scientific field/gate/access lock, write disjoint `artifacts_v2`, and permit no endpoint substitution after
   execution. V1 result: `experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V1.md`; v2 protocol:
   `experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION_V2.md`.
+- U0 v2 passed at protocol commit `2ad540a99131595cb131d425dc8885f5eff3ba5f`: 1,000/1,000 unique pools had
+  exact ordered calldata/`SetFeeProtocol`/`FeeUpdateTriggered` pairing and all frozen gates passed. All were
+  `(0,0)` to nonzero activations: 107 packed `0x44`, 893 packed `0x66`. Ledger SHA
+  `8d3c4c1137f2ad6abfe1c0fc8326bd3845d269275c8fc6b00eac857ac1a6ae08`.
+- The first pool activation occurred 2,292 blocks/27,672 seconds after governance. This directly confirms the
+  per-pool event clock and invalidates a proposal-time simultaneous-treatment assumption for this event.
+- There are zero reapplied-same-fee rows, hence no natural within-frame always-treated comparison. U1 must freeze
+  candidate controls using treatment status, immutable metadata and pre-treatment data only, then report
+  overlap/positivity before any response access. Do not invent controls from post-treatment behavior.
+- U0 unlocks only U1 pre-treatment support/identity/control design. No LP response, U2 event study, model training
+  or GPU allocation is authorized. Result:
+  `experiments/v14_uniswap_v3_fee_treatment_conformance/RESULTS_V2.md`.

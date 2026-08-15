@@ -448,3 +448,15 @@ V2 retains the same 11-successful-call ceiling and all data/compute locks, chang
 to `latest`. Its expected retained volume remains below 20 MB and local work below one CPU core-hour. Paid-data,
 remote-worker and GPU budgets remain zero; the V100s and RTX 2060 stay idle. If the sealed v2 transport fails,
 there is no within-protocol endpoint substitution.
+
+### Uniswap v3 U0 v2 compute result
+
+V2 completed exactly 11 successful read-only RPC calls, all on one attempt, and retained about 482 KiB of
+normalized treatment rows plus about 9 KiB of summary/provenance metadata. It reconstructed 1,000 unique pool
+transitions and passed all frozen U0 gates. No raw RPC envelope, LP response, paid data, remote worker or GPU was
+used.
+
+Additional compute is not the next bottleneck. U1 is a CPU/network-only, pre-treatment data-coverage design and
+must first benchmark log volume and identity mapping before any larger acquisition. Both V100s and the RTX 2060
+remain idle; no model queue is authorized. The absence of within-frame controls is an identification issue, not a
+reason to allocate more compute.

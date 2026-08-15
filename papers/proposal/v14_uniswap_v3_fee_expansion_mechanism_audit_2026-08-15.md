@@ -173,3 +173,12 @@ historical-block `eth_getCode` query with HTTP 403 on all three allowed attempts
 or old/new fee transition was accessed. V2 therefore changes only this provenance query to `latest`; treatment
 clocks, batch hashes, thresholds and response locks are unchanged. This repair must be committed before execution
 and is not evidence for or against the mechanism hypothesis.
+
+## 11. U0 v2 result
+
+V2 passed all gates on 1,000 unique pools. Every row was a newly activated `(0,0)` to nonzero transition: 107 to
+`(4,4)` and 893 to `(6,6)`. The exact public M2 ledger is therefore viable for this development prefix.
+
+However, no same-fee reapplication exists in the frame. The proposed contemporaneous always-treated comparison
+is unavailable. U1 must use only treatment status, immutable pool metadata and a frozen pre-window to assess
+candidate controls, activity support and identity coverage; no post-period variable may enter that design.
