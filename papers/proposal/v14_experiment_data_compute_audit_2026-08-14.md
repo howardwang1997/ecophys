@@ -352,3 +352,14 @@ The 25 frozen gates cover exact acquisition/R2 retention, archive integrity, sch
 base joins and the prospective one-or-exact-`{GEN, LOAD}` relation. The GPUs remain idle regardless of E1b outcome.
 A pass unlocks only a new protocol for a limited multi-day development panel; a failure ends this bridge attempt
 unless a genuinely new, independently frozen source contract is justified.
+
+### Executed E1b compute result
+
+E1b passed 25/25 gates on 1,422,918 target rows and 4,559,065 contracted timestamps using local CPU only. It used
+18,244,129 compressed bytes, no paid data, no remote worker and zero GPU-hours. There is therefore no evidence for
+GPU expansion or even current V100/RTX 2060 use at this stage.
+
+The next compute estimate must be derived from a frozen multi-day sample count and these measured row/runtime
+characteristics. That next step remains CPU/data engineering. Model training and Experiment 156 stay locked until
+the observation bridge is shown stable across the limited version-aware panel and a separate model protocol is
+preregistered.

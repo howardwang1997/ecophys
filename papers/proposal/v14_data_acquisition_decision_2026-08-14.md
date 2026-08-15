@@ -221,3 +221,14 @@ The exact three URLs, byte counts and R2 keys are immutable in
 object, no replacement, and verified R2 retention before parsing. `NO_BUY_NOW` therefore remains the correct
 decision. Even a full E1b pass licenses only design of a limited multi-day development sample; it does not license
 a data purchase, bulk panel acquisition, prospective outcome access or model training.
+
+### Executed E1b result
+
+All three exact objects were downloaded once, retained in R2 before parsing and passed CRC/schema checks. E1b then
+passed all 25 gates on 594,720 tracker records, including 44,928 exact two-leg BDU bundles. The result confirms the
+corrected modern relation on a fresh month without paid data.
+
+`NO_BUY_NOW` remains unchanged. The next data action is not a bulk purchase: first freeze a small, mechanically
+sampled multi-day development panel that spans ordinary days and relevant public table-version strata. Its byte
+budget and dates must be fixed before acquisition. Commercial history and prospective target data remain behind
+their original evidence gates.

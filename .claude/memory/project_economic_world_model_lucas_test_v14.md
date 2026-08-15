@@ -254,3 +254,10 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   effective `BIDIRECTIONAL` identity, bid type in `ENERGY`/`LOWERREG`/`RAISEREG`, and a nonempty pair count.
   Realized dispatch cannot select a leg. This is CPU-only confirmation; multi-day data, Exp156 and GPUs remain
   locked until a full pass. Protocol: `experiments/v14_aemo_bundle_confirmation/PREREGISTRATION.md`.
+- E1b protocol commit `9ee922f91ca1b4be4257e8555b49d13f27272c1a` passed all 25 gates on the untouched
+  2026-07-07 sample. All 594,720 trackers were covered: 549,792 singletons and 44,928 exact `{GEN, LOAD}` pairs;
+  all pair direction, uniqueness, effective-BDU-identity and bid-type violation counts were zero. Summary SHA:
+  `dc36b2fe31cc5c230def8f808a7efef1fa320f80ab30e61f1999d367dd9e466b`.
+- This confirms only a modern set-valued observation bridge. E1a remains a failure of the discarded unique-row
+  contract. The next unlocked action is to freeze a limited mechanically sampled, version-aware multi-day
+  development panel. Exp156, prospective outcomes and GPU/model work remain locked.

@@ -431,3 +431,17 @@ This is a free local CPU confirmation with zero GPU-hours. A pass validates only
 bridge on one fresh day and unlocks design—not execution—of a limited multi-day development panel. A failure keeps
 that panel, Experiment 156 and all GPU/model work closed. Protocol:
 `experiments/v14_aemo_bundle_confirmation/PREREGISTRATION.md`.
+
+### 11.4 E1b confirmation result and revised work order
+
+E1b was executed once from pushed protocol commit `9ee922f91`. All 25 frozen gates passed. All 594,720 tracker
+records had complete relation coverage: 549,792 singletons and 44,928 exact `{GEN, LOAD}` pairs. Every pair had
+one effective `BIDIRECTIONAL` identity and an allowed bid type; every violation count was zero. All R2, CRC,
+schema, timestamp, primary-key and supporting-join gates also passed. Summary SHA-256:
+`dc36b2fe31cc5c230def8f808a7efef1fa320f80ab30e61f1999d367dd9e466b`.
+
+This confirms the corrected modern set-valued bridge across one fresh month. It does not rehabilitate the old E1a
+unique-direction contract and does not establish historical compatibility, causal adaptation, replay or model
+quality. The next admissible step is to freeze a *limited* multi-day, version-aware development-panel protocol
+with mechanical date selection and no target events. Do not start Experiment 156 or a GPU model job yet. Result:
+`experiments/v14_aemo_bundle_confirmation/RESULTS.md`.

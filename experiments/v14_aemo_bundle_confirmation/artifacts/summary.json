@@ -1,0 +1,254 @@
+{
+  "analyzer_git_commit": "9ee922f91ca1b4be4257e8555b49d13f27272c1a",
+  "archive_observations": [
+    {
+      "archive_bytes": 9224570,
+      "archive_path": "PUBLIC_BIDMOVE_COMPLETE_20260707_0000000526370718.zip",
+      "archive_sha256": "18f3b5fd8485c86dad4ebcd56546305ad9d9461e6c4910acec1ecfdaae6a04d2",
+      "bad_crc_member": null,
+      "crc_test_completed": true,
+      "csv_member": "PUBLIC_BIDMOVE_COMPLETE_20260707_0000000526370718.CSV",
+      "errors": [],
+      "exact_byte_match": true,
+      "expected_bytes": 9224570,
+      "headers": [
+        {
+          "header_field_count": 28,
+          "header_present": true,
+          "logical_role": "BIDDAYOFFER_D",
+          "missing_required_fields": [],
+          "package": "BID",
+          "row_count": 2221,
+          "table": "BIDDAYOFFER_D",
+          "version": "3"
+        },
+        {
+          "header_field_count": 31,
+          "header_present": true,
+          "logical_role": "BIDPEROFFER_D",
+          "missing_required_fields": [],
+          "package": "BID",
+          "row_count": 639648,
+          "table": "BIDPEROFFER_D",
+          "version": "4"
+        }
+      ],
+      "member_compressed_bytes": 9224366,
+      "member_uncompressed_bytes": 132060634,
+      "object_id": "bidmove-complete-2026-07-07",
+      "pass": true,
+      "single_csv_member": true,
+      "target_data_rows": 641869,
+      "total_data_rows": 641869,
+      "zip_crc_pass": true
+    },
+    {
+      "archive_bytes": 8641259,
+      "archive_path": "PUBLIC_NEXT_DAY_DISPATCH_20260707_0000000526367103.zip",
+      "archive_sha256": "b7a2ba62396ffcb07b61c73af10aeb705ab54196581bfbb4dcf82e44f392e214",
+      "bad_crc_member": null,
+      "crc_test_completed": true,
+      "csv_member": "PUBLIC_NEXT_DAY_DISPATCH_20260707_0000000526367103.CSV",
+      "errors": [],
+      "exact_byte_match": true,
+      "expected_bytes": 8641259,
+      "headers": [
+        {
+          "header_field_count": 6,
+          "header_present": true,
+          "logical_role": "DISPATCHOFFERTRK",
+          "missing_required_fields": [],
+          "package": "DISPATCH",
+          "row_count": 594720,
+          "table": "OFFERTRK",
+          "version": "1"
+        },
+        {
+          "header_field_count": 69,
+          "header_present": true,
+          "logical_role": "DISPATCHLOAD",
+          "missing_required_fields": [],
+          "package": "DISPATCH",
+          "row_count": 163008,
+          "table": "UNIT_SOLUTION",
+          "version": "6"
+        }
+      ],
+      "member_compressed_bytes": 8641053,
+      "member_uncompressed_bytes": 125999835,
+      "object_id": "next-day-dispatch-2026-07-07",
+      "pass": true,
+      "single_csv_member": true,
+      "target_data_rows": 757728,
+      "total_data_rows": 841225,
+      "zip_crc_pass": true
+    },
+    {
+      "archive_bytes": 378300,
+      "archive_path": "PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202607010000.zip",
+      "archive_sha256": "c87e888dbae6e65fba3b07aba89c04c1f3e3a17f38e811cfe0b1ee6833139b1e",
+      "bad_crc_member": null,
+      "crc_test_completed": true,
+      "csv_member": "PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202607010000.CSV",
+      "errors": [],
+      "exact_byte_match": true,
+      "expected_bytes": 378300,
+      "headers": [
+        {
+          "header_field_count": 29,
+          "header_present": true,
+          "logical_role": "DUDETAILSUMMARY",
+          "missing_required_fields": [],
+          "package": "PARTICIPANT_REGISTRATION",
+          "row_count": 23321,
+          "table": "DUDETAILSUMMARY",
+          "version": "7"
+        }
+      ],
+      "member_compressed_bytes": 378078,
+      "member_uncompressed_bytes": 5077667,
+      "object_id": "dudetailsummary-2026-07",
+      "pass": true,
+      "single_csv_member": true,
+      "target_data_rows": 23321,
+      "total_data_rows": 23321,
+      "zip_crc_pass": true
+    }
+  ],
+  "base_joins": {
+    "bid_period_parent_expected_count": 639648,
+    "bid_period_parent_match_count": 639648,
+    "bid_period_parent_match_rate": 1.0,
+    "dispatch_identity_expected_count": 163008,
+    "dispatch_identity_match_count": 163008,
+    "dispatch_identity_match_rate": 1.0,
+    "dispatch_identity_overlap_count": 0,
+    "tracker_dispatch_expected_count": 594720,
+    "tracker_dispatch_match_count": 594720,
+    "tracker_dispatch_match_rate": 1.0
+  },
+  "claim_boundary": {
+    "does_not_validate": [
+      "raw submissions or rejected actions",
+      "historical table-version equivalence",
+      "dispatch optimization replay",
+      "causal adaptation",
+      "model prediction or policy fidelity"
+    ],
+    "validates": "fresh-day modern set-valued applied-offer relation"
+  },
+  "decision": "PASS_FRESH_SET_VALUED_OFFER_BRIDGE_CONFIRMATION",
+  "gates": {
+    "archive_crc": true,
+    "archive_parse": true,
+    "bid_market_date": true,
+    "bid_period_parent_join": true,
+    "candidate_cardinality": true,
+    "dispatch_identity_join": true,
+    "dispatch_market_window": true,
+    "exact_archive_byte_count": true,
+    "exact_download_object_count": true,
+    "identity_nonoverlap": true,
+    "pair_bidtype_domain": true,
+    "pair_direction_exactness": true,
+    "pair_direction_uniqueness": true,
+    "pair_effective_identity": true,
+    "pair_nonempty": true,
+    "primary_key_uniqueness": true,
+    "r2_retention_verified": true,
+    "required_headers": true,
+    "required_tables_nonempty": true,
+    "row_cap": true,
+    "single_direction_domain": true,
+    "timestamp_parse": true,
+    "tracker_dispatch_join": true,
+    "tracker_offer_reference": true,
+    "tracker_relation_coverage": true
+  },
+  "generated_at": "2026-08-15T04:29:32.587282Z",
+  "gpu_used": false,
+  "model_run": false,
+  "paid_data_used": false,
+  "pass": true,
+  "raw": {
+    "archive_crc_pass_count": 3,
+    "archive_parse_pass_count": 3,
+    "archive_sha256": {
+      "bidmove-complete-2026-07-07": "18f3b5fd8485c86dad4ebcd56546305ad9d9461e6c4910acec1ecfdaae6a04d2",
+      "dudetailsummary-2026-07": "c87e888dbae6e65fba3b07aba89c04c1f3e3a17f38e811cfe0b1ee6833139b1e",
+      "next-day-dispatch-2026-07-07": "b7a2ba62396ffcb07b61c73af10aeb705ab54196581bfbb4dcf82e44f392e214"
+    },
+    "compressed_bytes": 18244129,
+    "download_pass_count": 3,
+    "exact_archive_byte_count": 3,
+    "r2_verified_count": 3
+  },
+  "relation": {
+    "candidate_cardinality": {
+      "1": 549792,
+      "2": 44928
+    },
+    "direction_sets": {
+      "BIDIRECTIONAL": 103680,
+      "GEN": 337824,
+      "GEN|LOAD": 44928,
+      "LOAD": 108288
+    },
+    "duplicate_pair_direction_count": 0,
+    "invalid_candidate_cardinality_count": 0,
+    "invalid_pair_bidtype_count": 0,
+    "invalid_pair_direction_count": 0,
+    "invalid_pair_identity_count": 0,
+    "invalid_single_direction_count": 0,
+    "offer_reference_rate": 1.0,
+    "pair_bidtypes": {
+      "ENERGY": 18432,
+      "LOWERREG": 13248,
+      "RAISEREG": 13248
+    },
+    "pair_count": 44928,
+    "pair_unique_duid_count": 64,
+    "realized_dispatch_used_to_select_leg": false,
+    "relation_coverage_rate": 1.0,
+    "relation_match_count": 594720,
+    "tracker_count": 594720,
+    "valid_offer_reference_count": 594720
+  },
+  "sample_date": "2026-07-07",
+  "schema_version": "ecophys-aemo-bundle-confirmation-summary/v1",
+  "scientific_role": "confirmation_only_modern_set_valued_applied_offer_bridge",
+  "source_manifest": "data/manifests/aemo_bundle_confirmation_v1.yaml",
+  "source_manifest_sha256": "5c3fce26b35c1da084c10c3c1ab8b4238d62ac423e7f4df608108af4571c5a36",
+  "tables": {
+    "primary_key_duplicate_count": 0,
+    "primary_key_duplicates": {
+      "BIDDAYOFFER_D": 0,
+      "BIDPEROFFER_D": 0,
+      "DISPATCHLOAD": 0,
+      "DISPATCHOFFERTRK": 0,
+      "DUDETAILSUMMARY": 0
+    },
+    "required_header_pass_count": 5,
+    "row_counts": {
+      "BIDDAYOFFER_D": 2221,
+      "BIDPEROFFER_D": 639648,
+      "DISPATCHLOAD": 163008,
+      "DISPATCHOFFERTRK": 594720,
+      "DUDETAILSUMMARY": 23321
+    },
+    "total_data_rows_all_tables": 1506415,
+    "total_target_rows": 1422918
+  },
+  "target_outcome_used": false,
+  "timestamps": {
+    "bid_market_date_expected_count": 641869,
+    "bid_market_date_match_count": 641869,
+    "bid_market_date_rate": 1.0,
+    "dispatch_window_expected_count": 1397376,
+    "dispatch_window_match_count": 1397376,
+    "dispatch_window_rate": 1.0,
+    "expected_count": 4559065,
+    "parse_rate": 1.0,
+    "parsed_count": 4559065
+  }
+}
