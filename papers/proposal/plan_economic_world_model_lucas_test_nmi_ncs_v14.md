@@ -558,3 +558,18 @@ permission and an older archive-specific personal-use notice also conflict; raw 
 until written clarification. Source audit:
 `papers/proposal/v14_aemo_nemde_source_audit_2026-08-15.md`. Protocol:
 `experiments/v14_aemo_nemde_tail_inventory/PREREGISTRATION.md`.
+
+### 11.12 NEMDE tail-inventory result
+
+Protocol commit `0787be5f0` passed both development regimes. Each retained suffix contained a complete central
+directory with exactly 288 members and the full interval set `001..288`. There were no encrypted, unsupported or
+wrong-date members. The deterministic interval-144 members are uniquely identified at local-header offsets
+57,637,442 and 65,590,506, with 404,030 and 459,136 compressed bytes. Their conservative range bounds are 469,595
+and 524,701 bytes, well below the frozen 2 MiB cap. Summary SHA-256:
+`9fca06c5e627960499f0e045dbbf77de174ac8a99b3f5fe46d975dfdbb1e1bb8`.
+
+This establishes cheap date/member addressability, not XML content or replay. The next admissible step is a
+separately frozen two-member conformance protocol using these exact names, offsets, sizes and CRCs. It must retain
+bytes before parsing, require input/output/price-setting sections and report rather than post-hoc select fields.
+Historical model training, Experiment 156 and all GPUs remain locked. Result:
+`experiments/v14_aemo_nemde_tail_inventory/RESULTS.md`.

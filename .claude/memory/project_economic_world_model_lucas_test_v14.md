@@ -314,3 +314,11 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   It permits exactly two 1 MiB suffix requests and no XML access. Both ZIP central directories must cover
   intervals 001--288 and place deterministic interval 144 within a conservative 2 MiB later range. No GPU or
   paid data is required; pass unlocks only a separately frozen two-XML conformance audit.
+- Tail protocol commit `0787be5f04f7d66e80c497f85051ce2b742bcc11` passed. Both archives have exactly 288
+  date-correct, unencrypted deflate members and complete interval IDs 001--288. Interval 144 is unique in each:
+  January offset/size/CRC `57637442 / 404030 / 11f971a8`; December
+  `65590506 / 459136 / ebbea93d`. Conservative range bounds are 469,595 and 524,701 bytes. Summary SHA:
+  `9fca06c5e627960499f0e045dbbf77de174ac8a99b3f5fe46d975dfdbb1e1bb8`.
+- This pass makes one interval per regime cheaply addressable and supersedes bulk monthly-prefix extraction as the
+  next source route. It does not validate XML sections, solver replay or behavior. Freeze exact member-range and
+  XML conformance gates before requesting content; raw redistribution and GPUs remain locked.
