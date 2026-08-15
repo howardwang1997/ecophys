@@ -335,3 +335,8 @@ The next diagnostic still needs zero GPU-hours, no new purchase and no new sourc
 `DISPATCHLOAD` direction semantics and characterize the ambiguity on the already-retained development day. If a
 principled three-table bridge exists, confirmation requires one fresh frozen daily sample. V100/RTX 2060 resources
 stay idle until the corrected E1 gate passes.
+
+The post-hoc diagnostic supports a precise correction: all 43,200 ambiguous relations were complete two-leg
+`{GEN, LOAD}` bundles for effective bidirectional units, restricted to energy and regulation FCAS. No dispatch
+sign selector is admissible. The next E1b confirmation remains a small CPU/data job on one fresh day; model/GPU
+work stays locked.

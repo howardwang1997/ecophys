@@ -203,3 +203,8 @@ schemas, timestamps, primary keys and all non-direction joins passed, but the ov
 592,560 `DISPATCHOFFERTRK` rows had multiple period-bid direction matches (`7.2904% > 5%`). The public data are
 sufficient to investigate a three-table direction bridge at zero purchase cost, but the current two-table bridge
 is not admissible for reconstructing unique applied actions. `NO_BUY_NOW` remains unchanged.
+
+The post-hoc retained-day diagnostic found an exact bundle structure rather than arbitrary multiplicity: every
+ambiguous relation was one `{GEN, LOAD}` pair for an effective BDU, across energy and regulation FCAS only. This
+supports one additional free daily confirmation sample under a new frozen E1b relation contract. It does not
+justify commercial data, bulk history or model training.

@@ -239,3 +239,11 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   direction sets, bid types and effective identity on the retained day. It cannot override E1a. Any bundle bridge
   needs fresh-day confirmation. Summary SHA:
   `fc422654de5c64a91e71b8dcceb22612f406092cdf6a36900859072041a6668b`.
+- Post-hoc bundle diagnostic commit `b6572efc96b816268bb959e033a9127930970c7f` exactly reproduced 592,560
+  tracker rows and 43,200 ambiguous rows. All ambiguous records were exactly one `{GEN, LOAD}` pair, with no
+  repeated direction, exactly one effective `BIDIRECTIONAL` identity and bid type limited to `ENERGY` (17,280),
+  `LOWERREG` (12,960) or `RAISEREG` (12,960); 60 DUIDs were involved.
+- This supports a set-valued applied-offer bundle, not direction imputation. Realized `TOTALCLEARED` sign cannot
+  choose an ex-ante leg. The result is post-hoc and does not override E1a; freeze the exact relation contract and
+  confirm on one fresh date. Diagnostic SHA:
+  `d8b4bb0ffe6ede3fadf00cdac68c6851568fab132b6e2c94162c8bb4317cfaa2`.

@@ -402,3 +402,14 @@ bundle attached to one effective BDU identity. It has no pass/fail authority and
 the set-valued bridge must be confirmed on a fresh mechanically selected date. Result:
 `experiments/v14_aemo_row_conformance/RESULTS.md`. Diagnostic plan:
 `experiments/v14_aemo_direction_bundle_diagnostic/ANALYSIS_PLAN.md`.
+
+The post-hoc run exactly reproduced the E1a multiplicity. All 43,200 ambiguous tracker records were exactly
+two-row `{GEN, LOAD}` pairs with no repeated direction; every one matched exactly one effective
+`BIDIRECTIONAL` identity. They involved 60 DUIDs and only `ENERGY` (17,280), `LOWERREG` (12,960) and `RAISEREG`
+(12,960). This strongly supports a set-valued offer-version bridge on the development day.
+
+The result is deliberately non-promotional: it is post-hoc, E1a remains failed and the bundle rule may not be
+fitted further. Freeze an E1b relation-level contract and test one fresh mechanically selected day. A valid bridge
+maps a tracker to either one bid row or the complete two-leg `{GEN, LOAD}` bundle; realized dispatch may be joined
+as an outcome but may never choose the ex-ante leg. Diagnostic result:
+`experiments/v14_aemo_direction_bundle_diagnostic/RESULTS.md`.
