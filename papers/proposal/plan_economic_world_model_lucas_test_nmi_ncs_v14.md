@@ -442,6 +442,25 @@ schema, timestamp, primary-key and supporting-join gates also passed. Summary SH
 
 This confirms the corrected modern set-valued bridge across one fresh month. It does not rehabilitate the old E1a
 unique-direction contract and does not establish historical compatibility, causal adaptation, replay or model
-quality. The next admissible step is to freeze a *limited* multi-day, version-aware development-panel protocol
-with mechanical date selection and no target events. Do not start Experiment 156 or a GPU model job yet. Result:
+quality. The next admissible step is to freeze a *limited* within-version multi-day development-panel protocol
+with mechanical date selection and no target events; historical-version portability remains a later gate. Do not
+start Experiment 156 or a GPU model job yet. Result:
 `experiments/v14_aemo_bundle_confirmation/RESULTS.md`.
+
+### 11.5 Within-version four-day stability panel frozen on 15 August 2026
+
+The next gate is deliberately limited to temporal stability within the already confirmed modern table versions.
+It does not claim historical-version portability. Metadata-only selection controls the weekday, excludes the two
+accessed dates and takes the earliest and latest remaining Tuesday in each month with a complete retained identity
+snapshot. The four untouched dates are 23/30 June and 14/28 July 2026. August is excluded because its monthly
+identity archive was not published at freeze; July identity data may not stand in for August.
+
+The protocol adds eight daily public objects (70,593,936 compressed bytes) and reuses the exact June/July identity
+objects from verified R2, for 71,350,764 staged bytes. Every date independently runs all 25 E1b gates and must
+pass; one failed date fails the panel, with no pooled-rate exception. Dates are processed sequentially on local
+CPU. Required GPU-hours, paid data and remote workers remain zero.
+
+This protocol is still unexecuted and row-locked. A pass would establish only modern within-version stability and
+then permit a separately frozen historical-version bridge audit. It would not unlock Experiment 156, causal
+claims or model training by itself. Protocol:
+`experiments/v14_aemo_bundle_stability_panel/PREREGISTRATION.md`.

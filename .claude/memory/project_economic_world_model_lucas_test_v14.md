@@ -259,5 +259,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   all pair direction, uniqueness, effective-BDU-identity and bid-type violation counts were zero. Summary SHA:
   `dc36b2fe31cc5c230def8f808a7efef1fa320f80ab30e61f1999d367dd9e466b`.
 - This confirms only a modern set-valued observation bridge. E1a remains a failure of the discarded unique-row
-  contract. The next unlocked action is to freeze a limited mechanically sampled, version-aware multi-day
-  development panel. Exp156, prospective outcomes and GPU/model work remain locked.
+  contract. The next unlocked action is to freeze a limited mechanically sampled within-version multi-day panel;
+  historical portability remains a separate gate. Exp156, prospective outcomes and GPU/model work remain locked.
+- The next protocol separates within-version stability from historical portability. Four untouched Tuesdays are
+  frozen mechanically: 2026-06-23/30 and 2026-07-14/28. Eight new daily objects total 70,593,936 compressed bytes;
+  verified June/July identity objects are reused from R2 for 71,350,764 staged bytes. August is excluded because a
+  complete monthly identity archive was not published at freeze.
+- Each date must independently pass all 25 E1b gates; there is no pooled-rate exception. The panel is CPU-only and
+  unexecuted. Even a pass unlocks only a separately frozen historical-version bridge audit, not Exp156 or GPU/model
+  work. Protocol: `experiments/v14_aemo_bundle_stability_panel/PREREGISTRATION.md`.

@@ -690,6 +690,8 @@ def summarize_bundle_confirmation(
     source_manifest_sha256: str,
     analyzer_git_commit: str,
     generated_at: str,
+    summary_schema_version: str = SUMMARY_SCHEMA_VERSION,
+    source_manifest_path: str = SOURCE_MANIFEST_PATH,
 ) -> dict[str, object]:
     """Evaluate the frozen fresh-day relation and supporting data-plane gates."""
 
@@ -715,7 +717,9 @@ def summarize_bundle_confirmation(
     }
     duplicate_count = sum(duplicates_by_role.values())
 
-    selected_date = date.fromisoformat(SAMPLE_DATE)
+    time_contract = cast(dict[str, object], manifest["time_contract"])
+    sample_date = cast(str, time_contract["market_date_field_value"])
+    selected_date = date.fromisoformat(sample_date)
     bid_rows = list(tables["BIDDAYOFFER_D"]) + list(tables["BIDPEROFFER_D"])
     bid_date_matches = sum(
         parsed is not None and parsed.date() == selected_date
@@ -724,7 +728,6 @@ def summarize_bundle_confirmation(
     )
     bid_date_rate = _rate(bid_date_matches, len(bid_rows))
 
-    time_contract = cast(dict[str, object], manifest["time_contract"])
     window_start = datetime.fromisoformat(cast(str, time_contract["dispatch_interval_start_inclusive"]))
     window_end = datetime.fromisoformat(cast(str, time_contract["dispatch_interval_end_inclusive"]))
     interval_fields = {
@@ -907,12 +910,12 @@ def summarize_bundle_confirmation(
     }
     overall_pass = all(gates.values())
     return {
-        "schema_version": SUMMARY_SCHEMA_VERSION,
+        "schema_version": summary_schema_version,
         "generated_at": generated_at,
         "analyzer_git_commit": analyzer_git_commit,
-        "source_manifest": SOURCE_MANIFEST_PATH,
+        "source_manifest": source_manifest_path,
         "source_manifest_sha256": source_manifest_sha256,
-        "sample_date": SAMPLE_DATE,
+        "sample_date": sample_date,
         "scientific_role": manifest["scientific_role"],
         "decision": (
             "PASS_FRESH_SET_VALUED_OFFER_BRIDGE_CONFIRMATION"

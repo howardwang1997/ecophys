@@ -229,6 +229,17 @@ passed all 25 gates on 594,720 tracker records, including 44,928 exact two-leg B
 corrected modern relation on a fresh month without paid data.
 
 `NO_BUY_NOW` remains unchanged. The next data action is not a bulk purchase: first freeze a small, mechanically
-sampled multi-day development panel that spans ordinary days and relevant public table-version strata. Its byte
-budget and dates must be fixed before acquisition. Commercial history and prospective target data remain behind
-their original evidence gates.
+sampled within-version multi-day development panel across ordinary days. Its byte budget and dates must be fixed
+before acquisition; historical table-version strata require a later, separate protocol. Commercial history and
+prospective target data remain behind their original evidence gates.
+
+### Frozen modern stability-panel acquisition
+
+The next free acquisition is bounded to four untouched Tuesdays: 23/30 June and 14/28 July 2026. The mechanical
+rule chooses the earliest and latest unaccessed Tuesday in every month with an already retained complete identity
+snapshot. August is excluded because its monthly identity archive was not published at freeze.
+
+Eight new daily objects total 70,593,936 compressed bytes. The verified June and July identity objects are reused
+from R2 without another AEMO source request, bringing staged bytes to 71,350,764. Every literal URL, filename,
+byte count, prior-object hash and R2 key is frozen in
+`data/manifests/aemo_bundle_stability_panel_v1.yaml`. This remains free and does not alter `NO_BUY_NOW`.

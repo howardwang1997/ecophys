@@ -361,5 +361,15 @@ GPU expansion or even current V100/RTX 2060 use at this stage.
 
 The next compute estimate must be derived from a frozen multi-day sample count and these measured row/runtime
 characteristics. That next step remains CPU/data engineering. Model training and Experiment 156 stay locked until
-the observation bridge is shown stable across the limited version-aware panel and a separate model protocol is
-preregistered.
+the observation bridge is shown stable across the limited within-version panel, historical portability is treated
+separately and a model protocol is preregistered.
+
+### Frozen four-day panel budget
+
+The modern stability panel adds 70.6 MB of public daily ZIPs and stages 71.4 MB after verified identity reuse.
+Each date retains the existing caps of 4,000,000 MMSDM rows and about 1.11 GB uncompressed input; days must be
+processed sequentially, with a 16,000,000-row and 4.43 GB cumulative ceiling. Expected work is several minutes of
+local CPU plus R2 transfer.
+
+Required GPU-hours remain zero. Neither V100 nor RTX 2060 should be queued, and no compute expansion is justified.
+All four dates must independently pass the 25 E1b gates before a historical-version protocol is designed.
