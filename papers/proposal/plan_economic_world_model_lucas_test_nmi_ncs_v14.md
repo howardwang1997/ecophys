@@ -612,3 +612,25 @@ stability and align production outputs to public dispatch tables before attempti
 call applied offers raw submission history or infer strategy from one solver case. Exact replay, Experiment 156
 and GPU training remain locked. Result:
 `experiments/v14_aemo_nemde_xml_conformance/RESULTS.md`.
+
+### 11.15 Open-replay engine audit and input-RHS gate
+
+The two leading open reconstructions do not yet provide an independent replay claim. Current Nempy
+(`2d3cef0e5`, version 3.0.3) obtains its standard generic-constraint RHS values from production
+`NemSpdOutputs/ConstraintSolution`; akxen/nemde (`23afcdf12`) likewise serializes the production solution RHS into
+`P_GC_RHS`. Their historical agreement is therefore a solution-assisted engineering baseline. In akxen/nemde,
+`run_mode="target"` selects the physical intervention case rather than fixing all targets, but that does not remove
+the output-RHS dependence.
+
+Nempy is selected for the next component gate because it is maintained and contains a distinct input-side RHS
+expression evaluator. Before a full one-day archive or solver is run, freeze a two-case R2-only preflight at the
+audited commit. It must seal production RHS for scoring, replace every output RHS with two different sentinel
+assignments, compute all dynamic equations from `NemSpdInputs`, require sentinel-invariant predictions, preserve
+unsupported equations and report frozen coverage/error summaries. No new AEMO byte, solver, paid data or GPU is
+needed.
+
+A pass establishes only that one mechanical sublayer is reconstructible without its realized answer. It then
+permits a one-day temporal-schema/output-alignment gate and the design of paired solution-assisted versus
+input-only solver arms. An accurate assisted replay is never evidence of participant adaptation. Experiment 156,
+counterfactual claims and GPU training remain locked. Audit:
+`papers/proposal/v14_aemo_open_replay_engine_audit_2026-08-15.md`.

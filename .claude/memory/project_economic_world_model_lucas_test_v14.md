@@ -337,3 +337,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - This pivots the historical development route to production NEMDE cases. Next mechanically sample a complete day,
   validate temporal schema and align outputs to public dispatch tables, then benchmark an open solver. Do not call
   applied cases raw submission history. Exact replay/model/GPU and raw redistribution remain locked.
+- Open replay-engine audit (2026-08-15): neither current Nempy nor akxen/nemde is an input-only replay by default.
+  Both inject realized generic-constraint RHS from `NemSpdOutputs/ConstraintSolution` into the historical solve.
+  Treat their published agreement as solution-assisted, not independent mechanism validation. Nempy commit
+  `2d3cef0e5545c820067fecddfa2e2fd984ac5583` is the primary next baseline because it is maintained and includes an
+  input-side `RHSCalc`; akxen/nemde commit `23afcdf128352f12d3074194a1321a8f810f4407` is a stale secondary
+  formulation reference.
+- Before downloading a full NEMDE day, run a frozen R2-only two-case RHS reconstructibility gate. Seal output RHS
+  for scoring, replace them with two sentinels during computation, require sentinel invariance, and report all
+  unsupported equations. It needs zero new AEMO bytes, zero paid data and zero GPU. A pass unlocks only one-day
+  alignment and paired assisted/input-only solver design; participant adaptation and Experiment 156 stay locked.
