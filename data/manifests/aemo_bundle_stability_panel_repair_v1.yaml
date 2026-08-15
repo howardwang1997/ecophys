@@ -1,0 +1,112 @@
+schema_version: ecophys-aemo-bundle-stability-panel-repair/v1
+sample_id: aemo-modern-bundle-stability-four-day-preparse-repair-v1
+frozen_at: "2026-08-15T05:23:25Z"
+parent_commit: 0ac261fe0032042b75a87c65ac597a1c6c864a55
+scientific_role: plumbing_repair_only_no_scientific_contract_change
+
+failed_protocol:
+  protocol_commit: 1f44811e75a455f161532fbfdd3bde2092508bf5
+  source_manifest: data/manifests/aemo_bundle_stability_panel_v1.yaml
+  source_manifest_sha256: a155a7be423b7b2ec0e84024df3e52d88b065706dc24df11a171e90c6b206dc9
+  download_receipt_sha256: 5a9735d0a427bdc5f34e99bb4933dd5ce2c08ffa4ece65d5f108a01ab7b2fabc
+  retention_receipt_sha256: 1eba9a2d9440c2e44edc9af99a236f9500707b1f9c592f9e6e086d69b10776c7
+  failure_artifact_sha256: 0b1d4fa9229997f8be220eda0c9e4bb6319191c13981d658fb222493b8c756f1
+  decision: FAIL_PANEL_IMPLEMENTATION_PRE_PARSE
+  archive_open_attempt_count: 0
+  csv_rows_opened: 0
+  market_content_observed: false
+
+repair_contract:
+  exact_root_cause: derived_day_manifest_missing_resource_contract
+  allowed_code_changes:
+    - add resource_contract.maximum_total_data_rows=4000000 to derived day manifest
+    - add parser-entry preflight integration test
+    - add zero-source-request R2 materializer and repair analyzer
+  selected_dates_unchanged: ["2026-06-23", "2026-06-30", "2026-07-14", "2026-07-28"]
+  object_bytes_unchanged: true
+  table_contracts_unchanged: true
+  relation_contract_unchanged: true
+  day_gates_unchanged: true
+  panel_gates_unchanged: true
+  claim_boundary_unchanged: true
+  new_aemo_source_request_count: 0
+  replacement_allowed: false
+  parser_preflight_required: true
+
+objects:
+  - object_id: bidmove-2026-06-23
+    expected_filename: PUBLIC_BIDMOVE_COMPLETE_20260623_0000000523981071.zip
+    expected_bytes: 9226981
+    sha256: 3c0dc84416a7e198d6da2c188bc9b45bc89bba7762b2cb31c97ccb2c20b94fd5
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-06-23/PUBLIC_BIDMOVE_COMPLETE_20260623_0000000523981071.zip
+  - object_id: dispatch-2026-06-23
+    expected_filename: PUBLIC_NEXT_DAY_DISPATCH_20260623_0000000523977310.zip
+    expected_bytes: 8558160
+    sha256: c894febdf52b1b9736eb0d574ad09ab4b7d95cb4461d4856abc2cb72297042ae
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-06-23/PUBLIC_NEXT_DAY_DISPATCH_20260623_0000000523977310.zip
+  - object_id: bidmove-2026-06-30
+    expected_filename: PUBLIC_BIDMOVE_COMPLETE_20260630_0000000525170705.zip
+    expected_bytes: 9180603
+    sha256: 59907fe158ac30ebba265054734aa15ff97a4e0d56eb91327b4e80af5044ab8f
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-06-30/PUBLIC_BIDMOVE_COMPLETE_20260630_0000000525170705.zip
+  - object_id: dispatch-2026-06-30
+    expected_filename: PUBLIC_NEXT_DAY_DISPATCH_20260630_0000000525166622.zip
+    expected_bytes: 8538407
+    sha256: 2104d80cc235a31d74e1818a63cc97eb6d3406ace9951d58caa858dffc2af01b
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-06-30/PUBLIC_NEXT_DAY_DISPATCH_20260630_0000000525166622.zip
+  - object_id: bidmove-2026-07-14
+    expected_filename: PUBLIC_BIDMOVE_COMPLETE_20260714_0000000527498321.zip
+    expected_bytes: 9189813
+    sha256: eec3b638c29ae3da5f8a57203373fae94dc13fe6f4f5b175ecbc769e0f26d111
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-07-14/PUBLIC_BIDMOVE_COMPLETE_20260714_0000000527498321.zip
+  - object_id: dispatch-2026-07-14
+    expected_filename: PUBLIC_NEXT_DAY_DISPATCH_20260714_0000000527494724.zip
+    expected_bytes: 8577698
+    sha256: 02a918c71282388d8f90496f4d1a1a3ee45547bf3a8e60387a505ff9d0539a65
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-07-14/PUBLIC_NEXT_DAY_DISPATCH_20260714_0000000527494724.zip
+  - object_id: bidmove-2026-07-28
+    expected_filename: PUBLIC_BIDMOVE_COMPLETE_20260728_0000000529787923.zip
+    expected_bytes: 9135889
+    sha256: 093cedcd1e57bedef94796e0c5683702343a49b5a44b61643a2df1ac9293a1fe
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-07-28/PUBLIC_BIDMOVE_COMPLETE_20260728_0000000529787923.zip
+  - object_id: dispatch-2026-07-28
+    expected_filename: PUBLIC_NEXT_DAY_DISPATCH_20260728_0000000529784086.zip
+    expected_bytes: 8186385
+    sha256: ca430c5f27ef8ab6b6df183865a6cfc0a2d70cbfba382dc7076e23ee47e9d813
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_stability_panel/market_date=2026-07-28/PUBLIC_NEXT_DAY_DISPATCH_20260728_0000000529784086.zip
+  - object_id: identity-2026-06
+    expected_filename: PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202606010000.zip
+    expected_bytes: 378528
+    sha256: f6af1ba508eb473bb95ee0dae0964b9e00d29aa6f8bf549a60f75d597f48c3ae
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_row_conformance/market_date=2026-06-16/PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202606010000.zip
+  - object_id: identity-2026-07
+    expected_filename: PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202607010000.zip
+    expected_bytes: 378300
+    sha256: c87e888dbae6e65fba3b07aba89c04c1f3e3a17f38e811cfe0b1ee6833139b1e
+    r2_bucket: ecophys
+    r2_key: raw/aemo/v14_bundle_confirmation/market_date=2026-07-07/PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202607010000.zip
+
+resource_contract:
+  exact_object_count: 10
+  exact_staged_compressed_bytes: 71350764
+  maximum_total_data_rows_per_day: 4000000
+  maximum_uncompressed_bytes_per_day: 1107296256
+  sequential_day_analysis_required: true
+  cpu_only: true
+  gpu_allowed: false
+  paid_data_allowed: false
+  remote_worker_required: false
+
+outputs:
+  raw_root: artifacts/v14_aemo_bundle_stability_panel_repair/raw
+  materialization_receipt: experiments/v14_aemo_bundle_stability_panel_repair/artifacts/materialization_receipt.json
+  summary: experiments/v14_aemo_bundle_stability_panel_repair/artifacts/summary.json

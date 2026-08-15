@@ -274,3 +274,7 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   content were observed. Download/retention SHAs are `5a9735d0…` and `1eba9a2d…`.
 - Preserve v1. A separate pushed repair may reuse the exact R2 bytes with no AEMO source request and add only the
   missing resource section plus preflight coverage. Dates, relations, gates and claim boundary cannot change.
+- The repair is frozen with all ten exact R2 hashes and the v1 provenance chain. It adds only
+  `resource_contract.maximum_total_data_rows=4000000` to derived day manifests, plus a parser-entry integration
+  preflight and R2-only materializer. New AEMO request count is fixed at zero; 28 combined AEMO tests pass. The
+  repair remains unexecuted, CPU-only and unable to unlock historical/model claims by itself.

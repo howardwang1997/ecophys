@@ -250,3 +250,9 @@ All 70,593,936 new bytes were obtained in eight one-shot requests and retained i
 were also verified/materialized from R2 without a new AEMO request. The subsequent failure occurred before archive
 access, so the exact data remain content-blind and reusable only under a newly pushed plumbing-repair protocol.
 No additional source acquisition or purchase is justified; `NO_BUY_NOW` remains unchanged.
+
+### Frozen pre-parse repair data path
+
+The repair performs zero AEMO source requests. It freezes all ten existing R2 keys, exact sizes and SHA-256 values
+and materializes only those bytes. New acquisition is therefore 0 bytes; staged bytes remain 71,350,764. Any R2
+mismatch fails the repair. This is provenance reuse, not a replacement sample, and leaves `NO_BUY_NOW` unchanged.

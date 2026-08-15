@@ -380,3 +380,9 @@ Acquisition and R2 materialization passed, but the analyzer stopped before the f
 day manifest lacked `resource_contract`. No row computation, GPU or scientific evaluation occurred. A minimal
 repair remains local CPU work and must use the retained bytes with zero new source requests. Compute requirements
 and all model/GPU locks are unchanged.
+
+### Frozen repair compute budget
+
+The repair adds one parser-entry preflight and the missing per-day row cap, then runs the same sequential CPU
+analysis on R2-materialized bytes. New source transfer is zero; maximum staged/computation budgets are unchanged.
+Twenty-eight combined AEMO tests pass before execution. Required GPU-hours and paid-data spend remain zero.

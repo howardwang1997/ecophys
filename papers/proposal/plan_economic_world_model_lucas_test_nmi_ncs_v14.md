@@ -477,3 +477,15 @@ before the archive loop, an independent repair protocol may reuse the exact veri
 source requests. The repair may add only the missing resource section plus a preflight integration test; dates,
 tables, relation gates, thresholds and claim boundary must remain byte-for-byte or semantically identical. Result:
 `experiments/v14_aemo_bundle_stability_panel/RESULTS.md`.
+
+### 11.7 Zero-source-request pre-parse repair frozen on 15 August 2026
+
+The repair is a new protocol, not a v1 rerun. It freezes all ten R2 object hashes plus the v1 manifest, receipt and
+failure-artifact hashes. It permits exactly one scientific-code change: inject the already frozen
+`maximum_total_data_rows=4,000,000` cap into each derived day manifest. A parser-entry integration preflight is now
+mandatory. No AEMO request, replacement date, table/relation/gate change or claim expansion is allowed.
+
+Execution must materialize 10/10 bytes from R2 before content access, then apply the original four-date/all-days
+decision. The repair is unexecuted and CPU-only. Even a pass remains a within-version observation-bridge result;
+historical portability, Experiment 156 and GPU/model work stay locked. Protocol:
+`experiments/v14_aemo_bundle_stability_panel_repair/PREREGISTRATION.md`.

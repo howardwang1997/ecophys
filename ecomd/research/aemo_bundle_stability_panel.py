@@ -385,6 +385,12 @@ def build_day_manifest(manifest: Mapping[str, object], day: Mapping[str, object]
         },
         "relation_contract": EXPECTED_RELATION_CONTRACT,
         "gates": EXPECTED_GATES,
+        "resource_contract": {
+            "maximum_total_data_rows": cast(
+                int,
+                cast(Mapping[str, object], manifest["resource_contract"])["maximum_data_rows_per_day"],
+            )
+        },
     }
 
 
@@ -435,6 +441,7 @@ def summarize_panel(
     source_manifest_sha256: str,
     analyzer_git_commit: str,
     generated_at: str,
+    source_manifest_path: str = SOURCE_MANIFEST_PATH,
 ) -> dict[str, object]:
     """Aggregate immutable per-day decisions without refitting the relation rule."""
 
@@ -508,7 +515,7 @@ def summarize_panel(
         "schema_version": SUMMARY_SCHEMA_VERSION,
         "generated_at": generated_at,
         "analyzer_git_commit": analyzer_git_commit,
-        "source_manifest": SOURCE_MANIFEST_PATH,
+        "source_manifest": source_manifest_path,
         "source_manifest_sha256": source_manifest_sha256,
         "scientific_role": manifest["scientific_role"],
         "decision": (
