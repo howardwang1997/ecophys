@@ -676,3 +676,22 @@ The next authorized work is protocol design, not an account-scale census. Becaus
 increase, first budget a four-candidate aggregate cap-activation/estimand preflight using fixed historical getters
 only. This remains tens of RPC calls, seconds-to-minutes of CPU/network, and zero GPU. Account enumeration, action
 traces and response construction remain unbudgeted and locked until that gate is frozen and passes.
+
+### Frozen Compound D1a supply-cap activation budget
+
+D1a is now exactly budgeted at 141 successful no-retry operations: 134 JSON-RPC calls and seven Blockscout
+verified-source REST calls. The RPC vector contains two chain IDs, eight historical implementation-code reads, 24
+pre-event headers and 100 fixed configuration/aggregate calls. It covers four mechanics survivors and six
+pre-event block offsets per survivor, with both providers reproducing each contemporaneous cap and aggregate
+collateral total.
+
+The global throttle is one operation per second, so the mechanical lower bound is 2.35 minutes; the runbook budgets
+15 minutes for source payload and provider latency. Hard ceilings are 512 HTTP attempts, 128 MiB of responses,
+2,048 verified-source files and 64 MiB of decoded source text. Raw source/RPC bodies are discarded after bounded
+normalization and hashing. Expected durable output is small JSON containing source inventories, state snapshots
+and the attempt ledger.
+
+This remains local CPU/network work with zero paid data, remote-worker hours and GPU-hours. Both V100s and the RTX
+2060 stay idle. The protocol forbids accounts, actions, logs/traces, prices, liquidations, post-event aggregate
+state and realized responses. Even an exact-saturation pass budgets only a separate market-level D1b design; no
+participant-data or training job is queued.

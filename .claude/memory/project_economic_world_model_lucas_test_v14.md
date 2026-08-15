@@ -666,3 +666,16 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   pre-event on-chain denominator. D1 is authorized for design only and must begin with a zero-account-row aggregate
   cap-binding/estimand gate. Slack caps or no defensible market-level entrant/flow control retire Compound M3.
   Account/actions/responses, `G1` and every GPU remain locked.
+- Compound D1a is designed as a source-matched, zero-account aggregate activation audit over all four D0b v2
+  survivors and seven unique historical implementations. Each implementation must match fully verified unchanged
+  Blockscout Solidity source, exact aggregate/config ABI, six cap-enforcement/storage markers and the parent
+  deployed-bytecode hash.
+- The fixed state design uses offsets 1, 300, 1,800, 7,200, 21,600 and 50,400 blocks before each event. Both
+  providers reproduce the contemporaneous configuration and `totalsCollateral`; fixed headers give actual elapsed
+  time. It never queries event/post-event aggregate totals, accounts, actions, prices or responses.
+- Exact `totalSupplyAsset == supplyCap` at T−1 is the only confirmatory activation rule. The 90/95/99% ratios and
+  other snapshots are diagnostic and cannot authorize a pass. A pass permits only separate market-level D1b
+  design; no exact saturation retires Compound M3. Account-level M3 is retired for every result because potential
+  thwarted suppliers are not a pre-event enumerable cohort.
+- The D1a no-retry budget is 141 public reads: 134 RPC plus seven verified-source REST requests, one request/s,
+  bounded failure ledger, local CPU/network, free data and zero GPU. Both V100s and the RTX 2060 remain idle.

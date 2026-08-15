@@ -691,7 +691,13 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     直接改变已有账户的 balance/CF/liquidation threshold，原来“任一非零仓位”的 generic denominator
     不是 treated cohort；下一步必须先做零账户行的 cap-activation/estimand gate，不能直接采集账户。
     若旧 cap 不 binding，或无法事前定义可识别的 market-level entrant/flow estimand，Compound M3 因果
-    路线应停止。G1、D1 账户/行为/响应数据和全部 GPU 生产作业继续锁定。
+    路线应停止。D1a 现已设计为零账户的 source/state activation gate：对四个 survivor 的七个唯一历史
+    implementation 做 verified-source/bytecode/ABI/enforcement-marker 匹配，并在每个事件前固定
+    `1/300/1,800/7,200/21,600/50,400` block 六个快照，由 Blockscout 与 PublicNode 复核当时的 cap 与
+    `totalsCollateral`。只有 T−1 的精确整数饱和能通过；90/95/99% 仅为诊断，不能移动门槛，且不查询
+    event/post-event aggregate response。精确计划为 134 RPC + 7 source REST = 141 个只读操作，本地
+    CPU/network、免费数据、零 GPU。即使通过也只允许另行冻结 market-level collateral-flow D1b 设计；
+    account-level estimand 已结构性退休。G1、D1 账户/行为/响应数据和全部 GPU 生产作业继续锁定。
 
 ---
 

@@ -292,3 +292,20 @@ suppliers blocked by the old cap have no pre-event on-chain denominator. Before 
 aggregate T-1 cap-utilization/estimand gate and a market-level entrant/flow estimand. Slack caps or an indefensible
 control retire the causal M3 route. Result:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V2.md`.
+
+## 16. Frozen zero-account supply-cap activation gate
+
+D1a now fixes the missing source/state test over all four survivors. Seven unique old/new implementations must
+match fully verified, unchanged Blockscout Solidity source, exact aggregate/configuration ABI, source-level cap
+enforcement markers and D0b bytecode hashes. Six response-blind block offsets per event reproduce historical caps
+and aggregate collateral totals across Blockscout and PublicNode; T−1 and T configuration/code also reproduce the
+mechanics parent.
+
+The confirmatory activation rule is exact `totalSupplyAsset == supplyCap` at T−1. Near-cap utilization at 90%, 95%
+or 99% and other snapshots are descriptive only. No post-event aggregate state is queried. Integrity plus at least
+one exact saturation authorizes only a separately frozen market-level collateral-flow D1b design. No exact
+saturation retires this Compound M3 causal route; source/state nonconformance keeps all D1 rows locked. The
+account-level estimand is retired regardless because would-be blocked suppliers lack a pre-event denominator.
+
+The plan is 141 public read-only operations, local CPU/network, no paid data and zero GPU. Protocol:
+`experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION.md`.

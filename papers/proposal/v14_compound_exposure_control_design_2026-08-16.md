@@ -314,3 +314,18 @@ binding constraint, which market-level entrant/flow estimand remains identifiabl
 account census may begin merely because D0b passed. If the cap was slack or the estimand/control is not defensible,
 Compound remains mechanics evidence only. Immutable result:
 `experiments/v14_compound_v3_candidate_mechanics_preflight/RESULTS_V2.md`.
+
+The D1a protocol now makes that gate executable without opening participant data. It hash-pins every D0b v2
+artifact and derives all four survivors plus seven unique implementation bytecode hashes before network access.
+Each historical implementation must match a fully verified, unchanged Blockscout Solidity source bundle with the
+exact aggregate getter ABI and source-level cap-enforcement markers. PublicNode then reproduces D0b's bytecode and
+T−1/T configuration state.
+
+For each event, D1a fixes six pre-event block offsets—1, 300, 1,800, 7,200, 21,600 and 50,400—and obtains the
+contemporaneous cap and `totalsCollateral(asset)` from both providers. Exact T−1 equality is the only strong-
+activation pass; 90%, 95% and 99% utilization and earlier snapshots are diagnostics, not movable thresholds. No
+post-event total is queried. A pass permits only a separately frozen market-level collateral-flow design; the
+account-level route is retired for every outcome because thwarted potential suppliers are unobservable. A clean
+no-retry run is exactly 134 RPC plus seven verified-source REST operations and requires no paid data, worker or
+GPU. Protocol:
+`experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION.md`.
