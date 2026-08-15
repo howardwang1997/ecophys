@@ -804,3 +804,31 @@ created. CoW can reopen only through a new non-top-up source such as an official
 The immediate free exact-M2 route should move to a public on-chain system with a complete event index and
 executable state transition. GPUs, learned models and AEMO full-day acquisition remain locked. Result:
 `experiments/v14_cow_competition_head_enumeration/RESULTS.md`.
+
+### 11.25 Uniswap v3 treatment conformance frozen before response access
+
+Proposal 94 supplies a promising public exact-M2 development event, but neither its prose nor its governance
+execution time is the pool-level treatment. The proposal text names adapter `0x3e40...`; the executed factory
+`OwnerChanged` log and Seatbelt calldata instead name `0xf237...`. Likewise, the front-end execution timestamp
+differs from the Ethereum block timestamp. Chain calldata, receipts and block headers are authoritative.
+
+The address discrepancy exposes a broader Economic World Model requirement. The stale and executed adapters have
+identical 7,266-byte runtime code, so a code hash alone does not identify the operative rule. An executable
+mechanism must be pinned by runtime code, immutable arguments, relevant storage, authority state and executed
+transition history. For Uniswap v3, Proposal 94 transfers authority; each pool is treated only when a successful
+`setFeeProtocol` transition occurs.
+
+U0 freezes the first two successful direct 500-pool propagation batches after execution, in chain order. The
+runner must reconstruct exactly 1,000 unique calldata/event pairs, require one ordered `SetFeeProtocol` plus one
+`FeeUpdateTriggered` event per pool, accept only symmetric new fees `(4,4)` or `(6,6)`, and find at least 100
+zero-to-nonzero activations with at least ten in each fee class. This is a deterministic conformance prefix, not a
+population sample. Reconnaissance had already opened calldata and receipt event-type counts for the two
+transactions; that access is disclosed. Old/new fee arguments, activation classes and LP responses remained
+unopened when the thresholds were frozen.
+
+Only governance and propagation transactions, receipts, block headers and adapter runtime code may be opened.
+LP actions, swaps, liquidity, price, volume, post-treatment outcomes and even preperiod selection remain locked.
+A pass authorizes only a separately frozen U1 pre-treatment support/identity audit; a failure blocks response
+collection without batch replacement or threshold repair. U0 uses 11 read-only RPC calls, less than 20 MB, under
+one local CPU core-hour, no paid data and zero GPU-hours. Protocol:
+`experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION.md`.

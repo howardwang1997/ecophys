@@ -425,3 +425,15 @@ The run used about 6.5 minutes of local CPU/network time and returned 93 HTTP 20
 integrity gates passed, but the eligible-count gate failed by seven. No GET, GPU, remote worker or paid data was
 used, and no payload experiment is queued. Additional compute cannot repair the sealed sampling decision; use an
 official list/snapshot or move exact-mechanism development to a fully indexed on-chain system.
+
+### Uniswap v3 U0 treatment-conformance checkpoint
+
+The next free exact-M2 gate is a mechanism-only Uniswap v3 Proposal 94 conformance run. Its sealed input consists
+of chain ID and deployed code plus one governance and two propagation transaction/receipt/block triples: 11
+read-only Ethereum RPC calls in total, capped at one request per second with two transport retries. Expected
+retained volume is below 20 MB and expected local compute is under one CPU core-hour.
+
+Required paid-data spend, remote workers and GPU-hours are zero. Both V100s and the RTX 2060 remain idle; H20 is
+excluded. The run may retain exact treatment transitions but cannot open LP actions, swaps, liquidity, price,
+volume or any post-treatment response. Only a passing, committed U0 result can unlock design—not execution—of a
+separately frozen pre-treatment U1 identity/support audit. Model training and GPU allocation remain locked.

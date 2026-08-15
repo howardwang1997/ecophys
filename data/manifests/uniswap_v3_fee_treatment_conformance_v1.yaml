@@ -1,0 +1,131 @@
+schema_version: ecophys-uniswap-v3-fee-treatment-conformance/v1
+stage: frozen_before_old_new_fee_transition_decoding
+scientific_role: historical_development_treatment_metadata_only
+sample_id: uniswap-v3-mainnet-first-two-open-fee-propagation-batches-v1
+frozen_at: "2026-08-15T09:27:12Z"
+
+source:
+  network: ethereum_mainnet
+  chain_id: 1
+  rpc_url: https://ethereum-rpc.publicnode.com
+  verified_source_url: https://eth.blockscout.com/api/v2/smart-contracts/0xf2371551Fe3937Db7c750f4DfABe5c2fFFdcBf5A
+  proposal_url: https://vote.uniswapfoundation.org/proposals/94
+  protocol_fees_repository: https://github.com/Uniswap/protocol-fees
+  protocol_fees_commit: cf7d8a118b39cb99c693a6e82dd804ada7d42427
+  protocol_activation_commit: 62c74e210706f14e3a5b5d5956f74fa171cc3a6b
+  seatbelt_repository: https://github.com/uniswapfoundation/governance-seatbelt
+  seatbelt_commit: c212a947caa78f2fea524757b1cb49a977c78575
+  verified_source_sha256: 5d27bfa68f22a569a05a8e9c576fd716355ec73d0504d247c2280543344ff7cf
+  deployer_source_sha256: a667346def393f80a72d4907554d678184799f00600167d82e0bce19523aac3f
+  activation_source_sha256: 873936b568e3cf8327cb039a62212f858a1cb33fd769400d05e31b412da7e332
+  seatbelt_simulation_sha256: 5c6a148a00cdd4582c18a0cdda87e9d16fa03bd98c5e9c6212a4bf973bd2d3da
+  runtime_bytecode_size_bytes: 7266
+  runtime_bytecode_block: 24599177
+  runtime_bytecode_sha256: 37bd11b8fd174245af62b4a67691566c2df3d544d12b57cdcf5ebc1039f66bef
+  runtime_bytecode_keccak256: c70860dac1053e6bf7e1656c65fc140ddc7da892716f0209873be37343f579c0
+  compiler_version: v0.8.29+commit.ab55807c
+  evm_version: cancun
+  maximum_requests_per_second: 1.0
+  maximum_transport_retries: 2
+  expected_rpc_request_count: 11
+  user_agent: EcoPhys-uniswap-treatment-conformance/1.0
+
+deployment:
+  creation_transaction_hash: "0xf99405e6eff4bd1a8224e73d426cad3540550a537c200cb3964f4eeb24fc512a"
+  creation_block: 24520406
+  verified_at: "2026-02-23T15:19:13.125254Z"
+  factory_constructor_argument: "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+  token_jar_constructor_argument: "0xf38521f130fcCF29dB1961597bc5d2B60F995f85"
+  default_fee_packed: 68
+  fee_tier_defaults:
+    "100": 68
+    "500": 68
+    "3000": 102
+    "10000": 102
+
+mechanism:
+  governance_proposal_id: 94
+  governor_address: "0x408ED6354d4973f66138C91495F2f2FCbd8724C3"
+  governance_execution_tx: "0xd6c4c93eaaac3b6cf144853655f91b326c5e3019b022baeec08eaf74c8af9833"
+  governance_execution_block: 24596885
+  governance_execution_block_hash: "0x79347467bfce1f0af9e6a0dcb92bd06aad357d3605be5e3960512e29f1ab8d1c"
+  governance_execution_chain_timestamp_utc: "2026-03-06T07:19:59Z"
+  agora_displayed_execution_timestamp_utc: "2026-03-06T21:54:35Z"
+  timestamp_authority: ethereum_block_header
+  factory_address: "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+  old_adapter_address: "0x5E74C9f42EEd283bFf3744fBD1889d398d40867d"
+  proposal_prose_adapter_address: "0x3e40DB80450f025b01E45c58b0aF763C7A29a8bd"
+  executed_adapter_address: "0xf2371551Fe3937Db7c750f4DfABe5c2fFFdcBf5A"
+  execution_address_authority: governance_receipt_owner_changed_event
+  owner_changed_topic: "0xb532073b38c83145e3e5135377a08bf9aab55bc0fd7c1179cd4fb995d2a5159c"
+  fee_update_triggered_topic: "0xa38b98e5166edaa11e3ca8a9decd55d5a224db2efb90ec8329d980e46857bcd1"
+  set_fee_protocol_topic: "0x973d8d92bb299f4af6ce49b52a8adb85ae46b9f214c4c4fc06ac77401237b133"
+  activation_clock: per_pool_set_fee_protocol_event
+  governance_execution_is_not_pool_activation: true
+
+propagation_frame:
+  selection_rule: first_two_successful_direct_batchTriggerFeeUpdateByPool_transactions_after_proposal_94_in_chain_order
+  discovery_role: consumed_mechanism_metadata_not_lp_response
+  batch_transaction_hashes:
+    - "0x0c49a2013d5c008bf2f07c939071753c3dbcbfefa43265095c55d0e8a36f849b"
+    - "0x95b0b34aad5322027abe65c4f35468809039f6648798d8905a9de918fe7d9f65"
+  batch_transaction_hashes_sha256: f31c21c154ba710de074cc27de8410c2a5d38f456b239e673655dc22e6726408
+  expected_blocks:
+    - 24599177
+    - 24599179
+  expected_batch_timestamps_utc:
+    - "2026-03-06T15:01:11Z"
+    - "2026-03-06T15:01:35Z"
+  expected_direct_caller: "0x2cf8e5b175aa29c1fdf0e9fe572735c78eacce43"
+  selector: "0x08f4779e"
+  function_signature: batchTriggerFeeUpdateByPool(address[])
+  expected_batch_size: 500
+  expected_total_pool_rows: 1000
+  no_replacement: true
+  population_scope: deterministic_conformance_prefix_not_all_uniswap_v3_pools
+
+reconnaissance_disclosure:
+  calldata_lengths_accessed: true
+  receipt_event_type_counts_accessed: true
+  old_new_fee_arguments_decoded: false
+  activation_classes_decoded: false
+  lp_response_events_accessed: false
+  frame_is_pristine: false
+
+gates:
+  exact_owner_change: true
+  exact_batch_hash_order: true
+  exact_event_pairing: true
+  unique_pools: true
+  exact_batch_size: 500
+  exact_total_pool_rows: 1000
+  allowed_new_fee_pairs:
+    - [4, 4]
+    - [6, 6]
+  minimum_activated_total: 100
+  minimum_activated_per_fee_value: 10
+  one_set_fee_protocol_per_pool: true
+  one_fee_update_triggered_per_pool: true
+  calldata_event_order_must_match: true
+
+access_boundary:
+  mechanism_transactions_and_receipts_only: true
+  lp_action_events_opened: false
+  swap_events_opened: false
+  liquidity_outcomes_opened: false
+  price_or_volume_outcomes_opened: false
+  post_treatment_response_window_opened: false
+  preperiod_selection_opened: false
+  outcome_model_training_authorized: false
+  gpu_hours_authorized: 0
+  paid_data_authorized: false
+
+result: null
+
+artifacts:
+  preregistration: experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION.md
+  runbook: experiments/v14_uniswap_v3_fee_treatment_conformance/RUNBOOK.md
+  treatment_ledger: experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts/treatment_ledger.jsonl
+  response_hash_manifest: experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts/rpc_response_hashes.json
+  summary: experiments/v14_uniswap_v3_fee_treatment_conformance/artifacts/treatment_summary.json
+  source_audit: papers/proposal/v14_uniswap_v3_fee_expansion_mechanism_audit_2026-08-15.md

@@ -421,3 +421,24 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - No resolved manifest exists. Do not lower the gate, append seven IDs, top up another frame or open the 93
   competition bodies. CoW payload development requires an official list/snapshot or collaboration. Move the free
   exact-M2 scout to a fully indexed on-chain mechanism; keep all GPUs/models locked.
+- Uniswap v3 Proposal 94 is now the conditional free exact-M2 development route. Governance transaction
+  `0xd6c4...9833` changed factory authority at block 24,596,885, but pool treatment occurs later and separately at
+  each successful `SetFeeProtocol` event; governance execution is not a simultaneous treatment clock.
+- Do not trust the proposal prose as the executed mechanism identifier. It names adapter `0x3e40...`, whereas the
+  Seatbelt calldata and factory `OwnerChanged` receipt name `0xf237...`. The Agora timestamp also differs from the
+  block-header timestamp; chain calldata, receipts and headers are authoritative.
+- The stale and executed adapters have identical 7,266-byte runtime code (SHA-256
+  `37bd11b8fd174245af62b4a67691566c2df3d544d12b57cdcf5ebc1039f66bef`). Durable design rule: identify a mechanism
+  by runtime code, immutables, relevant storage, authority state and executed event history, never code hash or
+  governance prose alone.
+- U0 freezes exactly the first two direct 500-pool propagation transactions after Proposal 94, hashes
+  `0x0c49...849b` and `0x95b0...9f65`, as a disclosed deterministic conformance prefix. It requires 1,000 unique
+  calldata/event pairs, symmetric `(4,4)`/`(6,6)` new fees, at least 100 zero-to-nonzero activations and at least
+  ten activations in each fee class.
+- This U0 frame is not pristine: reconnaissance had already accessed calldata lengths and receipt event-type
+  counts, establishing 500 pool plus 500 adapter events in each transaction. Old/new fee arguments, activation
+  classes and all LP responses remained unopened when the thresholds were frozen; preserve that disclosure.
+- U0 may read only chain/mechanism metadata. LP actions, swaps, liquidity, prices, volume, preperiod selection and
+  post-treatment responses remain unopened. A pass unlocks only a separately frozen U1 pre-treatment
+  support/identity audit; it does not authorize an event study, learned model or GPU job. Protocol:
+  `experiments/v14_uniswap_v3_fee_treatment_conformance/PREREGISTRATION.md`.
