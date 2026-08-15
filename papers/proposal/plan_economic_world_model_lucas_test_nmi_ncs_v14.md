@@ -706,3 +706,23 @@ specification-grounded input/SCADA arms. Any evaluation must use fresh mechanica
 paired arms (`baseline`, `RPN`, `input`, `combined`), with dual-sentinel and full-tail gates frozen before new RHS
 access. The diagnostic validates no repair, and whole-day/full-solver/GPU work remains locked. Result:
 `experiments/v14_aemo_nemde_rhs_reconstruction/TAIL_DIAGNOSTIC_RESULTS.md`.
+
+### 11.20 Official RHS-rule audit narrows the repair on 15 August 2026
+
+AEMO's final April 2023 Constraint Implementation Guidelines fixes the group semantics needed for one repair arm:
+each group has an independent stack; its final top value is multiplied once by the group factor and added once to
+the parent stack. The simple official known answer is `1118.222`. The pinned Nempy implementation has two direct
+violations: unchecked next/end-group indexing and a no-op `group.pop` where its own comment requires removal of
+the **first** shared-ID `G` member. An unqualified `pop()` would remove the wrong member.
+
+The same audit does **not** establish an official SCADA repair. Public AEMO material defines SCADA-derived SPD
+types and the `EMSMASTER` ID/type catalogue, but not duplicate-record selection, `EMS_Good`/replacement precedence
+or default fallback. The production formulation remains restricted through the paid participant Queue. Therefore
+the prior descriptive 2-by-2 suggestion is narrowed: freeze `baseline` versus a minimal RPN-group repair only.
+Keep the input/SCADA arm explicitly blocked until an authoritative rule or an outcome-blind identification plus
+fresh confirmation exists; production RHS cannot choose the rule.
+
+Development may reuse the two consumed intervals for known-answer and non-claim checks. Evaluation must use fresh
+mechanically selected members with dual sentinels, unchanged denominators and pre-registered improvement plus
+non-degradation gates. Expected new data are only 2--4 MiB and CPU minutes; paid data, solver runs and all GPUs
+remain locked. Audit: `papers/proposal/v14_aemo_nemde_rhs_official_rule_audit_2026-08-15.md`.

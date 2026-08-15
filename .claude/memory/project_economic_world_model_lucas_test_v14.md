@@ -375,3 +375,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   Multiple-SCADA equations have 52.8%/49.4% tail rates and resolver-missing inputs 36.7%/26.3%, versus
   17.2%/9.52% overall. These are overlapping descriptive associations. Next repair must be 2x2: baseline,
   RPN-group only, specification-grounded input/SCADA only, combined; validate on fresh deterministic intervals.
+- Official RHS-rule audit supersedes that tentative 2x2 topology. AEMO's final April 2023 guide specifies an
+  independent stack per group, one group-factor multiplication and one parent-stack addition; its page-38 known
+  answer is `1118.222`. Nempy's unchecked group-boundary indexing and no-op `group.pop` contradict that rule, and
+  the required shared-ID removal is the first member, not the default last member.
+- Public AEMO `EMSMASTER`, Constraint Implementation Guidelines and Queue Users' Guide do not specify duplicate
+  SCADA selection, `EMS_Good`/replacement precedence or term-default fallback. Do not invent or tune an input arm
+  against production RHS. Next repair validation is paired baseline/RPN only; SCADA is blocked until an
+  authoritative rule or outcome-blind identification with fresh confirmation. Audit:
+  `papers/proposal/v14_aemo_nemde_rhs_official_rule_audit_2026-08-15.md`.
