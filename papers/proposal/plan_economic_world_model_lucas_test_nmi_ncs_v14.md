@@ -460,7 +460,20 @@ objects from verified R2, for 71,350,764 staged bytes. Every date independently 
 pass; one failed date fails the panel, with no pooled-rate exception. Dates are processed sequentially on local
 CPU. Required GPU-hours, paid data and remote workers remain zero.
 
-This protocol is still unexecuted and row-locked. A pass would establish only modern within-version stability and
-then permit a separately frozen historical-version bridge audit. It would not unlock Experiment 156, causal
+At freeze this protocol was unexecuted and row-locked. A pass would establish only modern within-version
+stability, then permit a separately frozen historical-version bridge audit. It would not unlock Experiment 156, causal
 claims or model training by itself. Protocol:
 `experiments/v14_aemo_bundle_stability_panel/PREREGISTRATION.md`.
+
+### 11.6 Stability-panel v1 pre-parse implementation failure
+
+Protocol commit `1f44811e7` completed all eight one-shot downloads and verified all ten new/reused objects in R2.
+The analyzer then failed before opening the first ZIP because its derived day manifest omitted the parser's
+`resource_contract`. The authoritative v1 decision is `FAIL_PANEL_IMPLEMENTATION_PRE_PARSE`: zero archives opened,
+zero CSV rows read, zero market content observed and zero day summaries produced.
+
+This is not scientific evidence about stability. Preserve v1 and do not rerun it. Because the exception occurred
+before the archive loop, an independent repair protocol may reuse the exact verified R2 bytes with zero new AEMO
+source requests. The repair may add only the missing resource section plus a preflight integration test; dates,
+tables, relation gates, thresholds and claim boundary must remain byte-for-byte or semantically identical. Result:
+`experiments/v14_aemo_bundle_stability_panel/RESULTS.md`.

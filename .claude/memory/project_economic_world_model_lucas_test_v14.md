@@ -265,6 +265,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   frozen mechanically: 2026-06-23/30 and 2026-07-14/28. Eight new daily objects total 70,593,936 compressed bytes;
   verified June/July identity objects are reused from R2 for 71,350,764 staged bytes. August is excluded because a
   complete monthly identity archive was not published at freeze.
-- Each date must independently pass all 25 E1b gates; there is no pooled-rate exception. The panel is CPU-only and
-  unexecuted. Even a pass unlocks only a separately frozen historical-version bridge audit, not Exp156 or GPU/model
-  work. Protocol: `experiments/v14_aemo_bundle_stability_panel/PREREGISTRATION.md`.
+- Each date must independently pass all 25 E1b gates; there is no pooled-rate exception. At freeze the panel was
+  unexecuted and CPU-only. Even a pass unlocks only a separately frozen historical-version bridge audit, not
+  Exp156 or GPU/model work. Protocol: `experiments/v14_aemo_bundle_stability_panel/PREREGISTRATION.md`.
+- Panel v1 commit `1f44811e75a455f161532fbfdd3bde2092508bf5` passed all eight source downloads and ten
+  R2 materializations, then failed before the first ZIP open because the derived day manifest omitted
+  `resource_contract`. Decision: `FAIL_PANEL_IMPLEMENTATION_PRE_PARSE`; zero ZIPs, rows, day summaries or market
+  content were observed. Download/retention SHAs are `5a9735d0…` and `1eba9a2d…`.
+- Preserve v1. A separate pushed repair may reuse the exact R2 bytes with no AEMO source request and add only the
+  missing resource section plus preflight coverage. Dates, relations, gates and claim boundary cannot change.

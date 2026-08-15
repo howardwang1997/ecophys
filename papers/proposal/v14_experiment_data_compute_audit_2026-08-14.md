@@ -373,3 +373,10 @@ local CPU plus R2 transfer.
 
 Required GPU-hours remain zero. Neither V100 nor RTX 2060 should be queued, and no compute expansion is justified.
 All four dates must independently pass the 25 E1b gates before a historical-version protocol is designed.
+
+### Stability-panel v1 execution failure
+
+Acquisition and R2 materialization passed, but the analyzer stopped before the first ZIP open because the derived
+day manifest lacked `resource_contract`. No row computation, GPU or scientific evaluation occurred. A minimal
+repair remains local CPU work and must use the retained bytes with zero new source requests. Compute requirements
+and all model/GPU locks are unchanged.

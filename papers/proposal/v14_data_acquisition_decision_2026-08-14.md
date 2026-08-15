@@ -243,3 +243,10 @@ Eight new daily objects total 70,593,936 compressed bytes. The verified June and
 from R2 without another AEMO source request, bringing staged bytes to 71,350,764. Every literal URL, filename,
 byte count, prior-object hash and R2 key is frozen in
 `data/manifests/aemo_bundle_stability_panel_v1.yaml`. This remains free and does not alter `NO_BUY_NOW`.
+
+### Stability-panel v1 acquisition result
+
+All 70,593,936 new bytes were obtained in eight one-shot requests and retained in R2. Both prior identity objects
+were also verified/materialized from R2 without a new AEMO request. The subsequent failure occurred before archive
+access, so the exact data remain content-blind and reusable only under a newly pushed plumbing-repair protocol.
+No additional source acquisition or purchase is justified; `NO_BUY_NOW` remains unchanged.
