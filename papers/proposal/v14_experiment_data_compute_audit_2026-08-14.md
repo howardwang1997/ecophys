@@ -311,3 +311,16 @@ the 2021-12 bid-period object rules out an indiscriminate full-month conformance
 - **Current action:** inventory already consumed local AEMO artifacts and exact official daily alternatives, then
   design—but do not yet execute—a minimal timestamp/key/join conformance protocol; separately obtain an
   outcome-blind CoW enumerator. Do not open new rows, train models, open target outcomes or buy data.
+
+## 9. AEMO modern row-conformance resource checkpoint — 15 August 2026
+
+The inventory is complete. Earlier full development ZIPs are absent and lack verified R2 retention, so they will
+not be reused or silently reacquired. The frozen replacement is a non-target, modern one-day *conformance* smoke,
+not a replacement result: three official objects, 18,085,971 compressed bytes, five tables and a hard 4,000,000
+MMSDM-row cap.
+
+Required work is exact download/hash verification, R2 retention, ZIP CRC, schema/time/key validation and four
+joins. Expected compute is minutes of Mac CPU time and less than about 1.11 GB maximum uncompressed working data.
+Required GPU-hours are zero; both V100s and the RTX 2060 remain idle. Required paid data and purchased storage are
+zero. A pass unlocks only the design of a multi-day historical development protocol, not model training or a
+prospective claim. See `experiments/v14_aemo_row_conformance/PREREGISTRATION.md`.

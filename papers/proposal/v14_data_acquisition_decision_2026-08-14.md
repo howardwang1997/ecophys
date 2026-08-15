@@ -179,3 +179,19 @@ and Elexon supplies a formal request route, but the complete extract/licence/ret
 provenance still require written confirmation before target retrieval. See
 `papers/proposal/v14_cross_domain_event_scout_2026-08-14.md` and
 `papers/proposal/v14_gc0166_elexon_neso_clarification_brief_2026-08-14.md`.
+
+## 7. Modern daily row-smoke decision — 15 August 2026
+
+The previously downloaded complete AEMO development ZIPs are no longer locally available and were never covered
+by a verified R2 raw-object manifest. Do not treat their result summaries as recoverable input data. This is a
+retention-process gap, not permission to rerun the consumed held-out months.
+
+The free official alternative is a mechanically selected non-target daily sample for 16 June 2026:
+`BID_MOVE_COMPLETE` (9,095,887 bytes), `NEXT_DAY_DISPATCH` (8,611,556 bytes) and June
+`DUDETAILSUMMARY` (378,528 bytes). Total compressed acquisition is 18,085,971 bytes. The exact manifest requires
+one GET per object, no replacement, exact-size/SHA verification and immutable R2 retention before any ZIP/CSV
+access. At freeze, no selected row had been opened.
+
+This preserves `NO_BUY_NOW`: the experiment is free and CPU-only. It tests modern parser, time, key and join
+conformance, not raw submission/rejection provenance, historical comparability or policy effects. Full source
+inventory: `papers/proposal/v14_aemo_row_conformance_source_inventory_2026-08-15.md`.

@@ -1,0 +1,175 @@
+schema_version: ecophys-aemo-row-conformance/v1
+sample_id: aemo-modern-daily-row-conformance-2026-06-16-v1
+frozen_at: "2026-08-15T03:15:56Z"
+parent_commit: 8a2d236276f440e17da9c74be9033643558d7ac8
+scientific_role: development_only_modern_row_join_conformance_smoke
+
+prior_gate:
+  decision: PASS_TRANSFER_REPAIR_AND_SOURCE_HEADER_CONFIRMATION
+  result_commit: 8a2d236276f440e17da9c74be9033643558d7ac8
+  raw_summary_sha256: e4bac4ac57b8b25b8d91a3465eba544c9c9e22050c47750c89344e339f6417c4
+  rows_opened: 0
+
+selection:
+  rule: first_tuesday_in_earliest_seven_day_shared_daily_report_window
+  shared_window_start: "2026-06-13"
+  shared_window_end: "2026-06-19"
+  selected_market_date: "2026-06-16"
+  selection_inputs: directory_metadata_only_no_zip_or_market_row
+  target_event: false
+  causal_outcome: false
+  no_replacement: true
+  previously_consumed_months:
+    - "2020-09"
+    - "2021-01"
+    - "2021-02"
+    - "2021-03"
+    - "2021-09"
+    - "2021-11"
+    - "2021-12"
+    - "2022-04"
+    - "2025-01"
+    - "2025-07"
+
+source_metadata:
+  audited_at: "2026-08-15T03:15:56Z"
+  nemweb_current_reports: https://www.nemweb.com.au/Reports/CURRENT/
+  bidmove_listing: https://www.nemweb.com.au/Reports/CURRENT/Bidmove_Complete/
+  next_day_dispatch_listing: https://www.nemweb.com.au/Reports/CURRENT/Next_Day_Dispatch/
+  monthly_identity_listing: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2026/MMSDM_2026_06/MMSDM_Historical_Data_SQLLoader/DATA/
+  official_data_model: https://visualisations.aemo.com.au/aemo/nemweb/MMSDataModelReport/Electricity/MMS%20Data%20Model%20Report_toc.htm
+  official_table_triggers: https://tech-specs.docs.public.aemo.com.au/Content/TSP_TechnicalSpecificationPortal/EMMSDMTableTriggers.htm
+
+objects:
+  - object_id: bidmove-complete-2026-06-16
+    source_role: BIDMOVE_COMPLETE
+    url: https://www.nemweb.com.au/Reports/CURRENT/Bidmove_Complete/PUBLIC_BIDMOVE_COMPLETE_20260616_0000000522858228.zip
+    listing_url: https://www.nemweb.com.au/Reports/CURRENT/Bidmove_Complete/
+    expected_filename: PUBLIC_BIDMOVE_COMPLETE_20260616_0000000522858228.zip
+    expected_bytes: 9095887
+    maximum_uncompressed_bytes: 536870912
+    required_table_roles: [BIDDAYOFFER_D, BIDPEROFFER_D]
+    r2_key: raw/aemo/v14_row_conformance/market_date=2026-06-16/PUBLIC_BIDMOVE_COMPLETE_20260616_0000000522858228.zip
+  - object_id: next-day-dispatch-2026-06-16
+    source_role: NEXT_DAY_DISPATCH
+    url: https://www.nemweb.com.au/Reports/CURRENT/Next_Day_Dispatch/PUBLIC_NEXT_DAY_DISPATCH_20260616_0000000522854663.zip
+    listing_url: https://www.nemweb.com.au/Reports/CURRENT/Next_Day_Dispatch/
+    expected_filename: PUBLIC_NEXT_DAY_DISPATCH_20260616_0000000522854663.zip
+    expected_bytes: 8611556
+    maximum_uncompressed_bytes: 536870912
+    required_table_roles: [DISPATCHOFFERTRK, DISPATCHLOAD]
+    r2_key: raw/aemo/v14_row_conformance/market_date=2026-06-16/PUBLIC_NEXT_DAY_DISPATCH_20260616_0000000522854663.zip
+  - object_id: dudetailsummary-2026-06
+    source_role: DUDETAILSUMMARY_MONTHLY_SNAPSHOT
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2026/MMSDM_2026_06/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_ARCHIVE%23DUDETAILSUMMARY%23FILE01%23202606010000.zip
+    listing_url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2026/MMSDM_2026_06/MMSDM_Historical_Data_SQLLoader/DATA/
+    expected_filename: PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202606010000.zip
+    expected_bytes: 378528
+    maximum_uncompressed_bytes: 33554432
+    required_table_roles: [DUDETAILSUMMARY]
+    r2_key: raw/aemo/v14_row_conformance/market_date=2026-06-16/PUBLIC_ARCHIVE#DUDETAILSUMMARY#FILE01#202606010000.zip
+
+table_contracts:
+  - logical_role: BIDDAYOFFER_D
+    source_object_id: bidmove-complete-2026-06-16
+    expected_package: BID
+    expected_table: BIDDAYOFFER_D
+    expected_version: "3"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION, BIDSETTLEMENTDATE, OFFERDATE, PARTICIPANTID]
+    primary_key: [SETTLEMENTDATE, BIDTYPE, DUID, DIRECTION]
+  - logical_role: BIDPEROFFER_D
+    source_object_id: bidmove-complete-2026-06-16
+    expected_package: BID
+    expected_table: BIDPEROFFER_D
+    expected_version: "4"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION, INTERVAL_DATETIME, BIDSETTLEMENTDATE, OFFERDATE, VERSIONNO, MAXAVAIL]
+    primary_key: [SETTLEMENTDATE, BIDTYPE, DUID, DIRECTION, INTERVAL_DATETIME]
+  - logical_role: DISPATCHOFFERTRK
+    source_object_id: next-day-dispatch-2026-06-16
+    expected_package: DISPATCH
+    expected_table: OFFERTRK
+    expected_version: "1"
+    required_fields: [SETTLEMENTDATE, DUID, BIDTYPE, BIDSETTLEMENTDATE, BIDOFFERDATE]
+    primary_key: [SETTLEMENTDATE, DUID, BIDTYPE]
+  - logical_role: DISPATCHLOAD
+    source_object_id: next-day-dispatch-2026-06-16
+    expected_package: DISPATCH
+    expected_table: UNIT_SOLUTION
+    expected_version: "6"
+    required_fields: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION, INITIALMW, TOTALCLEARED]
+    primary_key: [SETTLEMENTDATE, RUNNO, DUID, INTERVENTION]
+  - logical_role: DUDETAILSUMMARY
+    source_object_id: dudetailsummary-2026-06
+    expected_package: PARTICIPANT_REGISTRATION
+    expected_table: DUDETAILSUMMARY
+    expected_version: "7"
+    required_fields: [DUID, START_DATE, END_DATE, DISPATCHTYPE, REGIONID, PARTICIPANTID, DISPATCHSUBTYPE]
+    primary_key: [DUID, START_DATE]
+
+time_contract:
+  timezone_semantics: AEMO_MARKET_TIME_AS_PUBLISHED_NO_UTC_CONVERSION
+  market_date_field_value: "2026-06-16"
+  dispatch_interval_start_inclusive: "2026-06-16T04:05:00"
+  dispatch_interval_end_inclusive: "2026-06-17T04:00:00"
+  identity_interval: START_DATE <= SETTLEMENTDATE < END_DATE
+  future_identity_rows_may_not_override_as_of_match: true
+
+join_contract:
+  bid_period_to_day_parent: [SETTLEMENTDATE, DUID, BIDTYPE, DIRECTION]
+  tracker_to_period:
+    DISPATCHOFFERTRK.SETTLEMENTDATE: BIDPEROFFER_D.INTERVAL_DATETIME
+    DISPATCHOFFERTRK.DUID: BIDPEROFFER_D.DUID
+    DISPATCHOFFERTRK.BIDTYPE: BIDPEROFFER_D.BIDTYPE
+    DISPATCHOFFERTRK.BIDSETTLEMENTDATE: BIDPEROFFER_D.BIDSETTLEMENTDATE
+    DISPATCHOFFERTRK.BIDOFFERDATE: BIDPEROFFER_D.OFFERDATE
+  direction_limitation: "DISPATCHOFFERTRK_HAS_NO_DIRECTION; retain all matches and report multiplicity"
+  tracker_to_physical_dispatch: [SETTLEMENTDATE, DUID]
+  physical_dispatch_filter:
+    RUNNO: 1
+    INTERVENTION: 0
+  dispatch_to_identity: [DUID, effective_half_open_interval]
+
+resource_contract:
+  exact_compressed_bytes: 18085971
+  maximum_total_uncompressed_bytes: 1107296256
+  maximum_total_data_rows: 4000000
+  cpu_only: true
+  gpu_allowed: false
+  paid_data_allowed: false
+  remote_worker_required: false
+
+retention_contract:
+  bucket: ecophys
+  prefix: raw/aemo/v14_row_conformance/market_date=2026-06-16/
+  upload_before_any_csv_row_parse: true
+  remote_sha256_metadata_required: true
+  overwrite_mismatched_remote_object_allowed: false
+  raw_rows_committed_to_git: false
+
+gates:
+  required_object_count: 3
+  required_r2_verified_count: 3
+  required_archive_crc_count: 3
+  required_table_count: 5
+  required_nonempty_table_count: 5
+  maximum_total_data_rows: 4000000
+  timestamp_parse_rate_min: 1.0
+  primary_key_duplicate_count_max: 0
+  bid_market_date_rate_min: 1.0
+  dispatch_window_rate_min: 1.0
+  bid_period_parent_match_rate_min: 1.0
+  tracker_offer_reference_non_null_rate_min: 0.99
+  tracker_period_match_rate_min: 0.995
+  tracker_period_ambiguous_rate_max: 0.05
+  tracker_dispatch_match_rate_min: 0.995
+  dispatch_identity_match_rate_min: 0.995
+  dispatch_identity_overlap_count_max: 0
+  replacement_allowed: false
+  causal_claim_allowed: false
+  model_claim_allowed: false
+
+outputs:
+  raw_root: artifacts/v14_aemo_row_conformance/raw
+  download_receipt: experiments/v14_aemo_row_conformance/artifacts/download_receipt.json
+  retention_receipt: experiments/v14_aemo_row_conformance/artifacts/retention_receipt.json
+  summary: experiments/v14_aemo_row_conformance/artifacts/summary.json

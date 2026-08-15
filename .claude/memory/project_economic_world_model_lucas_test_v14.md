@@ -212,3 +212,16 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   expose a downloadable NMISP roster on 2026-08-14; any self-described NMISP status requires official confirmation.
 - Collaboration brief: `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`.
 - Cross-domain event scout: `papers/proposal/v14_cross_domain_event_scout_2026-08-14.md`.
+
+## Modern AEMO row-conformance freeze
+
+- The earlier complete AEMO development ZIPs are absent locally and have no verified R2 raw-object manifest.
+  Preserve their summaries, but do not claim the bytes are reusable or rerun consumed months. Every new row
+  protocol must verify immutable R2 retention before opening a ZIP.
+- A modern, non-target protocol is frozen for 2026-06-16 using exact daily `BID_MOVE_COMPLETE`,
+  `NEXT_DAY_DISPATCH` and June `DUDETAILSUMMARY` objects (18,085,971 compressed bytes). It tests five table
+  headers, timestamps, primary keys, bid parentage, applied-offer/period multiplicity, physical dispatch and
+  effective-dated identity. `DISPATCHOFFERTRK` lacks direction; ambiguity must be measured, never imputed.
+- At freeze, those three ZIPs and all selected rows were unaccessed. Exact bytes must be retained and SHA-256
+  verified in R2 before parsing. The smoke is CPU-only and cannot validate raw submissions, rejected actions,
+  NEMDE replay, historical equivalence, causality or model prediction.

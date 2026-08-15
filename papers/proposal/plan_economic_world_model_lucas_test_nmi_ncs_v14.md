@@ -359,3 +359,22 @@ If figures 4--6 cannot be built without post-event fitting or model-imputed iden
    but do not yet execute, a minimal row-level timestamp/key/join conformance protocol that avoids the 1.61 GB
    monthly bid-period object. Obtain an outcome-blind CoW competition enumerator before any new CoW sample.
 6. Open no Experiment 156, prospective-target collector or GPU job unless the full event contract passes G1.
+
+### 11.1 Modern AEMO row-conformance gate frozen on 15 August 2026
+
+The source inventory found that the earlier complete development ZIPs are absent locally and have no verified R2
+manifest. Their preserved results remain evidence, but their bytes cannot be reused. A new retention-before-parse
+rule is now mandatory.
+
+A separately frozen, non-target modern smoke uses the mechanically selected 16 June 2026 daily reports and one
+monthly identity table: 18,085,971 compressed bytes total. It tests exact bytes/CRC, five headers, timestamp and
+primary-key conformance, daily-to-period bids, applied offers to period bids, applied offers to physical dispatch,
+and dispatch to effective-dated DUID identity. Because `DISPATCHOFFERTRK` omits direction, match multiplicity is
+reported rather than resolved by imputation.
+
+At protocol freeze, no selected ZIP or row had been accessed. The inputs must be uploaded and SHA-256 verified in
+R2 before any ZIP is opened. This is CPU-only E1a data-plane validation. Even a full pass does not establish raw
+participant actions, NEMDE replay, historical regime equivalence, causality or model fidelity; it only permits a
+separately frozen multi-day development design. Protocol:
+`experiments/v14_aemo_row_conformance/PREREGISTRATION.md`. Source inventory:
+`papers/proposal/v14_aemo_row_conformance_source_inventory_2026-08-15.md`.
