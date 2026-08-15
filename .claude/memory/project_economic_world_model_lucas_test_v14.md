@@ -285,3 +285,11 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Modern within-version bridge stability is now supported across six Tuesdays/two monthly identity snapshots.
   Additional same-version days have low value. Next freeze a minimal historical schema/source bridge audit; raw
   action provenance, prospective G1, Exp156 and GPU/model work remain locked.
+- The first historical gate is a bounded order/reachability preflight, not a join test. It deliberately reuses the
+  consumed header-only `2021-01` and `2021-12` period-offer objects so untouched months remain eligible for later
+  confirmation. Each gets one fixed 64 MiB prefix request, exact R2 retention before row access and no retry,
+  extension or full-file fallback. Pass requires the first month day and a chronological transition to day two in
+  both regimes. Manifest SHA: `40bf7a5c76aaf87a3533edb11cc42a41eb59fa2877bbd1c1bcf21f0dc338e9ed`.
+- The rolling daily report archive exposes only recent months and cannot recover the 2021 mechanism boundary.
+  Consequently a pass licenses a fresh, bounded five-role monthly-prefix bridge protocol; a failure returns to
+  source design. It never licenses the 1.61 GB full object, causal/model claims, Exp156 or a GPU queue.

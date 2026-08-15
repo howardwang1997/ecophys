@@ -504,3 +504,21 @@ version portability or actual-action provenance. The next free gate is a separat
 schema bridge audit; only after it passes should a bounded historical action panel be designed. Experiment 156,
 causal claims and GPU/model work remain locked. Result:
 `experiments/v14_aemo_bundle_stability_panel_repair/RESULTS.md`.
+
+### 11.9 Historical prefix-reachability gate frozen on 15 August 2026
+
+The official rolling daily-report archive cannot recover the 2021 5MS/WDR boundary, while the post-v5.1 monthly
+period-offer object is 1,610,349,080 compressed bytes. Before any fresh historical month or full object is opened,
+the next gate tests whether a complete first market day is reachable from a bounded chronological ZIP prefix.
+
+The development-only protocol reuses the already consumed, header-only January/December 2021 objects; they cannot
+serve as confirmation. Each receives exactly one 64 MiB range request. Exact bytes must be retained in R2 before
+row parsing; retry, extension, substitution and full-file fallback are forbidden. A streaming CPU parser must
+reconfirm the pre/post header, parse all reached dates without loss or regression, start at the first month day and
+reach a second day in both objects. Manifest SHA-256:
+`40bf7a5c76aaf87a3533edb11cc42a41eb59fa2877bbd1c1bcf21f0dc338e9ed`.
+
+A pass licenses only a separately frozen five-role historical row bridge on untouched months. It is not a
+historical join, action-semantics, intervention or model result. At freeze the protocol is network-unexecuted;
+Experiment 156 and all GPU/model work remain locked. Protocol:
+`experiments/v14_aemo_historical_prefix_reachability/PREREGISTRATION.md`.

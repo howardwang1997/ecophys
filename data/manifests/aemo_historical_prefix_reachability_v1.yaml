@@ -1,0 +1,92 @@
+schema_version: ecophys-aemo-historical-prefix-reachability/v1
+sample_id: aemo-consumed-month-historical-prefix-reachability-v1
+frozen_at: "2026-08-15T05:50:36Z"
+parent_commit: 0fc24416bd6c0a0ab2a2865d3d7d817c25b60a34
+scientific_role: development_only_historical_prefix_reachability
+
+prior_evidence:
+  source_contract_decision: PASS_TRANSFER_REPAIR_AND_SOURCE_HEADER_CONFIRMATION
+  source_contract_summary_sha256: e4bac4ac57b8b25b8d91a3465eba544c9c9e22050c47750c89344e339f6417c4
+  modern_panel_decision: PASS_MODERN_BUNDLE_STABILITY_PANEL
+  modern_panel_summary_sha256: d939fffd8bc7673eb0aac78e06ae2abf38b1ea27e81cba67d03c355bec77ec88
+
+selection:
+  rule: reuse_consumed_header_only_months_for_order_feasibility_not_confirmation
+  months: ["2021-01", "2021-12"]
+  previous_market_rows_opened: false
+  held_out_status: development_consumed_not_eligible_for_confirmation
+  replacement_allowed: false
+
+range_contract:
+  request_header: "Range: bytes=0-67108863"
+  exact_response_bytes_per_object: 67108864
+  maximum_total_response_bytes: 134217728
+  maximum_uncompressed_bytes_per_object: 1073741824
+  full_download_fallback_allowed: false
+  range_extension_allowed: false
+  parse_before_r2_retention_allowed: false
+
+objects:
+  - object_id: pre-bridge-bidperoffer-prefix-2021-01
+    sample_label: consumed-development-pre-bridge-2021-01
+    month: "2021-01"
+    mechanism_phase: A0_30_MINUTE_ONLY
+    observation_phase: O0_LEGACY_REPORTS
+    logical_role: BIDPEROFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202101010000.zip
+    expected_filename: PUBLIC_DVD_BIDPEROFFER_202101010000.prefix-67108864.bin
+    expected_member: PUBLIC_DVD_BIDPEROFFER_202101010000.CSV
+    expected_archive_bytes: 95238254
+    expected_package: OFFER
+    expected_table: BIDPEROFFER
+    expected_version: "1"
+    market_day_field: SETTLEMENTDATE
+    expected_first_market_day: "2021-01-01"
+    required_fields: [SETTLEMENTDATE, OFFERDATE, PERIODID, VERSIONNO, DUID, BIDTYPE, MAXAVAIL]
+    r2_key: raw/aemo/v14_historical_prefix_reachability/pre-bridge-bidperoffer-prefix-2021-01.prefix-67108864.bin
+  - object_id: post-v51-bidperoffer-prefix-2021-12
+    sample_label: consumed-development-post-v51-2021-12
+    month: "2021-12"
+    mechanism_phase: A3_5MS_PLUS_WDR
+    observation_phase: O4_V51_CLUSTERED_RELEASE
+    logical_role: BIDPEROFFER
+    url: https://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2021/MMSDM_2021_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_BIDPEROFFER_202112010000.zip
+    expected_filename: PUBLIC_DVD_BIDPEROFFER_202112010000.prefix-67108864.bin
+    expected_member: PUBLIC_DVD_BIDPEROFFER_202112010000.CSV
+    expected_archive_bytes: 1610349080
+    expected_package: BIDS
+    expected_table: BIDOFFERPERIOD
+    expected_version: "1"
+    market_day_field: TRADINGDATE
+    expected_first_market_day: "2021-12-01"
+    required_fields: [TRADINGDATE, OFFERDATETIME, PERIODID, DUID, BIDTYPE, MAXAVAIL]
+    r2_key: raw/aemo/v14_historical_prefix_reachability/post-v51-bidperoffer-prefix-2021-12.prefix-67108864.bin
+
+retention_contract:
+  bucket: ecophys
+  prefix: raw/aemo/v14_historical_prefix_reachability/
+  upload_before_any_csv_row_parse: true
+  remote_sha256_metadata_required: true
+  overwrite_mismatched_remote_object_allowed: false
+  raw_prefixes_committed_to_git: false
+
+gates:
+  required_object_count: 2
+  required_r2_verified_count: 2
+  required_header_contract_count: 2
+  required_first_market_day_count: 2
+  required_second_market_day_reached_count: 2
+  required_chronological_prefix_count: 2
+  timestamp_parse_rate_min: 1.0
+  malformed_row_count_max: 0
+  complete_archive_transfer_count_max: 0
+  causal_claim_allowed: false
+  model_claim_allowed: false
+  gpu_allowed: false
+  paid_data_allowed: false
+
+outputs:
+  raw_root: artifacts/v14_aemo_historical_prefix_reachability/raw
+  download_receipt: experiments/v14_aemo_historical_prefix_reachability/artifacts/download_receipt.json
+  retention_receipt: experiments/v14_aemo_historical_prefix_reachability/artifacts/retention_receipt.json
+  summary: experiments/v14_aemo_historical_prefix_reachability/artifacts/summary.json

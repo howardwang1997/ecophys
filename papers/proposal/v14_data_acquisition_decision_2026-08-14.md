@@ -267,3 +267,14 @@ Do not buy data or bulk-download more modern days. The next data question is his
 minimal public source combination that supplies the same five logical roles across declared schema regimes, then
 freeze a header/time/key bridge before any large historical object is fetched. Raw submission/rejection provenance
 and prospective-event data remain separate blockers. `NO_BUY_NOW` remains unchanged.
+
+### Frozen historical prefix-reachability acquisition
+
+The official rolling report archive retains recent rather than 2021 daily bundles, so it cannot test portability
+across the 5MS/WDR boundary. The next free protocol therefore requests only the first 67,108,864 bytes of each
+already consumed 2021-01/12 monthly `BIDPEROFFER` archive: 134,217,728 bytes total, versus 1,705,587,334 bytes for
+the two complete objects. No fresh confirmation month is consumed.
+
+Both exact prefixes must be retained in R2 before content access. There is no retry, range extension, replacement
+or full-download fallback. A pass only establishes that a bounded one-day historical sample can be designed;
+`NO_BUY_NOW` remains unchanged and no bulk archive or commercial data is authorized.

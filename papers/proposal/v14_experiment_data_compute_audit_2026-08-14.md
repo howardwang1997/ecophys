@@ -393,3 +393,10 @@ The four sequential CPU analyses passed on 5,697,359 target rows and 18,255,035 
 remote worker, paid data or model run was used. More same-version sampling is not compute-efficient: the next work
 is historical schema/source reconnaissance and small CPU preflights. V100/RTX 2060 queues remain empty until a
 separate model experiment is scientifically unlocked.
+
+### Frozen historical reachability budget
+
+The next preflight transfers exactly two 64 MiB compressed prefixes and retains 128 MiB in existing R2. It streams
+at most 1 GiB uncompressed per object, stores only counts/date blocks in memory and runs sequentially on local CPU.
+Expected GPU-hours, paid-data spend and remote-worker requirements are zero. A pass triggers protocol design, not
+training; V100 and RTX 2060 queues remain empty.
