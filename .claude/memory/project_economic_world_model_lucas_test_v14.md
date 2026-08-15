@@ -583,3 +583,20 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - The pass authorizes a separately frozen exposure/control protocol design only. `G1 NOT PASSED`; account/action/
   response rows and GPUs remain locked. Next gates: enumerable pre-event denominator, successful-action null,
   identity layers, liquidation competing risk, outcome-blind controls, finality replication and licence/retention.
+- Compound exposure completeness can be certified exactly at one block. For candidate addresses `U`, require
+  `totalSupplyBase = sum(max(principal,0))`, `totalBorrowBase = sum(max(-principal,0))` and each
+  `totalsCollateral[a] = sum(userCollateral[i,a])`, all with zero tolerance. Under the conforming aggregate
+  invariant, nonnegative omitted contributions make zero residual a certificate of no outside nonzero position;
+  any positive or negative residual is a hard failure. This is a completeness lemma, not novelty.
+- State-owner enumeration uses Supply.dst, Withdraw.src, SupplyCollateral.dst, WithdrawCollateral.src, nonzero
+  Transfer endpoints, TransferCollateral endpoints and Absorb borrower. Token funder/recipient, manager/Bulker,
+  call operator, tx sender, account and liquidator remain separate layers.
+- Logs are not a complete M3 action panel: debt-to-debt base transfers can change two principals without an owner-
+  identifying balance event. Full C3 requires successful call traces plus state reconciliation; without traces,
+  only logged channels/net state may be reported and the complete-adaptation claim fails.
+- Preferred clean event is one existing asset's borrow-CF, then liquidate-CF, then supply-cap update, atomically
+  linked to Configurator event + CometDeployed + proxy Upgraded in one transaction. `Upgraded` is the operative
+  clock. Shared admin is not control independence; payload spillover and overlap/concentration are hard gates.
+- Zero-row design manifest passes 21 relevant tests and authorizes only a separately frozen governance metadata
+  inventory. No governance/account/trace/response query or GPU job is yet authorized. Design:
+  `papers/proposal/v14_compound_exposure_control_design_2026-08-16.md`.

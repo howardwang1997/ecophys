@@ -1,0 +1,179 @@
+schema_version: ecophys-compound-v3-exposure-control-design/v1
+design_id: compound_v3_exposure_control_zero_row_v1
+as_of: "2026-08-16"
+stage: zero_row_protocol_design_only
+
+evidence:
+  source_summary_path: experiments/v14_compound_v3_metadata_preflight/artifacts/summary.json
+  source_summary_sha256: 643edb6750ab5567528a9754bdf92b84143deaa82a9225a9c8ea9730e0d81e11
+  chain_summary_path: experiments/v14_compound_v3_chain_metadata_preflight/artifacts_v2/summary.json
+  chain_summary_sha256: 14f5b044d8c51e4323419b901a7f037c84c4af45083464e0daaefc561256c944
+  source_commit: f766f51583c23acc33b2a7824654ef2029a96804
+  chain_collection_commit: d1019df44df4acbc944e6aae408595de69478e09
+
+access_boundary:
+  account_state_rows_opened: false
+  chain_rpc_used: false
+  governance_payload_rows_opened: false
+  governance_log_rows_opened: false
+  participant_action_rows_opened: false
+  call_trace_rows_opened: false
+  liquidation_rows_opened: false
+  price_or_oracle_rows_opened: false
+  realized_response_rows_opened: false
+  raw_addresses_retained: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+  official_code_blobs_opened: true
+
+unit_contract:
+  primary_unit: chain_comet_market_account_address
+  beneficial_person_claimed: false
+  cross_market_address_clustered_for_inference: true
+  smart_contract_wallet_is_distinct_address_unit: true
+  entity_clustering_forbidden: true
+  identity_layers:
+    - account_state_owner
+    - top_level_transaction_sender
+    - immediate_call_operator
+    - manager_or_bulker
+    - token_funder_or_recipient
+    - liquidation_absorber
+    - collateral_sale_recipient
+
+treatment_contract:
+  eligible_configuration_events:
+    - UpdateAssetBorrowCollateralFactor
+    - UpdateAssetLiquidateCollateralFactor
+    - UpdateAssetSupplyCap
+  priority_order:
+    - UpdateAssetBorrowCollateralFactor
+    - UpdateAssetLiquidateCollateralFactor
+    - UpdateAssetSupplyCap
+  excluded_event_classes:
+    - AddAsset
+    - UpdateAssetPriceFeed
+    - implementation_only_upgrade
+    - PauseAction
+    - rewards_or_reserves_change
+    - bundled_multi_market_change
+  required_same_transaction_events:
+    - eligible_configuration_event
+    - CometDeployed
+    - Upgraded
+  operative_clock: comet_proxy_upgraded_log
+  require_single_market: true
+  require_single_existing_collateral_asset: true
+  require_pre_post_getter_conformance: true
+  require_no_other_market_upgrade_in_transaction: true
+  contamination_window_seconds: 86400
+  selection_uses_post_event_participant_data: false
+
+population_contract:
+  enumeration_start: comet_proxy_deployment_block
+  snapshot_block: execution_block_minus_one
+  at_risk_rule: nonzero_signed_principal_or_any_positive_collateral_balance
+  state_owner_events:
+    - event: Supply
+      owner_fields: [dst]
+    - event: Withdraw
+      owner_fields: [src]
+    - event: SupplyCollateral
+      owner_fields: [dst]
+    - event: WithdrawCollateral
+      owner_fields: [src]
+    - event: Transfer
+      owner_fields: [from, to]
+    - event: TransferCollateral
+      owner_fields: [from, to]
+    - event: AbsorbDebt
+      owner_fields: [borrower]
+    - event: AbsorbCollateral
+      owner_fields: [borrower]
+  exclude_zero_address: true
+  exact_residual_tolerance: 0
+  residual_identities:
+    - totalSupplyBase_equals_sum_positive_principal
+    - totalBorrowBase_equals_sum_negative_principal_magnitude
+    - each_totalsCollateral_equals_sum_account_collateral
+  all_residuals_must_equal_zero: true
+  require_historical_implementation_source_conformance: true
+
+action_contract:
+  voluntary_channels:
+    - supply_base
+    - repay_base
+    - withdraw_base
+    - borrow_base
+    - supply_collateral
+    - withdraw_collateral
+    - transfer_base
+    - transfer_collateral
+  liquidation_channel: separate_competing_risk
+  no_action_label: no_successful_state_changing_account_adjustment_in_frozen_window
+  no_action_does_not_mean_no_intent_or_revert: true
+  require_complete_successful_call_traces: true
+  logged_event_only_panel_is_complete_claim: false
+  require_pre_post_state_reconciliation: true
+  response_horizons_seconds: [3600, 86400, 604800, 2419200]
+
+control_contract:
+  candidate_families:
+    - same_market_zero_direct_asset_exposure
+    - same_asset_other_unchanged_comet_market
+    - matched_account_market_in_unchanged_comet_market
+    - pre_event_pseudo_intervention
+  single_control_family_sufficient: false
+  shared_admin_is_independence_evidence: false
+  require_payload_level_spillover_audit: true
+  require_common_support_before_response_access: true
+  maximum_weighted_standardized_mean_difference: 0.10
+  minimum_effective_sample_size_per_arm: 100
+  maximum_top_one_weight_share: 0.20
+  maximum_top_ten_weight_share: 0.60
+  cluster_by_account_address: true
+
+finality_contract:
+  confirmation_depth_is_consensus_finality: false
+  require_consensus_finalized_execution_block: true
+  require_second_execution_provider_block_hash_match: true
+  require_beacon_execution_payload_hash_match: true
+  provider_substitution_after_freeze: false
+
+privacy_retention_contract:
+  public_artifacts_contain_raw_account_addresses: false
+  internal_longitudinal_id: keyed_hmac_sha256
+  encrypted_address_crosswalk_required: true
+  raw_rpc_payload_publication_forbidden: true
+  provider_terms_review_required: true
+  human_reidentification_forbidden: true
+  code_license_and_chain_data_terms_separate: true
+
+gates:
+  - evidence_hashes
+  - zero_row_access_boundary
+  - scoped_address_unit
+  - operative_upgrade_clock
+  - single_asset_event_filter
+  - exact_population_certificate
+  - complete_action_semantics
+  - liquidation_separation
+  - outcome_blind_controls
+  - consensus_finality_replication
+  - privacy_and_retention
+  - gpu_lock
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_ZERO_ROW_DESIGN_AUTHORIZE_GOVERNANCE_METADATA_PREFLIGHT_ONLY
+  fail: FAIL_ZERO_ROW_DESIGN_KEEP_GOVERNANCE_AND_ACCOUNT_ROWS_LOCKED
+  authorized_next_stage: separately_frozen_governance_configuration_metadata_inventory
+
+limitations:
+  - The aggregate residual identities certify position-set completeness only if the per-account and aggregate values are read atomically from the same conforming implementation and block.
+  - Event-topic enumeration alone is not a complete action panel because some successful base transfers can change debt without emitting a state-owner event.
+  - A provider-confirmed block depth is not Ethereum consensus finality.
+  - Shared admin, common assets, cross-market accounts and bundled governance can invalidate every proposed control family.
+  - Address units are not people, firms or independently controlled agents.
+  - This design does not select an intervention, inspect a payload or authorize any account, action, price, liquidation or response row.

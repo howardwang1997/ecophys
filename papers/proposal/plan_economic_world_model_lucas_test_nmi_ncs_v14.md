@@ -1090,3 +1090,28 @@ account/action/response acquisition. The next document must define an enumerated
 successful-action null, manager/account/beneficiary separation, liquidation competing risk, outcome-blind controls,
 consensus-finality/provider replication and licence/retention gates before any rows are opened. Result:
 `experiments/v14_compound_v3_chain_metadata_preflight/RESULTS_V2.md`.
+
+### 11.41 Exact exposure certificate designed; complete M3 now depends on traces and controls
+
+The zero-row Compound design derives an exact denominator certificate from Comet's signed principal and collateral
+accounting. Enumerate candidate state-owner addresses from deployment to `T-1`, read every candidate and aggregate
+at the same block, and require zero residual for positive principal versus `totalSupplyBase`, negative-principal
+magnitude versus `totalBorrowBase`, and every collateral balance versus `totalsCollateral`. Because every omitted
+component is nonnegative, zero residuals certify that no address outside the enumerated set has a nonzero position;
+positive or negative residuals are hard reconstruction failures. This is a source-conditional completeness lemma,
+not a novelty claim.
+
+The design also identifies a harder blocker. Successful debt-to-debt base transfers can change account state
+without a complete owner event, so logs alone cannot support C3 or a complete M3 panel. The full route requires
+successful call traces, manager/Bulker/operator/sender separation and pre/post state reconciliation. Liquidation
+remains a competing risk, and raw addresses may not enter public artifacts.
+
+Eligible development events are single-market, single-existing-asset collateral-factor or supply-cap changes with
+an atomic Configurator event, `CometDeployed` and proxy `Upgraded`. The operative clock is `Upgraded`; multi-market,
+price-feed, pause, collateral-addition and implementation-only changes are excluded. Four control families must
+survive payload spillover and frozen overlap/concentration gates; shared admin is explicitly not independence.
+
+This design passes only as a machine-checked zero-row contract. It authorizes writing a separately frozen D0
+governance/configuration metadata inventory—not querying it yet. `G1 NOT PASSED`; accounts, traces, prices,
+liquidations, responses and GPUs remain locked. Design:
+`papers/proposal/v14_compound_exposure_control_design_2026-08-16.md`.

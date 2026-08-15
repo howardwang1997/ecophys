@@ -593,3 +593,16 @@ local CPU/network only, zero paid data, zero remote-worker time and zero GPU-hou
 This removes deployment/archive metadata as the immediate bottleneck but does not create a compute queue. Exposure
 denominator, shared-authority controls, finality replication and retention/licence must be solved in a zero-row
 design before any account acquisition. Neither V100 nor RTX 2060 is queued; no training job is authorized.
+
+### Compound zero-row exposure/control design budget
+
+The machine-checked design, exact residual identity and 21-test relevant suite use seconds of local CPU, negligible
+storage, no chain request and zero GPU. It opens no governance payload, account, action, trace, liquidation, price
+or response row.
+
+The next D0 governance-metadata protocol is expected to remain a small CPU/network inventory, but its exact calls
+and bytes must be frozen before execution. D1 exposure cost is not yet authorized: it scales with deployment-to-
+event logs, unique candidate accounts and active collateral assets, and first needs a count-only budget. Complete
+M3 additionally requires historical successful call traces; if no free reproducible source exists, the resource
+choice is a terms-reviewed provider or a self-managed archive/trace index with substantial SSD and CPU/RAM. This is
+not GPU work. Both V100s and the RTX 2060 remain idle through D2.

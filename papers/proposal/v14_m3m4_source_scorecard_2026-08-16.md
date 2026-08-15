@@ -186,3 +186,27 @@ makes bundled treatment and shared-authority spillover an explicit control risk.
 non-authoritative until code/storage/execution metadata conform on chain. The next admissible protocol is chain
 deployment/archive *metadata only*; accounts, actions, prices, responses and GPUs stay locked. Result:
 `experiments/v14_compound_v3_metadata_preflight/RESULTS.md`.
+
+## 11. Chain-metadata result
+
+The v2 chain run at protocol commit `d1019df44df4acbc944e6aae408595de69478e09` passed 12/12 metadata gates:
+62 one-attempt calls, an explicit 64-block confirmation-depth snapshot, six source-conforming market getters and
+bounded historical state at block 17,000,000. Artifact SHA-256:
+`14f5b044d8c51e4323419b901a7f037c84c4af45083464e0daaefc561256c944`.
+
+All six markets and the Configurator share one proxy-admin address. This removes deployment ambiguity but makes
+shared-authority spillover more concrete. The pass authorizes exposure/control protocol design only; it does not
+change the candidate to G1-admitted. Result:
+`experiments/v14_compound_v3_chain_metadata_preflight/RESULTS_V2.md`.
+
+## 12. Zero-row exposure/control design result
+
+The design now has an exact exposure-denominator test. At one block, enumerated positive/negative principal and
+each collateral balance must reproduce the corresponding aggregate total with zero residual. Conditional on the
+active implementation's accounting invariant, zero residual certifies no omitted nonzero position.
+
+This advances the exposure kill switch from “unresolved in principle” to “empirically testable but not yet run.”
+Controls and retention remain unresolved, and complete action data becomes a new explicit trace-source kill switch:
+event logs do not cover every debt-changing base transfer. The next stage is a sealed governance metadata inventory
+only. No account, trace or response access follows from the design. Full protocol:
+`papers/proposal/v14_compound_exposure_control_design_2026-08-16.md`.
