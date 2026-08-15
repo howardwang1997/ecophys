@@ -1071,3 +1071,22 @@ provider-replication checks. Endpoint, markets, getters, archive block, 80-attem
 response and GPU locks remain unchanged. V1 result:
 `experiments/v14_compound_v3_chain_metadata_preflight/RESULTS_V1.md`; v2 protocol:
 `experiments/v14_compound_v3_chain_metadata_preflight/PREREGISTRATION_V2.md`.
+
+### 11.40 Compound chain metadata passes; exposure/control design is now the bottleneck
+
+The clean v2 run at protocol commit `d1019df44df4acbc944e6aae408595de69478e09` passed all twelve frozen
+metadata gates. Exactly 62/62 calls succeeded once, transferring 418,232 bytes. Provider head 25,760,636 and
+explicit snapshot 25,760,572 differ by the frozen 64 blocks; fixed block 17,000,000 returned coherent proxy and
+implementation state for USDC and WETH. Independent verification reproduced the method vector, hashes, getters,
+archive/current relations and decision.
+
+All six current proxies share one proxy-code hash but have six implementation addresses/hashes. More importantly,
+all six market admin slots and the shared Configurator resolve to one admin address. Cross-market contrasts are
+therefore structurally exposed to shared authority and cannot be accepted as controls without payload/event-level
+separation and a frozen spillover rule.
+
+The pass authorizes only a separate pre-event exposure/control *protocol design*. It does not pass G1 or authorize
+account/action/response acquisition. The next document must define an enumerated at-risk account denominator,
+successful-action null, manager/account/beneficiary separation, liquidation competing risk, outcome-blind controls,
+consensus-finality/provider replication and licence/retention gates before any rows are opened. Result:
+`experiments/v14_compound_v3_chain_metadata_preflight/RESULTS_V2.md`.

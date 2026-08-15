@@ -573,3 +573,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - `head - 64` is a confirmation-depth convention, not Ethereum consensus finality; both headers are one-provider
   observations. Any later intervention/response protocol needs separately frozen consensus-finality and provider-
   replication checks. V2 still uses zero paid data/remote workers/GPUs and can unlock design only.
+- Compound chain metadata v2 passed 12/12 at protocol commit
+  `d1019df44df4acbc944e6aae408595de69478e09`: 62/62 one-attempt calls, 418,232 response bytes, head
+  25,760,636 and explicit snapshot 25,760,572. Fixed block 17,000,000 had coherent USDC/WETH proxy and historical
+  implementation state. Summary SHA `14f5b044d8c51e4323419b901a7f037c84c4af45083464e0daaefc561256c944`.
+- All six current Comet proxies share one proxy-code hash, while implementations/hashes are six-way distinct. All
+  six proxy admin slots and the Configurator share admin `0x1ec63b5883c3481134fd50d5daebc83ecd2e8779`; never treat
+  markets as independent controls without payload/event separation and a spillover rule.
+- The pass authorizes a separately frozen exposure/control protocol design only. `G1 NOT PASSED`; account/action/
+  response rows and GPUs remain locked. Next gates: enumerable pre-event denominator, successful-action null,
+  identity layers, liquidation competing risk, outcome-blind controls, finality replication and licence/retention.

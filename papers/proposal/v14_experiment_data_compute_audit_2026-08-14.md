@@ -583,3 +583,13 @@ historical block yield exactly 62 successful calls on the expected path. Runtime
 requests per second, retained output remains two small JSON files and the hard limits remain 80 HTTP attempts and
 8 MiB. The 64-block lag is not consensus finality. Required V100, RTX 2060 and paid-data budgets remain zero;
 the GPU queues stay empty even after a pass because only exposure/control protocol design could be unlocked.
+
+### Compound chain-metadata v2 compute result
+
+V2 completed 62/62 one-attempt metadata calls in 36.18 seconds and transferred 418,232 response bytes. Its two
+artifacts total 51,854 bytes. All twelve gates and an independent structural/hash verification passed. The run used
+local CPU/network only, zero paid data, zero remote-worker time and zero GPU-hours.
+
+This removes deployment/archive metadata as the immediate bottleneck but does not create a compute queue. Exposure
+denominator, shared-authority controls, finality replication and retention/licence must be solved in a zero-row
+design before any account acquisition. Neither V100 nor RTX 2060 is queued; no training job is authorized.
