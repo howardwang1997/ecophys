@@ -391,7 +391,14 @@ direction candidates because `DISPATCHOFFERTRK` omits direction, an ambiguity ra
 maximum. Do not relax the threshold or choose a candidate post hoc. E1a remains failed; no multi-day panel,
 Experiment 156 or GPU job is unlocked.
 
-The next zero-cost step is a post-hoc development audit of official `DISPATCHLOAD` direction semantics and the
-retained selected-day rows. Only if that establishes a legitimate three-table bridge should a new rule be frozen
-and tested on a fresh mechanically selected date. Result:
-`experiments/v14_aemo_row_conformance/RESULTS.md`.
+The official v5.3 specification and the retained 69-field `DISPATCHLOAD` v6 header show that dispatch has no
+direction field. It instead gives a signed realized target: negative for BDU import and positive otherwise. Using
+that outcome to select an ex-ante bid direction would leak realization into action. The better development
+hypothesis is that one tracker record applies a *bundle* of direction-specific bid rows for BDU energy/regulation
+services, rather than selecting one row.
+
+An explicitly post-hoc diagnostic is frozen to test whether every ambiguity is exactly a two-row `{GEN, LOAD}`
+bundle attached to one effective BDU identity. It has no pass/fail authority and cannot override E1a. If supported,
+the set-valued bridge must be confirmed on a fresh mechanically selected date. Result:
+`experiments/v14_aemo_row_conformance/RESULTS.md`. Diagnostic plan:
+`experiments/v14_aemo_direction_bundle_diagnostic/ANALYSIS_PLAN.md`.

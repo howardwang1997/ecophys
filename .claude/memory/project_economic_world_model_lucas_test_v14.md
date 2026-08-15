@@ -231,6 +231,11 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Authoritative decision is `FAIL_MODERN_ROW_CONFORMANCE_SMOKE`: 43,200/592,560 tracker rows matched more than one
   period-bid direction (`7.290400972% > 5%`). Preserve the threshold and failure. Never impute a direction from
   the two-table join. E1a, multi-day acquisition, Exp156 and GPUs remain locked.
-- Next admissible work is a post-hoc development audit of official `DISPATCHLOAD` direction semantics plus the
-  already-retained 2026-06-16 rows. A proposed three-table bridge needs a separately frozen fresh-day confirmation.
-  Summary SHA: `fc422654de5c64a91e71b8dcceb22612f406092cdf6a36900859072041a6668b`.
+- Official Data Model v5.3 and the real 69-field `DISPATCHLOAD` v6 header confirm that dispatch contains no
+  direction field. `TOTALCLEARED` is negative for BDU import and positive otherwise, but it is a realized outcome;
+  using it to select an ex-ante bid row would be leakage.
+- The development hypothesis is therefore set-valued: one tracker record may apply a two-leg `{GEN, LOAD}` offer
+  bundle for BDU energy/regulation services. A post-hoc descriptive diagnostic is frozen to test cardinality,
+  direction sets, bid types and effective identity on the retained day. It cannot override E1a. Any bundle bridge
+  needs fresh-day confirmation. Summary SHA:
+  `fc422654de5c64a91e71b8dcceb22612f406092cdf6a36900859072041a6668b`.
