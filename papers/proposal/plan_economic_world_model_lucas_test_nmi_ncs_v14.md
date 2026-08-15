@@ -944,3 +944,21 @@ the exact-M2 mechanism case; participant response M3/M4 must come from another r
 prospective event/control frame. Post-hoc analysis of already consumed preperiod counts may inform an exposure-
 routing module, but cannot repair this gate or support a causal claim. Result:
 `experiments/v14_uniswap_v3_preperiod_exposure_census/RESULTS.md`.
+
+### 11.32 Post-hoc exposure-routing geometry frozen without a gate
+
+Before selecting a replacement M3/M4 domain, quantify what U1R already consumed. The exploratory analysis fixes
+swap, position-action and combined event measures; top-1/3/5/10/20 shares; HHI/effective counts; full/active Gini;
+total variation from uniform contracts; fee/batch partitions; and swap-versus-position support/mass divergence.
+There is no pass/fail threshold and no fresh data. U1R remains failed regardless of output.
+
+This exposes a missing operator in the multiscale design. Exact mechanism execution remains fixed at M2, while a
+state- and channel-dependent router maps technical units into economic exposure before M3 participant adaptation.
+For `u_i=1/N`, event weights `p_i` and `g_i=Np_i`, the exact aggregation identity is
+`E_p[r]-E_u[r]=Cov_u(g,r)`, with `Var_u(g)=N HHI(p)-1`. These are elementary identities, not a novelty claim; the
+unopened response determines the covariance and its sign.
+
+The computation reads only the committed 1,000 count rows, runs locally in seconds and uses zero network, paid
+data and GPU. Its purpose is to constrain architecture and the next source gate, not to generate a causal result.
+Plan: `experiments/v14_uniswap_v3_exposure_routing_exploratory/EXPLORATORY_PLAN.md`; topology:
+`papers/proposal/v14_exposure_routing_topology_2026-08-15.md`.

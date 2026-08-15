@@ -1,0 +1,63 @@
+schema_version: ecophys-exposure-routing-exploratory/v1
+stage: frozen_posthoc_before_routing_metric_computation
+analysis_id: uniswap-v3-u1r-exposure-routing-posthoc-v1
+frozen_at: "2026-08-15T11:41:00Z"
+scientific_status: post_hoc_description_no_inferential_gate
+
+parent:
+  protocol_commit: ab722229d305220c23ec53d268a91d854a6a4e31
+  result_commit: 6e71239366b1b1f64006a1cfc2cc563d13b9423e
+  exposure_census: experiments/v14_uniswap_v3_preperiod_exposure_census/artifacts/exposure_census.jsonl
+  exposure_census_sha256: 677483727bfd7d1537640221bb3b7441f2227e5907a5abfa4b5d67370c5bf72f
+  summary: experiments/v14_uniswap_v3_preperiod_exposure_census/artifacts/summary.json
+  summary_sha256: 3ddff9cd49570a85f3c658533266a05539068624cf9385dd008147237adf0d6c
+  input_already_consumed: true
+  u1r_decision_remains_binding: FAIL_FULL_PREPERIOD_EXPOSURE_SUPPORT_KEEP_UNISWAP_M2_ONLY
+
+metrics:
+  channels: [swap_count, position_action_count, combined_event_count]
+  top_k: [1, 3, 5, 10, 20]
+  concentration:
+    - active_fraction
+    - top_k_shares
+    - hhi
+    - inverse_hhi_effective_count
+    - entropy_effective_count
+    - gini_population
+    - gini_active
+    - uniform_to_event_total_variation
+    - exposure_multiplier_variance
+  channel_comparison:
+    - support_overlap
+    - weight_total_variation
+    - jensen_shannon_divergence
+    - cosine_similarity
+  partitions: [packed_fee_68, packed_fee_102, propagation_batch_1, propagation_batch_2]
+  top_pool_rows_per_channel: 10
+
+mathematical_identity:
+  uniform_measure: u_i_equals_1_over_N
+  event_measure: p_i_equals_event_count_i_over_total_event_count
+  exposure_multiplier: g_i_equals_N_times_p_i
+  exact_mean_gap: E_p_response_minus_E_u_response_equals_Cov_u_g_response
+  total_variation_bound: absolute_mean_gap_at_most_TV_times_response_range
+  cauchy_bound: absolute_mean_gap_at_most_sqrt_N_HHI_minus_1_times_response_variance
+  status: algebraic_identity_not_novel_theorem
+
+access_boundary:
+  source_is_only_committed_u1r_counts: true
+  new_network_or_chain_access: false
+  post_treatment_data_opened: false
+  control_data_opened: false
+  identity_data_opened: false
+  amount_price_liquidity_decoded: false
+  u1r_reanalysis_changes_decision: false
+  inferential_pass_fail_gate: false
+  paid_data: false
+  gpu_hours: 0
+
+result: null
+
+artifacts:
+  plan: experiments/v14_uniswap_v3_exposure_routing_exploratory/EXPLORATORY_PLAN.md
+  summary: experiments/v14_uniswap_v3_exposure_routing_exploratory/artifacts/exploratory_summary.json

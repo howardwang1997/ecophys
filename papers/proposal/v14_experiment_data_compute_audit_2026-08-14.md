@@ -508,3 +508,13 @@ The run failed only the predeclared swap-count concentration gate, not a compute
 CPU/GPU cannot repair the decision, and excluding the dominant pool post hoc is prohibited. Paid-data spend,
 remote-worker use and GPU-hours were zero. Both V100s and the RTX 2060 remain idle; no Uniswap response/model job
 is queued.
+
+### Exposure-routing exploratory budget
+
+The post-U1R routing description rereads only the committed 1,000-row census. It performs sorting and scalar
+reductions for three count channels and four fixed partitions, writes one small JSON summary and makes zero
+network requests. Expected work is seconds on one local CPU core with negligible memory/storage.
+
+This is explicitly post hoc and has no gate; more compute cannot increase its evidential status. Paid data,
+remote workers and GPU-hours are zero. V100/RTX 2060 queues remain empty, and no response/model access is
+authorized by the output.

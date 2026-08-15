@@ -513,3 +513,10 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   real system or a genuinely new prospective frame. Post-hoc description of consumed counts may inform an
   exposure-routing module but cannot repair U1R. Result:
   `experiments/v14_uniswap_v3_preperiod_exposure_census/RESULTS.md`.
+- Freeze one no-gate post-hoc routing analysis on the committed U1R counts before selecting M3/M4 data. Report
+  top-k, HHI/effective counts, Gini, total variation, fee/batch representation and swap-position channel
+  divergence. It uses no new network/chain/response/identity data and cannot change U1R.
+- Revised architecture: keep exact executable transitions fixed at M2, then learn a state- and channel-dependent
+  exposure router before M3/M4. For uniform contracts `u`, event weights `p`, and `g=Np`, the exact identity is
+  `E_p[r]-E_u[r]=Cov_u(g,r)` and `Var_u(g)=N*HHI(p)-1`. This is elementary algebra, not a novel theorem or response
+  evidence. Topology: `papers/proposal/v14_exposure_routing_topology_2026-08-15.md`.
