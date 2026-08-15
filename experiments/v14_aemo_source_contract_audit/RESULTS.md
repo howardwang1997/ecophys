@@ -63,10 +63,9 @@ Repair the generic range auditor so `Content-Range` detects a complete-object tr
 protocol must use a smaller fixed byte range, prove on synthetic or already consumed material that the information
 header remains parseable, and mechanically select new untouched months. It must be frozen before requesting them.
 
-That repair is now implemented, but remains network-unexecuted, in
-`experiments/v14_aemo_source_contract_repair/PREREGISTRATION.md`. Its deterministic offline proof passes at 64 KiB
-and its mechanical rule selects untouched 2021-01 and 2021-12. The repair protocol must be committed and pushed
-before either month is requested.
+The repair was subsequently frozen at `23c847de0527ad1e7b367d596d3a4bb82d34c194` and passed once on untouched
+2021-01/2021-12: 10/10 exact 64 KiB partial transfers, 10/10 scientific source headers and zero complete objects.
+See `experiments/v14_aemo_source_contract_repair/RESULTS.md`.
 
 This result does not authorize row access, bulk synchronization, model training, causal claims, prospective
 outcomes, paid data or GPU.

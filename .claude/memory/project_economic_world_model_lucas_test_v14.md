@@ -126,9 +126,14 @@ silently treated as the adaptive-ecology model; it may be a disclosed legacy or 
 - The deterministic offline repair proof passed at exactly 65,536 compressed bytes. Across 20 preserved real
   prefixes, maximum data offset/header fields were 89/57; the synthetic stress archive uses 95/128 and is 624,432
   compressed bytes. Proof SHA is `0be682973ed75bc65c630c8ac650cb839cffc60baa3fa4d256d5a4816ca3c8d5`.
-- The network-unexecuted v2 rule skips every consumed month and selects 2021-01/2021-12. It requires exactly 64 KiB,
-  final byte 65,535, declared total above 65,536, 10/10 scientific headers and zero complete transfers. Commit and
-  push before one no-replacement execution; a pass still does not unlock rows, workers or GPU.
+- The v2 rule skipped every consumed month and selected 2021-01/2021-12. Frozen commit
+  `23c847de0527ad1e7b367d596d3a4bb82d34c194` passed once: 10/10 exact 64 KiB partial transfers, 10/10 scientific
+  source headers, zero complete compressed objects and zero `D` rows. Raw summary SHA is
+  `e4bac4ac57b8b25b8d91a3465eba544c9c9e22050c47750c89344e339f6417c4`; total transfer was 655,360 bytes.
+- This pass closes only source-version and bounded-transfer metadata. Timestamp, key, effective-dated identity and
+  applied-offer/dispatch joins remain untested. The 2021-12 `BIDPEROFFER` object declares 1,610,349,080 compressed
+  bytes; do not full-download it for conformance. A separately frozen minimal-row protocol must first inventory
+  already consumed artifacts or exact small daily alternatives. Workers/GPU remain locked.
 
 ## GC0166 metadata audit boundary
 

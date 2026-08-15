@@ -108,6 +108,12 @@ hard-coded `full_archive_downloaded=false` was incorrect. The immutable raw outp
 `FAIL_FULL_ARCHIVE_TRANSFER_GUARD` adjudication. These months are development evidence and cannot be rerun or
 replaced; row acquisition remains locked.
 
+The separately frozen 64 KiB repair then passed all ten transfer and scientific header gates on untouched 2021-01
+and 2021-12, with zero complete compressed objects and zero rows. This resolves the metadata acquisition method,
+not row semantics. The 2021-12 bid-period object declares a 1.610 GB compressed total, so the next conformance
+protocol must avoid indiscriminate monthly-archive downloads and first inventory already consumed local material
+or exact official daily alternatives.
+
 ## 4. What can be acquired now
 
 ### Free and immediately locatable
@@ -158,10 +164,10 @@ gate. Buying NEMDE before open replay has been quantified also does not pass.
 4. Maintain the frozen CoW/Uniswap event registry; request competition-history retention, rate-limit and research-
    redistribution clarification only for a post-cutoff candidate that reaches a final package.
 5. Use the prepared, unsent Elexon/NESO request for CRA-I015 and MDO/MDB provenance if external contact is approved.
-6. Preserve all failed AEMO header protocols. The channel-keyed source matrix passed its ten scientific header
-   checks, but the transfer guard failed on two complete small objects. The repaired detector and deterministic
-   64 KiB proof now pass offline; freeze and push the exact 2021-01/2021-12 no-replacement protocol before its one
-   execution. Independently obtain a valid CoW enumeration rule. No GPU is needed.
+6. Preserve all failed AEMO header protocols and the later 10/10 64 KiB repair pass. Inventory already consumed
+   local AEMO rows and official small daily alternatives before freezing a minimal timestamp/key/join sample; do
+   not fetch the 1.610 GB monthly bid-period object. Independently obtain a valid CoW enumeration rule. No GPU is
+   needed.
 
 The required partner topology, minimum field contract, candidate contact pool and scientific red lines are specified
 in `papers/proposal/v14_fta_collaboration_brief_2026-08-14.md`. No named organisation is yet a confirmed collaborator

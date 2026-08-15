@@ -296,6 +296,11 @@ was 2,409,465 bytes; no `D` row was parsed, no GPU or paid data was used, and no
 The source matrix is empirically supported at header level, but row access remains locked behind a smaller-range
 protocol with automatic complete-object detection.
 
+That repair was frozen at `23c847de0` and passed once on untouched 2021-01/2021-12: all ten responses were exact
+64 KiB partial transfers, all ten scientific headers passed, and no complete object or `D` row was opened. The
+metadata transport problem is closed. Row timestamp/key/join semantics remain open; the 1.610 GB declared size of
+the 2021-12 bid-period object rules out an indiscriminate full-month conformance download.
+
 ## 8. Bottom line
 
 - **Experiment plan:** scientifically sensible, operationally incomplete; E0/E1 must precede model training.
@@ -303,6 +308,6 @@ protocol with automatic complete-object detection.
   not pass. FTA is probably too retail-private; IPRR's date is reset.
 - **Compute:** current GPUs are enough for feasibility and likely enough for a carefully scoped paper. CPU, storage
   and event availability matter more. No compute expansion is justified now.
-- **Current action:** commit and push the offline-proven 64 KiB AEMO repair on untouched 2021-01/2021-12, then
-  execute it once without replacement; separately obtain an outcome-blind CoW enumerator. Do not open rows, train
-  models, open target outcomes or buy data.
+- **Current action:** inventory already consumed local AEMO artifacts and exact official daily alternatives, then
+  design—but do not yet execute—a minimal timestamp/key/join conformance protocol; separately obtain an
+  outcome-blind CoW enumerator. Do not open new rows, train models, open target outcomes or buy data.
