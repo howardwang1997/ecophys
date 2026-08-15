@@ -522,3 +522,18 @@ A pass licenses only a separately frozen five-role historical row bridge on unto
 historical join, action-semantics, intervention or model result. At freeze the protocol is network-unexecuted;
 Experiment 156 and all GPU/model work remain locked. Protocol:
 `experiments/v14_aemo_historical_prefix_reachability/PREREGISTRATION.md`.
+
+### 11.10 Historical prefix-reachability result
+
+Both fixed 64 MiB requests and their R2 retention passed. The streaming parser then read 15,505,469 period-offer
+rows with 100% timestamp parsing and zero malformed rows. Nevertheless both archive generations violated the
+frozen market-day ordering gate. January began on `2021-01-02`, reached `2021-02-01` and regressed between date
+blocks; December exposed all 31 dates with explicit regressions such as day 21 before day 17. Neither prefix
+contained a provably complete first-day block. Decision: `FAIL_HISTORICAL_PREFIX_REACHABILITY`; summary SHA-256:
+`4e865928a5362e00eb4d07e7a89272c0638c1aaa0dedeb0871f35aeceeab478e`.
+
+This falsifies prefix-by-date extraction, not historical portability itself. Do not extend the consumed prefixes.
+The next source gate must compare free queryable/date-partitioned interfaces by official provenance, row-level
+identity, licence and temporal coverage. Only if none passes may a separately frozen complete sequential-stream
+budget be considered. Historical joins, action semantics, Experiment 156 and GPU/model work remain locked.
+Result: `experiments/v14_aemo_historical_prefix_reachability/RESULTS.md`.

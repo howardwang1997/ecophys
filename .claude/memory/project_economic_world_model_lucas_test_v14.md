@@ -293,3 +293,10 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - The rolling daily report archive exposes only recent months and cannot recover the 2021 mechanism boundary.
   Consequently a pass licenses a fresh, bounded five-role monthly-prefix bridge protocol; a failure returns to
   source design. It never licenses the 1.61 GB full object, causal/model claims, Exp156 or a GPU queue.
+- The frozen prefix gate executed once from `d7dd5af5bc3b654a46da37364d118f98e408f067` and failed. Both
+  exact 64 MiB responses and R2 copies passed, then 15,505,469 rows parsed with 100% timestamp success and zero
+  malformed rows. Both generations had market-day regressions, so neither yielded a complete first-day prefix
+  block. Summary SHA: `4e865928a5362e00eb4d07e7a89272c0638c1aaa0dedeb0871f35aeceeab478e`.
+- Do not extend these prefixes. The next gate is provenance/licence/partition auditing for a free queryable mirror
+  or official interface. If none passes, freeze the cost and semantics of a complete sequential compressed stream
+  separately. Untouched confirmation months, Exp156 and all GPUs remain locked.

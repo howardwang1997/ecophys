@@ -400,3 +400,10 @@ The next preflight transfers exactly two 64 MiB compressed prefixes and retains 
 at most 1 GiB uncompressed per object, stores only counts/date blocks in memory and runs sequentially on local CPU.
 Expected GPU-hours, paid-data spend and remote-worker requirements are zero. A pass triggers protocol design, not
 training; V100 and RTX 2060 queues remain empty.
+
+### Historical reachability compute result
+
+The CPU parser processed 15,505,469 rows and hit both 1 GiB uncompressed caps while retaining only aggregate date
+counts. It used 128 MiB of R2-backed compressed input, no GPU, remote worker or paid data. The scientific decision
+failed because dates were not contiguous, not because of inadequate compute. Adding CPU/GPU capacity cannot repair
+that source-layout failure; the next work is a source/provenance audit. GPU queues remain empty.

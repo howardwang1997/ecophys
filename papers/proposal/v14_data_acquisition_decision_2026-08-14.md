@@ -278,3 +278,13 @@ the two complete objects. No fresh confirmation month is consumed.
 Both exact prefixes must be retained in R2 before content access. There is no retry, range extension, replacement
 or full-download fallback. A pass only establishes that a bounded one-day historical sample can be designed;
 `NO_BUY_NOW` remains unchanged and no bulk archive or commercial data is authorized.
+
+### Historical prefix acquisition result
+
+Both 64 MiB responses and exact R2 retention passed, but date order failed in both archive generations. A leading
+ZIP prefix is therefore not a valid date partition: it mixes incomplete rows from many days. Do not extend these
+two consumed prefixes and do not select replacement months post hoc.
+
+The next acquisition decision is source-based, not size-based: audit free queryable/date-partitioned mirrors or an
+official interface for exact AEMO provenance, licensing, field versions and reproducible snapshots. Only if none
+is admissible should a complete 1.7 GB two-object sequential-stream design be costed. `NO_BUY_NOW` remains in force.
