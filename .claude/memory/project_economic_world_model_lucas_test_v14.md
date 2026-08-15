@@ -367,3 +367,11 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   structure and SCADA quality/replacement flags, plus original-`1e-3` feature slices. It is descriptive only, uses
   the two consumed local ranges, exposes no RHS/SCADA values, and cannot change the partial decision or unlock a
   full day/solver/GPU.
+- Tail diagnostic artifact SHA
+  `5c51257ed48c54b4b2164c83729332dd1288438444c1e35fd14dc7022fe80348`: 133/772 (17.23%) pre and
+  84/882 (9.52%) post equations exceed normalized error `1e-3`. All four exceptions terminate at unchecked Nempy
+  `_rpn_stack:555` group-next-term access; the same block uses `group.pop` without calling it. The nine worst pre
+  errors are one `Q_NIL_STRGTH_*` group/generic family at `0.988--0.9968`; post maximum `Q>YLTX_DS` is `0.500001`.
+  Multiple-SCADA equations have 52.8%/49.4% tail rates and resolver-missing inputs 36.7%/26.3%, versus
+  17.2%/9.52% overall. These are overlapping descriptive associations. Next repair must be 2x2: baseline,
+  RPN-group only, specification-grounded input/SCADA only, combined; validate on fresh deterministic intervals.

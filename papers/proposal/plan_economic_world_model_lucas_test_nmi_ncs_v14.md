@@ -686,3 +686,23 @@ This diagnostic has no pass/fail outcome, may not change the original denominato
 consumed local ranges plus the same pinned Nempy checkout. Its sole permissible output is a concrete repair
 hypothesis to test on fresh deterministic intervals. Whole-day/full-solver work, Experiment 156 and GPUs remain
 locked. Plan: `experiments/v14_aemo_nemde_rhs_reconstruction/TAIL_DIAGNOSTIC_PLAN.md`.
+
+### 11.19 Tail diagnostic result and repair topology
+
+The descriptive artifact confirms a structured multi-cause tail. At the original `1e-3` boundary, 133/772
+(17.23%) pre-5MS and 84/882 (9.52%) post-change equations exceed tolerance. All four evaluation exceptions end at
+the same unchecked Nempy group-boundary access (`_rpn_stack:555`); the source block also references `group.pop`
+without calling it. Separately, nine catastrophic pre-5MS `Q_NIL_STRGTH_*` equations have normalized error
+`0.988--0.9968` with an identical group/generic structure, while the post maximum `Q>YLTX_DS` is `0.500001` and
+also group-structured.
+
+The wider tail is enriched for multiple SCADA entries (52.8%/49.4% beyond `1e-3`) and resolver-missing inputs
+(36.7%/26.3%), compared with 17.2%/9.52% overall. These overlapping post-hoc slices are not causal, but they rule
+out a one-line success story. Artifact SHA-256:
+`5c51257ed48c54b4b2164c83729332dd1288438444c1e35fd14dc7022fe80348`.
+
+The next admissible development is a two-factor repair with independently switchable RPN-group and
+specification-grounded input/SCADA arms. Any evaluation must use fresh mechanically selected intervals and four
+paired arms (`baseline`, `RPN`, `input`, `combined`), with dual-sentinel and full-tail gates frozen before new RHS
+access. The diagnostic validates no repair, and whole-day/full-solver/GPU work remains locked. Result:
+`experiments/v14_aemo_nemde_rhs_reconstruction/TAIL_DIAGNOSTIC_RESULTS.md`.
