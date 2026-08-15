@@ -702,7 +702,12 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     因此这是 transport infrastructure failure，不是 cap activation 结果。没有 code/getter/aggregate 或
     participant/response 行被打开。v1 不重跑；任何 v2 只能基于官方文档修复历史状态 transport，并保留
     四候选、六 lookbacks、精确饱和规则及全部 access locks。G1、D1 账户/行为/响应数据和全部 GPU
-    生产作业继续锁定。
+    生产作业继续锁定。官方 PublicNode 页面把 archive data 放在单独的 Get Archive Access 入口，因此
+    v2 不再把免费 PublicNode endpoint 当历史 state provider，只用它复核 24 个历史 header；Blockscout
+    是唯一历史 configuration/aggregate state provider，并与 PublicNode 对每个 lookback 的 block
+    number/hash/timestamp 完全一致。这个设计不冒充 cross-provider state replication。v2 保留全部科学
+    规则，去掉 8 个冗余 code 和 4 个冗余 post-config 请求，精确计划为 98 RPC + 7 source REST = 105；
+    partial failure 会保留已规范化证据但不形成科学结论。
 
 ---
 

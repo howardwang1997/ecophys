@@ -689,3 +689,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Never rerun v1. Any v2 may repair only documented historical-state transport and partial source-evidence
   durability while preserving the exact four candidates, six lookbacks, source semantics, exact T−1 saturation,
   decisions and access locks. D1b, `G1` and GPU queues remain locked.
+- Official PublicNode UI states that archive data uses a separate “Get Archive Access” action. D1a v2 therefore
+  never uses the free PublicNode endpoint for historical code/state; it keeps PublicNode only for chain ID and 24
+  historical headers. Blockscout's documented block-parameter `eth_call` is the sole historical state source.
+- Every v2 lookback uses Blockscout and PublicNode headers with exact number/hash/timestamp identity before the
+  Blockscout configuration/aggregate value is accepted. This anchors canonical block identity but is explicitly
+  not cross-provider state replication or a locally verified state proof.
+- V2 inherits all four candidates, seven source matches, six lookbacks, exact saturation and access/decision rules.
+  It removes eight redundant PublicNode code reads and four redundant post-config reads, yielding 98 RPC + seven
+  source REST = 105 operations. Partial failure now preserves completed normalized source/candidate evidence while
+  remaining non-scientific. CPU/free network only; all GPUs stay idle.

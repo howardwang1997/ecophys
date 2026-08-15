@@ -316,3 +316,11 @@ result exists. The independently checked failure ledger is immutable. A new prot
 documented historical-state transport and failure evidence; it may not change selection, lookbacks, activation
 thresholds or access. Result:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V1.md`.
+
+V2 uses the official capability boundary rather than another free-endpoint guess. PublicNode remains a historical-
+header provider only; Blockscout's documented block-parameter `eth_call` supplies configuration and aggregate
+state. Every lookback header must agree across both providers, but the scorecard explicitly records that state is
+not independently replicated. Four candidates, seven source implementations, six lookbacks, exact T−1 saturation,
+kill decisions and zero-account locks are unchanged. The exact budget is 105 public reads, and partial failure
+evidence is now durable. Protocol:
+`experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION_V2.md`.

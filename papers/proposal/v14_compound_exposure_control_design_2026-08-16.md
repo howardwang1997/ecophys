@@ -336,3 +336,16 @@ before any code result, configuration, aggregate total or participant/response r
 independently verified; v1 is immutable and must not be rerun. A v2 may repair only documented historical-state
 transport and partial normalized-source evidence while preserving every scientific and access rule. Result:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V1.md`.
+
+V2 is a narrow documented repair. PublicNode's public page exposes archive data through a separate access action,
+so its unauthenticated endpoint is retained only for historical headers. Blockscout's documented per-instance RPC
+becomes the sole historical configuration/aggregate-state source; both providers must return identical number,
+hash and timestamp for every lookback block. This is canonical-block triangulation, not independent state
+replication, and the limitation is an explicit result field.
+
+The four candidates, seven source matches, six lookbacks, exact saturation and all access/decision rules inherit
+unchanged. Redundant PublicNode code/post-configuration requests are removed because D0b and verified-source
+bytecode hashes are immutable parents. The v2 plan is 98 RPC plus seven source REST = 105 operations. A later
+failure now retains completed normalized source/candidate evidence without turning it into a scientific result.
+Protocol:
+`experiments/v14_compound_v3_supply_cap_activation_preflight/PREREGISTRATION_V2.md`.

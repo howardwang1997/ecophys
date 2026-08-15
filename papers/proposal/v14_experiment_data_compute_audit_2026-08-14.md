@@ -707,3 +707,19 @@ No historical code result, configuration getter, aggregate total or participant/
 paid-data, external-worker and GPU use was zero. Extra GPU capacity cannot repair this endpoint capability. Any v2
 budget must remain CPU/network-only and freeze a documented historical-state transport before another candidate
 request; D1b and training remain unqueued.
+
+### Frozen Compound D1a v2 transport-repair budget
+
+V2 contains 105 successful no-retry operations: 98 RPC and seven verified-source REST calls. Its RPC vector is two
+chain IDs, 48 historical headers and 48 Blockscout historical state calls. PublicNode supplies only one chain ID
+and 24 headers; it performs no archive-state method. Both providers reproduce every lookback header, while
+Blockscout alone supplies configuration and aggregate state.
+
+The one-request-per-second lower bound is 1.75 minutes, with the same 15-minute runbook budget. Caps are 384 HTTP
+attempts, 128 MiB responses, 2,048 source files and 64 MiB normalized source text. A failure now retains completed
+normalized source/candidate evidence plus the full hash ledger, never raw payloads and never a partial scientific
+decision.
+
+This is again free local CPU/network work with zero remote workers and GPU-hours. Both V100s and the RTX 2060 stay
+idle. The weaker single-provider historical-state provenance is a scientific limitation, not a compute need; a
+later confirmatory study would require independent archive state or verified state proofs.

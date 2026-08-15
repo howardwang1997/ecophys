@@ -1,0 +1,142 @@
+schema_version: ecophys-compound-v3-supply-cap-activation-preflight/v2
+audit_id: compound_v3_mainnet_supply_cap_activation_preflight_v2
+as_of: "2026-08-16"
+stage: verified_source_blockscout_historical_state_cross_provider_headers_only
+
+base_protocol:
+  manifest_path: data/manifests/compound_v3_supply_cap_activation_preflight_v1.yaml
+  manifest_sha256: aac34fd0b8bb1d3e1f63b12fb0230f10039a0d2d7019bf8ea461d433cb5b3037
+  protocol_commit: 1dfdecf47d60b3f78a1076d2a09ed60f7ad5fc7f
+  result_path: experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V1.md
+  result_sha256: baf1d606ac535388e6ff53dd3f3f8c54fe3abce0b21400465a937792c513c119
+  result_commit: 74b8a3767748ffd508c9d1be5255aa26145b71da
+  failure_path: experiments/v14_compound_v3_supply_cap_activation_preflight/artifacts/failure.json
+  failure_sha256: 225266d3fb1e394f0714ceed60000ca42c84476ac8bd1641b4eacb8da30c40c8
+  failure_decision: INFRASTRUCTURE_FAILURE_NO_SUPPLY_CAP_ACTIVATION_RESULT
+
+repair_contract:
+  replace_publicnode_historical_state_with_blockscout_documented_historical_eth_call: true
+  retain_publicnode_for_cross_provider_historical_block_headers: true
+  remove_redundant_publicnode_implementation_code_reads: true
+  remove_redundant_post_event_configuration_read: true
+  persist_completed_normalized_source_and_candidate_evidence_on_failure: true
+  four_candidates_source_semantics_lookbacks_activation_rules_unchanged: true
+  account_participant_price_and_response_access_unchanged_locked: true
+  no_candidate_capability_probe_before_protocol_commit: true
+  endpoint_substitution_after_v2_freeze: false
+
+access_boundary:
+  mechanics_parent_opened: true
+  v1_failure_parent_opened: true
+  chain_rpc_used: true
+  verified_contract_source_metadata_opened: true
+  cross_provider_historical_block_headers_opened: true
+  parent_implementation_code_hashes_opened: true
+  blockscout_historical_configuration_getter_rows_opened: true
+  blockscout_historical_aggregate_market_collateral_state_rows_opened: true
+  new_implementation_code_rows_opened: false
+  cross_provider_historical_state_replication_performed: false
+  new_governance_transaction_or_receipt_rows_opened: false
+  new_log_or_call_trace_rows_opened: false
+  account_state_rows_opened: false
+  participant_action_rows_opened: false
+  participant_call_trace_rows_opened: false
+  liquidation_rows_opened: false
+  price_or_oracle_rows_opened: false
+  post_event_aggregate_state_rows_opened: false
+  realized_response_rows_opened: false
+  raw_source_or_rpc_payloads_retained: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+
+sources:
+  blockscout_rpc_url: https://eth.blockscout.com/api/eth-rpc
+  blockscout_smart_contract_base_url: https://eth.blockscout.com
+  blockscout_eth_rpc_documentation_url: https://docs.blockscout.com/devs/apis/rpc/eth-rpc
+  blockscout_smart_contract_documentation_url: https://docs.blockscout.com/api-reference/get-smart-contract
+  blockscout_rate_limit_documentation_url: https://docs.blockscout.com/devs/apis/requests-and-limits
+  publicnode_rpc_url: https://ethereum-rpc.publicnode.com
+  publicnode_documentation_url: https://ethereum.publicnode.com/
+  publicnode_page_states_archive_data_requires_get_archive_access: true
+  publicnode_archive_state_used: false
+  blockscout_is_only_historical_state_provider: true
+  cross_provider_historical_headers_required: true
+  maximum_requests_per_second_across_sources: 1
+  maximum_transport_retries: 2
+  maximum_http_attempts: 384
+  maximum_response_bytes: 134217728
+  maximum_verified_source_files: 2048
+  maximum_verified_source_text_bytes: 67108864
+  raw_response_payloads_retained: false
+  endpoint_substitution_after_freeze: false
+  allowed_rpc_methods:
+    - eth_chainId
+    - eth_getBlockByNumber
+    - eth_call
+  allowed_rest_path_templates:
+    - /api/v2/smart-contracts/{address_hash}
+  user_agent: EcoPhys-V14-Compound-supply-cap-activation-preflight/2.0
+
+expected_request_contract:
+  candidate_count: 4
+  unique_implementation_count: 7
+  lookback_snapshot_count_per_candidate: 6
+  json_rpc_success_count_without_retry: 98
+  blockscout_smart_contract_success_count_without_retry: 7
+  network_operation_count_without_retry: 105
+  method_counts:
+    eth_call: 48
+    eth_chainId: 2
+    eth_getBlockByNumber: 48
+  rest_path_template_counts:
+    "/api/v2/smart-contracts/{address_hash}": 7
+  provider_counts:
+    blockscout: 73
+    blockscout_smart_contract: 7
+    publicnode_execution: 25
+
+failure_artifact_contract:
+  schema_version: ecophys-compound-v3-supply-cap-activation-failure/v2
+  write_on_any_caught_collection_exception: true
+  retain_successful_operation_hash_ledger: true
+  retain_every_http_attempt_hash_and_outcome: true
+  persist_completed_normalized_evidence: true
+  retain_exception_class_and_bounded_message: true
+  maximum_exception_message_characters: 2000
+  raw_response_payloads_retained: false
+  success_outputs_absent_on_failure: true
+  failure_output_absent_on_success: true
+  partial_evidence_is_not_a_scientific_gate_decision: true
+
+integrity_gates:
+  - v1_failure_and_scientific_parents_reproduced
+  - ethereum_mainnet_provider_identity
+  - all_historical_implementations_source_conform
+  - cross_provider_lookback_block_headers_agree
+  - blockscout_historical_configuration_conforms
+  - blockscout_aggregate_totals_within_contemporaneous_cap
+  - all_candidates_evaluated
+  - exact_complete_request_plan
+  - request_and_source_resource_caps
+  - zero_account_and_response_access_boundary
+
+decision_policy:
+  integrity_gates_all_required: true
+  pass: PASS_EXACT_CAP_ACTIVATION_AUTHORIZE_MARKET_LEVEL_D1B_DESIGN_ONLY
+  fail_no_activation: FAIL_NO_EXACT_T_MINUS_ONE_SATURATION_RETIRE_COMPOUND_M3_CAUSAL_ROUTE
+  fail_conformance: FAIL_SOURCE_OR_STATE_CONFORMANCE_KEEP_ALL_D1_ROWS_LOCKED
+  infrastructure_failure: INFRASTRUCTURE_FAILURE_NO_SUPPLY_CAP_ACTIVATION_RESULT_V2
+  authorized_next_stage: separately_frozen_market_level_collateral_flow_d1b_protocol_design_only
+
+limitations:
+  - V2 is a transport repair after v1's documented PublicNode historical-state HTTP 403; v1 is immutable and is not rerun.
+  - PublicNode documents archive data behind a separate Get Archive Access entry, so v2 uses its public endpoint only for chain identity and historical block headers.
+  - Blockscout is the only historical state provider in v2. Two-provider header identity anchors the block, but configuration and aggregate values are not independently state-replicated or verified with Ethereum state proofs.
+  - Source metadata, deployed-bytecode hashes and the D0b parent triangulate implementation semantics, but Blockscout source REST and state RPC are not independent organizations.
+  - Exact T-minus-one saturation proves that any positive collateral supply would have exceeded the old cap at that state; it does not identify who attempted or intended to supply.
+  - A slack cap can still constrain deposits larger than the remaining headroom, but the counterfactual depositor and order-size distribution are not observed in this zero-account audit.
+  - Fixed block-offset snapshots are diagnostics and do not prove continuous saturation between observations.
+  - No post-event aggregate total is queried, because end-of-block state can mix the governance mechanism with same-block participant response.
+  - Even a pass authorizes only a separately frozen market-level collateral-flow design; account, action, price and response rows remain locked.
+  - The four mechanics survivors are all cap increases in two markets during 2022-2023, including two events for the same WETH-market asset; this is not independent cross-market replication.
