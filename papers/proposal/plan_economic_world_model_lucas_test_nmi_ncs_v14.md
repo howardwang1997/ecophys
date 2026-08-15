@@ -673,3 +673,16 @@ step is a post-hoc descriptive classification of tail equations on these consume
 found, must be frozen and tested on fresh deterministic intervals. One-day alignment, Experiment 156 and all GPU
 model work remain locked. Result:
 `experiments/v14_aemo_nemde_rhs_reconstruction/RESULTS.md`.
+
+### 11.18 Post-hoc RHS tail diagnostic fixed before tail inspection
+
+The partial decision is preserved. Before inspecting individual tail IDs or equation terms, a descriptive-only
+analysis plan fixes six error thresholds, top-25 ordering, all failure records, recursively expanded RPN
+operations/SPD types, unresolved-input counts and SCADA quality/replacement flags. It also fixes feature,
+operation and SPD-type slices against the original `1e-3` tail boundary. No individual production/predicted RHS
+or SCADA value is retained.
+
+This diagnostic has no pass/fail outcome, may not change the original denominator/threshold and uses only the two
+consumed local ranges plus the same pinned Nempy checkout. Its sole permissible output is a concrete repair
+hypothesis to test on fresh deterministic intervals. Whole-day/full-solver work, Experiment 156 and GPUs remain
+locked. Plan: `experiments/v14_aemo_nemde_rhs_reconstruction/TAIL_DIAGNOSTIC_PLAN.md`.

@@ -362,3 +362,8 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   `IndexError`. Do not relax the threshold or drop tails. Whole-day alignment/full solver/GPU remain locked;
   next is a post-hoc descriptive tail-operation audit, followed by a separately frozen fresh-interval repair if
   justified.
+- Tail diagnostic scope was fixed before inspecting individual error IDs/terms: report six threshold exceedance
+  rates, top 25 errors, every exception, expanded operations/SPD types, unresolved inputs, group/default/generic
+  structure and SCADA quality/replacement flags, plus original-`1e-3` feature slices. It is descriptive only, uses
+  the two consumed local ranges, exposes no RHS/SCADA values, and cannot change the partial decision or unlock a
+  full day/solver/GPU.
