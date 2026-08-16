@@ -117,6 +117,11 @@ identity and the zero address over block 0 and a deterministically bisected 250,
 hosts must finish before the first single host covering all deployments is selected; primary precedes replica on
 that host. A canary pass permits B0 v2 protocol design, not execution or scientific inference.
 
+Canary v1 then failed without target rows: the two V100 hosts cover five deployments each and RTX 2060/Mac six;
+no single host covers all nine. Polygon and Base replicas pass a single genesis block but return HTTP 400/413 on
+the large range, while neither BNB candidate can serve even block 0. The cross-egress agreement rejects a Mac-only
+diagnosis. B0 v2 remains closed pending an official archive-endpoint audit and versioned target-free canary repair.
+
 ### B1 — exact vector compiler, zero accounts
 
 For every selected program, decode receipts and calldata, map the complete call cone to historical verified source,

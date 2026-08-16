@@ -853,3 +853,8 @@ CUDA hidden. Each tests the same 18 existing chain endpoints using only chain ID
 log ranges. Per-host caps are 500 HTTP attempts, 32 MiB responses, two requests/s and two attempts/logical call.
 Expected parallel wall time is below ten minutes, durable output below 1 MiB, paid data zero and GPU-hours zero.
 All four artifacts are mandatory; PASS licenses only a B0 v2 protocol with the selected single-host route.
+
+The actual canary completed on all four CPU hosts: 322 logical calls, 347 HTTP attempts and 27,601 response bytes.
+Wall time was 47.6--169.5 seconds/host and durable artifacts about 327 KiB. Coverage was 5/9 on each V100 and 6/9
+on RTX 2060/Mac, so no route was selected. Every successful log result was empty, no target row was retained, paid
+data remained zero and all GPUs remained unused. B0 v2 compute/data remain unbudgeted.

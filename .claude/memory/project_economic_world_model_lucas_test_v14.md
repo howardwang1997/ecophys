@@ -807,3 +807,9 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   zero-address `eth_getLogs` over block 0 and a bisected `[0,249999]` prefix are allowed. All four hosts must report;
   the first single host covering every deployment is selected, with primary before replica per deployment. A PASS
   licenses B0 v2 protocol design only. No Aave address/event row, partial-host mosaic, GPU or new endpoint is allowed.
+- Transport-canary v1 ran at pushed commit `4f18e81850102023ce802109f47bb5727f6315a0` and strictly failed with zero
+  aggregate validation errors. V100-A/B cover 5/9 deployments; RTX2060/Mac cover 6/9; no single host was selected.
+  Across all hosts: 322 logical calls, 347 HTTP attempts, 27,601 bytes, zero target rows and zero GPU. Polygon/Base
+  replicas pass block 0 but reject the 250k range with HTTP 400/413; BNB primary gives 403 and replica gives
+  JSON-RPC -32005 even at block 0. The pattern is not Mac-egress-specific. B0 v2 remains unauthorized; next is an
+  official endpoint/archive audit and separately frozen target-free error-classification/endpoint canary repair.

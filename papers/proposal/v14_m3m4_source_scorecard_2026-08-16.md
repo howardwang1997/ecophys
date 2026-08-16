@@ -4,9 +4,9 @@
 
 **Current decision:** `AAVE_A1A_ZERO_STRICT_CANDIDATES_RETIRE_ETHEREUM_SCALAR_LT_ROUTE`
 
-**Next gate:** archive the B0 v1 transport failure, then run a separately frozen target-row-free transport canary.
-Only a later versioned B0 scientific pass may authorize design of a historical ABI/state/receipt compiler protocol.
-Neither stage is G1-admitted.
+**Next gate:** archive the failed transport canary, audit official/free archive routes and freeze a target-row-free
+canary repair. Only a later versioned B0 scientific pass may authorize design of a historical ABI/state/receipt
+compiler protocol. Neither stage is G1-admitted.
 
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
@@ -50,6 +50,10 @@ are under `experiments/v14_aave_v3_cross_deployment_program_directory/artifacts/
 The successor transport canary is now designed with no target address: both existing endpoints for all nine chains
 are tested on four frozen host IDs using only chain ID and zero-address genesis log queries. Selection waits for all
 hosts and requires one host to cover every deployment. Its PASS licenses only B0 v2 protocol design.
+
+That canary strictly failed: host coverage is 5/9, 5/9, 6/9 and 6/9, with zero aggregate validation errors and no
+selected host. Polygon/Base need a frozen HTTP range-status repair; BNB needs a new officially justified archive
+route because both existing candidates fail block 0. No target support was observed and B0 v2 is not authorized.
 
 Initial machine-readable decision (historical and immutable):
 `data/manifests/v14_m3m4_source_selection_v1.yaml`.

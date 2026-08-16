@@ -791,6 +791,12 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     不二分，非空结果污染失败且不保留 row。四个 host 全部返回后，按冻结顺序选第一个覆盖九条链的
     单一 host，再按 primary-before-replica 选 endpoint。每 host 上限 500 attempts/32 MiB/2 rps；GPU
     隐藏。PASS 只允许写 B0 v2 protocol，不允许直接执行或打开 target/account/outcome。
+19. **Transport canary v1 严格 FAIL：** pushed commit `4f18e818...` 的四个 host artifact 全部通过独立
+    完整性重算，但 V100-A/B 只覆盖 5/9，RTX2060/Mac 只覆盖 6/9，没有 single-host selection。合计
+    322 logical calls、347 HTTP attempts、27,601 bytes，所有成功 log response 均为空且 target rows=0。
+    Polygon/Base replica 的 block 0 通过而 250k range 返回 HTTP 400/413，可做 versioned range-error
+    分类 repair；BNB primary 在 block 0 返回 403、replica 返回 `-32005 limit exceeded`，必须先做官方
+    archive-route audit。跨四 egress 模式近乎一致，排除 Mac-only 解释。B0 v2 仍未获授权。
 
 ---
 
