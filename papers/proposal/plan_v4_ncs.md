@@ -717,6 +717,17 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     移动门槛；若探索 hard-constraint boundary layer / endogenous governance，必须另立 hypothesis、扩展
     cross-protocol events 并保留全新 held-out confirmation。当前下一步回到新 M3/M4 source 的零行
     identification/source audit（Aave 为首个候选），而不是继续 Compound participant census。
+13. **Aave A0 已冻结、待一次源码审计：** 当前候选效应类是单一 base-reserve liquidation-threshold
+    严格下调，LTV 与 liquidation bonus 不变。对使用该抵押品、正债务且未被 eMode 覆盖的账户，固定
+    T−1 balance/price/index/其它 configuration 后，源码给出精确整数恒等式
+    `W_new = W_old - C_changed * (LT_old - LT_new)`，HF 继续使用 Aave `wadDiv` half-up 再除 10,000；
+    eMode override 或未启用抵押路线的直接 base-LT 效应为零。`HF < 1` 只称 health-factor boundary
+    crossing，不等同于可执行 liquidation。A0 固定 official Aave V3.7 commit `cff15de6...` 的 14 个
+    source/licence files、12 个 conjunctive gates 与 BSL 1.1 provenance；不打开 deployment/event/payload/
+    account/action/response 行。Proposal 204 已在设计检索中暴露，只能作 development evidence。协议
+    commit/push 后从 clean detached worktree 只运行一次；pass 也只允许另行设计 deployment/version/LT-
+    event inventory，不通过 G1，不启动 GPU。预计本地 CPU 小于一分钟、免费数据、2×V100 与 RTX2060
+    继续空闲。完整设计见 `papers/proposal/v14_aave_liquidation_threshold_effect_design_2026-08-16.md`。
 
 ---
 

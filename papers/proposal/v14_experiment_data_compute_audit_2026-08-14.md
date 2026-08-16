@@ -737,3 +737,16 @@ of the four candidates was exactly saturated at T−1, the frozen decision retir
 Consequently no Compound D1b, participant census or training budget exists. The next budget may cover only a new
 source's zero-row identification/source audit; GPU allocation remains locked until that route independently
 passes its data and identification gates.
+
+### Frozen Aave A0 source/effect budget
+
+A0 reads exactly fourteen files from one clean partial checkout of official Aave V3.7 source commit
+`cff15de6d1271b0c800fc001f4aea4c263e8a597`. It performs no API or chain call. The durable artifact contains file
+paths, byte counts and hashes, normalized marker booleans, twelve gate booleans and small deterministic effect
+self-checks; it retains no raw source body. The expected local audit runtime is under one minute, with well below
+100 MiB of checkout and artifact data.
+
+Actual pre-run requirements are one Mac CPU core, free GitHub source, zero paid data, zero external-worker time and
+zero GPU-hours. The two V100 workers and RTX 2060 remain idle and unqueued; H20 is excluded. Even an A0 pass only
+budgets the **design** of an Ethereum deployment/version and strict LT-decrease event inventory. Chain scanning,
+account reconstruction, action/response collection and training have no budget until separately frozen gates pass.

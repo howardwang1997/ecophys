@@ -719,3 +719,19 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   it must first demonstrate a complete pre-event denominator, exact local execution clock, unbundled effect class,
   authoritative state reconstruction and outcome-blind control support. Compound remains mechanics/development
   evidence only.
+- Aave A0 now freezes official `aave-v3-origin` V3.7 commit
+  `cff15de6d1271b0c800fc001f4aea4c263e8a597`, fourteen source/licence paths and twelve conjunctive gates. It is a
+  source/effect audit only: no deployment, event, governance payload, account, action or response row is opened.
+- For a base-reserve LT-only strict decrease, the exact eligible-account operator is
+  `W_new = W_old - C_changed * (LT_old - LT_new)` followed by source-matched half-up `wadDiv` and integer division
+  by 10,000. LTV and liquidation bonus stay fixed. An eMode override or disabled collateral route has zero direct
+  base-LT effect.
+- Never call an HF=1 crossing executable liquidation without checking reserve active/pause/grace state and other
+  eligibility. `configureReserveAsCollateral` also has a frozen-reserve pending-LTV path, so later candidates must
+  exclude frozen reserves and same-execution account-relevant configuration bundles.
+- A0 pass authorizes only a separately frozen deployment/version and LT-event inventory design. Aave remains
+  outside G1; account/action/response collection and all GPUs remain locked. Proposal 204 was exposed during
+  source-design reconnaissance and is development-only, never untouched confirmation.
+- All fourteen allowed Aave blobs were opened through the official GitHub API during marker calibration (197,858
+  bytes, zero missing markers). Treat A0 as reproducible source-integrity certification, not a blind scientific
+  discovery; the first real empirical kill gate is the separately frozen historical deployment/event inventory.

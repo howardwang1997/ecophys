@@ -1,0 +1,203 @@
+schema_version: ecophys-aave-v3-liquidation-threshold-source-preflight/v1
+audit_id: aave_v3_liquidation_threshold_source_preflight_v1
+as_of: "2026-08-16"
+stage: official_source_effect_identity_only
+
+access_boundary:
+  official_code_blobs_opened: true
+  official_documentation_opened: true
+  chain_event_rows_opened: false
+  chain_rpc_used: false
+  governance_payload_rows_opened: false
+  account_state_rows_opened: false
+  participant_action_rows_opened: false
+  realized_response_rows_opened: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+
+source:
+  repo_url: https://github.com/aave-dao/aave-v3-origin.git
+  commit: cff15de6d1271b0c800fc001f4aea4c263e8a597
+  reconnaissance_disclosure: >-
+    Protocol design opened all fourteen pinned official Aave V3.7 code and licence blobs through the official
+    GitHub API to calibrate normalized semantic markers, totaling 197858 bytes, and opened official documentation.
+    It also encountered governance proposal 204, an AAVE V3 Ethereum liquidation-threshold increase executed in
+    2023. Proposal 204 is development-only and can never be an untouched confirmation event. No chain-event,
+    payload, account, participant-action or realized-response row was opened.
+
+files:
+  aave_config_engine:
+    path: src/contracts/extensions/v3-config-engine/AaveV3ConfigEngine.sol
+    required_normalized_markers:
+      - "functionupdateCollateralSide("
+      - "CollateralEngine.executeCollateralSide(_getEngineConstants(),updates);"
+  collateral_engine:
+    path: src/contracts/extensions/v3-config-engine/libraries/CollateralEngine.sol
+    required_normalized_markers:
+      - "KEEP_CURRENT"
+      - "poolConfigurator.configureReserveAsCollateral("
+      - "updates[i].liqThreshold==EngineFlags.KEEP_CURRENT"
+      - "configuration.getParams();"
+      - "100_00+updates[i].liqBonus"
+  config_engine_interface:
+    path: src/contracts/extensions/v3-config-engine/IAaveV3ConfigEngine.sol
+    required_normalized_markers:
+      - "structCollateralUpdate{"
+      - "functionupdateCollateralSide("
+      - "uint256liqThreshold;"
+  engine_flags:
+    path: src/contracts/extensions/v3-config-engine/EngineFlags.sol
+    required_normalized_markers:
+      - "KEEP_CURRENT=type(uint256).max-42;"
+  generic_logic:
+    path: src/contracts/protocol/libraries/logic/GenericLogic.sol
+    required_normalized_markers:
+      - "functioncalculateUserAccountData("
+      - "vars.liquidationThreshold=vars.eModeLiqThreshold;"
+      - "vars.liquidationThreshold=vars.configurationCache.getLiquidationThreshold();"
+      - "vars.avgLiquidationThreshold+=vars.userBalanceInBaseCurrency*vars.liquidationThreshold;"
+      - "vars.healthFactor=(vars.totalDebtInBaseCurrency==0)?type(uint256).max:vars.avgLiquidationThreshold.wadDiv(vars.totalDebtInBaseCurrency)/100_00;"
+      - "returnMathUtils.mulDivCeil(userTotalDebt,assetPrice,assetUnit);"
+      - "returnbalance/assetUnit;"
+  license:
+    path: LICENSE
+    required_normalized_markers:
+      - "BusinessSourceLicense1.1"
+      - "Licensor:AaveDAO,representedbyitsgovernancesmartcontracts"
+      - "LicensedWork:Aavev3.7"
+      - "2027-03-06"
+      - "ChangeLicense:MIT"
+  pool:
+    path: src/contracts/protocol/pool/Pool.sol
+    required_normalized_markers:
+      - "functiongetUserAccountData(addressuser)"
+      - "userConfig:_usersConfig[user]"
+      - "userEModeCategory:_usersEModeCategory[user]"
+      - "functiongetConfiguration(addressasset)"
+      - "functiongetUserConfiguration(addressuser)"
+      - "functiongetReservesList()"
+      - "functiongetReserveAddressById(uint16id)"
+      - "functiongetUserEMode(addressuser)"
+  pool_configurator:
+    path: src/contracts/protocol/pool/PoolConfigurator.sol
+    required_normalized_markers:
+      - "functionconfigureReserveAsCollateral(addressasset,uint256ltv,uint256liquidationThreshold,uint256liquidationBonus)externaloverrideonlyRiskOrPoolAdmins{"
+      - "if(currentConfig.getFrozen()){"
+      - "_pendingLtv[asset]=ltv;"
+      - "currentConfig.setLiquidationThreshold(liquidationThreshold);"
+      - "currentConfig.setLiquidationBonus(liquidationBonus);"
+      - "_pool.setConfiguration(asset,currentConfig);"
+      - "emitCollateralConfigurationChanged(asset,newLtv,liquidationThreshold,liquidationBonus);"
+  pool_configurator_interface:
+    path: src/contracts/interfaces/IPoolConfigurator.sol
+    required_normalized_markers:
+      - "eventCollateralConfigurationChanged(addressindexedasset,uint256ltv,uint256liquidationThreshold,uint256liquidationBonus);"
+      - "functionconfigureReserveAsCollateral("
+  pool_interface:
+    path: src/contracts/interfaces/IPool.sol
+    required_normalized_markers:
+      - "functiongetUserAccountData("
+      - "functiongetConfiguration("
+      - "functiongetUserConfiguration("
+      - "functiongetReservesList()"
+      - "functiongetReserveAddressById("
+      - "functiongetUserEMode("
+  reserve_configuration:
+    path: src/contracts/protocol/libraries/configuration/ReserveConfiguration.sol
+    required_normalized_markers:
+      - "functiongetLtv("
+      - "functiongetLiquidationThreshold("
+      - "functiongetLiquidationBonus("
+      - "functiongetDecimals("
+      - "functiongetFrozen("
+  user_configuration:
+    path: src/contracts/protocol/libraries/configuration/UserConfiguration.sol
+    required_normalized_markers:
+      - "BORROWING_MASK"
+      - "COLLATERAL_MASK"
+      - "functionisUsingAsCollateral("
+      - "functionisBorrowingAny("
+      - "functiongetNextFlags("
+  validation_logic:
+    path: src/contracts/protocol/libraries/logic/ValidationLogic.sol
+    required_normalized_markers:
+      - "uint256publicconstantHEALTH_FACTOR_LIQUIDATION_THRESHOLD=1e18;"
+      - "params.healthFactor<HEALTH_FACTOR_LIQUIDATION_THRESHOLD"
+      - "borrowerConfig.isUsingAsCollateral(collateralReserve.id)"
+      - "params.totalDebt!=0"
+  wad_ray_math:
+    path: src/contracts/protocol/libraries/math/WadRayMath.sol
+    required_normalized_markers:
+      - "uint256internalconstantWAD=1e18;"
+      - "functionwadDiv(uint256a,uint256b)internalpurereturns(uint256c){"
+      - "c:=div(add(mul(a,WAD),div(b,2)),b)"
+
+effect_contract:
+  effect_class_id: base_reserve_liquidation_threshold_strict_decrease
+  strict_liquidation_threshold_decrease: true
+  new_liquidation_threshold_must_be_positive: true
+  ltv_must_be_unchanged: true
+  liquidation_bonus_must_be_unchanged: true
+  config_engine_ltv_and_liquidation_bonus_must_use_keep_current_when_applicable: true
+  changed_reserve_must_not_be_frozen: true
+  same_transaction_account_relevant_configuration_must_be_unchanged: true
+  changed_reserve_must_be_enabled_as_collateral: true
+  account_must_have_positive_changed_collateral_base_value: true
+  account_must_have_positive_total_debt_base: true
+  e_mode_override_has_zero_direct_base_threshold_effect: true
+  counterfactual_holds_t_minus_one_balances_prices_indexes_and_other_configuration_fixed: true
+  weighted_identity: >-
+    weighted_lt_new = weighted_lt_old - changed_collateral_base_value *
+    (old_liquidation_threshold_bps - new_liquidation_threshold_bps)
+  health_factor_identity: >-
+    health_factor = wad_div_half_up(weighted_liquidation_threshold_sum, total_debt_base)
+    // 10000
+  historical_candidate_requires_version_matched_deployed_code: true
+  health_factor_boundary_crossing_is_not_sufficient_for_executable_liquidation: true
+  source_pass_authorizes_event_inventory_design_only: true
+
+gates:
+  - account_state_views
+  - config_engine_effect_class
+  - effect_identity_self_checks
+  - e_mode_routing_explicit
+  - exact_health_factor_accumulator
+  - health_factor_boundary
+  - license_provenance
+  - required_files
+  - required_markers
+  - configuration_transition_has_no_account_write_or_iteration
+  - source_clean
+  - source_commit
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_SOURCE_EFFECT_IDENTITY_AUTHORIZE_AAVE_CHAIN_EVENT_INVENTORY_DESIGN_ONLY
+  fail: FAIL_SOURCE_EFFECT_IDENTITY_KEEP_AAVE_UNADMITTED
+  authorized_next_stage: separately_frozen_aave_ethereum_deployment_and_liquidation_threshold_event_inventory_design_only
+
+limitations:
+  - >-
+    The pinned source is Aave V3.7 current source, not evidence that the same code was deployed at any
+    historical event; every historical candidate requires block-matched proxy and implementation verification.
+  - >-
+    Source conformance does not establish that an eligible strict liquidation-threshold decrease exists, that
+    account state can be reconstructed completely, or that a causal response panel is identified.
+  - >-
+    An eMode collateral override makes the direct effect of the base-reserve liquidation-threshold change
+    exactly zero for that account-reserve route.
+  - >-
+    A health-factor crossing is not sufficient for executable liquidation: reserve activity, pause and
+    grace-period state, debt and collateral eligibility and the transaction path also matter.
+  - >-
+    Frozen-reserve changes and same-transaction changes to eMode, oracle, indexes or other account-relevant
+    configuration are outside the strict effect class.
+  - >-
+    LTV changes affect borrowing capacity rather than this health-factor identity, while liquidation-bonus
+    changes affect liquidation payoffs; both are excluded to avoid a bundled response estimand.
+  - >-
+    The source licence audit records the pinned Business Source License 1.1 text and is not legal advice.
+  - >-
+    This stage opens no chain event, governance payload, account, action, liquidation or response rows and
+    authorizes no GPU work or G1 admission.

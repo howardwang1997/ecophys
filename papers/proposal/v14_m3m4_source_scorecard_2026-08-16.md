@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-16
 
-**Current decision:** `RETIRE_COMPOUND_M3_CAUSAL_ROUTE_AUTHORIZE_NEW_SOURCE_ZERO_ROW_DESIGN_ONLY`
+**Current decision:** `COMPOUND_M3_RETIRED_AAVE_A0_SOURCE_PROTOCOL_FROZEN_PENDING_ONE_RUN`
 
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
@@ -20,8 +20,9 @@ plan. Managers, Bulker operators, transaction senders and account addresses must
 
 At initial selection Compound had five `pass`, five `partial` and two `unresolved` criteria. The later mechanics
 and activation audits resolve the relevant denominator/activation route negatively rather than repairing it.
-Aave is now the first candidate for a fresh zero-row source and effect-class audit; it is not automatically
-admitted to G1. GC0166 remains conditional on official identity/provenance clarification. Uniswap Proposal 94
+Aave is now the first candidate for a fresh zero-row source and effect-class audit. Its A0 protocol is frozen but
+has no result and does not admit Aave to G1. GC0166 remains conditional on official identity/provenance
+clarification. Uniswap Proposal 94
 stays the exact-M2 case and cannot be rehabilitated as M3/M4 by changing its failed concentration gate.
 
 Initial machine-readable decision (historical and immutable):
@@ -344,3 +345,25 @@ Compound now supplies audited mechanics and development evidence only. A distinc
 boundary-layer hypothesis would need new events and untouched confirmation data. For the current M3/M4 program,
 the next allowed work is a fresh Aave zero-row source/effect-class audit design. Full result:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V2.md`.
+
+## 18. Frozen Aave A0 source/effect protocol
+
+A0 pins official Aave V3.7 source commit `cff15de6d1271b0c800fc001f4aea4c263e8a597` and fourteen exact source/
+licence paths. It audits config-engine routing, `configureReserveAsCollateral`, the weighted LT accumulator,
+half-up `wadDiv`, explicit eMode overrides, account-state views and the HF=1 boundary. The source-derived direct
+operator for an eligible account is
+
+\[
+W^+ = W^- - C_j^-(L_j^- - L_j^+),
+\]
+
+with LTV and liquidation bonus unchanged. The eMode-override and disabled-collateral routes have zero direct base-
+LT effect. An HF crossing is not labelled executable liquidation because activity, pause/grace and other
+eligibility conditions still matter.
+
+The protocol excludes frozen reserves and same-execution account-relevant configuration bundles from any later
+candidate class. It opens no chain, payload, account, action or response row. All twelve source gates are
+conjunctive; a pass authorizes only a separately frozen deployment/version and LT-event inventory design, while a
+fail keeps Aave unadmitted. Local source inspection costs one CPU minute, zero paid data and zero GPU. Proposal 204
+was exposed in source-design reconnaissance and is development-only, never untouched confirmation. Protocol:
+`experiments/v14_aave_v3_liquidation_threshold_source_preflight/PREREGISTRATION.md`.
