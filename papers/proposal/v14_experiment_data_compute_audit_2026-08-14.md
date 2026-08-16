@@ -858,3 +858,16 @@ The actual canary completed on all four CPU hosts: 322 logical calls, 347 HTTP a
 Wall time was 47.6--169.5 seconds/host and durable artifacts about 327 KiB. Coverage was 5/9 on each V100 and 6/9
 on RTX 2060/Mac, so no route was selected. Every successful log result was empty, no target row was retained, paid
 data remained zero and all GPUs remained unused. B0 v2 compute/data remain unbudgeted.
+
+### Frozen target-row-free transport-repair budget
+
+Repair v2 inherits six routes from the hash-pinned RTX 2060 and Mac v1 artifacts and issues requests only for
+Polygon, Base and one predeclared BNB candidate. Both eligible hosts run as CPU/network workers with CUDA hidden;
+the V100 hosts are not repeated because their v1 coverage cannot satisfy the same-host nine-chain rule after only
+three repairs.
+
+Per host caps are 100 HTTP attempts, 8 MiB responses, two requests/s, two attempts/logical call and 30 seconds per
+attempt. Expected parallel wall time is below five minutes and durable output below 1 MiB. Inputs are public
+documentation plus existing immutable canary artifacts; paid data, new storage, software installation and GPU-hours
+are zero. B0 v2, B1 and all model training still have no budget unless this canary passes and a separate protocol
+is committed.

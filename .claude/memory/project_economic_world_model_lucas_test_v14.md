@@ -813,3 +813,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   replicas pass block 0 but reject the 250k range with HTTP 400/413; BNB primary gives 403 and replica gives
   JSON-RPC -32005 even at block 0. The pattern is not Mac-egress-specific. B0 v2 remains unauthorized; next is an
   official endpoint/archive audit and separately frozen target-free error-classification/endpoint canary repair.
+- Official BNB documentation says `eth_getLogs` is disabled on its listed public mainnet endpoints and lists dRPC
+  as a provider; Base documentation recommends log ranges below 2,000 blocks. Repair canary v2 therefore inherits
+  the same six validated routes from the immutable RTX2060/Mac v1 artifacts and probes only Polygon replica, Base
+  replica and the single predeclared `https://bsc.drpc.org` candidate on those two hosts. V100-A/B are ineligible
+  because five v1 passes plus three repairs cannot cover nine deployments.
+- In repair v2, HTTP 400/413 can trigger bisection only after the single-block empty query passed and both attempts
+  have one of those statuses. JSON-RPC range errors may also bisect; every other outcome is terminal. Both eligible
+  hosts must report and the first complete host in RTX2060→Mac order is selected. Per-host bounds are 100 attempts
+  and 8 MiB; target rows, paid data and GPU remain zero. PASS permits B0 v2 design only, never same-step execution.

@@ -219,3 +219,15 @@ Stop or reframe if any of the following holds:
 
 The fallback is a transparent protocol-governance benchmark or software/data paper, not a weakened universal or
 causal claim.
+
+## 11. B0 transport-repair gate
+
+Canary v1 failed before any Aave row and therefore cannot be used to revise the scientific support gate. The
+official-source audit isolates a narrow free-data repair: inherit the six routes independently validated on RTX
+2060 and Mac, reclassify persistent HTTP 400/413 as range-dependent only after a passing single-block query, and
+test one predeclared BNB dRPC candidate. The two V100 egresses are excluded because their five-chain v1 coverage
+cannot reach nine from these three repair probes.
+
+The v2 repair requires both eligible hosts, a single-host nine-chain plan and zero target rows. Its PASS permits
+only B0 v2 protocol design; its FAIL closes the current free-RPC directory route. Neither result changes the vector
+policy-shock hypothesis, supplies scientific support, or opens compiler/account/outcome/model work.

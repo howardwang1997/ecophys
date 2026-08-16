@@ -797,6 +797,14 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     Polygon/Base replica 的 block 0 通过而 250k range 返回 HTTP 400/413，可做 versioned range-error
     分类 repair；BNB primary 在 block 0 返回 403、replica 返回 `-32005 limit exceeded`，必须先做官方
     archive-route audit。跨四 egress 模式近乎一致，排除 Mac-only 解释。B0 v2 仍未获授权。
+20. **Transport repair canary v2 已冻结、尚未执行：** 官方 BNB 文档明确其公开主网 endpoint 禁用
+    `eth_getLogs` 并把 dRPC 列为第三方 provider；Base 官方建议 log range 小于 2,000 blocks。v2 因而只在
+    v1 覆盖 6/9 的 RTX2060 与 Mac 上补测 Polygon/Base 既有 replica 和唯一新增的 BNB dRPC candidate，
+    并继承双方独立通过的六条 route。只有 single-block 空结果先通过后，连续两次 HTTP 400/413 或
+    JSON-RPC range error 才可触发 deterministic left-prefix bisection；403/429/5xx/transport/nonempty
+    一律 terminal。两台 host 都必须返回，再按 RTX2060→Mac 选第一个覆盖全部三项的单一 host。每 host
+    100 attempts/8 MiB/2 rps，CUDA 隐藏、免费数据、零 GPU。PASS 仍只允许另行设计 B0 v2；协议 commit
+    推送并远端核验前不得发出新 RPC。
 
 ---
 

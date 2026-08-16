@@ -24,7 +24,7 @@ flowchart TD
     V --> E0[Development replay: 77 bundles; 0 pure emitted-LT vectors]
     E0 --> B0[B0 v1 transport fail before logs; scientific gate unevaluated]
     B0 --> T0[Transport canary v1 FAIL: no single host covers 9 chains]
-    T0 --> T1[Official archive-route audit + target-free canary repair]
+    T0 --> T1[Repair v2 frozen: RTX/Mac + 3 missing routes]
     T1 --> B0V2[Versioned B0 scientific rerun only after canary PASS]
     B0V2 --> B1[B1 only after a B0 scientific pass]
     B1 --> B2[B2 complete account denominator + accounting replay]
@@ -46,7 +46,7 @@ flowchart TD
 | Bundle structural replay | 77 bundles; 27 known net changes; 5 net LT decreases; 0 pure LT; 1 round trip | vector-compiler protocol design only |
 | B0 v1 | fixed 4-train/2-validation/3-test deployments; ≥220 gate | infrastructure failure before a log row; no scientific decision |
 | Transport canary v1 | zero address; 4 hosts; 2 existing endpoints/chain | FAIL, host coverage 5/5/6/6 of 9; no target inference |
-| Transport repair | Polygon/Base range classification + BNB official archive route | not yet frozen/run; nothing yet |
+| Transport repair v2 | six inherited routes + Polygon/Base range classification + one documented BNB provider | frozen, not run; PASS licenses B0 v2 design only |
 | B0 v2 | not yet designed or run | nothing yet |
 | B1--B3 | not yet designed/run | nothing yet |
 

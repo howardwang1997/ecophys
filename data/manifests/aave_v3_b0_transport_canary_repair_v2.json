@@ -1,0 +1,146 @@
+{
+  "schema_version": "ecophys-aave-v3-b0-transport-canary-repair/v2",
+  "audit_id": "aave_v3_b0_transport_canary_repair_v2",
+  "as_of": "2026-08-17",
+  "stage": "target_row_free_rpc_transport_canary_repair",
+  "parents": {
+    "canary_v1_archive_commit": "fc9f9bff03ff9432cd76b60b314d7e561d15193e",
+    "canary_v1_protocol_commit": "4f18e81850102023ce802109f47bb5727f6315a0",
+    "canary_v1_manifest_path": "data/manifests/aave_v3_b0_transport_canary_v1.json",
+    "canary_v1_manifest_sha256": "a524b694b761e324571c74f0d4131295722c0d6094e9fc2e0abe5f5e84864c33",
+    "canary_v1_source_path": "ecomd/research/aave_b0_transport_canary.py",
+    "canary_v1_source_sha256": "6f56b9fa956d7c8ab2cc7d48ab776bdeedc428211cb644c06ad0eeeea0a1155f",
+    "canary_v1_result_path": "experiments/v14_aave_v3_b0_transport_canary/RESULTS_V1.md",
+    "canary_v1_result_sha256": "f19d55771549d917482602a6949b023aa219c7fcda859f78edda356d352a0526",
+    "canary_v1_summary_path": "experiments/v14_aave_v3_b0_transport_canary/artifacts/summary.json",
+    "canary_v1_summary_sha256": "28946aa8439804b9a69f0e9a0793adece6e5903a33c8fba47f4475dfd917bab3",
+    "canary_v1_rtx2060_artifact_path": "experiments/v14_aave_v3_b0_transport_canary/artifacts/hosts/rtx2060.json",
+    "canary_v1_rtx2060_artifact_sha256": "c3aec5623eeed78c9be2987d65c8cef6abad1c208bf53f0b11094c62e740a25f",
+    "canary_v1_local_mac_artifact_path": "experiments/v14_aave_v3_b0_transport_canary/artifacts/hosts/local_mac.json",
+    "canary_v1_local_mac_artifact_sha256": "61c6016d8bb9c25181f92b26d1e4b0bb489f3cc939a09f5a61983c1b05163600",
+    "source_audit_path": "papers/proposal/v14_aave_b0_transport_repair_source_audit_2026-08-17.md",
+    "source_audit_sha256": "9e91405a6b80d1f399fe92fe026faae5fc983b756a3186dae68d37c74509f0dc",
+    "expected_canary_v1_decision": "FAIL_TARGET_ROW_FREE_TRANSPORT_CANARY_KEEP_B0_V2_B1_G1_GPU_LOCKED"
+  },
+  "scientific_contract": {
+    "deployment_universe_unchanged": true,
+    "deployment_split_unchanged": true,
+    "cutoff_unchanged": true,
+    "program_inclusion_rule_unchanged": true,
+    "support_thresholds_unchanged": true,
+    "scientific_resource_caps_unchanged": true,
+    "target_addresses_forbidden": true,
+    "target_event_rows_forbidden": true,
+    "b0_v2_execution_not_authorized": true,
+    "b1_accounts_outcomes_g1_gpu_locked": true
+  },
+  "eligibility": {
+    "host_priority": ["rtx2060", "local_mac"],
+    "all_eligible_hosts_must_report": true,
+    "required_v1_passing_deployments": [
+      "arbitrum",
+      "avalanche",
+      "gnosis",
+      "linea",
+      "optimism",
+      "scroll"
+    ],
+    "excluded_v1_hosts": ["v100_a", "v100_b"],
+    "exclusion_rule": "v1_coverage_below_six_cannot_reach_nine_from_three_repair_probes"
+  },
+  "inherited_routes": [
+    {
+      "deployment": "arbitrum",
+      "endpoint_role": "replica",
+      "url": "https://arb1.arbitrum.io/rpc",
+      "initial_maximum_interval_span": 250000
+    },
+    {
+      "deployment": "avalanche",
+      "endpoint_role": "primary",
+      "url": "https://avalanche-c-chain-rpc.publicnode.com",
+      "initial_maximum_interval_span": 31250
+    },
+    {
+      "deployment": "optimism",
+      "endpoint_role": "replica",
+      "url": "https://mainnet.optimism.io",
+      "initial_maximum_interval_span": 7813
+    },
+    {
+      "deployment": "gnosis",
+      "endpoint_role": "primary",
+      "url": "https://gnosis-rpc.publicnode.com",
+      "initial_maximum_interval_span": 7813
+    },
+    {
+      "deployment": "linea",
+      "endpoint_role": "primary",
+      "url": "https://linea-rpc.publicnode.com",
+      "initial_maximum_interval_span": 31250
+    },
+    {
+      "deployment": "scroll",
+      "endpoint_role": "primary",
+      "url": "https://scroll-rpc.publicnode.com",
+      "initial_maximum_interval_span": 31250
+    }
+  ],
+  "canary": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "expected_log_count": 0,
+    "single_block_interval": [0, 0],
+    "root_interval": [0, 249999],
+    "multiblock_bisection_allowed_after_single_empty": true,
+    "bisection_eligible_final_outcomes": ["rpc_error", "persistent_http_400", "persistent_http_413"],
+    "all_other_outcomes_terminal": true,
+    "nonempty_result_action": "contamination_fail_discard_rows",
+    "allowed_methods": ["eth_chainId", "eth_getLogs"]
+  },
+  "hosts": {
+    "priority": ["rtx2060", "local_mac"],
+    "all_hosts_must_report_before_selection": true,
+    "gpu_visible": false,
+    "host_ids_are_bound_to_gitignored_local_inventory": true
+  },
+  "rpc": {
+    "maximum_requests_per_second_per_host": 2,
+    "maximum_attempts_per_logical_call": 2,
+    "maximum_http_attempts_per_host": 100,
+    "maximum_response_bytes_per_host": 8388608,
+    "timeout_seconds": 30,
+    "user_agent": "EcoPhys-V14-Aave-B0-transport-canary-repair/2.0",
+    "raw_response_payloads_retained": false
+  },
+  "repair_endpoints": [
+    {
+      "name": "polygon",
+      "chain_id_hex": "0x89",
+      "endpoint_role": "replica",
+      "url": "https://polygon.drpc.org",
+      "candidate_origin": "canary_v1_single_block_pass_http_400_range_failure"
+    },
+    {
+      "name": "base",
+      "chain_id_hex": "0x2105",
+      "endpoint_role": "replica",
+      "url": "https://mainnet.base.org",
+      "candidate_origin": "canary_v1_single_block_pass_http_413_range_failure"
+    },
+    {
+      "name": "bnb",
+      "chain_id_hex": "0x38",
+      "endpoint_role": "documented_provider",
+      "url": "https://bsc.drpc.org",
+      "candidate_origin": "bnb_official_provider_list_and_drpc_eth_getlogs_documentation"
+    }
+  ],
+  "decision_policy": {
+    "pass": "PASS_TARGET_ROW_FREE_TRANSPORT_REPAIR_AUTHORIZE_B0_V2_PROTOCOL_DESIGN_ONLY",
+    "fail": "FAIL_TARGET_ROW_FREE_TRANSPORT_REPAIR_KEEP_B0_V2_B1_G1_GPU_LOCKED",
+    "all_hosts_required": true,
+    "single_host_required_for_all_three_repairs": true,
+    "select_first_passing_host_by_frozen_priority": true,
+    "authorized_next_stage": "scientific_contract_preserving_b0_v2_protocol_design_only"
+  }
+}
