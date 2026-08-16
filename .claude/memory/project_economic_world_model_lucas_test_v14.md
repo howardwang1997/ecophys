@@ -856,3 +856,24 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   Treat this as a standard terminal-projection insufficiency witness, not theorem novelty. ESTIR authorizes only
   fixture/spec extension; rollback/nested calls/events/dynamic storage/aliasing/EVM conformance remain open, and
   B0 v2/B1/accounts/outcomes/G1/GPU remain locked.
+- A primary-source prior-art audit kills a standalone ESTIR v2 EVM-semantics/IR claim. KEVM/EELS already provide
+  executable/reference EVM semantics and fixtures; EthIR/Gigahorse provide analyzable bytecode IR; Geth/OpenTracer
+  provide call/state/instruction trace infrastructure. Hybrid known-plus-learned dynamics and operator/action
+  conditioning are also established. Do not implement those capabilities as a purported research contribution.
+- ESTIR is retained only as a strict normalized execution-evidence vocabulary. Its provider/client adapter waits
+  for a B0 pass and a frozen B1 source sample, then must reconcile fork/code identity, ordered frames, rollback,
+  receipt logs, pre/post state and explicit unknown coverage against reference fixtures and independent evidence.
+- For response `Y`, terminal representation `X` and extra trace `Z`, Bayes log-loss gain is exactly
+  `I(Y; Z | X)` (and the squared-loss gain is the conditional-expectation projection norm). These are standard
+  identities. Synthetic labels control the gain by construction, so no synthetic response-model experiment or GPU
+  work is authorized. The next scientific gate is still explicit archive-resource qualification and B0.
+- A provider-neutral archive-access request packet is send-ready but unsent. It asks for explicit per-chain
+  headers/`eth_getLogs` range, quota, retention, licence and publication terms across the frozen nine networks,
+  with later trace/state capabilities optional. Qualification remains zero-address and target-free. Sending,
+  activating a trial, using credentials or buying access requires an explicit resource/recipient choice.
+- Documentary provider ordering: QuickNode Streams/custom export first, Alchemy enterprise/custom second,
+  GetBlock dedicated backup, dRPC deprioritized. QuickNode documents archive/no-pruning and debug-trace data on all
+  nine chains, but its ordinary paid RPC has a 10,000-block log range. The preserved Arbitrum cutoff lower bound
+  makes Provider + one Configurator require at least 98,924 log calls, so Core RPC cannot fit the 50,000 cap.
+  Alchemy documents all nine chain names but its free/PayGo range matrix is also unqualified for the aggregate
+  budget. No provider has passed; request packets remain unsent.

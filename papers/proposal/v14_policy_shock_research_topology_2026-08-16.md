@@ -28,7 +28,10 @@ flowchart TD
     T1 --> AR[Explicit archive-data resource decision]
     AR --> B0V2[Versioned B0 only after new target-free qualification PASS]
     T1 --> IR[ESTIR v1 PASS: ordered trace + safe limited canonicalization]
-    IR --> IRS[Compiler fixtures/spec only; cannot bypass B0]
+    IR --> PA[Prior-art kill audit]
+    PA --> K[Kill standalone EVM semantics/IR and synthetic-response claims]
+    K --> EA[Execution-evidence adapter contract only]
+    EA --> IRS[Defer implementation to frozen B1 sources; cannot bypass B0]
     B0V2 --> B1[B1 only after a B0 scientific pass]
     B1 --> B2[B2 complete account denominator + accounting replay]
     B2 --> B3[B3 frozen OOD prediction task]
@@ -51,6 +54,8 @@ flowchart TD
 | Transport canary v1 | zero address; 4 hosts; 2 existing endpoints/chain | FAIL, host coverage 5/5/6/6 of 9; no target inference |
 | Transport repair v2 | Polygon/Base pass at spans 62/7,813; BNB fails on both hosts; zero target rows | FAIL; free-RPC B0 route closed |
 | ESTIR v1 | 72,000 generated cases; 10/10 gates; terminal-collision path witness | PASS for fixtures/spec only; no empirical authorization |
+| ESTIR prior-art audit | KEVM/EELS/EthIR/Gigahorse/Geth/OpenTracer plus hybrid/operator-learning comparison | kill standalone EVM/IR novelty; retain evidence adapter only |
+| Evidence adapter contract | strict provenance/frame/effect/uncertainty schema and 12 future gates | design boundary only; implementation waits for B0 and frozen B1 sources |
 | B0 v2 | not yet designed or run | nothing yet |
 | B1--B3 | not yet designed/run | nothing yet |
 
@@ -74,3 +79,7 @@ The topology preserves both negative results as informative constraints. The piv
 available”; it follows from two independent failures of scalar treatment construction. Future theory should treat
 program compilation, exact instantaneous state transition and learned adaptation as separate objects, and test
 whether that separation improves held-out program prediction rather than merely fitting historical responses.
+The ESTIR audit further narrows this statement: compilation infrastructure is not the novelty. Under Bayes log
+loss, the maximum value of trace evidence beyond prestate and terminal effects is exactly the conditional mutual
+information with the real response. Synthetic labels can set that quantity by construction, so only sealed real
+programs can adjudicate the response claim.

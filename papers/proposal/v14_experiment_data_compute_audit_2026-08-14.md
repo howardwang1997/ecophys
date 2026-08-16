@@ -895,3 +895,16 @@ The formal Mac CPU run completed 72,000 generated cases in 3.06 seconds and wrot
 independent reconstruction took 2.83 seconds. Network calls, chain/market rows, paid data, remote-worker use and
 GPU-hours were exactly zero. The result remains far below its 60-second, 100,000-case and 1-MiB caps and creates no
 new empirical or training budget.
+
+### Post-ESTIR prior-art decision
+
+No ESTIR v2 full-semantics implementation or synthetic response-model run is budgeted. Established executable EVM
+semantics, decompilers, tracers, hybrid dynamics and operator/action conditioning remove those objects as
+standalone novelty claims. ESTIR remains an evidence-normalization vocabulary whose implementation waits for a B0
+pass and a frozen B1 provider/client sample.
+
+The only current next-stage resource task is documentary: obtain a written nine-chain archive capability response
+and then freeze a zero-target qualification. Preparing the request packet uses negligible local CPU, zero network
+data collection and zero GPU. No trial activation, credential use, paid plan, B0 run or model training is
+authorized. Both V100 GPUs and the RTX 2060 GPU remain idle; their CPUs are also unnecessary until a qualification
+protocol is frozen.

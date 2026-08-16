@@ -252,3 +252,21 @@ V1 passed all ten gates at protocol commit `b7b123e4...`: 72,000 generated cases
 cases and zero determinism, commutation, canonical-hash or sparse-support violations. The fixed round trip has zero
 terminal delta but a distinct path hash. This validates the limited IR design choice only. Full EVM semantics,
 source/receipt/state conformance and every empirical claim remain open.
+
+## 13. ESTIR scope after the prior-art kill audit
+
+Do not implement a standalone ESTIR v2 EVM semantics. KEVM and the Ethereum Execution Layer Specifications already
+provide executable semantics; EthIR and Gigahorse provide bytecode IR/decompilation; reference-client tracers and
+OpenTracer already expose call, state and instruction evidence. Likewise, combining known mechanics with learned
+dynamics and conditioning models on operators/actions are established patterns.
+
+ESTIR is retained only as a provider-neutral normalized evidence vocabulary. A future B1 adapter must consume
+version-pinned reference/client evidence, reconcile receipts and T-1/T state, propagate unknown semantics and fail
+closed. Its implementation waits for a B0 pass and a frozen real source sample so that invented fixtures do not
+dictate the interface.
+
+For future responses `Y`, terminal representation `X` and added trace evidence `Z`, the Bayes log-loss improvement
+is `I(Y; Z | X)`. A synthetic label generator controls this value by construction; therefore no synthetic response
+benchmark can unlock a scientific claim or GPU work. The next substantive gate remains archive-resource
+qualification followed by B0. Full decision:
+`papers/proposal/v14_estir_prior_art_and_scope_decision_2026-08-17.md`.

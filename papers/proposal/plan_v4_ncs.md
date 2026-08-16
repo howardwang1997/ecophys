@@ -833,6 +833,26 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     `2f9ed635...`。固定反例确认 terminal delta 会丢掉 `8000→1→8000` transient path，因此未来 IR 同时保留
     trace 与 terminal operator。这个结论是 standard program semantics 的 software feasibility，不是新
     theorem、EVM conformance 或 C0 empirical evidence。只解锁 fixture/spec 扩展；B0/B1/G1/GPU 不变。
+25. **Prior-art kill audit 终止 ESTIR 全语义扩张：** KEVM/EELS 已提供完整或维护中的 executable EVM
+    semantics/reference fixtures，EthIR/Gigahorse 已覆盖 bytecode-to-IR/decompilation，Geth/OpenTracer 已覆盖
+    call/state/instruction trace；known-mechanism-plus-learned-remainder、operator learning 与 action-conditioned
+    world dynamics 也均非新概念。因此不得把 rollback/call frame/event/dynamic storage 的自研实现包装为
+    NCS/NMI 方法贡献。ESTIR 仅保留为 external execution evidence 的 strict normalized vocabulary；adapter
+    实现推迟到 B0 PASS 后的 frozen B1 source sample。Bayes log-loss 下 trace 相对 terminal representation
+    的最大价值恰为 `I(Y; Z | X)`；synthetic response generator 可按构造任意设置它，故不启动循环论证式
+    synthetic ML，也不解锁 GPU。下一科学 gate 仍是 explicit archive resource 的 target-free qualification
+    和 B0。范围决策与未来 12-gate adapter contract 见
+    `v14_estir_prior_art_and_scope_decision_2026-08-17.md` 与
+    `v14_execution_evidence_adapter_contract_2026-08-17.md`。
+26. **Archive provider 文档筛选完成，但没有资源通过：** QuickNode 官方表格覆盖九链 archive/no-pruning，
+    且 Streams 文档覆盖 historical logs/receipts/debug traces；但普通付费 RPC 的 `eth_getLogs` 固定 10,000
+    blocks。已封存 Arbitrum cutoff bracket 高于 494,618,480，仅 Provider + 一个 Configurator 的理论下限
+    即 98,924 log calls，超过 50,000 cap，所以不得试用普通 Core RPC。第一书面请求应明确询问 QuickNode
+    Streams/custom content-hashed export 的 genesis backfill、completeness、quota、price 与 publication rights。
+    Alchemy chain list 也覆盖九链，但 free range=10，PayGo 的 Polygon=2,000、BNB/多数其它链=10,000，整体
+    预算仍未证明；只作第二个 enterprise/custom 候选。GetBlock dedicated 是 backup，dRPC 因 archive label
+    不保证 block 0 且 free test 已 throttled 而降级。request packet 与 documentary shortlist 均已写好但
+    未发送；trial/account/purchase/target/GPU 全未授权。
 
 ---
 

@@ -113,3 +113,15 @@ The useful request is not “send us market data.” It is:
 The partner can be an RPC/archive provider, blockchain data infrastructure group, protocol analytics team,
 university systems lab or institution already licensed for the data. It is not geographically restricted. No
 participant identity or proprietary trading record is needed for B0.
+
+A provider-neutral, send-ready request and response matrix is maintained at
+`papers/proposal/v14_archive_access_request_packet_2026-08-17.md`. It has not been sent and authorizes neither a
+trial nor a purchase. Once a recipient names an exact product/region/credential class, freeze the target-free
+qualification before activating that access.
+
+The documentary shortlist is
+`papers/proposal/v14_archive_provider_documentary_shortlist_2026-08-17.md`. QuickNode's standard Core RPC is
+already infeasible under its documented 10,000-block log range: the preserved Arbitrum cutoff bracket alone implies
+at least 98,924 calls for one Provider plus one Configurator. The first request should therefore target QuickNode
+Streams/custom export, with Alchemy enterprise/custom archive second. Neither is qualified until written terms and
+a frozen zero-target test pass.
