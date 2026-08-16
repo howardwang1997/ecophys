@@ -247,3 +247,8 @@ to remain trace-distinct.
 This is infrastructure, not evidence for C0--C3 and not a theorem claim. A PASS can improve the future B1
 specification but cannot bypass B0 or open any empirical row. Plan:
 `papers/proposal/v14_executable_shock_trace_ir_plan_2026-08-17.md`.
+
+V1 passed all ten gates at protocol commit `b7b123e4...`: 72,000 generated cases, 38,250 certified-independent
+cases and zero determinism, commutation, canonical-hash or sparse-support violations. The fixed round trip has zero
+terminal delta but a distinct path hash. This validates the limited IR design choice only. Full EVM semantics,
+source/receipt/state conformance and every empirical claim remain open.

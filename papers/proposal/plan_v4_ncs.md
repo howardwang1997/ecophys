@@ -826,6 +826,13 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     canonicalize frozen read/write criterion 证明独立的顺序。开发态 8 tests、Ruff、strict mypy 通过；测试
     会覆盖完整 72,000-case grid，但不能替代 pushed implementation commit 上的 clean detached sealed run。
     Verifier 必须重算全 grid/ledger/witnesses 并核对 repository manifest/source hash。
+24. **ESTIR v1 通过，但不改变经验 gate：** pushed protocol `b7b123e4...` 的 clean detached run 在 3.06 秒
+    内完成 72,000 cases，10/10 gates；55,830 successful、13,170 guard-rejected、3,000 duplicate-ID strict
+    rejects，38,250 certified-independent cases 中 acceptance/terminal/canonical-hash violation 全为 0，
+    determinism 与 sparse-support violation 也为 0。独立 full replay 2.83 秒并逐字段一致；summary SHA 为
+    `2f9ed635...`。固定反例确认 terminal delta 会丢掉 `8000→1→8000` transient path，因此未来 IR 同时保留
+    trace 与 terminal operator。这个结论是 standard program semantics 的 software feasibility，不是新
+    theorem、EVM conformance 或 C0 empirical evidence。只解锁 fixture/spec 扩展；B0/B1/G1/GPU 不变。
 
 ---
 

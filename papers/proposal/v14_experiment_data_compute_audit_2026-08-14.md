@@ -888,3 +888,10 @@ The post-transport feasibility audit reads only its JSON manifest and hash-pinne
 most 100,000 exact-integer generated cases on one Mac CPU core, with a 60-second wall-time cap and output below 1
 MiB. Network/chain/market/account/outcome rows, paid data, remote workers and GPU-hours are all zero. V100 and RTX
 remain idle; H20 is excluded. A PASS opens compiler fixture/specification work only, not empirical B1 or training.
+
+### ESTIR actual resource result
+
+The formal Mac CPU run completed 72,000 generated cases in 3.06 seconds and wrote a 3,628-byte summary. Full
+independent reconstruction took 2.83 seconds. Network calls, chain/market rows, paid data, remote-worker use and
+GPU-hours were exactly zero. The result remains far below its 60-second, 100,000-case and 1-MiB caps and creates no
+new empirical or training budget.

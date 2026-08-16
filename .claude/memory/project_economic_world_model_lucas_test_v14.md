@@ -846,3 +846,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   lexicographic Kahn ordering only among ready independent instructions. Its deterministic verifier recomputes the
   complete grid and checks actual repository manifest/source hashes. Eight focused tests, Ruff and strict mypy pass;
   formal execution still requires a pushed implementation commit and clean detached worktree.
+- ESTIR v1 formally passed 10/10 at pushed protocol commit
+  `b7b123e4ed970f1f15bad5d46a8aef04679be640`. It evaluated 72,000 cases: 55,830 successful, 13,170 guard-rejected
+  and 3,000 duplicate-ID schema rejections. All 38,250 certified-independent cases have zero acceptance,
+  terminal-state and canonical-hash violations; determinism and sparse-support violations are also zero. The full
+  reconstruction matches; summary SHA-256 is
+  `2f9ed635eb7693d0e4108df5172e12662eb6f43d570b7e176b67b845f4c9dfa5`.
+- The Aave-like `8000 -> 1 -> 8000` and no-op programs have equal empty terminal deltas but different trace hashes.
+  Treat this as a standard terminal-projection insufficiency witness, not theorem novelty. ESTIR authorizes only
+  fixture/spec extension; rollback/nested calls/events/dynamic storage/aliasing/EVM conformance remain open, and
+  B0 v2/B1/accounts/outcomes/G1/GPU remain locked.
