@@ -1,7 +1,7 @@
 # Aave liquidation-threshold shocks as a candidate exact intervention layer
 
-**Status:** A0 source/effect identity passed; A1 deployment/event-inventory design authorized; Aave is not admitted
-to G1.
+**Status:** A0 source/effect identity passed; the A1a zero-account deployment/version/event-directory protocol is
+frozen but not yet executed; Aave is not admitted to G1.
 
 ## Why this is cleaner than the retired Compound cap route
 
@@ -68,6 +68,20 @@ If no eligible event survives, retire the Aave LT route before accounts are open
 ConfigEngine encodes `liqBonus` as the increment above 100% and adds `100_00` when calling PoolConfigurator. A1
 must normalize that payload representation to actual reserve configuration before applying the unchanged-bonus
 filter.
+
+The first empirical subgate is now A1a, a deliberately narrower directory. It freezes Ethereum blocks
+0--25,760,572, official address-book/source commits, three complete log streams and the ERC-1967 implementation
+slot before opening any chain event. PoolAddressesProvider and PoolConfigurator are scanned without a topic
+filter; the Pool proxy is scanned only for `Upgraded`. Provider transitions must form a continuous implementation
+chain and match proxy upgrades one-for-one. Fixed-end getters, slots and code come from Blockscout; PublicNode
+replicates only chain ID and headers because its free historical-state limitation is already known.
+
+A1a compares each configuration row only with the previous **emitted** configuration. A provisional directory
+row needs a strict positive LT decrease, unchanged emitted LTV/bonus, exactly one Configurator log in its
+transaction and no provider/proxy upgrade. At least three rows, two assets and three transactions are required.
+This is not authoritative T−1 state or payload isolation. A pass authorizes an all-candidate A1b protocol; only
+A1b may open historical configuration, receipts, calldata/call paths and version-matched implementation source.
+Full preregistration: `experiments/v14_aave_v3_lt_event_directory/PREREGISTRATION.md`.
 
 ### A2 — enumerable denominator and pre-event reconstruction
 

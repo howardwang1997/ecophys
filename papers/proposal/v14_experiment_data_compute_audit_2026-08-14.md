@@ -761,3 +761,23 @@ twelve gates. Actual paid-data, external-worker and GPU use was zero; both V100s
 The frozen reconnaissance disclosure's 197,858 count was Unicode characters, not UTF-8 bytes; this accounting
 correction changes no source content or resource conclusion. A1 currently has a **design-only** budget. No chain
 request, account-scale storage, remote CPU or GPU allocation exists until the deployment/event protocol freezes.
+
+### Frozen Aave A1a zero-account directory budget
+
+A1a now freezes 312 root log reads: 104 inclusive 250,000-block intervals for the PoolAddressesProvider, the
+PoolConfigurator proxy and Pool-proxy upgrades. Two providers each supply chain ID and start/end headers (six
+calls). Blockscout then supplies three terminal provider getters, two ERC-1967 slots and code for the provider,
+two proxies and every unique implementation derived from the complete histories. With no saturated root, the
+successful request count is `326 + N_impl`; `N_impl` is response-derived but the sorted request rule and 128-address
+cap are fixed ex ante.
+
+Hard caps are 2,000 HTTP attempts, 256 MiB responses, 100,000 normalized logs and two requests/s. Expected local
+wall time is three to five minutes; durable JSON should be small. Raw RPC bodies are hashed then discarded.
+PublicNode does not receive a historical state request: prior evidence already restricts its free use to header
+replication, while Blockscout supplies fixed-block getters/slots/code. This is a stated single-provider state
+limitation, not a reason to retry a known-incompatible method.
+
+No historical per-event configuration, transaction, receipt, payload, trace, account, participant action,
+liquidation, price value or response is budgeted. Paid data, external workers and GPU-hours are zero. Both V100s
+and the RTX 2060 remain idle; H20 is excluded. Even a pass budgets only a separately frozen all-candidate A1b
+mechanics/source protocol.

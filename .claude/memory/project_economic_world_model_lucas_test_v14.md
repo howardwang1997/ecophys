@@ -745,3 +745,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - ConfigEngine's pinned sentinel is `KEEP_CURRENT = type(uint256).max - 42`; its `liqBonus` is the increment above
   100% and is translated to `100_00 + liqBonus` for PoolConfigurator. Normalize this before unchanged-bonus
   filtering. Aave remains outside G1; all participant data and GPU jobs stay locked.
+- Aave A1a is now frozen as a zero-account Ethereum directory over blocks 0--25,760,572. It scans all
+  PoolAddressesProvider and PoolConfigurator logs plus Pool `Upgraded` logs in 312 fixed roots, crosswalks every
+  provider implementation transition to proxy upgrades, and checks fixed-end address-book/getter/slot/code
+  conformance. PublicNode replicates headers only; Blockscout is the sole fixed-block state source because the
+  former's free archive-state limitation is already known.
+- A1a's previous emitted configuration is explicitly not authoritative T−1 state. A provisional row needs a
+  positive LT-only decrease, one total Configurator log in its transaction and no provider/proxy upgrade. The
+  frozen support gate is at least three rows, two assets and three transactions. A pass authorizes only a new
+  all-candidate receipt/payload/historical-state/source protocol; accounts, actions, responses, G1 and GPUs remain
+  locked.

@@ -4,6 +4,9 @@
 
 **Current decision:** `AAVE_A0_SOURCE_IDENTITY_PASS_AUTHORIZE_A1_EVENT_INVENTORY_DESIGN_ONLY`
 
+**Next frozen gate:** Aave A1a zero-account deployment/version/LT-event directory; protocol frozen locally,
+not yet executed and not G1-admitted.
+
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
 

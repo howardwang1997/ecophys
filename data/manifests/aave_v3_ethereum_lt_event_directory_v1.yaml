@@ -1,0 +1,216 @@
+schema_version: ecophys-aave-v3-lt-event-directory/v1
+audit_id: aave_v3_ethereum_lt_event_directory_v1
+as_of: "2026-08-16"
+stage: zero_account_deployment_version_and_configuration_event_directory
+
+parents:
+  a0_summary_path: experiments/v14_aave_v3_liquidation_threshold_source_preflight/artifacts/summary.json
+  a0_summary_sha256: 355928afb19ab4b4a8f6de0b786986e9aa4542e1394a3acac7b14dc1ebbc85e9
+  a0_manifest_path: data/manifests/aave_v3_liquidation_threshold_source_preflight_v1.yaml
+  a0_manifest_sha256: 2656f0966d2e0c74b74eb2b147ef6e50bcb7838b078edef6e3552d66b2933ccc
+  chain_summary_path: experiments/v14_compound_v3_chain_metadata_preflight/artifacts_v2/summary.json
+  chain_summary_sha256: 14f5b044d8c51e4323419b901a7f037c84c4af45083464e0daaefc561256c944
+  expected_a0_decision: PASS_SOURCE_EFFECT_IDENTITY_AUTHORIZE_AAVE_CHAIN_EVENT_INVENTORY_DESIGN_ONLY
+
+source_identity:
+  aave_v3_origin_repository: https://github.com/aave-dao/aave-v3-origin.git
+  aave_v3_origin_commit: cff15de6d1271b0c800fc001f4aea4c263e8a597
+  aave_address_book_repository: https://github.com/aave-dao/aave-address-book.git
+  aave_address_book_commit: 70e2f303fe93616784148d6827df6644e5dda4db
+  files:
+    - repository: aave_address_book
+      path: src/AaveV3Ethereum.sol
+      git_blob: 9fc2e4533f0bd4d8e47a05f41ee539a688efe2d7
+      sha256: 1a862b7389de3d59ee77680a8edb451a29e630a07813a0c5becdce65d730a22a
+    - repository: aave_v3_origin
+      path: src/contracts/interfaces/IPoolAddressesProvider.sol
+      git_blob: c2c2a83d6c909f35bec510add4a2faf2848ef21f
+      sha256: 6a44f3a913093d62dd072d1691cf605a76262f56da42cbecdcf80607d8aeef94
+    - repository: aave_v3_origin
+      path: src/contracts/protocol/configuration/PoolAddressesProvider.sol
+      git_blob: 009f4e5cc6cd396c16e5bd3960d472587d7a0756
+      sha256: 134e0b3a2ac286d1a14459aae8a45541eed1877f3a043b7099e158d2332379a7
+    - repository: aave_v3_origin
+      path: src/contracts/interfaces/IPoolConfigurator.sol
+      git_blob: 6f66c1cdc6aa9f6bd263607502dc4b1305daf8b3
+      sha256: e84bcade8ae8bd981db571c25cab4f20f313b6e4800c4e0d8e9fff216b518da8
+    - repository: aave_v3_origin
+      path: src/contracts/dependencies/openzeppelin/upgradeability/BaseUpgradeabilityProxy.sol
+      git_blob: aec817cb346ac6b178a806394c33a8ecc2145ce1
+      sha256: 1b85e71d4ef4e473a7cd29c69f8f0845de7051d4f2aa2786ef1307893a93f04f
+    - repository: aave_v3_origin
+      path: src/contracts/misc/aave-upgradeability/InitializableImmutableAdminUpgradeabilityProxy.sol
+      git_blob: 6913a19d605892588baca1bd87e5044989a2b802
+      sha256: b9db086d3c390c3e3fac8dfdf5795204e4e1746695ff37d511fc43c6d92d2337
+
+access_boundary:
+  chain_rpc_used: true
+  official_deployment_source_opened: true
+  provider_log_rows_opened: true
+  configurator_log_rows_opened: true
+  proxy_upgrade_log_rows_opened: true
+  terminal_protocol_getters_and_slots_opened: true
+  implementation_code_opened: true
+  historical_reserve_configuration_opened: false
+  governance_proposal_or_payload_rows_opened: false
+  governance_transaction_or_receipt_rows_opened: false
+  governance_call_trace_rows_opened: false
+  account_state_rows_opened: false
+  participant_action_rows_opened: false
+  liquidation_rows_opened: false
+  price_or_oracle_value_rows_opened: false
+  realized_response_rows_opened: false
+  raw_rpc_payloads_retained: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+
+rpc:
+  blockscout_rpc_url: https://eth.blockscout.com/api/eth-rpc
+  blockscout_documentation_url: https://docs.blockscout.com/devs/apis/rpc/eth-rpc
+  blockscout_terms_url: https://eaas.blockscout.com/terms-and-conditions
+  publicnode_rpc_url: https://ethereum-rpc.publicnode.com
+  publicnode_documentation_url: https://ethereum.publicnode.dev/
+  maximum_requests_per_second_across_sources: 2
+  maximum_transport_retries: 2
+  maximum_http_attempts: 2000
+  maximum_response_bytes: 268435456
+  log_response_limit: 1000
+  maximum_normalized_logs: 100000
+  maximum_unique_implementations: 128
+  root_partition_block_count: 250000
+  raw_response_payloads_retained: false
+  allowed_methods:
+    - eth_chainId
+    - eth_getBlockByNumber
+    - eth_getLogs
+    - eth_call
+    - eth_getStorageAt
+    - eth_getCode
+  endpoint_substitution_after_freeze: false
+  user_agent: EcoPhys-V14-Aave-LT-event-directory/1.0
+
+window:
+  from_block: 0
+  to_block: 25760572
+  to_block_hash: "0xd2bb500d88a2c0fa956e04af3e6df36f8e60c4cd82307bcf71180cde466a4ca4"
+  expected_root_interval_count_per_stream: 104
+  expected_log_stream_count: 3
+  expected_root_log_query_count: 312
+
+deployment:
+  chain_id: "0x1"
+  pool_addresses_provider: "0x2f39d218133afab8f2b819b1066c7e434ad94e9e"
+  pool_proxy: "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2"
+  pool_configurator_proxy: "0x64b761d848206f447fe2dd461b0c635ec39ebb27"
+  price_oracle: "0x54586be62e3c3580375ae3723c145253060ca0c2"
+  address_book_pool_implementation: "0x728a138a4823392c2efa55e028d434f526fe03cf"
+  address_book_pool_configurator_implementation: "0xff42ce30054dce7dc7c1282a9a497aa58eabce99"
+  pool_id: "0x504f4f4c00000000000000000000000000000000000000000000000000000000"
+  pool_configurator_id: "0x504f4f4c5f434f4e464947555241544f52000000000000000000000000000000"
+  erc1967_implementation_slot: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+  getters:
+    get_pool: "0x026b1d5f"
+    get_pool_configurator: "0x631adfca"
+    get_price_oracle: "0xfca513a8"
+
+events:
+  collateral_configuration_changed:
+    signature: CollateralConfigurationChanged(address,uint256,uint256,uint256)
+    topic0: "0x637febbda9275aea2e85c0ff690444c8d87eb2e8339bbede9715abcc89cb0995"
+  upgraded:
+    signature: Upgraded(address)
+    topic0: "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b"
+  pool_updated:
+    signature: PoolUpdated(address,address)
+    topic0: "0x90affc163f1a2dfedcd36aa02ed992eeeba8100a4014f0b4cdc20ea265a66627"
+  pool_configurator_updated:
+    signature: PoolConfiguratorUpdated(address,address)
+    topic0: "0x8932892569eba59c8382a089d9b732d1f49272878775235761a2a6b0309cd465"
+  proxy_created:
+    signature: ProxyCreated(bytes32,address,address)
+    topic0: "0x4a465a9bd819d9662563c1e11ae958f8109e437e7f4bf1c6ef0b9a7b3f35d478"
+  address_set:
+    signature: AddressSet(bytes32,address,address)
+    topic0: "0x9ef0e8c8e52743bb38b83b17d9429141d494b8041ca6d616a6c77cebae9cd8b7"
+  address_set_as_proxy:
+    signature: AddressSetAsProxy(bytes32,address,address,address)
+    topic0: "0x3bbd45b5429b385e3fb37ad5cd1cd1435a3c8ec32196c7937597365a3fd3e99c"
+  market_id_set:
+    signature: MarketIdSet(string,string)
+    topic0: "0xe685c8cdecc6030c45030fd54778812cb84ed8e4467c38294403d68ba7860823"
+  price_oracle_updated:
+    signature: PriceOracleUpdated(address,address)
+    topic0: "0x56b5f80d8cac1479698aa7d01605fd6111e90b15fc4d2b377417f46034876cbd"
+  acl_manager_updated:
+    signature: ACLManagerUpdated(address,address)
+    topic0: "0xb30efa04327bb8a537d61cc1e5c48095345ad18ef7cc04e6bacf7dfb6caaf507"
+  acl_admin_updated:
+    signature: ACLAdminUpdated(address,address)
+    topic0: "0xe9cf53972264dc95304fd424458745019ddfca0e37ae8f703d74772c41ad115b"
+  price_oracle_sentinel_updated:
+    signature: PriceOracleSentinelUpdated(address,address)
+    topic0: "0x5326514eeca90494a14bedabcff812a0e683029ee85d1e23824d44fd14cd6ae7"
+  pool_data_provider_updated:
+    signature: PoolDataProviderUpdated(address,address)
+    topic0: "0xc853974cfbf81487a14a23565917bee63f527853bcb5fa54f2ae1cdf8a38356d"
+  ownership_transferred:
+    signature: OwnershipTransferred(address,address)
+    topic0: "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+
+partition_rule:
+  root_intervals_are_inclusive_disjoint_and_complete: true
+  exactly_limit_response_is_saturated: true
+  saturated_interval_action: recursively_bisect_inclusive_interval
+  saturated_single_block_action: fail
+  discard_saturated_parent_logs: true
+
+directory_candidate_rule:
+  predecessor_is_previous_emitted_configuration_not_authoritative_t_minus_one_state: true
+  require_previous_emitted_configuration: true
+  require_strict_positive_liquidation_threshold_decrease: true
+  require_emitted_ltv_unchanged: true
+  require_emitted_liquidation_bonus_unchanged: true
+  require_exactly_one_configurator_log_in_transaction: true
+  require_no_provider_or_proxy_upgrade_log_in_transaction: true
+  minimum_provisional_candidates: 3
+  minimum_distinct_assets: 2
+  minimum_distinct_transactions: 3
+  frozen_reserve_check_deferred: true
+  authoritative_t_minus_one_and_t_configuration_deferred: true
+  config_engine_payload_keep_current_check_deferred: true
+  receipt_and_call_path_isolation_deferred: true
+  proposal_mapping_and_development_confirmation_split_deferred: true
+
+gates:
+  - parent_hashes_and_a0_decision
+  - frozen_source_identity
+  - ethereum_chain_id_replication
+  - fixed_window_header_replication
+  - exact_root_partition_plan
+  - complete_bounded_log_partitions
+  - strict_log_decoding
+  - no_duplicate_or_conflicting_logs
+  - provider_event_abi_complete
+  - provider_getter_source_conformance
+  - proxy_terminal_state_source_conformance
+  - complete_proxy_upgrade_crosswalk
+  - implementation_code_nonempty
+  - minimum_provisional_directory_support
+  - request_and_byte_caps
+  - zero_account_access_boundary
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_AAVE_LT_EVENT_DIRECTORY_AUTHORIZE_ALL_CANDIDATE_MECHANICS_PROTOCOL_ONLY
+  fail: FAIL_AAVE_LT_EVENT_DIRECTORY_KEEP_ACCOUNTS_RESPONSES_AND_G1_LOCKED
+  authorized_next_stage: separately_frozen_all_candidate_historical_state_receipt_payload_source_preflight
+
+limitations:
+  - A previous emitted configuration is not authoritative T-minus-one reserve state; every provisional row requires historical eth_call replay.
+  - No transaction, receipt, calldata, proposal payload or call trace is opened, so same-execution spillovers outside the Configurator and provider/proxy log set remain unresolved.
+  - Historical implementation addresses and end-block bytecode are inventoried, but verified source identity for every active implementation is deferred.
+  - Reserve frozen state, eMode interactions, oracle/index/pause/grace changes and ConfigEngine KEEP_CURRENT semantics are not candidate-certified here.
+  - Headers are provider-replicated, but fixed-block getters, slots and code come only from Blockscout and are not independent archive-state replication or state-proof evidence.
+  - Proposal 204 is development reconnaissance and can never enter an untouched confirmation set.
+  - No account, action, liquidation, price value or realized response is opened; G1 and all GPU work remain locked.

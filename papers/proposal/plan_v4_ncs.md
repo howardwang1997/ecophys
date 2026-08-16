@@ -731,6 +731,17 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     development evidence。PASS 只允许另行设计 deployment/version/LT-event inventory，不通过 G1，不
     启动 GPU。2×V100 与 RTX2060 继续空闲。完整结果见
     `experiments/v14_aave_v3_liquidation_threshold_source_preflight/RESULTS.md`。
+14. **Aave A1a 零账户事件目录已冻结、尚未执行：** inclusive block window 固定为
+    0--25,760,572；104 个 250,000-block roots × 三个地址流，共 312 个根 `eth_getLogs`。完整扫描
+    PoolAddressesProvider 与 PoolConfigurator，Pool 仅扫 `Upgraded`；所有 provider transition 必须与
+    proxy upgrade 按 transaction/new implementation 一一对应，并形成连续 old→new chain。Blockscout
+    在固定终点提供三个 provider getters、两个 ERC-1967 slots 和 provider/proxy/全部历史
+    implementation code；PublicNode 只复核 chain ID 与 start/end headers，避免重复已知的免费历史 state
+    403。候选只用 previous emitted configuration 做目录筛选：positive LT strict decrease、emitted LTV/bonus
+    不变、同 tx 恰好一个 Configurator log、无 provider/proxy upgrade；至少 3 candidates、2 assets、3 tx
+    才能 PASS。这个 predecessor 不是 authoritative T−1，PASS 只允许另行冻结 all-candidate receipt/
+    payload/historical-state/source audit。accounts/actions/responses、G1 和全部 GPU 仍锁定。协议见
+    `experiments/v14_aave_v3_lt_event_directory/PREREGISTRATION.md`。
 
 ---
 
