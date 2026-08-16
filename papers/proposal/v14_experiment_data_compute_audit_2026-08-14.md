@@ -750,3 +750,14 @@ Actual pre-run requirements are one Mac CPU core, free GitHub source, zero paid 
 zero GPU-hours. The two V100 workers and RTX 2060 remain idle and unqueued; H20 is excluded. Even an A0 pass only
 budgets the **design** of an Ethereum deployment/version and strict LT-decrease event inventory. Chain scanning,
 account reconstruction, action/response collection and training have no budget until separately frozen gates pass.
+
+### Aave A0 actual resource result
+
+The one sealed audit read fourteen already-staged source files totaling 197,890 bytes and wrote one 15,589-byte
+summary. It made no network, API or chain call during the audit and used local CPU only. An independent verifier
+re-read all raw files and reproduced 63 marker checks, file/inventory hashes, five integer identity checks and all
+twelve gates. Actual paid-data, external-worker and GPU use was zero; both V100s and the RTX 2060 remained idle.
+
+The frozen reconnaissance disclosure's 197,858 count was Unicode characters, not UTF-8 bytes; this accounting
+correction changes no source content or resource conclusion. A1 currently has a **design-only** budget. No chain
+request, account-scale storage, remote CPU or GPU allocation exists until the deployment/event protocol freezes.

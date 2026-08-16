@@ -733,5 +733,15 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   outside G1; account/action/response collection and all GPUs remain locked. Proposal 204 was exposed during
   source-design reconnaissance and is development-only, never untouched confirmation.
 - All fourteen allowed Aave blobs were opened through the official GitHub API during marker calibration (197,858
-  bytes, zero missing markers). Treat A0 as reproducible source-integrity certification, not a blind scientific
-  discovery; the first real empirical kill gate is the separately frozen historical deployment/event inventory.
+  decoded Unicode characters, zero missing markers). Treat A0 as reproducible source-integrity certification, not
+  a blind scientific discovery; the first empirical kill gate is the frozen historical deployment/event inventory.
+- Corrigendum: the pre-freeze 197,858 value was decoded Unicode character count, not bytes. The fourteen UTF-8
+  source files total 197,890 bytes; non-ASCII licence characters explain the 32-byte difference. Leave the frozen
+  manifest immutable and cite the A0 result correction; source hashes, markers, gates and decision are unaffected.
+- Aave A0 ran once at protocol commit `fdb1dc41497a4eca9e740dbd196061208e61c584` and passed all 12 gates, 63
+  markers and five identity self-checks. Summary SHA is
+  `355928afb19ab4b4a8f6de0b786986e9aa4542e1394a3acac7b14dc1ebbc85e9`; independent fourteen-file raw-source
+  replay passed. The decision authorizes A1 deployment/version/LT-event inventory design only.
+- ConfigEngine's pinned sentinel is `KEEP_CURRENT = type(uint256).max - 42`; its `liqBonus` is the increment above
+  100% and is translated to `100_00 + liqBonus` for PoolConfigurator. Normalize this before unchanged-bonus
+  filtering. Aave remains outside G1; all participant data and GPU jobs stay locked.

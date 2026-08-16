@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-16
 
-**Current decision:** `COMPOUND_M3_RETIRED_AAVE_A0_SOURCE_PROTOCOL_FROZEN_PENDING_ONE_RUN`
+**Current decision:** `AAVE_A0_SOURCE_IDENTITY_PASS_AUTHORIZE_A1_EVENT_INVENTORY_DESIGN_ONLY`
 
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
@@ -20,8 +20,9 @@ plan. Managers, Bulker operators, transaction senders and account addresses must
 
 At initial selection Compound had five `pass`, five `partial` and two `unresolved` criteria. The later mechanics
 and activation audits resolve the relevant denominator/activation route negatively rather than repairing it.
-Aave is now the first candidate for a fresh zero-row source and effect-class audit. Its A0 protocol is frozen but
-has no result and does not admit Aave to G1. GC0166 remains conditional on official identity/provenance
+Aave is now the first candidate for a fresh zero-row source and effect-class audit. A0 passed source/effect
+identity and authorizes A1 deployment/event-inventory design only; Aave is not admitted to G1. GC0166 remains
+conditional on official identity/provenance
 clarification. Uniswap Proposal 94
 stays the exact-M2 case and cannot be rehabilitated as M3/M4 by changing its failed concentration gate.
 
@@ -346,7 +347,7 @@ boundary-layer hypothesis would need new events and untouched confirmation data.
 the next allowed work is a fresh Aave zero-row source/effect-class audit design. Full result:
 `experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V2.md`.
 
-## 18. Frozen Aave A0 source/effect protocol
+## 18. Aave A0 source/effect result
 
 A0 pins official Aave V3.7 source commit `cff15de6d1271b0c800fc001f4aea4c263e8a597` and fourteen exact source/
 licence paths. It audits config-engine routing, `configureReserveAsCollateral`, the weighted LT accumulator,
@@ -361,9 +362,15 @@ with LTV and liquidation bonus unchanged. The eMode-override and disabled-collat
 LT effect. An HF crossing is not labelled executable liquidation because activity, pause/grace and other
 eligibility conditions still matter.
 
-The protocol excludes frozen reserves and same-execution account-relevant configuration bundles from any later
-candidate class. It opens no chain, payload, account, action or response row. All twelve source gates are
-conjunctive; a pass authorizes only a separately frozen deployment/version and LT-event inventory design, while a
-fail keeps Aave unadmitted. Local source inspection costs one CPU minute, zero paid data and zero GPU. Proposal 204
-was exposed in source-design reconnaissance and is development-only, never untouched confirmation. Protocol:
-`experiments/v14_aave_v3_liquidation_threshold_source_preflight/PREREGISTRATION.md`.
+The one sealed audit at protocol commit `fdb1dc41497a4eca9e740dbd196061208e61c584` passed all twelve gates over
+fourteen files, 197,890 bytes and 63 markers. The independently replayed summary SHA-256 is
+`355928afb19ab4b4a8f6de0b786986e9aa4542e1394a3acac7b14dc1ebbc85e9`. ConfigEngine's exact `KEEP_CURRENT`
+sentinel is `type(uint256).max - 42`, and its `liqBonus` is an increment above 100%; A1 must normalize payload
+encoding to actual reserve configuration.
+
+The protocol excludes frozen reserves and same-execution account-relevant bundles. No chain, payload, account,
+action or response row was opened. The pass authorizes only a separately frozen deployment/version and LT-event
+inventory design; Aave stays outside G1. Proposal 204 remains development-only. A frozen disclosure called
+197,858 Unicode characters “bytes”; the immutable result corrects the true UTF-8 total to 197,890 without changing
+hashes, markers, gates or decision. Result:
+`experiments/v14_aave_v3_liquidation_threshold_source_preflight/RESULTS.md`.

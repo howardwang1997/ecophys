@@ -1,0 +1,356 @@
+{
+  "access_boundary": {
+    "account_state_rows_opened": false,
+    "chain_event_rows_opened": false,
+    "chain_rpc_used": false,
+    "external_workers_used": false,
+    "governance_payload_rows_opened": false,
+    "gpu_used": false,
+    "official_code_blobs_opened": true,
+    "official_documentation_opened": true,
+    "paid_data_used": false,
+    "participant_action_rows_opened": false,
+    "realized_response_rows_opened": false
+  },
+  "as_of": "2026-08-16",
+  "audit_id": "aave_v3_liquidation_threshold_source_preflight_v1",
+  "authorized_next_stage": "separately_frozen_aave_ethereum_deployment_and_liquidation_threshold_event_inventory_design_only",
+  "collection_commit": "fdb1dc41497a4eca9e740dbd196061208e61c584",
+  "decision": "PASS_SOURCE_EFFECT_IDENTITY_AUTHORIZE_AAVE_CHAIN_EVENT_INVENTORY_DESIGN_ONLY",
+  "effect_contract": {
+    "account_must_have_positive_changed_collateral_base_value": true,
+    "account_must_have_positive_total_debt_base": true,
+    "changed_reserve_must_be_enabled_as_collateral": true,
+    "changed_reserve_must_not_be_frozen": true,
+    "config_engine_ltv_and_liquidation_bonus_must_use_keep_current_when_applicable": true,
+    "counterfactual_holds_t_minus_one_balances_prices_indexes_and_other_configuration_fixed": true,
+    "e_mode_override_has_zero_direct_base_threshold_effect": true,
+    "effect_class_id": "base_reserve_liquidation_threshold_strict_decrease",
+    "health_factor_boundary_crossing_is_not_sufficient_for_executable_liquidation": true,
+    "health_factor_identity": "health_factor = wad_div_half_up(weighted_liquidation_threshold_sum, total_debt_base) // 10000",
+    "historical_candidate_requires_version_matched_deployed_code": true,
+    "liquidation_bonus_must_be_unchanged": true,
+    "ltv_must_be_unchanged": true,
+    "new_liquidation_threshold_must_be_positive": true,
+    "same_transaction_account_relevant_configuration_must_be_unchanged": true,
+    "source_pass_authorizes_event_inventory_design_only": true,
+    "strict_liquidation_threshold_decrease": true,
+    "weighted_identity": "weighted_lt_new = weighted_lt_old - changed_collateral_base_value * (old_liquidation_threshold_bps - new_liquidation_threshold_bps)"
+  },
+  "effect_identity_self_checks": {
+    "checks": {
+      "direct_health_factor_boundary_crossing": true,
+      "direct_health_factor_monotonicity": true,
+      "direct_weighted_identity": true,
+      "disabled_collateral_zero_direct_effect": true,
+      "e_mode_override_zero_direct_effect": true
+    },
+    "direct_case": {
+      "crosses_health_factor_boundary": true,
+      "direct_health_factor_decrease": 133333333333333333,
+      "direct_weighted_sum_decrease": 20000000000000,
+      "health_factor_monotone_nonincreasing": true,
+      "mechanically_exposed": true,
+      "new_health_factor": 933333333333333333,
+      "new_weighted_liquidation_threshold_sum": 140000000000000,
+      "old_health_factor": 1066666666666666666,
+      "old_weighted_liquidation_threshold_sum": 160000000000000,
+      "route_reason": "base_liquidation_threshold_direct_route",
+      "weighted_identity_holds": true
+    },
+    "disabled_collateral_case": {
+      "crosses_health_factor_boundary": false,
+      "direct_health_factor_decrease": 0,
+      "direct_weighted_sum_decrease": 0,
+      "health_factor_monotone_nonincreasing": true,
+      "mechanically_exposed": false,
+      "new_health_factor": 1066666666666666666,
+      "new_weighted_liquidation_threshold_sum": 160000000000000,
+      "old_health_factor": 1066666666666666666,
+      "old_weighted_liquidation_threshold_sum": 160000000000000,
+      "route_reason": "changed_reserve_not_enabled_as_collateral",
+      "weighted_identity_holds": true
+    },
+    "e_mode_override_case": {
+      "crosses_health_factor_boundary": false,
+      "direct_health_factor_decrease": 0,
+      "direct_weighted_sum_decrease": 0,
+      "health_factor_monotone_nonincreasing": true,
+      "mechanically_exposed": false,
+      "new_health_factor": 1066666666666666666,
+      "new_weighted_liquidation_threshold_sum": 160000000000000,
+      "old_health_factor": 1066666666666666666,
+      "old_weighted_liquidation_threshold_sum": 160000000000000,
+      "route_reason": "e_mode_liquidation_threshold_override",
+      "weighted_identity_holds": true
+    }
+  },
+  "gate_counts": {
+    "fail": 0,
+    "pass": 12
+  },
+  "gates": {
+    "account_state_views": true,
+    "config_engine_effect_class": true,
+    "configuration_transition_has_no_account_write_or_iteration": true,
+    "e_mode_routing_explicit": true,
+    "effect_identity_self_checks": true,
+    "exact_health_factor_accumulator": true,
+    "health_factor_boundary": true,
+    "license_provenance": true,
+    "required_files": true,
+    "required_markers": true,
+    "source_clean": true,
+    "source_commit": true
+  },
+  "limitations": [
+    "The pinned source is Aave V3.7 current source, not evidence that the same code was deployed at any historical event; every historical candidate requires block-matched proxy and implementation verification.",
+    "Source conformance does not establish that an eligible strict liquidation-threshold decrease exists, that account state can be reconstructed completely, or that a causal response panel is identified.",
+    "An eMode collateral override makes the direct effect of the base-reserve liquidation-threshold change exactly zero for that account-reserve route.",
+    "A health-factor crossing is not sufficient for executable liquidation: reserve activity, pause and grace-period state, debt and collateral eligibility and the transaction path also matter.",
+    "Frozen-reserve changes and same-transaction changes to eMode, oracle, indexes or other account-relevant configuration are outside the strict effect class.",
+    "LTV changes affect borrowing capacity rather than this health-factor identity, while liquidation-bonus changes affect liquidation payoffs; both are excluded to avoid a bundled response estimand.",
+    "The source licence audit records the pinned Business Source License 1.1 text and is not legal advice.",
+    "This stage opens no chain event, governance payload, account, action, liquidation or response rows and authorizes no GPU work or G1 admission."
+  ],
+  "manifest_sha256": "2656f0966d2e0c74b74eb2b147ef6e50bcb7838b078edef6e3552d66b2933ccc",
+  "marker_results": {
+    "aave_config_engine": {
+      "CollateralEngine.executeCollateralSide(_getEngineConstants(),updates);": true,
+      "functionupdateCollateralSide(": true
+    },
+    "collateral_engine": {
+      "100_00+updates[i].liqBonus": true,
+      "KEEP_CURRENT": true,
+      "configuration.getParams();": true,
+      "poolConfigurator.configureReserveAsCollateral(": true,
+      "updates[i].liqThreshold==EngineFlags.KEEP_CURRENT": true
+    },
+    "config_engine_interface": {
+      "functionupdateCollateralSide(": true,
+      "structCollateralUpdate{": true,
+      "uint256liqThreshold;": true
+    },
+    "engine_flags": {
+      "KEEP_CURRENT=type(uint256).max-42;": true
+    },
+    "generic_logic": {
+      "functioncalculateUserAccountData(": true,
+      "returnMathUtils.mulDivCeil(userTotalDebt,assetPrice,assetUnit);": true,
+      "returnbalance/assetUnit;": true,
+      "vars.avgLiquidationThreshold+=vars.userBalanceInBaseCurrency*vars.liquidationThreshold;": true,
+      "vars.healthFactor=(vars.totalDebtInBaseCurrency==0)?type(uint256).max:vars.avgLiquidationThreshold.wadDiv(vars.totalDebtInBaseCurrency)/100_00;": true,
+      "vars.liquidationThreshold=vars.configurationCache.getLiquidationThreshold();": true,
+      "vars.liquidationThreshold=vars.eModeLiqThreshold;": true
+    },
+    "license": {
+      "2027-03-06": true,
+      "BusinessSourceLicense1.1": true,
+      "ChangeLicense:MIT": true,
+      "LicensedWork:Aavev3.7": true,
+      "Licensor:AaveDAO,representedbyitsgovernancesmartcontracts": true
+    },
+    "pool": {
+      "functiongetConfiguration(addressasset)": true,
+      "functiongetReserveAddressById(uint16id)": true,
+      "functiongetReservesList()": true,
+      "functiongetUserAccountData(addressuser)": true,
+      "functiongetUserConfiguration(addressuser)": true,
+      "functiongetUserEMode(addressuser)": true,
+      "userConfig:_usersConfig[user]": true,
+      "userEModeCategory:_usersEModeCategory[user]": true
+    },
+    "pool_configurator": {
+      "_pendingLtv[asset]=ltv;": true,
+      "_pool.setConfiguration(asset,currentConfig);": true,
+      "currentConfig.setLiquidationBonus(liquidationBonus);": true,
+      "currentConfig.setLiquidationThreshold(liquidationThreshold);": true,
+      "emitCollateralConfigurationChanged(asset,newLtv,liquidationThreshold,liquidationBonus);": true,
+      "functionconfigureReserveAsCollateral(addressasset,uint256ltv,uint256liquidationThreshold,uint256liquidationBonus)externaloverrideonlyRiskOrPoolAdmins{": true,
+      "if(currentConfig.getFrozen()){": true
+    },
+    "pool_configurator_interface": {
+      "eventCollateralConfigurationChanged(addressindexedasset,uint256ltv,uint256liquidationThreshold,uint256liquidationBonus);": true,
+      "functionconfigureReserveAsCollateral(": true
+    },
+    "pool_interface": {
+      "functiongetConfiguration(": true,
+      "functiongetReserveAddressById(": true,
+      "functiongetReservesList()": true,
+      "functiongetUserAccountData(": true,
+      "functiongetUserConfiguration(": true,
+      "functiongetUserEMode(": true
+    },
+    "reserve_configuration": {
+      "functiongetDecimals(": true,
+      "functiongetFrozen(": true,
+      "functiongetLiquidationBonus(": true,
+      "functiongetLiquidationThreshold(": true,
+      "functiongetLtv(": true
+    },
+    "user_configuration": {
+      "BORROWING_MASK": true,
+      "COLLATERAL_MASK": true,
+      "functiongetNextFlags(": true,
+      "functionisBorrowingAny(": true,
+      "functionisUsingAsCollateral(": true
+    },
+    "validation_logic": {
+      "borrowerConfig.isUsingAsCollateral(collateralReserve.id)": true,
+      "params.healthFactor<HEALTH_FACTOR_LIQUIDATION_THRESHOLD": true,
+      "params.totalDebt!=0": true,
+      "uint256publicconstantHEALTH_FACTOR_LIQUIDATION_THRESHOLD=1e18;": true
+    },
+    "wad_ray_math": {
+      "c:=div(add(mul(a,WAD),div(b,2)),b)": true,
+      "functionwadDiv(uint256a,uint256b)internalpurereturns(uint256c){": true,
+      "uint256internalconstantWAD=1e18;": true
+    }
+  },
+  "reserve_transition_checks": {
+    "emits_collateral_configuration": true,
+    "function_found": true,
+    "no_account_iteration": true,
+    "no_user_configuration_reference": true,
+    "risk_or_pool_admin_only": true,
+    "writes_liquidation_threshold": true,
+    "writes_reserve_configuration": true
+  },
+  "schema_version": "ecophys-aave-v3-liquidation-threshold-source-audit/v1",
+  "source": {
+    "clean": true,
+    "commit": "cff15de6d1271b0c800fc001f4aea4c263e8a597",
+    "examined_file_count": 14,
+    "examined_file_inventory_sha256": "61984d36118a448c451c98ad9be9fefb0882174f11466eff3e8e12be0912bb79",
+    "files": [
+      {
+        "byte_count": 5204,
+        "exists": true,
+        "marker_count": 2,
+        "marker_pass_count": 2,
+        "path": "src/contracts/extensions/v3-config-engine/AaveV3ConfigEngine.sol",
+        "role": "aave_config_engine",
+        "sha256": "8a5231bdf5dc1fe7dd4d844c67851e4c06923f6168d79f44426e0a2c54e8c18a"
+      },
+      {
+        "byte_count": 3415,
+        "exists": true,
+        "marker_count": 5,
+        "marker_pass_count": 5,
+        "path": "src/contracts/extensions/v3-config-engine/libraries/CollateralEngine.sol",
+        "role": "collateral_engine",
+        "sha256": "f79d8a95b074a97cb08af30e8b8da5e66566a93143387371ecb1589b46662099"
+      },
+      {
+        "byte_count": 11388,
+        "exists": true,
+        "marker_count": 3,
+        "marker_pass_count": 3,
+        "path": "src/contracts/extensions/v3-config-engine/IAaveV3ConfigEngine.sol",
+        "role": "config_engine_interface",
+        "sha256": "23f6a26e179dbd9ae05f7832ab91373f9e53787629055c990b1076b6a532cc0e"
+      },
+      {
+        "byte_count": 1497,
+        "exists": true,
+        "marker_count": 1,
+        "marker_pass_count": 1,
+        "path": "src/contracts/extensions/v3-config-engine/EngineFlags.sol",
+        "role": "engine_flags",
+        "sha256": "8d316008b9d2c39df7a385fe167f42a312d5ad3ee4e508e971dad26e2daaeb10"
+      },
+      {
+        "byte_count": 10585,
+        "exists": true,
+        "marker_count": 7,
+        "marker_pass_count": 7,
+        "path": "src/contracts/protocol/libraries/logic/GenericLogic.sol",
+        "role": "generic_logic",
+        "sha256": "4b18019505e4fbfab2624f371f28946557588c22f5c51e331fd2595613ba516d"
+      },
+      {
+        "byte_count": 6211,
+        "exists": true,
+        "marker_count": 5,
+        "marker_pass_count": 5,
+        "path": "LICENSE",
+        "role": "license",
+        "sha256": "e1d4497339ffc807e4fefcf6b36e23b44b876b83512b611e0d765c7fd0ad8655"
+      },
+      {
+        "byte_count": 29046,
+        "exists": true,
+        "marker_count": 8,
+        "marker_pass_count": 8,
+        "path": "src/contracts/protocol/pool/Pool.sol",
+        "role": "pool",
+        "sha256": "ec6dbae72f43777446d8320f94eccbc6ae1dbe5daf1942502264bf0e35ef00fc"
+      },
+      {
+        "byte_count": 23456,
+        "exists": true,
+        "marker_count": 7,
+        "marker_pass_count": 7,
+        "path": "src/contracts/protocol/pool/PoolConfigurator.sol",
+        "role": "pool_configurator",
+        "sha256": "e9eb3e7d9f1b8c18bd1b265d5fcfe598a372d0b988daf403c082ae5afc5663ca"
+      },
+      {
+        "byte_count": 19595,
+        "exists": true,
+        "marker_count": 2,
+        "marker_pass_count": 2,
+        "path": "src/contracts/interfaces/IPoolConfigurator.sol",
+        "role": "pool_configurator_interface",
+        "sha256": "e84bcade8ae8bd981db571c25cab4f20f313b6e4800c4e0d8e9fff216b518da8"
+      },
+      {
+        "byte_count": 36349,
+        "exists": true,
+        "marker_count": 6,
+        "marker_pass_count": 6,
+        "path": "src/contracts/interfaces/IPool.sol",
+        "role": "pool_interface",
+        "sha256": "ee58bacafc0b033adeaf673da3b08130d9f3a9a3eb563f7f19a03240e488eba7"
+      },
+      {
+        "byte_count": 17792,
+        "exists": true,
+        "marker_count": 5,
+        "marker_pass_count": 5,
+        "path": "src/contracts/protocol/libraries/configuration/ReserveConfiguration.sol",
+        "role": "reserve_configuration",
+        "sha256": "2c8bc42461625030d09ff1f82a2d0ff4ddb0843c633fe1f0c514998ce6ee422e"
+      },
+      {
+        "byte_count": 7534,
+        "exists": true,
+        "marker_count": 5,
+        "marker_pass_count": 5,
+        "path": "src/contracts/protocol/libraries/configuration/UserConfiguration.sol",
+        "role": "user_configuration",
+        "sha256": "1cb5d65909b7e2d1c9fceb190d0e766a9a136454c62eec6fff63ee770052344c"
+      },
+      {
+        "byte_count": 20419,
+        "exists": true,
+        "marker_count": 4,
+        "marker_pass_count": 4,
+        "path": "src/contracts/protocol/libraries/logic/ValidationLogic.sol",
+        "role": "validation_logic",
+        "sha256": "0bfb51e54f0a8589fbf24bbc03046b12ee6f189641b7a2a6f1b2874acbb2bb45"
+      },
+      {
+        "byte_count": 5399,
+        "exists": true,
+        "marker_count": 3,
+        "marker_pass_count": 3,
+        "path": "src/contracts/protocol/libraries/math/WadRayMath.sol",
+        "role": "wad_ray_math",
+        "sha256": "5155df4a005cb2e2901ae6752b3a30d57eb900eb91d2cd1bad0b9e12837c0d41"
+      }
+    ],
+    "raw_source_retained_in_artifact": false,
+    "repo_url": "https://github.com/aave-dao/aave-v3-origin.git"
+  }
+}

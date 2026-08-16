@@ -1,6 +1,7 @@
 # Aave liquidation-threshold shocks as a candidate exact intervention layer
 
-**Status:** A0 source/effect protocol in development; Aave is not admitted to G1.
+**Status:** A0 source/effect identity passed; A1 deployment/event-inventory design authorized; Aave is not admitted
+to G1.
 
 ## Why this is cleaner than the retired Compound cap route
 
@@ -42,7 +43,9 @@ market-level liquidity. The hybrid architecture is:
 ### A0 — source/effect identity
 
 Pin Aave V3.7 source; verify config-engine routing, exact HF accumulation, eMode routing, state views, HF boundary
-and licence. No chain row is used. A pass authorizes A1 design only.
+and licence. The sealed audit passed 12/12 gates over fourteen files and 63 markers at protocol commit
+`fdb1dc41497a4eca9e740dbd196061208e61c584`; independent raw-source replay passed. No chain row was used. This
+authorizes A1 design only.
 
 ### A1 — deployment and event inventory
 
@@ -119,7 +122,7 @@ hash. Time and event splits must be frozen; development-only proposal 204 cannot
 - Full NCS model: independent event/seed/market jobs scale across heterogeneous non-H20 pools, with GPU types kept
   in separate benchmarked pools. No plan assumes H20.
 
-No job is queued on the V100s or RTX 2060: A0 has no result and G1 has not passed.
+No job is queued on the V100s or RTX 2060: A0 is source-only and G1 has not passed.
 
 ## What could make this NCS-level
 
