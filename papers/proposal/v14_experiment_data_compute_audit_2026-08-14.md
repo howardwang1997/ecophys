@@ -819,3 +819,21 @@ emitted-LT vectors, one round trip and 54 unknown-predecessor asset occurrences.
 do not determine the B0 support threshold. The only new resource authorization is to design a frozen, zero-account
 cross-deployment B0 inventory and B1 compiler protocol; no new chain read, account row, response row or GPU job is
 yet budgeted.
+
+### Frozen Aave B0 cross-deployment program-directory budget
+
+B0 v1 adds nine named canonical V3 deployments under a split frozen before their event counts are opened:
+Arbitrum/Avalanche/Optimism/Polygon train, Base/Gnosis validation, and BNB/Linea/Scroll untouched test. Ethereum is
+reused only as a development parent and makes no new RPC call. Ten official address-book files at commit
+`70e2f303...` total 279,290 bytes and are pinned by git blob and SHA-256.
+
+For every new chain, two fixed no-auth endpoints may serve only chain IDs and cutoff block headers. PublicNode is
+the sole log source. The program cutoff is the last block at or before 2026-08-15 00:00 UTC; both endpoints must
+derive the same boundary and successor. The collector reads complete PoolAddressesProvider and every derived
+Configurator-address log directory, plus one primary header per program block. It does not call transaction,
+receipt, trace, state or code methods.
+
+Hard caps are 50,000 HTTP attempts, 512 MiB responses, 250,000 normalized logs and 50,000 programs at two requests
+per second. Expected wall time is about 1.5--4 hours and durable output below 100 MiB. One Mac CPU/network worker is
+sufficient; alternatively a V100 machine may supply CPU/network only. Paid data, external workers and GPU-hours are
+zero. Both V100 GPUs and the RTX 2060 remain idle, and H20 is excluded. A PASS budgets only B1 protocol design.

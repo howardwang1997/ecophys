@@ -767,6 +767,18 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     OOD validation 为中心；NMI 只有在 architecture novelty、更广 benchmark 和显著 OOD gains 后才考虑。
     全计划与拓扑见 `papers/proposal/v14_executable_policy_shock_pivot_2026-08-16.md` 和
     `papers/proposal/v14_policy_shock_research_topology_2026-08-16.md`。G1 与 GPU 仍锁定。
+16. **B0 cross-deployment program directory v1 已在新链访问前写死：** Ethereum 只作已暴露的
+    development parent；train 固定为 Arbitrum/Avalanche/Optimism/Polygon，validation 固定为
+    Base/Gnosis，untouched test 固定为 BNB/Linea/Scroll。每个新 deployment 至少 10 个 program；三个
+    split 至少 120/40/60、总计至少 220，并同时满足 unique topic、multi-log、upgrade、time-span 和
+    calendar-quarter gates。Program 是同一 chain/transaction 内任一历史 Configurator surface 的全部
+    logs；不按参数类型、方向、LT 或 scalar purity 过滤。共同 cutoff 是 2026-08-15 00:00 UTC 之前最后
+    一块，由两个固定 endpoint 独立 binary search 并复核相邻 header。Provider 全历史先推导所有
+    Configurator addresses；初始 proxy creation 不要求 `Upgraded`，以后每次 implementation transition
+    必须一一匹配。v1 只允许 chain ID/header/provider/configurator logs 与其中携带的 tx hash/topic/data；
+    transaction/receipt/calldata/trace/state/account/response/G1/GPU 全锁定。PASS 也只允许设计 B1 compiler
+    protocol。协议与 runbook 见
+    `experiments/v14_aave_v3_cross_deployment_program_directory/PREREGISTRATION.md`。
 
 ---
 

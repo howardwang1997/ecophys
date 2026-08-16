@@ -93,12 +93,19 @@ agent adaptation and regime dynamics are learned or statistically estimated.
   change, five with a net LT decrease, zero pure emitted-LT vectors, one execution-path round trip and 54
   unknown-predecessor asset occurrences. All seven integrity gates pass. These explored counts set no support
   threshold and authorize protocol design only.
-- Freeze an official-address/source inventory across preselected Aave deployments.
+- Use the now-frozen official-address/source inventory across the nine preselected new deployments.
 - Count all configuration-program transactions with the same inclusive rules; do not search only for LT events.
-- Require enough programs, versions, vector dimensions and time/deployment separation for train/validation/test.
+- Apply the frozen program/topic/width/time support requirements for train/validation/test.
 
 No threshold will be chosen from the already explored Ethereum counts. A new B0 protocol must state the minimum
 support before opening other deployments.
+
+B0 v1 now fixes that contract before new-chain access. Ethereum remains development-only. Train is
+Arbitrum/Avalanche/Optimism/Polygon, validation is Base/Gnosis, and untouched test is BNB/Linea/Scroll. Every named
+new deployment must have at least ten Configurator-program transactions; the conjunctive split minima are
+120/40/60 programs and the total minimum is 220, with additional topic, multi-log, upgrade, time-span and quarter
+requirements. All Configurator-log transactions are included without parameter, direction or scalar-purity
+filtering. Full protocol: `experiments/v14_aave_v3_cross_deployment_program_directory/PREREGISTRATION.md`.
 
 ### B1 — exact vector compiler, zero accounts
 
@@ -150,6 +157,8 @@ hash. Crash periods remain evaluation-only. No future plan may assume H20.
 ## 8. Compute requirements
 
 - B0 and current structural replay: Mac CPU/network, seconds to hours, zero GPU.
+- Frozen B0 v1: one CPU/network worker, about 1.5--4 hours expected, with hard caps of 50,000 HTTP attempts,
+  512 MiB responses, 250,000 logs and 50,000 programs. It can use a V100 host's CPU only; no GPU process starts.
 - B1: CPU/network/trace parsing; shard by deployment/program. The V100 hosts and RTX 2060 can supply CPU workers,
   but GPU is unnecessary.
 - B2: archive I/O, RAM and CPU dominate. Scale by deployment, block and address batch; checkpoint all manifests.

@@ -782,3 +782,17 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   chain access, accounts, outcomes, G1 or GPU training.
 - Cross-deployment scalar scanning is a bounded B0 side audit under the unchanged isolation rule, not the paper
   center. NCS is the primary route; NMI requires stronger operator-conditioned ML novelty and broader OOD evidence.
+- B0 v1 is designed but must not execute until its protocol commit is pushed. Ethereum is development-only; new
+  train deployments are Arbitrum/Avalanche/Optimism/Polygon, validation is Base/Gnosis, and untouched test is
+  BNB/Linea/Scroll. Every new deployment needs >=10 programs; split minima are 120/40/60 and total >=220, plus
+  topic, multi-log, upgrade, span and quarter gates. The common cutoff is the last block at or before
+  2026-08-15T00:00:00Z, exactly replicated by two frozen endpoints.
+- B0 includes every transaction with a log at any Provider-derived Configurator surface, without type/direction/LT/
+  scalar-purity filtering. The corrected history rule allows zero or one initial matching `Upgraded` event but
+  matches every later provider implementation transition one-to-one. Only headers/provider/configurator logs and embedded tx hashes/
+  topics/data may open. PASS licenses B1 compiler protocol design only; transaction/receipt/calldata/trace/state,
+  accounts, outcomes, G1 and GPUs remain locked.
+- The B0 collector is duplicate-safe and fail-closed. Saturated or failed multiblock log intervals are bisected;
+  a learned conservative range bound is reused only within the same deployment, while every failed logical request
+  remains in the hash ledger. Single-block failures terminate the run. The sealed v1 execution must occur once from
+  a clean detached worktree only after its exact protocol commit is pushed and remotely verified.

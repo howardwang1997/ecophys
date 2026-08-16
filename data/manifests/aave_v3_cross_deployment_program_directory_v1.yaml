@@ -1,0 +1,345 @@
+schema_version: ecophys-aave-v3-cross-deployment-program-directory/v1
+audit_id: aave_v3_cross_deployment_program_directory_v1
+as_of: "2026-08-16"
+stage: zero_account_cross_deployment_configurator_program_directory
+
+parents:
+  bundle_summary_path: experiments/v14_aave_v3_bundle_structure_feasibility/artifacts/summary.json
+  bundle_summary_sha256: 922312a9c75a64cfe66a1ef828140df938929e4bc6fbac9200a3a1f6fa9d9db9
+  bundle_manifest_path: data/manifests/aave_v3_bundle_structure_feasibility_v1.yaml
+  bundle_manifest_sha256: e8cf60b2577bdf9e46f68f15c0c7e21931a3d705357420a907b75d74838a65e0
+  a1a_summary_path: experiments/v14_aave_v3_lt_event_directory/artifacts/summary.json
+  a1a_summary_sha256: ff3e120920b766957353c59c02341c42990a18818a751d62da6e1a6798a3c1bb
+  a1a_directory_path: experiments/v14_aave_v3_lt_event_directory/artifacts/event_directory.json
+  a1a_directory_sha256: 1d1d73b5f5ba51c60841a411edf563317f143e9599e3eac958643895c90648ec
+  expected_bundle_decision: COMPLETE_DEVELOPMENT_BUNDLE_STRUCTURE_AUTHORIZE_VECTOR_COMPILER_PROTOCOL_DESIGN_ONLY
+  expected_a1a_decision: FAIL_AAVE_LT_EVENT_DIRECTORY_KEEP_ACCOUNTS_RESPONSES_AND_G1_LOCKED
+
+source_identity:
+  repository: https://github.com/aave-dao/aave-address-book.git
+  commit: 70e2f303fe93616784148d6827df6644e5dda4db
+  release_commit_date_utc: "2026-08-08T18:31:54Z"
+  license: MIT
+  license_url: https://github.com/aave-dao/aave-address-book/blob/70e2f303fe93616784148d6827df6644e5dda4db/LICENSE
+  provenance_url: https://github.com/aave-dao/aave-address-book
+  inspected_at_utc: "2026-08-16"
+  files:
+    - deployment: arbitrum
+      path: src/AaveV3Arbitrum.sol
+      git_blob: 6ced3e9db2b3af5808cc4ec7d4d08ae74ba93598
+      sha256: 67353fe8ff68bf166c24d0ef3a110713bbb2128d122d60a045e5ad61d72b6cff
+    - deployment: avalanche
+      path: src/AaveV3Avalanche.sol
+      git_blob: 649607f0b9140df203b7745ae46c6df3fd18935c
+      sha256: 04eb0307e435920d05e1a20ad74bbcf765dc6a8febc80e4f2d9d309b3b84d1fd
+    - deployment: bnb
+      path: src/AaveV3BNB.sol
+      git_blob: 3c515e02e613c5891be9da280e7942534d384054
+      sha256: cffe4c9b69b70d13e5fad83007c04e170e6ebc1a7ef806b53d20507a9c506494
+    - deployment: base
+      path: src/AaveV3Base.sol
+      git_blob: 1a43dc376203b92bad17172988c951c3f951a556
+      sha256: 1965f69c52ac312c0af43a349ac55f41abded3250cad475ea445abc8c58fce48
+    - deployment: ethereum
+      path: src/AaveV3Ethereum.sol
+      git_blob: 9fc2e4533f0bd4d8e47a05f41ee539a688efe2d7
+      sha256: 1a862b7389de3d59ee77680a8edb451a29e630a07813a0c5becdce65d730a22a
+    - deployment: gnosis
+      path: src/AaveV3Gnosis.sol
+      git_blob: c341afa33b2d671c10bd6129ecbfe811cc7ea37d
+      sha256: b43452360f76eb1ceb9ca0cf11602836b9b2f000e06c07228a61534f3655cdba
+    - deployment: linea
+      path: src/AaveV3Linea.sol
+      git_blob: 2b9edb8f7bf6d301718e165c1a8510c321075933
+      sha256: d1b5bfaf93e780c49d7475d0f2cc5ab33778717a93975992e23861677488262c
+    - deployment: optimism
+      path: src/AaveV3Optimism.sol
+      git_blob: f8cc265ece5505f65ef6cc2f91ff456937b34fde
+      sha256: 7a352505339412e53d71330354bc8e67a9ee960d0ae958609a61fbc653944995
+    - deployment: polygon
+      path: src/AaveV3Polygon.sol
+      git_blob: 82d9e0bcd2cab0348078cd1580a6f36629e0fc27
+      sha256: 94879a4ed820c09ca8d76b81782fa245d7866705301e4676c73b5d178b95ae49
+    - deployment: scroll
+      path: src/AaveV3Scroll.sol
+      git_blob: 51ebc143922143aeb1a54e188f64881808523094
+      sha256: af0154c572df10fe973834c182f9d607430649e05f6879cb95703f98779b98cb
+
+selection_contract:
+  development_deployment: ethereum
+  development_parent_reused_without_new_rpc: true
+  primary_universe_selected_before_new_event_counts: true
+  selection_basis:
+    - canonical Aave V3 main pool in the pinned official address book
+    - free no-auth PublicNode primary RPC listed on 2026-08-16
+    - separate public chain RPC for cutoff-header replication
+    - architecture and governance-route breadth across mature EVM deployments
+  excluded_from_primary_universe:
+    - alternate Ethereum pools and whitelabel pools
+    - testnets
+    - deployments not named below
+  excluded_deployments_cannot_be_added_after_support_is_seen: true
+  split_is_by_deployment_and_frozen_before_new_logs: true
+
+cutoff:
+  timestamp_utc: "2026-08-15T00:00:00Z"
+  timestamp_unix: 1786752000
+  from_block: 0
+  end_block_rule: largest_block_with_timestamp_less_than_or_equal_to_cutoff
+  require_next_block_timestamp_strictly_after_cutoff: true
+  require_primary_replica_exact_number_hash_and_timestamp_agreement: true
+
+deployments:
+  - name: ethereum
+    chain_id: 1
+    chain_id_hex: "0x1"
+    split: development
+    network_access_in_b0: false
+    pool_addresses_provider: "0x2f39d218133afab8f2b819b1066c7e434ad94e9e"
+    pool: "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2"
+    pool_configurator: "0x64b761d848206f447fe2dd461b0c635ec39ebb27"
+    price_oracle: "0x54586be62e3c3580375ae3723c145253060ca0c2"
+    parent_directory_only: true
+  - name: arbitrum
+    chain_id: 42161
+    chain_id_hex: "0xa4b1"
+    split: train
+    network_access_in_b0: true
+    pool_addresses_provider: "0xa97684ead0e402dc232d5a977953df7ecbab3cdb"
+    pool: "0x794a61358d6845594f94dc1db02a252b5b4814ad"
+    pool_configurator: "0x8145edddf43f50276641b55bd3ad95944510021e"
+    price_oracle: "0xb56c2f0b653b2e0b10c9b928c8580ac5df02c7c7"
+    primary_rpc_url: https://arbitrum-one-rpc.publicnode.com
+    replica_rpc_url: https://arb1.arbitrum.io/rpc
+    primary_rpc_provenance: https://arbitrum.publicnode.com/
+    replica_rpc_provenance: https://docs.arbitrum.io/
+  - name: avalanche
+    chain_id: 43114
+    chain_id_hex: "0xa86a"
+    split: train
+    network_access_in_b0: true
+    pool_addresses_provider: "0xa97684ead0e402dc232d5a977953df7ecbab3cdb"
+    pool: "0x794a61358d6845594f94dc1db02a252b5b4814ad"
+    pool_configurator: "0x8145edddf43f50276641b55bd3ad95944510021e"
+    price_oracle: "0xebd36016b3ed09d4693ed4251c67bd858c3c7c9c"
+    primary_rpc_url: https://avalanche-c-chain-rpc.publicnode.com
+    replica_rpc_url: https://api.avax.network/ext/bc/C/rpc
+    primary_rpc_provenance: https://avalanche.publicnode.com/
+    replica_rpc_provenance: https://docs.avax.network/docs/primary-network
+  - name: optimism
+    chain_id: 10
+    chain_id_hex: "0xa"
+    split: train
+    network_access_in_b0: true
+    pool_addresses_provider: "0xa97684ead0e402dc232d5a977953df7ecbab3cdb"
+    pool: "0x794a61358d6845594f94dc1db02a252b5b4814ad"
+    pool_configurator: "0x8145edddf43f50276641b55bd3ad95944510021e"
+    price_oracle: "0xd81eb3728a631871a7ebbad631b5f424909f0c77"
+    primary_rpc_url: https://optimism-rpc.publicnode.com
+    replica_rpc_url: https://mainnet.optimism.io
+    primary_rpc_provenance: https://optimism.publicnode.com/
+    replica_rpc_provenance: https://docs.optimism.io/app-developers/reference/rpc-providers
+  - name: polygon
+    chain_id: 137
+    chain_id_hex: "0x89"
+    split: train
+    network_access_in_b0: true
+    pool_addresses_provider: "0xa97684ead0e402dc232d5a977953df7ecbab3cdb"
+    pool: "0x794a61358d6845594f94dc1db02a252b5b4814ad"
+    pool_configurator: "0x8145edddf43f50276641b55bd3ad95944510021e"
+    price_oracle: "0xb023e699f5a33916ea823a16485e259257ca8bd1"
+    primary_rpc_url: https://polygon-bor-rpc.publicnode.com
+    replica_rpc_url: https://polygon.drpc.org
+    primary_rpc_provenance: https://polygon.publicnode.com/
+    replica_rpc_provenance: https://docs.polygon.technology/pos/reference/rpc-endpoints
+  - name: base
+    chain_id: 8453
+    chain_id_hex: "0x2105"
+    split: validation
+    network_access_in_b0: true
+    pool_addresses_provider: "0xe20fcbdbffc4dd138ce8b2e6fbb6cb49777ad64d"
+    pool: "0xa238dd80c259a72e81d7e4664a9801593f98d1c5"
+    pool_configurator: "0x5731a04b1e775f0fdd454bf70f3335886e9a96be"
+    price_oracle: "0x2cc0fc26ed4563a5ce5e8bdcfe1a2878676ae156"
+    primary_rpc_url: https://base-rpc.publicnode.com
+    replica_rpc_url: https://mainnet.base.org
+    primary_rpc_provenance: https://base.publicnode.com/
+    replica_rpc_provenance: https://docs.base.org/base-chain/api-reference/rpc-overview
+  - name: gnosis
+    chain_id: 100
+    chain_id_hex: "0x64"
+    split: validation
+    network_access_in_b0: true
+    pool_addresses_provider: "0x36616cf17557639614c1cddb356b1b83fc0b2132"
+    pool: "0xb50201558b00496a145fe76f7424749556e326d8"
+    pool_configurator: "0x7304979ec9e4eaa0273b6a037a31c4e9e5a75d16"
+    price_oracle: "0xeb0a051be10228213baeb449db63719d6742f7c4"
+    primary_rpc_url: https://gnosis-rpc.publicnode.com
+    replica_rpc_url: https://rpc.gnosischain.com
+    primary_rpc_provenance: https://gnosis.publicnode.com/
+    replica_rpc_provenance: https://docs.gnosischain.com/about/networks/
+  - name: bnb
+    chain_id: 56
+    chain_id_hex: "0x38"
+    split: test
+    network_access_in_b0: true
+    pool_addresses_provider: "0xff75b6da14ffbbfd355daf7a2731456b3562ba6d"
+    pool: "0x6807dc923806fe8fd134338eabca509979a7e0cb"
+    pool_configurator: "0x67bdf23c7fce7c65ff7415ba3f2520b45d6f9584"
+    price_oracle: "0x39bc1bfda2130d6bb6dbefd366939b4c7aa7c697"
+    primary_rpc_url: https://bsc-rpc.publicnode.com
+    replica_rpc_url: https://bsc-dataseed.bnbchain.org
+    primary_rpc_provenance: https://bsc.publicnode.com/
+    replica_rpc_provenance: https://docs.bnbchain.org/bnb-smart-chain/developers/json_rpc/json-rpc-endpoint/
+  - name: linea
+    chain_id: 59144
+    chain_id_hex: "0xe708"
+    split: test
+    network_access_in_b0: true
+    pool_addresses_provider: "0x89502c3731f69ddc95b65753708a07f8cd0373f4"
+    pool: "0xc47b8c00b0f69a36fa203ffeac0334874574a8ac"
+    pool_configurator: "0x812e7c19421d9f41a6ddcf047d5cc2de2ca5bfa2"
+    price_oracle: "0xcfdada7dcd2e785cf706badbc2b8af5084d595e9"
+    primary_rpc_url: https://linea-rpc.publicnode.com
+    replica_rpc_url: https://rpc.linea.build
+    primary_rpc_provenance: https://linea.publicnode.com/
+    replica_rpc_provenance: https://docs.linea.build/
+  - name: scroll
+    chain_id: 534352
+    chain_id_hex: "0x82750"
+    split: test
+    network_access_in_b0: true
+    pool_addresses_provider: "0x69850d0b276776781c063771b161bd8894bcdd04"
+    pool: "0x11fcfe756c05ad438e312a7fd934381537d3cffe"
+    pool_configurator: "0x32bcab42a2bb5ac577d24b425d46d8b8e0df9b7f"
+    price_oracle: "0x04421d8c506e2fa2371a08efaabf791f624054f3"
+    primary_rpc_url: https://scroll-rpc.publicnode.com
+    replica_rpc_url: https://rpc.scroll.io
+    primary_rpc_provenance: https://scroll.publicnode.com/
+    replica_rpc_provenance: https://docs.scroll.io/en/developers
+
+program_inclusion_rule:
+  provider_history_scanned_from_genesis_to_cutoff: true
+  derive_every_configurator_surface_from_provider_events: true
+  official_current_configurator_must_be_in_derived_surface: true
+  scan_all_topics_at_every_derived_configurator_surface: true
+  program_key: [chain_id, transaction_hash]
+  include_if_at_least_one_configurator_surface_log: true
+  include_upgrade_only_initialization_emergency_steward_and_governance_transactions: true
+  no_parameter_type_direction_or_scalar_purity_filter: true
+  retain_full_normalized_topics_and_data: true
+  provider_logs_are_context_not_programs_unless_transaction_also_has_configurator_log: true
+  first_proxy_initialization_does_not_require_upgraded_event: true
+  every_later_provider_implementation_transition_requires_matching_upgraded_event: true
+
+support_thresholds:
+  per_named_non_development_deployment_minimum_programs: 10
+  train:
+    deployments: [arbitrum, avalanche, optimism, polygon]
+    minimum_programs: 120
+    minimum_unique_topic0: 12
+    minimum_multi_log_programs: 30
+    minimum_deployments_with_upgrade_program: 2
+    minimum_span_days: 730
+    minimum_distinct_calendar_quarters: 8
+  validation:
+    deployments: [base, gnosis]
+    minimum_programs: 40
+    minimum_unique_topic0: 8
+    minimum_multi_log_programs: 10
+    minimum_deployments_with_upgrade_program: 1
+    minimum_span_days: 365
+    minimum_distinct_calendar_quarters: 4
+  test:
+    deployments: [bnb, linea, scroll]
+    minimum_programs: 60
+    minimum_unique_topic0: 8
+    minimum_multi_log_programs: 15
+    minimum_deployments_with_upgrade_program: 1
+    minimum_span_days: 365
+    minimum_distinct_calendar_quarters: 4
+  minimum_total_non_development_programs: 220
+
+rpc:
+  maximum_requests_per_second_across_sources: 2
+  maximum_transport_retries: 2
+  maximum_http_attempts: 50000
+  maximum_response_bytes: 536870912
+  maximum_normalized_logs: 250000
+  maximum_programs: 50000
+  log_response_limit: 10000
+  root_partition_block_count: 250000
+  raw_response_payloads_retained: false
+  endpoint_substitution_after_freeze: false
+  rpc_error_on_multiblock_log_interval_action: recursively_bisect_inclusive_interval
+  rpc_error_on_single_block_log_interval_action: fail
+  exactly_limit_response_action: recursively_bisect_inclusive_interval
+  learned_range_limit_reused_within_deployment: true
+  failed_logical_requests_retained: true
+  allowed_methods:
+    - eth_chainId
+    - eth_blockNumber
+    - eth_getBlockByNumber
+    - eth_getLogs
+  user_agent: EcoPhys-V14-Aave-cross-deployment-program-directory/1.0
+
+access_boundary:
+  official_deployment_source_opened: true
+  chain_rpc_used: true
+  cutoff_and_program_block_headers_opened: true
+  provider_log_rows_opened: true
+  configurator_log_rows_opened: true
+  configuration_program_transaction_hashes_opened: true
+  normalized_event_topics_and_data_opened: true
+  development_ethereum_parent_reused: true
+  transaction_rows_opened: false
+  receipt_rows_opened: false
+  calldata_rows_opened: false
+  call_trace_rows_opened: false
+  historical_contract_state_opened: false
+  contract_code_opened: false
+  governance_proposal_or_payload_rows_opened: false
+  account_state_rows_opened: false
+  participant_action_rows_opened: false
+  liquidation_rows_opened: false
+  price_or_oracle_value_rows_opened: false
+  realized_response_rows_opened: false
+  raw_rpc_payloads_retained: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+
+gates:
+  - parent_hashes_and_decisions
+  - frozen_official_address_sources
+  - exact_deployment_universe_and_split
+  - replicated_chain_identities
+  - deterministic_replicated_cutoff_headers
+  - complete_provider_log_directories
+  - complete_configurator_surface_derivation
+  - complete_bounded_configurator_log_directories
+  - strict_log_normalization
+  - no_duplicate_or_conflicting_logs
+  - source_corrected_configurator_upgrade_histories
+  - exact_program_grouping_and_block_headers
+  - minimum_train_support
+  - minimum_validation_support
+  - minimum_test_support
+  - minimum_total_support
+  - request_byte_log_and_program_caps
+  - zero_account_and_response_access_boundary
+
+decision_policy:
+  all_gates_required: true
+  pass: PASS_CROSS_DEPLOYMENT_PROGRAM_DIRECTORY_AUTHORIZE_B1_COMPILER_PROTOCOL_DESIGN_ONLY
+  fail: FAIL_CROSS_DEPLOYMENT_PROGRAM_DIRECTORY_KEEP_B1_ACCOUNTS_RESPONSES_G1_GPU_LOCKED
+  authorized_next_stage: separately_frozen_historical_abi_source_receipt_state_compiler_protocol_design_only
+
+limitations:
+  - Ethereum treatment structure was already explored and is development-only; it is excluded from every support threshold.
+  - B0 enumerates transactions through Configurator-address logs and can miss state-changing routes that emit no Configurator-surface event.
+  - Configurator topics and data are preserved but not yet mapped to historical ABI semantics, calldata, call paths, authoritative state writes or proposal intent.
+  - Header timestamp monotonicity is assumed for deterministic cutoff binary search and adjacent cutoff blocks are checked explicitly.
+  - Public free RPC completeness is tested by exact partitions and fail-closed rules but is not an independently proven archival guarantee.
+  - Transaction hashes from logs are known, but transaction, receipt, calldata and trace objects remain unopened.
+  - Counts determine only whether B1 compiler protocol design is worthwhile; accounts, responses, G1 and all GPU work remain locked.

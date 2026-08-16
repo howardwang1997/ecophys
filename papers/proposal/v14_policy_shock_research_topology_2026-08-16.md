@@ -22,7 +22,7 @@ flowchart TD
     S --> XS[Bounded side audit: unchanged scalar rule across precommitted deployments]
     XS --> V
     V --> E0[Development replay: 77 bundles; 0 pure emitted-LT vectors]
-    E0 --> B0[B0 cross-deployment bundle breadth, zero accounts]
+    E0 --> B0[B0 v1 frozen: 9 new deployments; >=220 programs; zero accounts]
     B0 --> B1[B1 receipt/source/state exact vector compiler]
     B1 --> B2[B2 complete account denominator + accounting replay]
     B2 --> B3[B3 frozen OOD prediction task]
@@ -41,7 +41,8 @@ flowchart TD
 | Aave A0 | exact LT operator and zero routes | event-directory design |
 | Aave A1a | 3,119 logs; 18 LT decreases; 0 strict candidates | scalar-route retirement; bundle analysis |
 | Bundle structural replay | 77 bundles; 27 known net changes; 5 net LT decreases; 0 pure LT; 1 round trip | vector-compiler protocol design only |
-| B0--B3 | not yet run | nothing yet |
+| B0 v1 protocol | fixed 4-train/2-validation/3-test deployments; ≥220 non-development programs | not yet run; nothing yet |
+| B1--B3 | not yet designed/run | nothing yet |
 
 ## Non-negotiable boundaries
 
@@ -50,6 +51,8 @@ flowchart TD
   no support threshold.
 - No scalar isolation threshold is relaxed after A1a.
 - No other deployment is opened before a B0 chain/deployment/support manifest is pushed.
+- B0 v1 cannot add deployments, reassign splits or relax its 220-program and per-split breadth gates after new logs
+  are opened.
 - No account or response row is opened before B0/B1/B2 and the frozen B3 design pass.
 - No GPU training starts before G1.
 - A vector program supports predictive/interventional modeling; it does not identify independent component effects
