@@ -832,3 +832,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   split/support gate. Stop no-auth endpoint chasing. Reopening cross-deployment B0 requires an explicit new archive-
   data resource decision and separately frozen target-free qualification; Polygon span 62 must also fit the
   unchanged B0 request cap before execution can be authorized.
+- The next zero-cost work is ESTIR v1, a generated exact-integer semantic feasibility audit. It supports only
+  `set/add/copy/require_equal`, derives read/write sets, preserves conflicts in a dependency DAG, canonicalizes
+  certified-independent order and retains both terminal sparse deltas and ordered traces. Ten conjunctive gates
+  cover strict schemas, deterministic replay, commutation soundness, a dependent noncommuting witness, canonical
+  hash invariance, terminal-collision trace separation, support containment, two fixture families and access locks.
+- ESTIR is explicitly standard software semantics, not theorem novelty, full EVM compilation or C0 empirical
+  evidence. It uses <=100,000 generated cases, one Mac CPU, <=60 seconds, zero network/data/GPU. PASS licenses only
+  compiler fixture/specification extension and cannot bypass B0. Archive access requirements are recorded in
+  `papers/proposal/v14_archive_data_access_requirements_2026-08-17.md`.

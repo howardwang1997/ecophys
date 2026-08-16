@@ -27,6 +27,8 @@ flowchart TD
     T0 --> T1[Repair v2: Polygon/Base pass; BNB rate-limit FAIL]
     T1 --> AR[Explicit archive-data resource decision]
     AR --> B0V2[Versioned B0 only after new target-free qualification PASS]
+    T1 --> IR[ESTIR zero-network semantic feasibility]
+    IR --> IRS[Compiler fixtures/spec only; cannot bypass B0]
     B0V2 --> B1[B1 only after a B0 scientific pass]
     B1 --> B2[B2 complete account denominator + accounting replay]
     B2 --> B3[B3 frozen OOD prediction task]
@@ -48,6 +50,7 @@ flowchart TD
 | B0 v1 | fixed 4-train/2-validation/3-test deployments; ≥220 gate | infrastructure failure before a log row; no scientific decision |
 | Transport canary v1 | zero address; 4 hosts; 2 existing endpoints/chain | FAIL, host coverage 5/5/6/6 of 9; no target inference |
 | Transport repair v2 | Polygon/Base pass at spans 62/7,813; BNB fails on both hosts; zero target rows | FAIL; free-RPC B0 route closed |
+| ESTIR v1 | generated integer programs; ordered trace, dependency DAG and collision witnesses | frozen, not run; no empirical authorization |
 | B0 v2 | not yet designed or run | nothing yet |
 | B1--B3 | not yet designed/run | nothing yet |
 

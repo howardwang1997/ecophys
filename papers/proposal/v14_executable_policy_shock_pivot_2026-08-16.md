@@ -236,3 +236,14 @@ The sealed v2 run at `91188042c...` returned that FAIL with zero aggregate valid
 passed on both eligible hosts at conservative spans 62 and 7,813, but the sole BNB candidate was rate-limited at
 chain ID or block-0 logs. No Aave row was opened. The mainline compiler hypothesis remains scientifically
 unevaluated; B0 now needs an explicit archive-data access decision rather than another free-endpoint guess.
+
+## 12. Zero-network compiler-semantics feasibility
+
+While access is blocked, ESTIR v1 tests the minimum semantic skeleton on generated exact-integer programs. It
+retains ordered traces and terminal sparse deltas, derives read/write sets from opcodes, and canonicalizes only
+certified-independent instructions. A frozen round-trip counterexample requires two terminally identical programs
+to remain trace-distinct.
+
+This is infrastructure, not evidence for C0--C3 and not a theorem claim. A PASS can improve the future B1
+specification but cannot bypass B0 or open any empirical row. Plan:
+`papers/proposal/v14_executable_shock_trace_ir_plan_2026-08-17.md`.

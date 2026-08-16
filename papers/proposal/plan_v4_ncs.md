@@ -813,6 +813,14 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     事后换 endpoint、删 BNB 或改 split/support gate。当前免费 no-auth RPC 路线关闭，重开必须先形成新的
     archive-data resource decision 与独立 target-free qualification protocol。Polygon 的 62-block span
     也尚未证明能满足 B0 原 50,000-request cap。
+22. **阻塞期间的零网络工作已预注册：** 不把 endpoint failure 变成降低数据门槛的理由。新的 ESTIR
+    feasibility 只在 exact integer generated fixtures 上检查 ordered primitive replay、derived read/write
+    independence、dependency-DAG canonicalization、sparse-support containment，以及“terminal delta 相同但
+    transient trace 不同”的固定反例。它明确不是 EVM compiler、经验 Aave validation 或新定理 claim；
+    standard commutativity 只作 software obligation。资源上限为 Mac 单 CPU、100,000 cases、60 秒、1 MiB
+    output、零网络/零 GPU。即使全部通过，也只允许扩展 compiler fixtures/spec，不解锁 B0/B1/G1。同时
+    `v14_archive_data_access_requirements_2026-08-17.md` 已写明九链 archive logs、retention/licence、range/
+    quota、B1/B2 traces/state 和 target-free qualification 的最低合同。
 
 ---
 

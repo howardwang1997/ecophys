@@ -881,3 +881,10 @@ HTTP attempts and 8,510 bytes. Durable host/summary artifacts are small; paid da
 Polygon and Base passed on both hosts, but BNB failed under the frozen terminal rate-limit rules, so no B0 v2
 budget was opened. A future attempt requires a separately approved archive-data resource and target-free protocol.
 The V100s remain unused, H20 remains excluded, and no training job is queued from this result.
+
+### Frozen ESTIR generated-fixture budget
+
+The post-transport feasibility audit reads only its JSON manifest and hash-pinned result metadata. It evaluates at
+most 100,000 exact-integer generated cases on one Mac CPU core, with a 60-second wall-time cap and output below 1
+MiB. Network/chain/market/account/outcome rows, paid data, remote workers and GPU-hours are all zero. V100 and RTX
+remain idle; H20 is excluded. A PASS opens compiler fixture/specification work only, not empirical B1 or training.

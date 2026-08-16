@@ -1,0 +1,129 @@
+{
+  "schema_version": "ecophys-executable-shock-trace-ir-feasibility/v1",
+  "audit_id": "executable_shock_trace_ir_feasibility_v1",
+  "as_of": "2026-08-17",
+  "stage": "generated_zero_network_exact_integer_ir_feasibility",
+  "parents": {
+    "bundle_manifest_path": "data/manifests/aave_v3_bundle_structure_feasibility_v1.yaml",
+    "bundle_manifest_sha256": "e8cf60b2577bdf9e46f68f15c0c7e21931a3d705357420a907b75d74838a65e0",
+    "bundle_result_path": "experiments/v14_aave_v3_bundle_structure_feasibility/RESULTS.md",
+    "bundle_result_sha256": "08383a129202f720f12920644cb05399ddc402e05b9687a9ff73f1ecebea68f2",
+    "bundle_summary_path": "experiments/v14_aave_v3_bundle_structure_feasibility/artifacts/summary.json",
+    "bundle_summary_sha256": "922312a9c75a64cfe66a1ef828140df938929e4bc6fbac9200a3a1f6fa9d9db9",
+    "transport_repair_result_path": "experiments/v14_aave_v3_b0_transport_canary_repair/RESULTS.md",
+    "transport_repair_result_sha256": "7acdc245a33355c70c22e04ada738155e05c37ee6c11aa814e1677c0a508450e",
+    "transport_repair_summary_path": "experiments/v14_aave_v3_b0_transport_canary_repair/artifacts/summary.json",
+    "transport_repair_summary_sha256": "4cd70d0ef198a88f8e2e6014cbb4de10c24a2f357259432212bdc2a57fe4df33",
+    "expected_bundle_decision": "COMPLETE_DEVELOPMENT_BUNDLE_STRUCTURE_AUTHORIZE_VECTOR_COMPILER_PROTOCOL_DESIGN_ONLY",
+    "expected_transport_decision": "FAIL_TARGET_ROW_FREE_TRANSPORT_REPAIR_KEEP_B0_V2_B1_G1_GPU_LOCKED"
+  },
+  "claim_boundary": {
+    "development_only": true,
+    "new_theorem_claim_authorized": false,
+    "full_evm_semantics_claim_authorized": false,
+    "empirical_aave_compiler_claim_authorized": false,
+    "b0_v2_authorized": false,
+    "b1_empirical_compiler_authorized": false,
+    "account_or_outcome_access_authorized": false,
+    "g1_or_gpu_authorized": false
+  },
+  "state_domain": {
+    "exhaustive_coordinate_names": ["a", "b", "c"],
+    "initial_values": [-2, -1, 0, 1, 2],
+    "exact_integer_only": true,
+    "booleans_rejected_as_integers": true,
+    "missing_coordinate_action": "fail"
+  },
+  "instruction_contract": {
+    "allowed_opcodes": ["set", "add", "copy", "require_equal"],
+    "read_write_sets_derived_from_opcode": true,
+    "unique_instruction_ids_required": true,
+    "unknown_fields_forbidden": true,
+    "set_values": [-1, 0, 1],
+    "add_values": [-1, 1],
+    "copy_offsets": [0],
+    "require_equal_values": [0],
+    "expected_generated_instruction_count": 24
+  },
+  "canonicalization": {
+    "independence_rule": "Wi_intersect_Rj_union_Wj_and_Wj_intersect_Ri_union_Wi_are_both_empty",
+    "dependency_edges_preserve_original_conflicting_order": true,
+    "topological_tie_breaker": "instruction_id_lexicographic",
+    "canonical_hash_encoding": "sorted_key_compact_json_sha256",
+    "guards_must_preserve_acceptance_under_certified_swaps": true
+  },
+  "evaluation": {
+    "ordered_instruction_pairs": true,
+    "all_initial_state_cartesian_products": true,
+    "expected_initial_state_count": 125,
+    "maximum_generated_cases": 100000,
+    "repeat_each_successful_execution": 2,
+    "retain_case_rows": false,
+    "retain_case_ledger_sha256": true
+  },
+  "frozen_witnesses": {
+    "independent_swap": {
+      "initial_state": {"a": 0, "b": 0, "c": 0},
+      "instructions": [
+        {"instruction_id": "z_set_b", "opcode": "set", "target": "b", "value": 1},
+        {"instruction_id": "a_add_a", "opcode": "add", "target": "a", "value": 1}
+      ]
+    },
+    "dependent_noncommuting": {
+      "initial_state": {"a": 0, "b": 0, "c": 0},
+      "instructions": [
+        {"instruction_id": "a_set", "opcode": "set", "target": "a", "value": 1},
+        {"instruction_id": "z_add", "opcode": "add", "target": "a", "value": 1}
+      ],
+      "expected_forward_a": 2,
+      "expected_reverse_a": 1
+    },
+    "aave_like_terminal_collision": {
+      "initial_state": {"asset.lt": 8000},
+      "round_trip_program": [
+        {"instruction_id": "lower", "opcode": "set", "target": "asset.lt", "value": 1},
+        {"instruction_id": "restore", "opcode": "set", "target": "asset.lt", "value": 8000}
+      ],
+      "no_op_program": [],
+      "expected_terminal_delta": {},
+      "expected_transient_value": 1
+    },
+    "generic_inventory_order": {
+      "initial_state": {"inventory": 10, "cap": 12},
+      "instructions": [
+        {"instruction_id": "set_cap", "opcode": "set", "target": "cap", "value": 20},
+        {"instruction_id": "copy_cap", "opcode": "copy", "target": "inventory", "source": "cap", "offset": 0}
+      ],
+      "expected_forward_inventory": 20,
+      "expected_reverse_inventory": 12
+    }
+  },
+  "gates": [
+    "manifest_and_parent_integrity",
+    "instruction_schema_fail_closed",
+    "interpreter_determinism",
+    "certified_independence_commutation",
+    "dependency_witness_nonzero_commutator",
+    "canonical_hash_independent_swap_invariance",
+    "terminal_collision_trace_separation",
+    "sparse_support_containment",
+    "two_fixture_families",
+    "access_and_claim_boundary"
+  ],
+  "resources": {
+    "network_calls": 0,
+    "market_or_chain_rows_read": 0,
+    "maximum_runtime_seconds": 60,
+    "maximum_output_bytes": 1048576,
+    "cpu_workers": 1,
+    "gpu_hours": 0,
+    "paid_data": false,
+    "h20_used": false
+  },
+  "decision_policy": {
+    "all_gates_required": true,
+    "pass": "PASS_ESTIR_SOFTWARE_FEASIBILITY_AUTHORIZE_COMPILER_FIXTURES_ONLY",
+    "fail": "FAIL_ESTIR_UNDERSPECIFIED_KEEP_EMPIRICAL_COMPILER_AND_GPU_LOCKED",
+    "authorized_next_stage": "compiler_fixture_and_specification_extension_only"
+  }
+}
