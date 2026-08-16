@@ -806,3 +806,16 @@ Expected runtime is seconds on one Mac CPU core and output is small JSON. Paid d
 are zero; both V100s and the RTX 2060 remain idle. Completion budgets only a new zero-account vector-compiler
 protocol design. Receipts, source-by-version, historical state, accounts, actions and responses have no current
 budget.
+
+### Development-only Aave bundle replay actual resource result
+
+The deterministic pass read only the immutable A1a parent and wrote one 288,390-byte summary. It grouped 3,119
+unique normalized logs into 77 collateral-configuration transaction bundles. An independent no-module-import
+verifier reconstructed every bundle and all seven integrity gates passed. Actual network calls, paid data,
+external-worker time and GPU-hours were zero; both V100s and the RTX 2060 remained idle.
+
+The replay found 27 bundles with at least one known-predecessor net change, five with a net LT decrease, zero pure
+emitted-LT vectors, one round trip and 54 unknown-predecessor asset occurrences. These development-explored counts
+do not determine the B0 support threshold. The only new resource authorization is to design a frozen, zero-account
+cross-deployment B0 inventory and B1 compiler protocol; no new chain read, account row, response row or GPU job is
+yet budgeted.

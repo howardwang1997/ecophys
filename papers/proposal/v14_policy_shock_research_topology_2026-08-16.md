@@ -21,7 +21,8 @@ flowchart TD
     S --> V[Mainline: Executable Policy Shock Compiler]
     S --> XS[Bounded side audit: unchanged scalar rule across precommitted deployments]
     XS --> V
-    V --> B0[B0 cross-deployment bundle breadth, zero accounts]
+    V --> E0[Development replay: 77 bundles; 0 pure emitted-LT vectors]
+    E0 --> B0[B0 cross-deployment bundle breadth, zero accounts]
     B0 --> B1[B1 receipt/source/state exact vector compiler]
     B1 --> B2[B2 complete account denominator + accounting replay]
     B2 --> B3[B3 frozen OOD prediction task]
@@ -39,12 +40,14 @@ flowchart TD
 | Compound D1a | exact source/state, no exact T−1 cap saturation | failure lesson only |
 | Aave A0 | exact LT operator and zero routes | event-directory design |
 | Aave A1a | 3,119 logs; 18 LT decreases; 0 strict candidates | scalar-route retirement; bundle analysis |
-| Bundle structural replay | development-only; no outcomes | vector-compiler protocol design only |
+| Bundle structural replay | 77 bundles; 27 known net changes; 5 net LT decreases; 0 pure LT; 1 round trip | vector-compiler protocol design only |
 | B0--B3 | not yet run | nothing yet |
 
 ## Non-negotiable boundaries
 
 - The two exposed Ethereum bundles are development evidence, never untouched confirmation.
+- The complete 77-bundle replay is also development-only: counts and shapes were explored before freeze and set
+  no support threshold.
 - No scalar isolation threshold is relaxed after A1a.
 - No other deployment is opened before a B0 chain/deployment/support manifest is pushed.
 - No account or response row is opened before B0/B1/B2 and the frozen B3 design pass.

@@ -89,7 +89,10 @@ agent adaptation and regime dynamics are learned or statistically estimated.
 
 ### B0 — bundle breadth, zero accounts
 
-- Finish the development-only Ethereum structural replay.
+- The development-only Ethereum replay is complete: 77 transaction bundles, 27 with a known-predecessor net
+  change, five with a net LT decrease, zero pure emitted-LT vectors, one execution-path round trip and 54
+  unknown-predecessor asset occurrences. All seven integrity gates pass. These explored counts set no support
+  threshold and authorize protocol design only.
 - Freeze an official-address/source inventory across preselected Aave deployments.
 - Count all configuration-program transactions with the same inclusive rules; do not search only for LT events.
 - Require enough programs, versions, vector dimensions and time/deployment separation for train/validation/test.
@@ -156,6 +159,10 @@ hash. Crash periods remain evaluation-only. No future plan may assume H20.
   Exact event compilation and reconciliation remain CPU jobs.
 
 No GPU job is currently authorized or queued.
+
+The frozen Ethereum replay and standalone verification are archived in
+`experiments/v14_aave_v3_bundle_structure_feasibility/RESULTS.md`; summary SHA-256 is
+`922312a9c75a64cfe66a1ef828140df938929e4bc6fbac9200a3a1f6fa9d9db9`.
 
 ## 9. NCS versus NMI
 

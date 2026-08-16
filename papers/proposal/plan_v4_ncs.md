@@ -755,9 +755,13 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     inactive boundary 与 same-transaction bundling 失败，共同说明真实制度干预是 executable program，
     不是方便挑选的 scalar label。新主对象是 Executable Policy Shock Compiler：用 versioned source、
     receipt/call path 与 authoritative T−1/T state 把治理程序编译为 exact sparse transition operator；即时
-    机制不学习，账户适应、跨资产耦合与慢 regime 才学习。现有 Aave directory 先做 development-only、
-    zero-network bundle replay，按 transaction 重建 LTV/LT/bonus 的 net vector 与 in-transaction round
-    trip，并明确披露 bundle 统计已在 freeze 前探索；完成只允许设计 historical ABI/state/receipt compiler。
+    机制不学习，账户适应、跨资产耦合与慢 regime 才学习。现有 Aave directory 的 development-only、
+    zero-network bundle replay 已在 protocol commit `d5636dd75...` 完成：77 个 transaction bundles，27 个
+    有已知 predecessor 的 net change，5 个含 net LT decrease，0 个 pure emitted-LT vector，1 个
+    in-transaction round trip，54 个 asset occurrence 的 emitted predecessor 未知；7/7 integrity gates
+    通过，summary SHA-256 为 `922312a9c75a64cfe66a1ef828140df938929e4bc6fbac9200a3a1f6fa9d9db9`。
+    Bundle 统计已在 freeze 前探索，不能当 blind/confirmatory evidence；完成只允许设计 historical ABI/
+    state/receipt compiler。
     Cross-deployment scalar scan 只作为使用 unchanged rule 的 bounded B0 side audit，不再是 paper 主线。
     NCS 路线以 compiler conformance、accounting-constrained multiscale prediction 与跨 program/deployment
     OOD validation 为中心；NMI 只有在 architecture novelty、更广 benchmark 和显著 OOD gains 后才考虑。

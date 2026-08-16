@@ -4,8 +4,8 @@
 
 **Current decision:** `AAVE_A1A_ZERO_STRICT_CANDIDATES_RETIRE_ETHEREUM_SCALAR_LT_ROUTE`
 
-**Next gate:** development-only offline bundle replay, followed—only if structurally useful—by a newly frozen
-cross-deployment executable-vector compiler protocol. Neither is G1-admitted.
+**Next gate:** freeze a zero-account B0 cross-deployment program-inventory protocol and its ex-ante support rule,
+followed—only on a B0 pass—by a historical ABI/state/receipt compiler protocol. Neither is G1-admitted.
 
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
@@ -23,9 +23,15 @@ plan. Managers, Bulker operators, transaction senders and account addresses must
 
 At initial selection Compound had five `pass`, five `partial` and two `unresolved` criteria. The later mechanics
 and activation audits resolve the relevant denominator/activation route negatively rather than repairing it.
-Aave is now the first candidate for a fresh zero-row source and effect-class audit. A0 passed source/effect
-identity and authorizes A1 deployment/event-inventory design only; Aave is not admitted to G1. GC0166 remains
-conditional on official identity/provenance
+
+The disclosed development-only Aave replay is now complete. It reconstructs 77 transaction bundles from the
+immutable Ethereum directory: 27 have a known-predecessor net change, five contain a net LT decrease, none is a
+pure emitted-LT vector, and one contains an execution-path round trip. Fifty-four asset occurrences have unknown
+emitted predecessors, so zero known net dimension is not evidence of no intervention. All seven integrity gates
+pass, but the counts were explored before freeze and authorize compiler protocol design only.
+Aave is now the development substrate for a fresh zero-account B0 cross-deployment program inventory. A0 passed
+source/effect identity, but A1a retired the Ethereum scalar route and the bundle replay authorizes only B0/B1
+protocol design; Aave is not admitted to G1. GC0166 remains conditional on official identity/provenance
 clarification. Uniswap Proposal 94
 stays the exact-M2 case and cannot be rehabilitated as M3/M4 by changing its failed concentration gate.
 

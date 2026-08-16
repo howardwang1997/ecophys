@@ -773,5 +773,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   transaction, treats first asset configurations as unknown predecessor, uses the final emitted configuration for
   the net vector and flags intermediate round trips. Other Configurator topics remain opaque until a source/ABI/
   receipt compiler protocol. This can authorize design only, never G1.
+- The replay completed once at pushed protocol commit `d5636dd751b7654a24e8fae9fc39b72c6cc4a76b`. It produced 77
+  bundles, 27 with a known-predecessor net change, five with a net LT decrease, zero pure emitted-LT vectors, one
+  round trip, 54 unknown-predecessor asset occurrences and a maximum known net dimension of 20. All seven gates
+  and a standalone exact-bundle verifier pass; summary SHA is
+  `922312a9c75a64cfe66a1ef828140df938929e4bc6fbac9200a3a1f6fa9d9db9`. Counts/shapes were explored before
+  freeze, so this is development evidence only. It authorizes a separately frozen B0/B1 protocol design, not new
+  chain access, accounts, outcomes, G1 or GPU training.
 - Cross-deployment scalar scanning is a bounded B0 side audit under the unchanged isolation rule, not the paper
   center. NCS is the primary route; NMI requires stronger operator-conditioned ML novelty and broader OOD evidence.
