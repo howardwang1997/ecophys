@@ -841,3 +841,8 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   evidence. It uses <=100,000 generated cases, one Mac CPU, <=60 seconds, zero network/data/GPU. PASS licenses only
   compiler fixture/specification extension and cannot bypass B0. Archive access requirements are recorded in
   `papers/proposal/v14_archive_data_access_requirements_2026-08-17.md`.
+- ESTIR implementation derives read/write sets from four strict opcodes, validates direct dataclass construction,
+  preserves stepwise exact state traces, constructs forward dependency edges for every conflict and uses
+  lexicographic Kahn ordering only among ready independent instructions. Its deterministic verifier recomputes the
+  complete grid and checks actual repository manifest/source hashes. Eight focused tests, Ruff and strict mypy pass;
+  formal execution still requires a pushed implementation commit and clean detached worktree.

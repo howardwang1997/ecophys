@@ -821,6 +821,11 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     output、零网络/零 GPU。即使全部通过，也只允许扩展 compiler fixtures/spec，不解锁 B0/B1/G1。同时
     `v14_archive_data_access_requirements_2026-08-17.md` 已写明九链 archive logs、retention/licence、range/
     quota、B1/B2 traces/state 和 target-free qualification 的最低合同。
+23. **ESTIR 实现已完成、formal run 尚未执行：** strict opcode schema 与 dataclass 直构造都拒绝未知/
+    缺失/boolean 语义；interpreter 保留逐步 exact state trace 与 terminal sparse delta；dependency DAG 只
+    canonicalize frozen read/write criterion 证明独立的顺序。开发态 8 tests、Ruff、strict mypy 通过；测试
+    会覆盖完整 72,000-case grid，但不能替代 pushed implementation commit 上的 clean detached sealed run。
+    Verifier 必须重算全 grid/ledger/witnesses 并核对 repository manifest/source hash。
 
 ---
 
