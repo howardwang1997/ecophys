@@ -23,7 +23,7 @@ flowchart TD
     XS --> V
     V --> E0[Development replay: 77 bundles; 0 pure emitted-LT vectors]
     E0 --> B0[B0 v1 transport fail before logs; scientific gate unevaluated]
-    B0 --> T0[Versioned empty-address transport canary]
+    B0 --> T0[Transport canary frozen: zero address x 4 hosts x 2 endpoints]
     T0 --> B0V2[Versioned B0 scientific rerun; unchanged contract]
     B0V2 --> B1[B1 only after a B0 scientific pass]
     B1 --> B2[B2 complete account denominator + accounting replay]
@@ -44,7 +44,8 @@ flowchart TD
 | Aave A1a | 3,119 logs; 18 LT decreases; 0 strict candidates | scalar-route retirement; bundle analysis |
 | Bundle structural replay | 77 bundles; 27 known net changes; 5 net LT decreases; 0 pure LT; 1 round trip | vector-compiler protocol design only |
 | B0 v1 | fixed 4-train/2-validation/3-test deployments; ≥220 gate | infrastructure failure before a log row; no scientific decision |
-| Transport canary / B0 v2 | not yet designed or run | nothing yet |
+| Transport canary | zero address; 4-host single-host selection; existing endpoints only | protocol frozen, not run; nothing yet |
+| B0 v2 | not yet designed or run | nothing yet |
 | B1--B3 | not yet designed/run | nothing yet |
 
 ## Non-negotiable boundaries

@@ -47,6 +47,10 @@ PublicNode returned HTTP 403 for all 14 logical Provider log ranges down to bloc
 `INFRASTRUCTURE_FAILURE_NO_B0_SCIENTIFIC_DECISION`, not a support failure. The immutable failure and request ledger
 are under `experiments/v14_aave_v3_cross_deployment_program_directory/artifacts/`; v1 cannot be retried.
 
+The successor transport canary is now designed with no target address: both existing endpoints for all nine chains
+are tested on four frozen host IDs using only chain ID and zero-address genesis log queries. Selection waits for all
+hosts and requires one host to cover every deployment. Its PASS licenses only B0 v2 protocol design.
+
 Initial machine-readable decision (historical and immutable):
 `data/manifests/v14_m3m4_source_selection_v1.yaml`.
 

@@ -845,3 +845,11 @@ chain/header calls and recorded 14 failed logical `eth_getLogs` calls with three
 and 129,956 response bytes total. No normalized log, program, account, outcome or model row was retained. Mac CPU/
 network wall time was under one minute; paid data, remote-worker hours and GPU-hours were zero. Both V100s and the
 RTX 2060 remained idle. This is an infrastructure failure and creates no B0 support estimate.
+
+### Target-row-free transport-canary budget
+
+The versioned canary uses the Mac, two V100 hosts and RTX 2060 host as four independent CPU/network egresses, with
+CUDA hidden. Each tests the same 18 existing chain endpoints using only chain IDs and empty zero-address genesis
+log ranges. Per-host caps are 500 HTTP attempts, 32 MiB responses, two requests/s and two attempts/logical call.
+Expected parallel wall time is below ten minutes, durable output below 1 MiB, paid data zero and GPU-hours zero.
+All four artifacts are mandatory; PASS licenses only a B0 v2 protocol with the selected single-host route.

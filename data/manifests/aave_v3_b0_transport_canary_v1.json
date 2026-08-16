@@ -1,0 +1,141 @@
+{
+  "schema_version": "ecophys-aave-v3-b0-transport-canary/v1",
+  "audit_id": "aave_v3_b0_transport_canary_v1",
+  "as_of": "2026-08-17",
+  "stage": "target_row_free_rpc_transport_canary",
+  "parents": {
+    "b0_v1_archive_commit": "da29a8e0ec9f7c318eafccc5c1aee571ff9d700e",
+    "b0_v1_protocol_commit": "7079562919b039f69927a916ccc08281e1d2462b",
+    "b0_v1_manifest_path": "data/manifests/aave_v3_cross_deployment_program_directory_v1.yaml",
+    "b0_v1_manifest_sha256": "1136d03e39fdc4e518f6f77b71a8929e579b31ca2979c50caadf874e7f9dedb1",
+    "b0_v1_result_path": "experiments/v14_aave_v3_cross_deployment_program_directory/RESULTS_V1.md",
+    "b0_v1_result_sha256": "9aa6fe25ea25f98e7f15bde2cdd0d6269120221eae8c65ffacc65aba6b939aa1",
+    "b0_v1_failure_path": "experiments/v14_aave_v3_cross_deployment_program_directory/artifacts/failure.json",
+    "b0_v1_failure_sha256": "714c3ed29acd92df19fab1b1eedadc52c46f61db321f13756284b0b35ceeffdf",
+    "b0_v1_ledger_path": "experiments/v14_aave_v3_cross_deployment_program_directory/artifacts/rpc_response_hashes.json",
+    "b0_v1_ledger_sha256": "0784cb7bf2383f4b4df20d6754265cea3e3dd5eb022ab7ae654360b9d2c987d8",
+    "expected_b0_v1_decision": "INFRASTRUCTURE_FAILURE_NO_B0_SCIENTIFIC_DECISION"
+  },
+  "scientific_contract": {
+    "deployment_universe_unchanged": true,
+    "deployment_split_unchanged": true,
+    "cutoff_unchanged": true,
+    "program_inclusion_rule_unchanged": true,
+    "support_thresholds_unchanged": true,
+    "scientific_resource_caps_unchanged": true,
+    "target_addresses_forbidden": true,
+    "target_event_rows_forbidden": true,
+    "b0_v2_execution_not_authorized": true
+  },
+  "canary": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "expected_log_count": 0,
+    "single_block_interval": [0, 0],
+    "root_interval": [0, 249999],
+    "range_error_action": "bisect_left_prefix_until_empty_success_or_single_block_failure",
+    "http_error_action": "retry_then_fail_without_bisection",
+    "nonempty_result_action": "contamination_fail_discard_rows",
+    "allowed_methods": ["eth_chainId", "eth_getLogs"]
+  },
+  "hosts": {
+    "priority": ["v100_a", "v100_b", "rtx2060", "local_mac"],
+    "all_hosts_must_report_before_selection": true,
+    "gpu_visible": false,
+    "host_ids_are_bound_to_gitignored_local_inventory": true
+  },
+  "selection_policy": {
+    "single_host_required_for_all_deployments": true,
+    "select_first_passing_host_by_frozen_priority": true,
+    "within_selected_host_prefer_primary_then_replica_per_deployment": true,
+    "no_partial_host_or_target_result_selection": true
+  },
+  "rpc": {
+    "maximum_requests_per_second_per_host": 2,
+    "maximum_attempts_per_logical_call": 2,
+    "maximum_http_attempts_per_host": 500,
+    "maximum_response_bytes_per_host": 33554432,
+    "timeout_seconds": 30,
+    "user_agent": "EcoPhys-V14-Aave-B0-transport-canary/1.0",
+    "raw_response_payloads_retained": false
+  },
+  "deployments": [
+    {
+      "name": "arbitrum",
+      "chain_id_hex": "0xa4b1",
+      "endpoints": [
+        {"role": "primary", "url": "https://arbitrum-one-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://arb1.arbitrum.io/rpc"}
+      ]
+    },
+    {
+      "name": "avalanche",
+      "chain_id_hex": "0xa86a",
+      "endpoints": [
+        {"role": "primary", "url": "https://avalanche-c-chain-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://api.avax.network/ext/bc/C/rpc"}
+      ]
+    },
+    {
+      "name": "optimism",
+      "chain_id_hex": "0xa",
+      "endpoints": [
+        {"role": "primary", "url": "https://optimism-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://mainnet.optimism.io"}
+      ]
+    },
+    {
+      "name": "polygon",
+      "chain_id_hex": "0x89",
+      "endpoints": [
+        {"role": "primary", "url": "https://polygon-bor-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://polygon.drpc.org"}
+      ]
+    },
+    {
+      "name": "base",
+      "chain_id_hex": "0x2105",
+      "endpoints": [
+        {"role": "primary", "url": "https://base-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://mainnet.base.org"}
+      ]
+    },
+    {
+      "name": "gnosis",
+      "chain_id_hex": "0x64",
+      "endpoints": [
+        {"role": "primary", "url": "https://gnosis-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://rpc.gnosischain.com"}
+      ]
+    },
+    {
+      "name": "bnb",
+      "chain_id_hex": "0x38",
+      "endpoints": [
+        {"role": "primary", "url": "https://bsc-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://bsc-dataseed.bnbchain.org"}
+      ]
+    },
+    {
+      "name": "linea",
+      "chain_id_hex": "0xe708",
+      "endpoints": [
+        {"role": "primary", "url": "https://linea-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://rpc.linea.build"}
+      ]
+    },
+    {
+      "name": "scroll",
+      "chain_id_hex": "0x82750",
+      "endpoints": [
+        {"role": "primary", "url": "https://scroll-rpc.publicnode.com"},
+        {"role": "replica", "url": "https://rpc.scroll.io"}
+      ]
+    }
+  ],
+  "decision_policy": {
+    "pass": "PASS_TARGET_ROW_FREE_TRANSPORT_CANARY_AUTHORIZE_B0_V2_PROTOCOL_DESIGN_ONLY",
+    "fail": "FAIL_TARGET_ROW_FREE_TRANSPORT_CANARY_KEEP_B0_V2_B1_G1_GPU_LOCKED",
+    "all_hosts_required": true,
+    "authorized_next_stage": "scientific_contract_preserving_b0_v2_protocol_design_only"
+  }
+}

@@ -785,6 +785,12 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     成功 log response、program count、summary 或 directory，因此不是 support FAIL，也不允许重跑 v1。
     后继只能先冻结不读取 target row 的 empty-address transport canary，再做 versioned repair；deployment/
     split/cutoff/inclusion/threshold/cap/access locks 不变。B1、account、response、G1 和 GPU 继续锁定。
+18. **Target-row-free transport canary v1 已设计、尚未执行：** 对九条链的两个既有 endpoint，在
+    `v100_a/v100_b/rtx2060/local_mac` 四个固定 host ID 上只调用 chain ID 和 zero-address genesis
+    `eth_getLogs`。单块必须空；250,000-block prefix 可仅因 JSON-RPC range error 左半递归。HTTP error
+    不二分，非空结果污染失败且不保留 row。四个 host 全部返回后，按冻结顺序选第一个覆盖九条链的
+    单一 host，再按 primary-before-replica 选 endpoint。每 host 上限 500 attempts/32 MiB/2 rps；GPU
+    隐藏。PASS 只允许写 B0 v2 protocol，不允许直接执行或打开 target/account/outcome。
 
 ---
 

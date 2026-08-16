@@ -112,6 +112,11 @@ chain/header calls succeeded, while 14 logical Provider `eth_getLogs` ranges ret
 attempt down to block 0. This is an infrastructure failure, not a breadth decision. V1 is immutable and cannot be
 retried; a successor must first freeze a target-row-free transport canary while preserving the scientific contract.
 
+That canary is now frozen across the two existing endpoints and four predeclared CPU hosts. It queries only chain
+identity and the zero address over block 0 and a deterministically bisected 250,000-block genesis prefix. All four
+hosts must finish before the first single host covering all deployments is selected; primary precedes replica on
+that host. A canary pass permits B0 v2 protocol design, not execution or scientific inference.
+
 ### B1 — exact vector compiler, zero accounts
 
 For every selected program, decode receipts and calldata, map the complete call cone to historical verified source,

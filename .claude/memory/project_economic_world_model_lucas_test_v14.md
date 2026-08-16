@@ -802,3 +802,8 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   HTTP attempts and 129,956 response bytes. No log row, program count or support gate was opened; summary/directory
   artifacts do not exist. V1 cannot be retried. Any v2 must preserve the scientific contract and choose transport
   only through a separately frozen empty-address canary; B1/accounts/outcomes/G1/GPU remain locked.
+- Transport-canary v1 is designed but cannot execute until pushed. It tests both existing endpoints for all nine
+  deployments on `v100_a`, `v100_b`, `rtx2060` and `local_mac`, in that frozen priority. Only `eth_chainId` and
+  zero-address `eth_getLogs` over block 0 and a bisected `[0,249999]` prefix are allowed. All four hosts must report;
+  the first single host covering every deployment is selected, with primary before replica per deployment. A PASS
+  licenses B0 v2 protocol design only. No Aave address/event row, partial-host mosaic, GPU or new endpoint is allowed.
