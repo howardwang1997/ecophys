@@ -731,7 +731,7 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     development evidence。PASS 只允许另行设计 deployment/version/LT-event inventory，不通过 G1，不
     启动 GPU。2×V100 与 RTX2060 继续空闲。完整结果见
     `experiments/v14_aave_v3_liquidation_threshold_source_preflight/RESULTS.md`。
-14. **Aave A1a 零账户事件目录已冻结、尚未执行：** inclusive block window 固定为
+14. **Aave A1a 零账户事件目录失败，Ethereum scalar-LT route 退休：** inclusive block window 固定为
     0--25,760,572；104 个 250,000-block roots × 三个地址流，共 312 个根 `eth_getLogs`。完整扫描
     PoolAddressesProvider 与 PoolConfigurator，Pool 仅扫 `Upgraded`；所有 provider transition 必须与
     proxy upgrade 按 transaction/new implementation 一一对应，并形成连续 old→new chain。Blockscout
@@ -740,8 +740,17 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     403。候选只用 previous emitted configuration 做目录筛选：positive LT strict decrease、emitted LTV/bonus
     不变、同 tx 恰好一个 Configurator log、无 provider/proxy upgrade；至少 3 candidates、2 assets、3 tx
     才能 PASS。这个 predecessor 不是 authoritative T−1，PASS 只允许另行冻结 all-candidate receipt/
-    payload/historical-state/source audit。accounts/actions/responses、G1 和全部 GPU 仍锁定。协议见
-    `experiments/v14_aave_v3_lt_event_directory/PREREGISTRATION.md`。
+    payload/historical-state/source audit。accounts/actions/responses、G1 和全部 GPU 仍锁定。唯一 sealed
+    run 在 commit `ceb83d1fd...` 完成：344 个一次成功 requests、2,948,736 bytes、3,119 normalized logs、
+    137 个 collateral-configuration rows。18 条 emitted LT decrease 中只有 4 条同时保持 LTV/bonus，且
+    全部集中在两个含 13/16 条 Configurator logs 的 transaction；后一笔还在同 tx 内反复 `7500↔1`，
+    最终恢复原值。strict candidate 因而为 0。另一个 frozen history gate 因预注册误要求 initial proxy
+    `Upgraded` 而失败；pinned initializer 实际用 `_setImplementation`，后续全部 upgrades 与 terminal
+    slots 连续吻合。这个 source corrigendum 不改变独立的 zero-support failure。不得事后放松 bundling
+    gate；不启动 A1b、账户 census、G1 或 GPU。新方向只能另行预注册 cross-deployment strict directory，
+    或把 bundled vector shock 立为全新 estimand/方法问题；两笔已见 Ethereum bundle 不能作 untouched
+    confirmation。协议与结果见 `experiments/v14_aave_v3_lt_event_directory/PREREGISTRATION.md` 和
+    `experiments/v14_aave_v3_lt_event_directory/RESULTS.md`。
 
 ---
 

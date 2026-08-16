@@ -755,3 +755,14 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   frozen support gate is at least three rows, two assets and three transactions. A pass authorizes only a new
   all-candidate receipt/payload/historical-state/source protocol; accounts, actions, responses, G1 and GPUs remain
   locked.
+- Aave A1a ran once at pushed protocol commit `ceb83d1fdd638836cfd8c563d7741f59d33174c6`: 344 one-attempt requests,
+  2,948,736 response bytes, 3,119 normalized logs and 137 collateral configuration events. It found 18 emitted LT
+  decreases, four with unchanged emitted LTV/bonus, but zero strict candidates because all four are bundled in two
+  transactions with 13 and 16 Configurator logs.
+- One frozen gate also failed because v1 incorrectly expected an initial proxy `Upgraded` event. Pinned
+  `InitializableUpgradeabilityProxy.initialize` uses `_setImplementation`, so initial creation emits no upgrade;
+  every later transition and both terminal slots conform. Preserve the v1 failure. A source-corrected offline
+  diagnostic passes history but the independent zero-support failure remains.
+- Retire the Ethereum scalar-LT route before accounts. Do not relax transaction isolation, run A1b, open
+  participant rows or start GPUs. A cross-deployment strict directory or bundled-vector shock is a new hypothesis
+  requiring a new protocol; the exposed Ethereum bundles are development-only.

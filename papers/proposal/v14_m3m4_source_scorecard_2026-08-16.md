@@ -2,10 +2,10 @@
 
 **Date:** 2026-08-16
 
-**Current decision:** `AAVE_A0_SOURCE_IDENTITY_PASS_AUTHORIZE_A1_EVENT_INVENTORY_DESIGN_ONLY`
+**Current decision:** `AAVE_A1A_ZERO_STRICT_CANDIDATES_RETIRE_ETHEREUM_SCALAR_LT_ROUTE`
 
-**Next frozen gate:** Aave A1a zero-account deployment/version/LT-event directory; protocol frozen locally,
-not yet executed and not G1-admitted.
+**Next gate:** none for the Ethereum scalar-LT route. Any cross-deployment strict scan or bundled-vector policy
+shock is a new protocol and hypothesis; neither is G1-admitted.
 
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.

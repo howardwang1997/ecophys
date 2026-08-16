@@ -781,3 +781,16 @@ No historical per-event configuration, transaction, receipt, payload, trace, acc
 liquidation, price value or response is budgeted. Paid data, external workers and GPU-hours are zero. Both V100s
 and the RTX 2060 remain idle; H20 is excluded. Even a pass budgets only a separately frozen all-candidate A1b
 mechanics/source protocol.
+
+### Aave A1a actual resource result
+
+The sole sealed run completed 344 successful requests in 344 HTTP attempts over a 181.476-second response span.
+It transferred 2,948,736 bytes, normalized 3,119 logs and inventoried 18 unique implementation addresses plus the
+provider and two proxies. All 312 log roots were unsaturated. Three fixed-end calls, two slots and all 21 code
+objects conformed.
+
+Actual paid-data, external-worker and GPU use was zero; both V100s and the RTX 2060 remained idle. No historical
+per-event state, transaction/receipt/payload/trace, account, action, liquidation, price value or response was
+opened. Because the strict candidate count is zero, no A1b/account/training budget exists for the Ethereum scalar-
+LT route. A new cross-deployment or bundled-vector project requires a new data/compute audit rather than reusing
+this budget.

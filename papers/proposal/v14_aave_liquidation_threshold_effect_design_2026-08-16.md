@@ -1,7 +1,7 @@
 # Aave liquidation-threshold shocks as a candidate exact intervention layer
 
-**Status:** A0 source/effect identity passed; the A1a zero-account deployment/version/event-directory protocol is
-frozen but not yet executed; Aave is not admitted to G1.
+**Status:** A0 source/effect identity passed, but A1a found zero strict unbundled Ethereum LT-only candidates. The
+Ethereum scalar-LT route is retired before accounts; Aave is not admitted to G1.
 
 ## Why this is cleaner than the retired Compound cap route
 
@@ -82,6 +82,18 @@ transaction and no provider/proxy upgrade. At least three rows, two assets and t
 This is not authoritative T−1 state or payload isolation. A pass authorizes an all-candidate A1b protocol; only
 A1b may open historical configuration, receipts, calldata/call paths and version-matched implementation source.
 Full preregistration: `experiments/v14_aave_v3_lt_event_directory/PREREGISTRATION.md`.
+
+A1a has now run once at protocol commit `ceb83d1fd...`. It normalized 3,119 logs and 137 collateral-configuration
+events. Eighteen rows decrease emitted LT; only four preserve emitted LTV and bonus, and all four are bundled in
+two transactions with 13 and 16 Configurator logs. The latter transaction repeatedly toggles one asset
+`7500 -> 1 -> 7500 -> 1 -> 7500`, so its apparent decreases are not persistent block-boundary treatments. The
+strict provisional count is zero.
+
+The frozen proxy crosswalk also exposed one design mistake: initial proxy `initialize()` calls
+`_setImplementation`, so it does not emit `Upgraded`. Every later upgrade and both terminal slots conform. An
+offline source-corrected history passes, but v1 remains immutable and the independent zero-support failure still
+retires the Ethereum route. Do not run A1b or open accounts. Result:
+`experiments/v14_aave_v3_lt_event_directory/RESULTS.md`.
 
 ### A2 — enumerable denominator and pre-event reconstruction
 
