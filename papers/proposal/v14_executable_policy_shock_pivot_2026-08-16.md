@@ -107,6 +107,11 @@ new deployment must have at least ten Configurator-program transactions; the con
 requirements. All Configurator-log transactions are included without parameter, direction or scalar-purity
 filtering. Full protocol: `experiments/v14_aave_v3_cross_deployment_program_directory/PREREGISTRATION.md`.
 
+The sealed v1 run at pushed commit `707956291...` terminated before any successful log response: 66 Arbitrum
+chain/header calls succeeded, while 14 logical Provider `eth_getLogs` ranges returned HTTP 403 on every allowed
+attempt down to block 0. This is an infrastructure failure, not a breadth decision. V1 is immutable and cannot be
+retried; a successor must first freeze a target-row-free transport canary while preserving the scientific contract.
+
 ### B1 — exact vector compiler, zero accounts
 
 For every selected program, decode receipts and calldata, map the complete call cone to historical verified source,

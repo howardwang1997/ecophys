@@ -796,3 +796,9 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   a learned conservative range bound is reused only within the same deployment, while every failed logical request
   remains in the hash ledger. Single-block failures terminate the run. The sealed v1 execution must occur once from
   a clean detached worktree only after its exact protocol commit is pushed and remotely verified.
+- B0 v1 was sealed at pushed commit `7079562919b039f69927a916ccc08281e1d2462b` and ended in
+  `INFRASTRUCTURE_FAILURE_NO_B0_SCIENTIFIC_DECISION`. Arbitrum completed 66 chain/header calls, but every one of 14
+  logical Provider `eth_getLogs` requests received HTTP 403 on all three attempts, including block 0. Total: 108
+  HTTP attempts and 129,956 response bytes. No log row, program count or support gate was opened; summary/directory
+  artifacts do not exist. V1 cannot be retried. Any v2 must preserve the scientific contract and choose transport
+  only through a separately frozen empty-address canary; B1/accounts/outcomes/G1/GPU remain locked.

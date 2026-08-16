@@ -837,3 +837,11 @@ Hard caps are 50,000 HTTP attempts, 512 MiB responses, 250,000 normalized logs a
 per second. Expected wall time is about 1.5--4 hours and durable output below 100 MiB. One Mac CPU/network worker is
 sufficient; alternatively a V100 machine may supply CPU/network only. Paid data, external workers and GPU-hours are
 zero. Both V100 GPUs and the RTX 2060 remain idle, and H20 is excluded. A PASS budgets only B1 protocol design.
+
+### Aave B0 v1 actual transport use
+
+The sealed run at commit `707956291...` ended on Arbitrum before a successful event-log response. It completed 66
+chain/header calls and recorded 14 failed logical `eth_getLogs` calls with three attempts each: 108 HTTP attempts
+and 129,956 response bytes total. No normalized log, program, account, outcome or model row was retained. Mac CPU/
+network wall time was under one minute; paid data, remote-worker hours and GPU-hours were zero. Both V100s and the
+RTX 2060 remained idle. This is an infrastructure failure and creates no B0 support estimate.

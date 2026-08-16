@@ -779,6 +779,12 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     transaction/receipt/calldata/trace/state/account/response/G1/GPU 全锁定。PASS 也只允许设计 B1 compiler
     protocol。协议与 runbook 见
     `experiments/v14_aave_v3_cross_deployment_program_directory/PREREGISTRATION.md`。
+17. **B0 v1 在科学数据开始前发生 transport failure：** pushed commit `707956291...` 的 sealed run
+    成功完成 Arbitrum 的 66 次 chain/header 请求，但 PublicNode 对 14 个递归到 block 0 的逻辑
+    `eth_getLogs` 请求全部返回 HTTP 403（三次尝试/请求）。总计 108 HTTP attempts、129,956 bytes；没有
+    成功 log response、program count、summary 或 directory，因此不是 support FAIL，也不允许重跑 v1。
+    后继只能先冻结不读取 target row 的 empty-address transport canary，再做 versioned repair；deployment/
+    split/cutoff/inclusion/threshold/cap/access locks 不变。B1、account、response、G1 和 GPU 继续锁定。
 
 ---
 

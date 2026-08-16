@@ -4,8 +4,9 @@
 
 **Current decision:** `AAVE_A1A_ZERO_STRICT_CANDIDATES_RETIRE_ETHEREUM_SCALAR_LT_ROUTE`
 
-**Next gate:** execute the pushed zero-account B0 v1 cross-deployment program inventory once; only a full pass may
-authorize design of a historical ABI/state/receipt compiler protocol. Neither stage is G1-admitted.
+**Next gate:** archive the B0 v1 transport failure, then run a separately frozen target-row-free transport canary.
+Only a later versioned B0 scientific pass may authorize design of a historical ABI/state/receipt compiler protocol.
+Neither stage is G1-admitted.
 
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
@@ -40,6 +41,11 @@ conjunctive minimum is 220 non-Ethereum Configurator-program transactions: 120 t
 with every deployment contributing at least ten and additional structure/time gates. It includes all
 Configurator-log transactions and cannot add chains or change splits after seeing support. Transactions, receipts,
 state, accounts, outcomes and GPUs remain outside the access boundary.
+
+B0 v1 then ended before any log row was returned. Both Arbitrum endpoints completed chain/cutoff-header work, but
+PublicNode returned HTTP 403 for all 14 logical Provider log ranges down to block 0. This is
+`INFRASTRUCTURE_FAILURE_NO_B0_SCIENTIFIC_DECISION`, not a support failure. The immutable failure and request ledger
+are under `experiments/v14_aave_v3_cross_deployment_program_directory/artifacts/`; v1 cannot be retried.
 
 Initial machine-readable decision (historical and immutable):
 `data/manifests/v14_m3m4_source_selection_v1.yaml`.
