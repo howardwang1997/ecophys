@@ -805,6 +805,14 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     一律 terminal。两台 host 都必须返回，再按 RTX2060→Mac 选第一个覆盖全部三项的单一 host。每 host
     100 attempts/8 MiB/2 rps，CUDA 隐藏、免费数据、零 GPU。PASS 仍只允许另行设计 B0 v2；协议 commit
     推送并远端核验前不得发出新 RPC。
+21. **Transport repair v2 严格 FAIL，停止 free-endpoint chase：** 协议在 pushed commit `91188042c...`
+    上由 RTX2060 与 Mac 并行执行，聚合零 validation error。两台都通过 Polygon/Base，且独立得到相同的
+    conservative span 62/7,813；唯一预声明 BNB dRPC candidate 在 RTX 上 chain ID 通过后对 block-0 log
+    返回 RPC `-32000` rate limit，在 Mac 上 chain ID 两次 HTTP 429。合计 49 logical calls、84 HTTP
+    attempts、8,510 bytes、target rows=0、GPU=0。没有 host 覆盖三项，故 B0 v2/B1/G1/GPU 仍锁定；不得
+    事后换 endpoint、删 BNB 或改 split/support gate。当前免费 no-auth RPC 路线关闭，重开必须先形成新的
+    archive-data resource decision 与独立 target-free qualification protocol。Polygon 的 62-block span
+    也尚未证明能满足 B0 原 50,000-request cap。
 
 ---
 

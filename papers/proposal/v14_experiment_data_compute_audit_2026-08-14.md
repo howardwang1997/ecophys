@@ -871,3 +871,13 @@ attempt. Expected parallel wall time is below five minutes and durable output be
 documentation plus existing immutable canary artifacts; paid data, new storage, software installation and GPU-hours
 are zero. B0 v2, B1 and all model training still have no budget unless this canary passes and a separate protocol
 is committed.
+
+### Target-row-free transport-repair actual use
+
+Both sealed CPU/network workers completed: RTX used 25 logical calls, 42 HTTP attempts, 4,299 bytes and 21.115
+seconds; Mac used 24 logical calls, 42 attempts, 4,211 bytes and 52.812 seconds. Total use was 49 logical calls, 84
+HTTP attempts and 8,510 bytes. Durable host/summary artifacts are small; paid data and GPU-hours were zero.
+
+Polygon and Base passed on both hosts, but BNB failed under the frozen terminal rate-limit rules, so no B0 v2
+budget was opened. A future attempt requires a separately approved archive-data resource and target-free protocol.
+The V100s remain unused, H20 remains excluded, and no training job is queued from this result.

@@ -231,3 +231,8 @@ cannot reach nine from these three repair probes.
 The v2 repair requires both eligible hosts, a single-host nine-chain plan and zero target rows. Its PASS permits
 only B0 v2 protocol design; its FAIL closes the current free-RPC directory route. Neither result changes the vector
 policy-shock hypothesis, supplies scientific support, or opens compiler/account/outcome/model work.
+
+The sealed v2 run at `91188042c...` returned that FAIL with zero aggregate validation errors. Polygon and Base
+passed on both eligible hosts at conservative spans 62 and 7,813, but the sole BNB candidate was rate-limited at
+chain ID or block-0 logs. No Aave row was opened. The mainline compiler hypothesis remains scientifically
+unevaluated; B0 now needs an explicit archive-data access decision rather than another free-endpoint guess.

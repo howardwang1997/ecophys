@@ -822,3 +822,13 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
   have one of those statuses. JSON-RPC range errors may also bisect; every other outcome is terminal. Both eligible
   hosts must report and the first complete host in RTX2060→Mac order is selected. Per-host bounds are 100 attempts
   and 8 MiB; target rows, paid data and GPU remain zero. PASS permits B0 v2 design only, never same-step execution.
+- Repair v2 ran once from remotely verified protocol commit `91188042c798709ecbc4a11784cdf0a8864c7923` on RTX
+  2060 and Mac and strictly failed with zero aggregate validation errors. Both hosts pass Polygon at span 62 and
+  Base at span 7,813. The sole BNB dRPC candidate returns the correct chain ID then RPC -32000 rate limiting at
+  block-0 logs on RTX; Mac gets HTTP 429 on both chain-ID attempts. Total use is 49 logical calls, 84 HTTP attempts,
+  8,510 bytes, zero target rows and zero GPU. Summary SHA-256 is
+  `4cd70d0ef198a88f8e2e6014cbb4de10c24a2f357259432212bdc2a57fe4df33`.
+- B0 v2/B1/accounts/outcomes/G1/GPU remain locked. Never replace the BNB candidate post hoc, drop BNB or weaken the
+  split/support gate. Stop no-auth endpoint chasing. Reopening cross-deployment B0 requires an explicit new archive-
+  data resource decision and separately frozen target-free qualification; Polygon span 62 must also fit the
+  unchanged B0 request cap before execution can be authorized.
