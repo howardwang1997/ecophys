@@ -794,3 +794,15 @@ per-event state, transaction/receipt/payload/trace, account, action, liquidation
 opened. Because the strict candidate count is zero, no A1b/account/training budget exists for the Ethereum scalar-
 LT route. A new cross-deployment or bundled-vector project requires a new data/compute audit rather than reusing
 this budget.
+
+### Frozen development-only Aave bundle replay budget
+
+The bundle replay reads only the committed 2.1-MiB A1a normalized directory and its hash-pinned summary/manifest.
+It makes zero network calls. One deterministic pass groups configuration events by transaction, preserves unknown
+predecessors, reconstructs final-minus-predecessor LTV/LT/bonus vectors and identifies in-transaction round trips.
+Other Configurator topics remain opaque counts.
+
+Expected runtime is seconds on one Mac CPU core and output is small JSON. Paid data, external workers and GPU-hours
+are zero; both V100s and the RTX 2060 remain idle. Completion budgets only a new zero-account vector-compiler
+protocol design. Receipts, source-by-version, historical state, accounts, actions and responses have no current
+budget.

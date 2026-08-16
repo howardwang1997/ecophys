@@ -1,0 +1,82 @@
+schema_version: ecophys-aave-v3-bundle-structure-feasibility/v1
+audit_id: aave_v3_ethereum_bundle_structure_feasibility_v1
+as_of: "2026-08-16"
+stage: post_a1a_development_only_offline_bundle_structure
+
+parents:
+  directory_path: experiments/v14_aave_v3_lt_event_directory/artifacts/event_directory.json
+  directory_sha256: 1d1d73b5f5ba51c60841a411edf563317f143e9599e3eac958643895c90648ec
+  summary_path: experiments/v14_aave_v3_lt_event_directory/artifacts/summary.json
+  summary_sha256: ff3e120920b766957353c59c02341c42990a18818a751d62da6e1a6798a3c1bb
+  manifest_path: data/manifests/aave_v3_ethereum_lt_event_directory_v1.yaml
+  manifest_sha256: 860cd0338414508d3a447cd522114cc3dbaa3193624863c9326091e0f1fa2763
+  expected_parent_decision: FAIL_AAVE_LT_EVENT_DIRECTORY_KEEP_ACCOUNTS_RESPONSES_AND_G1_LOCKED
+
+development_disclosure:
+  parent_treatment_metadata_already_opened: true
+  bundle_count_and_shape_explored_before_freeze: true
+  confirmatory_or_blind_claim_permitted: false
+  participant_outcomes_opened: false
+  purpose: deterministic_reproducible_structural_summary_and_next_protocol_design_only
+
+access_boundary:
+  network_used: false
+  normalized_parent_logs_read: true
+  parent_summary_read: true
+  transaction_or_receipt_rows_opened: false
+  calldata_or_call_trace_rows_opened: false
+  historical_state_calls_used: false
+  account_state_rows_opened: false
+  participant_action_rows_opened: false
+  liquidation_rows_opened: false
+  price_or_oracle_value_rows_opened: false
+  realized_response_rows_opened: false
+  paid_data_used: false
+  external_workers_used: false
+  gpu_used: false
+
+vectorization_rule:
+  ordering:
+    - block_number
+    - transaction_index
+    - log_index
+  transaction_key:
+    - block_hash
+    - transaction_hash
+    - transaction_index
+  configuration_fields:
+    - ltv
+    - liquidation_threshold
+    - liquidation_bonus
+  predecessor: last_emitted_configuration_strictly_before_transaction
+  first_observed_asset_configuration: predecessor_unknown_not_zero
+  post_configuration: last_emitted_configuration_for_asset_in_transaction
+  net_change: post_minus_predecessor_for_each_known_field
+  round_trip: any_intermediate_configuration_differs_from_predecessor_and_final_equals_predecessor
+  other_configurator_events: retained_as_topic0_counts_not_semantically_decoded
+  pure_lt_vector: nonempty_net_vector_and_every_changed_field_is_liquidation_threshold
+  no_same_transaction_isolation_claim: true
+  no_causal_claim: true
+
+gates:
+  - parent_hashes_and_decision
+  - exact_parent_log_identity_partition
+  - deterministic_transaction_grouping
+  - predecessor_unknown_not_imputed
+  - exact_net_vector_reconstruction
+  - round_trip_detection
+  - no_network_or_participant_outcome_access
+
+decision_policy:
+  all_gates_required: true
+  complete: COMPLETE_DEVELOPMENT_BUNDLE_STRUCTURE_AUTHORIZE_VECTOR_COMPILER_PROTOCOL_DESIGN_ONLY
+  fail: FAIL_BUNDLE_STRUCTURE_ARTIFACT_INTEGRITY_NO_NEXT_STAGE
+  authorized_next_stage: separately_frozen_historical_abi_state_and_receipt_vector_compiler_protocol_design_only
+
+limitations:
+  - Bundle counts and shapes were explored before this development manifest was frozen; no statistic is confirmatory or blind.
+  - Only CollateralConfigurationChanged is semantically decoded; other Configurator topics remain opaque identities.
+  - Previous emitted configuration is not authoritative historical reserve state.
+  - Transaction grouping does not expose receipts, payloads, call paths or state changes in other contracts.
+  - A structural bundle is not an exogenous intervention and does not identify any component-level causal effect.
+  - The parent contains no accounts, participant actions, prices or realized responses; this audit cannot admit G1.

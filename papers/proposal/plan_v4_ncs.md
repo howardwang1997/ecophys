@@ -751,6 +751,18 @@ WP2 screening 采用更保守的约 120 V100-eq h 预算，包括调度和失败
     或把 bundled vector shock 立为全新 estimand/方法问题；两笔已见 Ethereum bundle 不能作 untouched
     confirmation。协议与结果见 `experiments/v14_aave_v3_lt_event_directory/PREREGISTRATION.md` 和
     `experiments/v14_aave_v3_lt_event_directory/RESULTS.md`。
+15. **主线调整为 executable vector policy shock：** Compound 与 Aave 的两个 scalar route 分别因
+    inactive boundary 与 same-transaction bundling 失败，共同说明真实制度干预是 executable program，
+    不是方便挑选的 scalar label。新主对象是 Executable Policy Shock Compiler：用 versioned source、
+    receipt/call path 与 authoritative T−1/T state 把治理程序编译为 exact sparse transition operator；即时
+    机制不学习，账户适应、跨资产耦合与慢 regime 才学习。现有 Aave directory 先做 development-only、
+    zero-network bundle replay，按 transaction 重建 LTV/LT/bonus 的 net vector 与 in-transaction round
+    trip，并明确披露 bundle 统计已在 freeze 前探索；完成只允许设计 historical ABI/state/receipt compiler。
+    Cross-deployment scalar scan 只作为使用 unchanged rule 的 bounded B0 side audit，不再是 paper 主线。
+    NCS 路线以 compiler conformance、accounting-constrained multiscale prediction 与跨 program/deployment
+    OOD validation 为中心；NMI 只有在 architecture novelty、更广 benchmark 和显著 OOD gains 后才考虑。
+    全计划与拓扑见 `papers/proposal/v14_executable_policy_shock_pivot_2026-08-16.md` 和
+    `papers/proposal/v14_policy_shock_research_topology_2026-08-16.md`。G1 与 GPU 仍锁定。
 
 ---
 

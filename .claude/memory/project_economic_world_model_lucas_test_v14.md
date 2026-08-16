@@ -766,3 +766,12 @@ Source/purchase decision: `papers/proposal/v14_data_acquisition_decision_2026-08
 - Retire the Ethereum scalar-LT route before accounts. Do not relax transaction isolation, run A1b, open
   participant rows or start GPUs. A cross-deployment strict directory or bundled-vector shock is a new hypothesis
   requiring a new protocol; the exposed Ethereum bundles are development-only.
+- The new v14 mainline hypothesis is an Executable Policy Shock Compiler: compile versioned governance programs,
+  receipts/call paths and authoritative T−1/T state into exact sparse transition operators, then learn multiscale
+  adaptation and slow context. Do not claim independent component causality for a vector bundle.
+- First run a disclosed development-only, zero-network replay over the immutable A1a directory. It groups by
+  transaction, treats first asset configurations as unknown predecessor, uses the final emitted configuration for
+  the net vector and flags intermediate round trips. Other Configurator topics remain opaque until a source/ABI/
+  receipt compiler protocol. This can authorize design only, never G1.
+- Cross-deployment scalar scanning is a bounded B0 side audit under the unchanged isolation rule, not the paper
+  center. NCS is the primary route; NMI requires stronger operator-conditioned ML novelty and broader OOD evidence.

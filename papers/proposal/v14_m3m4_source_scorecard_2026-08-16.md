@@ -4,8 +4,8 @@
 
 **Current decision:** `AAVE_A1A_ZERO_STRICT_CANDIDATES_RETIRE_ETHEREUM_SCALAR_LT_ROUTE`
 
-**Next gate:** none for the Ethereum scalar-LT route. Any cross-deployment strict scan or bundled-vector policy
-shock is a new protocol and hypothesis; neither is G1-admitted.
+**Next gate:** development-only offline bundle replay, followed—only if structurally useful—by a newly frozen
+cross-deployment executable-vector compiler protocol. Neither is G1-admitted.
 
 **Admission state:** no candidate has passed G1; no participant action, account state or realized response has been
 opened. Compound source/mechanics/aggregate-state audits are complete and do not authorize participant rows.
