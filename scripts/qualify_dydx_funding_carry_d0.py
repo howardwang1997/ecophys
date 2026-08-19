@@ -15,6 +15,8 @@ from typing import Any
 
 import requests
 import yaml
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from ecomd.data.dydx_qualification import (
     EndpointKind,
@@ -44,6 +46,23 @@ def _parse_time(value: str) -> datetime:
 
 def _iso(value: datetime) -> str:
     return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
+
+
+def _build_session(retries: int) -> requests.Session:
+    retry = Retry(
+        total=retries,
+        connect=retries,
+        read=retries,
+        status=retries,
+        allowed_methods=frozenset({"GET"}),
+        status_forcelist=(429, 500, 502, 503, 504),
+        backoff_factor=0.5,
+        raise_on_status=False,
+    )
+    session = requests.Session()
+    session.mount("https://", HTTPAdapter(max_retries=retry))
+    session.headers.update({"User-Agent": "EcoPhys-D0-qualification/1.0"})
+    return session
 
 
 def _request(
@@ -193,8 +212,7 @@ def qualify(config_path: Path, output_path: Path) -> dict[str, Any]:
 
     source = config["sources"]
     timeout_seconds = int(config["limits"]["request_timeout_seconds"])
-    session = requests.Session()
-    session.headers.update({"User-Agent": "EcoPhys-D0-qualification/1.0"})
+    session = _build_session(int(config["limits"]["transport_retries"]))
 
     governance_params: dict[str, str | int] = {
         "pagination.limit": 500,

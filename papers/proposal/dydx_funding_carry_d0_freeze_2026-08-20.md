@@ -20,6 +20,9 @@ oracle price, OHLC, volume, trade-count, open-interest or midpoint values.
 The code enforces this by reducing each response to a no-values manifest in memory. Tests insert recognizable
 fake outcomes and require that none appears in serialized output.
 
+Transport failures use three fixed idempotent-GET retries with exponential backoff. This policy cannot alter a
+market, event window, endpoint, row limit or scientific gate. A failed attempt writes no partial manifest.
+
 ## Frozen probes
 
 For every development market, D0 requests:
