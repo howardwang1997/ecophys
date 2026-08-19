@@ -40,3 +40,16 @@ This is a CPU/network audit capped at 20 core-hours and 2 GB, with zero GPU. The
 2060 intentionally remain idle because the uncertainty is treatment support, not model capacity. Passing D0
 would authorize only a separately frozen exact policy-state replay; it would not establish identification or
 authorize an EcoMD experiment.
+
+The D0 implementation uses source-ordered, exact-field proposal/injection matching and reconstructs expiration
+and minimum-delay exposure from AgentHub configuration events. Minimum-delay boundaries are grouped by agent and
+unchanged delay value; agents or epochs cannot be pooled. Before any proposal value was retrieved, exact-boundary
+bunching was fixed as at least five zero margins making up at least 50% of a boundary's scores. Exact zeros count
+on neither side. Amplitude range scores remain unavailable because pinned source proves `previousValue` is only
+the previous oracle proposal while the deployed agents validate against contemporaneous protocol state.
+
+Five pinned official repositories pass a source-only audit: AgentHub, Risk Agents, Chaos Agents, address book and
+proposals. The Aave/Chaos/proposals AgentHub interfaces agree, the Risk Agents submodule pins the frozen Chaos
+commit, and the Ethereum AgentHub and RangeValidation addresses occur in the frozen address book. Six decoder,
+matching, terminal-class and boundary-support tests pass without adding an ABI dependency. The formal chain run
+must start from a clean implementation commit; until then no proposal value has been opened.

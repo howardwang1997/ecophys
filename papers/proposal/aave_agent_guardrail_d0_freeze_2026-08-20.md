@@ -76,6 +76,13 @@ Criterion 4 is deliberately demanding. A large number of successful actions with
 does not identify a guardrail effect. If any criterion fails, stop the threshold-causal route before D1 and before
 all market outcomes. A descriptive controller ledger may survive only as infrastructure.
 
+Before proposal values are read, exact-boundary bunching is operationalized as at least five exactly zero margins
+and at least 50% of all scores for the same agent and unchanged minimum-delay boundary. Each delay boundary is
+kept agent-specific; heterogeneous agents or delay epochs are not pooled. Negative and positive near-boundary
+counts exclude exact zeros. An amplitude range score is unavailable in D0 unless the exact contemporaneous
+protocol value read by the agent is present on the allowed policy surface; the Risk Oracle's prior proposal is
+not that value.
+
 ## Forbidden rescues
 
 - do not redefine ordinary injected actions as independent shocks;
