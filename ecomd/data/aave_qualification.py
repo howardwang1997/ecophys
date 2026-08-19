@@ -12,7 +12,8 @@ from typing import Any
 
 def canonical_sha256(value: Any) -> str:
     """Return a deterministic SHA-256 digest for a JSON-compatible value."""
-    encoded = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    normalized = json.loads(json.dumps(value, allow_nan=False))
+    encoded = json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
 
 

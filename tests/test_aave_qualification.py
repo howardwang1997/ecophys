@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
+
 from ecomd.data.aave_qualification import (
     address_topic,
     audit_asset_rate_change,
+    canonical_sha256,
     extract_implementation_reference,
 )
 
@@ -67,3 +70,9 @@ def test_implementation_reference_and_address_topic() -> None:
     assert address_topic("0x00000000000000000000000000000000000000aA") == (
         "0x00000000000000000000000000000000000000000000000000000000000000aa"
     )
+
+
+def test_canonical_digest_survives_json_key_normalization() -> None:
+    value = {"excluded": {69: "first", 216: "second"}}
+    round_tripped = json.loads(json.dumps(value))
+    assert canonical_sha256(value) == canonical_sha256(round_tripped)
