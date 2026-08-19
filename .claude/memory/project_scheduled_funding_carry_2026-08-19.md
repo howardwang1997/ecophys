@@ -6,7 +6,7 @@ metadata:
   type: project
 ---
 
-# Scheduled funding-carry intervention — 2026-08-19
+# Scheduled funding-carry intervention — updated 2026-08-20
 
 The post-dispatch intervention search found one AMBER candidate. dYdX proposal 220 raised
 `default_funding_ppm` from 0 to 100 ppm per eight hours (0.125 bp/hour) while the settlement clock stayed hourly;
@@ -37,3 +37,22 @@ discontinuities or signed boundary-flow response; it narrows rather than closes 
 event study alone is specialist/NMI-feasibility work, not NCS. NCS would still require a general inversion method
 with guarantees and independent multi-system validation.
 
+## T0 result and D0 lock — 2026-08-20
+
+T0 passed without opening a market outcome row. A counted public Cosmos REST query returned all 391 governance
+proposals. For the ten paired markets, the full passed-message payload changes only `default_funding_ppm` from
+0 to 100 at proposal 220; for all 28 eligible November reversals, the immediately prior and event payloads
+change only that field from 100 to 0. Official source at commit
+`91316e6a6c9d8bdf46370ee4661c40767caf3bff` establishes that `MsgUpdatePerpetualParams` is internal/governance-
+only. The trades controller filters to `Liquidity.TAKER`, so its public `side` is taker direction.
+
+Historical block headers and block results locate EndBlock execution exactly: proposal 220 at 38694464; 314 at
+63326127; 315 at 63626789; 316 at 63626888; 317 at 63981005; and 318 at 63981519. This is a transition-ledger
+proof plus execution event, not a claim that a pruned public RPC served historical state directly. The outcome
+design drops the partial execution hour.
+
+Formal result is `papers/proposal/dydx_funding_carry_t0_result_2026-08-20.md`. D0 is frozen in
+`configs/empirical_physics/dydx_funding_carry_d0_v1.yaml` with a tested no-values reducer. It may query only the
+21 proposal-314--316 development markets and retain schemas, counts, timestamps, heights and hashes. Proposal
+317 and the March proposal-220 outcome window remain sealed. A D0 pass still requires a separately committed D1
+freeze before bulk acquisition or analysis. GPU, paid data and EcoMD remain unauthorized.

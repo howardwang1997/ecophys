@@ -1,0 +1,68 @@
+contract:
+  name: dydx_funding_carry_d0
+  version: 1
+  status: frozen_before_any_indexer_response_row
+  parent_t0_commit: ce9034dfd291eb8daebd15335beddad501791e11
+  purpose: qualify_public_history_without_retaining_market_outcome_values
+
+sources:
+  cosmos_governance_url: https://dydx-rest.publicnode.com/cosmos/gov/v1/proposals
+  indexer_base_url: https://indexer.dydx.trade/v4
+  official_http_docs: https://docs.dydx.xyz/indexer-client/http
+  official_chain_source_commit: 91316e6a6c9d8bdf46370ee4661c40767caf3bff
+
+events:
+  - proposal_id: 314
+    execution_height: 63326127
+    execution_time: "2025-11-14T12:07:36.732286866Z"
+    expected_pre_default_funding_ppm: 100
+    expected_post_default_funding_ppm: 0
+    markets: [2Z-USD, ASTER-USD, ATH-USD, BEAM-USD, BERA-USD, DRIFT-USD]
+  - proposal_id: 315
+    execution_height: 63626789
+    execution_time: "2025-11-16T16:31:53.817651095Z"
+    expected_pre_default_funding_ppm: 100
+    expected_post_default_funding_ppm: 0
+    markets: [EIGEN-USD, ENA-USD, HYPE-USD, KAITO-USD, MNT-USD, MORPHO-USD, MOVE-USD, ONDO-USD]
+  - proposal_id: 316
+    execution_height: 63626888
+    execution_time: "2025-11-16T16:32:58.083063704Z"
+    expected_pre_default_funding_ppm: 100
+    expected_post_default_funding_ppm: 0
+    markets: [PAXG-USD, PENGU-USD, POL-USD, POPCAT-USD, SPX-USD, S-USD, SYRUP-USD]
+
+pagination_probes:
+  - {proposal_id: 314, ticker: BEAM-USD}
+  - {proposal_id: 315, ticker: ENA-USD}
+  - {proposal_id: 316, ticker: PAXG-USD}
+
+coverage:
+  candle_window_minutes_each_side: 30
+  trade_post_height_offset: 20000
+  trade_page_size: 5
+  required_development_markets: 21
+
+blinding:
+  proposal_317_outcome_window_forbidden: true
+  proposal_220_outcome_window_forbidden: true
+  persist_raw_responses: false
+  retain_price_size_side_rate_ohlc_oi_or_midpoint_values: false
+  retain_only_schema_counts_timestamps_heights_and_hashes: true
+
+limits:
+  request_timeout_seconds: 30
+  cpu_core_hours: 20
+  temporary_data_gb: 2
+  paid_data: forbidden
+  gpu: forbidden
+  v100: forbidden
+  rtx2060: forbidden
+  h20: forbidden
+  ecomd: forbidden
+
+pass_gate:
+  all_21_governance_transitions_change_only_default_funding_ppm: true
+  every_probe_nonempty: true
+  every_required_schema_field_present: true
+  representative_trade_pages_nonoverlapping: true
+  no_market_outcome_value_retained: true
