@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
+from statistics import median
 from typing import Any
 
 from ecomd.data.aave_qualification import normalize_address
@@ -552,6 +555,524 @@ def assess_action_support(
         "range_boundary_scores_unavailable_reason": (
             "agent validation reads contemporaneous protocol state; RiskOracle.previousValue is only "
             "the prior oracle proposal and is not a valid substitute"
+        ),
+        "decision_checks": checks,
+        "passed": all(checks.values()),
+    }
+
+
+def _latest_config_event(
+    events: Sequence[Mapping[str, Any]],
+    *,
+    agent_id: int,
+    event_name: str,
+    before: EventPosition,
+) -> Mapping[str, Any] | None:
+    matches = [
+        event
+        for event in events
+        if int(event.get("agent_id", -1)) == agent_id
+        and str(event.get("event_name")) == event_name
+        and event_position(event) < before
+    ]
+    return max(matches, key=event_position) if matches else None
+
+
+def _initialized_registration(
+    registration: Mapping[str, Any],
+    config_events: Sequence[Mapping[str, Any]],
+    *,
+    before: EventPosition,
+) -> dict[str, Any] | None:
+    agent_id = int(registration["agent_id"])
+    agent_address = _latest_config_event(
+        config_events,
+        agent_id=agent_id,
+        event_name="AgentAddressSet",
+        before=before,
+    )
+    enabled_events = [
+        event
+        for event in config_events
+        if int(event.get("agent_id", -1)) == agent_id
+        and str(event.get("event_name")) == "AgentEnabledSet"
+        and event_position(event) < before
+    ]
+    expiration = _latest_config_event(
+        config_events,
+        agent_id=agent_id,
+        event_name="ExpirationPeriodSet",
+        before=before,
+    )
+    minimum_delay = _latest_config_event(
+        config_events,
+        agent_id=agent_id,
+        event_name="MinimumDelaySet",
+        before=before,
+    )
+    if (
+        agent_address is None
+        or not any(bool(event["enabled"]) for event in enabled_events)
+        or expiration is None
+        or minimum_delay is None
+    ):
+        return None
+    latest_enabled = max(enabled_events, key=event_position)
+    return {
+        "registration": registration,
+        "agent_address": str(agent_address["agent_address"]),
+        "enabled": bool(latest_enabled["enabled"]),
+        "expiration_period": int(expiration["expiration_period"]),
+        "minimum_delay": int(minimum_delay["minimum_delay"]),
+        "minimum_delay_epoch_position": event_position(minimum_delay),
+    }
+
+
+def build_holdout_chain_ledger(
+    hub_events: Sequence[Mapping[str, Any]],
+    proposals: Sequence[Mapping[str, Any]],
+    *,
+    chain_id: int,
+    chain_name: str,
+    expected_risk_oracle: str,
+    end_timestamp: int,
+) -> dict[str, list[dict[str, Any]]]:
+    """Build activation-conditioned eligible and exclusion ledgers for one chain."""
+    if chain_id <= 0:
+        raise ValueError("chain_id must be positive")
+    normalized_oracle = normalize_address(expected_risk_oracle)
+    ordered_hub = sorted(hub_events, key=event_position)
+    registrations = [event for event in ordered_hub if event.get("event_name") == "AgentRegistered"]
+    injections = [event for event in ordered_hub if event.get("event_name") == "UpdateInjected"]
+    config_events = [event for event in ordered_hub if event not in registrations + injections]
+    registration_ids = [int(event["agent_id"]) for event in registrations]
+    if len(registration_ids) != len(set(registration_ids)):
+        raise ValueError(f"an agent ID was registered more than once on {chain_name}")
+    if any(normalize_address(str(proposal["risk_oracle"])) != normalized_oracle for proposal in proposals):
+        raise ValueError(f"{chain_name} proposal came from a non-pinned Risk Oracle")
+
+    ordered_proposals = sorted(proposals, key=event_position)
+    eligible: list[dict[str, Any]] = []
+    exclusions: list[dict[str, Any]] = []
+    for proposal in ordered_proposals:
+        proposal_position = event_position(proposal)
+        source_registrations = [
+            registration
+            for registration in registrations
+            if normalize_address(str(registration["risk_oracle"])) == normalized_oracle
+            and str(registration["update_type_hash"]) == str(proposal["update_type_hash"])
+        ]
+        prior_registrations = [
+            registration
+            for registration in source_registrations
+            if event_position(registration) < proposal_position
+        ]
+        initialized = [
+            state
+            for registration in prior_registrations
+            if (
+                state := _initialized_registration(
+                    registration,
+                    config_events,
+                    before=proposal_position,
+                )
+            )
+            is not None
+        ]
+        base = {**proposal, "chain_id": chain_id, "chain_name": chain_name}
+        if not initialized:
+            if not source_registrations:
+                reason = "never_registered"
+            elif not prior_registrations:
+                reason = "pre_registration"
+            else:
+                reason = "pre_initialization"
+            exclusions.append(
+                {
+                    **base,
+                    "eligible": False,
+                    "exclusion_reason": reason,
+                }
+            )
+            continue
+
+        row: dict[str, Any] = {
+            **base,
+            "eligible": True,
+            "source_unambiguous": len(initialized) == 1,
+            "agent_id": int(initialized[0]["registration"]["agent_id"]) if len(initialized) == 1 else None,
+            "delay_exposed": None,
+            "minimum_delay_score": None,
+        }
+        if len(initialized) != 1:
+            row["terminal_class"] = "unmatched_or_ambiguous"
+            row["ambiguity_reason"] = "multiple_initialized_source_registrations"
+            eligible.append(row)
+            continue
+
+        state = initialized[0]
+        agent_id = int(state["registration"]["agent_id"])
+        minimum_delay = int(state["minimum_delay"])
+        prior_injections = [
+            injection
+            for injection in injections
+            if int(injection["agent_id"]) == agent_id
+            and str(injection["market"]) == str(proposal["market"])
+            and event_position(injection) < proposal_position
+        ]
+        if prior_injections and minimum_delay > 0:
+            last_injection = max(prior_injections, key=event_position)
+            elapsed = int(proposal["block_timestamp"]) - int(last_injection["block_timestamp"])
+            margin = elapsed - minimum_delay
+            epoch = state["minimum_delay_epoch_position"]
+            row["delay_exposed"] = margin < 0
+            row["minimum_delay_score"] = {
+                "boundary_id": (
+                    f"chain_{chain_id}_agent_{agent_id}_delay_{minimum_delay}s_"
+                    f"epoch_{epoch[0]}_{epoch[1]}_{epoch[2]}"
+                ),
+                "chain_id": chain_id,
+                "chain_name": chain_name,
+                "agent_id": agent_id,
+                "minimum_delay_seconds": minimum_delay,
+                "minimum_delay_epoch_position": list(epoch),
+                "elapsed_since_prior_injection_seconds": elapsed,
+                "margin_seconds": margin,
+                "normalized_margin": margin / minimum_delay,
+                "prior_injection_update_id": int(last_injection["update_id"]),
+            }
+
+        structural_injections = [
+            injection
+            for injection in injections
+            if int(injection["agent_id"]) == agent_id
+            and str(injection["update_type_hash"]) == str(proposal["update_type_hash"])
+            and int(injection["update_id"]) == int(proposal["update_id"])
+            and str(injection["market"]) == str(proposal["market"])
+            and event_position(injection) > proposal_position
+        ]
+        exact_injections = [
+            injection
+            for injection in structural_injections
+            if str(injection["new_value"]) == str(proposal["new_value"])
+        ]
+        if len(structural_injections) > 1 or (
+            structural_injections and len(exact_injections) != len(structural_injections)
+        ):
+            row["terminal_class"] = "unmatched_or_ambiguous"
+            row["source_unambiguous"] = False
+            row["ambiguity_reason"] = "structural_injection_not_one_exact_value_match"
+            eligible.append(row)
+            continue
+
+        resolution_candidates: list[dict[str, Any]] = []
+        if exact_injections:
+            injection = exact_injections[0]
+            resolution_candidates.append(
+                {
+                    "terminal_class": "injected",
+                    "timestamp": int(injection["block_timestamp"]),
+                    "position": event_position(injection),
+                    "injection": injection,
+                }
+            )
+        next_proposals = [
+            candidate
+            for candidate in ordered_proposals
+            if normalize_address(str(candidate["risk_oracle"])) == normalized_oracle
+            and str(candidate["update_type_hash"]) == str(proposal["update_type_hash"])
+            and str(candidate["market"]) == str(proposal["market"])
+            and event_position(candidate) > proposal_position
+        ]
+        if next_proposals:
+            overwritten = min(next_proposals, key=event_position)
+            resolution_candidates.append(
+                {
+                    "terminal_class": "overwritten_uninjected",
+                    "timestamp": int(overwritten["block_timestamp"]),
+                    "position": event_position(overwritten),
+                }
+            )
+
+        disable_events = [
+            event
+            for event in config_events
+            if int(event.get("agent_id", -1)) == agent_id
+            and event.get("event_name") == "AgentEnabledSet"
+            and not bool(event["enabled"])
+            and event_position(event) > proposal_position
+        ]
+        if not bool(state["enabled"]):
+            resolution_candidates.append(
+                {
+                    "terminal_class": "disabled_or_offboarded",
+                    "timestamp": int(proposal["block_timestamp"]),
+                    "position": proposal_position,
+                }
+            )
+        elif disable_events:
+            disabled = min(disable_events, key=event_position)
+            resolution_candidates.append(
+                {
+                    "terminal_class": "disabled_or_offboarded",
+                    "timestamp": int(disabled["block_timestamp"]),
+                    "position": event_position(disabled),
+                }
+            )
+
+        expiry_timestamp = _effective_expiry_timestamp(
+            oracle_timestamp=int(proposal["oracle_timestamp"]),
+            proposal_position=proposal_position,
+            agent_id=agent_id,
+            initial_period=int(state["expiration_period"]),
+            config_events=config_events,
+        )
+        resolution_candidates.append(
+            {
+                "terminal_class": "expired_uninjected",
+                "timestamp": expiry_timestamp,
+                "position": None,
+            }
+        )
+        first = min(resolution_candidates, key=_terminal_choice_key)
+        if int(first["timestamp"]) > end_timestamp:
+            row["terminal_class"] = "right_censored"
+            row["resolution_timestamp"] = None
+        else:
+            row["terminal_class"] = str(first["terminal_class"])
+            row["resolution_timestamp"] = int(first["timestamp"])
+            if first["terminal_class"] == "injected":
+                injection = first["injection"]
+                row["injection_block_number"] = int(injection["block_number"])
+                row["injection_transaction_hash"] = str(injection["transaction_hash"])
+                row["injection_log_index"] = int(injection["log_index"])
+                row["injection_delay_seconds"] = int(injection["block_timestamp"]) - int(
+                    proposal["block_timestamp"]
+                )
+        eligible.append(row)
+    return {"eligible": eligible, "exclusions": exclusions}
+
+
+def assign_action_batches(
+    ledger: Sequence[Mapping[str, Any]],
+    *,
+    maximum_adjacent_gap_seconds: int,
+) -> list[dict[str, Any]]:
+    """Assign deterministic connected time batches across chains and update types."""
+    if maximum_adjacent_gap_seconds < 0:
+        raise ValueError("maximum adjacent batch gap cannot be negative")
+    ordered = sorted(
+        (dict(row) for row in ledger),
+        key=lambda row: (
+            int(row["oracle_timestamp"]),
+            int(row["chain_id"]),
+            event_position(row),
+        ),
+    )
+    components: list[list[dict[str, Any]]] = []
+    for row in ordered:
+        if (
+            not components
+            or int(row["oracle_timestamp"]) - int(components[-1][-1]["oracle_timestamp"])
+            > maximum_adjacent_gap_seconds
+        ):
+            components.append([])
+        components[-1].append(row)
+
+    for component_index, component in enumerate(components):
+        identities = sorted(
+            (
+                int(row["chain_id"]),
+                str(row["block_hash"]),
+                str(row["transaction_hash"]),
+                int(row["log_index"]),
+            )
+            for row in component
+        )
+        encoded = json.dumps(identities, separators=(",", ":")).encode()
+        batch_id = hashlib.sha256(encoded).hexdigest()
+        for row in component:
+            row["action_batch_id"] = batch_id
+            row["action_batch_index"] = component_index
+            row["action_batch_size"] = len(component)
+    return ordered
+
+
+def summarize_holdout_delay_boundaries(
+    ledger: Sequence[Mapping[str, Any]],
+    rules: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    """Summarize row and conservative batch-median support for holdout boundaries."""
+    grouped: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
+    for row in ledger:
+        score = row.get("minimum_delay_score")
+        if isinstance(score, Mapping):
+            if not isinstance(row.get("action_batch_id"), str):
+                raise ValueError("delay score lacks an action batch")
+            grouped[str(score["boundary_id"])].append(row)
+
+    summaries: list[dict[str, Any]] = []
+    for boundary_id, rows in sorted(grouped.items()):
+        scores = [row["minimum_delay_score"] for row in rows]
+        minimum_delay = int(scores[0]["minimum_delay_seconds"])
+        if any(int(score["minimum_delay_seconds"]) != minimum_delay for score in scores):
+            raise ValueError(f"boundary {boundary_id} mixes minimum-delay values")
+        margins = [int(score["margin_seconds"]) for score in scores]
+        radius = float(rules["neighborhood_fraction"]) * minimum_delay
+        negative = [margin for margin in margins if margin < 0]
+        positive = [margin for margin in margins if margin > 0]
+        exact = [margin for margin in margins if margin == 0]
+        near_negative = [margin for margin in negative if abs(margin) <= radius]
+        near_positive = [margin for margin in positive if margin <= radius]
+
+        by_batch: dict[str, list[int]] = defaultdict(list)
+        for row in rows:
+            by_batch[str(row["action_batch_id"])].append(int(row["minimum_delay_score"]["margin_seconds"]))
+        batch_margins = [float(median(values)) for _, values in sorted(by_batch.items())]
+        batch_negative = [margin for margin in batch_margins if margin < 0]
+        batch_positive = [margin for margin in batch_margins if margin > 0]
+        batch_exact = [margin for margin in batch_margins if margin == 0]
+        batch_near_negative = [margin for margin in batch_negative if abs(margin) <= radius]
+        batch_near_positive = [margin for margin in batch_positive if margin <= radius]
+
+        row_checks = {
+            "minimum_scores": len(margins) >= int(rules["row_level_minimum_scores"]),
+            "minimum_each_side": len(negative) >= int(rules["row_level_minimum_each_side"])
+            and len(positive) >= int(rules["row_level_minimum_each_side"]),
+            "minimum_near_each_side": len(near_negative) >= int(rules["row_level_minimum_near_each_side"])
+            and len(near_positive) >= int(rules["row_level_minimum_near_each_side"]),
+        }
+        batch_checks = {
+            "minimum_scores": len(batch_margins) >= int(rules["batch_level_minimum_scores"]),
+            "minimum_each_side": len(batch_negative) >= int(rules["batch_level_minimum_each_side"])
+            and len(batch_positive) >= int(rules["batch_level_minimum_each_side"]),
+            "minimum_near_each_side": len(batch_near_negative)
+            >= int(rules["batch_level_minimum_near_each_side"])
+            and len(batch_near_positive) >= int(rules["batch_level_minimum_near_each_side"]),
+        }
+        row_bunched = len(exact) >= int(rules["exact_row_bunching_minimum_count"]) and len(exact) / len(
+            margins
+        ) >= float(rules["exact_bunching_minimum_fraction"])
+        batch_bunched = len(batch_exact) >= int(rules["exact_batch_bunching_minimum_count"]) and len(
+            batch_exact
+        ) / len(batch_margins) >= float(rules["exact_bunching_minimum_fraction"])
+        otherwise_eligible = all(row_checks.values()) and all(batch_checks.values())
+        summaries.append(
+            {
+                "boundary_id": boundary_id,
+                "chain_id": int(scores[0]["chain_id"]),
+                "chain_name": str(scores[0]["chain_name"]),
+                "agent_id": int(scores[0]["agent_id"]),
+                "minimum_delay_seconds": minimum_delay,
+                "row_score_count": len(margins),
+                "row_negative_count": len(negative),
+                "row_positive_count": len(positive),
+                "row_exact_count": len(exact),
+                "row_near_negative_count": len(near_negative),
+                "row_near_positive_count": len(near_positive),
+                "batch_score_count": len(batch_margins),
+                "batch_negative_count": len(batch_negative),
+                "batch_positive_count": len(batch_positive),
+                "batch_exact_count": len(batch_exact),
+                "batch_near_negative_count": len(batch_near_negative),
+                "batch_near_positive_count": len(batch_near_positive),
+                "minimum_row_margin_seconds": min(margins),
+                "maximum_row_margin_seconds": max(margins),
+                "minimum_batch_median_margin_seconds": min(batch_margins),
+                "maximum_batch_median_margin_seconds": max(batch_margins),
+                "row_support_checks": row_checks,
+                "batch_support_checks": batch_checks,
+                "otherwise_eligible_before_bunching_check": otherwise_eligible,
+                "row_exact_boundary_bunching": row_bunched,
+                "batch_exact_boundary_bunching": batch_bunched,
+                "qualifies": otherwise_eligible and not row_bunched and not batch_bunched,
+            }
+        )
+    return summaries
+
+
+def assess_holdout_action_support(
+    ledger: Sequence[Mapping[str, Any]],
+    exclusions: Sequence[Mapping[str, Any]],
+    *,
+    thresholds: Mapping[str, Any],
+    boundary_rules: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Apply the frozen multichain row, batch and boundary support gates."""
+    eligible = list(ledger)
+    batches = {str(row["action_batch_id"]) for row in eligible}
+    exact_injected = [
+        row
+        for row in eligible
+        if bool(row.get("source_unambiguous")) and row.get("terminal_class") == "injected"
+    ]
+    resolved_non_immediate = [
+        row
+        for row in eligible
+        if bool(row.get("source_unambiguous"))
+        and (
+            row.get("terminal_class")
+            in {"overwritten_uninjected", "expired_uninjected", "disabled_or_offboarded"}
+            or (row.get("terminal_class") == "injected" and bool(row.get("delay_exposed")))
+        )
+    ]
+    non_right_censored = [row for row in eligible if row.get("terminal_class") != "right_censored"]
+    classified = [row for row in non_right_censored if row.get("terminal_class") != "unmatched_or_ambiguous"]
+    classification_rate = len(classified) / len(non_right_censored) if non_right_censored else 0.0
+    boundaries = summarize_holdout_delay_boundaries(eligible, boundary_rules)
+    qualifying = [boundary for boundary in boundaries if bool(boundary["qualifies"])]
+    represented_agents = {
+        (int(row["chain_id"]), int(row["agent_id"])) for row in eligible if row.get("agent_id") is not None
+    }
+    represented_chains = {int(row["chain_id"]) for row in eligible}
+    non_immediate_batches = {str(row["action_batch_id"]) for row in resolved_non_immediate}
+    checks = {
+        "minimum_eligible_proposals": len(eligible) >= int(thresholds["minimum_eligible_proposals"]),
+        "minimum_exact_injections": len(exact_injected) >= int(thresholds["minimum_exact_injections"]),
+        "minimum_update_types": len({str(row["update_type_hash"]) for row in eligible})
+        >= int(thresholds["minimum_update_types"]),
+        "minimum_chain_market_pairs": len({(int(row["chain_id"]), str(row["market"])) for row in eligible})
+        >= int(thresholds["minimum_chain_market_pairs"]),
+        "minimum_represented_chain_agents": len(represented_agents)
+        >= int(thresholds["minimum_represented_chain_agents"]),
+        "minimum_represented_chains": len(represented_chains)
+        >= int(thresholds["minimum_represented_chains"]),
+        "minimum_proposal_batches": len(batches) >= int(thresholds["minimum_proposal_batches"]),
+        "minimum_resolved_non_immediate_proposals": len(resolved_non_immediate)
+        >= int(thresholds["minimum_resolved_non_immediate_proposals"]),
+        "minimum_resolved_non_immediate_batches": len(non_immediate_batches)
+        >= int(thresholds["minimum_resolved_non_immediate_batches"]),
+        "minimum_terminal_classification_rate": classification_rate
+        >= float(thresholds["minimum_terminal_classification_rate"]),
+        "minimum_qualifying_boundaries": len(qualifying)
+        >= int(boundary_rules["minimum_qualifying_boundaries"]),
+        "minimum_chains_with_qualifying_boundary": len({int(boundary["chain_id"]) for boundary in qualifying})
+        >= int(boundary_rules["minimum_chains_with_qualifying_boundary"]),
+    }
+    return {
+        "eligible_proposal_count": len(eligible),
+        "excluded_proposal_count": len(exclusions),
+        "exclusion_counts": dict(sorted(Counter(str(row["exclusion_reason"]) for row in exclusions).items())),
+        "proposal_batch_count": len(batches),
+        "exact_injection_count": len(exact_injected),
+        "exact_injection_batch_count": len({str(row["action_batch_id"]) for row in exact_injected}),
+        "distinct_update_type_count": len({str(row["update_type_hash"]) for row in eligible}),
+        "distinct_chain_market_pair_count": len(
+            {(int(row["chain_id"]), str(row["market"])) for row in eligible}
+        ),
+        "represented_chain_agent_count": len(represented_agents),
+        "represented_chain_count": len(represented_chains),
+        "resolved_non_immediate_proposal_count": len(resolved_non_immediate),
+        "resolved_non_immediate_batch_count": len(non_immediate_batches),
+        "terminal_counts": dict(sorted(Counter(str(row["terminal_class"]) for row in eligible).items())),
+        "terminal_classification_rate_excluding_right_censoring": classification_rate,
+        "delay_boundaries": boundaries,
+        "qualifying_boundary_count": len(qualifying),
+        "qualifying_boundary_chain_count": len({int(boundary["chain_id"]) for boundary in qualifying}),
+        "range_boundary_scores_reconstructed": 0,
+        "range_boundary_scores_unavailable_reason": (
+            "agents validate contemporaneous protocol state; RiskOracle.previousValue is only the prior "
+            "oracle proposal"
         ),
         "decision_checks": checks,
         "passed": all(checks.values()),

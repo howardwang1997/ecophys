@@ -7,13 +7,17 @@ import pytest
 
 from ecomd.data.aave_agent_guardrail import (
     address_from_topic,
+    assess_holdout_action_support,
+    assign_action_batches,
     bool_from_topic,
     build_action_ledger,
+    build_holdout_chain_ledger,
     decode_default_range_config_data,
     decode_market_range_config_data,
     decode_parameter_updated_data,
     decode_update_injected_data,
     summarize_delay_boundaries,
+    summarize_holdout_delay_boundaries,
 )
 from scripts import audit_aave_agent_guardrail_d0 as guardrail_runner
 from scripts.audit_aave_agent_guardrail_d0 import (
@@ -242,6 +246,202 @@ def test_action_ledger_distinguishes_injected_overwritten_and_expired() -> None:
     assert ledger[1]["minimum_delay_score"]["margin_seconds"] == -20
     assert ledger[2]["delay_exposed"] is True
     assert ledger[3]["resolution_timestamp"] == 301
+
+
+def _identified_proposal(
+    block: int,
+    timestamp: int,
+    update_id: int,
+    value: str,
+    *,
+    update_type_hash: str = "0x" + "22" * 32,
+    market: str = "0x" + "33" * 20,
+) -> dict[str, Any]:
+    return {
+        **_proposal(block, timestamp, update_id, value),
+        "block_hash": "0x" + f"{block:064x}",
+        "transaction_hash": "0x" + f"{update_id:064x}",
+        "update_type_hash": update_type_hash,
+        "market": market,
+    }
+
+
+def _initialized_agent(
+    *,
+    agent_id: int,
+    block: int,
+    oracle: str = "0x" + "11" * 20,
+    update_type_hash: str = "0x" + "22" * 32,
+) -> list[dict[str, Any]]:
+    return [
+        _event(
+            "AgentRegistered",
+            block,
+            block,
+            agent_id=agent_id,
+            risk_oracle=oracle,
+            update_type_hash=update_type_hash,
+        ),
+        _event(
+            "AgentAddressSet",
+            block,
+            block,
+            agent_id=agent_id,
+            agent_address="0x" + f"{agent_id + 10:040x}",
+            log_index=1,
+        ),
+        _event("AgentEnabledSet", block, block, agent_id=agent_id, enabled=True, log_index=2),
+        _event(
+            "ExpirationPeriodSet",
+            block,
+            block,
+            agent_id=agent_id,
+            expiration_period=50,
+            log_index=3,
+        ),
+        _event(
+            "MinimumDelaySet",
+            block,
+            block,
+            agent_id=agent_id,
+            minimum_delay=100,
+            log_index=4,
+        ),
+    ]
+
+
+def test_holdout_ledger_excludes_only_pre_activation_rows() -> None:
+    hub_events = [
+        *_initialized_agent(agent_id=0, block=10),
+        _injection(30, 130, 2, "0x02"),
+    ]
+    proposals = [
+        _identified_proposal(5, 5, 1, "0x01"),
+        _identified_proposal(20, 100, 2, "0x02"),
+    ]
+
+    result = build_holdout_chain_ledger(
+        hub_events,
+        proposals,
+        chain_id=10,
+        chain_name="optimism",
+        expected_risk_oracle="0x" + "11" * 20,
+        end_timestamp=500,
+    )
+
+    assert len(result["exclusions"]) == 1
+    assert result["exclusions"][0]["exclusion_reason"] == "pre_registration"
+    assert len(result["eligible"]) == 1
+    assert result["eligible"][0]["source_unambiguous"] is True
+    assert result["eligible"][0]["terminal_class"] == "injected"
+    assert result["eligible"][0]["chain_id"] == 10
+
+
+def test_holdout_ledger_keeps_post_activation_source_ambiguity_in_denominator() -> None:
+    hub_events = [
+        *_initialized_agent(agent_id=0, block=1),
+        *_initialized_agent(agent_id=1, block=2),
+    ]
+    proposal = _identified_proposal(10, 100, 7, "0x07")
+
+    result = build_holdout_chain_ledger(
+        hub_events,
+        [proposal],
+        chain_id=137,
+        chain_name="polygon",
+        expected_risk_oracle="0x" + "11" * 20,
+        end_timestamp=500,
+    )
+
+    assert result["exclusions"] == []
+    assert len(result["eligible"]) == 1
+    assert result["eligible"][0]["source_unambiguous"] is False
+    assert result["eligible"][0]["terminal_class"] == "unmatched_or_ambiguous"
+    assert result["eligible"][0]["ambiguity_reason"] == ("multiple_initialized_source_registrations")
+
+
+def test_holdout_batching_uses_connected_timestamp_components() -> None:
+    rows = [
+        {**_identified_proposal(1, 100, 1, "0x01"), "chain_id": 10},
+        {**_identified_proposal(2, 220, 2, "0x02"), "chain_id": 137},
+        {**_identified_proposal(3, 341, 3, "0x03"), "chain_id": 42161},
+    ]
+
+    forward = assign_action_batches(rows, maximum_adjacent_gap_seconds=120)
+    reverse = assign_action_batches(list(reversed(rows)), maximum_adjacent_gap_seconds=120)
+
+    assert forward[0]["action_batch_id"] == forward[1]["action_batch_id"]
+    assert forward[1]["action_batch_id"] != forward[2]["action_batch_id"]
+    assert [row["action_batch_id"] for row in forward] == [row["action_batch_id"] for row in reverse]
+    assert [row["action_batch_size"] for row in forward] == [2, 2, 1]
+
+
+def test_holdout_support_requires_two_chain_specific_row_and_batch_boundaries() -> None:
+    ledger: list[dict[str, Any]] = []
+    for chain_index, chain_id in enumerate([10, 137]):
+        for index in range(20):
+            margin = -10 if index < 10 else 10
+            ledger.append(
+                {
+                    "chain_id": chain_id,
+                    "chain_name": f"chain-{chain_id}",
+                    "agent_id": chain_index,
+                    "market": "0x" + f"{index + 1:040x}",
+                    "update_type_hash": "0x" + f"{chain_index + 1:064x}",
+                    "source_unambiguous": True,
+                    "terminal_class": "injected",
+                    "delay_exposed": margin < 0,
+                    "action_batch_id": f"batch-{chain_id}-{index}",
+                    "minimum_delay_score": {
+                        "boundary_id": f"boundary-{chain_id}",
+                        "chain_id": chain_id,
+                        "chain_name": f"chain-{chain_id}",
+                        "agent_id": chain_index,
+                        "minimum_delay_seconds": 100,
+                        "margin_seconds": margin,
+                    },
+                }
+            )
+    boundary_rules = {
+        "row_level_minimum_scores": 20,
+        "row_level_minimum_each_side": 5,
+        "neighborhood_fraction": 0.25,
+        "row_level_minimum_near_each_side": 5,
+        "batch_level_minimum_scores": 10,
+        "batch_level_minimum_each_side": 3,
+        "batch_level_minimum_near_each_side": 3,
+        "exact_row_bunching_minimum_count": 5,
+        "exact_batch_bunching_minimum_count": 3,
+        "exact_bunching_minimum_fraction": 0.5,
+        "minimum_qualifying_boundaries": 2,
+        "minimum_chains_with_qualifying_boundary": 2,
+    }
+    thresholds = {
+        "minimum_eligible_proposals": 30,
+        "minimum_exact_injections": 20,
+        "minimum_update_types": 2,
+        "minimum_chain_market_pairs": 5,
+        "minimum_represented_chain_agents": 2,
+        "minimum_represented_chains": 2,
+        "minimum_proposal_batches": 10,
+        "minimum_resolved_non_immediate_proposals": 10,
+        "minimum_resolved_non_immediate_batches": 5,
+        "minimum_terminal_classification_rate": 0.9,
+    }
+
+    boundaries = summarize_holdout_delay_boundaries(ledger, boundary_rules)
+    support = assess_holdout_action_support(
+        ledger,
+        [],
+        thresholds=thresholds,
+        boundary_rules=boundary_rules,
+    )
+
+    assert len(boundaries) == 2
+    assert all(boundary["qualifies"] for boundary in boundaries)
+    assert support["qualifying_boundary_count"] == 2
+    assert support["qualifying_boundary_chain_count"] == 2
+    assert support["passed"] is True
 
 
 def test_delay_boundary_requires_both_local_sides_and_rejects_bunching() -> None:
