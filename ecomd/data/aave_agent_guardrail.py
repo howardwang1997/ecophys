@@ -566,6 +566,7 @@ def _latest_config_event(
     *,
     agent_id: int,
     event_name: str,
+    after: EventPosition,
     before: EventPosition,
 ) -> Mapping[str, Any] | None:
     matches = [
@@ -573,6 +574,7 @@ def _latest_config_event(
         for event in events
         if int(event.get("agent_id", -1)) == agent_id
         and str(event.get("event_name")) == event_name
+        and after < event_position(event)
         and event_position(event) < before
     ]
     return max(matches, key=event_position) if matches else None
@@ -585,10 +587,12 @@ def _initialized_registration(
     before: EventPosition,
 ) -> dict[str, Any] | None:
     agent_id = int(registration["agent_id"])
+    registration_position = event_position(registration)
     agent_address = _latest_config_event(
         config_events,
         agent_id=agent_id,
         event_name="AgentAddressSet",
+        after=registration_position,
         before=before,
     )
     enabled_events = [
@@ -596,18 +600,21 @@ def _initialized_registration(
         for event in config_events
         if int(event.get("agent_id", -1)) == agent_id
         and str(event.get("event_name")) == "AgentEnabledSet"
+        and registration_position < event_position(event)
         and event_position(event) < before
     ]
     expiration = _latest_config_event(
         config_events,
         agent_id=agent_id,
         event_name="ExpirationPeriodSet",
+        after=registration_position,
         before=before,
     )
     minimum_delay = _latest_config_event(
         config_events,
         agent_id=agent_id,
         event_name="MinimumDelaySet",
+        after=registration_position,
         before=before,
     )
     if (

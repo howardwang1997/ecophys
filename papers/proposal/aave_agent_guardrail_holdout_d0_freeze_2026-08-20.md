@@ -78,6 +78,10 @@ A proposal is eligible only when all of the following occur earlier in canonical
 2. the registered Risk Oracle equals that chain's pinned Edge Risk Oracle;
 3. AgentAddressSet, AgentEnabledSet(true), ExpirationPeriodSet and MinimumDelaySet have initialized that agent.
 
+Each initialization event must itself follow the matching registration; an earlier event with the same numeric
+agent ID cannot activate a later registration. This is a causal-order clarification, not an activity-dependent
+screen.
+
 Pre-activation and never-registered proposals remain in an exclusion ledger with a reason; they do not enter any
 support or terminal-classification denominator. Exactly one initialized prior registration is required for an
 unambiguous source. If multiple initialized registrations match, the proposal has entered the risk set but remains
@@ -134,6 +138,22 @@ endpoint. Formal extraction then starts from a chain-specific span corresponding
 under the frozen header rate. Explicit range/timeout/result-size failures recursively split that span without
 changing the block union; this prevents short-block-time chains from requiring tens of thousands of knowingly
 redundant requests. No API key, paid endpoint, IP fan-out or raw RPC retention is allowed.
+
+## Implementation lock before event access
+
+The formal implementation is `scripts/audit_aave_agent_guardrail_holdout_d0.py`. Its `chain` mode re-verifies the
+failed Ethereum pilot digest and exclusion, all five pinned source repositories, 26 source/address files, chain
+anchors and nonzero AgentHub code before querying an allowed event. It then qualifies two listed transports on
+one identical nonempty 10,000-block Hub shard. Its repository-external checkpoint contains only decoded allowed
+policy events and canonical headers and is bound to the code SHA, config digest, source SHAs, chain, anchors and
+formal RPC. The `merge` mode accepts all nine fixed chain artifacts or none and applies the frozen global gate
+once.
+
+The runner and core are covered by tests for source-independent pilot binding, exact log identity and duplicate
+rejection, checkpoint digest/identity/blinding, topic partitioning, nonzero contract code, causal activation,
+cross-chain connected batching, row/batch boundary support and the immutable contract. Ruff, strict mypy and the
+28-test focused suite pass. These implementation choices were fixed before the first non-Ethereum event query;
+none changes a sample, threshold or stop rule.
 
 ## Resources and interpretation
 

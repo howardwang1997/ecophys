@@ -337,6 +337,24 @@ def test_holdout_ledger_excludes_only_pre_activation_rows() -> None:
     assert result["eligible"][0]["chain_id"] == 10
 
 
+def test_holdout_initialization_must_follow_the_registration() -> None:
+    registration = _initialized_agent(agent_id=0, block=10)[0]
+    stale_configuration = _initialized_agent(agent_id=0, block=5)[1:]
+    proposal = _identified_proposal(20, 100, 2, "0x02")
+
+    result = build_holdout_chain_ledger(
+        [*stale_configuration, registration],
+        [proposal],
+        chain_id=10,
+        chain_name="optimism",
+        expected_risk_oracle="0x" + "11" * 20,
+        end_timestamp=500,
+    )
+
+    assert result["eligible"] == []
+    assert result["exclusions"][0]["exclusion_reason"] == "pre_initialization"
+
+
 def test_holdout_ledger_keeps_post_activation_source_ambiguity_in_denominator() -> None:
     hub_events = [
         *_initialized_agent(agent_id=0, block=1),

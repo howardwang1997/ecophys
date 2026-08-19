@@ -245,6 +245,7 @@ eligibility:
 batching:
   purpose: conservative_dependence_unit_for_synchronized_or_bulk_oracle_actions
   sort_key: [oracle_timestamp, chain_id, block_number, transaction_index, log_index]
+  maximum_adjacent_gap_seconds: 120
   connected_component_rule: adjacent_oracle_timestamps_at_most_120_seconds_apart
   update_type_or_chain_need_not_match: true
   reference_id_is_not_used_to_split_batches: true

@@ -10,7 +10,7 @@ import sys
 from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 
@@ -533,7 +533,7 @@ def _query_decoded_stage(
 ) -> list[dict[str, Any]]:
     completed = state["completed_through"]
     event_groups = state["events"]
-    stage_events = event_groups[stage]
+    stage_events = cast(list[dict[str, Any]], event_groups[stage])
     identities = {
         (
             str(event["block_hash"]),

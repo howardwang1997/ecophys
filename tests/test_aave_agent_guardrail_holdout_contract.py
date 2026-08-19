@@ -100,6 +100,7 @@ def test_activation_batch_boundary_and_stop_rules_are_conservative() -> None:
     assert eligibility["post_activation_ambiguous_proposals"]["count_against_terminal_classification"]
 
     assert batching["connected_component_rule"] == ("adjacent_oracle_timestamps_at_most_120_seconds_apart")
+    assert batching["maximum_adjacent_gap_seconds"] == 120
     assert batching["update_type_or_chain_need_not_match"] is True
     assert batching["inference_must_cluster_by_batch"] is True
     assert boundary["never_pool_boundaries_across_chains_or_agents"] is True

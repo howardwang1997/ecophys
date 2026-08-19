@@ -128,3 +128,12 @@ initialized matches stay in the denominator as failures. Transport qualification
 formal scanning starts from a fixed per-chain span approximating seven UTC days and recursively splits explicit
 range/timeout/result-size failures. This changes neither the block union nor any scientific threshold and avoids
 pathological request counts on short-block-time chains.
+
+The pre-event D0H implementation is now complete in
+`scripts/audit_aave_agent_guardrail_holdout_d0.py`. It has isolated `chain`/`merge` modes, requires a clean code
+snapshot, independently re-verifies the failed Ethereum pilot and all pinned sources, qualifies two transports
+by exact nonempty-shard log identity, and writes only identity-bound decoded checkpoints outside the repository.
+Required initialization must follow its matching registration. The focused 28-test suite, Ruff and strict mypy
+pass; source audit binds nine chains and 26 files. As of this lock, no non-Ethereum event query has occurred and
+all D0H scientific thresholds remain unchanged. The next authorized action is the CPU/network-only nine-chain
+run from the committed SHA; D1, outcomes, EcoMD and GPUs remain locked pending a conjunctive pass.
