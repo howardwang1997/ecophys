@@ -56,3 +56,17 @@ Formal result is `papers/proposal/dydx_funding_carry_t0_result_2026-08-20.md`. D
 21 proposal-314--316 development markets and retain schemas, counts, timestamps, heights and hashes. Proposal
 317 and the March proposal-220 outcome window remain sealed. A D0 pass still requires a separately committed D1
 freeze before bulk acquisition or analysis. GPU, paid data and EcoMD remain unauthorized.
+
+## D0 result — 2026-08-20
+
+D0 passed from clean commit `ddb729525`; sanitized manifest canonical SHA is `777d5026…`. All 21 development
+markets return historical trade, 1m candle and funding rows at the frozen heights. Every one-hour candle probe
+has 60 rows and the required schema. The fixed BEAM/ENA/PAXG two-page trade probes have offsets 0/5 and no row
+overlap. The result contains only schemas, counts, timestamps, heights and hashes; raw responses and market
+values were not persisted.
+
+A low-activity warning is binding: `2Z`, `ATH`, `BEAM`, `BERA`, `DRIFT`, `KAITO`, `PAXG` and `S` had no new
+trade between the execution cursor and a fixed 20,000-block-later cursor. This is not a D0 failure, but it makes
+the frozen pre-period requirement (100 trades on 21/28 days) an immediate earning-or-kill gate. Before bulk
+ticks, D1A must use only 28 pre-event daily candles for the 21 development markets. Proceed at 20--21 eligible;
+AMBER at 15--19; stop dYdX-only below 15. Do not relax the activity threshold or open proposal 317/220 outcomes.
