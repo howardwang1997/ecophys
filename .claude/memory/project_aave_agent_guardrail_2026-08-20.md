@@ -151,3 +151,17 @@ exact `to_block`. Header/code-only preflight found one on all nine chains (Arbit
 first fixed endpoint elsewhere). The expanded focused suite passes 38 tests plus Ruff/strict mypy. No chain, data union,
 event family, eligibility rule, batch definition, scientific gate or stop rule changed. D1, outcomes, EcoMD and
 GPUs remain locked pending a conjunctive D0H pass from the next clean SHA.
+
+The clean attempt from `e9e4b3dc9` passed all nine separate state witnesses but produced no artifact: BNB log
+sources failed through rate limiting/TLS and Linea exposed the explicit cap message `range ... exceeds limit of
+10000`. No current-SHA checkpoint survived; one older Gnosis checkpoint is identity-incompatible and unusable.
+
+BNB transport is now repaired without changing the scientific design. Pinned proposal history plus archive
+`getAgentCount()` state locates the exact first registration-state transition at blocks 75,187,733 (0) and
+75,187,734 (2), fixing aligned qualification shard 75,184,723--75,194,722 without screening market outcomes.
+SQD Portal, public no-key Nodeflare and public no-key Pocket all return 30 identical Hub log identities; their
+canonical digest is `2d50fe7f...5a4`. Nodeflare/Pocket are the first two log candidates and OnFinality remains the
+state witness. Nodeflare also returns a valid empty result on the first frozen 10k interval, excluding the
+immediate recent-history-only failure. BNB formal span is 10,000, matching the documented free cap. Linea's exact `exceeds limit of`
+message is splittable while generic `limit exceeded` remains a fatal/quota error. Restart from a new clean SHA;
+D1, outcomes, EcoMD and GPUs remain locked.

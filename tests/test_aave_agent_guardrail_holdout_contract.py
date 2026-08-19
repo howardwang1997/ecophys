@@ -66,7 +66,7 @@ def test_all_chain_anchors_and_source_addresses_are_explicit() -> None:
         suffix = ADDRESS_BOOK_SUFFIXES[name]
         assert chain["address_book_modules"] == [f"Misc{suffix}", f"AaveV3{suffix}"]
         assert len(chain["expected_agent_types"]) in {1, 2}
-        assert chain["formal_initial_get_logs_span"] > 10_000
+        assert chain["formal_initial_get_logs_span"] >= 10_000
         assert chain["anchor_rpc"].startswith("https://")
         assert len(chain["formal_rpc_candidates"]) >= 2
         assert all(url.startswith("https://") for url in chain["formal_rpc_candidates"])
@@ -76,6 +76,25 @@ def test_all_chain_anchors_and_source_addresses_are_explicit() -> None:
     assert chains["bnb"]["anchor_rpc_eth_get_logs_disabled_by_provider"] is True
     assert "https://avalanche.drpc.org" in chains["avalanche"]["formal_rpc_candidates"]
     assert "https://bnb.api.onfinality.io/public" in chains["bnb"]["formal_rpc_candidates"]
+    bnb = chains["bnb"]
+    assert bnb["formal_initial_get_logs_span"] == 10_000
+    assert bnb["qualification_from_block"] == 75_184_723
+    assert bnb["qualification_to_block"] == 75_194_722
+    assert (bnb["qualification_from_block"] - bnb["from_block"]) % 10_000 == 0
+    assert bnb["qualification_state_transition"] == {
+        "method_signature": "getAgentCount()",
+        "last_zero_block": 75_187_733,
+        "last_zero_count": 0,
+        "first_positive_block": 75_187_734,
+        "first_positive_count": 2,
+    }
+    assert bnb["formal_rpc_candidates"][:2] == [
+        "https://rpc.nodeflare.app/bnb/public",
+        "https://bsc.api.pocket.network",
+    ]
+    assert bnb["qualification_expected_canonical_log_identity_sha256"] == (
+        "2d50fe7fd5bcb03ca93f6783a94047a9664c28daf21acfc490e168f5591985a4"
+    )
 
 
 def test_activation_batch_boundary_and_stop_rules_are_conservative() -> None:
@@ -128,7 +147,9 @@ def test_holdout_transport_and_resource_caps_remain_free_and_cpu_only() -> None:
 
     assert transport["qualification_occurs_only_after_this_freeze"] is True
     assert transport["qualification_get_logs_span"] == 10_000
-    assert transport["formal_initial_span_rule"] == ("approximate_seven_utc_days_from_frozen_header_rate")
+    assert transport["formal_initial_span_rule"] == (
+        "approximate_seven_utc_days_unless_transport_amendment_records_smaller_provider_cap"
+    )
     assert transport["formal_range_errors_split_recursively_without_changing_union"] is True
     assert transport["require_nonempty_hub_shard_identity_crosscheck"] is True
     assert transport["identity_crosscheck_sources"] == 2

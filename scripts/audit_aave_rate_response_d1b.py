@@ -372,6 +372,7 @@ def _splittable(error: RpcError) -> bool:
             "range is too wide",
             "range limit",
             "ranges over",
+            "exceeds limit of",
             "response size",
             "result size",
             "too many results",

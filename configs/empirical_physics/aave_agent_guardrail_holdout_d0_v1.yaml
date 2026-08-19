@@ -100,10 +100,21 @@ chains:
     from_block_hash: "0xf3becf98b98ec9bbcdd789318c8304bbf505fa3d0524cea5adcb621adc13b82c"
     to_block: 116889115
     to_block_hash: "0xea600032b5ef449c56f889bcb70306302b3e47ac697cee374cd479d4a14b7197"
-    formal_initial_get_logs_span: 1200000
+    formal_initial_get_logs_span: 10000
+    qualification_from_block: 75184723
+    qualification_to_block: 75194722
+    qualification_expected_canonical_log_identity_sha256: 2d50fe7fd5bcb03ca93f6783a94047a9664c28daf21acfc490e168f5591985a4
+    qualification_state_transition:
+      method_signature: getAgentCount()
+      last_zero_block: 75187733
+      last_zero_count: 0
+      first_positive_block: 75187734
+      first_positive_count: 2
     anchor_rpc: https://bsc-dataseed.bnbchain.org
     anchor_rpc_eth_get_logs_disabled_by_provider: true
     formal_rpc_candidates:
+      - https://rpc.nodeflare.app/bnb/public
+      - https://bsc.api.pocket.network
       - https://bsc-rpc.publicnode.com
       - https://bnb.api.onfinality.io/public
       - https://bnb.rpc.subquery.network/public
@@ -197,7 +208,7 @@ transport:
   require_nonempty_hub_shard_identity_crosscheck: true
   identity_crosscheck_sources: 2
   qualification_get_logs_span: 10000
-  formal_initial_span_rule: approximate_seven_utc_days_from_frozen_header_rate
+  formal_initial_span_rule: approximate_seven_utc_days_unless_transport_amendment_records_smaller_provider_cap
   formal_range_errors_split_recursively_without_changing_union: true
   maximum_topics_per_get_logs: 14
   minimum_request_interval_seconds_per_endpoint: 0.75
@@ -211,6 +222,19 @@ transport:
     formal_log_transports_verify_chain_hashes_and_exact_log_identity: true
     avalanche_added_documented_public_rpc: https://avalanche.drpc.org
     bnb_added_documented_public_archive_rpc: https://bnb.api.onfinality.io/public
+    no_chain_sample_event_family_threshold_or_stop_rule_changed: true
+  amendment_2026_08_20_after_third_qualification_attempt:
+    trigger: bnb_log_rate_limits_and_linea_explicit_10000_block_range_cap
+    fixed_block_unions_and_scientific_rules_unchanged: true
+    linea_explicit_exceeds_limit_of_error_is_recursively_splittable: true
+    bnb_qualification_start_rule: fixed_grid_shard_containing_first_getAgentCount_positive_block
+    bnb_state_witness_method: getAgentCount()
+    bnb_primary_public_rpc: https://rpc.nodeflare.app/bnb/public
+    bnb_reference_public_rpc: https://bsc.api.pocket.network
+    bnb_third_identity_audit_dataset: https://portal.sqd.dev/datasets/binance-mainnet
+    bnb_qualification_event_count: 30
+    bnb_qualification_canonical_log_identity_sha256: 2d50fe7fd5bcb03ca93f6783a94047a9664c28daf21acfc490e168f5591985a4
+    bnb_formal_span_reduced_to_documented_free_rpc_cap: 10000
     no_chain_sample_event_family_threshold_or_stop_rule_changed: true
 
 allowed_event_families:

@@ -284,6 +284,10 @@ def _canonical_log_identities(logs: Sequence[Mapping[str, Any]]) -> list[tuple[s
     return identities
 
 
+def _canonical_log_identity_sha256(identities: Sequence[tuple[str, str, int]]) -> str:
+    return canonical_sha256(list(identities))
+
+
 def _query_logs_interval(
     client: _RpcClient,
     *,
@@ -352,8 +356,18 @@ def _first_nonempty_hub_shard(
     span: int,
     maximum_topics_per_query: int,
 ) -> tuple[int, int, list[Mapping[str, Any]]]:
-    start = int(chain["from_block"])
+    from_block = int(chain["from_block"])
+    start = int(chain.get("qualification_from_block", from_block))
     to_block = int(chain["to_block"])
+    fixed_end = (
+        int(chain["qualification_to_block"]) if chain.get("qualification_to_block") is not None else None
+    )
+    if not from_block <= start <= to_block:
+        raise ValueError("qualification start is outside the frozen interval")
+    if (start - from_block) % span != 0:
+        raise ValueError("qualification start is not aligned to the frozen qualification grid")
+    if fixed_end is not None and fixed_end != min(to_block, start + span - 1):
+        raise ValueError("qualification end differs from the frozen qualification grid shard")
     while start <= to_block:
         end = min(to_block, start + span - 1)
         logs = _query_logs_interval(
@@ -366,6 +380,8 @@ def _first_nonempty_hub_shard(
         )
         if logs:
             return start, end, logs
+        if fixed_end is not None:
+            raise RuntimeError("the exact frozen AgentHub qualification shard is empty")
         start = end + 1
     raise RuntimeError("no nonempty AgentHub qualification shard exists in the frozen interval")
 
@@ -381,9 +397,55 @@ def _qualify_state_witness(
         try:
             client = _new_client(url, minimum_interval=minimum_interval)
             _validate_transport_anchor(client, chain=chain, require_contract_code=True)
+            transition_result: dict[str, Any] | None = None
+            raw_transition = chain.get("qualification_state_transition")
+            if raw_transition is not None:
+                if not isinstance(raw_transition, Mapping):
+                    raise ValueError("qualification state transition must be an object")
+                method_signature = str(raw_transition["method_signature"])
+                last_zero_block = int(raw_transition["last_zero_block"])
+                first_positive_block = int(raw_transition["first_positive_block"])
+                if first_positive_block != last_zero_block + 1:
+                    raise ValueError("qualification state-transition blocks are not consecutive")
+                selector = _keccak_topic(method_signature)[:10]
+                observed_counts: dict[str, int] = {}
+                for label, block_key, count_key in (
+                    ("last_zero", "last_zero_block", "last_zero_count"),
+                    ("first_positive", "first_positive_block", "first_positive_count"),
+                ):
+                    block = int(raw_transition[block_key])
+                    observed = _hex_quantity(
+                        client.call(
+                            "eth_call",
+                            [
+                                {
+                                    "to": normalize_address(str(chain["agent_hub"])),
+                                    "data": selector,
+                                },
+                                hex(block),
+                            ],
+                        ),
+                        field=f"{method_signature} at block {block}",
+                    )
+                    expected = int(raw_transition[count_key])
+                    if observed != expected:
+                        raise RuntimeError(
+                            f"{method_signature} {label} count differs: {observed} != {expected}"
+                        )
+                    observed_counts[label] = observed
+                transition_result = {
+                    "method_signature": method_signature,
+                    "selector": selector,
+                    "last_zero_block": last_zero_block,
+                    "last_zero_count": observed_counts["last_zero"],
+                    "first_positive_block": first_positive_block,
+                    "first_positive_count": observed_counts["first_positive"],
+                    "exact_consecutive_transition_verified": True,
+                }
             return {
                 "state_witness_rpc": url,
                 "frozen_endpoint_agent_hub_code_verified": True,
+                "qualification_state_transition": transition_result,
                 "request_counts": dict(sorted(client.method_counts.items())),
                 "failed_candidates_before_success": failures,
             }
@@ -436,6 +498,10 @@ def _qualify_transport(
                 maximum_topics_per_query=maximum_topics,
             )
             primary_identities = _canonical_log_identities(primary_logs)
+            identity_sha256 = _canonical_log_identity_sha256(primary_identities)
+            expected_identity_sha256 = chain.get("qualification_expected_canonical_log_identity_sha256")
+            if expected_identity_sha256 is not None and identity_sha256 != str(expected_identity_sha256):
+                raise RuntimeError("canonical qualification identity digest differs from the freeze")
         except Exception as error:
             failures.append(
                 {
@@ -474,6 +540,7 @@ def _qualify_transport(
                     "from_block": start,
                     "to_block": end,
                     "nonempty_hub_event_count": len(primary_identities),
+                    "canonical_log_identity_sha256": identity_sha256,
                     "canonical_log_identity_sets_equal": True,
                     "failed_candidates_before_success": failures,
                     "reference_request_counts": dict(sorted(reference.method_counts.items())),

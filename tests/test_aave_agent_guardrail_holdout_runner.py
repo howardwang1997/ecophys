@@ -11,6 +11,8 @@ from ecomd.data.aave_qualification import canonical_sha256
 from scripts import audit_aave_agent_guardrail_holdout_d0 as holdout_runner
 from scripts.audit_aave_agent_guardrail_holdout_d0 import (
     _canonical_log_identities,
+    _canonical_log_identity_sha256,
+    _first_nonempty_hub_shard,
     _load_chain_checkpoint,
     _qualify_state_witness,
     _validate_pilot_binding,
@@ -41,6 +43,10 @@ def test_canonical_log_identities_sort_and_reject_duplicates() -> None:
     assert identities == sorted(identities)
     with pytest.raises(ValueError, match="duplicate"):
         _canonical_log_identities([earlier, earlier])
+
+    assert _canonical_log_identity_sha256(identities) == (
+        "0da18cb3ca6994e97b371aa46b4bac9bc94857777154bfa410c5643652fe70c2"
+    )
 
 
 def test_holdout_checkpoint_round_trip_is_digest_and_identity_bound(tmp_path: Path) -> None:
@@ -174,6 +180,116 @@ def test_state_witness_uses_first_archive_capable_candidate(
     assert result["state_witness_rpc"] == "https://archive.test"
     assert result["frozen_endpoint_agent_hub_code_verified"] is True
     assert len(result["failed_candidates_before_success"]) == 1
+
+
+def test_state_witness_verifies_frozen_consecutive_transition(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeClient:
+        def __init__(self) -> None:
+            self.method_counts = {"eth_call": 2}
+
+        def call(self, method: str, params: list[Any]) -> Any:
+            assert method == "eth_call"
+            assert params[0] == {
+                "to": "0x" + "11" * 20,
+                "data": holdout_runner._keccak_topic("getAgentCount()")[:10],
+            }
+            return "0x0" if params[1] == hex(20) else "0x2"
+
+    monkeypatch.setattr(
+        holdout_runner,
+        "_new_client",
+        lambda url, *, minimum_interval: FakeClient(),
+    )
+    monkeypatch.setattr(
+        holdout_runner,
+        "_validate_transport_anchor",
+        lambda client, *, chain, require_contract_code: None,
+    )
+    result = _qualify_state_witness(
+        chain={
+            "agent_hub": "0x" + "11" * 20,
+            "qualification_state_transition": {
+                "method_signature": "getAgentCount()",
+                "last_zero_block": 20,
+                "last_zero_count": 0,
+                "first_positive_block": 21,
+                "first_positive_count": 2,
+            },
+        },
+        candidate_urls=["https://archive.test"],
+        minimum_interval=0.75,
+    )
+
+    assert result["qualification_state_transition"]["exact_consecutive_transition_verified"]
+
+
+def test_qualification_scan_starts_at_aligned_frozen_hint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[int, int]] = []
+
+    def fake_query(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+        del args
+        calls.append((kwargs["start_block"], kwargs["end_block"]))
+        return [_raw_log(block=kwargs["start_block"], transaction=1, log_index=0)]
+
+    monkeypatch.setattr(holdout_runner, "_query_logs_interval", fake_query)
+    chain = {
+        "agent_hub": "0x" + "11" * 20,
+        "from_block": 100,
+        "to_block": 500,
+        "qualification_from_block": 300,
+    }
+
+    start, end, logs = _first_nonempty_hub_shard(
+        object(),  # type: ignore[arg-type]
+        chain=chain,
+        hub_topics=["0x" + "22" * 32],
+        span=100,
+        maximum_topics_per_query=14,
+    )
+
+    assert (start, end, len(logs)) == (300, 399, 1)
+    assert calls == [(300, 399)]
+    with pytest.raises(ValueError, match="aligned"):
+        _first_nonempty_hub_shard(
+            object(),  # type: ignore[arg-type]
+            chain={**chain, "qualification_from_block": 301},
+            hub_topics=["0x" + "22" * 32],
+            span=100,
+            maximum_topics_per_query=14,
+        )
+
+
+def test_exact_qualification_shard_cannot_drift_after_an_empty_response(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[int, int]] = []
+
+    def fake_query(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+        del args
+        calls.append((kwargs["start_block"], kwargs["end_block"]))
+        return []
+
+    monkeypatch.setattr(holdout_runner, "_query_logs_interval", fake_query)
+    with pytest.raises(RuntimeError, match="exact frozen"):
+        _first_nonempty_hub_shard(
+            object(),  # type: ignore[arg-type]
+            chain={
+                "agent_hub": "0x" + "11" * 20,
+                "from_block": 100,
+                "to_block": 500,
+                "qualification_from_block": 300,
+                "qualification_to_block": 399,
+            },
+            hub_topics=["0x" + "22" * 32],
+            span=100,
+            maximum_topics_per_query=14,
+        )
+
+    assert calls == [(300, 399)]
 
 
 def test_log_query_partitions_topics_and_preserves_the_exact_range(

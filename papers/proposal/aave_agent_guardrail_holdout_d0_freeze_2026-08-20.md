@@ -135,9 +135,10 @@ anchor-hash checks. At least one nonempty AgentHub shard must have the same comp
 `(blockHash, transactionHash, logIndex)` set from two listed sources, or one RPC plus an independent explorer API.
 Qualify transports on 10,000-block shards, with at most 14 topics and 0.75 seconds between requests to one
 endpoint. Formal extraction then starts from a chain-specific span corresponding to approximately seven UTC days
-under the frozen header rate. Explicit range/timeout/result-size failures recursively split that span without
-changing the block union; this prevents short-block-time chains from requiring tens of thousands of knowingly
-redundant requests. No API key, paid endpoint, IP fan-out or raw RPC retention is allowed.
+under the frozen header rate, unless a transport-only amendment records a smaller explicit free-provider cap.
+Explicit range/timeout/result-size failures recursively split that span without changing the block union; this
+prevents short-block-time chains from requiring tens of thousands of knowingly redundant requests. No API key,
+paid endpoint, IP fan-out or raw RPC retention is allowed.
 
 ## Implementation lock before event access
 
@@ -152,8 +153,9 @@ once.
 The runner and core are covered by tests for source-independent pilot binding, exact log identity and duplicate
 rejection, checkpoint digest/identity/blinding, topic partitioning, nonzero contract code, causal activation,
 cross-chain connected batching, row/batch boundary support and the immutable contract. Ruff, strict mypy and the
-38-test focused suite pass. These implementation choices were fixed before the first non-Ethereum event query;
-none changes a sample, threshold or stop rule.
+58-test complete Aave suite pass. The scientific implementation choices were fixed before the first
+non-Ethereum event query; later changes are explicitly recorded transport repairs, and none changes a sample,
+threshold or stop rule.
 
 The first post-freeze qualification attempt produced no chain artifact or checkpoint and exposed three transport
 facts: Avalanche's official endpoint caps a request at 2,048 blocks, Polygon dRPC requires a nominal 10,000-block
@@ -176,6 +178,34 @@ returned both exact headers but had already pruned the frozen endpoint's state. 
 preflight found an archive-capable witness for every chain: Arbitrum Blockscout, BNB OnFinality, and each other
 chain's first fixed candidate or anchor. No event value was used to select a witness. The failed attempt again
 wrote no artifact or checkpoint.
+
+The third clean attempt from `e9e4b3dc9` passed the independent state-witness check on all nine chains, then
+stopped without a chain artifact. BNB OnFinality repeatedly rate-limited log queries and the remaining listed
+services did not yield two qualifying log transports. Linea's formal scan returned the explicit provider error
+`range 151199 exceeds limit of 10000`, whose wording was not yet recognized as a range cap. The only checkpoint
+found afterward was a Gnosis checkpoint bound to an older code SHA and is therefore unusable. All current-SHA
+processes were terminated; no partial result can be merged.
+
+The BNB recovery is a transport-only, auditable amendment. Pinned Aave proposal history identifies the first
+multichain risk-agent registration deployment without inspecting a proposal value or market outcome. Historical
+`getAgentCount()` state on the frozen Hub is zero at block 75,187,733 and two at the consecutive block
+75,187,734. This fixes, before a formal rescan, the aligned 10,000-block qualification shard
+75,184,723--75,194,722. It is the unique frozen grid shard containing the first positive registration state;
+earlier grid shards cannot contain a registered-agent event under the contract state.
+
+The public [SQD Portal](https://docs.sqd.dev/en/portal/evm/examples/query-logs) returned 30 allowed Hub events on
+that complete shard. Two independently operated, no-key transports—[Nodeflare](https://nodeflare.app/chains/bnb)
+and [Pocket](https://docs.pocket.network/developers/supported-chains/)—each returned the same 30 canonical
+identities, with SHA-256
+`2d50fe7fd5bcb03ca93f6783a94047a9664c28daf21acfc490e168f5591985a4`. The executable contract freezes the shard,
+digest and exact consecutive state transition. Nodeflare is the first formal candidate, Pocket is the second
+identity source, and OnFinality remains the archive state witness. Because Nodeflare's public tier explicitly
+caps one log query at 10,000 blocks, BNB formal extraction now uses 10,000-block requests over the exact original
+union. A source-blind preflight on the first frozen BNB interval, blocks 69,254,723--69,264,722, returned a valid
+empty log set rather than a pruned-history error, so the primary is not limited to the later qualification shard.
+Linea recognizes only the observed phrase `exceeds limit of` as splittable; the generic `limit exceeded` message
+remains non-splittable because a tested provider returned it even for one block. No chain, block union, event
+family, sample rule, threshold or stop rule changed.
 
 ## Resources and interpretation
 

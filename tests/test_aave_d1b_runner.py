@@ -28,6 +28,8 @@ def test_policy_log_transport_splits_timeouts_but_not_rate_limits() -> None:
 def test_provider_specific_explicit_block_caps_are_splittable() -> None:
     assert _splittable(RpcError("requested too many blocks; maximum is set to 2048"))
     assert _splittable(RpcError("ranges over 10000 blocks are not supported on free plan"))
+    assert _splittable(RpcError("range 151199 exceeds limit of 10000"))
+    assert not _splittable(RpcError("limit exceeded", rpc_code=-32005))
 
 
 def test_exact_handler_crash_is_retryable_but_other_server_errors_are_not() -> None:
