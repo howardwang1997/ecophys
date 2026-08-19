@@ -474,23 +474,31 @@ def _query_logs(
     from_block: int,
     to_block: int,
     maximum_span: int,
+    maximum_topics_per_query: int,
 ) -> list[Mapping[str, Any]]:
     if not addresses or not topics:
         return []
+    if maximum_topics_per_query <= 0:
+        raise ValueError("maximum topics per query must be positive")
+    topic_groups = [
+        topics[index : index + maximum_topics_per_query]
+        for index in range(0, len(topics), maximum_topics_per_query)
+    ]
     logs: list[Mapping[str, Any]] = []
     start = from_block
     while start <= to_block:
         end = min(to_block, start + maximum_span - 1)
-        logs.extend(
-            _get_logs_with_split(
-                client,
-                addresses=addresses,
-                topics=topics,
-                start_block=start,
-                end_block_inclusive=end,
-                remaining_split_depth=20,
+        for topic_group in topic_groups:
+            logs.extend(
+                _get_logs_with_split(
+                    client,
+                    addresses=addresses,
+                    topics=topic_group,
+                    start_block=start,
+                    end_block_inclusive=end,
+                    remaining_split_depth=20,
+                )
             )
-        )
         start = end + 1
     identities: set[tuple[str, str, int]] = set()
     for raw in logs:
@@ -518,6 +526,7 @@ def _query_decoded_stage(
     from_block: int,
     to_block: int,
     maximum_span: int,
+    maximum_topics_per_query: int,
     decoder: Callable[[Mapping[str, Any]], dict[str, Any]],
     save_checkpoint: Callable[[], None],
 ) -> list[dict[str, Any]]:
@@ -542,6 +551,7 @@ def _query_decoded_stage(
             from_block=start,
             to_block=end,
             maximum_span=maximum_span,
+            maximum_topics_per_query=maximum_topics_per_query,
         )
         for raw in raw_logs:
             decoded = decoder(raw)
@@ -648,6 +658,7 @@ def audit(
     range_by_topic = {_keccak_topic(signature): signature for signature in RANGE_SIGNATURES}
     risk_topic = _keccak_topic(RISK_ORACLE_SIGNATURE)
     maximum_span = int(transport["maximum_get_logs_span"])
+    maximum_topics_per_query = int(transport["maximum_topics_per_get_logs"])
     checkpoint_identity = {
         "repository_sha": _git("rev-parse", "HEAD"),
         "config_sha256": _sha256_file(config_path),
@@ -682,6 +693,7 @@ def audit(
         from_block=from_block,
         to_block=to_block,
         maximum_span=maximum_span,
+        maximum_topics_per_query=maximum_topics_per_query,
         decoder=lambda raw: _decode_hub_log(
             raw,
             hub_address=hub_address,
@@ -703,6 +715,7 @@ def audit(
         from_block=from_block,
         to_block=to_block,
         maximum_span=maximum_span,
+        maximum_topics_per_query=maximum_topics_per_query,
         decoder=lambda raw: _decode_range_log(
             raw,
             module_address=range_address,
@@ -720,6 +733,7 @@ def audit(
         from_block=from_block,
         to_block=to_block,
         maximum_span=maximum_span,
+        maximum_topics_per_query=maximum_topics_per_query,
         decoder=lambda raw: _decode_proposal_log(
             raw,
             oracle_addresses=oracle_addresses,
@@ -795,6 +809,7 @@ def audit(
         "transport": {
             "formal_rpc": str(transport["formal_rpc"]),
             "maximum_get_logs_span": maximum_span,
+            "maximum_topics_per_get_logs": maximum_topics_per_query,
             "rpc_request_counts": dict(sorted(client.method_counts.items())),
             "log_range_splits": client.log_range_splits,
             "rate_limit_retry_count": client.rate_limit_retry_count,

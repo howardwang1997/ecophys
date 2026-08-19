@@ -15,6 +15,7 @@ from ecomd.data.aave_agent_guardrail import (
     decode_update_injected_data,
     summarize_delay_boundaries,
 )
+from scripts import audit_aave_agent_guardrail_d0 as guardrail_runner
 from scripts.audit_aave_agent_guardrail_d0 import (
     HUB_SIGNATURES,
     RISK_ORACLE_SIGNATURE,
@@ -311,3 +312,43 @@ def test_decoded_checkpoint_round_trip_is_identity_bound(tmp_path: Path) -> None
     assert loaded == state
     with pytest.raises(RuntimeError, match="identity"):
         _load_checkpoint(path, identity={**identity, "formal_rpc": "changed"}, from_block=10)
+
+
+def test_log_queries_partition_blocks_and_allowed_topics(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[tuple[int, int, tuple[str, ...]]] = []
+
+    def fake_get_logs(
+        client: Any,
+        *,
+        addresses: Any,
+        topics: Any,
+        start_block: int,
+        end_block_inclusive: int,
+        remaining_split_depth: int,
+    ) -> list[dict[str, Any]]:
+        del client, addresses, remaining_split_depth
+        calls.append((start_block, end_block_inclusive, tuple(topics)))
+        return []
+
+    monkeypatch.setattr(guardrail_runner, "_get_logs_with_split", fake_get_logs)
+    topics = ["0x" + f"{index:064x}" for index in range(10)]
+    assert (
+        guardrail_runner._query_logs(
+            object(),
+            addresses=["0x" + "11" * 20],
+            topics=topics,
+            from_block=10,
+            to_block=19,
+            maximum_span=5,
+            maximum_topics_per_query=4,
+        )
+        == []
+    )
+    assert calls == [
+        (10, 14, tuple(topics[:4])),
+        (10, 14, tuple(topics[4:8])),
+        (10, 14, tuple(topics[8:])),
+        (15, 19, tuple(topics[:4])),
+        (15, 19, tuple(topics[4:8])),
+        (15, 19, tuple(topics[8:])),
+    ]

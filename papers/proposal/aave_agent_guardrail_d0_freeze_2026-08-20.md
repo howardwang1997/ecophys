@@ -29,7 +29,9 @@ limits `eth_getLogs` to 10,000 blocks, not the source-freeze probe's 50,000. The
 request scheduling and recoverability only; the inclusive block union, events, matching and thresholds do not
 change. JSON-RPC `-32000/method handler crashed` is retried with the same bounded exponential backoff as transport
 limits and recorded separately; evidence from failed singleton bisection rules out treating it as a range-size
-error. Rate limits and genuine range/response-size failures retain their separate handling.
+error. A 14-topic Hub filter fails while fixed groups of at most four allowed topics succeed on the same shard,
+so formal queries use `10,000 blocks x <=4 allowed topics` and union logs by canonical identity. Rate limits and
+genuine range/response-size failures retain their separate handling.
 
 ## Allowed event surface
 

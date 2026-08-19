@@ -62,3 +62,9 @@ The next shard then reproduced JSON-RPC `method handler crashed` twice after the
 24,309,999. A later run crossed that shard but cascaded through bisection to a singleton block, falsifying the
 range-size interpretation. Treat only exact code `-32000` plus `method handler crashed` as a bounded, separately
 metered transient retry; do not split it or generalize to other `-32000` errors.
+Further probes localize the backend fault to compound topic filters: the same shard succeeds when the 14 allowed
+Hub topics are partitioned into groups of at most four. Formal transport therefore uses 10,000-block by four-topic
+cells and unions canonical log identities. Flashbots is unusable because it silently omitted a dRPC-verified
+68-event deployment shard; LlamaRPC and 1RPC also failed availability/plan checks.
+The implemented four-topic partition independently re-fetches and exactly matches all 68 deployment-shard log
+identities in four calls without retry. This is the required transport sanity check before a new formal run.
