@@ -1,0 +1,159 @@
+contract:
+  name: dydx_funding_carry_t0
+  version: 1
+  status: frozen_before_any_intervention_window_outcome_row
+  purpose: test_novelty_identifiability_and_zero_cost_data_path_for_fixed_carry_induced_boundary_synchronization
+  candidate_map: papers/proposal/intervention_first_candidate_map_2026-08-19.md
+  human_protocol: papers/proposal/dydx_funding_carry_t0_freeze_2026-08-19.md
+  stop_at_first_hard_failure: true
+
+claim:
+  allowed: fixed_carry_change_at_unchanged_hourly_clock_causes_signed_exit_reentry_flow_dipole
+  forbidden:
+    - trading_activity_is_periodic_at_funding_times
+    - funding_affects_trading
+    - funding_rates_or_basis_mean_revert
+    - unsigned_volume_or_volatility_spike_is_mechanism_evidence
+    - dydx_event_study_alone_is_ncs
+    - ecomd_validates_real_market_mechanism
+
+treatment:
+  field: default_funding_ppm
+  low: 0
+  high: 100
+  high_semantics: 100_ppm_per_8h_equals_0_125_bp_per_hour
+  clock: hourly_unchanged
+  activation: first_block_executing_passed_proposal
+  voting_end_is_provisional_only: true
+  require_state_diff_at_h_minus_1_and_h: true
+
+cohorts:
+  paired_core:
+    - ONDO-USD
+    - ENA-USD
+    - TAO-USD
+    - XMR-USD
+    - MNT-USD
+    - POPCAT-USD
+    - BEAM-USD
+    - ZEN-USD
+    - PAXG-USD
+    - DRIFT-USD
+  reverse_development:
+    proposal_314: [2Z-USD, ASTER-USD, ATH-USD, BEAM-USD, BERA-USD, DRIFT-USD]
+    proposal_315: [EIGEN-USD, ENA-USD, HYPE-USD, KAITO-USD, MNT-USD, MORPHO-USD, MOVE-USD, ONDO-USD]
+    proposal_316: [PAXG-USD, PENGU-USD, POL-USD, POPCAT-USD, SPX-USD, S-USD, SYRUP-USD]
+  reverse_confirmation:
+    proposal_317: [TAO-USD, TRUMP-USD, USUAL-USD, XMR-USD, ZEC-USD, ZEN-USD]
+  secondary_only:
+    proposal_318: [ZORA-USD]
+  forward_locked:
+    proposal_220: [ONDO-USD, ENA-USD, TAO-USD, XMR-USD, MNT-USD, POPCAT-USD, BEAM-USD, ZEN-USD, PAXG-USD, DRIFT-USD]
+  excluded_missing_prestate: [AVNT-USD, CRO-USD, PUMP-USD, WLFI-USD, XPL-USD]
+  excluded_bundled: [FARTCOIN-USD]
+  exclusions_can_only_increase: true
+
+provisional_voting_end_utc:
+  proposal_220: 2025-03-03T02:28:29.323928578Z
+  proposal_314: 2025-11-14T12:07:36.473482691Z
+  proposal_315: 2025-11-16T16:31:53.693887575Z
+  proposal_316: 2025-11-16T16:32:57.953575588Z
+  proposal_317: 2025-11-19T06:19:54.525009385Z
+  proposal_318: 2025-11-19T06:25:18.243741551Z
+
+response:
+  primary: normalized_signed_exit_reentry_dipole
+  pre_minutes: [-5, -4, -3, -2, -1]
+  post_minutes: [0, 1, 2, 3, 4]
+  pseudo_boundary_minutes: [15, 30, 45]
+  trade_notional: price_times_size
+  taker_side_must_be_fixture_verified: true
+  zero_denominator: missing
+  definition: half_of_pre_sell_minus_buy_imbalance_plus_post_buy_minus_sell_imbalance_minus_pseudo_boundary_mean
+  smallest_effect_of_interest: 0.02
+  secondary_order:
+    - realized_total_funding_and_midpoint_oracle_basis
+    - open_interest_change
+    - unsigned_trade_count_and_notional
+    - return_and_absolute_return
+  forbidden_outcomes: [historical_spread, historical_depth]
+
+directional_predictions:
+  zero_to_100: dipole_increases
+  100_to_zero: dipole_decreases
+  equal_forward_reverse_magnitude_required: false
+  pseudo_boundaries_move_same_direction: false
+
+windows:
+  reverse_full_days_each_side: 28
+  forward_full_days_each_side: 7
+  drop_execution_partial_hour: true
+  control_rule_change_exclusion_days_each_side: 35
+
+control_eligibility:
+  minimum_market_age_days: 60
+  minimum_valid_expected_minutes_fraction: 0.95
+  reverse_minimum_trades_per_day: 100
+  reverse_minimum_eligible_pre_days: 21
+  forward_minimum_trades_per_day: 100
+  forward_minimum_eligible_pre_days: 5
+  use_preperiod_only: true
+  match_on: [margin_type, liquidity_tier, market_age, log_volume, volatility, open_interest]
+
+estimation:
+  primary: stacked_difference_in_discontinuities
+  comparison: real_hour_boundary_vs_within_hour_pseudo_boundaries_treated_vs_eligible_controls_pre_vs_post
+  fixed_effects: [market, utc_date_by_hour, day_of_week]
+  inference: [market_cluster, wild_cluster_bootstrap, label_randomization_inference]
+  reverse_development_frozen_before_confirmation: true
+  forward_opened_only_after_reverse_immutable: true
+
+falsifications:
+  pseudo_execution_day_offsets: [-14, -7, 7, 14]
+  announcement_and_voting_start_leads: true
+  never_and_not_yet_treated_controls: true
+  drop_top_absolute_return_hours: [1, 3]
+  leave_one_market_out: true
+  leave_one_proposal_out: true
+  contaminated_fartcoin_negative_design_control_only: true
+
+t0_pass_gate:
+  minimum_paired_markets_after_state_verification: 10
+  minimum_clean_reverse_markets_after_state_verification: 20
+  claim_non_equivalent_to_nearest_work: true
+  public_side_price_size_timestamp_height_and_funding_history: true
+  proposal_317_reservable: true
+  proposal_220_reservable: true
+  result_changes_protocol_fixed_carry_evaluation: true
+
+t0_fail_gate:
+  fewer_than_paired_markets: 5
+  fewer_than_reverse_markets: 15
+  funding_clock_changed: true
+  only_unsigned_periodicity_remains: true
+
+post_d0_stop_gate:
+  no_realized_funding_first_stage: stop
+  confirmation_direction_disagrees: stop
+  forward_direction_does_not_reverse: stop
+  pseudo_boundaries_comparable_to_real_boundary: stop
+
+data_lock:
+  allowed_t0: [governance_payloads, source_code, terms, api_schemas, endpoint_headers, academic_papers]
+  forbidden_t0: [trades, candles, prices, open_interest, basis, realized_funding]
+  d0_numeric_outcomes_discarded: true
+  publish_fetch_code_and_hashes_not_hosted_raw_responses: true
+  paid_data_forbidden: true
+
+compute:
+  t0_cpu_core_hour_cap: 20
+  d0_cpu_core_hour_cap: 20
+  d0_temporary_data_gb_cap: 2
+  first_outcome_pilot_raw_data_gb_range: [5, 20]
+  first_outcome_pilot_parquet_gb_cap: 5
+  first_outcome_pilot_cpu_core_hour_cap: 100
+  gpu_forbidden: true
+  v100_forbidden: true
+  rtx2060_forbidden: true
+  h20_forbidden: true
+  ecomd_forbidden: true
