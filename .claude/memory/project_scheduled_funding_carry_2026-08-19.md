@@ -70,3 +70,8 @@ trade between the execution cursor and a fixed 20,000-block-later cursor. This i
 the frozen pre-period requirement (100 trades on 21/28 days) an immediate earning-or-kill gate. Before bulk
 ticks, D1A must use only 28 pre-event daily candles for the 21 development markets. Proceed at 20--21 eligible;
 AMBER at 15--19; stop dYdX-only below 15. Do not relax the activity threshold or open proposal 317/220 outcomes.
+
+D1A is now frozen in `configs/empirical_physics/dydx_funding_carry_d1a_activity_v1.yaml` before daily activity
+values. It makes exactly 21 `1DAY` candle requests, stores only UTC dates and daily trade counts, and has a unit
+test preventing recognizable OHLC/volume/OI fixture values from reaching the result. A D1A pass still requires
+a separate D1B freeze; it does not authorize tick acquisition by itself.

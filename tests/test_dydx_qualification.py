@@ -5,6 +5,7 @@ import json
 from ecomd.data.dydx_qualification import (
     audit_funding_transition,
     extract_passed_perpetual_updates,
+    summarize_daily_activity,
     summarize_response,
 )
 
@@ -106,3 +107,53 @@ def test_governance_audit_requires_funding_only_change() -> None:
             "clean": True,
         }
     ]
+
+
+def test_daily_activity_summary_retains_only_gate_values() -> None:
+    payload = {
+        "candles": [
+            {
+                "startedAt": "2025-01-01T00:00:00.000Z",
+                "ticker": "TEST-USD",
+                "resolution": "1DAY",
+                "trades": 101,
+                "open": "SECRET_OPEN",
+                "high": "SECRET_HIGH",
+                "low": "SECRET_LOW",
+                "close": "SECRET_CLOSE",
+                "baseTokenVolume": "SECRET_VOLUME",
+                "usdVolume": "SECRET_USD_VOLUME",
+                "startingOpenInterest": "SECRET_OI",
+            },
+            {
+                "startedAt": "2025-01-02T00:00:00.000Z",
+                "ticker": "TEST-USD",
+                "resolution": "1DAY",
+                "trades": 99,
+                "open": "ANOTHER_SECRET",
+            },
+        ]
+    }
+    summary = summarize_daily_activity(
+        payload,
+        raw_body=json.dumps(payload).encode(),
+        start_inclusive="2025-01-01T00:00:00Z",
+        end_exclusive="2025-01-03T00:00:00Z",
+        minimum_trades_per_day=100,
+        minimum_eligible_days=1,
+    )
+    encoded = json.dumps(summary)
+    assert summary["daily_trade_counts"] == {"2025-01-01": 101, "2025-01-02": 99}
+    assert summary["days_meeting_activity_floor"] == 1
+    assert summary["activity_eligible"] is True
+    for forbidden in (
+        "SECRET_OPEN",
+        "SECRET_HIGH",
+        "SECRET_LOW",
+        "SECRET_CLOSE",
+        "SECRET_VOLUME",
+        "SECRET_USD_VOLUME",
+        "SECRET_OI",
+        "ANOTHER_SECRET",
+    ):
+        assert forbidden not in encoded

@@ -6,6 +6,7 @@ import hashlib
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
 EndpointKind = Literal["trades", "candles", "historical_funding"]
@@ -165,6 +166,68 @@ def summarize_response(
         "maximum_height": max(heights) if heights else None,
         "pagination": pagination,
         "retained_market_outcome_values": False,
+    }
+
+
+def _parse_iso(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError(f"timestamp lacks timezone: {value}")
+    return parsed.astimezone(UTC)
+
+
+def summarize_daily_activity(
+    payload: Mapping[str, Any],
+    *,
+    raw_body: bytes,
+    start_inclusive: str,
+    end_exclusive: str,
+    minimum_trades_per_day: int,
+    minimum_eligible_days: int,
+) -> dict[str, Any]:
+    """Retain only dates and pre-period trade counts needed by the frozen activity gate."""
+    rows = _rows(payload, ENDPOINT_SPECS["candles"].collection_key)
+    start = _parse_iso(start_inclusive)
+    end = _parse_iso(end_exclusive)
+    if end <= start:
+        raise ValueError("activity window must have positive duration")
+    duration = end - start
+    if duration % timedelta(days=1) != timedelta(0):
+        raise ValueError("activity window must contain whole UTC days")
+    expected_days = [
+        (start + timedelta(days=offset)).date().isoformat()
+        for offset in range(duration.days)
+    ]
+    daily_counts: dict[str, int] = {}
+    row_keys = sorted({key for row in rows for key in row})
+    for row in rows:
+        timestamp = _parse_iso(str(row["startedAt"]))
+        if not start <= timestamp < end:
+            continue
+        day = timestamp.date().isoformat()
+        if day in daily_counts:
+            raise ValueError(f"duplicate daily candle for {day}")
+        daily_counts[day] = int(row["trades"])
+    missing_days = sorted(set(expected_days) - set(daily_counts))
+    eligible_days = sum(
+        daily_counts.get(day, -1) >= minimum_trades_per_day for day in expected_days
+    )
+    return {
+        "raw_body_sha256": hashlib.sha256(raw_body).hexdigest(),
+        "http_body_bytes": len(raw_body),
+        "row_schema": row_keys,
+        "start_inclusive": start.isoformat(),
+        "end_exclusive": end.isoformat(),
+        "expected_day_count": len(expected_days),
+        "observed_day_count": len(expected_days) - len(missing_days),
+        "missing_days": missing_days,
+        "daily_trade_counts": {day: daily_counts[day] for day in expected_days if day in daily_counts},
+        "minimum_trades_per_day": minimum_trades_per_day,
+        "minimum_eligible_days": minimum_eligible_days,
+        "days_meeting_activity_floor": eligible_days,
+        "activity_eligible": not missing_days and eligible_days >= minimum_eligible_days,
+        "retained_fields": ["startedAt", "trades"],
+        "retained_price_volume_ohlc_oi_or_midpoint_values": False,
     }
 
 

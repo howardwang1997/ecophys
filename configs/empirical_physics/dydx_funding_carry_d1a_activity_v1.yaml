@@ -1,0 +1,64 @@
+contract:
+  name: dydx_funding_carry_d1a_activity
+  version: 1
+  status: frozen_before_any_daily_activity_value
+  parent_d0_commit: bdf61a127
+  parent_d0_manifest_sha256: 0f3310f803ebb7d6313b23549709394a519aa41feb124df54f9172083dcfd00c
+  purpose: apply_pre_registered_activity_floor_before_bulk_trade_acquisition
+
+source:
+  indexer_base_url: https://indexer.dydx.trade/v4
+  endpoint: /candles/perpetualMarkets/{ticker}
+  resolution: 1DAY
+
+events:
+  - proposal_id: 314
+    pre_start_inclusive: "2025-10-17T00:00:00Z"
+    pre_end_exclusive: "2025-11-14T00:00:00Z"
+    markets: [2Z-USD, ASTER-USD, ATH-USD, BEAM-USD, BERA-USD, DRIFT-USD]
+  - proposal_id: 315
+    pre_start_inclusive: "2025-10-19T00:00:00Z"
+    pre_end_exclusive: "2025-11-16T00:00:00Z"
+    markets: [EIGEN-USD, ENA-USD, HYPE-USD, KAITO-USD, MNT-USD, MORPHO-USD, MOVE-USD, ONDO-USD]
+  - proposal_id: 316
+    pre_start_inclusive: "2025-10-19T00:00:00Z"
+    pre_end_exclusive: "2025-11-16T00:00:00Z"
+    markets: [PAXG-USD, PENGU-USD, POL-USD, POPCAT-USD, SPX-USD, S-USD, SYRUP-USD]
+
+activity_rule:
+  preperiod_days: 28
+  minimum_trades_per_day: 100
+  minimum_eligible_pre_days: 21
+  missing_daily_candle_makes_market_ineligible: true
+  threshold_tuning_after_values: forbidden
+
+decision:
+  proceed_minimum_markets: 20
+  amber_minimum_markets: 15
+  fewer_than_15: stop_dydx_only_before_bulk_ticks
+  proposal_317_cannot_rescue_d1a: true
+
+blinding:
+  allowed_retained_candle_values: [startedAt, trades]
+  forbidden_retained_candle_values:
+    [open, high, low, close, baseTokenVolume, usdVolume, startingOpenInterest,
+     orderbookMidPriceOpen, orderbookMidPriceClose]
+  post_event_data: forbidden
+  trade_endpoint: forbidden
+  proposal_317: forbidden
+  proposal_220_window: forbidden
+  raw_responses: forbidden
+
+limits:
+  requests: 21
+  response_limit_each: 100
+  request_timeout_seconds: 30
+  transport_retries: 3
+  cpu_core_hours: 1
+  temporary_data_mb: 50
+  paid_data: forbidden
+  gpu: forbidden
+  v100: forbidden
+  rtx2060: forbidden
+  h20: forbidden
+  ecomd: forbidden
