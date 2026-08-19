@@ -81,3 +81,5 @@ dRPC remains fatal after roughly 128 cumulative calls even after topic splitting
 Ethereum ETH RPC exactly reproduces two complete dRPC identity sets (68/68 deployment, 5/5 sparse). It becomes the
 formal replaceable transport with 10,000-block shards, 0.75-second pacing and 14 allowed Hub topics; the documented
 1,000-log cap exceeds the observed 68-log shard maximum. Chain ID and frozen endpoint block hash also match.
+The Blockscout instance rejects one-element address arrays, so single-contract log requests use the standard
+scalar form; multi-address requests remain arrays. The failed attempt returned no log or result.

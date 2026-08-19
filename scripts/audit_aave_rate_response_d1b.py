@@ -416,7 +416,7 @@ def _get_logs_with_split(
             "eth_getLogs",
             [
                 {
-                    "address": list(addresses),
+                    "address": addresses[0] if len(addresses) == 1 else list(addresses),
                     "fromBlock": hex(start_block),
                     "toBlock": hex(end_block_inclusive),
                     "topics": [list(topics)],

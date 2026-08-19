@@ -43,8 +43,10 @@ ETH RPC is accepted only after exact cross-transport checks: it reproduces all 6
 deployment shard 24,230,000--24,239,999 and all five identities in the sparse shard
 24,320,000--24,329,999. Formal extraction uses Blockscout with the same 10,000-block shards, 0.75-second pacing
 and all 14 allowed Hub topics; its documented 1,000-log response cap is above the observed shard maximum of 68.
+The per-instance implementation rejects a one-element address array despite documenting string-or-array input;
+formal single-contract requests therefore encode the address as a scalar. Multi-address requests remain arrays.
 
-Google’s current Blockchain Analytics table covers the frozen endpoint, but a result-equivalent address query has
+Google's current Blockchain Analytics table covers the frozen endpoint, but a result-equivalent address query has
 a 789.9 GB dry-run upper bound. The visible query project has zero billed bytes this month, yet another project on
 the same billing account cannot be audited with the available permissions. Because Google's 1 TiB free allowance
 is account-level, BigQuery is not executed and is not a hidden paid fallback.

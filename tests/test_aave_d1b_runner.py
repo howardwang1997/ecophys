@@ -54,6 +54,7 @@ def test_topic_first_log_split_preserves_block_range() -> None:
             assert method == "eth_getLogs"
             request = params[0]
             assert isinstance(request, dict)
+            assert request["address"] == "0x" + "11" * 20
             topic_filter = request["topics"]
             assert isinstance(topic_filter, list)
             topics = topic_filter[0]
