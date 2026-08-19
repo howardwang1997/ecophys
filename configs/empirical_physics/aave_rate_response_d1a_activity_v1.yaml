@@ -1,7 +1,7 @@
 contract:
   name: aave_rate_response_spectroscopy_d1a_activity
   version: 1
-  status: amended_after_transport_only_failure_before_any_log_result
+  status: amended_after_transport_and_rate_limit_failures_before_result_artifact
   parent_t0_artifact_commit: e29230ce9
   parent_t0_manifest_sha256: 9db209180d036091c48eb2dc05b4c3eef1e23f50ae97a937ab227e920823ed8b
   purpose: qualify_preintervention_activity_before_any_postevent_outcome_acquisition
@@ -10,6 +10,7 @@ source:
   provider: dRPC_public_ethereum_endpoint
   rpc_url: https://eth.drpc.org/
   provider_documentation: https://drpc.org/docs/ethereum-api
+  provider_rate_limit_documentation: https://drpc.org/docs/howitworks/ratelimiting
   expected_chain_id_hex: "0x1"
   provider_is_replaceable_transport_not_dataset_licensor: true
   prequery_capability_probe:
@@ -95,6 +96,10 @@ blinding:
 limits:
   request_timeout_seconds: 30
   transport_retries: 3
+  minimum_request_interval_seconds: 0.5
+  rate_limit_retries: 6
+  rate_limit_backoff_initial_seconds: 5
+  rate_limit_backoff_max_seconds: 30
   block_chunk_size: 5000
   maximum_log_range_split_depth: 8
   boundary_search_back_blocks: 400000

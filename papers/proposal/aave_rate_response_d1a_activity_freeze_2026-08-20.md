@@ -56,6 +56,22 @@ This amendment changes no proposal, asset, timestamp, block-boundary rule, event
 activity threshold or decision threshold. It must itself be committed before the first successful Aave log
 request.
 
+### Public-rate-limit amendment before a result artifact
+
+The retry from clean transport commit `e617f85aa` progressed into the frozen request sequence but terminated on
+dRPC HTTP 429. Some authorized pre-period log responses may have existed transiently in process memory before
+the failure; no aggregate count was printed, inspected or written, and no result artifact exists. Repeated
+unpaced restarts would waste the public service and repeatedly discard completed work.
+
+dRPC documents dynamic free-public-node rate limiting, a two-second maximum provider timeout, and a 10,000-log
+response cap. Before another retry, every JSON-RPC request is therefore paced at least 0.5 seconds apart. HTTP
+429 receives at most six explicit retries with frozen 5, 10, 20, 30, 30 and 30 second upper-bounded backoffs,
+honoring a larger provider `Retry-After` value only up to the same 30-second cap. Retry count and total wait are
+written to the sanitized manifest. HTTP 429 is never treated as a block-range error.
+
+This is a transport-scheduling amendment only. It changes no requested block, market event, participant
+definition, retained aggregate, unit threshold or panel decision. It must be committed before retrying.
+
 ## Retained information
 
 For each asset-event unit and each week, retain only:

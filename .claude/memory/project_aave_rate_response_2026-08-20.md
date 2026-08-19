@@ -49,8 +49,7 @@ D1A uses four consecutive seven-day bins immediately before each exact payload e
 execution block. For each asset-event unit it retains only weekly Borrow/Repay counts and distinct debt-user
 counts, plus their 28-day totals. User topics exist only in memory; no participant, amount, rate, transaction
 hash, per-log identifier, raw log or response is serialized. The pure reducer rejects duplicates, removed logs,
-wrong contracts/reserves/events and out-of-window rows; eight targeted tests plus Ruff and strict mypy pass
-after the transport amendment and before the first returned log.
+wrong contracts/reserves/events and out-of-window rows; targeted tests, Ruff and strict mypy guard the runner.
 
 An eligible unit needs every week to have at least 10 Borrows, 10 Repays and 10 distinct debt users, and the
 full period to have at least 200 combined actions and 50 distinct debt users. The panel passes only with at
@@ -64,3 +63,9 @@ personal token for historical `eth_getLogs`. An outcome-blind empty-address prob
 public Ethereum endpoint supports the frozen 5,000-block historical query. The transport is amended to dRPC
 before retry; thresholds and scientific queries are unchanged. HTTP 403 is fatal rather than recursively split;
 only recognized range/result-size errors may split chunks.
+
+The retry from `e617f85aa` reached the authorized pre-period request sequence but stopped on dRPC HTTP 429; no
+aggregate was printed or persisted. Before another retry, freeze 0.5-second request pacing and six bounded 429
+backoffs, and retain retry/wait diagnostics. This is transport scheduling only: no scientific query or threshold
+changes. Partial pre-period responses may have existed transiently, so do not claim that no Aave log has ever
+been returned; the correct claim is that no D1A aggregate result or post-event value exists yet.

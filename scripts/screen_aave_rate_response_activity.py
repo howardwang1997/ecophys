@@ -6,6 +6,7 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime, timedelta
@@ -43,14 +44,30 @@ class RpcError(RuntimeError):
 
 
 class _RpcClient:
-    def __init__(self, *, url: str, timeout: int, transport_retries: int) -> None:
+    def __init__(
+        self,
+        *,
+        url: str,
+        timeout: int,
+        transport_retries: int,
+        minimum_request_interval_seconds: float,
+        rate_limit_retries: int,
+        rate_limit_backoff_initial_seconds: float,
+        rate_limit_backoff_max_seconds: float,
+    ) -> None:
+        if minimum_request_interval_seconds < 0:
+            raise ValueError("minimum request interval cannot be negative")
+        if rate_limit_retries < 0:
+            raise ValueError("rate-limit retries cannot be negative")
+        if rate_limit_backoff_initial_seconds <= 0 or rate_limit_backoff_max_seconds <= 0:
+            raise ValueError("rate-limit backoff values must be positive")
         retry = Retry(
             total=transport_retries,
             connect=transport_retries,
             read=transport_retries,
             status=transport_retries,
             allowed_methods=frozenset({"POST"}),
-            status_forcelist=(429, 500, 502, 503, 504),
+            status_forcelist=(500, 502, 503, 504),
             backoff_factor=0.5,
             raise_on_status=False,
         )
@@ -59,27 +76,56 @@ class _RpcClient:
         self.session.headers.update({"User-Agent": "EcoPhys-Aave-D1A-screen/1.0"})
         self.url = url
         self.timeout = timeout
+        self.minimum_request_interval_seconds = minimum_request_interval_seconds
+        self.rate_limit_retries = rate_limit_retries
+        self.rate_limit_backoff_initial_seconds = rate_limit_backoff_initial_seconds
+        self.rate_limit_backoff_max_seconds = rate_limit_backoff_max_seconds
         self.next_request_id = 1
         self.method_counts: Counter[str] = Counter()
         self.log_range_splits = 0
+        self.rate_limit_retry_count = 0
+        self.rate_limit_wait_seconds = 0.0
+        self._last_request_started: float | None = None
         self._block_cache: dict[int, dict[str, Any]] = {}
 
     def call(self, method: str, params: list[Any]) -> Any:
         request_id = self.next_request_id
         self.next_request_id += 1
-        self.method_counts[method] += 1
-        response = self.session.post(
-            self.url,
-            json={"jsonrpc": "2.0", "id": request_id, "method": method, "params": params},
-            timeout=self.timeout,
-        )
-        try:
-            payload = response.json()
-        except requests.JSONDecodeError as error:
-            raise RpcError(
-                f"RPC {method} returned non-JSON HTTP {response.status_code}",
-                http_status=response.status_code,
-            ) from error
+        payload: Any = None
+        response: requests.Response | None = None
+        for rate_limit_attempt in range(self.rate_limit_retries + 1):
+            self._pace()
+            self.method_counts[method] += 1
+            response = self.session.post(
+                self.url,
+                json={
+                    "jsonrpc": "2.0",
+                    "id": request_id,
+                    "method": method,
+                    "params": params,
+                },
+                timeout=self.timeout,
+            )
+            try:
+                payload = response.json()
+            except requests.JSONDecodeError as error:
+                raise RpcError(
+                    f"RPC {method} returned non-JSON HTTP {response.status_code}",
+                    http_status=response.status_code,
+                ) from error
+            if response.status_code != 429 or rate_limit_attempt >= self.rate_limit_retries:
+                break
+            delay = _rate_limit_delay(
+                attempt=rate_limit_attempt,
+                initial_seconds=self.rate_limit_backoff_initial_seconds,
+                maximum_seconds=self.rate_limit_backoff_max_seconds,
+                retry_after=response.headers.get("Retry-After"),
+            )
+            self.rate_limit_retry_count += 1
+            self.rate_limit_wait_seconds += delay
+            time.sleep(delay)
+        if response is None:
+            raise AssertionError("RPC loop completed without an HTTP response")
         if response.status_code >= 400:
             remote_error = payload.get("error") if isinstance(payload, Mapping) else None
             raise RpcError(
@@ -102,6 +148,16 @@ class _RpcClient:
         if "result" not in payload:
             raise RpcError(f"RPC {method} returned no result")
         return payload["result"]
+
+    def _pace(self) -> None:
+        now = time.monotonic()
+        if self._last_request_started is not None:
+            remaining = self.minimum_request_interval_seconds - (
+                now - self._last_request_started
+            )
+            if remaining > 0:
+                time.sleep(remaining)
+        self._last_request_started = time.monotonic()
 
     def block(self, number: int) -> dict[str, Any]:
         if number < 0:
@@ -170,6 +226,25 @@ def _hash(value: str, *, field: str) -> str:
 
 def _utc(unix_seconds: int) -> str:
     return datetime.fromtimestamp(unix_seconds, UTC).isoformat()
+
+
+def _rate_limit_delay(
+    *,
+    attempt: int,
+    initial_seconds: float,
+    maximum_seconds: float,
+    retry_after: str | None,
+) -> float:
+    if attempt < 0 or initial_seconds <= 0 or maximum_seconds <= 0:
+        raise ValueError("rate-limit backoff parameters must be positive")
+    header_delay = 0.0
+    if retry_after is not None:
+        try:
+            header_delay = max(0.0, float(retry_after))
+        except ValueError:
+            header_delay = 0.0
+    exponential = initial_seconds * float(2**attempt)
+    return float(min(max(exponential, header_delay), maximum_seconds))
 
 
 def _verify_parent_t0(config: Mapping[str, Any], t0: Mapping[str, Any]) -> None:
@@ -273,9 +348,7 @@ def _is_splittable_log_error(error: RpcError) -> bool:
         "query returned more than",
         "log response size exceeded",
     )
-    return error.rpc_code in {-32005, -32002} or any(
-        marker in message for marker in range_markers
-    )
+    return any(marker in message for marker in range_markers)
 
 
 def _get_window_logs(
@@ -378,6 +451,12 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
         url=str(source["rpc_url"]),
         timeout=int(limits["request_timeout_seconds"]),
         transport_retries=int(limits["transport_retries"]),
+        minimum_request_interval_seconds=float(limits["minimum_request_interval_seconds"]),
+        rate_limit_retries=int(limits["rate_limit_retries"]),
+        rate_limit_backoff_initial_seconds=float(
+            limits["rate_limit_backoff_initial_seconds"]
+        ),
+        rate_limit_backoff_max_seconds=float(limits["rate_limit_backoff_max_seconds"]),
     )
     chain_id = client.call("eth_chainId", [])
     if chain_id != str(source["expected_chain_id_hex"]):
@@ -558,6 +637,8 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
             "event_topics": {"borrow": borrow_topic, "repay": repay_topic},
             "rpc_request_counts": dict(sorted(client.method_counts.items())),
             "log_range_splits": client.log_range_splits,
+            "rate_limit_retry_count": client.rate_limit_retry_count,
+            "rate_limit_wait_seconds": round(client.rate_limit_wait_seconds, 3),
             "raw_rpc_responses_persisted": False,
         },
         "activity_rule": activity_rule,
