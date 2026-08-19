@@ -75,3 +75,16 @@ D1A is now frozen in `configs/empirical_physics/dydx_funding_carry_d1a_activity_
 values. It makes exactly 21 `1DAY` candle requests, stores only UTC dates and daily trade counts, and has a unit
 test preventing recognizable OHLC/volume/OI fixture values from reaching the result. A D1A pass still requires
 a separate D1B freeze; it does not authorize tick acquisition by itself.
+
+## D1A result — hard stop on 2026-08-20
+
+Only HYPE passes the frozen 100-trades-on-21-of-28-days rule: 1 eligible market versus the hard stop line of 15.
+ENA has 20 qualifying days, SPX 15, ASTER 11 and every other market at most five. All 21 markets have all 28
+daily candles, and official candle-generator source confirms that `trades` increments once per trade, so this is
+not missing history or field confusion. Canonical manifest SHA is `536cfcd5…`.
+
+Stop the dYdX-only causal paper before tick acquisition. Do not lower the threshold, add ENA as a near miss,
+open proposal 317 or proposal 220, or run a one-market HYPE anecdote. The result does not refute the mechanism;
+it shows that this clean intervention lacks the observational support needed for the frozen estimand. No D1B,
+GPU, paid-data or EcoMD job is queued. Reuse the identification/pipeline only after a new domain demonstrates at
+least 15 active treated units or repeated independent interventions in liquid units at metadata stage.
