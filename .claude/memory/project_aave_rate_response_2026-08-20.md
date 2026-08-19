@@ -42,3 +42,19 @@ Commit a separate 28-day pre-period activity gate before querying any response. 
 are anticipation, endogenous policy, incomplete risk-steward intervention history, repeated-unit dependence,
 the at-risk population for new borrowing, and utilization feedback. No GPU, paid data or EcoMD run is
 authorized by T0.
+
+## D1A activity gate frozen before logs
+
+D1A uses four consecutive seven-day bins immediately before each exact payload execution and excludes the
+execution block. For each asset-event unit it retains only weekly Borrow/Repay counts and distinct debt-user
+counts, plus their 28-day totals. User topics exist only in memory; no participant, amount, rate, transaction
+hash, per-log identifier, raw log or response is serialized. The pure reducer rejects duplicates, removed logs,
+wrong contracts/reserves/events and out-of-window rows; six tests plus Ruff and strict mypy pass before the
+first query.
+
+An eligible unit needs every week to have at least 10 Borrows, 10 Repays and 10 distinct debt users, and the
+full period to have at least 200 combined actions and 50 distinct debt users. The panel passes only with at
+least 15/18 total, 12/15 primary decreases, 2/3 reverse-sign probes and two assets in every proposal. Any miss
+stops post-event acquisition; thresholds cannot be weakened after inspection. Passing authorizes only a
+separately frozen complete intervention-ledger and anticipation/identification audit. D1A is CPU/RPC-only and
+does not authorize V100, RTX 2060, paid data or EcoMD.

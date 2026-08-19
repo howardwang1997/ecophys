@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections.abc import Mapping, Sequence
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,173 @@ def normalize_address(value: str) -> str:
 def address_topic(value: str) -> str:
     """Encode an indexed address as a 32-byte EVM log topic."""
     return "0x" + "0" * 24 + normalize_address(value)[2:]
+
+
+def _normalize_topic(value: str) -> str:
+    normalized = value.lower()
+    if re.fullmatch(r"0x[0-9a-f]{64}", normalized) is None:
+        raise ValueError(f"invalid EVM log topic: {value}")
+    return normalized
+
+
+def _hex_quantity(value: Any, *, field: str) -> int:
+    if not isinstance(value, str) or re.fullmatch(r"0x[0-9a-fA-F]+", value) is None:
+        raise ValueError(f"invalid {field}: {value}")
+    return int(value, 16)
+
+
+def summarize_preperiod_activity(
+    windows: Sequence[Mapping[str, Any]],
+    *,
+    pool_address: str,
+    assets: Mapping[str, str],
+    borrow_topic: str,
+    repay_topic: str,
+    minimum_weekly_borrow_events: int,
+    minimum_weekly_repay_events: int,
+    minimum_weekly_unique_debt_users: int,
+    minimum_total_actions: int,
+    minimum_total_unique_debt_users: int,
+) -> dict[str, Any]:
+    """Reduce pre-period logs to frozen activity counts without retaining log values."""
+    if not windows:
+        raise ValueError("at least one pre-period window is required")
+    thresholds = (
+        minimum_weekly_borrow_events,
+        minimum_weekly_repay_events,
+        minimum_weekly_unique_debt_users,
+        minimum_total_actions,
+        minimum_total_unique_debt_users,
+    )
+    if any(value < 0 for value in thresholds):
+        raise ValueError("activity thresholds must be non-negative")
+
+    normalized_pool = normalize_address(pool_address)
+    asset_topics = {
+        address_topic(address): str(symbol) for symbol, address in sorted(assets.items())
+    }
+    if len(asset_topics) != len(assets):
+        raise ValueError("asset addresses must be unique")
+    event_topics = {
+        _normalize_topic(borrow_topic): "borrow",
+        _normalize_topic(repay_topic): "repay",
+    }
+    if len(event_topics) != 2:
+        raise ValueError("Borrow and Repay topics must differ")
+
+    symbols = sorted(assets)
+    weekly_summaries: dict[str, list[dict[str, Any]]] = {symbol: [] for symbol in symbols}
+    total_borrow = {symbol: 0 for symbol in symbols}
+    total_repay = {symbol: 0 for symbol in symbols}
+    total_users: dict[str, set[str]] = {symbol: set() for symbol in symbols}
+    seen_log_ids: set[tuple[str, str, int]] = set()
+    previous_end: int | None = None
+
+    for week_index, window in enumerate(windows, start=1):
+        start_block = int(window["start_block"])
+        end_block_exclusive = int(window["end_block_exclusive"])
+        if start_block < 0 or end_block_exclusive <= start_block:
+            raise ValueError(f"invalid block window {start_block}:{end_block_exclusive}")
+        if previous_end is not None and start_block != previous_end:
+            raise ValueError("pre-period block windows must be contiguous")
+        previous_end = end_block_exclusive
+        logs = window.get("logs")
+        if not isinstance(logs, Sequence) or isinstance(logs, (str, bytes)):
+            raise ValueError("window logs must be a sequence")
+        week_borrow = {symbol: 0 for symbol in symbols}
+        week_repay = {symbol: 0 for symbol in symbols}
+        week_users: dict[str, set[str]] = {symbol: set() for symbol in symbols}
+
+        for raw_log in logs:
+            if not isinstance(raw_log, Mapping):
+                raise ValueError("each log must be a mapping")
+            if raw_log.get("removed") is True:
+                raise ValueError("removed logs are forbidden in a formal activity screen")
+            if normalize_address(str(raw_log.get("address"))) != normalized_pool:
+                raise ValueError("RPC returned a log from an unexpected contract")
+            topics = raw_log.get("topics")
+            if not isinstance(topics, Sequence) or isinstance(topics, (str, bytes)):
+                raise ValueError("log topics must be a sequence")
+            if len(topics) < 3:
+                raise ValueError("Borrow/Repay log has fewer than three topics")
+            normalized_topics = [_normalize_topic(str(topic)) for topic in topics]
+            event_name = event_topics.get(normalized_topics[0])
+            symbol = asset_topics.get(normalized_topics[1])
+            if event_name is None or symbol is None:
+                raise ValueError("RPC returned an unexpected event or reserve")
+            block_number = _hex_quantity(raw_log.get("blockNumber"), field="blockNumber")
+            if not start_block <= block_number < end_block_exclusive:
+                raise ValueError("RPC returned a log outside its requested week")
+            block_hash = _normalize_topic(str(raw_log.get("blockHash")))
+            transaction_hash = _normalize_topic(str(raw_log.get("transactionHash")))
+            log_index = _hex_quantity(raw_log.get("logIndex"), field="logIndex")
+            identity = (block_hash, transaction_hash, log_index)
+            if identity in seen_log_ids:
+                raise ValueError("duplicate log returned across RPC chunks")
+            seen_log_ids.add(identity)
+
+            debt_user = normalized_topics[2]
+            if event_name == "borrow":
+                week_borrow[symbol] += 1
+                total_borrow[symbol] += 1
+            else:
+                week_repay[symbol] += 1
+                total_repay[symbol] += 1
+            week_users[symbol].add(debt_user)
+            total_users[symbol].add(debt_user)
+
+        for symbol in symbols:
+            borrow_events = week_borrow[symbol]
+            repay_events = week_repay[symbol]
+            unique_users = len(week_users[symbol])
+            weekly_eligible = (
+                borrow_events >= minimum_weekly_borrow_events
+                and repay_events >= minimum_weekly_repay_events
+                and unique_users >= minimum_weekly_unique_debt_users
+            )
+            weekly_summaries[symbol].append(
+                {
+                    "week_index": week_index,
+                    "start_block": start_block,
+                    "end_block_exclusive": end_block_exclusive,
+                    "borrow_events": borrow_events,
+                    "repay_events": repay_events,
+                    "combined_actions": borrow_events + repay_events,
+                    "unique_debt_users": unique_users,
+                    "weekly_activity_eligible": weekly_eligible,
+                }
+            )
+
+    summaries: dict[str, Any] = {}
+    for symbol in symbols:
+        symbol_total_borrow = total_borrow[symbol]
+        symbol_total_repay = total_repay[symbol]
+        total_actions = symbol_total_borrow + symbol_total_repay
+        total_unique_users = len(total_users[symbol])
+        weeks = weekly_summaries[symbol]
+        summaries[symbol] = {
+            "weeks": weeks,
+            "total_borrow_events": symbol_total_borrow,
+            "total_repay_events": symbol_total_repay,
+            "total_combined_actions": total_actions,
+            "total_unique_debt_users": total_unique_users,
+            "all_weeks_meet_activity_floor": all(
+                bool(week["weekly_activity_eligible"]) for week in weeks
+            ),
+            "activity_eligible": (
+                all(bool(week["weekly_activity_eligible"]) for week in weeks)
+                and total_actions >= minimum_total_actions
+                and total_unique_users >= minimum_total_unique_debt_users
+            ),
+            "retained_fields": [
+                "block_window",
+                "borrow_event_count",
+                "repay_event_count",
+                "unique_debt_user_count",
+            ],
+            "retained_addresses_amounts_transactions_or_raw_logs": False,
+        }
+    return summaries
 
 
 def _percent_to_bps(value: str) -> int:

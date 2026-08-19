@@ -1,0 +1,96 @@
+contract:
+  name: aave_rate_response_spectroscopy_d1a_activity
+  version: 1
+  status: frozen_before_any_aave_borrow_repay_log
+  parent_t0_artifact_commit: e29230ce9
+  parent_t0_manifest_sha256: 9db209180d036091c48eb2dc05b4c3eef1e23f50ae97a937ab227e920823ed8b
+  purpose: qualify_preintervention_activity_before_any_postevent_outcome_acquisition
+
+source:
+  provider: PublicNode
+  rpc_url: https://ethereum-rpc.publicnode.com
+  expected_chain_id_hex: "0x1"
+  provider_is_replaceable_transport_not_dataset_licensor: true
+  borrow_topic: "0xb3d084820fb1a9decffb176436bd02558d15fac9b0ddfed8c465bc7359d7dce0"
+  repay_topic: "0xa534c8dbe71f871f9f3530e97a74601fea17b426cae02e1c5aee42c96c784051"
+
+market:
+  chain_id: 1
+  instance: Aave V3 Ethereum Core
+  pool: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"
+  assets:
+    DAI: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+    USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+
+selection:
+  primary_rate_decrease_proposals: [94, 130, 159, 247, 271]
+  reverse_sign_probe_proposals: [3]
+  expected_primary_units: 15
+  expected_reverse_sign_units: 3
+  expected_total_units: 18
+
+window:
+  clock: ethereum_block_timestamp_utc
+  boundary_rule: first_block_with_timestamp_greater_than_or_equal_to_target
+  start_inclusive: true
+  end_exclusive: true
+  execution_block_excluded: true
+  bins_are_relative_to_exact_payload_execution: true
+
+activity_rule:
+  preperiod_days: 28
+  weekly_bin_days: 7
+  minimum_weekly_borrow_events: 10
+  minimum_weekly_repay_events: 10
+  minimum_weekly_unique_debt_users: 10
+  minimum_total_combined_actions: 200
+  minimum_total_unique_debt_users: 50
+  every_week_must_meet_all_weekly_floors: true
+  threshold_tuning_after_values: forbidden
+  counts_are_power_metadata_not_behavioral_outcomes: true
+
+decision:
+  minimum_total_eligible_units: 15
+  minimum_primary_eligible_units: 12
+  minimum_reverse_sign_eligible_units: 2
+  minimum_eligible_assets_per_proposal: 2
+  all_four_conditions_required: true
+  below_gate: stop_aave_singleton_panel_before_postevent_outcomes
+  pass_only_authorizes_separately_frozen_intervention_ledger_gate: true
+
+blinding:
+  allowed_retained_market_values:
+    - weekly_borrow_event_count
+    - weekly_repay_event_count
+    - weekly_unique_debt_user_count
+    - total_event_counts
+    - total_unique_debt_user_count
+  forbidden_retained_values:
+    - participant_or_user_address
+    - amount
+    - realized_rate
+    - utilization
+    - reserve_balance_or_index
+    - transaction_hash
+    - per_log_block_identifier
+    - raw_log_or_rpc_response
+  postevent_logs: forbidden
+  execution_block_logs: forbidden
+  reserve_data_updated_logs: forbidden
+  position_or_balance_calls: forbidden
+
+limits:
+  request_timeout_seconds: 30
+  transport_retries: 3
+  block_chunk_size: 5000
+  maximum_log_range_split_depth: 8
+  boundary_search_back_blocks: 400000
+  cpu_core_hours: 4
+  temporary_data_mb: 500
+  paid_data: forbidden
+  gpu: forbidden
+  v100: forbidden
+  rtx2060: forbidden
+  h20: forbidden
+  ecomd: forbidden
