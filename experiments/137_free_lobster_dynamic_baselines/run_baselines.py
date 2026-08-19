@@ -190,6 +190,20 @@ def _split_points(n_rows: int, train_fraction: float, validation_fraction: float
     return train_end, validation_end
 
 
+def shard_assignments(
+    archives: Sequence[Path], shard_index: int, num_shards: int
+) -> list[tuple[int, Path]]:
+    """Assign archives while preserving their global indices for fixed seeds."""
+
+    if num_shards <= 0 or not 0 <= shard_index < num_shards:
+        raise ValueError("invalid shard assignment")
+    return [
+        (index, path)
+        for index, path in enumerate(archives)
+        if index % num_shards == shard_index
+    ]
+
+
 def unconditional_scores(
     labels: np.ndarray, train_end: int, validation_end: int
 ) -> dict[str, float]:
@@ -445,23 +459,19 @@ def main() -> None:
     if not isinstance(raw_config, dict):
         raise ValueError("configuration must be a mapping")
     archives = [ROOT / str(value) for value in raw_config["archives"]]
-    assigned = [path for index, path in enumerate(archives) if index % args.num_shards == args.shard_index]
+    assigned = shard_assignments(archives, args.shard_index, args.num_shards)
     started = time.perf_counter()
     results = [
-        run_archive(path, raw_config, device, int(raw_config["seed_root"]) + 1000 * index)
-        for index, path in enumerate(assigned)
+        run_archive(path, raw_config, device, int(raw_config["seed_root"]) + 1000 * global_index)
+        for global_index, path in assigned
     ]
     gain_count = sum(item["checks"]["baseline_gain_gate_pass"] for item in results)
-    local_required = math.ceil(
-        len(results) * int(raw_config["minimum_symbols_with_gain"]) / len(archives)
-    )
     checks = {
         "assigned_paths_complete": len(results) == len(assigned),
         "all_pipeline_checks_pass": all(
             all(value for key, value in item["checks"].items() if key != "baseline_gain_gate_pass")
             for item in results
         ),
-        "shard_gain_count_provisional": gain_count >= local_required,
     }
     git_sha = args.git_sha or subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
@@ -478,6 +488,8 @@ def main() -> None:
         "num_shards": args.num_shards,
         "wall_seconds": time.perf_counter() - started,
         "symbols": results,
+        "provisional_symbols_passing_gain_gate": gain_count,
+        "global_gain_gate_requires": int(raw_config["minimum_symbols_with_gain"]),
         "checks": checks,
         "all_checks_pass": all(checks.values()),
         "interpretation": "one-day observation-baseline feasibility only; no EcoMD claim",

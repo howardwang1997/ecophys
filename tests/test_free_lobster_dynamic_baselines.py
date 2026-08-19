@@ -61,3 +61,10 @@ def test_queue_features_have_fixed_shape_and_finite_values() -> None:
     features = module.queue_features(books, np.array([1.0, 1.1, 1.3]), depth=2)
     assert features.shape == (3, 9)
     assert np.isfinite(features).all()
+
+
+def test_shard_assignment_preserves_global_indices() -> None:
+    module = _module()
+    paths = [Path(f"archive_{index}.zip") for index in range(5)]
+    assert module.shard_assignments(paths, 2, 3) == [(2, paths[2])]
+    assert module.shard_assignments(paths, 0, 3) == [(0, paths[0]), (3, paths[3])]
