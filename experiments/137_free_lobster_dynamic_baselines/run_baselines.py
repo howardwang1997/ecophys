@@ -447,10 +447,13 @@ def main() -> None:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=1)
+    parser.add_argument("--archive-index", type=int)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
     parser.add_argument("--git-sha")
     args = parser.parse_args()
-    if args.num_shards <= 0 or not 0 <= args.shard_index < args.num_shards:
+    if args.archive_index is None and (
+        args.num_shards <= 0 or not 0 <= args.shard_index < args.num_shards
+    ):
         raise ValueError("invalid shard assignment")
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA requested but unavailable")
@@ -459,7 +462,12 @@ def main() -> None:
     if not isinstance(raw_config, dict):
         raise ValueError("configuration must be a mapping")
     archives = [ROOT / str(value) for value in raw_config["archives"]]
-    assigned = shard_assignments(archives, args.shard_index, args.num_shards)
+    if args.archive_index is None:
+        assigned = shard_assignments(archives, args.shard_index, args.num_shards)
+    else:
+        if not 0 <= args.archive_index < len(archives):
+            raise ValueError("archive index is out of bounds")
+        assigned = [(args.archive_index, archives[args.archive_index])]
     started = time.perf_counter()
     results = [
         run_archive(path, raw_config, device, int(raw_config["seed_root"]) + 1000 * global_index)
@@ -486,6 +494,7 @@ def main() -> None:
         "device_name": torch.cuda.get_device_name(device) if device.type == "cuda" else "cpu",
         "shard_index": args.shard_index,
         "num_shards": args.num_shards,
+        "archive_indices": [index for index, _ in assigned],
         "wall_seconds": time.perf_counter() - started,
         "symbols": results,
         "provisional_symbols_passing_gain_gate": gain_count,
