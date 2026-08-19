@@ -28,14 +28,24 @@ official_sources:
     license: MIT
 
 transport:
-  formal_rpc: https://eth.drpc.org/
+  formal_rpc: https://eth.blockscout.com/api/eth-rpc
   rpc_is_replaceable_transport: true
+  reference_rpc_used_for_identity_crosscheck: https://eth.drpc.org/
   minimum_request_interval_seconds: 0.75
   rate_limit_retries: 6
   rate_limit_backoff_initial_seconds: 2
   rate_limit_backoff_max_seconds: 30
   maximum_get_logs_span: 10000
-  maximum_topics_per_get_logs: 4
+  maximum_topics_per_get_logs: 14
+  preformal_identity_crosschecks:
+    - from_block: 24230000
+      to_block: 24239999
+      expected_and_observed_allowed_hub_logs: 68
+      canonical_log_identity_sets_equal: true
+    - from_block: 24320000
+      to_block: 24329999
+      expected_and_observed_allowed_hub_logs: 5
+      canonical_log_identity_sets_equal: true
 
 ethereum:
   chain_id: 1

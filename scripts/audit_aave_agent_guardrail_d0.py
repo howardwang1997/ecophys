@@ -811,6 +811,7 @@ def audit(
             "formal_rpc": str(transport["formal_rpc"]),
             "maximum_get_logs_span": maximum_span,
             "maximum_topics_per_get_logs": maximum_topics_per_query,
+            "preformal_identity_crosschecks": transport["preformal_identity_crosschecks"],
             "rpc_request_counts": dict(sorted(client.method_counts.items())),
             "log_range_splits": client.log_range_splits,
             "log_topic_splits": client.log_topic_splits,

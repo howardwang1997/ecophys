@@ -37,7 +37,14 @@ about 128 calls in one minute, so requests are paced at 0.75 seconds (at most 80
 splits the topic set first while preserving its block range. Only a singleton-topic range/size timeout may split
 the block interval. Topic and block split counts are reported separately.
 
-Google's current Blockchain Analytics table covers the frozen endpoint, but a result-equivalent address query has
+The dRPC public endpoint ultimately fails after roughly 128 calls even for singleton topics, so it remains a
+reference transport, not the formal extraction transport. Blockscout's documented no-key Ethereum per-instance
+ETH RPC is accepted only after exact cross-transport checks: it reproduces all 68 canonical log identities in the
+deployment shard 24,230,000--24,239,999 and all five identities in the sparse shard
+24,320,000--24,329,999. Formal extraction uses Blockscout with the same 10,000-block shards, 0.75-second pacing
+and all 14 allowed Hub topics; its documented 1,000-log response cap is above the observed shard maximum of 68.
+
+Google’s current Blockchain Analytics table covers the frozen endpoint, but a result-equivalent address query has
 a 789.9 GB dry-run upper bound. The visible query project has zero billed bytes this month, yet another project on
 the same billing account cannot be audited with the available permissions. Because Google's 1 TiB free allowance
 is account-level, BigQuery is not executed and is not a hidden paid fallback.
