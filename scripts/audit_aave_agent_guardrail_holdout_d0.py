@@ -44,6 +44,12 @@ from scripts.audit_aave_rate_response_d1b import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+INITIAL_FREEZE_STATUS = "frozen_before_any_non_ethereum_agent_event_query"
+TRANSPORT_AMENDMENT_STATUS = (
+    "transport_amended_after_outcome_blind_policy_event_diagnostics_before_market_outcomes"
+)
+TRANSPORT_AMENDMENT_KEY = "amendment_2026_08_20_after_outcome_blind_formal_transport_diagnostics"
+INITIAL_CONFIG_PATH = REPO_ROOT / "configs/empirical_physics/aave_agent_guardrail_holdout_d0_v1.yaml"
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -82,6 +88,106 @@ def _validate_pilot_binding(config: Mapping[str, Any]) -> dict[str, Any]:
         "diagnostic_used_for_design_only": str(binding["diagnostic_used_for_design_only"]),
         "verified_against_repository_artifact": True,
         "excluded_from_all_holdout_counts": True,
+    }
+
+
+def _validate_freeze_provenance(config: Mapping[str, Any]) -> dict[str, Any]:
+    contract = config["contract"]
+    status = str(contract["status"])
+    version = int(contract["version"])
+    if status == INITIAL_FREEZE_STATUS:
+        if version != 1:
+            raise RuntimeError("initial holdout freeze must use contract version 1")
+        return {
+            "status": status,
+            "transport_only_amendment": False,
+            "market_outcomes_queried_before_freeze": False,
+        }
+    if status != TRANSPORT_AMENDMENT_STATUS or version != 2:
+        raise RuntimeError("holdout contract lacks a recognized outcome-blind freeze status")
+    transport = config["transport"]
+    amendment = transport.get(TRANSPORT_AMENDMENT_KEY)
+    if not isinstance(amendment, Mapping):
+        raise RuntimeError("transport-amended holdout lacks its provenance ledger")
+    required_true = (
+        "fixed_block_unions_and_scientific_rules_unchanged",
+        "cached_first_nonempty_qualification_shards_are_deterministic_transport_hints",
+        "fixed_qualification_shards_cover_all_chains",
+        "all_parent_config_chain_artifacts_are_diagnostic_only",
+        "all_chains_must_rerun_under_one_v2_config_digest",
+        (
+            "fast_primary_transport_concentration_requires_full_union_independent_replication_"
+            "before_market_outcomes"
+        ),
+        "no_chain_sample_event_family_threshold_or_stop_rule_changed",
+    )
+    if any(amendment.get(field) is not True for field in required_true):
+        raise RuntimeError("transport amendment does not preserve the scientific freeze")
+    if amendment.get("market_outcomes_queried_before_amendment") is not False:
+        raise RuntimeError("transport amendment is not outcome blind")
+    parent_config_sha = str(amendment.get("parent_config_sha256", ""))
+    parent_repository_sha = str(amendment.get("parent_repository_git_sha", ""))
+    if re.fullmatch(r"[0-9a-f]{64}", parent_config_sha) is None:
+        raise RuntimeError("transport amendment parent config digest is malformed")
+    if re.fullmatch(r"[0-9a-f]{40}", parent_repository_sha) is None:
+        raise RuntimeError("transport amendment parent repository SHA is malformed")
+    if not INITIAL_CONFIG_PATH.is_file() or _sha256_file(INITIAL_CONFIG_PATH) != parent_config_sha:
+        raise RuntimeError("transport amendment does not bind the repository's initial freeze")
+    parent = _load_yaml(INITIAL_CONFIG_PATH)
+    invariant_sections = (
+        "pilot_binding",
+        "official_sources",
+        "time_window",
+        "allowed_event_families",
+        "eligibility",
+        "batching",
+        "matching",
+        "boundary_support",
+        "pass_thresholds",
+        "forbidden_data",
+        "stop_rules",
+        "resources",
+    )
+    if any(config.get(section) != parent.get(section) for section in invariant_sections):
+        raise RuntimeError("transport amendment changes the initial scientific freeze")
+    invariant_contract_fields = (
+        "name",
+        "purpose",
+        "ethereum_pilot_is_excluded_from_all_holdout_counts",
+    )
+    if any(
+        contract.get(field) != parent["contract"].get(field)
+        for field in invariant_contract_fields
+    ):
+        raise RuntimeError("transport amendment changes the initial contract scope")
+    transport_only_chain_fields = {
+        "formal_rpc_candidates",
+        "qualification_from_block",
+        "qualification_to_block",
+        "qualification_expected_canonical_log_identity_sha256",
+    }
+    if set(config["chains"]) != set(parent["chains"]):
+        raise RuntimeError("transport amendment changes the frozen chain panel")
+    for chain_name, parent_chain in parent["chains"].items():
+        amended_chain = config["chains"][chain_name]
+        parent_science = {
+            key: value for key, value in parent_chain.items() if key not in transport_only_chain_fields
+        }
+        amended_science = {
+            key: value for key, value in amended_chain.items() if key not in transport_only_chain_fields
+        }
+        if amended_science != parent_science:
+            raise RuntimeError(f"transport amendment changes frozen chain science: {chain_name}")
+    return {
+        "status": status,
+        "transport_only_amendment": True,
+        "market_outcomes_queried_before_amendment": False,
+        "parent_contract_version": int(amendment["parent_contract_version"]),
+        "parent_config_sha256": parent_config_sha,
+        "parent_repository_git_sha": parent_repository_sha,
+        "all_parent_config_chain_artifacts_are_diagnostic_only": True,
+        "all_chains_must_rerun_under_one_v2_config_digest": True,
+        "independent_full_union_transport_replication_required_before_market_outcomes": True,
     }
 
 
@@ -738,8 +844,7 @@ def audit_chain(
     if output_path.is_relative_to(REPO_ROOT):
         raise RuntimeError("chain shards must remain outside the repository until merge")
     config = _load_yaml(config_path)
-    if config["contract"]["status"] != "frozen_before_any_non_ethereum_agent_event_query":
-        raise RuntimeError("holdout contract lacks the pre-event freeze status")
+    freeze_provenance = _validate_freeze_provenance(config)
     if chain_name not in config["chains"]:
         raise ValueError(f"chain is outside the frozen panel: {chain_name}")
     pilot_audit = _validate_pilot_binding(config)
@@ -867,6 +972,7 @@ def audit_chain(
         "contract_name": str(config["contract"]["name"]),
         "contract_version": int(config["contract"]["version"]),
         "artifact_type": "outcome_blind_chain_shard",
+        "freeze_provenance": freeze_provenance,
         "repository": {
             "git_sha": repository_sha,
             "clean_worktree_at_start": True,
@@ -964,6 +1070,7 @@ def merge_chain_results(
     if _git("status", "--porcelain"):
         raise RuntimeError("formal holdout merge requires a clean EcoPhys worktree")
     config = _load_yaml(config_path)
+    freeze_provenance = _validate_freeze_provenance(config)
     pilot_audit = _validate_pilot_binding(config)
     repository_sha = _git("rev-parse", "HEAD")
     config_sha = _sha256_file(config_path)
@@ -988,6 +1095,8 @@ def merge_chain_results(
             raise RuntimeError(f"chain shard endpoint mismatch: {chain_name}")
         if payload.get("pilot_binding") != pilot_audit:
             raise RuntimeError(f"chain shard pilot binding mismatch: {chain_name}")
+        if payload.get("freeze_provenance") != freeze_provenance:
+            raise RuntimeError(f"chain shard freeze provenance mismatch: {chain_name}")
         if source_audit is None:
             source_audit = payload["source_audit"]
         elif payload["source_audit"] != source_audit:
@@ -1028,6 +1137,7 @@ def merge_chain_results(
         "contract_version": int(config["contract"]["version"]),
         "artifact_type": "outcome_blind_multichain_holdout_result",
         "decision": decision,
+        "freeze_provenance": freeze_provenance,
         "repository": {
             "git_sha": repository_sha,
             "clean_worktree_at_start": True,

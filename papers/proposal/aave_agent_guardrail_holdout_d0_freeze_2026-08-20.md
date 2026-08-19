@@ -12,7 +12,10 @@ confirmation sample. The only pilot-derived design correction is temporal risk-s
 be at risk of AgentHub execution before its unique agent is registered and initialized. This correction is now
 prospective on an untouched panel.
 
-Executable contract: `configs/empirical_physics/aave_agent_guardrail_holdout_d0_v1.yaml`.
+Initial scientific freeze: `configs/empirical_physics/aave_agent_guardrail_holdout_d0_v1.yaml`. Current executable
+transport amendment: `configs/empirical_physics/aave_agent_guardrail_holdout_d0_v2.yaml`. Version 2 changes only
+transport and qualification metadata after outcome-blind policy-event diagnostics; every chain, block union,
+event family, eligibility rule, gate and stop rule remains identical to version 1.
 
 ## Fixed panel and time anchors
 
@@ -228,6 +231,43 @@ module import and made no RPC request; the corrected `python -m` invocation comp
 other chains. Once the BNB reference changed, every old-SHA result and checkpoint became deliberately
 unmergeable. All remaining processes were terminated by exact PID and their files retained as attempt
 provenance. The complete nine-chain panel must restart from the next single clean SHA.
+
+## Outcome-blind transport amendment v2
+
+The clean version-1 run from `ac99559212dd0a0943c669b5d0981908e44d81e8` was a transport diagnostic, not a
+holdout result. Arbitrum, Gnosis and Linea completed, while Base failed three independent qualification attempts
+and the slower public transports made several other full scans impractical. Only allowed AgentHub policy events,
+contract state witnesses and block headers were inspected. No pool state, price, utilization, liquidation,
+position, user transaction or response window was queried. Because the diagnostics informed transport choices,
+all version-1 artifacts and checkpoints are permanently diagnostic-only and cannot be pooled with version 2.
+
+The following fixed qualification shards now cover all nine chains. Each canonical identity digest was reproduced
+by at least two independently operated public sources before it was written into version 2. The event count is a
+transport-completeness checksum, not a sample-selection criterion; formal extraction still covers every original
+frozen block.
+
+| Chain | Fixed qualification blocks | Events | Canonical identity SHA-256 | Fast primary | Independent reference |
+|---|---:|---:|---|---|---|
+| Arbitrum | 421,201,737--421,211,736 | 48 | `653120b4...ecc69bda` | Tenderly | Blockscout |
+| Avalanche | 75,715,069--75,725,068 | 45 | `8ab51afa...311fca` | Tenderly | official Avalanche RPC |
+| Base | 40,786,527--40,796,526 | 38 | `31b2e41e...12090` | Tenderly | official Base RPC |
+| BNB | 75,184,723--75,194,722 | 30 | `2d50fe7f...985a4` | Sentio | bloXroute |
+| Gnosis | 44,149,823--44,159,822 | 30 | `50c3b3df...3f52a` | Tenderly | Blockscout |
+| Linea | 27,827,319--27,837,318 | 12 | `5fe9ba21...293ff0` | Tenderly | official Linea RPC |
+| Optimism | 146,381,812--146,391,811 | 32 | `5f54a007...50fb54` | Tenderly | official Optimism RPC |
+| Plasma | 11,441,827--11,451,826 | 30 | `2968ed41...f65b` | Sentio | official Plasma RPC and thirdweb |
+| Polygon | 81,628,684--81,638,683 | 38 | `e93d2393...ba2b0b` | Tenderly | Sentio and dRPC |
+
+Tenderly can return the tested dense formal ranges in one request on seven chains; Sentio can do so on Plasma.
+Sentio's BNB endpoint enforces a 10,000-block cap but completed six consecutive test shards in 0.35--0.93 seconds
+per shard, reducing the projected three-stage scan from roughly two days to roughly three hours. The version-2
+configuration digest is `93be07281ff57e853d32f5caadc2f08d9a38e9e91728c35c8126a22aab25246c`.
+
+This speedup concentrates seven primary scans at one provider. Therefore a version-2 scientific pass is not yet
+permission to read market outcomes. Before D1 or outcome access, the complete decoded event union on every chain
+must be independently reproduced from a non-primary provider and compared by canonical event identity and decoded
+payload. A mismatch is a transport failure and stops the route; it cannot be resolved by choosing the favorable
+provider. All nine primary artifacts must also come from one clean repository SHA and the one version-2 digest.
 
 ## Resources and interpretation
 

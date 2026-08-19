@@ -175,3 +175,21 @@ second candidate and run all BNB roles from that one preflighted egress; never c
 The initial fleet command's script-path import failure made no RPC call; corrected module launches produced some
 old-SHA files, all now identity-incompatible and retained only as attempt provenance. Restart all nine chains from
 the next clean SHA.
+
+Version-1 clean run `ac99559212dd0a0943c669b5d0981908e44d81e8` is now classified as an outcome-blind transport
+diagnostic. It completed valid but unmergeable Arbitrum (29 eligible/5 excluded), Gnosis (1/0) and Linea (14/40)
+artifacts and exposed Base qualification failure plus deterministic latency/range bottlenecks elsewhere. No
+market outcome was queried. Fixed qualification shards and exact canonical identity digests were independently
+established for all nine chains: Arbitrum `653120b4...`, Avalanche `8ab51afa...`, Base `31b2e41e...`, BNB
+`2d50fe7f...`, Gnosis `50c3b3df...`, Linea `5fe9ba21...`, Optimism `5f54a007...`, Plasma `2968ed41...` and
+Polygon `e93d2393...`.
+
+The outcome-blind transport amendment is executable as
+`configs/empirical_physics/aave_agent_guardrail_holdout_d0_v2.yaml`, digest
+`93be07281ff57e853d32f5caadc2f08d9a38e9e91728c35c8126a22aab25246c`. Seven chains use Tenderly as a fast
+primary; BNB and Plasma use Sentio. Each qualification shard has an independent provider match, but primary
+provider concentration creates correlated omission risk. Therefore even a D0H pass cannot unlock market
+outcomes until every chain's complete decoded event union is reproduced by a non-primary provider and compared
+by identity and payload. All nine primary artifacts must also be rerun from one clean v2 code SHA/config digest;
+v1 files remain diagnostic-only. This changes no chain, block union, event family, sample rule, threshold or stop
+rule. GPUs, EcoMD, D1 and outcomes remain locked.

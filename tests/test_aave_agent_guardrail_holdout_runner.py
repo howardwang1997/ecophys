@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,7 @@ from scripts.audit_aave_agent_guardrail_holdout_d0 import (
     _first_nonempty_hub_shard,
     _load_chain_checkpoint,
     _qualify_state_witness,
+    _validate_freeze_provenance,
     _validate_pilot_binding,
     _validate_transport_anchor,
     _verified_artifact,
@@ -23,6 +25,7 @@ from scripts.audit_aave_agent_guardrail_holdout_d0 import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO_ROOT / "configs/empirical_physics/aave_agent_guardrail_holdout_d0_v1.yaml"
+V2_CONFIG_PATH = REPO_ROOT / "configs/empirical_physics/aave_agent_guardrail_holdout_d0_v2.yaml"
 
 
 def _raw_log(*, block: int, transaction: int, log_index: int) -> dict[str, Any]:
@@ -94,6 +97,44 @@ def test_pilot_binding_is_verified_against_the_frozen_artifact() -> None:
         "764f08a7a02c550f28f8b7ace275cf4e451ba5430ea5768aff55f374c1226460"
     )
     assert audit["excluded_from_all_holdout_counts"] is True
+
+
+def test_freeze_provenance_distinguishes_initial_and_transport_amended_contracts() -> None:
+    initial = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
+    amended = yaml.safe_load(V2_CONFIG_PATH.read_text(encoding="utf-8"))
+
+    initial_audit = _validate_freeze_provenance(initial)
+    amended_audit = _validate_freeze_provenance(amended)
+
+    assert initial_audit["transport_only_amendment"] is False
+    assert amended_audit == {
+        "status": (
+            "transport_amended_after_outcome_blind_policy_event_diagnostics_before_market_outcomes"
+        ),
+        "transport_only_amendment": True,
+        "market_outcomes_queried_before_amendment": False,
+        "parent_contract_version": 1,
+        "parent_config_sha256": (
+            "1c2eaa505b1993df153ff8cdd90ff698745fb4a7ec398aee8fa9f301e5a47eb9"
+        ),
+        "parent_repository_git_sha": "ac99559212dd0a0943c669b5d0981908e44d81e8",
+        "all_parent_config_chain_artifacts_are_diagnostic_only": True,
+        "all_chains_must_rerun_under_one_v2_config_digest": True,
+        "independent_full_union_transport_replication_required_before_market_outcomes": True,
+    }
+
+    tampered = copy.deepcopy(amended)
+    amendment = tampered["transport"][
+        "amendment_2026_08_20_after_outcome_blind_formal_transport_diagnostics"
+    ]
+    amendment["market_outcomes_queried_before_amendment"] = True
+    with pytest.raises(RuntimeError, match="not outcome blind"):
+        _validate_freeze_provenance(tampered)
+
+    scientifically_tampered = copy.deepcopy(amended)
+    scientifically_tampered["pass_thresholds"]["minimum_eligible_proposals"] = 29
+    with pytest.raises(RuntimeError, match="changes the initial scientific freeze"):
+        _validate_freeze_provenance(scientifically_tampered)
 
 
 def test_transport_anchor_rejects_zero_contract_code() -> None:
