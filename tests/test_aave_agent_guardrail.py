@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -20,6 +21,8 @@ from scripts.audit_aave_agent_guardrail_d0 import (
     _decode_hub_log,
     _decode_proposal_log,
     _keccak_topic,
+    _load_checkpoint,
+    _write_checkpoint,
 )
 
 
@@ -284,3 +287,27 @@ def test_delay_boundary_requires_both_local_sides_and_rejects_bunching() -> None
     )[0]
     assert bunched["exact_boundary_bunching"] is True
     assert bunched["qualifies"] is False
+
+
+def test_decoded_checkpoint_round_trip_is_identity_bound(tmp_path: Path) -> None:
+    path = tmp_path / "d0.json"
+    identity = {
+        "repository_sha": "a" * 40,
+        "config_sha256": "b" * 64,
+        "formal_rpc": "https://example.test",
+    }
+    state = {
+        "completed_through": {"hub": 12, "range": 9, "proposals": 9},
+        "events": {
+            "hub": [{"event_name": "AgentRegistered"}],
+            "range": [],
+            "proposals": [],
+        },
+        "block_headers": {"12": {"number": 12, "hash": "0x" + "aa" * 32}},
+    }
+    _write_checkpoint(path, identity=identity, state=state)
+    loaded, resumed = _load_checkpoint(path, identity=identity, from_block=10)
+    assert resumed is True
+    assert loaded == state
+    with pytest.raises(RuntimeError, match="identity"):
+        _load_checkpoint(path, identity={**identity, "formal_rpc": "changed"}, from_block=10)

@@ -53,3 +53,8 @@ proposals. The Aave/Chaos/proposals AgentHub interfaces agree, the Risk Agents s
 commit, and the Ethereum AgentHub and RangeValidation addresses occur in the frozen address book. Six decoder,
 matching, terminal-class and boundary-support tests pass without adding an ABI dependency. The formal chain run
 must start from a clean implementation commit; until then no proposal value has been opened.
+
+The first clean formal invocation from `c8aed2a12` was rejected before its first log response because dRPC's
+free-plan `eth_getLogs` maximum is now 10,000 blocks. This did not open a proposal value or write a result.
+Transport is amended to 10,000-block shards with an external decoded-event/header checkpoint bound to code,
+config, source SHAs, RPC and endpoint block. The scientific block union, events and gates are unchanged.

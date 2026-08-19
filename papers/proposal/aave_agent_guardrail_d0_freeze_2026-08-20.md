@@ -23,6 +23,12 @@ The formal run uses the exact official repositories and commits in
 The lower bound predates the January 2026 Risk Agent activation. The upper bound is frozen on 20 August 2026
 NZST and includes the later offboarding. No moving `latest` tag is allowed in the formal result.
 
+The first clean formal attempt was rejected before any log was returned because dRPC's free-plan transport now
+limits `eth_getLogs` to 10,000 blocks, not the source-freeze probe's 50,000. The formal transport therefore uses
+10,000-block inclusive shards and an identity-bound decoded-event checkpoint outside the repository. This changes
+request scheduling and recoverability only; the inclusive block union, events, matching and thresholds do not
+change.
+
 ## Allowed event surface
 
 D0 may retrieve and decode only:

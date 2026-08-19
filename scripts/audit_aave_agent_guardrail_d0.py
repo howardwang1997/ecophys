@@ -7,7 +7,7 @@ import hashlib
 import json
 import re
 import sys
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -81,6 +81,87 @@ def _utc(unix_seconds: int) -> str:
 
 def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _write_checkpoint(
+    path: Path,
+    *,
+    identity: Mapping[str, Any],
+    state: Mapping[str, Any],
+) -> None:
+    payload: dict[str, Any] = {
+        "schema_version": 1,
+        "identity": dict(identity),
+        **state,
+        "contains_only_decoded_policy_events_and_block_headers": True,
+        "contains_raw_rpc_or_market_outcomes": False,
+    }
+    payload["canonical_payload_sha256"] = canonical_sha256(payload)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def _load_checkpoint(
+    path: Path,
+    *,
+    identity: Mapping[str, Any],
+    from_block: int,
+) -> tuple[dict[str, Any], bool]:
+    if not path.exists():
+        return (
+            {
+                "completed_through": {
+                    "hub": from_block - 1,
+                    "range": from_block - 1,
+                    "proposals": from_block - 1,
+                },
+                "events": {"hub": [], "range": [], "proposals": []},
+                "block_headers": {},
+            },
+            False,
+        )
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise RuntimeError("D0 checkpoint is not a JSON object")
+    stored_digest = str(payload.get("canonical_payload_sha256"))
+    body = {key: value for key, value in payload.items() if key != "canonical_payload_sha256"}
+    if canonical_sha256(body) != stored_digest:
+        raise RuntimeError("D0 checkpoint digest mismatch")
+    if payload.get("identity") != dict(identity):
+        raise RuntimeError("D0 checkpoint identity mismatch")
+    if payload.get("contains_raw_rpc_or_market_outcomes") is not False:
+        raise RuntimeError("D0 checkpoint lacks the no-outcome assertion")
+    completed = payload.get("completed_through")
+    events = payload.get("events")
+    headers = payload.get("block_headers")
+    stages = {"hub", "range", "proposals"}
+    if (
+        not isinstance(completed, dict)
+        or set(completed) != stages
+        or any(not isinstance(completed[stage], int) for stage in stages)
+        or not isinstance(events, dict)
+        or set(events) != stages
+        or any(
+            not isinstance(events[stage], list) or any(not isinstance(event, dict) for event in events[stage])
+            for stage in stages
+        )
+        or not isinstance(headers, dict)
+        or any(not isinstance(header, dict) for header in headers.values())
+    ):
+        raise RuntimeError("D0 checkpoint is malformed")
+    return (
+        {
+            "completed_through": dict(completed),
+            "events": {stage: list(events[stage]) for stage in stages},
+            "block_headers": dict(headers),
+        },
+        True,
+    )
 
 
 def _source_audit(
@@ -427,14 +508,76 @@ def _query_logs(
     return logs
 
 
+def _query_decoded_stage(
+    client: _RpcClient,
+    *,
+    stage: str,
+    state: dict[str, Any],
+    addresses: Sequence[str],
+    topics: Sequence[str],
+    from_block: int,
+    to_block: int,
+    maximum_span: int,
+    decoder: Callable[[Mapping[str, Any]], dict[str, Any]],
+    save_checkpoint: Callable[[], None],
+) -> list[dict[str, Any]]:
+    completed = state["completed_through"]
+    event_groups = state["events"]
+    stage_events = event_groups[stage]
+    identities = {
+        (
+            str(event["block_hash"]),
+            str(event["transaction_hash"]),
+            int(event["log_index"]),
+        )
+        for event in stage_events
+    }
+    start = max(from_block, int(completed[stage]) + 1)
+    while start <= to_block:
+        end = min(to_block, start + maximum_span - 1)
+        raw_logs = _query_logs(
+            client,
+            addresses=addresses,
+            topics=topics,
+            from_block=start,
+            to_block=end,
+            maximum_span=maximum_span,
+        )
+        for raw in raw_logs:
+            decoded = decoder(raw)
+            identity = (
+                str(decoded["block_hash"]),
+                str(decoded["transaction_hash"]),
+                int(decoded["log_index"]),
+            )
+            if identity in identities:
+                raise ValueError(f"duplicate decoded {stage} event across checkpoint shards")
+            identities.add(identity)
+            stage_events.append(decoded)
+        stage_events.sort(key=event_position)
+        completed[stage] = end
+        save_checkpoint()
+        start = end + 1
+    return stage_events
+
+
 def _attach_block_timestamps(
     client: _RpcClient,
     event_groups: Sequence[list[dict[str, Any]]],
+    *,
+    header_cache: dict[str, Any],
+    save_checkpoint: Callable[[], None],
 ) -> int:
     events = [event for group in event_groups for event in group]
     block_numbers = sorted({int(event["block_number"]) for event in events})
     for number in block_numbers:
-        header = client.block(number)
+        key = str(number)
+        if key not in header_cache:
+            header_cache[key] = client.block(number)
+            save_checkpoint()
+        header = header_cache[key]
+        if int(header["number"]) != number:
+            raise RuntimeError(f"checkpoint header number mismatch at {number}")
         for event in events:
             if int(event["block_number"]) != number:
                 continue
@@ -442,6 +585,7 @@ def _attach_block_timestamps(
                 raise RuntimeError(f"event block hash mismatch at {number}")
             event["block_timestamp"] = int(header["timestamp"])
             event["block_utc"] = _utc(int(header["timestamp"]))
+    save_checkpoint()
     return len(block_numbers)
 
 
@@ -454,10 +598,13 @@ def audit(
     address_book_root: Path,
     proposals_root: Path,
     output_path: Path,
+    checkpoint_path: Path,
 ) -> dict[str, Any]:
     """Execute D0 without reading market behavior or protocol outcome state."""
     if _git("status", "--porcelain"):
         raise RuntimeError("formal Aave guardrail D0 requires a clean EcoPhys worktree")
+    if checkpoint_path.is_relative_to(REPO_ROOT):
+        raise RuntimeError("formal D0 checkpoint must remain outside the repository")
     config = _load_yaml(config_path)
     if str(config["contract"]["status"]) != (
         "frozen_before_risk_oracle_proposal_values_or_execution_matching"
@@ -501,66 +648,91 @@ def audit(
     range_by_topic = {_keccak_topic(signature): signature for signature in RANGE_SIGNATURES}
     risk_topic = _keccak_topic(RISK_ORACLE_SIGNATURE)
     maximum_span = int(transport["maximum_get_logs_span"])
+    checkpoint_identity = {
+        "repository_sha": _git("rev-parse", "HEAD"),
+        "config_sha256": _sha256_file(config_path),
+        "formal_rpc": str(transport["formal_rpc"]),
+        "chain_id": int(ethereum["chain_id"]),
+        "from_block": from_block,
+        "to_block": to_block,
+        "to_block_hash": str(ethereum["to_block_hash"]).lower(),
+        "source_repository_shas": {
+            label: str(record["git_sha"]) for label, record in source_audit["repositories"].items()
+        },
+    }
+    checkpoint_state, resumed_from_checkpoint = _load_checkpoint(
+        checkpoint_path,
+        identity=checkpoint_identity,
+        from_block=from_block,
+    )
 
-    raw_hub = _query_logs(
+    def save_checkpoint() -> None:
+        _write_checkpoint(
+            checkpoint_path,
+            identity=checkpoint_identity,
+            state=checkpoint_state,
+        )
+
+    hub_events = _query_decoded_stage(
         client,
+        stage="hub",
+        state=checkpoint_state,
         addresses=[hub_address],
         topics=sorted(hub_by_topic),
         from_block=from_block,
         to_block=to_block,
         maximum_span=maximum_span,
-    )
-    hub_events = [
-        _decode_hub_log(
+        decoder=lambda raw: _decode_hub_log(
             raw,
             hub_address=hub_address,
             signatures_by_topic=hub_by_topic,
-        )
-        for raw in raw_hub
-    ]
-    hub_events.sort(key=event_position)
+        ),
+        save_checkpoint=save_checkpoint,
+    )
     registrations = [event for event in hub_events if event["event_name"] == "AgentRegistered"]
     oracle_addresses = {str(event["risk_oracle"]) for event in registrations}
     if not oracle_addresses:
         raise RuntimeError("no Risk Oracle was discovered from AgentRegistered events")
 
-    raw_range = _query_logs(
+    range_events = _query_decoded_stage(
         client,
+        stage="range",
+        state=checkpoint_state,
         addresses=[range_address],
         topics=sorted(range_by_topic),
         from_block=from_block,
         to_block=to_block,
         maximum_span=maximum_span,
-    )
-    range_events = [
-        _decode_range_log(
+        decoder=lambda raw: _decode_range_log(
             raw,
             module_address=range_address,
             hub_address=hub_address,
             signatures_by_topic=range_by_topic,
-        )
-        for raw in raw_range
-    ]
-    range_events.sort(key=event_position)
-
-    raw_proposals = _query_logs(
+        ),
+        save_checkpoint=save_checkpoint,
+    )
+    proposals = _query_decoded_stage(
         client,
+        stage="proposals",
+        state=checkpoint_state,
         addresses=sorted(oracle_addresses),
         topics=[risk_topic],
         from_block=from_block,
         to_block=to_block,
         maximum_span=maximum_span,
-    )
-    proposals = [
-        _decode_proposal_log(
+        decoder=lambda raw: _decode_proposal_log(
             raw,
             oracle_addresses=oracle_addresses,
             expected_topic=risk_topic,
-        )
-        for raw in raw_proposals
-    ]
-    proposals.sort(key=event_position)
-    unique_header_count = _attach_block_timestamps(client, [hub_events, range_events, proposals])
+        ),
+        save_checkpoint=save_checkpoint,
+    )
+    unique_header_count = _attach_block_timestamps(
+        client,
+        [hub_events, range_events, proposals],
+        header_cache=checkpoint_state["block_headers"],
+        save_checkpoint=save_checkpoint,
+    )
     if any(int(proposal["oracle_timestamp"]) != int(proposal["block_timestamp"]) for proposal in proposals):
         raise RuntimeError("Risk Oracle timestamp differs from its canonical block timestamp")
 
@@ -628,6 +800,12 @@ def audit(
             "rate_limit_retry_count": client.rate_limit_retry_count,
             "rate_limit_wait_seconds": round(client.rate_limit_wait_seconds, 3),
         },
+        "checkpoint": {
+            "resumed_from_decoded_event_checkpoint": resumed_from_checkpoint,
+            "checkpoint_outside_repository": not checkpoint_path.is_relative_to(REPO_ROOT),
+            "checkpoint_contains_raw_rpc_or_market_outcomes": False,
+            "checkpoint_removed_after_success": True,
+        },
         "blinding": {
             "only_configuration_proposal_injection_events_and_headers_queried": True,
             "pool_balances_utilization_rates_positions_prices_liquidations_queried": False,
@@ -650,6 +828,7 @@ def audit(
         encoding="utf-8",
     )
     temporary.replace(output_path)
+    checkpoint_path.unlink(missing_ok=True)
     return result
 
 
@@ -662,6 +841,7 @@ def main() -> int:
     parser.add_argument("--address-book-root", type=Path, required=True)
     parser.add_argument("--proposals-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--checkpoint", type=Path, required=True)
     args = parser.parse_args()
     result = audit(
         args.config.resolve(),
@@ -671,6 +851,7 @@ def main() -> int:
         address_book_root=args.address_book_root.resolve(),
         proposals_root=args.proposals_root.resolve(),
         output_path=args.output.resolve(),
+        checkpoint_path=args.checkpoint.resolve(),
     )
     print(
         json.dumps(
