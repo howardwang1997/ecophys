@@ -286,8 +286,11 @@ and 27. The missing identity is block 436,939,422, transaction
 the official Arbitrum RPC and Tenderly return the same `UpdateInjected` payload and block hash; Blockscout returns
 an empty set. This confirms a silent Blockscout omission and changes one old derived terminal label from expired
 to injected. It does not invalidate the Tenderly primary, but it disqualifies Blockscout as the final Arbitrum
-full-union reference. A complete official-Arbitrum replication is running. The incident demonstrates why a
-matching 10,000-block qualification shard cannot substitute for the pre-outcome full-union audit.
+full-union reference. The incident demonstrates why a matching 10,000-block qualification shard cannot
+substitute for the pre-outcome full-union audit. A complete official-Arbitrum replication has now completed: its
+full action surface is byte-identical to the Tenderly primary, with canonical
+digest `11ee6f153425f1ddb34c692af9e2bf242ca2533f279af59856282248159237c2`. The independent result therefore
+confirms the v2 Arbitrum ledger and isolates the fault to Blockscout.
 
 ## Resources and interpretation
 

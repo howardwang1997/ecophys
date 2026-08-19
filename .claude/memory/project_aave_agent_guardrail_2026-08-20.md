@@ -210,5 +210,9 @@ and 26 injections, while Tenderly v2 has 90 and 27. The missing identity is bloc
 `arb1.arbitrum.io` and Tenderly return the same `UpdateInjected` payload/hash at that exact block; Blockscout
 returns an empty set. This is a confirmed silent Blockscout omission, not a reorg or Tenderly overcount. It changes
 one v1 proposal from falsely expired to correctly injected and proves that one matching qualification shard is
-insufficient to guarantee full-window completeness. A full official-Arbitrum v2 replication is running on
-V100-A. Blockscout cannot serve as the final Arbitrum full-union reference. No market outcome was queried.
+insufficient to guarantee full-window completeness. A full official-Arbitrum v2 replication completed on
+V100-A with artifact digest `d5eed01f...`; its complete action surface is byte-identical to the
+Tenderly primary, canonical action-surface digest `11ee6f153425f1ddb34c692af9e2bf242ca2533f279af59856282248159237c2`.
+Blockscout cannot serve as the final Arbitrum full-union reference. The eight complete primary artifacts are now
+staged beside the running BNB task on the RTX host; watchdog PID 286331 will merge only if BNB writes a result,
+and otherwise records failure without attempting a partial merge. No market outcome was queried.
