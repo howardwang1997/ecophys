@@ -99,6 +99,11 @@ it does not change the 24-hour or four-of-six thresholds. RPC pacing (0.2 second
 429 retries, and deterministic range bisection for timeout/size errors) is likewise transport-only and cannot
 change the queried block union or any scientific gate.
 
+The first clean invocation stopped before `eth_getLogs`: Flashbots returned HTTP 403 because `web3_sha3` is not
+whitelisted. No result artifact or policy event was produced. Event topics are therefore computed locally with
+OpenSSL Keccak-256 after checking the fixed ERC-20 `Transfer(address,address,uint256)` Ethereum topic vector.
+This replaces only a denied hash service; it leaves every frozen signature and query unchanged.
+
 ## Binding decision
 
 D1B passes to D1C only if all of the following hold:

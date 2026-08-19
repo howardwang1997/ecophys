@@ -354,6 +354,18 @@ def _merge_block_intervals(intervals: Sequence[tuple[int, int]]) -> list[tuple[i
     return merged
 
 
+def _keccak_topic(signature: str) -> str:
+    process = subprocess.run(
+        ["openssl", "dgst", "-keccak-256", "-binary"],
+        input=signature.encode(),
+        check=True,
+        capture_output=True,
+    )
+    if len(process.stdout) != 32:
+        raise RuntimeError("OpenSSL returned a non-32-byte Keccak-256 digest")
+    return "0x" + process.stdout.hex()
+
+
 def _forum_timeline(
     session: requests.Session,
     *,
@@ -551,7 +563,6 @@ def _audit_cross_chain(
 
 
 def _build_event_topics(
-    client: _RpcClient,
     config: Mapping[str, Any],
     source_definitions: Mapping[str, Mapping[str, dict[str, Any]]],
 ) -> tuple[list[str], dict[str, dict[str, Any]]]:
@@ -580,8 +591,7 @@ def _build_event_topics(
         for signature in requested:
             definition = available[signature]
             name = str(definition["name"])
-            encoded = "0x" + signature.encode().hex()
-            topic = str(client.call("web3_sha3", [encoded])).lower()
+            topic = _keccak_topic(signature)
             if re.fullmatch(r"0x[0-9a-f]{64}", topic) is None:
                 raise RuntimeError(f"web3_sha3 returned malformed topic for {signature}")
             if contract_group == "pool_configurator":
@@ -803,9 +813,11 @@ def audit(
     )
     if client.call("eth_chainId", []) != "0x1":
         raise RuntimeError("primary D1B RPC is not Ethereum mainnet")
-    event_topics, topic_definitions = _build_event_topics(
-        client, config, source_definitions
-    )
+    if _keccak_topic("Transfer(address,address,uint256)") != (
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+    ):
+        raise RuntimeError("local Keccak-256 implementation failed the frozen ERC-20 vector")
+    event_topics, topic_definitions = _build_event_topics(config, source_definitions)
 
     for event in t0["events"]:
         header = client.block(int(event["execution_block"]))
@@ -987,6 +999,8 @@ def audit(
             "repositories": source_repositories,
             "abi_source_sha256": abi_digests,
             "address_book_source_sha256": address_book_digest,
+            "event_topic_hash_method": "openssl_keccak_256",
+            "event_topic_hash_known_vector_verified": True,
             "all_frozen_event_signatures_found_in_pinned_abis": True,
             "all_frozen_addresses_found_in_pinned_address_book": True,
         },
