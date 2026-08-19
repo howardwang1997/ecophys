@@ -1,7 +1,7 @@
 contract:
   name: aave_rate_response_spectroscopy_d1a_activity
   version: 1
-  status: amended_after_transport_and_rate_limit_failures_before_result_artifact
+  status: amended_after_transport_rate_limit_and_timeout_failures_before_result_artifact
   parent_t0_artifact_commit: e29230ce9
   parent_t0_manifest_sha256: 9db209180d036091c48eb2dc05b4c3eef1e23f50ae97a937ab227e920823ed8b
   purpose: qualify_preintervention_activity_before_any_postevent_outcome_acquisition
@@ -92,6 +92,13 @@ blinding:
   execution_block_logs: forbidden
   reserve_data_updated_logs: forbidden
   position_or_balance_calls: forbidden
+  sanitized_checkpoint:
+    location: outside_git_repository
+    write_frequency: after_each_complete_proposal
+    allowed_content: boundary_metadata_and_frozen_aggregate_counts_only
+    raw_logs_participants_amounts_rates_transactions: forbidden
+    stale_identity_or_digest: fatal
+    remove_after_complete_result: true
 
 limits:
   request_timeout_seconds: 30

@@ -69,3 +69,10 @@ aggregate was printed or persisted. Before another retry, freeze 0.5-second requ
 backoffs, and retain retry/wait diagnostics. This is transport scheduling only: no scientific query or threshold
 changes. Partial pre-period responses may have existed transiently, so do not claim that no Aave log has ever
 been returned; the correct claim is that no D1A aggregate result or post-event value exists yet.
+
+The paced run from `1115109ab` later stopped on dRPC HTTP 408 and again wrote no final artifact. Treat
+408/413/exhausted-504 as deterministic transport-chunk bisection conditions without changing the block union.
+Future retries use an outside-repository, digest-bound checkpoint after each complete proposal containing only
+allowed boundary metadata and aggregate counts; it must be a frozen-order prefix and is deleted after success.
+This prevents infrastructure failures from repeatedly consuming the public endpoint while preserving the
+no-raw-log contract.

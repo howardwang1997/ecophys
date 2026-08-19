@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
@@ -204,6 +205,71 @@ def _load_json(path: Path) -> dict[str, Any]:
     return payload
 
 
+def _write_checkpoint(
+    path: Path,
+    *,
+    repository_sha: str,
+    config_sha256: str,
+    parent_t0_sha256: str,
+    event_results: Sequence[Mapping[str, Any]],
+) -> None:
+    payload: dict[str, Any] = {
+        "schema_version": 1,
+        "repository_sha": repository_sha,
+        "config_sha256": config_sha256,
+        "parent_t0_sha256": parent_t0_sha256,
+        "completed_proposal_ids": [int(event["proposal_id"]) for event in event_results],
+        "events": list(event_results),
+        "contains_only_allowed_aggregate_counts_and_boundary_metadata": True,
+        "contains_raw_logs_participants_amounts_or_transactions": False,
+    }
+    payload["canonical_payload_sha256"] = canonical_sha256(payload)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def _load_checkpoint(
+    path: Path,
+    *,
+    repository_sha: str,
+    config_sha256: str,
+    parent_t0_sha256: str,
+    ordered_proposal_ids: Sequence[int],
+) -> tuple[list[dict[str, Any]], bool]:
+    if not path.exists():
+        return [], False
+    payload = _load_json(path)
+    stored_digest = str(payload.get("canonical_payload_sha256"))
+    digest_payload = {
+        key: value for key, value in payload.items() if key != "canonical_payload_sha256"
+    }
+    if canonical_sha256(digest_payload) != stored_digest:
+        raise RuntimeError("D1A checkpoint digest mismatch")
+    identity = (
+        str(payload.get("repository_sha")),
+        str(payload.get("config_sha256")),
+        str(payload.get("parent_t0_sha256")),
+    )
+    expected_identity = (repository_sha, config_sha256, parent_t0_sha256)
+    if identity != expected_identity:
+        raise RuntimeError(f"stale D1A checkpoint identity: {identity} != {expected_identity}")
+    raw_events = payload.get("events")
+    if not isinstance(raw_events, list) or any(not isinstance(row, dict) for row in raw_events):
+        raise RuntimeError("D1A checkpoint events are malformed")
+    event_results: list[dict[str, Any]] = list(raw_events)
+    completed_ids = [int(event["proposal_id"]) for event in event_results]
+    if completed_ids != list(ordered_proposal_ids[: len(completed_ids)]):
+        raise RuntimeError("D1A checkpoint is not a prefix of the frozen proposal order")
+    if payload.get("contains_raw_logs_participants_amounts_or_transactions") is not False:
+        raise RuntimeError("D1A checkpoint lacks the no-raw-data assertion")
+    return event_results, True
+
+
 def _hex_quantity(value: Any, *, field: str) -> int:
     if not isinstance(value, str) or not value.startswith("0x"):
         raise RpcError(f"invalid {field}: {value}")
@@ -335,7 +401,7 @@ def _get_logs_with_split(
 
 
 def _is_splittable_log_error(error: RpcError) -> bool:
-    if error.http_status == 413:
+    if error.http_status in {408, 413, 504}:
         return True
     message = str(error).lower()
     range_markers = (
@@ -379,11 +445,19 @@ def _get_window_logs(
     return logs
 
 
-def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any]:
+def screen(
+    config_path: Path,
+    t0_path: Path,
+    output_path: Path,
+    checkpoint_path: Path,
+) -> dict[str, Any]:
     """Run D1A and persist only frozen pre-period activity aggregates."""
     if _git("status", "--porcelain"):
         raise RuntimeError("formal Aave D1A requires a clean worktree")
+    if checkpoint_path.is_relative_to(REPO_ROOT):
+        raise RuntimeError("formal D1A checkpoint must remain outside the repository")
     config = _load_yaml(config_path)
+    config_sha256 = hashlib.sha256(config_path.read_bytes()).hexdigest()
     t0 = _load_json(t0_path)
     _verify_parent_t0(config, t0)
     parent_artifact_commit = str(config["contract"]["parent_t0_artifact_commit"])
@@ -447,6 +521,17 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
             f"D1A unit arithmetic differs from freeze: {expected_counts} != {frozen_counts}"
         )
 
+    repository_sha = _git("rev-parse", "HEAD")
+    ordered_proposal_ids = sorted(included_ids)
+    event_results, resumed_from_checkpoint = _load_checkpoint(
+        checkpoint_path,
+        repository_sha=repository_sha,
+        config_sha256=config_sha256,
+        parent_t0_sha256=str(t0["canonical_payload_sha256"]),
+        ordered_proposal_ids=ordered_proposal_ids,
+    )
+    resumed_event_count = len(event_results)
+
     client = _RpcClient(
         url=str(source["rpc_url"]),
         timeout=int(limits["request_timeout_seconds"]),
@@ -467,11 +552,10 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
     if preperiod_days <= 0 or weekly_bin_days <= 0 or preperiod_days % weekly_bin_days != 0:
         raise RuntimeError("preperiod must divide into positive, complete weekly bins")
     week_count = preperiod_days // weekly_bin_days
-    event_results: list[dict[str, Any]] = []
     pool_address = normalize_address(str(market["pool"]))
     asset_topic_values = [address_topic(address) for address in assets.values()]
 
-    for proposal_id in sorted(included_ids):
+    for proposal_id in ordered_proposal_ids[resumed_event_count:]:
         event = event_lookup[proposal_id]
         execution_block = int(event["execution_block"])
         execution_timestamp = int(event["executed_at_unix"])
@@ -567,6 +651,13 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
                 "assets": summaries,
             }
         )
+        _write_checkpoint(
+            checkpoint_path,
+            repository_sha=repository_sha,
+            config_sha256=config_sha256,
+            parent_t0_sha256=str(t0["canonical_payload_sha256"]),
+            event_results=event_results,
+        )
 
     eligible_units = [
         {
@@ -619,7 +710,7 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
         ),
         "repository": {
             "branch": _git("branch", "--show-current"),
-            "git_sha": _git("rev-parse", "HEAD"),
+            "git_sha": repository_sha,
         },
         "parent_t0": {
             "artifact_commit": parent_artifact_commit,
@@ -640,6 +731,14 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
             "rate_limit_retry_count": client.rate_limit_retry_count,
             "rate_limit_wait_seconds": round(client.rate_limit_wait_seconds, 3),
             "raw_rpc_responses_persisted": False,
+        },
+        "checkpoint": {
+            "resumed_from_sanitized_checkpoint": resumed_from_checkpoint,
+            "resumed_completed_event_count": resumed_event_count,
+            "checkpoint_filename": checkpoint_path.name,
+            "checkpoint_outside_repository": not checkpoint_path.is_relative_to(REPO_ROOT),
+            "checkpoint_contains_only_allowed_aggregates": True,
+            "checkpoint_removed_after_success": True,
         },
         "activity_rule": activity_rule,
         "selection": selection,
@@ -682,6 +781,7 @@ def screen(config_path: Path, t0_path: Path, output_path: Path) -> dict[str, Any
         encoding="utf-8",
     )
     temporary.replace(output_path)
+    checkpoint_path.unlink(missing_ok=True)
     return result
 
 
@@ -690,11 +790,13 @@ def main() -> int:
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--t0-result", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--checkpoint", type=Path, required=True)
     args = parser.parse_args()
     result = screen(
         args.config.resolve(),
         args.t0_result.resolve(),
         args.output.resolve(),
+        args.checkpoint.resolve(),
     )
     print(
         json.dumps(

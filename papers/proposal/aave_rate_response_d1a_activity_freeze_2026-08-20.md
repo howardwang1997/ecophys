@@ -72,6 +72,23 @@ written to the sanitized manifest. HTTP 429 is never treated as a block-range er
 This is a transport-scheduling amendment only. It changes no requested block, market event, participant
 definition, retained aggregate, unit threshold or panel decision. It must be committed before retrying.
 
+### Free-provider timeout and sanitized-resume amendment
+
+The paced retry from clean commit `1115109ab` ran for roughly four minutes and then received dRPC HTTP 408:
+the free-plan request exceeded its provider timeout. No final artifact was written. HTTP 408, 413 and exhausted
+504 errors are now eligible for deterministic bisection of only the failing transport chunk; authorization,
+rate-limit and ambiguous numeric limit errors remain fatal. The requested union of blocks is unchanged.
+
+To prevent a later transport interruption from discarding completed proposals, the runner atomically writes a
+checkpoint outside the Git repository after each complete proposal. It contains exactly the already allowed
+boundary metadata and aggregate counts, plus repository/config/parent-T0 identities and a canonical digest. It
+contains no raw log, participant topic, amount, rate or transaction. A checkpoint must be an exact prefix of the
+frozen proposal order and match the same code/config/T0 identity; otherwise the run stops. It is removed after a
+complete result is atomically written.
+
+This amendment affects transport range size and recoverability only. No scientific field, threshold, event,
+asset or time boundary changes. It must be committed before another retry.
+
 ## Retained information
 
 For each asset-event unit and each week, retain only:
