@@ -30,6 +30,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 class RpcError(RuntimeError):
     """Raised when an Ethereum JSON-RPC request fails."""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        rpc_code: int | None = None,
+        http_status: int | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.rpc_code = rpc_code
+        self.http_status = http_status
+
 
 class _RpcClient:
     def __init__(self, *, url: str, timeout: int, transport_retries: int) -> None:
@@ -62,12 +73,32 @@ class _RpcClient:
             json={"jsonrpc": "2.0", "id": request_id, "method": method, "params": params},
             timeout=self.timeout,
         )
-        response.raise_for_status()
-        payload = response.json()
+        try:
+            payload = response.json()
+        except requests.JSONDecodeError as error:
+            raise RpcError(
+                f"RPC {method} returned non-JSON HTTP {response.status_code}",
+                http_status=response.status_code,
+            ) from error
+        if response.status_code >= 400:
+            remote_error = payload.get("error") if isinstance(payload, Mapping) else None
+            raise RpcError(
+                f"RPC {method} returned HTTP {response.status_code}: {remote_error}",
+                http_status=response.status_code,
+            )
         if not isinstance(payload, Mapping):
             raise RpcError(f"RPC {method} returned non-object JSON")
         if payload.get("error") is not None:
-            raise RpcError(f"RPC {method} failed: {payload['error']}")
+            remote_error = payload["error"]
+            rpc_code = (
+                int(remote_error["code"])
+                if isinstance(remote_error, Mapping) and isinstance(remote_error.get("code"), int)
+                else None
+            )
+            raise RpcError(
+                f"RPC {method} failed: {remote_error}",
+                rpc_code=rpc_code,
+            )
         if "result" not in payload:
             raise RpcError(f"RPC {method} returned no result")
         return payload["result"]
@@ -197,8 +228,12 @@ def _get_logs_with_split(
     }
     try:
         payload = client.call("eth_getLogs", [query])
-    except (RpcError, requests.RequestException):
-        if start_block >= end_block_inclusive or remaining_split_depth <= 0:
+    except RpcError as error:
+        if (
+            not _is_splittable_log_error(error)
+            or start_block >= end_block_inclusive
+            or remaining_split_depth <= 0
+        ):
             raise
         client.log_range_splits += 1
         middle = (start_block + end_block_inclusive) // 2
@@ -222,6 +257,25 @@ def _get_logs_with_split(
     if not isinstance(payload, list) or any(not isinstance(row, Mapping) for row in payload):
         raise RpcError("eth_getLogs returned a malformed result")
     return payload
+
+
+def _is_splittable_log_error(error: RpcError) -> bool:
+    if error.http_status == 413:
+        return True
+    message = str(error).lower()
+    range_markers = (
+        "block range",
+        "range is too wide",
+        "range limit",
+        "response size",
+        "result size",
+        "too many results",
+        "query returned more than",
+        "log response size exceeded",
+    )
+    return error.rpc_code in {-32005, -32002} or any(
+        marker in message for marker in range_markers
+    )
 
 
 def _get_window_logs(

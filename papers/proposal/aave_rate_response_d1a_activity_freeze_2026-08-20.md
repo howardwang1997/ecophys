@@ -19,9 +19,9 @@ cohort; proposal 3 supplies three reverse-sign probes.
 
 The script queries the Aave V3 Ethereum Core Pool at
 `0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2` through the replaceable public Ethereum endpoint recorded in the
-YAML contract. PublicNode is transport, not the source of ownership or a claim that a packaged dataset has been
-licensed. Before distributing a bulk snapshot, provider terms and an independent RPC reproduction must be
-archived separately. This aggregate screen does not distribute provider responses.
+YAML contract. The RPC provider is transport, not the source of ownership or a claim that a packaged dataset
+has been licensed. Before distributing a bulk snapshot, provider terms and an independent RPC reproduction
+must be archived separately. This aggregate screen does not distribute provider responses.
 
 Only the `Borrow` and `Repay` event signatures frozen and independently derived at T0 are allowed. One RPC call
 may OR-filter the two signatures and the three reserve-address topics. No `ReserveDataUpdated`, position,
@@ -37,6 +37,24 @@ final exclusive boundary and must never be queried.
 The script rechecks the execution block timestamp and block hash against T0. It requests logs in fixed
 5,000-block chunks. A transport or JSON-RPC range failure may recursively split a chunk, but cannot change the
 scientific time window, event topics, assets or thresholds.
+
+### Transport-only amendment before any returned log
+
+The first formal attempt from clean freeze commit `4ed11b638` resolved chain and block metadata, but PublicNode
+returned HTTP 403 for the first historical `eth_getLogs` request with the explicit message that archive requests
+require a personal token. It returned no Aave log result and the runner wrote no artifact. The original runner
+also recursively split this authorization failure, which was an implementation defect: only an actual
+range/result-size failure may change transport chunking.
+
+Before retrying, the endpoint is replaced with dRPC's documented public Ethereum endpoint
+`https://eth.drpc.org/`. Outcome-blind capability probes at historical block 19,000,000 returned chain and block
+metadata plus zero rows for an impossible address over both one block and the frozen 5,000-block span. Flashbots
+passed the same empty-address probe and remains an independent reproduction option. The error classifier now
+stops immediately on HTTP 403 and splits only HTTP 413 or recognized JSON-RPC range/result-size errors.
+
+This amendment changes no proposal, asset, timestamp, block-boundary rule, event topic, retained field,
+activity threshold or decision threshold. It must itself be committed before the first successful Aave log
+request.
 
 ## Retained information
 

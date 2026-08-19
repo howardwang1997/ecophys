@@ -49,8 +49,8 @@ D1A uses four consecutive seven-day bins immediately before each exact payload e
 execution block. For each asset-event unit it retains only weekly Borrow/Repay counts and distinct debt-user
 counts, plus their 28-day totals. User topics exist only in memory; no participant, amount, rate, transaction
 hash, per-log identifier, raw log or response is serialized. The pure reducer rejects duplicates, removed logs,
-wrong contracts/reserves/events and out-of-window rows; six tests plus Ruff and strict mypy pass before the
-first query.
+wrong contracts/reserves/events and out-of-window rows; eight targeted tests plus Ruff and strict mypy pass
+after the transport amendment and before the first returned log.
 
 An eligible unit needs every week to have at least 10 Borrows, 10 Repays and 10 distinct debt users, and the
 full period to have at least 200 combined actions and 50 distinct debt users. The panel passes only with at
@@ -58,3 +58,9 @@ least 15/18 total, 12/15 primary decreases, 2/3 reverse-sign probes and two asse
 stops post-event acquisition; thresholds cannot be weakened after inspection. Passing authorizes only a
 separately frozen complete intervention-ledger and anticipation/identification audit. D1A is CPU/RPC-only and
 does not authorize V100, RTX 2060, paid data or EcoMD.
+
+The first formal D1A attempt from `4ed11b638` returned no logs and wrote no artifact: PublicNode requires a
+personal token for historical `eth_getLogs`. An outcome-blind empty-address probe verified that dRPC's documented
+public Ethereum endpoint supports the frozen 5,000-block historical query. The transport is amended to dRPC
+before retry; thresholds and scientific queries are unchanged. HTTP 403 is fatal rather than recursively split;
+only recognized range/result-size errors may split chunks.
