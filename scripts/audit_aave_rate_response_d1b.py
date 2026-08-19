@@ -357,6 +357,7 @@ def _splittable(error: RpcError) -> bool:
             "too many results",
             "query returned more than",
             "log response size exceeded",
+            "method handler crashed",
         )
     )
 

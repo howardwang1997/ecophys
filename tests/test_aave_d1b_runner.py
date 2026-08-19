@@ -18,6 +18,7 @@ def test_policy_ledger_merges_only_overlapping_or_adjacent_ranges() -> None:
 def test_policy_log_transport_splits_timeouts_but_not_rate_limits() -> None:
     assert _splittable(RpcError("gateway timeout", http_status=504)) is True
     assert _splittable(RpcError("block range is too wide", rpc_code=-32602)) is True
+    assert _splittable(RpcError("method handler crashed", rpc_code=-32000)) is True
     assert _splittable(RpcError("rate limit exceeded", http_status=429)) is False
 
 

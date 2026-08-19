@@ -58,3 +58,5 @@ The first clean formal invocation from `c8aed2a12` was rejected before its first
 free-plan `eth_getLogs` maximum is now 10,000 blocks. This did not open a proposal value or write a result.
 Transport is amended to 10,000-block shards with an external decoded-event/header checkpoint bound to code,
 config, source SHAs, RPC and endpoint block. The scientific block union, events and gates are unchanged.
+The next shard then reproduced JSON-RPC `method handler crashed` twice after the checkpoint reached block
+24,309,999. Treat only that exact server failure as deterministically splittable; do not split rate limits.
