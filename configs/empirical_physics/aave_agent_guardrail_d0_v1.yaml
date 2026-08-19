@@ -1,0 +1,116 @@
+contract:
+  name: aave_agent_guardrail_d0_action_support
+  version: 1
+  status: frozen_before_risk_oracle_proposal_values_or_execution_matching
+  purpose: test_threshold_action_support_before_any_market_outcome
+
+official_sources:
+  risk_agents:
+    remote: https://github.com/aave-dao/aave-risk-agents.git
+    expected_git_sha: dec4cc7254bfed47d7d73e142c60241f00865352
+    license: MIT_and_BUSL_components_as_declared
+  agent_hub:
+    remote: https://github.com/aave-dao/aave-agent-hub.git
+    expected_git_sha: 71e6dbbadcc86e5eb1ce29d2111a9ca313ae90f3
+    license: MIT
+  chaos_agents:
+    remote: https://github.com/ChaosLabsInc/chaos-agents.git
+    expected_git_sha: b365c58bf040c32521266cf10a4e70da9a8b7d4f
+    license: MIT
+  address_book:
+    remote: https://github.com/aave-dao/aave-address-book.git
+    expected_git_sha: 6a0ac5a5e548d764488a2f95f26714ff9275de48
+    ethereum_path: src/MiscEthereum.sol
+    license: MIT
+  proposals_repository:
+    remote: https://github.com/aave-dao/aave-proposals-v3.git
+    expected_git_sha: 18e17247a3fc86b89c1049fe2ae06cdb6bc36367
+    license: MIT
+
+transport:
+  formal_rpc: https://eth.drpc.org/
+  rpc_is_replaceable_transport: true
+  minimum_request_interval_seconds: 0.5
+  rate_limit_retries: 6
+  rate_limit_backoff_initial_seconds: 2
+  rate_limit_backoff_max_seconds: 30
+  maximum_get_logs_span: 50000
+
+ethereum:
+  chain_id: 1
+  from_block: 24000000
+  to_block: 25790047
+  to_block_hash: "0xdc25498b91d330723928b6528f81e4a1022166276ad2f8b0f96973a730cb8362"
+  agent_hub: "0x95E3015c67EF62B866cC28ca5A9AB5017A55e336"
+  range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+
+allowed_event_families:
+  agent_hub:
+    - AgentRegistered
+    - AgentAddressSet
+    - AgentAdminSet
+    - AgentEnabledSet
+    - AgentPermissionedStatusSet
+    - MarketsFromAgentEnabled
+    - ExpirationPeriodSet
+    - MinimumDelaySet
+    - AgentContextSet
+    - AllowedMarketAdded
+    - AllowedMarketRemoved
+    - RestrictedMarketAdded
+    - RestrictedMarketRemoved
+    - UpdateInjected
+  range_validation_module:
+    - DefaultRangeConfigSet
+    - MarketRangeConfigSet
+  risk_oracle:
+    - ParameterUpdated
+
+forbidden_data:
+  - pool_balances
+  - utilization
+  - borrow_or_supply_rates
+  - user_transactions
+  - positions
+  - prices
+  - liquidations
+  - market_response_windows
+
+matching:
+  exact_fields: [risk_oracle, update_type, update_id, market, proposed_value]
+  same_block_order: transaction_index_then_log_index
+  previous_oracle_value_is_not_protocol_validation_state: true
+
+terminal_classes:
+  - injected
+  - overwritten_uninjected
+  - expired_uninjected
+  - disabled_or_offboarded
+  - right_censored
+  - unmatched_or_ambiguous
+
+pass_thresholds:
+  minimum_unambiguous_proposals: 30
+  minimum_exact_injections: 20
+  minimum_update_types: 2
+  minimum_markets: 5
+  minimum_registered_agents: 3
+  minimum_resolved_non_immediate_proposals: 10
+  minimum_reconstructable_scores_for_one_boundary: 20
+  minimum_observations_each_side: 5
+  boundary_neighborhood_fraction: 0.25
+  minimum_near_boundary_each_side: 5
+  minimum_terminal_classification_rate: 0.90
+  clipping_or_bunching_at_every_boundary_fails: true
+
+stop_rules:
+  any_pass_threshold_failure_stops_threshold_causal_route: true
+  no_d1_or_market_outcomes_on_failure: true
+  no_multichain_rescue_without_new_freeze: true
+  no_synthetic_rejected_actions: true
+  no_gpu_or_ecomd: true
+
+resources:
+  maximum_cpu_core_hours: 20
+  maximum_retained_derived_gb: 2
+  gpu_hours: 0
