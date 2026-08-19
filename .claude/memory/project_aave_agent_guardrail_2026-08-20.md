@@ -68,3 +68,8 @@ cells and unions canonical log identities. Flashbots is unusable because it sile
 68-event deployment shard; LlamaRPC and 1RPC also failed availability/plan checks.
 The implemented four-topic partition independently re-fetches and exactly matches all 68 deployment-shard log
 identities in four calls without retry. This is the required transport sanity check before a new formal run.
+Formal degradation begins near 128 calls/minute despite the documented nominal CU allowance, so D0 pacing is
+fixed at 0.75 seconds (80 starts/minute). A current Google Blockchain Analytics fallback would scan 789.9 GB.
+Although `rooy-data` reports zero billed bytes this month, another inaccessible project shares its billing
+account; because the 1 TiB free allowance is account-level, BigQuery must not be executed as a purportedly free
+rescue.
