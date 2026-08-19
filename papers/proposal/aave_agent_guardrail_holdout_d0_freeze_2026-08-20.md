@@ -207,6 +207,28 @@ Linea recognizes only the observed phrase `exceeds limit of` as splittable; the 
 remains non-splittable because a tested provider returned it even for one block. No chain, block union, event
 family, sample rule, threshold or stop rule changed.
 
+The next clean attempt from `e7bf9a015` exposed a reproducibility failure in Pocket's public routing before any
+BNB artifact or checkpoint was written: the service no longer returned the frozen start anchor from the V100
+egress, and the same absence was reproduced from the RTX 2060 host and Mac. A transient earlier response is not
+sufficient evidence. One candidate that passed both headers, FastNode, silently returned zero events on the
+30-event shard and is explicitly rejected by the identity gate. This is exactly why endpoint availability and
+log completeness are separate requirements.
+
+The current ChainList registry supplied two further source-blind candidates. Sentio and bloXroute each passed
+chain ID, both anchor hashes and all 30 identities from Mac, but only bloXroute was usable from a designated
+compute node. On the RTX 2060 host's single egress, Nodeflare returns the exact 30-event digest, the documented
+public [bloXroute BSC Protect RPC](https://docs.bloxroute.com/introduction/protect-rpcs/bsc-protect-rpc) returns
+the same digest, and OnFinality independently verifies Hub code plus the consecutive zero-to-two state
+transition. bloXroute documents the exact endpoint and a three-request-per-second public limit; the frozen
+0.75-second pacing is below it. Because bloXroute routes to a nearby regional server, BNB must run entirely from
+the one preflighted RTX-host egress—no cross-IP identity assembly is permitted.
+
+The `e7bf9a015` attempt also demonstrated the clean-SHA fleet launcher. Its first invocation failed locally at
+module import and made no RPC request; the corrected `python -m` invocation completed Gnosis and made progress on
+other chains. Once the BNB reference changed, every old-SHA result and checkpoint became deliberately
+unmergeable. All remaining processes were terminated by exact PID and their files retained as attempt
+provenance. The complete nine-chain panel must restart from the next single clean SHA.
+
 ## Resources and interpretation
 
 D0H is capped at 50 CPU core-hours, 5 GB retained derived data, zero paid-data spend and zero GPU hours. The two

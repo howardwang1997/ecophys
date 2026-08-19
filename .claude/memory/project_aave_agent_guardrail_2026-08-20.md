@@ -165,3 +165,13 @@ state witness. Nodeflare also returns a valid empty result on the first frozen 1
 immediate recent-history-only failure. BNB formal span is 10,000, matching the documented free cap. Linea's exact `exceeds limit of`
 message is splittable while generic `limit exceeded` remains a fatal/quota error. Restart from a new clean SHA;
 D1, outcomes, EcoMD and GPUs remain locked.
+
+Attempt `e7bf9a015` proved the new Nodeflare primary but failed BNB before artifacts because Pocket stopped serving
+the frozen start anchor from all three tested egresses. FastNode passed headers but silently returned zero of the
+30 qualification logs and is rejected. ChainList candidates bloXroute and Sentio matched all 30 identities on
+Mac; on the designated RTX-host single egress, Nodeflare plus documented public bloXroute both match digest
+`2d50fe7f...5a4`, while OnFinality verifies code and the consecutive state transition. Use bloXroute as BNB's
+second candidate and run all BNB roles from that one preflighted egress; never combine identities across IPs.
+The initial fleet command's script-path import failure made no RPC call; corrected module launches produced some
+old-SHA files, all now identity-incompatible and retained only as attempt provenance. Restart all nine chains from
+the next clean SHA.

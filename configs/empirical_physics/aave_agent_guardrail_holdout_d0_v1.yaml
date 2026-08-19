@@ -114,6 +114,7 @@ chains:
     anchor_rpc_eth_get_logs_disabled_by_provider: true
     formal_rpc_candidates:
       - https://rpc.nodeflare.app/bnb/public
+      - https://bsc.rpc.blxrbdn.com
       - https://bsc.api.pocket.network
       - https://bsc-rpc.publicnode.com
       - https://bnb.api.onfinality.io/public
@@ -235,6 +236,19 @@ transport:
     bnb_qualification_event_count: 30
     bnb_qualification_canonical_log_identity_sha256: 2d50fe7fd5bcb03ca93f6783a94047a9664c28daf21acfc490e168f5591985a4
     bnb_formal_span_reduced_to_documented_free_rpc_cap: 10000
+    no_chain_sample_event_family_threshold_or_stop_rule_changed: true
+  amendment_2026_08_20_after_fourth_qualification_attempt:
+    trigger: pocket_historical_anchor_became_unavailable_across_three_tested_egresses
+    fixed_block_unions_and_scientific_rules_unchanged: true
+    bnb_primary_public_rpc: https://rpc.nodeflare.app/bnb/public
+    bnb_reference_public_rpc: https://bsc.rpc.blxrbdn.com
+    bnb_reference_provider_documentation: https://docs.bloxroute.com/introduction/protect-rpcs/bsc-protect-rpc
+    bnb_reference_documented_public_rate_per_second: 3
+    bnb_reference_event_count: 30
+    bnb_reference_canonical_log_identity_sha256: 2d50fe7fd5bcb03ca93f6783a94047a9664c28daf21acfc490e168f5591985a4
+    single_egress_must_pass_both_log_sources_and_state_witness: true
+    silently_incomplete_fastnode_response_is_excluded: true
+    all_old_sha_chain_artifacts_and_checkpoints_are_unmergeable: true
     no_chain_sample_event_family_threshold_or_stop_rule_changed: true
 
 allowed_event_families:

@@ -90,7 +90,7 @@ def test_all_chain_anchors_and_source_addresses_are_explicit() -> None:
     }
     assert bnb["formal_rpc_candidates"][:2] == [
         "https://rpc.nodeflare.app/bnb/public",
-        "https://bsc.api.pocket.network",
+        "https://bsc.rpc.blxrbdn.com",
     ]
     assert bnb["qualification_expected_canonical_log_identity_sha256"] == (
         "2d50fe7fd5bcb03ca93f6783a94047a9664c28daf21acfc490e168f5591985a4"
