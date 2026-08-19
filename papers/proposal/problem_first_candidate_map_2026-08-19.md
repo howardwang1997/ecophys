@@ -1,5 +1,9 @@
 # Problem-first high-impact candidate map — 2026-08-19
 
+> **T0 update (2026-08-19): FAIL.** E0 identification, E1 instrument and E2 constraint-law exits all failed;
+> no AEMO/NZEM market rows or compute were unlocked. The retained candidate is now closed, not AMBER. See
+> `papers/proposal/performative_dispatch_t0_result_2026-08-19.md`.
+
 ## Binding starting point
 
 The original invariant-calibration NCS route, generic simulator-audit route, EcoMD-v1 realism route and the

@@ -29,3 +29,19 @@ No CPU/GPU job is authorized. If T0 fails, do not download AEMO rows or implemen
 passes, freeze a separate metadata/header-only D0 source qualification. Full map:
 `papers/proposal/problem_first_candidate_map_2026-08-19.md`; protocol:
 `papers/proposal/performative_dispatch_t0_freeze_2026-08-19.md`.
+
+## T0 result (19:04 NZST)
+
+T0 formally **failed** before any market-row access. E0 failed because hidden common information preserves the
+frozen observational equivalence, while prediction-effect identification from randomized/overparameterized/
+discrete predictions, causal domain shift and sequential control is already directly covered. E1 found zero
+eligible instruments: verified WITS/AEMO outages generally also affect bids or market systems; NZ Winter 2023 is
+a single bundled intervention; only the 2026-04-02 NZ publication interruption remains unresolved and cannot meet
+the five-event rule. E2 failed because critical regions, piecewise-affine/discontinuous LMPs, extreme-price large
+deviations and lossy-LMP sensitivities are established.
+
+Do not unlock D0, download AEMO/NZEM values, implement a synthetic rescue or schedule CPU/GPU. Reopen only with
+a pre-outcome randomized/staggered publication design, five defensible publication-only events, a genuinely new
+identification theorem or a non-KKT constraint law. Result:
+`papers/proposal/performative_dispatch_t0_result_2026-08-19.md`; artifact:
+`results/empirical_physics/performative_dispatch_t0_result.json`.
