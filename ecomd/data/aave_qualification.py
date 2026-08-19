@@ -371,3 +371,397 @@ def find_payload_execution(
         "execution_transaction_hash": str(event["transactionHash"]),
         "execution_block_hash": str(event["blockHash"]),
     }
+
+
+def extract_solidity_event_definitions(source: str) -> dict[str, dict[str, Any]]:
+    """Extract canonical event signatures and indexed positions from Solidity source."""
+    without_comments = re.sub(r"/\*.*?\*/", "", source, flags=re.DOTALL)
+    without_comments = re.sub(r"//[^\n]*", "", without_comments)
+    definitions: dict[str, dict[str, Any]] = {}
+    for match in re.finditer(
+        r"\bevent\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*?)\)\s*;",
+        without_comments,
+        flags=re.DOTALL,
+    ):
+        name = match.group(1)
+        raw_parameters = [part.strip() for part in match.group(2).split(",")]
+        types: list[str] = []
+        indexed_positions: list[int] = []
+        for position, raw_parameter in enumerate(raw_parameters):
+            if not raw_parameter:
+                continue
+            tokens = raw_parameter.split()
+            if "indexed" in tokens:
+                indexed_positions.append(position)
+            qualifiers = {"indexed", "memory", "calldata", "storage", "payable"}
+            type_tokens = [token for token in tokens if token not in qualifiers]
+            if not type_tokens:
+                raise ValueError(f"event {name} contains an empty parameter")
+            canonical_type = type_tokens[0]
+            if canonical_type == "uint":
+                canonical_type = "uint256"
+            elif canonical_type == "int":
+                canonical_type = "int256"
+            types.append(canonical_type)
+        signature = f"{name}({','.join(types)})"
+        definition = {
+            "name": name,
+            "signature": signature,
+            "parameter_types": types,
+            "indexed_positions": indexed_positions,
+        }
+        previous = definitions.get(signature)
+        if previous is not None and previous != definition:
+            raise ValueError(f"conflicting definitions for event {signature}")
+        definitions[signature] = definition
+    return definitions
+
+
+def _balanced_segment(source: str, opening_index: int, *, opening: str, closing: str) -> str:
+    if opening_index < 0 or opening_index >= len(source) or source[opening_index] != opening:
+        raise ValueError("balanced segment does not start at the requested delimiter")
+    depth = 0
+    for index in range(opening_index, len(source)):
+        character = source[index]
+        if character == opening:
+            depth += 1
+        elif character == closing:
+            depth -= 1
+            if depth == 0:
+                return source[opening_index + 1 : index]
+    raise ValueError("unterminated balanced segment")
+
+
+def _solidity_bps(expression: str) -> int:
+    normalized = expression.strip()
+    wrapped = re.fullmatch(r"_bpsToRay\(\s*([0-9][0-9_]*)\s*\)", normalized)
+    literal = wrapped.group(1) if wrapped is not None else normalized
+    if re.fullmatch(r"[0-9][0-9_]*", literal) is None:
+        raise ValueError(f"unsupported Solidity basis-point expression: {expression}")
+    return int(literal.replace("_", ""))
+
+
+def extract_rate_strategy_updates(source: str) -> list[dict[str, Any]]:
+    """Parse V3 config-engine rate updates without compiling untrusted proposal code."""
+    marker = "IAaveV3ConfigEngine.RateStrategyUpdate({"
+    updates: list[dict[str, Any]] = []
+    search_from = 0
+    while True:
+        marker_index = source.find(marker, search_from)
+        if marker_index < 0:
+            break
+        opening_index = marker_index + len(marker) - 1
+        body = _balanced_segment(source, opening_index, opening="{", closing="}")
+        search_from = opening_index + len(body) + 2
+        asset_match = re.search(
+            r"\basset\s*:\s*AaveV3[A-Za-z0-9_]*Assets\.([A-Za-z0-9_]+)_UNDERLYING\b",
+            body,
+        )
+        if asset_match is None:
+            raise ValueError("rate update has no recognized Aave V3 asset constant")
+        params_match = re.search(
+            r"\bparams\s*:\s*(?:IV3RateStrategyFactory\.RateStrategyParams|"
+            r"IAaveV3ConfigEngine\.InterestRateInputData)\s*\(\s*\{",
+            body,
+        )
+        if params_match is None:
+            raise ValueError(f"rate update for {asset_match.group(1)} has unknown params type")
+        params_opening = params_match.end() - 1
+        params_body = _balanced_segment(body, params_opening, opening="{", closing="}")
+        fields: dict[str, str] = {}
+        for field_match in re.finditer(
+            r"\b([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([^,}\n]+)", params_body
+        ):
+            field = field_match.group(1)
+            if field in fields:
+                raise ValueError(f"duplicate rate field {field}")
+            fields[field] = field_match.group(2).strip()
+        if not fields:
+            raise ValueError(f"rate update for {asset_match.group(1)} has no fields")
+        configured_fields = [
+            field for field, value in fields.items() if value != "EngineFlags.KEEP_CURRENT"
+        ]
+        slope1_bps = (
+            _solidity_bps(fields["variableRateSlope1"])
+            if "variableRateSlope1" in configured_fields
+            else None
+        )
+        updates.append(
+            {
+                "asset_alias": asset_match.group(1),
+                "configured_change_fields": configured_fields,
+                "variable_rate_slope1_bps": slope1_bps,
+                "slope1_only": configured_fields == ["variableRateSlope1"],
+            }
+        )
+    return updates
+
+
+def _address_from_data_word_zero(data: str) -> str:
+    normalized = data.lower()
+    if re.fullmatch(r"0x[0-9a-f]*", normalized) is None or len(normalized) < 66:
+        raise ValueError("event data lacks a complete ABI word")
+    return normalize_address("0x" + normalized[26:66])
+
+
+def _address_from_topic(topic: str) -> str:
+    return normalize_address("0x" + _normalize_topic(topic)[-40:])
+
+
+def reduce_policy_logs(
+    logs: Sequence[Mapping[str, Any]],
+    *,
+    contract_addresses: Mapping[str, str],
+    topic_definitions: Mapping[str, Mapping[str, Any]],
+    selected_assets: Mapping[str, str],
+    selected_tokens: Mapping[str, Sequence[str]],
+    start_block: int,
+    end_block_inclusive: int,
+    block_timestamps: Mapping[int, int],
+) -> list[dict[str, Any]]:
+    """Sanitize configuration logs while retaining policy provenance only."""
+    if start_block < 0 or end_block_inclusive < start_block:
+        raise ValueError("invalid policy-ledger block interval")
+    normalized_contracts = {
+        normalize_address(address): str(group)
+        for group, address in contract_addresses.items()
+    }
+    if len(normalized_contracts) != len(contract_addresses):
+        raise ValueError("policy contract addresses must be unique")
+    normalized_topics = {
+        _normalize_topic(topic): dict(definition)
+        for topic, definition in topic_definitions.items()
+    }
+    asset_lookup = {
+        normalize_address(address): str(symbol)
+        for symbol, address in selected_assets.items()
+    }
+    token_lookup: dict[str, str] = {}
+    for token_symbol, addresses in selected_tokens.items():
+        for address in addresses:
+            normalized = normalize_address(address)
+            if normalized in token_lookup:
+                raise ValueError("selected policy tokens must be unique")
+            token_lookup[normalized] = str(token_symbol)
+
+    sanitized: list[dict[str, Any]] = []
+    seen: set[tuple[str, str, int]] = set()
+    for raw_log in logs:
+        if raw_log.get("removed") is True:
+            raise ValueError("removed logs are forbidden in a formal policy ledger")
+        address = normalize_address(str(raw_log.get("address")))
+        contract_group = normalized_contracts.get(address)
+        if contract_group is None:
+            raise ValueError("RPC returned a log from an unexpected policy contract")
+        raw_topics = raw_log.get("topics")
+        if not isinstance(raw_topics, Sequence) or isinstance(raw_topics, (str, bytes)):
+            raise ValueError("policy log topics must be a sequence")
+        if not raw_topics:
+            raise ValueError("policy log has no signature topic")
+        topics = [_normalize_topic(str(topic)) for topic in raw_topics]
+        definition = normalized_topics.get(topics[0])
+        if definition is None:
+            raise ValueError("RPC returned an unexpected policy event")
+        if str(definition["contract_group"]) != contract_group:
+            raise ValueError("policy event topic came from the wrong contract group")
+        block_number = _hex_quantity(raw_log.get("blockNumber"), field="blockNumber")
+        if not start_block <= block_number <= end_block_inclusive:
+            raise ValueError("RPC returned a policy log outside the requested interval")
+        if block_number not in block_timestamps:
+            raise ValueError(f"policy block {block_number} has no verified timestamp")
+        transaction_hash = _normalize_topic(str(raw_log.get("transactionHash")))
+        block_hash = _normalize_topic(str(raw_log.get("blockHash")))
+        log_index = _hex_quantity(raw_log.get("logIndex"), field="logIndex")
+        identity = (block_hash, transaction_hash, log_index)
+        if identity in seen:
+            raise ValueError("duplicate policy log returned across RPC chunks")
+        seen.add(identity)
+
+        scope_rule = str(definition["scope_rule"])
+        symbol: str | None = None
+        if scope_rule == "asset_topic":
+            if len(topics) < 2:
+                raise ValueError("asset-scoped policy event lacks indexed asset")
+            symbol = asset_lookup.get(_address_from_topic(topics[1]))
+            scope = "selected_asset" if symbol is not None else "other_asset"
+        elif scope_rule == "asset_data_word_zero":
+            symbol = asset_lookup.get(_address_from_data_word_zero(str(raw_log.get("data"))))
+            scope = "selected_asset" if symbol is not None else "other_asset"
+        elif scope_rule == "reward_asset_topic":
+            if len(topics) < 2:
+                raise ValueError("reward event lacks indexed configured asset")
+            symbol = token_lookup.get(_address_from_topic(topics[1]))
+            scope = "selected_asset" if symbol is not None else "other_reward_asset"
+        elif scope_rule == "global":
+            scope = "global"
+        else:
+            raise ValueError(f"unknown policy scope rule: {scope_rule}")
+
+        raw_data = str(raw_log.get("data"))
+        if re.fullmatch(r"0x[0-9a-fA-F]*", raw_data) is None:
+            raise ValueError("policy event has malformed data")
+        sanitized.append(
+            {
+                "event_signature": str(definition["signature"]),
+                "event_name": str(definition["name"]),
+                "contract_group": contract_group,
+                "scope": scope,
+                "symbol": symbol,
+                "block_number": block_number,
+                "block_timestamp": int(block_timestamps[block_number]),
+                "transaction_hash": transaction_hash,
+                "policy_data_sha256": hashlib.sha256(raw_data.lower().encode()).hexdigest(),
+            }
+        )
+    return sorted(
+        sanitized,
+        key=lambda row: (
+            int(row["block_number"]),
+            str(row["transaction_hash"]),
+            str(row["event_signature"]),
+            str(row["symbol"]),
+        ),
+    )
+
+
+_GLOBAL_MATERIAL_EVENTS = {
+    ("pool_configurator", "EModeCategoryAdded"),
+    ("pool_configurator", "EModeCategoryIsolationChanged"),
+    ("oracle", "FallbackOracleUpdated"),
+    ("addresses_provider", "PoolUpdated"),
+    ("addresses_provider", "PoolConfiguratorUpdated"),
+    ("addresses_provider", "PriceOracleUpdated"),
+    ("addresses_provider", "PriceOracleSentinelUpdated"),
+}
+
+
+def classify_clean_policy_windows(
+    policy_events: Sequence[Mapping[str, Any]],
+    units: Sequence[Mapping[str, Any]],
+    *,
+    exclusion_pre_seconds: int,
+    minimum_clean_post_seconds: int,
+    target_post_seconds: int,
+) -> list[dict[str, Any]]:
+    """Apply the frozen target, contamination and administrative-censoring rules."""
+    if not 0 < minimum_clean_post_seconds <= target_post_seconds:
+        raise ValueError("clean-post duration must be positive and no longer than target follow-up")
+    if exclusion_pre_seconds < 0:
+        raise ValueError("exclusion pre-period cannot be negative")
+    target_names = {"ReserveInterestRateStrategyChanged", "ReserveInterestRateDataChanged"}
+    results: list[dict[str, Any]] = []
+    for unit in units:
+        proposal_id = int(unit["proposal_id"])
+        symbol = str(unit["symbol"])
+        execution_block = int(unit["execution_block"])
+        execution_timestamp = int(unit["execution_timestamp"])
+        execution_transaction_hash = _normalize_topic(str(unit["execution_transaction_hash"]))
+
+        exact_targets = [
+            event
+            for event in policy_events
+            if str(event["event_name"]) in target_names
+            and event.get("symbol") == symbol
+            and int(event["block_number"]) == execution_block
+            and str(event["transaction_hash"]).lower() == execution_transaction_hash
+        ]
+        material_events: list[Mapping[str, Any]] = []
+        for event in policy_events:
+            is_exact_target = event in exact_targets
+            if is_exact_target:
+                continue
+            event_scope = str(event["scope"])
+            event_group = str(event["contract_group"])
+            event_name = str(event["event_name"])
+            if (
+                event_scope == "selected_asset" and event.get("symbol") == symbol
+            ) or (
+                event_scope == "global"
+                and (event_group, event_name) in _GLOBAL_MATERIAL_EVENTS
+            ):
+                material_events.append(event)
+
+        exclusion_start = execution_timestamp - exclusion_pre_seconds
+        clean_post_end = execution_timestamp + minimum_clean_post_seconds
+        target_post_end = execution_timestamp + target_post_seconds
+        contaminating = [
+            event
+            for event in material_events
+            if exclusion_start <= int(event["block_timestamp"]) <= clean_post_end
+        ]
+        later = sorted(
+            (
+                event
+                for event in material_events
+                if clean_post_end < int(event["block_timestamp"]) < target_post_end
+            ),
+            key=lambda event: (int(event["block_timestamp"]), int(event["block_number"])),
+        )
+        first_later = later[0] if later else None
+        target_matches_exactly_once = len(exact_targets) == 1
+        eligible = target_matches_exactly_once and not contaminating
+        censor_timestamp = (
+            int(first_later["block_timestamp"])
+            if eligible and first_later is not None
+            else target_post_end if eligible else None
+        )
+        results.append(
+            {
+                "proposal_id": proposal_id,
+                "symbol": symbol,
+                "cohort": str(unit["cohort"]),
+                "execution_block": execution_block,
+                "execution_timestamp": execution_timestamp,
+                "execution_transaction_hash": execution_transaction_hash,
+                "exact_target_event_count": len(exact_targets),
+                "target_matches_exactly_once": target_matches_exactly_once,
+                "contaminating_events": [dict(event) for event in contaminating],
+                "contaminating_event_count": len(contaminating),
+                "administrative_censor_event": (
+                    dict(first_later) if eligible and first_later is not None else None
+                ),
+                "administrative_censor_timestamp": censor_timestamp,
+                "clean_followup_seconds": (
+                    censor_timestamp - execution_timestamp
+                    if censor_timestamp is not None
+                    else 0
+                ),
+                "clean_window_eligible": eligible,
+            }
+        )
+    return results
+
+
+def assess_clean_panel(
+    units: Sequence[Mapping[str, Any]],
+    *,
+    minimum_total: int,
+    minimum_primary: int,
+    minimum_reverse: int,
+    minimum_assets_per_proposal: int,
+) -> dict[str, Any]:
+    """Evaluate the frozen Aave clean-panel arithmetic without fallback tiers."""
+    eligible = [unit for unit in units if bool(unit["clean_window_eligible"])]
+    primary = sum(str(unit["cohort"]) == "primary_rate_decrease" for unit in eligible)
+    reverse = sum(str(unit["cohort"]) == "reverse_sign" for unit in eligible)
+    proposal_ids = sorted({int(unit["proposal_id"]) for unit in units})
+    by_proposal = {
+        str(proposal_id): sum(int(unit["proposal_id"]) == proposal_id for unit in eligible)
+        for proposal_id in proposal_ids
+    }
+    checks = {
+        "minimum_total_clean_units": len(eligible) >= minimum_total,
+        "minimum_primary_clean_units": primary >= minimum_primary,
+        "minimum_reverse_sign_clean_units": reverse >= minimum_reverse,
+        "minimum_clean_assets_per_proposal": all(
+            count >= minimum_assets_per_proposal for count in by_proposal.values()
+        ),
+    }
+    return {
+        "passed": all(checks.values()),
+        "eligible_unit_count": len(eligible),
+        "eligible_primary_unit_count": primary,
+        "eligible_reverse_sign_unit_count": reverse,
+        "eligible_units_by_proposal": by_proposal,
+        "decision_checks": checks,
+    }

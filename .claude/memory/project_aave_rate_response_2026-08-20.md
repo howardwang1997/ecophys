@@ -114,3 +114,11 @@ source-audited slope1-only stablecoin update and at least 24 hours of execution 
 a separately frozen cross-chain pre-period activity/comparability gate D1C; failure stops the NCS route before
 behavioral outcomes. Pinned ABI/source SHAs and full rules live in
 `configs/empirical_physics/aave_rate_response_d1b_identification_v1.yaml`.
+
+Before formal D1B, the executable interpretation is fixed: DAI/DAIe, USDC/USDCe/USDCn and USDT/USDTe are
+the only cross-chain aliases, and a chain counts as comparable only when its historical, commit-pinned Solidity
+source changes exactly `variableRateSlope1` for at least one such asset. Stagger is measured across executed,
+source-audited comparable chains including Ethereum. Missing per-chain source is non-comparable, not inferred.
+The pure audit layer extracts event signatures from the pinned ABIs, parses both legacy `_bpsToRay(...)` and
+current direct-bps config forms, sanitizes policy logs, and applies exact-target/contamination/censoring rules.
+The implementation has targeted regression tests; no behavioral outcome has been opened.

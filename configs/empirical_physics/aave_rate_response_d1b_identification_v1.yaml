@@ -38,6 +38,10 @@ transport:
   secondary_reproduction_rpc: https://eth.drpc.org/
   forum_base_url: https://governance.aave.com
   rpc_is_replaceable_transport: true
+  minimum_request_interval_seconds: 0.2
+  rate_limit_retries: 6
+  rate_limit_backoff_initial_seconds: 2
+  rate_limit_backoff_max_seconds: 30
 
 ethereum:
   chain_id: 1
@@ -183,6 +187,15 @@ materiality:
 
 cross_chain_gate:
   source_audit_requires_only_rate_slope1_changed_for_comparator_asset: true
+  comparator_asset_aliases:
+    DAI: DAI
+    DAIe: DAI
+    USDC: USDC
+    USDCe: USDC
+    USDCn: USDC
+    USDT: USDT
+    USDTe: USDT
+  stagger_population: executed_source_audited_comparable_chains_including_ethereum
   minimum_executed_v3_payload_chains_per_qualifying_proposal: 3
   minimum_non_ethereum_comparator_chains_per_qualifying_proposal: 2
   minimum_execution_stagger_hours: 24

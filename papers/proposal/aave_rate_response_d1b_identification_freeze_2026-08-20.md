@@ -85,6 +85,20 @@ aggregated because shorter staggering is weak for an adjustment process expected
 does not assume those chains are active or comparable; it authorizes only a separately frozen D1C pre-period
 activity and comparability screen.
 
+### Pre-run implementation clarification
+
+Before the formal runner is committed, comparator symbols are mapped only as token-name aliases to the three
+frozen economic assets: `DAI`/`DAIe` to DAI, `USDC`/`USDCe`/`USDCn` to USDC, and `USDT`/`USDTe` to USDT. An
+alias counts only when the pinned chain-specific Solidity source changes exactly `variableRateSlope1`; merely
+appearing in the proposal-to-payload map does not count. The stagger is computed across executed,
+source-audited comparable chains, including Ethereum. Missing chain-specific source is retained as an
+unresolved/non-comparable payload rather than inferred from the proposal title.
+
+This clarification makes the already frozen phrase “source-audited comparable stablecoin update” executable;
+it does not change the 24-hour or four-of-six thresholds. RPC pacing (0.2 seconds between calls, six bounded
+429 retries, and deterministic range bisection for timeout/size errors) is likewise transport-only and cannot
+change the queried block union or any scientific gate.
+
 ## Binding decision
 
 D1B passes to D1C only if all of the following hold:
