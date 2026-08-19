@@ -136,6 +136,11 @@ def test_holdout_transport_and_resource_caps_remain_free_and_cpu_only() -> None:
     assert transport["raw_rpc_responses_retained"] is False
     amendment = transport["amendment_2026_08_20_after_first_qualification_attempt"]
     assert amendment["fixed_10000_block_qualification_union_unchanged"] is True
+    assert amendment["anchor_rpc_verifies_chain_and_hashes"] is True
+    assert (
+        amendment["first_archive_capable_anchor_or_formal_candidate_verifies_agent_hub_code_at_to_block"]
+        is True
+    )
     assert amendment["no_chain_sample_event_family_threshold_or_stop_rule_changed"] is True
     assert resources == {
         "maximum_cpu_core_hours": 50,

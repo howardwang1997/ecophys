@@ -12,6 +12,7 @@ from scripts import audit_aave_agent_guardrail_holdout_d0 as holdout_runner
 from scripts.audit_aave_agent_guardrail_holdout_d0 import (
     _canonical_log_identities,
     _load_chain_checkpoint,
+    _qualify_state_witness,
     _validate_pilot_binding,
     _validate_transport_anchor,
     _verified_artifact,
@@ -136,6 +137,43 @@ def test_log_transport_anchor_does_not_require_historical_contract_state() -> No
         chain=chain,
         require_contract_code=False,
     )
+
+
+def test_state_witness_uses_first_archive_capable_candidate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeClient:
+        def __init__(self, url: str) -> None:
+            self.url = url
+            self.method_counts = {"eth_chainId": 1}
+
+    clients = {
+        "https://pruned.test": FakeClient("https://pruned.test"),
+        "https://archive.test": FakeClient("https://archive.test"),
+    }
+
+    def fake_new_client(url: str, *, minimum_interval: float) -> FakeClient:
+        assert minimum_interval == 0.75
+        return clients[url]
+
+    def fake_validate(client: FakeClient, *, chain: Any, require_contract_code: bool) -> None:
+        del chain
+        assert require_contract_code is True
+        if client.url == "https://pruned.test":
+            raise RuntimeError("missing trie node")
+
+    monkeypatch.setattr(holdout_runner, "_new_client", fake_new_client)
+    monkeypatch.setattr(holdout_runner, "_validate_transport_anchor", fake_validate)
+
+    result = _qualify_state_witness(
+        chain={"chain_id": 10},
+        candidate_urls=["https://pruned.test", "https://archive.test"],
+        minimum_interval=0.75,
+    )
+
+    assert result["state_witness_rpc"] == "https://archive.test"
+    assert result["frozen_endpoint_agent_hub_code_verified"] is True
+    assert len(result["failed_candidates_before_success"]) == 1
 
 
 def test_log_query_partitions_topics_and_preserves_the_exact_range(

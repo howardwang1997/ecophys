@@ -139,9 +139,15 @@ mypy passed; source audit binds nine chains and 26 files.
 The first post-freeze qualification attempt from `4f826b2a3` produced no artifact/checkpoint. Avalanche and
 Polygon exposed explicit provider block-range caps; BNB exposed a false coupling between log transport and
 historical-state availability. A transport-only amendment keeps the exact 10,000-block qualification union but
-allows recursive request subdivision, verifies code on the fixed anchor RPC, and requires each log transport to
-verify chain/hashes plus exact log identities. Documented public Avalanche dRPC and archive-capable BNB
+allows recursive request subdivision, verifies chain/hashes on the fixed anchor RPC, and requires each log
+transport to verify chain/hashes plus exact log identities. Documented public Avalanche dRPC and archive-capable BNB
 OnFinality were added after source-blind anchor/code probes passed. Seven obsolete old-SHA runs were terminated;
-no shard is reusable. The expanded focused suite passes 37 tests plus Ruff/strict mypy. No chain, data union,
+no shard is reusable.
+
+The next clean attempt from `700d39f92` showed that fixed Arbitrum/BNB anchors had retained exact headers but
+pruned frozen state. It also wrote no artifact/checkpoint. State verification is now a separate, result-blind
+witness: the first archive-capable endpoint in fixed anchor/candidate order must return nonzero Hub code at the
+exact `to_block`. Header/code-only preflight found one on all nine chains (Arbitrum Blockscout, BNB OnFinality,
+first fixed endpoint elsewhere). The expanded focused suite passes 38 tests plus Ruff/strict mypy. No chain, data union,
 event family, eligibility rule, batch definition, scientific gate or stop rule changed. D1, outcomes, EcoMD and
 GPUs remain locked pending a conjunctive D0H pass from the next clean SHA.

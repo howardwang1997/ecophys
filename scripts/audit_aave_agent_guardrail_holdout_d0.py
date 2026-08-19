@@ -370,6 +370,34 @@ def _first_nonempty_hub_shard(
     raise RuntimeError("no nonempty AgentHub qualification shard exists in the frozen interval")
 
 
+def _qualify_state_witness(
+    *,
+    chain: Mapping[str, Any],
+    candidate_urls: Sequence[str],
+    minimum_interval: float,
+) -> dict[str, Any]:
+    failures: list[dict[str, Any]] = []
+    for url in dict.fromkeys(candidate_urls):
+        try:
+            client = _new_client(url, minimum_interval=minimum_interval)
+            _validate_transport_anchor(client, chain=chain, require_contract_code=True)
+            return {
+                "state_witness_rpc": url,
+                "frozen_endpoint_agent_hub_code_verified": True,
+                "request_counts": dict(sorted(client.method_counts.items())),
+                "failed_candidates_before_success": failures,
+            }
+        except Exception as error:
+            failures.append(
+                {
+                    "rpc": url,
+                    "error_type": type(error).__name__,
+                    "error": str(error),
+                }
+            )
+    raise RuntimeError(f"no frozen state-witness transport qualified: {failures}")
+
+
 def _qualify_transport(
     config: Mapping[str, Any],
     *,
@@ -388,7 +416,12 @@ def _qualify_transport(
     maximum_topics = int(config["transport"]["maximum_topics_per_get_logs"])
     anchor_url = str(chain["anchor_rpc"])
     anchor = _new_client(anchor_url, minimum_interval=interval)
-    _validate_transport_anchor(anchor, chain=chain, require_contract_code=True)
+    _validate_transport_anchor(anchor, chain=chain, require_contract_code=False)
+    state_witness = _qualify_state_witness(
+        chain=chain,
+        candidate_urls=[anchor_url, *candidates],
+        minimum_interval=interval,
+    )
     failures: list[dict[str, Any]] = []
     for primary_index in ordered_indices:
         primary_url = candidates[primary_index]
@@ -434,7 +467,8 @@ def _qualify_transport(
                 return primary, {
                     "anchor_rpc": anchor_url,
                     "anchor_request_counts": dict(sorted(anchor.method_counts.items())),
-                    "anchor_chain_hashes_and_agent_hub_code_verified": True,
+                    "anchor_chain_and_hashes_verified": True,
+                    "state_witness": state_witness,
                     "primary_rpc": primary_url,
                     "reference_rpc": reference_url,
                     "from_block": start,
