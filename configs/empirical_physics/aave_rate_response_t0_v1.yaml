@@ -1,0 +1,129 @@
+contract:
+  name: aave_rate_response_spectroscopy_t0
+  version: 1
+  status: frozen_before_any_aave_borrow_repay_outcome_log
+  purpose: qualify_repeated_high_liquidity_rate_steps_before_activity_or_outcome_acquisition
+
+sources:
+  governance_cache:
+    remote: https://github.com/aave-dao/aave-governance-cache.git
+    expected_git_sha: e5874da1b567b4b97ebade91f2c05d5c79b16e59
+    license: MIT
+  proposals_repository:
+    remote: https://github.com/aave-dao/aave-proposals-v3.git
+    expected_git_sha: 18e17247a3fc86b89c1049fe2ae06cdb6bc36367
+    license: MIT
+  claimed_open_dataset:
+    title: A Cross-Chain Event-Driven Data Infrastructure for Aave Protocol Analytics and Applications
+    doi: 10.5281/zenodo.17898640
+    record_api: https://zenodo.org/api/records/17898640
+    exact_title_search_api: https://zenodo.org/api/records
+    paper_cutoff: "2025-10-01T00:00:00Z"
+  public_rpc:
+    url: https://ethereum-rpc.publicnode.com
+    expected_chain_id_hex: "0x1"
+
+market:
+  chain_id: 1
+  instance: Aave V3 Ethereum Core
+  pool: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"
+  assets:
+    DAI: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+    USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+
+events:
+  - proposal_id: 3
+    expected_title: Stablecoin IR Curves Updates
+    expected_payload_id: 44
+    implementation_commit: cfbcf8fce5a168a5bd17d9dae385e0ca7d39d560
+    implementation_directory: 20231221_Multi_StablecoinIRCurvesUpdates
+    diff_path: diffs/AaveV3Ethereum_StablecoinIRCurvesUpdates_20231221_before_AaveV3Ethereum_StablecoinIRCurvesUpdates_20231221_after.md
+    slope1_before_bps: 500
+    slope1_after_bps: 600
+  - proposal_id: 94
+    expected_title: StablecoinIRUpdates
+    expected_payload_id: 117
+    implementation_commit: f123b71c8f30c55710f199d7f377960705dd7993
+    implementation_directory: 20240424_Multi_StablecoinIRUpdates
+    diff_path: diffs/AaveV3Ethereum_StablecoinIRUpdates_20240424_before_AaveV3Ethereum_StablecoinIRUpdates_20240424_after.md
+    slope1_before_bps: 1200
+    slope1_after_bps: 900
+  - proposal_id: 130
+    expected_title: Stablecoin IR Curve Amendment
+    expected_payload_id: 144
+    implementation_commit: 87be85f78fb5c0eefff01d5d413b5830ce850f0e
+    implementation_directory: 20240714_Multi_StablecoinIRCurveAmendment
+    diff_path: diffs/AaveV3Ethereum_StablecoinIRCurveAmendment_20240714_before_AaveV3Ethereum_StablecoinIRCurveAmendment_20240714_after.md
+    slope1_before_bps: 900
+    slope1_after_bps: 650
+  - proposal_id: 159
+    expected_title: Stablecoin IR Curve Amendment
+    expected_payload_id: 167
+    implementation_commit: 93023bc9ee8cd0058665e122b15dc411fad9705b
+    implementation_directory: 20240829_Multi_StablecoinIRCurveAmendment
+    diff_path: diffs/AaveV3Ethereum_StablecoinIRCurveAmendment_20240829_before_AaveV3Ethereum_StablecoinIRCurveAmendment_20240829_after.md
+    slope1_before_bps: 650
+    slope1_after_bps: 550
+  - proposal_id: 247
+    expected_title: Decrease Slope1 Parameter for Stablecoins on Aave V3
+    expected_payload_id: 244
+    implementation_commit: 374fe743a590705a61ff28be1f3060f1b16b251e
+    implementation_directory: 20250203_Multi_DecreaseSlope1ParameterforStablecoinsonAaveV3
+    diff_path: diffs/AaveV3Ethereum_DecreaseSlope1ParameterforStablecoinsonAaveV3_20250203_before_AaveV3Ethereum_DecreaseSlope1ParameterforStablecoinsonAaveV3_20250203_after.md
+    slope1_before_bps: 1150
+    slope1_after_bps: 950
+  - proposal_id: 271
+    expected_title: Stablecoins Interest Rate Curve Update
+    expected_payload_id: 259
+    implementation_commit: 78b4d81bddc1978b7807d39859b806883e087d15
+    implementation_directory: 20250312_Multi_StablecoinsInterestRateCurveUpdate
+    diff_path: diffs/AaveV3Ethereum_StablecoinsInterestRateCurveUpdate_20250312_before_AaveV3Ethereum_StablecoinsInterestRateCurveUpdate_20250312_after.md
+    slope1_before_bps: 850
+    slope1_after_bps: 650
+
+selection:
+  primary_rate_decrease_proposals: [94, 130, 159, 247, 271]
+  reverse_sign_probe_proposals: [3]
+  primary_market_event_units: 15
+  total_singleton_market_event_units: 18
+  minimum_units_before_activity_screen: 15
+  excluded_rate_curve_only_proposals:
+    69: changes_uoptimal_for_the_three_core_assets
+    216: changes_slope1_and_slope2
+  excluded_bundled_proposals:
+    238: bundles_wsteth_rate_and_rseth_supply_cap
+    350: bundles_rate_and_reserve_factor_changes
+
+event_topics:
+  borrow_signature: Borrow(address,address,address,uint256,uint8,uint256,uint16)
+  repay_signature: Repay(address,address,address,uint256,bool)
+  reserve_data_updated_signature: ReserveDataUpdated(address,uint256,uint256,uint256,uint256,uint256)
+
+blinding:
+  borrow_repay_logs: forbidden_at_t0
+  reserve_data_outcomes: forbidden_at_t0
+  position_balances: forbidden_at_t0
+  post_event_values: forbidden_at_t0
+  raw_market_responses: forbidden_at_t0
+
+decision:
+  pass_if:
+    - every_selected_proposal_is_executed_with_one_exact_ethereum_payload_event
+    - every_selected_asset_has_only_variable_rate_slope1_as_configured_change
+    - singleton_market_event_units_at_least_15
+    - public_rpc_chain_and_event_topic_metadata_are_available
+  dataset_doi_unavailable: use_direct_chain_logs_but_record_the_data_claim_failure
+  t0_pass_only_authorizes_a_separately_committed_preperiod_activity_freeze: true
+
+limits:
+  request_timeout_seconds: 30
+  transport_retries: 3
+  cpu_core_hours: 2
+  temporary_data_mb: 200
+  paid_data: forbidden
+  gpu: forbidden
+  v100: forbidden
+  rtx2060: forbidden
+  h20: forbidden
+  ecomd: forbidden
