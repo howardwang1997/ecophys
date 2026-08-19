@@ -76,3 +76,22 @@ Future retries use an outside-repository, digest-bound checkpoint after each com
 allowed boundary metadata and aggregate counts; it must be a frozen-order prefix and is deleted after success.
 This prevents infrastructure failures from repeatedly consuming the public endpoint while preserving the
 no-raw-log contract.
+
+## Formal D1A result
+
+D1A passed from clean commit `c0ebdf50d`; canonical result SHA is `f3ca5d19…` and matches an independent JSON
+read-back recomputation. All 18/18 units qualify: 15/15 primary decreases, 3/3 reverse-sign probes and all three
+assets in every proposal. The weakest weekly cells have 42 Borrows, 46 Repays and 49 distinct debt users; the
+weakest 28-day cells have 564 combined actions and 210 distinct users, so the pass is well away from the
+10/10/10 and 200/50 thresholds.
+
+The completed run used 481 historical block calls and 306 log calls, with one deterministic range split, 107
+HTTP-429 retries and 720 seconds of backoff. The sanitized checkpoint was removed after success. No raw response,
+participant, amount, rate, per-log transaction/block identifier, execution/post-event log, reserve update,
+position value, paid data, GPU or EcoMD was retained or queried beyond the authorized pre-period events.
+
+The next authorized step is only a separately committed D1B: complete reserve-intervention ledger,
+announcement-to-execution timing, cross-chain stagger/control audit and frozen falsification rules. Do not open
+post-event outcomes yet. Main risks remain anticipation, endogenous policy, other reserve changes, repeated
+asset dependence, at-risk-population definition and utilization feedback. Independently reproduce extraction
+against Flashbots or a controlled archive node before the main study.
