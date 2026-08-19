@@ -95,3 +95,22 @@ announcement-to-execution timing, cross-chain stagger/control audit and frozen f
 post-event outcomes yet. Main risks remain anticipation, endogenous policy, other reserve changes, repeated
 asset dependence, at-risk-population definition and utilization feedback. Independently reproduce extraction
 against Flashbots or a controlled archive node before the main study.
+
+## D1B identification gate frozen
+
+Execution cannot be framed as an unanticipated shock: governance proposal creation already leads Ethereum
+execution by several days, and the linked forum discussion is earlier. D1B therefore treats any public lead of
+at least 24 hours as anticipated and forbids the surprise-event-study claim.
+
+D1B audits a union of historical/current PoolConfigurator events plus oracle-source, addresses-provider and
+reward-configuration events from day −35 to +28. A unit requires exact T0 rate-event matching and no other
+material protocol event from day −14 through +14. A later material event administratively right-censors the
+target 28-day follow-up. The clean Ethereum panel still requires 15/18 total, 12/15 primary, 2/3 reverse and two
+assets per proposal.
+
+The candidate identification rescue is common announcement with asynchronous cross-chain implementation. At
+least four of six proposals must each have three executed V3 chains, two non-Ethereum comparators, a
+source-audited slope1-only stablecoin update and at least 24 hours of execution stagger. Passing authorizes only
+a separately frozen cross-chain pre-period activity/comparability gate D1C; failure stops the NCS route before
+behavioral outcomes. Pinned ABI/source SHAs and full rules live in
+`configs/empirical_physics/aave_rate_response_d1b_identification_v1.yaml`.

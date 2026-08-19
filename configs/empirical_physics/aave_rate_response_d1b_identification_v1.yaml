@@ -1,0 +1,237 @@
+contract:
+  name: aave_rate_response_spectroscopy_d1b_identification
+  version: 1
+  status: frozen_before_formal_protocol_ledger_and_cross_chain_stagger_result
+  parent_d1a_artifact_commit: 6371defe9
+  parent_d1a_manifest_sha256: f3ca5d19539f0da3aa13ad509ceb4b2968365423d411241a69ca9e770714d1b9
+  purpose: test_protocol_side_cleanliness_anticipation_and_cross_chain_identification_before_outcomes
+
+official_sources:
+  governance_cache:
+    remote: https://github.com/aave-dao/aave-governance-cache.git
+    expected_git_sha: e5874da1b567b4b97ebade91f2c05d5c79b16e59
+    license: MIT
+  proposals_repository:
+    remote: https://github.com/aave-dao/aave-proposals-v3.git
+    expected_git_sha: 18e17247a3fc86b89c1049fe2ae06cdb6bc36367
+    license: MIT
+  historical_v3_core:
+    remote: https://github.com/aave/aave-v3-core.git
+    expected_git_sha: 782f51917056a53a2c228701058a6c3fb233684a
+    abi_path: contracts/interfaces/IPoolConfigurator.sol
+    status: official_archived_repository
+  current_v3_origin:
+    remote: https://github.com/aave-dao/aave-v3-origin.git
+    expected_git_sha: cff15de6d1271b0c800fc001f4aea4c263e8a597
+    configurator_abi_path: src/contracts/interfaces/IPoolConfigurator.sol
+    oracle_abi_path: src/contracts/interfaces/IAaveOracle.sol
+    addresses_provider_abi_path: src/contracts/interfaces/IPoolAddressesProvider.sol
+    rewards_abi_path: src/contracts/rewards/interfaces/IRewardsDistributor.sol
+  address_book:
+    remote: https://github.com/aave-dao/aave-address-book.git
+    expected_git_sha: 6a0ac5a5e548d764488a2f95f26714ff9275de48
+    ethereum_path: src/AaveV3Ethereum.sol
+
+transport:
+  primary_rpc: https://rpc.flashbots.net/
+  primary_documentation: https://github.com/flashbots/rpc-endpoint
+  secondary_reproduction_rpc: https://eth.drpc.org/
+  forum_base_url: https://governance.aave.com
+  rpc_is_replaceable_transport: true
+
+ethereum:
+  chain_id: 1
+  pool: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"
+  pool_configurator: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27"
+  pool_addresses_provider: "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
+  oracle: "0x54586bE62E3c3580375aE3723C145253060Ca0C2"
+  rewards_controller: "0x8164Cc65827dcFe994AB23944CBC90e0aa80bFcb"
+  assets:
+    DAI:
+      underlying: "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+      a_token: "0x018008bfb33d285247A21d44E50697654f754e63"
+      variable_debt_token: "0xcF8d0c70c850859266f5C338b38F9D663181C314"
+    USDC:
+      underlying: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+      a_token: "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c"
+      variable_debt_token: "0x72E95b8931767C79bA4EeE721354d6E99a61D004"
+    USDT:
+      underlying: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+      a_token: "0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a"
+      variable_debt_token: "0x6df1C1E379bC5a00a7b4C6e67A203333772f45A8"
+
+proposals:
+  - id: 3
+    cohort: reverse_sign
+    forum_topic_id: 15838
+    discussion: https://governance.aave.com/t/arfc-chaos-labs-stablecoin-ir-curves-updates/15838
+  - id: 94
+    cohort: primary_rate_decrease
+    forum_topic_id: 17450
+    discussion: https://governance.aave.com/t/arfc-stablecoin-ir-curve-amendment-on-aave-v2-and-v3-04-22-2024/17450
+  - id: 130
+    cohort: primary_rate_decrease
+    forum_topic_id: 18252
+    discussion: https://governance.aave.com/t/arfc-stablecoin-ir-curve-amendment-on-aave-v2-and-v3-07-14-24/18252
+  - id: 159
+    cohort: primary_rate_decrease
+    forum_topic_id: 18669
+    discussion: https://governance.aave.com/t/arfc-chaos-labs-stablecoin-ir-curve-amendment-on-aave-v2-and-v3-2024-08-15/18669
+  - id: 247
+    cohort: primary_rate_decrease
+    forum_topic_id: 20841
+    discussion: https://governance.aave.com/t/arfc-chaos-labs-risk-stewards-decrease-slope1-parameter-for-stablecoins-on-aave-v3-01-29-25/20841
+  - id: 271
+    cohort: primary_rate_decrease
+    forum_topic_id: 21269
+    discussion: https://governance.aave.com/t/arfc-stablecoin-interest-rate-curve-update-03-04-2025/21269
+
+chain_labels:
+  Ethereum: 1
+  Optimism: 10
+  BNB: 56
+  Gnosis: 100
+  Polygon: 137
+  zkSync: 324
+  Metis: 1088
+  Base: 8453
+  Arbitrum: 42161
+  Avalanche: 43114
+  Scroll: 534352
+
+ledger_window:
+  support_pre_execution_days: 35
+  support_post_execution_days: 28
+  exclusion_pre_execution_days: 14
+  minimum_clean_post_execution_days: 14
+  target_post_execution_days: 28
+  selected_execution_transaction_is_allowed: true
+  first_later_material_event_causes_administrative_right_censoring: true
+  later_event_before_day_14_makes_unit_ineligible: true
+
+announcement_rule:
+  public_announcement: minimum_of_forum_first_post_and_governance_proposal_creation
+  proposal_lifecycle_fields:
+    [forum_first_post, proposal_creation, voting_activation, queuing, payload_execution]
+  lead_of_at_least_hours_is_anticipated: 24
+  execution_as_unanticipated_shock_claim: forbidden
+  unresolved_forum_or_governance_timestamp: proposal_fails_timeline_gate
+
+ethereum_material_event_signatures:
+  legacy_pool_configurator:
+    - ReserveInitialized(address,address,address,address,address)
+    - ReserveBorrowing(address,bool)
+    - ReserveFlashLoaning(address,bool)
+    - CollateralConfigurationChanged(address,uint256,uint256,uint256)
+    - ReserveStableRateBorrowing(address,bool)
+    - ReserveActive(address,bool)
+    - ReserveFrozen(address,bool)
+    - ReservePaused(address,bool)
+    - ReserveDropped(address)
+    - ReserveFactorChanged(address,uint256,uint256)
+    - BorrowCapChanged(address,uint256,uint256)
+    - SupplyCapChanged(address,uint256,uint256)
+    - LiquidationProtocolFeeChanged(address,uint256,uint256)
+    - UnbackedMintCapChanged(address,uint256,uint256)
+    - EModeAssetCategoryChanged(address,uint8,uint8)
+    - EModeCategoryAdded(uint8,uint256,uint256,uint256,address,string)
+    - ReserveInterestRateStrategyChanged(address,address,address)
+    - ATokenUpgraded(address,address,address)
+    - StableDebtTokenUpgraded(address,address,address)
+    - VariableDebtTokenUpgraded(address,address,address)
+    - DebtCeilingChanged(address,uint256,uint256)
+    - SiloedBorrowingChanged(address,bool,bool)
+    - BridgeProtocolFeeUpdated(uint256,uint256)
+    - FlashloanPremiumTotalUpdated(uint128,uint128)
+    - FlashloanPremiumToProtocolUpdated(uint128,uint128)
+    - BorrowableInIsolationChanged(address,bool)
+  current_pool_configurator_additions:
+    - PendingLtvChanged(address,uint256)
+    - LiquidationGracePeriodChanged(address,uint40)
+    - LiquidationGracePeriodDisabled(address)
+    - AssetCollateralInEModeChanged(address,uint8,bool)
+    - AssetBorrowableInEModeChanged(address,uint8,bool)
+    - AssetLtvzeroInEModeChanged(address,uint8,bool)
+    - EModeCategoryIsolationChanged(uint8,bool)
+    - ReserveInterestRateDataChanged(address,address,bytes)
+  oracle:
+    - AssetSourceUpdated(address,address)
+    - FallbackOracleUpdated(address)
+  addresses_provider:
+    - MarketIdSet(string,string)
+    - PoolUpdated(address,address)
+    - PoolConfiguratorUpdated(address,address)
+    - PriceOracleUpdated(address,address)
+    - ACLManagerUpdated(address,address)
+    - ACLAdminUpdated(address,address)
+    - PriceOracleSentinelUpdated(address,address)
+    - PoolDataProviderUpdated(address,address)
+    - ProxyCreated(bytes32,address,address)
+    - AddressSet(bytes32,address,address)
+    - AddressSetAsProxy(bytes32,address,address,address)
+  rewards:
+    - AssetConfigUpdated(address,address,uint256,uint256,uint256,uint256,uint256)
+
+materiality:
+  selected_asset_pool_configurator_event: material
+  selected_asset_oracle_source_event: material
+  selected_a_or_variable_debt_token_reward_config_event: material
+  pool_or_configurator_or_oracle_global_upgrade_event: material_for_all_assets
+  emode_or_other_global_risk_event: potential_material_requires_source_backed_mapping
+  selected_slope1_event_in_exact_t0_transaction: target_not_contaminant
+  raw_event_values_may_be_retained_only_as_policy_metadata: true
+
+cross_chain_gate:
+  source_audit_requires_only_rate_slope1_changed_for_comparator_asset: true
+  minimum_executed_v3_payload_chains_per_qualifying_proposal: 3
+  minimum_non_ethereum_comparator_chains_per_qualifying_proposal: 2
+  minimum_execution_stagger_hours: 24
+  minimum_qualifying_proposals: 4
+  cross_chain_activity_is_not_assumed: true
+  pass_only_authorizes_separate_cross_chain_preperiod_activity_gate: true
+
+ethereum_panel_gate:
+  minimum_total_clean_units: 15
+  minimum_primary_clean_units: 12
+  minimum_reverse_sign_clean_units: 2
+  minimum_clean_assets_per_proposal: 2
+
+decision:
+  all_required:
+    - six_of_six_announcement_and_governance_timelines_resolved
+    - selected_ethereum_rate_events_match_exact_t0_blocks_and_transactions
+    - ethereum_panel_gate_passes_with_at_least_14_clean_post_days
+    - cross_chain_gate_passes_for_at_least_four_proposals
+  pass: pass_to_separately_frozen_cross_chain_preperiod_activity_d1c
+  fail: stop_ncs_causal_route_before_behavioral_outcomes
+  specialist_descriptive_route_after_fail: requires_separate_explicit_scope_decision
+
+blinding:
+  allowed:
+    - governance_and_forum_timestamps
+    - proposal_source_and_diff_metadata
+    - cross_chain_payload_execution_metadata
+    - protocol_configuration_event_names_values_blocks_and_transactions
+    - clean_window_and_censoring_decisions
+  forbidden:
+    - post_execution_borrow_or_repay_events
+    - reserve_data_updated_outcomes
+    - position_or_balance_outcomes
+    - utilization_or_realized_borrow_rate
+    - price_or_volume_outcomes
+    - participant_addresses
+    - any_behavioral_response_statistic
+
+limits:
+  request_timeout_seconds: 30
+  transport_retries: 3
+  block_chunk_size: 5000
+  maximum_log_range_split_depth: 8
+  cpu_core_hours: 8
+  temporary_data_mb: 500
+  paid_data: forbidden
+  gpu: forbidden
+  v100: forbidden
+  rtx2060: forbidden
+  h20: forbidden
+  ecomd: forbidden
