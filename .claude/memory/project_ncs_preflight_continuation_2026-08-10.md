@@ -1,6 +1,6 @@
 ---
 name: ncs-preflight-continuation-2026-08-10
-description: "Exp131-134 lasting outcomes: event baselines passed without a new estimator, bistable diagnostic failed, two-rank CPU exact resume passed, and a minimal correctly specified synthetic L2 bridge passed while exposing latent sign non-identifiability."
+description: "Exp131-136 lasting outcomes: no novel estimator, a frozen mixing-diagnostic failure, exact CPU/distributed state semantics, honest latent-flow naming, and synthetic L2 recovery/misspecification/state-complete adapter passes that do not clear G0 or G3."
 metadata:
   node_type: memory
   type: project
@@ -30,13 +30,18 @@ metadata:
   in model, optimizer and both rank runtimes. All formal checks passed at implementation commit `a54b4406f`.
 - This is not yet a production-complete checkpoint contract: real sampler/data cursor, future scheduler/scaler,
   W&B, multi-node NCCL, asynchronous-write interruption and power-loss durability remain open.
-- Both V100s were occupied by unrelated graphene production processes when checked on 2026-08-10; they were
-  not touched. Single-V100 exact resume remains pending.
+- Both V100s were occupied by unrelated graphene production processes when exp133 was queued; they were not
+  touched. At `03:13 +08:00`, V100-A satisfied the ten consecutive one-minute idle polls and automatically ran
+  the CUDA gate. It completed in `16.81 s`: all 12 checks passed, and model, optimizer and rank-runtime/RNG
+  difference counts were all zero. The 9,124-byte result SHA-256 is
+  `3b3ab8be3bc77e0a88bd619a527c3b8d85093d96b3ae4d68f4703421e4bdf943`. At the `09:07 +08:00` status
+  check, both V100s were idle with no compute process; the completed queue service was inactive as expected.
 
 ## Priority implication
 
-Do not turn additional baseline smokes into G0 evidence. Next method work is the mathematical candidate spec,
-five-nearest-method non-equivalence table and a separately preregistered candidate E0--E3 comparison.
+Do not turn additional baseline smokes into G0 evidence. The v0 mathematical candidate spec is complete but
+fails non-equivalence: it is direct composition of persistent chains, hybrid pathwise/LR, Rhee--Glynn and
+diagnostics. E0--E3 candidate runs are blocked until a new theorem/estimator identity survives citation audit.
 
 ## Synthetic observation bridge
 
@@ -46,5 +51,29 @@ five-nearest-method non-equivalence table and a separately preregistered candida
   slopes and held-out gains to numerical noise. Median size-slope relative error was 1.08%.
 - Reversing the latent sign exactly reverses the fitted slope with identical likelihood. Real/EcoMD use needs a
   fixed buy/sell sign anchor; L2 messages cannot orient an arbitrary latent coordinate.
-- G3 remains open. The operator lacks an EcoMD adapter, price/order-level dynamics, misspecification tests and
-  observation-only/Hawkes/queue-reactive comparisons. Paid L2 is still locked.
+- The misleading model field is now canonically `latent_flow_alignment`; legacy `ofi` API/artifact keys remain
+  explicit aliases for historical compatibility.
+- Exp135 passed all frozen gates on 144 streams/4.32M events. It correctly separated current-latent,
+  observation-only, combined, lagged, nonlinear-even and null truths. The lag/current likelihood gap collapsed
+  to `0.00844` nats/event at `rho=0.98`, preserving a real temporal-identifiability warning.
+- Exp136 added a checkpointable absolute-clock EcoMD-to-L2 adapter. Eight `N=64,T=3000` simulator paths and
+  20,000 emitted messages passed bit-exact chunk/resume and reconstruction gates. Median recovered slope was
+  `2.010` for truth 2.0; latent beat observation-only by `0.0543` nats/visible event; the permutation gain was
+  `1.15e-4`; the positive structural anchor beat its sign flip by `0.232`.
+- G3 remains open. Exp136 uses fixed random EcoMD weights and a correctly specified synthetic emission family;
+  its structural sign convention is not external market validation. Dynamic price/queue semantics,
+  latency/censoring and Hawkes/queue-reactive/empirical baselines remain absent. Paid L2 is still locked.
+
+## Queue and repository handoff
+
+- The queue later released safely and exp133 passed the single-V100/CUDA exact-resume gate. V100-B never had a
+  duplicate EcoPhys queue. No production process was stopped or shared.
+- The broad Mac pytest attempt was killed under memory pressure; focused suites had already passed. macOS File
+  Provider then exposed roughly 15,000 repository/Git-object files as `dataless`, making the original clone's
+  Git commands fail with `SIGBUS`. The eight unpushed commits were reconstructed in a fresh sparse clone and
+  each recovered commit SHA/tree was checked exactly before the final result/document commit. The original
+  cloud-backed worktree must be rehydrated or replaced before it is used again.
+- In the healthy recovery clone, 45 focused tests and new-module Ruff passed. A bounded strict-mypy check on the
+  four new observation/experiment modules passed after type-only fixes; the full historical import graph is not
+  strict-mypy clean. Temporary reruns of exp135/136 kept every gate PASS and matched the frozen scientific
+  payloads exactly after removing environment/runtime metadata.

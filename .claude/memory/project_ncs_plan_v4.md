@@ -35,8 +35,8 @@ metadata:
 - Honest planning probability: about 7–12% joint from the current state, 20–35% conditional on all
   scientific gates passing. Fallback is TMLR/appropriate ML or microstructure venue without overclaiming.
 - Zero-purchase preflight on 2026-08-09 left G0 **AMBER**: broad novelty claims are occupied by prior art.
-  WP1 now has a state-complete single-process API, CPU/V100 mechanics evidence and a two-rank CPU/Gloo atomic
-  exact-resume PASS; the single-V100 exact-resume and production data-cursor contract are still open. Exp128
+  WP1 now has a state-complete single-process API, CPU/V100 mechanics evidence, a two-rank CPU/Gloo atomic
+  exact-resume PASS and a single-V100/CUDA exact-resume PASS; the production data-cursor contract is still open. Exp128
   uses five arms because force semantics are a third defect alongside missing state
   and train/inference jump mismatch. Exp129 shows persistent detached state alone remains biased in a
   slow-mixing AR(1). Exp130 validates streaming reconstruction on 1,381,420 free LOBSTER sample events,
@@ -45,7 +45,15 @@ metadata:
   audit, while exp132 failed its frozen easy-resolution diagnostic gate. Exp133 found and fixed missing initial
   rank-model broadcast and passed exact two-rank CPU continuation. See
   `project_ncs_preflight_continuation_2026-08-10.md`.
-- Exp134 passed a minimal correctly specified aggregate-L5 recovery test on 72 streams/2.16M events, including
-  a latent-permutation kill. It also proved the expected sign gauge exactly. G3 is not passed: EcoMD adaptation,
-  sign anchoring, price/order-level semantics, misspecification and observation-only baselines remain open; paid
-  L2 stays gated.
+- Exp134 passed a minimal correctly specified aggregate-L5 recovery test on 72 streams/2.16M events and proved
+  the latent sign gauge. Exp135 passed preregistered misspecification/observation-only controls on 144 streams/
+  4.32M events while exposing lag non-identifiability at `rho=0.98`. Exp136 passed a checkpointable,
+  state-complete EcoMD adapter audit on eight random-weight CPU paths. G3 is not passed: the adapter generated
+  its own correctly specified messages and the structural sign convention lacks external market validation.
+  Exp137 later closes one-day dynamic price/queue plumbing and simple latency/depth controls, but a proper
+  point-process likelihood, multi-day real comparison and EcoMD head-to-head remain open. Paid L2 stays gated.
+- 2026-08-19 free-data gates: exp137 passed real dynamic-queue reconstruction and observation-only relevance on
+  5/5 one-day LOBSTER paths (927,811/927,811 exact visible changes; median combined gain 0.271 nats/event, falling
+  to 0.080/0.023 at 5/20-event latency). Exp138 SQD header-only Q0a passed 9/9 networks while target rows remain
+  locked. Exp139 found a numerical ceiling: all `N=500` CUDA cells pass, all `N>=2,000` cells fail despite spare
+  HBM. G0/G3 remain open; next gates are Q0b, a proper point-process baseline and stability diagnosis.

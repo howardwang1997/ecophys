@@ -116,9 +116,11 @@ def validate_block_window(
     hashes_unique = len(set(hashes)) == len(hashes)
     parent_links_exact = all(parent_hashes[index] == hashes[index - 1] for index in range(1, len(hashes)))
     timestamps = [header.get("timestamp") for header in header_objects]
-    timestamps_nondecreasing = all(
-        isinstance(value, int) for value in timestamps
-    ) and all(timestamps[index] >= timestamps[index - 1] for index in range(1, len(timestamps)))
+    integer_timestamps = [value for value in timestamps if isinstance(value, int)]
+    timestamps_nondecreasing = len(integer_timestamps) == len(timestamps) and all(
+        integer_timestamps[index] >= integer_timestamps[index - 1]
+        for index in range(1, len(integer_timestamps))
+    )
     no_event_rows = all(
         not record.get(key)
         for record in records
