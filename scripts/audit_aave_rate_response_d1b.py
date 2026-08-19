@@ -94,6 +94,7 @@ class _RpcClient:
         self.next_request_id = 1
         self.method_counts: Counter[str] = Counter()
         self.log_range_splits = 0
+        self.log_topic_splits = 0
         self.rate_limit_retry_count = 0
         self.rate_limit_wait_seconds = 0.0
         self.server_error_retry_count = 0
@@ -383,6 +384,23 @@ def _splittable(error: RpcError) -> bool:
     )
 
 
+def _prefer_topic_split(error: RpcError) -> bool:
+    if error.http_status in {408, 413, 504}:
+        return True
+    message = str(error).lower()
+    return any(
+        marker in message
+        for marker in (
+            "method handler crashed",
+            "response size",
+            "result size",
+            "too many results",
+            "query returned more than",
+            "log response size exceeded",
+        )
+    )
+
+
 def _get_logs_with_split(
     client: _RpcClient,
     *,
@@ -391,6 +409,7 @@ def _get_logs_with_split(
     start_block: int,
     end_block_inclusive: int,
     remaining_split_depth: int,
+    split_topics_first: bool = False,
 ) -> list[Mapping[str, Any]]:
     try:
         payload = client.call(
@@ -405,6 +424,26 @@ def _get_logs_with_split(
             ],
         )
     except RpcError as error:
+        if split_topics_first and len(topics) > 1 and _prefer_topic_split(error):
+            client.log_topic_splits += 1
+            middle_topic = len(topics) // 2
+            return _get_logs_with_split(
+                client,
+                addresses=addresses,
+                topics=topics[:middle_topic],
+                start_block=start_block,
+                end_block_inclusive=end_block_inclusive,
+                remaining_split_depth=remaining_split_depth,
+                split_topics_first=True,
+            ) + _get_logs_with_split(
+                client,
+                addresses=addresses,
+                topics=topics[middle_topic:],
+                start_block=start_block,
+                end_block_inclusive=end_block_inclusive,
+                remaining_split_depth=remaining_split_depth,
+                split_topics_first=True,
+            )
         if (
             not _splittable(error)
             or start_block >= end_block_inclusive
@@ -420,6 +459,7 @@ def _get_logs_with_split(
             start_block=start_block,
             end_block_inclusive=middle,
             remaining_split_depth=remaining_split_depth - 1,
+            split_topics_first=split_topics_first,
         ) + _get_logs_with_split(
             client,
             addresses=addresses,
@@ -427,6 +467,7 @@ def _get_logs_with_split(
             start_block=middle + 1,
             end_block_inclusive=end_block_inclusive,
             remaining_split_depth=remaining_split_depth - 1,
+            split_topics_first=split_topics_first,
         )
     if not isinstance(payload, list) or any(not isinstance(row, Mapping) for row in payload):
         raise RpcError("eth_getLogs returned a malformed result")

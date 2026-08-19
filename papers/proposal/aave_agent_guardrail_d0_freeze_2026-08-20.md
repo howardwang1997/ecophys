@@ -33,7 +33,9 @@ error. A 14-topic Hub filter fails while fixed groups of at most four allowed to
 so formal queries use `10,000 blocks x <=4 allowed topics` and union logs by canonical identity. Rate limits and
 genuine range/response-size failures retain their separate handling. Empirical public-endpoint failure begins at
 about 128 calls in one minute, so requests are paced at 0.75 seconds (at most 80 starts per minute) rather than
-0.5 seconds.
+0.5 seconds. When a compound allowed-topic query still times out or returns the exact handler crash, the query
+splits the topic set first while preserving its block range. Only a singleton-topic range/size timeout may split
+the block interval. Topic and block split counts are reported separately.
 
 Google's current Blockchain Analytics table covers the frozen endpoint, but a result-equivalent address query has
 a 789.9 GB dry-run upper bound. The visible query project has zero billed bytes this month, yet another project on

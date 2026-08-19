@@ -1,8 +1,10 @@
 from scripts.audit_aave_rate_response_d1b import (
     RpcError,
+    _get_logs_with_split,
     _keccak_topic,
     _load_policy_checkpoint,
     _merge_block_intervals,
+    _prefer_topic_split,
     _retryable_rpc_server_error,
     _splittable,
     _write_policy_checkpoint,
@@ -33,6 +35,50 @@ def test_exact_handler_crash_is_retryable_but_other_server_errors_are_not() -> N
     assert not _retryable_rpc_server_error(
         {"error": {"message": "execution reverted", "code": -32000}}
     )
+
+
+def test_d0_prefers_topic_split_for_backend_timeouts_not_range_limits() -> None:
+    assert _prefer_topic_split(RpcError("method handler crashed", rpc_code=-32000))
+    assert _prefer_topic_split(RpcError("request timeout", http_status=408))
+    assert not _prefer_topic_split(RpcError("block range is too wide", rpc_code=-32602))
+
+
+def test_topic_first_log_split_preserves_block_range() -> None:
+    class FakeClient:
+        def __init__(self) -> None:
+            self.log_range_splits = 0
+            self.log_topic_splits = 0
+            self.topic_group_sizes: list[int] = []
+
+        def call(self, method: str, params: list[object]) -> list[object]:
+            assert method == "eth_getLogs"
+            request = params[0]
+            assert isinstance(request, dict)
+            topic_filter = request["topics"]
+            assert isinstance(topic_filter, list)
+            topics = topic_filter[0]
+            assert isinstance(topics, list)
+            self.topic_group_sizes.append(len(topics))
+            if len(topics) > 1:
+                raise RpcError("request timeout", http_status=408)
+            return []
+
+    client = FakeClient()
+    assert (
+        _get_logs_with_split(
+            client,  # type: ignore[arg-type]
+            addresses=["0x" + "11" * 20],
+            topics=["0x" + f"{index:064x}" for index in range(4)],
+            start_block=100,
+            end_block_inclusive=200,
+            remaining_split_depth=10,
+            split_topics_first=True,
+        )
+        == []
+    )
+    assert client.topic_group_sizes == [4, 2, 1, 1, 2, 1, 1]
+    assert client.log_topic_splits == 3
+    assert client.log_range_splits == 0
 
 
 def test_local_keccak_matches_ethereum_erc20_event_vector() -> None:

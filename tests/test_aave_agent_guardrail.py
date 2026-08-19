@@ -325,8 +325,10 @@ def test_log_queries_partition_blocks_and_allowed_topics(monkeypatch: pytest.Mon
         start_block: int,
         end_block_inclusive: int,
         remaining_split_depth: int,
+        split_topics_first: bool,
     ) -> list[dict[str, Any]]:
         del client, addresses, remaining_split_depth
+        assert split_topics_first is True
         calls.append((start_block, end_block_inclusive, tuple(topics)))
         return []
 

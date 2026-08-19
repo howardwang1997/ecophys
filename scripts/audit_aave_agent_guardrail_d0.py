@@ -497,6 +497,7 @@ def _query_logs(
                     start_block=start,
                     end_block_inclusive=end,
                     remaining_split_depth=20,
+                    split_topics_first=True,
                 )
             )
         start = end + 1
@@ -812,6 +813,7 @@ def audit(
             "maximum_topics_per_get_logs": maximum_topics_per_query,
             "rpc_request_counts": dict(sorted(client.method_counts.items())),
             "log_range_splits": client.log_range_splits,
+            "log_topic_splits": client.log_topic_splits,
             "rate_limit_retry_count": client.rate_limit_retry_count,
             "rate_limit_wait_seconds": round(client.rate_limit_wait_seconds, 3),
             "server_error_retry_count": client.server_error_retry_count,

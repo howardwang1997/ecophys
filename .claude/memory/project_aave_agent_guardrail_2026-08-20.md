@@ -73,3 +73,7 @@ fixed at 0.75 seconds (80 starts/minute). A current Google Blockchain Analytics 
 Although `rooy-data` reports zero billed bytes this month, another inaccessible project shares its billing
 account; because the 1 TiB free allowance is account-level, BigQuery must not be executed as a purportedly free
 rescue.
+The 0.75-second run remains complete but slows severely when some four-topic cells repeatedly back off. D0 now
+uses evidence-based two-dimensional recovery: compound-topic handler/timeout/size errors split topics first;
+only singleton-topic range failures split blocks. D1B retains block-first behavior, and both split counts are
+reported.
