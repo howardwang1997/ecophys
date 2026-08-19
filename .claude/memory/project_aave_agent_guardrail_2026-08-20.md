@@ -193,3 +193,22 @@ outcomes until every chain's complete decoded event union is reproduced by a non
 by identity and payload. All nine primary artifacts must also be rerun from one clean v2 code SHA/config digest;
 v1 files remain diagnostic-only. This changes no chain, block union, event family, sample rule, threshold or stop
 rule. GPUs, EcoMD, D1 and outcomes remain locked.
+
+Version 2 was committed and pushed as clean SHA `c9ab42a64295ec6bd3ea6868050cb9ca4dd05d15`, then deployed to
+isolated exact-SHA roots on both V100 hosts and the RTX 2060 host with CUDA hidden. Eight primary chain artifacts
+are complete and independently digest-verified locally: Arbitrum `1b02c48b...`, Avalanche `810fc3b4...`, Base
+`6554a05c...`, Gnosis `ea60ec3c...`, Linea `cdf9cec6...`, Optimism `552bdb4c...`, Plasma `832af1cb...` and
+Polygon `327f8ae5...`. Together they contain 366 raw proposals, 211 eligible proposals, 155 audited exclusions
+and 198 injections. These partial counts do not authorize a pass; BNB remains mandatory and is running through
+Sentio at the frozen 10,000-block/0.75-second cadence. Plasma was safely migrated from a slow official-RPC
+checkpoint to a fresh RTX/Sentio run after the new checkpoint proved its SHA/config/endpoint identity.
+
+The first full-union transport comparison found Gnosis and Linea action surfaces byte-for-byte equal between v1
+independent providers and v2 fast primaries. Arbitrum did not match: the v1 Blockscout artifact has 89 Hub events
+and 26 injections, while Tenderly v2 has 90 and 27. The missing identity is block 436,939,422, transaction
+`0xbf1e4f224eca8081e0d4699008f48de384e41521799ab9e58ce014682a81da1a`, log index 1. Both official
+`arb1.arbitrum.io` and Tenderly return the same `UpdateInjected` payload/hash at that exact block; Blockscout
+returns an empty set. This is a confirmed silent Blockscout omission, not a reorg or Tenderly overcount. It changes
+one v1 proposal from falsely expired to correctly injected and proves that one matching qualification shard is
+insufficient to guarantee full-window completeness. A full official-Arbitrum v2 replication is running on
+V100-A. Blockscout cannot serve as the final Arbitrum full-union reference. No market outcome was queried.

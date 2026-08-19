@@ -269,6 +269,26 @@ must be independently reproduced from a non-primary provider and compared by can
 payload. A mismatch is a transport failure and stops the route; it cannot be resolved by choosing the favorable
 provider. All nine primary artifacts must also come from one clean repository SHA and the one version-2 digest.
 
+### Version-2 execution and first full-union audit
+
+Version 2 was committed and pushed at clean SHA `c9ab42a64295ec6bd3ea6868050cb9ca4dd05d15`. Exact-SHA roots on
+the two V100 hosts and RTX 2060 host launched all nine chains with CUDA hidden. Eight primary artifacts have
+completed and passed independent canonical-digest, SHA, config, blinding and compute checks: Arbitrum, Avalanche,
+Base, Gnosis, Linea, Optimism, Plasma and Polygon. Their current combined inventory is 366 raw proposals, 211
+eligible proposals, 155 exclusions and 198 injections. BNB is still running at its frozen 10,000-block cadence;
+there is no partial-panel decision.
+
+The first no-new-RPC full-union comparison reused v1 files only as transport diagnostics. Gnosis and Linea have
+byte-identical complete action surfaces across their independent v1 providers and v2 fast primaries. Arbitrum
+does not: Blockscout's v1 full scan contains 89 Hub events and 26 injections, while Tenderly's v2 scan contains 90
+and 27. The missing identity is block 436,939,422, transaction
+`0xbf1e4f224eca8081e0d4699008f48de384e41521799ab9e58ce014682a81da1a`, log index 1. Exact-block queries to
+the official Arbitrum RPC and Tenderly return the same `UpdateInjected` payload and block hash; Blockscout returns
+an empty set. This confirms a silent Blockscout omission and changes one old derived terminal label from expired
+to injected. It does not invalidate the Tenderly primary, but it disqualifies Blockscout as the final Arbitrum
+full-union reference. A complete official-Arbitrum replication is running. The incident demonstrates why a
+matching 10,000-block qualification shard cannot substitute for the pre-outcome full-union audit.
+
 ## Resources and interpretation
 
 D0H is capped at 50 CPU core-hours, 5 GB retained derived data, zero paid-data spend and zero GPU hours. The two
