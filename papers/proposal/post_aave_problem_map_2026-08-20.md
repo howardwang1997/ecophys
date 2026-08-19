@@ -123,7 +123,7 @@ claim.
 
 | Gate | Data | Frozen purpose | Status |
 |---|---|---|---|
-| D0 | Aave official source/address commits; AgentHub configuration, Risk Oracle proposal and injection events only | determine whether proposals and executions provide support for a guardrail design | **authorized after a separate freeze** |
+| D0 | Aave official source/address commits; AgentHub configuration, Risk Oracle proposal and injection events only | determine whether proposals and executions provide support for a guardrail design | **completed: formal stop; 85.81% terminal classification missed the frozen 90% gate** |
 | D1 | historical policy state required to compute exact validation scores; still no market behavior | reconstruct every eligible, blocked, expired and overwritten action | locked until D0 passes |
 | D2 | utilization, rate, supply/borrow and transaction response around pre-specified thresholds | chronological causal pilot | locked until D1 passes |
 | D3 | Morpho, Euler, Sky or another independently implemented controller | transfer and mechanism contrast | locked until D2 passes |
@@ -148,6 +148,8 @@ workers only after the scientific gates pass.
 
 ## Immediate action
 
-Freeze `aave_agent_guardrail_d0_v1` before reading any Risk Oracle proposal value or matching it to execution.
-The route stops before market outcomes unless the action ledger contains enough proposed actions, non-executed or
-delayed actions, multiple markets/types, and genuine support around at least one deterministic guardrail boundary.
+`aave_agent_guardrail_d0_v1` was frozen before reading any Risk Oracle proposal value or matching it to execution.
+The formal audit then stopped before outcomes: eight of nine support gates passed, but only 133 of 155 proposals
+had an unambiguous terminal class, below the frozen 90% minimum. The result and post-hoc left-truncation diagnosis
+are recorded in `papers/proposal/aave_agent_guardrail_d0_result_2026-08-20.md`. No D1 or market-outcome query is
+authorized on the strength of this Ethereum result.

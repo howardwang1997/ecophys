@@ -83,3 +83,22 @@ formal replaceable transport with 10,000-block shards, 0.75-second pacing and 14
 1,000-log cap exceeds the observed 68-log shard maximum. Chain ID and frozen endpoint block hash also match.
 The Blockscout instance rejects one-element address arrays, so single-contract log requests use the standard
 scalar form; multi-address requests remain arrays. The failed attempt returned no log or result.
+
+Formal D0 completed from clean commit `cce8d234e7eb8d208c4bb2731bb61f63baee5ad7`. The immutable result is
+`results/empirical_physics/aave_agent_guardrail_d0_result.json`, canonical SHA-256
+`764f08a7a02c550f28f8b7ace275cf4e451ba5430ea5768aff55f374c1226460`. Its binding and decision are independently
+recomputed in `tests/test_aave_agent_guardrail_result.py` without calling the runner's gate or ledger helpers.
+
+The decision is a hard `stop_threshold_causal_route_before_market_outcomes`. Eight of nine gates pass: 155
+proposals, 133 unambiguous, 127 exact injections, five update types, 17 markets, five represented agents, 38
+resolved non-immediate proposals and one qualifying unbunched three-day delay boundary with 68 scores. The only
+failure is the terminal-classification rate, 133/155 = 85.81% versus the frozen 90% minimum. No D1 or market
+outcome is authorized.
+
+Post-hoc diagnosis must not be mistaken for a pass: 21 of the 22 unmatched rows precede the unique registration
+of their eventual source agent and one update type is never registered; all 133 post-registration proposals are
+classified. This exposes left truncation in the original risk-set definition. Any correction requires a new
+freeze and untouched holdout. A complete non-Ethereum deployment panel can prospectively validate measurement
+and support, with eligibility only after unique registration plus required initialization and with synchronized
+cross-chain proposals deduplicated. It does not by itself provide independent causal shocks. GPU, EcoMD, D1 and
+outcomes remain locked.
