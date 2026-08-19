@@ -23,8 +23,9 @@ T0 is frozen in `configs/empirical_physics/aave_rate_response_t0_v1.yaml` before
 `ReserveDataUpdated`, position-balance or post-event value. The singleton panel has proposals 3, 94, 130, 159,
 247 and 271 on Ethereum Core, crossed with DAI/USDC/USDT: 15 primary rate-decrease units plus three reverse-sign
 units. Official proposal diffs indicate only `variableRateSlope1` is configured for those assets; derived maximum
-rates and legacy strategy-address replacement are not extra policy fields. Proposals 69 and 216 are rate-curve-
-only but non-singleton and stay secondary.
+rates, the legacy identity `baseStableBorrowRate = variableRateSlope1 + baseStableRateOffset`, and strategy-
+address replacement are not extra policy fields. Proposals 69 and 216 are rate-curve-only but non-singleton and
+stay secondary.
 
 Official data infrastructure is unusually strong: `aave-governance-cache` maps proposal IDs to target-chain
 payloads and exact execution blocks/transactions, while `aave-proposals-v3` supplies executable source and

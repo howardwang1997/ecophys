@@ -73,7 +73,12 @@ def audit_asset_rate_change(
         row
         for row in changed_rows
         if row["field"]
-        not in {"interestRate", "interestRateStrategy", "maxVariableBorrowRate"}
+        not in {
+            "baseStableBorrowRate",
+            "interestRate",
+            "interestRateStrategy",
+            "maxVariableBorrowRate",
+        }
     ]
     if len(policy_rows) != 1 or policy_rows[0]["field"] != "variableRateSlope1":
         raise ValueError(f"{symbol} has unexpected configured changes: {policy_rows}")

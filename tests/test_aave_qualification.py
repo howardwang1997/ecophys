@@ -14,6 +14,7 @@ def test_asset_rate_audit_allows_only_deployment_and_derived_rows() -> None:
 | description | value before | value after |
 | --- | --- | --- |
 | interestRateStrategy | old | new |
+| baseStableBorrowRate | 12.5 % | 10.5 % |
 | maxVariableBorrowRate | 46.5 % | 44.5 % |
 | variableRateSlope1 | 11.5 % | 9.5 % |
 | interestRate | before-image | after-image |

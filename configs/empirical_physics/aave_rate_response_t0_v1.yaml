@@ -13,6 +13,11 @@ sources:
     remote: https://github.com/aave-dao/aave-proposals-v3.git
     expected_git_sha: 18e17247a3fc86b89c1049fe2ae06cdb6bc36367
     license: MIT
+  legacy_v3_rate_strategy_factory:
+    remote: https://github.com/bgd-labs/aave-helpers.git
+    commit: 1adaebd6fe409770e3a2d56560e0127df85b3e2e
+    source_path: src/v3-config-engine/V3RateStrategyFactory.sol
+    derived_field_identity: baseStableBorrowRate_equals_variableRateSlope1_plus_baseStableRateOffset
   claimed_open_dataset:
     title: A Cross-Chain Event-Driven Data Infrastructure for Aave Protocol Analytics and Applications
     doi: 10.5281/zenodo.17898640
@@ -113,6 +118,11 @@ decision:
     - every_selected_asset_has_only_variable_rate_slope1_as_configured_change
     - singleton_market_event_units_at_least_15
     - public_rpc_chain_and_event_topic_metadata_are_available
+  rendered_diff_nonindependent_fields:
+    - baseStableBorrowRate
+    - maxVariableBorrowRate
+    - interestRate
+    - interestRateStrategy
   dataset_doi_unavailable: use_direct_chain_logs_but_record_the_data_claim_failure
   t0_pass_only_authorizes_a_separately_committed_preperiod_activity_freeze: true
 

@@ -42,7 +42,10 @@ staggered cross-chain execution, plus transfer beyond one protocol.
 
 The official Aave governance cache and proposal source identify six Ethereum Core executions for which DAI,
 USDC and USDT each change only the configured `variableRateSlope1`; changes to
-`maxVariableBorrowRate` are algebraically derived, and old deployments may replace the strategy address.
+`maxVariableBorrowRate` are algebraically derived, and old deployments may replace the strategy address. In
+the legacy strategy factory pinned by proposal 3, `baseStableBorrowRate` is reconstructed as
+`variableRateSlope1 + baseStableRateOffset`; its synchronized rendered-diff change is therefore also derived,
+while `baseStableRateOffset` remains `KEEP_CURRENT` in the payload.
 
 | Proposal | Direction | Slope1 (bp) | Role |
 |---:|:---:|---:|---|
