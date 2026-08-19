@@ -128,3 +128,17 @@ backoffs during boundary-only block reads, both before `eth_getLogs`. Topics now
 OpenSSL Keccak-256, and the formal ledger uses the already D1A-validated dRPC endpoint at 0.5-second pacing.
 An outside-repository identity-bound checkpoint keeps only boundaries and sanitized policy-event metadata and
 is deleted on success; this is transport/recoverability only, not a scientific amendment.
+
+## Formal D1B hard stop
+
+D1B ran from clean commit `3a4fe2196`; canonical result SHA is `e7a1b74f…` and independently recomputes. All
+six timelines and all 18 exact T0 targets resolve, but all executions are anticipated by 10.7--32.7 days. Only
+proposal 159's DAI/USDC/USDT units are clean (3/18 versus the frozen 15); they are censored at 27.688 days by
+the v3.2 upgrade. Other proposals overlap genuine pool upgrades, collateral/cap/eMode changes or repeated rate
+updates. Official governance metadata corroborates the major contaminating transactions.
+
+Only proposals 3 and 271 exceed the 24-hour source-audited comparable cross-chain stagger (2/6 versus the
+required four); the other four span only 8.73--14.38 hours. Formal decision is
+`stop_ncs_causal_route_before_behavioral_outcomes`. Do not run D1C, open response data, lower the stagger/window
+rules, treat three assets from one proposal as independent evidence, or launch GPU/EcoMD. D1A's activity pass
+survives only as infrastructure. Any specialist descriptive rescue requires a new explicit scope decision.
