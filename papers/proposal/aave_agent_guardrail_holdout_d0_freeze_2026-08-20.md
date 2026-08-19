@@ -152,8 +152,22 @@ once.
 The runner and core are covered by tests for source-independent pilot binding, exact log identity and duplicate
 rejection, checkpoint digest/identity/blinding, topic partitioning, nonzero contract code, causal activation,
 cross-chain connected batching, row/batch boundary support and the immutable contract. Ruff, strict mypy and the
-28-test focused suite pass. These implementation choices were fixed before the first non-Ethereum event query;
+37-test focused suite pass. These implementation choices were fixed before the first non-Ethereum event query;
 none changes a sample, threshold or stop rule.
+
+The first post-freeze qualification attempt produced no chain artifact or checkpoint and exposed three transport
+facts: Avalanche's official endpoint caps a request at 2,048 blocks, Polygon dRPC requires a nominal 10,000-block
+shard to be subdivided, and BNB's initial candidates did not both provide historical state. The fixed 10,000-block
+qualification *union* is therefore retained while explicit provider cap errors may recursively subdivide its RPC
+requests. Chain ID, both hashes and nonzero Hub code are verified once on the fixed anchor RPC; each of the two log
+transports independently verifies chain ID and both hashes, then must return the identical complete log-identity
+set. This avoids requiring historical state from a service used only for logs.
+
+The transport-only candidate list adds the documented public
+[Avalanche dRPC](https://drpc.org/docs/avalanche-api) and public archive-capable
+[BNB OnFinality](https://documentation.onfinality.io/support/bnb-chain) endpoints. Both passed source-blind
+chain/hash/code probes before inclusion. No chain, block, event family, eligibility rule, batch definition,
+scientific threshold or stop rule changed.
 
 ## Resources and interpretation
 

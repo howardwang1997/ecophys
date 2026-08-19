@@ -105,9 +105,7 @@ class _RpcClient:
     def _pace(self) -> None:
         now = time.monotonic()
         if self._last_request_started is not None:
-            remaining = self.minimum_request_interval_seconds - (
-                now - self._last_request_started
-            )
+            remaining = self.minimum_request_interval_seconds - (now - self._last_request_started)
             if remaining > 0:
                 time.sleep(remaining)
         self._last_request_started = time.monotonic()
@@ -174,8 +172,7 @@ class _RpcClient:
             remote_error = payload["error"]
             rpc_code = (
                 int(remote_error["code"])
-                if isinstance(remote_error, Mapping)
-                and isinstance(remote_error.get("code"), int)
+                if isinstance(remote_error, Mapping) and isinstance(remote_error.get("code"), int)
                 else None
             )
             raise RpcError(f"RPC {method} failed: {remote_error}", rpc_code=rpc_code)
@@ -315,9 +312,7 @@ def _load_policy_checkpoint(
         or any(not isinstance(row, dict) for row in raw_windows)
         or not isinstance(raw_intervals, list)
         or any(
-            not isinstance(row, list)
-            or len(row) != 2
-            or any(not isinstance(value, int) for value in row)
+            not isinstance(row, list) or len(row) != 2 or any(not isinstance(value, int) for value in row)
             for row in raw_intervals
         )
         or not isinstance(raw_events, list)
@@ -373,8 +368,10 @@ def _splittable(error: RpcError) -> bool:
         marker in message
         for marker in (
             "block range",
+            "requested too many blocks",
             "range is too wide",
             "range limit",
+            "ranges over",
             "response size",
             "result size",
             "too many results",
@@ -444,11 +441,7 @@ def _get_logs_with_split(
                 remaining_split_depth=remaining_split_depth,
                 split_topics_first=True,
             )
-        if (
-            not _splittable(error)
-            or start_block >= end_block_inclusive
-            or remaining_split_depth <= 0
-        ):
+        if not _splittable(error) or start_block >= end_block_inclusive or remaining_split_depth <= 0:
             raise
         client.log_range_splits += 1
         middle = (start_block + end_block_inclusive) // 2
@@ -547,9 +540,7 @@ def _source_file_at_commit(
     if not candidates:
         return None
     if len(candidates) != 1:
-        raise RuntimeError(
-            f"{commit}:src/{directory} has {len(candidates)} {chain_label} V3 sources"
-        )
+        raise RuntimeError(f"{commit}:src/{directory} has {len(candidates)} {chain_label} V3 sources")
     path = f"src/{directory}/{candidates[0]}"
     source = _git("show", f"{commit}:{path}", root=proposals_root)
     return path, source
@@ -562,9 +553,7 @@ def _audit_cross_chain(
     proposals_root: Path,
 ) -> dict[str, Any]:
     payload_map = json.loads(
-        (governance_root / "cache" / "ui" / "mainnet" / "proposals_payloads.json").read_text(
-            encoding="utf-8"
-        )
+        (governance_root / "cache" / "ui" / "mainnet" / "proposals_payloads.json").read_text(encoding="utf-8")
     )["data"]
     chain_by_id = {int(chain_id): label for label, chain_id in config["chain_labels"].items()}
     aliases = {
@@ -609,9 +598,7 @@ def _audit_cross_chain(
                     canonical_symbol = aliases.get(str(update["asset_alias"]))
                     if canonical_symbol is not None:
                         stable_updates.append({**update, "canonical_symbol": canonical_symbol})
-            comparable_updates = [
-                update for update in stable_updates if bool(update["slope1_only"])
-            ]
+            comparable_updates = [update for update in stable_updates if bool(update["slope1_only"])]
             chain_results.append(
                 {
                     **execution,
@@ -636,10 +623,7 @@ def _audit_cross_chain(
             != str(t0_event["execution_transaction_hash"]).lower()
         ):
             raise RuntimeError(f"proposal {proposal_id} Ethereum payload differs from T0")
-        t0_after = {
-            str(asset["symbol"]): int(asset["slope1_after_bps"])
-            for asset in t0_event["assets"]
-        }
+        t0_after = {str(asset["symbol"]): int(asset["slope1_after_bps"]) for asset in t0_event["assets"]}
         ethereum_after = {
             str(update["canonical_symbol"]): int(update["variable_rate_slope1_bps"])
             for update in ethereum[0]["comparable_stablecoin_updates"]
@@ -759,13 +743,11 @@ def _load_source_definitions(
 ) -> tuple[dict[str, dict[str, dict[str, Any]]], dict[str, str]]:
     sources = config["official_sources"]
     paths = {
-        "legacy_pool_configurator": historical_core_root
-        / str(sources["historical_v3_core"]["abi_path"]),
+        "legacy_pool_configurator": historical_core_root / str(sources["historical_v3_core"]["abi_path"]),
         "current_pool_configurator_additions": origin_root
         / str(sources["current_v3_origin"]["configurator_abi_path"]),
         "oracle": origin_root / str(sources["current_v3_origin"]["oracle_abi_path"]),
-        "addresses_provider": origin_root
-        / str(sources["current_v3_origin"]["addresses_provider_abi_path"]),
+        "addresses_provider": origin_root / str(sources["current_v3_origin"]["addresses_provider_abi_path"]),
         "rewards": origin_root / str(sources["current_v3_origin"]["rewards_abi_path"]),
     }
     definitions: dict[str, dict[str, dict[str, Any]]] = {}
@@ -791,9 +773,7 @@ def _audit_address_book(config: Mapping[str, Any], address_book_root: Path) -> s
         )
     ]
     for asset in config["ethereum"]["assets"].values():
-        expected.extend(
-            [str(asset["underlying"]), str(asset["a_token"]), str(asset["variable_debt_token"])]
-        )
+        expected.extend([str(asset["underlying"]), str(asset["a_token"]), str(asset["variable_debt_token"])])
     missing = [address for address in expected if address.lower() not in source]
     if missing:
         raise RuntimeError(f"frozen Ethereum addresses absent from official address book: {missing}")
@@ -824,9 +804,7 @@ def audit(
     _verify_digest(d1a, expected_d1a_digest, label="parent D1A")
     if d1a.get("decision") != "pass_to_separately_frozen_intervention_ledger_gate":
         raise RuntimeError("parent D1A did not authorize D1B")
-    parent_commit = _git(
-        "rev-parse", f"{config['contract']['parent_d1a_artifact_commit']}^{{commit}}"
-    )
+    parent_commit = _git("rev-parse", f"{config['contract']['parent_d1a_artifact_commit']}^{{commit}}")
     ancestry = subprocess.run(
         ["git", "merge-base", "--is-ancestor", parent_commit, "HEAD"],
         cwd=REPO_ROOT,
@@ -863,17 +841,11 @@ def audit(
             label="Aave address book",
         ),
     }
-    source_definitions, abi_digests = _load_source_definitions(
-        config, historical_core_root, origin_root
-    )
+    source_definitions, abi_digests = _load_source_definitions(config, historical_core_root, origin_root)
     address_book_digest = _audit_address_book(config, address_book_root)
 
     governance_records = _load_json(
-        governance_root
-        / "cache"
-        / "1"
-        / "proposals"
-        / f"{GOVERNANCE_CONTRACT}.json"
+        governance_root / "cache" / "1" / "proposals" / f"{GOVERNANCE_CONTRACT}.json"
     )
     forum_retry = Retry(
         total=3,
@@ -902,9 +874,7 @@ def audit(
         if not isinstance(governance, Mapping) or int(governance.get("state", -1)) != 4:
             raise RuntimeError(f"proposal {proposal_id} is not resolved as executed")
         execution_timestamp = int(t0_by_proposal[proposal_id]["executed_at_unix"])
-        announcement_timestamp = min(
-            int(forum["first_post_timestamp"]), int(governance["creationTime"])
-        )
+        announcement_timestamp = min(int(forum["first_post_timestamp"]), int(governance["creationTime"]))
         lead_hours = (execution_timestamp - announcement_timestamp) / 3600
         timelines.append(
             {
@@ -938,13 +908,9 @@ def audit(
         url=formal_rpc,
         timeout=int(limits["request_timeout_seconds"]),
         transport_retries=int(limits["transport_retries"]),
-        minimum_request_interval_seconds=float(
-            transport["minimum_request_interval_seconds"]
-        ),
+        minimum_request_interval_seconds=float(transport["minimum_request_interval_seconds"]),
         rate_limit_retries=int(transport["rate_limit_retries"]),
-        rate_limit_backoff_initial_seconds=float(
-            transport["rate_limit_backoff_initial_seconds"]
-        ),
+        rate_limit_backoff_initial_seconds=float(transport["rate_limit_backoff_initial_seconds"]),
         rate_limit_backoff_max_seconds=float(transport["rate_limit_backoff_max_seconds"]),
     )
     if client.call("eth_chainId", []) != "0x1":
@@ -964,12 +930,8 @@ def audit(
             raise RuntimeError(f"proposal {event['proposal_id']} execution header differs from T0")
 
     support = config["ledger_window"]
-    support_pre_seconds = int(
-        timedelta(days=int(support["support_pre_execution_days"])).total_seconds()
-    )
-    support_post_seconds = int(
-        timedelta(days=int(support["support_post_execution_days"])).total_seconds()
-    )
+    support_pre_seconds = int(timedelta(days=int(support["support_pre_execution_days"])).total_seconds())
+    support_post_seconds = int(timedelta(days=int(support["support_post_execution_days"])).total_seconds())
     latest_t0_block = max(int(event["execution_block"]) for event in t0["events"])
     repository_sha = _git("rev-parse", "HEAD")
     config_sha256 = hashlib.sha256(config_path.read_bytes()).hexdigest()
@@ -1042,12 +1004,8 @@ def audit(
         merged_intervals[completed_interval_count:], start=completed_interval_count
     ):
         raw_logs: list[Mapping[str, Any]] = []
-        for chunk_start in range(
-            merged_start, merged_end + 1, int(limits["block_chunk_size"])
-        ):
-            chunk_end = min(
-                merged_end, chunk_start + int(limits["block_chunk_size"]) - 1
-            )
+        for chunk_start in range(merged_start, merged_end + 1, int(limits["block_chunk_size"])):
+            chunk_end = min(merged_end, chunk_start + int(limits["block_chunk_size"]) - 1)
             raw_logs.extend(
                 _get_logs_with_split(
                     client,
@@ -1061,13 +1019,8 @@ def audit(
         policy_blocks = sorted(
             {_hex_quantity(log.get("blockNumber"), field="blockNumber") for log in raw_logs}
         )
-        block_timestamps = {
-            block: int(client.block(block)["timestamp"]) for block in policy_blocks
-        }
-        assets = {
-            str(symbol): str(record["underlying"])
-            for symbol, record in ethereum["assets"].items()
-        }
+        block_timestamps = {block: int(client.block(block)["timestamp"]) for block in policy_blocks}
+        assets = {str(symbol): str(record["underlying"]) for symbol, record in ethereum["assets"].items()}
         selected_tokens = {
             str(symbol): [str(record["a_token"]), str(record["variable_debt_token"])]
             for symbol, record in ethereum["assets"].items()
@@ -1102,10 +1055,7 @@ def audit(
             policy_events=policy_events,
         )
 
-    cohort_by_proposal = {
-        int(proposal["id"]): str(proposal["cohort"])
-        for proposal in config["proposals"]
-    }
+    cohort_by_proposal = {int(proposal["id"]): str(proposal["cohort"]) for proposal in config["proposals"]}
     units = [
         {
             "proposal_id": int(event["proposal_id"]),
@@ -1133,26 +1083,16 @@ def audit(
         clean_units,
         minimum_total=int(config["ethereum_panel_gate"]["minimum_total_clean_units"]),
         minimum_primary=int(config["ethereum_panel_gate"]["minimum_primary_clean_units"]),
-        minimum_reverse=int(
-            config["ethereum_panel_gate"]["minimum_reverse_sign_clean_units"]
-        ),
-        minimum_assets_per_proposal=int(
-            config["ethereum_panel_gate"]["minimum_clean_assets_per_proposal"]
-        ),
+        minimum_reverse=int(config["ethereum_panel_gate"]["minimum_reverse_sign_clean_units"]),
+        minimum_assets_per_proposal=int(config["ethereum_panel_gate"]["minimum_clean_assets_per_proposal"]),
     )
     timeline_resolved = len(timelines) == len(config["proposals"])
-    selected_targets_match = all(
-        bool(unit["target_matches_exactly_once"]) for unit in clean_units
-    )
+    selected_targets_match = all(bool(unit["target_matches_exactly_once"]) for unit in clean_units)
     decision_checks = {
         "six_of_six_announcement_and_governance_timelines_resolved": timeline_resolved,
         "selected_ethereum_rate_events_match_exact_t0_blocks_and_transactions": selected_targets_match,
-        "ethereum_panel_gate_passes_with_at_least_14_clean_post_days": bool(
-            panel_gate["passed"]
-        ),
-        "cross_chain_gate_passes_for_at_least_four_proposals": bool(
-            cross_chain["passed"]
-        ),
+        "ethereum_panel_gate_passes_with_at_least_14_clean_post_days": bool(panel_gate["passed"]),
+        "cross_chain_gate_passes_for_at_least_four_proposals": bool(cross_chain["passed"]),
     }
     passed = all(decision_checks.values())
     result: dict[str, Any] = {
@@ -1192,8 +1132,7 @@ def audit(
             "formal_rpc": formal_rpc,
             "support_windows": support_windows,
             "merged_query_block_intervals": [
-                {"start_block": start, "end_block_inclusive": end}
-                for start, end in merged_intervals
+                {"start_block": start, "end_block_inclusive": end} for start, end in merged_intervals
             ],
             "event_topic_count": len(event_topics),
             "sanitized_policy_event_count": len(policy_events),
@@ -1272,9 +1211,7 @@ def main() -> int:
             {
                 "decision": result["decision"],
                 "clean_units": result["ethereum_panel_gate"]["eligible_unit_count"],
-                "cross_chain_qualifying_proposals": result["cross_chain_gate"][
-                    "qualifying_proposal_count"
-                ],
+                "cross_chain_qualifying_proposals": result["cross_chain_gate"]["qualifying_proposal_count"],
                 "manifest": str(args.output.resolve()),
             },
             indent=2,

@@ -25,16 +25,15 @@ def test_policy_log_transport_splits_timeouts_but_not_rate_limits() -> None:
     assert _splittable(RpcError("rate limit exceeded", http_status=429)) is False
 
 
+def test_provider_specific_explicit_block_caps_are_splittable() -> None:
+    assert _splittable(RpcError("requested too many blocks; maximum is set to 2048"))
+    assert _splittable(RpcError("ranges over 10000 blocks are not supported on free plan"))
+
+
 def test_exact_handler_crash_is_retryable_but_other_server_errors_are_not() -> None:
-    assert _retryable_rpc_server_error(
-        {"error": {"message": "method handler crashed", "code": -32000}}
-    )
-    assert not _retryable_rpc_server_error(
-        {"error": {"message": "method handler crashed", "code": -32602}}
-    )
-    assert not _retryable_rpc_server_error(
-        {"error": {"message": "execution reverted", "code": -32000}}
-    )
+    assert _retryable_rpc_server_error({"error": {"message": "method handler crashed", "code": -32000}})
+    assert not _retryable_rpc_server_error({"error": {"message": "method handler crashed", "code": -32602}})
+    assert not _retryable_rpc_server_error({"error": {"message": "execution reverted", "code": -32000}})
 
 
 def test_d0_prefers_topic_split_for_backend_timeouts_not_range_limits() -> None:

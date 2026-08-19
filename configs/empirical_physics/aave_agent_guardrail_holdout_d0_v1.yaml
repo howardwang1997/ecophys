@@ -70,6 +70,7 @@ chains:
     anchor_rpc: https://api.avax.network/ext/bc/C/rpc
     formal_rpc_candidates:
       - https://api.avax.network/ext/bc/C/rpc
+      - https://avalanche.drpc.org
       - https://avalanche-c-chain-rpc.publicnode.com
   base:
     chain_id: 8453
@@ -104,6 +105,7 @@ chains:
     anchor_rpc_eth_get_logs_disabled_by_provider: true
     formal_rpc_candidates:
       - https://bsc-rpc.publicnode.com
+      - https://bnb.api.onfinality.io/public
       - https://bnb.rpc.subquery.network/public
   gnosis:
     chain_id: 100
@@ -201,6 +203,14 @@ transport:
   minimum_request_interval_seconds_per_endpoint: 0.75
   no_api_keys_or_paid_endpoints: true
   raw_rpc_responses_retained: false
+  amendment_2026_08_20_after_first_qualification_attempt:
+    trigger: explicit_provider_range_limits_and_log_transport_without_historical_state
+    fixed_10000_block_qualification_union_unchanged: true
+    anchor_rpc_alone_verifies_chain_hashes_and_agent_hub_code: true
+    formal_log_transports_verify_chain_hashes_and_exact_log_identity: true
+    avalanche_added_documented_public_rpc: https://avalanche.drpc.org
+    bnb_added_documented_public_archive_rpc: https://bnb.api.onfinality.io/public
+    no_chain_sample_event_family_threshold_or_stop_rule_changed: true
 
 allowed_event_families:
   agent_hub:

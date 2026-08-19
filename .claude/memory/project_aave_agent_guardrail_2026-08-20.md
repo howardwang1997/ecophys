@@ -133,7 +133,15 @@ The pre-event D0H implementation is now complete in
 `scripts/audit_aave_agent_guardrail_holdout_d0.py`. It has isolated `chain`/`merge` modes, requires a clean code
 snapshot, independently re-verifies the failed Ethereum pilot and all pinned sources, qualifies two transports
 by exact nonempty-shard log identity, and writes only identity-bound decoded checkpoints outside the repository.
-Required initialization must follow its matching registration. The focused 28-test suite, Ruff and strict mypy
-pass; source audit binds nine chains and 26 files. As of this lock, no non-Ethereum event query has occurred and
-all D0H scientific thresholds remain unchanged. The next authorized action is the CPU/network-only nine-chain
-run from the committed SHA; D1, outcomes, EcoMD and GPUs remain locked pending a conjunctive pass.
+Required initialization must follow its matching registration. The initial focused 28-test suite, Ruff and strict
+mypy passed; source audit binds nine chains and 26 files.
+
+The first post-freeze qualification attempt from `4f826b2a3` produced no artifact/checkpoint. Avalanche and
+Polygon exposed explicit provider block-range caps; BNB exposed a false coupling between log transport and
+historical-state availability. A transport-only amendment keeps the exact 10,000-block qualification union but
+allows recursive request subdivision, verifies code on the fixed anchor RPC, and requires each log transport to
+verify chain/hashes plus exact log identities. Documented public Avalanche dRPC and archive-capable BNB
+OnFinality were added after source-blind anchor/code probes passed. Seven obsolete old-SHA runs were terminated;
+no shard is reusable. The expanded focused suite passes 37 tests plus Ruff/strict mypy. No chain, data union,
+event family, eligibility rule, batch definition, scientific gate or stop rule changed. D1, outcomes, EcoMD and
+GPUs remain locked pending a conjunctive D0H pass from the next clean SHA.

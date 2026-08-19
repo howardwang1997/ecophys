@@ -324,6 +324,7 @@ def _validate_transport_anchor(
     client: _RpcClient,
     *,
     chain: Mapping[str, Any],
+    require_contract_code: bool = True,
 ) -> None:
     if client.call("eth_chainId", []) != hex(int(chain["chain_id"])):
         raise RuntimeError("RPC chain ID differs from the frozen chain")
@@ -331,15 +332,16 @@ def _validate_transport_anchor(
         header = client.block(int(chain[f"{prefix}_block"]))
         if str(header["hash"]) != str(chain[f"{prefix}_block_hash"]).lower():
             raise RuntimeError(f"RPC {prefix}-anchor block hash differs")
-    code = client.call(
-        "eth_getCode", [normalize_address(str(chain["agent_hub"])), hex(int(chain["to_block"]))]
-    )
-    if (
-        not isinstance(code, str)
-        or re.fullmatch(r"0x(?:[0-9a-fA-F]{2})+", code) is None
-        or int(code[2:], 16) == 0
-    ):
-        raise RuntimeError("AgentHub code is absent at the frozen endpoint")
+    if require_contract_code:
+        code = client.call(
+            "eth_getCode", [normalize_address(str(chain["agent_hub"])), hex(int(chain["to_block"]))]
+        )
+        if (
+            not isinstance(code, str)
+            or re.fullmatch(r"0x(?:[0-9a-fA-F]{2})+", code) is None
+            or int(code[2:], 16) == 0
+        ):
+            raise RuntimeError("AgentHub code is absent at the frozen endpoint")
 
 
 def _first_nonempty_hub_shard(
@@ -384,12 +386,15 @@ def _qualify_transport(
     interval = float(config["transport"]["minimum_request_interval_seconds_per_endpoint"])
     qualification_span = int(config["transport"]["qualification_get_logs_span"])
     maximum_topics = int(config["transport"]["maximum_topics_per_get_logs"])
+    anchor_url = str(chain["anchor_rpc"])
+    anchor = _new_client(anchor_url, minimum_interval=interval)
+    _validate_transport_anchor(anchor, chain=chain, require_contract_code=True)
     failures: list[dict[str, Any]] = []
     for primary_index in ordered_indices:
         primary_url = candidates[primary_index]
         try:
             primary = _new_client(primary_url, minimum_interval=interval)
-            _validate_transport_anchor(primary, chain=chain)
+            _validate_transport_anchor(primary, chain=chain, require_contract_code=False)
             start, end, primary_logs = _first_nonempty_hub_shard(
                 primary,
                 chain=chain,
@@ -414,7 +419,7 @@ def _qualify_transport(
             reference_url = candidates[reference_index]
             try:
                 reference = _new_client(reference_url, minimum_interval=interval)
-                _validate_transport_anchor(reference, chain=chain)
+                _validate_transport_anchor(reference, chain=chain, require_contract_code=False)
                 reference_logs = _query_logs_interval(
                     reference,
                     addresses=[normalize_address(str(chain["agent_hub"]))],
@@ -427,6 +432,9 @@ def _qualify_transport(
                 if reference_identities != primary_identities:
                     raise RuntimeError("canonical qualification identity sets differ")
                 return primary, {
+                    "anchor_rpc": anchor_url,
+                    "anchor_request_counts": dict(sorted(anchor.method_counts.items())),
+                    "anchor_chain_hashes_and_agent_hub_code_verified": True,
                     "primary_rpc": primary_url,
                     "reference_rpc": reference_url,
                     "from_block": start,

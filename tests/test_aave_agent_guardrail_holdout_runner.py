@@ -112,6 +112,32 @@ def test_transport_anchor_rejects_zero_contract_code() -> None:
         _validate_transport_anchor(FakeClient(), chain=chain)  # type: ignore[arg-type]
 
 
+def test_log_transport_anchor_does_not_require_historical_contract_state() -> None:
+    class FakeClient:
+        def call(self, method: str, params: list[Any]) -> Any:
+            del params
+            assert method == "eth_chainId"
+            return "0xa"
+
+        def block(self, number: int) -> dict[str, Any]:
+            return {"number": number, "timestamp": number, "hash": "0x" + f"{number:064x}"}
+
+    chain = {
+        "chain_id": 10,
+        "from_block": 1,
+        "from_block_hash": "0x" + f"{1:064x}",
+        "to_block": 2,
+        "to_block_hash": "0x" + f"{2:064x}",
+        "agent_hub": "0x" + "11" * 20,
+    }
+
+    _validate_transport_anchor(  # type: ignore[arg-type]
+        FakeClient(),
+        chain=chain,
+        require_contract_code=False,
+    )
+
+
 def test_log_query_partitions_topics_and_preserves_the_exact_range(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

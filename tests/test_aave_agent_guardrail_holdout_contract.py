@@ -74,6 +74,8 @@ def test_all_chain_anchors_and_source_addresses_are_explicit() -> None:
     assert config["time_window"]["start_timestamp"] == 1763942400
     assert config["time_window"]["start_utc"] == "2025-11-24T00:00:00Z"
     assert chains["bnb"]["anchor_rpc_eth_get_logs_disabled_by_provider"] is True
+    assert "https://avalanche.drpc.org" in chains["avalanche"]["formal_rpc_candidates"]
+    assert "https://bnb.api.onfinality.io/public" in chains["bnb"]["formal_rpc_candidates"]
 
 
 def test_activation_batch_boundary_and_stop_rules_are_conservative() -> None:
@@ -132,6 +134,9 @@ def test_holdout_transport_and_resource_caps_remain_free_and_cpu_only() -> None:
     assert transport["identity_crosscheck_sources"] == 2
     assert transport["no_api_keys_or_paid_endpoints"] is True
     assert transport["raw_rpc_responses_retained"] is False
+    amendment = transport["amendment_2026_08_20_after_first_qualification_attempt"]
+    assert amendment["fixed_10000_block_qualification_union_unchanged"] is True
+    assert amendment["no_chain_sample_event_family_threshold_or_stop_rule_changed"] is True
     assert resources == {
         "maximum_cpu_core_hours": 50,
         "maximum_retained_derived_gb": 5,
