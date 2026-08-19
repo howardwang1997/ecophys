@@ -2,10 +2,10 @@
 
 **Decision:** PASS to a separately frozen pre-period activity screen.
 
-**Formal run commit:** `15e01b577`
+**Formal run commit:** `479534f16`
 
-**Preliminary manifest SHA-256:** `fd696f66addf9c8509ff08222a8c48a0648c2242461e8b85917e2ba9c393c947`
-(superseded before acceptance because it failed JSON read-back stability; final rerun pending)
+**Canonical result SHA-256:** `9db209180d036091c48eb2dc05b4c3eef1e23f50ae97a937ab227e920823ed8b`
+(verified after JSON read-back)
 
 This pass establishes intervention metadata and a free acquisition route. It is not evidence of a behavioral
 response, scaling collapse, friction distribution, causal effect, or model validity.
@@ -26,8 +26,8 @@ configured change.
 | 247 | 244 | 2025-02-11 19:09:59 | 21,825,278 | −200 bp |
 | 271 | 259 | 2025-03-19 15:23:47 | 22,081,787 | −200 bp |
 
-The final machine-readable result will be regenerated from the canonicalization-fix commit before D1A is
-frozen.
+The complete transaction hashes, block hashes, cached AIP digests, implementation commits, diff paths and diff
+digests are in `results/empirical_physics/aave_rate_response_t0_result.json`.
 
 The rendered diff can show three non-independent changes without invalidating the singleton configuration
 claim:

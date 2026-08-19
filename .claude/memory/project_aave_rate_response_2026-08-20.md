@@ -33,12 +33,10 @@ before/after diffs. However, the separate 50-million-record Aave preprint's clai
 `10.5281/zenodo.17898640` currently returns an unregistered-identifier 404 and an exact-title Zenodo search finds
 zero records. Do not describe that bulk dataset as acquired. Direct public chain logs are the free fallback.
 
-The first formal T0 run from clean commit `15e01b577` passes all scientific/content checks: all six proposals map
-to a unique exact Ethereum payload execution, all 18 asset-event diffs pass the singleton configured-change
-audit, and the public RPC metadata probe passes without opening a market log. Its preliminary SHA
-`fd696f66…` is superseded because integer YAML keys made the digest fail JSON read-back stability. Commit the
-canonicalization repair and rerun before accepting a final artifact or freezing D1A. The Zenodo DOI remains
-unavailable.
+Formal T0 passed from clean commit `479534f16`; canonical result SHA `9db20918…` is verified after JSON read-back.
+All six proposals map to a unique exact Ethereum payload execution, all 18 asset-event diffs pass the singleton
+configured-change audit, and the public RPC metadata probe passes without opening a market log. The Zenodo DOI
+remains unavailable.
 
 Commit a separate 28-day pre-period activity gate before querying any response. Later hard risks
 are anticipation, endogenous policy, incomplete risk-steward intervention history, repeated-unit dependence,
