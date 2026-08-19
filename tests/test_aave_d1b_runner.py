@@ -3,6 +3,7 @@ from scripts.audit_aave_rate_response_d1b import (
     _keccak_topic,
     _load_policy_checkpoint,
     _merge_block_intervals,
+    _retryable_rpc_server_error,
     _splittable,
     _write_policy_checkpoint,
 )
@@ -18,8 +19,20 @@ def test_policy_ledger_merges_only_overlapping_or_adjacent_ranges() -> None:
 def test_policy_log_transport_splits_timeouts_but_not_rate_limits() -> None:
     assert _splittable(RpcError("gateway timeout", http_status=504)) is True
     assert _splittable(RpcError("block range is too wide", rpc_code=-32602)) is True
-    assert _splittable(RpcError("method handler crashed", rpc_code=-32000)) is True
+    assert _splittable(RpcError("method handler crashed", rpc_code=-32000)) is False
     assert _splittable(RpcError("rate limit exceeded", http_status=429)) is False
+
+
+def test_exact_handler_crash_is_retryable_but_other_server_errors_are_not() -> None:
+    assert _retryable_rpc_server_error(
+        {"error": {"message": "method handler crashed", "code": -32000}}
+    )
+    assert not _retryable_rpc_server_error(
+        {"error": {"message": "method handler crashed", "code": -32602}}
+    )
+    assert not _retryable_rpc_server_error(
+        {"error": {"message": "execution reverted", "code": -32000}}
+    )
 
 
 def test_local_keccak_matches_ethereum_erc20_event_vector() -> None:

@@ -27,8 +27,9 @@ The first clean formal attempt was rejected before any log was returned because 
 limits `eth_getLogs` to 10,000 blocks, not the source-freeze probe's 50,000. The formal transport therefore uses
 10,000-block inclusive shards and an identity-bound decoded-event checkpoint outside the repository. This changes
 request scheduling and recoverability only; the inclusive block union, events, matching and thresholds do not
-change. A repeatedly reproduced JSON-RPC `method handler crashed` error is treated as a range/response failure and
-bisected deterministically; rate limits are not bisected.
+change. JSON-RPC `-32000/method handler crashed` is retried with the same bounded exponential backoff as transport
+limits and recorded separately; evidence from failed singleton bisection rules out treating it as a range-size
+error. Rate limits and genuine range/response-size failures retain their separate handling.
 
 ## Allowed event surface
 

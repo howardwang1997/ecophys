@@ -799,6 +799,8 @@ def audit(
             "log_range_splits": client.log_range_splits,
             "rate_limit_retry_count": client.rate_limit_retry_count,
             "rate_limit_wait_seconds": round(client.rate_limit_wait_seconds, 3),
+            "server_error_retry_count": client.server_error_retry_count,
+            "server_error_wait_seconds": round(client.server_error_wait_seconds, 3),
         },
         "checkpoint": {
             "resumed_from_decoded_event_checkpoint": resumed_from_checkpoint,

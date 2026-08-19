@@ -49,6 +49,17 @@ class RpcError(RuntimeError):
         self.http_status = http_status
 
 
+def _retryable_rpc_server_error(payload: Any) -> bool:
+    if not isinstance(payload, Mapping):
+        return False
+    remote_error = payload.get("error")
+    return (
+        isinstance(remote_error, Mapping)
+        and remote_error.get("code") == -32000
+        and str(remote_error.get("message", "")).lower() == "method handler crashed"
+    )
+
+
 class _RpcClient:
     def __init__(
         self,
@@ -85,6 +96,8 @@ class _RpcClient:
         self.log_range_splits = 0
         self.rate_limit_retry_count = 0
         self.rate_limit_wait_seconds = 0.0
+        self.server_error_retry_count = 0
+        self.server_error_wait_seconds = 0.0
         self._last_request_started: float | None = None
         self._block_cache: dict[int, dict[str, Any]] = {}
 
@@ -123,9 +136,14 @@ class _RpcClient:
                     f"RPC {method} returned non-JSON HTTP {response.status_code}",
                     http_status=response.status_code,
                 ) from error
-            if response.status_code != 429 or attempt >= self.rate_limit_retries:
+            retry_kind: str | None = None
+            if response.status_code == 429:
+                retry_kind = "rate_limit"
+            elif response.status_code < 400 and _retryable_rpc_server_error(payload):
+                retry_kind = "server_error"
+            if retry_kind is None or attempt >= self.rate_limit_retries:
                 break
-            retry_after = response.headers.get("Retry-After")
+            retry_after = response.headers.get("Retry-After") if retry_kind == "rate_limit" else None
             try:
                 header_delay = max(0.0, float(retry_after)) if retry_after else 0.0
             except ValueError:
@@ -134,8 +152,12 @@ class _RpcClient:
                 max(self.rate_limit_backoff_initial_seconds * 2**attempt, header_delay),
                 self.rate_limit_backoff_max_seconds,
             )
-            self.rate_limit_retry_count += 1
-            self.rate_limit_wait_seconds += delay
+            if retry_kind == "rate_limit":
+                self.rate_limit_retry_count += 1
+                self.rate_limit_wait_seconds += delay
+            else:
+                self.server_error_retry_count += 1
+                self.server_error_wait_seconds += delay
             time.sleep(delay)
         if response is None:
             raise AssertionError("RPC loop completed without a response")
@@ -357,7 +379,6 @@ def _splittable(error: RpcError) -> bool:
             "too many results",
             "query returned more than",
             "log response size exceeded",
-            "method handler crashed",
         )
     )
 

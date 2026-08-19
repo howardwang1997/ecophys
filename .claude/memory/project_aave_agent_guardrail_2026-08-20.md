@@ -59,4 +59,6 @@ free-plan `eth_getLogs` maximum is now 10,000 blocks. This did not open a propos
 Transport is amended to 10,000-block shards with an external decoded-event/header checkpoint bound to code,
 config, source SHAs, RPC and endpoint block. The scientific block union, events and gates are unchanged.
 The next shard then reproduced JSON-RPC `method handler crashed` twice after the checkpoint reached block
-24,309,999. Treat only that exact server failure as deterministically splittable; do not split rate limits.
+24,309,999. A later run crossed that shard but cascaded through bisection to a singleton block, falsifying the
+range-size interpretation. Treat only exact code `-32000` plus `method handler crashed` as a bounded, separately
+metered transient retry; do not split it or generalize to other `-32000` errors.
