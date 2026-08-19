@@ -66,6 +66,7 @@ def test_all_chain_anchors_and_source_addresses_are_explicit() -> None:
         suffix = ADDRESS_BOOK_SUFFIXES[name]
         assert chain["address_book_modules"] == [f"Misc{suffix}", f"AaveV3{suffix}"]
         assert len(chain["expected_agent_types"]) in {1, 2}
+        assert chain["formal_initial_get_logs_span"] > 10_000
         assert chain["anchor_rpc"].startswith("https://")
         assert len(chain["formal_rpc_candidates"]) >= 2
         assert all(url.startswith("https://") for url in chain["formal_rpc_candidates"])
@@ -83,7 +84,8 @@ def test_activation_batch_boundary_and_stop_rules_are_conservative() -> None:
     thresholds = config["pass_thresholds"]
     stop = config["stop_rules"]
 
-    assert eligibility["require_exactly_one_prior_agent_registration"] is True
+    assert eligibility["activation_requires_at_least_one_prior_initialized_registration"] is True
+    assert eligibility["source_unambiguous_requires_exactly_one_prior_initialized_registration"] is True
     assert eligibility["require_registered_risk_oracle_equals_address_book_edge_risk_oracle"] is True
     assert eligibility["required_prior_initialization"] == [
         "AgentAddressSet",
@@ -122,6 +124,9 @@ def test_holdout_transport_and_resource_caps_remain_free_and_cpu_only() -> None:
     resources = config["resources"]
 
     assert transport["qualification_occurs_only_after_this_freeze"] is True
+    assert transport["qualification_get_logs_span"] == 10_000
+    assert transport["formal_initial_span_rule"] == ("approximate_seven_utc_days_from_frozen_header_rate")
+    assert transport["formal_range_errors_split_recursively_without_changing_union"] is True
     assert transport["require_nonempty_hub_shard_identity_crosscheck"] is True
     assert transport["identity_crosscheck_sources"] == 2
     assert transport["no_api_keys_or_paid_endpoints"] is True

@@ -74,14 +74,15 @@ remains a later D1 question.
 
 A proposal is eligible only when all of the following occur earlier in canonical block/transaction/log order:
 
-1. exactly one AgentRegistered maps its chain, Risk Oracle and update-type hash to an agent;
+1. at least one AgentRegistered maps its chain, Risk Oracle and update-type hash to an agent;
 2. the registered Risk Oracle equals that chain's pinned Edge Risk Oracle;
 3. AgentAddressSet, AgentEnabledSet(true), ExpirationPeriodSet and MinimumDelaySet have initialized that agent.
 
 Pre-activation and never-registered proposals remain in an exclusion ledger with a reason; they do not enter any
-support or terminal-classification denominator. Once eligible, an ambiguous identity or exact match remains in the
-denominator and counts as a classification failure. This distinction repairs left truncation without hiding later
-data loss.
+support or terminal-classification denominator. Exactly one initialized prior registration is required for an
+unambiguous source. If multiple initialized registrations match, the proposal has entered the risk set but remains
+in the denominator as an ambiguity failure. This distinction repairs left truncation without hiding later data
+loss.
 
 ## Dependence and batch rule
 
@@ -128,9 +129,11 @@ permission only to freeze and run D1 exact validation replay.
 Transport is replaceable, but data identity is not. After this freeze, each chain must pass chain ID and both
 anchor-hash checks. At least one nonempty AgentHub shard must have the same complete canonical
 `(blockHash, transactionHash, logIndex)` set from two listed sources, or one RPC plus an independent explorer API.
-Start with 10,000-block shards, at most 14 topics and 0.75 seconds between requests to one endpoint. Explicit range
-limits may reduce shard size without changing the block union. No API key, paid endpoint, IP fan-out or raw RPC
-retention is allowed.
+Qualify transports on 10,000-block shards, with at most 14 topics and 0.75 seconds between requests to one
+endpoint. Formal extraction then starts from a chain-specific span corresponding to approximately seven UTC days
+under the frozen header rate. Explicit range/timeout/result-size failures recursively split that span without
+changing the block union; this prevents short-block-time chains from requiring tens of thousands of knowingly
+redundant requests. No API key, paid endpoint, IP fan-out or raw RPC retention is allowed.
 
 ## Resources and interpretation
 

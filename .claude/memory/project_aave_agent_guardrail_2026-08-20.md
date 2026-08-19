@@ -121,3 +121,10 @@ more than 120 seconds apart form one conservative cross-chain action batch regar
 represented chains and ten batches, plus two unbunched, two-sided chain-specific delay boundaries on two chains;
 each boundary must pass both row and batch-median support. No chain may be dropped for low activity. D0H is capped
 at 50 CPU core-hours, 5 GB, zero paid data and zero GPU; D1, outcomes and EcoMD remain locked.
+
+Before the first holdout event query, D0H clarifies activation versus unambiguity: at least one prior initialized
+registration enters the proposal into the risk set, while exactly one is required to classify its source. Multiple
+initialized matches stay in the denominator as failures. Transport qualification uses 10,000-block shards;
+formal scanning starts from a fixed per-chain span approximating seven UTC days and recursively splits explicit
+range/timeout/result-size failures. This changes neither the block union nor any scientific threshold and avoids
+pathological request counts on short-block-time chains.

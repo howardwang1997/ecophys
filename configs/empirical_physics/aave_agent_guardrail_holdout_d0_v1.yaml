@@ -49,6 +49,7 @@ chains:
     from_block_hash: "0x08ff6d59a329b218e2f997cc8d2aca936e764120d9278f368c377f693287e60f"
     to_block: 496241730
     to_block_hash: "0x054e80131734f620712f779b20d085068f05c0869791251d7ff053415d2857f3"
+    formal_initial_get_logs_span: 2419200
     anchor_rpc: https://arb1.arbitrum.io/rpc
     formal_rpc_candidates:
       - https://arbitrum.blockscout.com/api/eth-rpc
@@ -65,6 +66,7 @@ chains:
     from_block_hash: "0x1da7973f25e778d49befc0a0fe2ad406c9500cc389d5f8bc7b2a883223e8a26c"
     to_block: 93199822
     to_block_hash: "0x8534951f17d559208674923889c19cf5a40b1ea089110edd5cacf509661a4570"
+    formal_initial_get_logs_span: 540000
     anchor_rpc: https://api.avax.network/ext/bc/C/rpc
     formal_rpc_candidates:
       - https://api.avax.network/ext/bc/C/rpc
@@ -80,6 +82,7 @@ chains:
     from_block_hash: "0xa859552f00c917d19763e8e0992ece943466c52e1be5d05e1503ad10d72b2ff3"
     to_block: 50185771
     to_block_hash: "0x836508bd16b96957f97d61c209f68c871987934118582448ee77d0135e2e2ba9"
+    formal_initial_get_logs_span: 302400
     anchor_rpc: https://mainnet.base.org
     formal_rpc_candidates:
       - https://base.blockscout.com/api/eth-rpc
@@ -96,6 +99,7 @@ chains:
     from_block_hash: "0xf3becf98b98ec9bbcdd789318c8304bbf505fa3d0524cea5adcb621adc13b82c"
     to_block: 116889115
     to_block_hash: "0xea600032b5ef449c56f889bcb70306302b3e47ac697cee374cd479d4a14b7197"
+    formal_initial_get_logs_span: 1200000
     anchor_rpc: https://bsc-dataseed.bnbchain.org
     anchor_rpc_eth_get_logs_disabled_by_provider: true
     formal_rpc_candidates:
@@ -112,6 +116,7 @@ chains:
     from_block_hash: "0xc8c3f58b3d6b71ac2fee92ba55f017cf17cefe59e17682fd75bdeeb1548bc0f9"
     to_block: 47809063
     to_block_hash: "0x00c7a9c5f161d96442015a6ae7dce6dc208c7d8ff367566edbd42b037a6f1cc9"
+    formal_initial_get_logs_span: 117000
     anchor_rpc: https://rpc.gnosischain.com
     formal_rpc_candidates:
       - https://gnosis.blockscout.com/api/eth-rpc
@@ -128,6 +133,7 @@ chains:
     from_block_hash: "0xbf1f5d8da7eed4c7b00cc613abba9bee62d9ee6dde88e48c07959132842412d1"
     to_block: 155781056
     to_block_hash: "0x64f5e29a2beb5c69172d2999ef08034a1e987747006e623bc22f35da61f76a70"
+    formal_initial_get_logs_span: 302400
     anchor_rpc: https://mainnet.optimism.io
     formal_rpc_candidates:
       - https://optimism.blockscout.com/api/eth-rpc
@@ -144,6 +150,7 @@ chains:
     from_block_hash: "0x270e82f4814e8de8338e0ffbc0a0f3c526fa4ab6095aab1294fd19e50bfe47d2"
     to_block: 92303909
     to_block_hash: "0x04dd32fdef4a94de1c604052b82315a7082e6c756b9c51886fc681a3a3054c39"
+    formal_initial_get_logs_span: 335000
     anchor_rpc: https://polygon.drpc.org
     formal_rpc_candidates:
       - https://polygon.drpc.org
@@ -159,6 +166,7 @@ chains:
     from_block_hash: "0xe8ec58bba351dbe51f5112c56773ae0b0721903448c6f5bf0fe898da038af119"
     to_block: 30220344
     to_block_hash: "0xe55e7f25d09a59c0279ec6ed6dcb47f46bd77d044ab0cee892d85cec1aea0a60"
+    formal_initial_get_logs_span: 604800
     anchor_rpc: https://rpc.plasma.to
     formal_rpc_candidates:
       - https://rpc.plasma.to
@@ -174,6 +182,7 @@ chains:
     from_block_hash: "0xe00144517065a5a11376ac730e3b230eb1fda08c5d66be9f538154d1c9fd9804"
     to_block: 31762909
     to_block_hash: "0x975057a17e71e9a624b564bfd62b1d0313a95d98996800c4027ebbee98825938"
+    formal_initial_get_logs_span: 151200
     anchor_rpc: https://rpc.linea.build
     formal_rpc_candidates:
       - https://rpc.linea.build
@@ -185,7 +194,9 @@ transport:
   require_chain_id_and_both_anchor_hashes: true
   require_nonempty_hub_shard_identity_crosscheck: true
   identity_crosscheck_sources: 2
-  initial_maximum_get_logs_span: 10000
+  qualification_get_logs_span: 10000
+  formal_initial_span_rule: approximate_seven_utc_days_from_frozen_header_rate
+  formal_range_errors_split_recursively_without_changing_union: true
   maximum_topics_per_get_logs: 14
   minimum_request_interval_seconds_per_endpoint: 0.75
   no_api_keys_or_paid_endpoints: true
@@ -215,7 +226,8 @@ allowed_event_families:
 
 eligibility:
   source_key: [chain_id, risk_oracle, update_type_hash]
-  require_exactly_one_prior_agent_registration: true
+  activation_requires_at_least_one_prior_initialized_registration: true
+  source_unambiguous_requires_exactly_one_prior_initialized_registration: true
   require_registered_risk_oracle_equals_address_book_edge_risk_oracle: true
   required_prior_initialization:
     - AgentAddressSet
