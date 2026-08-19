@@ -239,6 +239,75 @@ def _verify_digest(payload: Mapping[str, Any], expected: str, *, label: str) -> 
         )
 
 
+def _write_policy_checkpoint(
+    path: Path,
+    *,
+    identity: Mapping[str, str],
+    support_windows: Sequence[Mapping[str, Any]],
+    merged_intervals: Sequence[tuple[int, int]],
+    completed_interval_count: int,
+    policy_events: Sequence[Mapping[str, Any]],
+) -> None:
+    payload: dict[str, Any] = {
+        "schema_version": 1,
+        "identity": dict(identity),
+        "support_windows": list(support_windows),
+        "merged_intervals": [list(interval) for interval in merged_intervals],
+        "completed_interval_count": completed_interval_count,
+        "policy_events": list(policy_events),
+        "contains_only_boundary_and_sanitized_policy_metadata": True,
+        "contains_raw_logs_behavior_or_participants": False,
+    }
+    payload["canonical_payload_sha256"] = canonical_sha256(payload)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def _load_policy_checkpoint(
+    path: Path,
+    *,
+    identity: Mapping[str, str],
+) -> tuple[list[dict[str, Any]], list[tuple[int, int]], int, list[dict[str, Any]]] | None:
+    if not path.exists():
+        return None
+    payload = _load_json(path)
+    stored_digest = str(payload.get("canonical_payload_sha256"))
+    body = {key: value for key, value in payload.items() if key != "canonical_payload_sha256"}
+    if canonical_sha256(body) != stored_digest:
+        raise RuntimeError("D1B policy checkpoint digest mismatch")
+    if payload.get("identity") != dict(identity):
+        raise RuntimeError("D1B policy checkpoint identity mismatch")
+    if payload.get("contains_raw_logs_behavior_or_participants") is not False:
+        raise RuntimeError("D1B policy checkpoint lacks the no-raw-data assertion")
+    raw_windows = payload.get("support_windows")
+    raw_intervals = payload.get("merged_intervals")
+    raw_events = payload.get("policy_events")
+    if (
+        not isinstance(raw_windows, list)
+        or any(not isinstance(row, dict) for row in raw_windows)
+        or not isinstance(raw_intervals, list)
+        or any(
+            not isinstance(row, list)
+            or len(row) != 2
+            or any(not isinstance(value, int) for value in row)
+            for row in raw_intervals
+        )
+        or not isinstance(raw_events, list)
+        or any(not isinstance(row, dict) for row in raw_events)
+    ):
+        raise RuntimeError("D1B policy checkpoint is malformed")
+    intervals = [(int(row[0]), int(row[1])) for row in raw_intervals]
+    completed = int(payload.get("completed_interval_count", -1))
+    if not 0 <= completed <= len(intervals):
+        raise RuntimeError("D1B checkpoint completed interval count is invalid")
+    return list(raw_windows), intervals, completed, list(raw_events)
+
+
 def _verify_repo(root: Path, expected_sha: str, *, label: str) -> dict[str, Any]:
     observed = _git("rev-parse", "HEAD", root=root)
     if observed != expected_sha:
@@ -678,10 +747,13 @@ def audit(
     origin_root: Path,
     address_book_root: Path,
     output_path: Path,
+    checkpoint_path: Path,
 ) -> dict[str, Any]:
     """Execute D1B without reading behavioral outcomes."""
     if _git("status", "--porcelain"):
         raise RuntimeError("formal Aave D1B requires a clean EcoPhys worktree")
+    if checkpoint_path.is_relative_to(REPO_ROOT):
+        raise RuntimeError("formal D1B checkpoint must remain outside the repository")
     config = _load_yaml(config_path)
     t0 = _load_json(t0_path)
     d1a = _load_json(d1a_path)
@@ -798,8 +870,9 @@ def audit(
 
     limits = config["limits"]
     transport = config["transport"]
+    formal_rpc = str(transport["formal_rpc_after_primary_rate_limit_failure"])
     client = _RpcClient(
-        url=str(transport["primary_rpc"]),
+        url=formal_rpc,
         timeout=int(limits["request_timeout_seconds"]),
         transport_retries=int(limits["transport_retries"]),
         minimum_request_interval_seconds=float(
@@ -835,35 +908,66 @@ def audit(
         timedelta(days=int(support["support_post_execution_days"])).total_seconds()
     )
     latest_t0_block = max(int(event["execution_block"]) for event in t0["events"])
-    support_windows: list[dict[str, Any]] = []
-    intervals: list[tuple[int, int]] = []
-    for event in t0["events"]:
-        execution_timestamp = int(event["executed_at_unix"])
-        start_timestamp = execution_timestamp - support_pre_seconds
-        end_timestamp = execution_timestamp + support_post_seconds
-        start_block = _first_block_at_or_after(
-            client,
-            target_timestamp=start_timestamp,
-            upper_block=int(event["execution_block"]),
+    repository_sha = _git("rev-parse", "HEAD")
+    config_sha256 = hashlib.sha256(config_path.read_bytes()).hexdigest()
+    checkpoint_identity = {
+        "repository_sha": repository_sha,
+        "config_sha256": config_sha256,
+        "parent_t0_sha256": str(t0["canonical_payload_sha256"]),
+        "parent_d1a_sha256": expected_d1a_digest,
+        "formal_rpc": formal_rpc,
+    }
+    checkpoint = _load_policy_checkpoint(checkpoint_path, identity=checkpoint_identity)
+    resumed_from_checkpoint = checkpoint is not None
+    resumed_completed_interval_count = 0
+    if checkpoint is None:
+        support_windows: list[dict[str, Any]] = []
+        intervals: list[tuple[int, int]] = []
+        for event in t0["events"]:
+            execution_timestamp = int(event["executed_at_unix"])
+            start_timestamp = execution_timestamp - support_pre_seconds
+            end_timestamp = execution_timestamp + support_post_seconds
+            start_block = _first_block_at_or_after(
+                client,
+                target_timestamp=start_timestamp,
+                upper_block=int(event["execution_block"]),
+            )
+            end_block = _first_block_at_or_after(
+                client,
+                target_timestamp=end_timestamp,
+                upper_block=latest_t0_block + 900_000,
+            )
+            intervals.append((start_block, end_block))
+            support_windows.append(
+                {
+                    "proposal_id": int(event["proposal_id"]),
+                    "start_timestamp": start_timestamp,
+                    "start_utc": _utc(start_timestamp),
+                    "start_block": start_block,
+                    "end_timestamp": end_timestamp,
+                    "end_utc": _utc(end_timestamp),
+                    "end_block_inclusive_for_boundary_safety": end_block,
+                }
+            )
+        merged_intervals = _merge_block_intervals(intervals)
+        completed_interval_count = 0
+        policy_events: list[dict[str, Any]] = []
+        _write_policy_checkpoint(
+            checkpoint_path,
+            identity=checkpoint_identity,
+            support_windows=support_windows,
+            merged_intervals=merged_intervals,
+            completed_interval_count=completed_interval_count,
+            policy_events=policy_events,
         )
-        end_block = _first_block_at_or_after(
-            client,
-            target_timestamp=end_timestamp,
-            upper_block=latest_t0_block + 900_000,
-        )
-        intervals.append((start_block, end_block))
-        support_windows.append(
-            {
-                "proposal_id": int(event["proposal_id"]),
-                "start_timestamp": start_timestamp,
-                "start_utc": _utc(start_timestamp),
-                "start_block": start_block,
-                "end_timestamp": end_timestamp,
-                "end_utc": _utc(end_timestamp),
-                "end_block_inclusive_for_boundary_safety": end_block,
-            }
-        )
-    merged_intervals = _merge_block_intervals(intervals)
+    else:
+        (
+            support_windows,
+            merged_intervals,
+            completed_interval_count,
+            policy_events,
+        ) = checkpoint
+        resumed_completed_interval_count = completed_interval_count
     ethereum = config["ethereum"]
     contract_addresses = {
         "pool_configurator": str(ethereum["pool_configurator"]),
@@ -871,8 +975,10 @@ def audit(
         "oracle": str(ethereum["oracle"]),
         "rewards": str(ethereum["rewards_controller"]),
     }
-    raw_logs: list[Mapping[str, Any]] = []
-    for merged_start, merged_end in merged_intervals:
+    for interval_index, (merged_start, merged_end) in enumerate(
+        merged_intervals[completed_interval_count:], start=completed_interval_count
+    ):
+        raw_logs: list[Mapping[str, Any]] = []
         for chunk_start in range(
             merged_start, merged_end + 1, int(limits["block_chunk_size"])
         ):
@@ -889,40 +995,49 @@ def audit(
                     remaining_split_depth=int(limits["maximum_log_range_split_depth"]),
                 )
             )
-    policy_blocks = sorted(
-        {_hex_quantity(log.get("blockNumber"), field="blockNumber") for log in raw_logs}
-    )
-    block_timestamps = {
-        block: int(client.block(block)["timestamp"]) for block in policy_blocks
-    }
-    assets = {
-        str(symbol): str(record["underlying"])
-        for symbol, record in ethereum["assets"].items()
-    }
-    selected_tokens = {
-        str(symbol): [str(record["a_token"]), str(record["variable_debt_token"])]
-        for symbol, record in ethereum["assets"].items()
-    }
-    policy_events = reduce_policy_logs(
-        raw_logs,
-        contract_addresses=contract_addresses,
-        topic_definitions=topic_definitions,
-        selected_assets=assets,
-        selected_tokens=selected_tokens,
-        start_block=min(start for start, _ in merged_intervals),
-        end_block_inclusive=max(end for _, end in merged_intervals),
-        block_timestamps=block_timestamps,
-    )
-    policy_events = [
-        event
-        for event in policy_events
-        if any(
-            int(window["start_timestamp"])
-            <= int(event["block_timestamp"])
-            <= int(window["end_timestamp"])
-            for window in support_windows
+        policy_blocks = sorted(
+            {_hex_quantity(log.get("blockNumber"), field="blockNumber") for log in raw_logs}
         )
-    ]
+        block_timestamps = {
+            block: int(client.block(block)["timestamp"]) for block in policy_blocks
+        }
+        assets = {
+            str(symbol): str(record["underlying"])
+            for symbol, record in ethereum["assets"].items()
+        }
+        selected_tokens = {
+            str(symbol): [str(record["a_token"]), str(record["variable_debt_token"])]
+            for symbol, record in ethereum["assets"].items()
+        }
+        interval_events = reduce_policy_logs(
+            raw_logs,
+            contract_addresses=contract_addresses,
+            topic_definitions=topic_definitions,
+            selected_assets=assets,
+            selected_tokens=selected_tokens,
+            start_block=merged_start,
+            end_block_inclusive=merged_end,
+            block_timestamps=block_timestamps,
+        )
+        policy_events.extend(
+            event
+            for event in interval_events
+            if any(
+                int(window["start_timestamp"])
+                <= int(event["block_timestamp"])
+                <= int(window["end_timestamp"])
+                for window in support_windows
+            )
+        )
+        completed_interval_count = interval_index + 1
+        _write_policy_checkpoint(
+            checkpoint_path,
+            identity=checkpoint_identity,
+            support_windows=support_windows,
+            merged_intervals=merged_intervals,
+            completed_interval_count=completed_interval_count,
+            policy_events=policy_events,
+        )
 
     cohort_by_proposal = {
         int(proposal["id"]): str(proposal["cohort"])
@@ -987,10 +1102,10 @@ def audit(
         ),
         "repository": {
             "branch": _git("branch", "--show-current"),
-            "git_sha": _git("rev-parse", "HEAD"),
+            "git_sha": repository_sha,
         },
         "contract": {
-            "config_sha256": hashlib.sha256(config_path.read_bytes()).hexdigest(),
+            "config_sha256": config_sha256,
             "parent_d1a_artifact_commit": parent_commit,
             "parent_d1a_canonical_payload_sha256": expected_d1a_digest,
             "parent_d1a_digest_recomputed": True,
@@ -1011,6 +1126,7 @@ def audit(
         "execution_as_unanticipated_shock_claim_allowed": False,
         "cross_chain_gate": cross_chain,
         "ethereum_policy_ledger": {
+            "formal_rpc": formal_rpc,
             "support_windows": support_windows,
             "merged_query_block_intervals": [
                 {"start_block": start, "end_block_inclusive": end}
@@ -1025,6 +1141,14 @@ def audit(
             "log_range_splits": client.log_range_splits,
             "rate_limit_retry_count": client.rate_limit_retry_count,
             "rate_limit_wait_seconds": round(client.rate_limit_wait_seconds, 3),
+        },
+        "checkpoint": {
+            "resumed_from_sanitized_checkpoint": resumed_from_checkpoint,
+            "resumed_completed_interval_count": resumed_completed_interval_count,
+            "completed_interval_count": completed_interval_count,
+            "checkpoint_outside_repository": not checkpoint_path.is_relative_to(REPO_ROOT),
+            "checkpoint_contains_only_boundary_and_sanitized_policy_metadata": True,
+            "checkpoint_removed_after_success": True,
         },
         "clean_units": clean_units,
         "ethereum_panel_gate": panel_gate,
@@ -1051,6 +1175,7 @@ def audit(
         encoding="utf-8",
     )
     temporary.replace(output_path)
+    checkpoint_path.unlink(missing_ok=True)
     return result
 
 
@@ -1065,6 +1190,7 @@ def main() -> int:
     parser.add_argument("--origin-root", type=Path, required=True)
     parser.add_argument("--address-book-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--checkpoint", type=Path, required=True)
     args = parser.parse_args()
     result = audit(
         args.config.resolve(),
@@ -1076,6 +1202,7 @@ def main() -> int:
         args.origin_root.resolve(),
         args.address_book_root.resolve(),
         args.output.resolve(),
+        args.checkpoint.resolve(),
     )
     print(
         json.dumps(

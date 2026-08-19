@@ -104,6 +104,12 @@ whitelisted. No result artifact or policy event was produced. Event topics are t
 OpenSSL Keccak-256 after checking the fixed ERC-20 `Transfer(address,address,uint256)` Ethereum topic vector.
 This replaces only a denied hash service; it leaves every frozen signature and query unchanged.
 
+The next clean attempt stopped during time-to-block boundary resolution, still before `eth_getLogs`, after the
+Flashbots endpoint exhausted all six 429 backoffs. The formal transport is therefore moved to the already
+documented dRPC public endpoint with the D1A-tested 0.5-second pacing. A digest- and commit-bound checkpoint
+outside the repository stores only completed boundary metadata and sanitized policy-event summaries after each
+disjoint merged interval. It contains no raw log, participant or behavioral outcome and is deleted on success.
+
 ## Binding decision
 
 D1B passes to D1C only if all of the following hold:

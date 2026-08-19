@@ -122,3 +122,9 @@ source-audited comparable chains including Ethereum. Missing per-chain source is
 The pure audit layer extracts event signatures from the pinned ABIs, parses both legacy `_bpsToRay(...)` and
 current direct-bps config forms, sanitizes policy logs, and applies exact-target/contamination/censoring rules.
 The implementation has targeted regression tests; no behavioral outcome has been opened.
+
+Flashbots proved unsuitable as the formal D1B transport: it blocks `web3_sha3` and then exhausted six 429
+backoffs during boundary-only block reads, both before `eth_getLogs`. Topics now use locally vector-checked
+OpenSSL Keccak-256, and the formal ledger uses the already D1A-validated dRPC endpoint at 0.5-second pacing.
+An outside-repository identity-bound checkpoint keeps only boundaries and sanitized policy-event metadata and
+is deleted on success; this is transport/recoverability only, not a scientific amendment.
