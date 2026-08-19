@@ -1,0 +1,301 @@
+contract:
+  name: aave_agent_guardrail_multichain_holdout_d0
+  version: 1
+  status: frozen_before_any_non_ethereum_agent_event_query
+  purpose: prospectively_validate_activation_conditioned_action_support_without_market_outcomes
+  ethereum_pilot_is_excluded_from_all_holdout_counts: true
+
+pilot_binding:
+  result_path: results/empirical_physics/aave_agent_guardrail_d0_result.json
+  canonical_payload_sha256: 764f08a7a02c550f28f8b7ace275cf4e451ba5430ea5768aff55f374c1226460
+  decision: stop_threshold_causal_route_before_market_outcomes
+  diagnostic_used_for_design_only: pre_registration_left_truncation
+  pilot_cannot_be_reclassified_or_pooled_into_holdout: true
+
+official_sources:
+  risk_agents:
+    remote: https://github.com/aave-dao/aave-risk-agents.git
+    expected_git_sha: dec4cc7254bfed47d7d73e142c60241f00865352
+    deployment_script: scripts/Deploy.s.sol
+  agent_hub:
+    remote: https://github.com/aave-dao/aave-agent-hub.git
+    expected_git_sha: 71e6dbbadcc86e5eb1ce29d2111a9ca313ae90f3
+  chaos_agents:
+    remote: https://github.com/ChaosLabsInc/chaos-agents.git
+    expected_git_sha: b365c58bf040c32521266cf10a4e70da9a8b7d4f
+  address_book:
+    remote: https://github.com/aave-dao/aave-address-book.git
+    expected_git_sha: 6a0ac5a5e548d764488a2f95f26714ff9275de48
+  proposals_repository:
+    remote: https://github.com/aave-dao/aave-proposals-v3.git
+    expected_git_sha: 18e17247a3fc86b89c1049fe2ae06cdb6bc36367
+
+time_window:
+  start_rule: first_block_with_timestamp_at_or_after_fixed_utc
+  start_timestamp: 1763942400
+  start_utc: "2025-11-24T00:00:00Z"
+  rationale: common_calendar_day_before_source_verified_multichain_deployment_batch
+  end_rule: exact_source_only_head_observed_before_any_event_query
+
+chains:
+  arbitrum:
+    chain_id: 42161
+    expected_agent_types: [AaveSupplyCapAgent, AaveBorrowCapAgent]
+    address_book_modules: [MiscArbitrum, AaveV3Arbitrum]
+    agent_hub: "0xf4F2bc657abe96863dC1Ae17C9e9fFfc2B420e7B"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0x861eeAdB55E41f161F31Acb1BFD4c70E3a964Aed"
+    from_block: 403441737
+    from_block_hash: "0x08ff6d59a329b218e2f997cc8d2aca936e764120d9278f368c377f693287e60f"
+    to_block: 496241730
+    to_block_hash: "0x054e80131734f620712f779b20d085068f05c0869791251d7ff053415d2857f3"
+    anchor_rpc: https://arb1.arbitrum.io/rpc
+    formal_rpc_candidates:
+      - https://arbitrum.blockscout.com/api/eth-rpc
+      - https://arb1.arbitrum.io/rpc
+      - https://arbitrum-one-rpc.publicnode.com
+  avalanche:
+    chain_id: 43114
+    expected_agent_types: [AaveSupplyCapAgent, AaveBorrowCapAgent]
+    address_book_modules: [MiscAvalanche, AaveV3Avalanche]
+    agent_hub: "0x556bBE96f04b4610E48EE003DAcEE1C74de7AC6a"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0x1273f29204fC102bD4620485B13cFE27a794fF32"
+    from_block: 72475069
+    from_block_hash: "0x1da7973f25e778d49befc0a0fe2ad406c9500cc389d5f8bc7b2a883223e8a26c"
+    to_block: 93199822
+    to_block_hash: "0x8534951f17d559208674923889c19cf5a40b1ea089110edd5cacf509661a4570"
+    anchor_rpc: https://api.avax.network/ext/bc/C/rpc
+    formal_rpc_candidates:
+      - https://api.avax.network/ext/bc/C/rpc
+      - https://avalanche-c-chain-rpc.publicnode.com
+  base:
+    chain_id: 8453
+    expected_agent_types: [AaveSupplyCapAgent, AaveBorrowCapAgent]
+    address_book_modules: [MiscBase, AaveV3Base]
+    agent_hub: "0x115E662Fa3f0b83014eB3f6F86F3D94BeC5eB411"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0x239d3Bc5fa247337287cb03f53B8bc63DBBc332D"
+    from_block: 38576527
+    from_block_hash: "0xa859552f00c917d19763e8e0992ece943466c52e1be5d05e1503ad10d72b2ff3"
+    to_block: 50185771
+    to_block_hash: "0x836508bd16b96957f97d61c209f68c871987934118582448ee77d0135e2e2ba9"
+    anchor_rpc: https://mainnet.base.org
+    formal_rpc_candidates:
+      - https://base.blockscout.com/api/eth-rpc
+      - https://mainnet.base.org
+      - https://base-rpc.publicnode.com
+  bnb:
+    chain_id: 56
+    expected_agent_types: [AaveSupplyCapAgent, AaveBorrowCapAgent]
+    address_book_modules: [MiscBNB, AaveV3BNB]
+    agent_hub: "0x115E662Fa3f0b83014eB3f6F86F3D94BeC5eB411"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0x239d3Bc5fa247337287cb03f53B8bc63DBBc332D"
+    from_block: 69254723
+    from_block_hash: "0xf3becf98b98ec9bbcdd789318c8304bbf505fa3d0524cea5adcb621adc13b82c"
+    to_block: 116889115
+    to_block_hash: "0xea600032b5ef449c56f889bcb70306302b3e47ac697cee374cd479d4a14b7197"
+    anchor_rpc: https://bsc-dataseed.bnbchain.org
+    anchor_rpc_eth_get_logs_disabled_by_provider: true
+    formal_rpc_candidates:
+      - https://bsc-rpc.publicnode.com
+      - https://bnb.rpc.subquery.network/public
+  gnosis:
+    chain_id: 100
+    expected_agent_types: [AaveSupplyCapAgent, AaveBorrowCapAgent]
+    address_book_modules: [MiscGnosis, AaveV3Gnosis]
+    agent_hub: "0x7520bb9c237c864957e9a9881821bF882491bc5C"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0x7BD97DD6C199532d11Cf5f55E13a120dB6dd0F4F"
+    from_block: 43299823
+    from_block_hash: "0xc8c3f58b3d6b71ac2fee92ba55f017cf17cefe59e17682fd75bdeeb1548bc0f9"
+    to_block: 47809063
+    to_block_hash: "0x00c7a9c5f161d96442015a6ae7dce6dc208c7d8ff367566edbd42b037a6f1cc9"
+    anchor_rpc: https://rpc.gnosischain.com
+    formal_rpc_candidates:
+      - https://gnosis.blockscout.com/api/eth-rpc
+      - https://rpc.gnosischain.com
+      - https://gnosis-rpc.publicnode.com
+  optimism:
+    chain_id: 10
+    expected_agent_types: [AaveSupplyCapAgent, AaveBorrowCapAgent]
+    address_book_modules: [MiscOptimism, AaveV3Optimism]
+    agent_hub: "0x1aCEC7abbcFE6dD10EA4bB50894908406FfE8719"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0x9f6aA2aB14bFF53e4b79A81ce1554F1DFdbb6608"
+    from_block: 144171812
+    from_block_hash: "0xbf1f5d8da7eed4c7b00cc613abba9bee62d9ee6dde88e48c07959132842412d1"
+    to_block: 155781056
+    to_block_hash: "0x64f5e29a2beb5c69172d2999ef08034a1e987747006e623bc22f35da61f76a70"
+    anchor_rpc: https://mainnet.optimism.io
+    formal_rpc_candidates:
+      - https://optimism.blockscout.com/api/eth-rpc
+      - https://mainnet.optimism.io
+      - https://optimism-rpc.publicnode.com
+  polygon:
+    chain_id: 137
+    expected_agent_types: [AaveSupplyCapAgent, AaveBorrowCapAgent]
+    address_book_modules: [MiscPolygon, AaveV3Polygon]
+    agent_hub: "0xd44342b1aC132353d3148Ea6ed330d1Ae6F0c664"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0x9f6aA2aB14bFF53e4b79A81ce1554F1DFdbb6608"
+    from_block: 79418684
+    from_block_hash: "0x270e82f4814e8de8338e0ffbc0a0f3c526fa4ab6095aab1294fd19e50bfe47d2"
+    to_block: 92303909
+    to_block_hash: "0x04dd32fdef4a94de1c604052b82315a7082e6c756b9c51886fc681a3a3054c39"
+    anchor_rpc: https://polygon.drpc.org
+    formal_rpc_candidates:
+      - https://polygon.drpc.org
+      - https://polygon-bor-rpc.publicnode.com
+  plasma:
+    chain_id: 9745
+    expected_agent_types: [AaveDiscountRateAgent, AaveEModeAgent]
+    address_book_modules: [MiscPlasma, AaveV3Plasma]
+    agent_hub: "0x5F29ACbFB6de4282bB4DD2017930cDA730eD864D"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0xAe48F22903d43f13f66Cc650F57Bd4654ac222cb"
+    from_block: 7011827
+    from_block_hash: "0xe8ec58bba351dbe51f5112c56773ae0b0721903448c6f5bf0fe898da038af119"
+    to_block: 30220344
+    to_block_hash: "0xe55e7f25d09a59c0279ec6ed6dcb47f46bd77d044ab0cee892d85cec1aea0a60"
+    anchor_rpc: https://rpc.plasma.to
+    formal_rpc_candidates:
+      - https://rpc.plasma.to
+      - https://9745.rpc.thirdweb.com
+  linea:
+    chain_id: 59144
+    expected_agent_types: [AaveRatesAgent]
+    address_book_modules: [MiscLinea, AaveV3Linea]
+    agent_hub: "0xa1e306dfB12270b02960d5a612539fc587108eD7"
+    range_validation_module: "0x9240a6669CC4782FC98620212862DF5CB2e0Df10"
+    edge_risk_oracle: "0xa6C229d3a1D4D31708B16C0ad2f14337aE4E7893"
+    from_block: 25957319
+    from_block_hash: "0xe00144517065a5a11376ac730e3b230eb1fda08c5d66be9f538154d1c9fd9804"
+    to_block: 31762909
+    to_block_hash: "0x975057a17e71e9a624b564bfd62b1d0313a95d98996800c4027ebbee98825938"
+    anchor_rpc: https://rpc.linea.build
+    formal_rpc_candidates:
+      - https://rpc.linea.build
+      - https://linea-rpc.publicnode.com
+
+transport:
+  rpc_is_replaceable_transport: true
+  qualification_occurs_only_after_this_freeze: true
+  require_chain_id_and_both_anchor_hashes: true
+  require_nonempty_hub_shard_identity_crosscheck: true
+  identity_crosscheck_sources: 2
+  initial_maximum_get_logs_span: 10000
+  maximum_topics_per_get_logs: 14
+  minimum_request_interval_seconds_per_endpoint: 0.75
+  no_api_keys_or_paid_endpoints: true
+  raw_rpc_responses_retained: false
+
+allowed_event_families:
+  agent_hub:
+    - AgentRegistered
+    - AgentAddressSet
+    - AgentAdminSet
+    - AgentEnabledSet
+    - AgentPermissionedStatusSet
+    - MarketsFromAgentEnabled
+    - ExpirationPeriodSet
+    - MinimumDelaySet
+    - AgentContextSet
+    - AllowedMarketAdded
+    - AllowedMarketRemoved
+    - RestrictedMarketAdded
+    - RestrictedMarketRemoved
+    - UpdateInjected
+  range_validation_module:
+    - DefaultRangeConfigSet
+    - MarketRangeConfigSet
+  risk_oracle:
+    - ParameterUpdated
+
+eligibility:
+  source_key: [chain_id, risk_oracle, update_type_hash]
+  require_exactly_one_prior_agent_registration: true
+  require_registered_risk_oracle_equals_address_book_edge_risk_oracle: true
+  required_prior_initialization:
+    - AgentAddressSet
+    - AgentEnabledSet_true
+    - ExpirationPeriodSet
+    - MinimumDelaySet
+  proposal_must_follow_all_required_events_by_block_transaction_log_order: true
+  pre_activation_or_never_registered_proposals:
+    retained_in_exclusion_ledger: true
+    excluded_from_support_and_terminal_classification_denominators: true
+  post_activation_ambiguous_proposals:
+    retained_in_eligible_ledger: true
+    count_against_terminal_classification: true
+
+batching:
+  purpose: conservative_dependence_unit_for_synchronized_or_bulk_oracle_actions
+  sort_key: [oracle_timestamp, chain_id, block_number, transaction_index, log_index]
+  connected_component_rule: adjacent_oracle_timestamps_at_most_120_seconds_apart
+  update_type_or_chain_need_not_match: true
+  reference_id_is_not_used_to_split_batches: true
+  batch_id: sha256_of_sorted_canonical_proposal_identities
+  inference_must_cluster_by_batch: true
+
+matching:
+  exact_fields: [chain_id, risk_oracle, update_type_hash, update_id, market, proposed_value]
+  same_block_order: transaction_index_then_log_index
+  previous_oracle_value_is_not_protocol_validation_state: true
+
+boundary_support:
+  boundary_key: [chain_id, agent_id, unchanged_minimum_delay_epoch]
+  never_pool_boundaries_across_chains_or_agents: true
+  row_level_minimum_scores: 20
+  row_level_minimum_each_side: 5
+  neighborhood_fraction: 0.25
+  row_level_minimum_near_each_side: 5
+  batch_representative: median_margin_within_boundary_and_batch
+  batch_level_minimum_scores: 10
+  batch_level_minimum_each_side: 3
+  batch_level_minimum_near_each_side: 3
+  exact_row_bunching_minimum_count: 5
+  exact_batch_bunching_minimum_count: 3
+  exact_bunching_minimum_fraction: 0.50
+  minimum_qualifying_boundaries: 2
+  minimum_chains_with_qualifying_boundary: 2
+
+pass_thresholds:
+  minimum_eligible_proposals: 30
+  minimum_exact_injections: 20
+  minimum_update_types: 2
+  minimum_chain_market_pairs: 5
+  minimum_represented_chain_agents: 3
+  minimum_represented_chains: 3
+  minimum_proposal_batches: 10
+  minimum_resolved_non_immediate_proposals: 10
+  minimum_resolved_non_immediate_batches: 5
+  minimum_terminal_classification_rate: 0.90
+
+forbidden_data:
+  - pool_balances
+  - utilization
+  - borrow_or_supply_rates
+  - user_transactions
+  - positions
+  - prices
+  - liquidations
+  - market_response_windows
+  - ethereum_pilot_rows_in_holdout_counts
+
+stop_rules:
+  any_pass_or_boundary_threshold_failure_stops_before_d1: true
+  no_chain_may_be_dropped_for_low_activity: true
+  unavailable_transport_requires_replacement_not_panel_selection: true
+  no_market_outcomes_on_failure: true
+  no_synthetic_rejected_actions: true
+  no_gpu_or_ecomd: true
+
+resources:
+  maximum_cpu_core_hours: 50
+  maximum_retained_derived_gb: 5
+  gpu_hours: 0
+  paid_data_budget_usd: 0
+  current_gpu_pool_held_idle: [v100_32gb_a, v100_32gb_b, rtx2060]
+  h20_assumed: false

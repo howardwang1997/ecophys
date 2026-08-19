@@ -102,3 +102,22 @@ freeze and untouched holdout. A complete non-Ethereum deployment panel can prosp
 and support, with eligibility only after unique registration plus required initialization and with synchronized
 cross-chain proposals deduplicated. It does not by itself provide independent causal shocks. GPU, EcoMD, D1 and
 outcomes remain locked.
+
+A new untouched protocol is frozen in
+`papers/proposal/aave_agent_guardrail_holdout_d0_freeze_2026-08-20.md` and
+`configs/empirical_physics/aave_agent_guardrail_holdout_d0_v1.yaml` before any non-Ethereum `eth_getLogs` or agent
+event value. It covers the complete nine-chain panel fixed by pinned Risk Agents source: Arbitrum, Avalanche,
+Base, BNB, Gnosis, Optimism, Polygon, Plasma and Linea. Ethereum is excluded from every holdout count and its
+failed D0 cannot be reclassified.
+
+All nine chain IDs, calendar start blocks, exact start/end hashes and AgentHub code existence were checked using
+only source, block headers and `eth_getCode`. The common start is the first block at or after 2025-11-24 00:00 UTC,
+before the synchronized deployment batch. No non-Ethereum event has yet been queried.
+
+D0H prospectively conditions eligibility on one unique registration plus prior AgentAddressSet, enabled=true,
+expiration and minimum-delay initialization. Pre-activation and never-registered proposals remain audited
+exclusions, while any ambiguity after activation penalizes the 90% classification gate. Adjacent proposals no
+more than 120 seconds apart form one conservative cross-chain action batch regardless of type. A pass needs three
+represented chains and ten batches, plus two unbunched, two-sided chain-specific delay boundaries on two chains;
+each boundary must pass both row and batch-median support. No chain may be dropped for low activity. D0H is capped
+at 50 CPU core-hours, 5 GB, zero paid data and zero GPU; D1, outcomes and EcoMD remain locked.
