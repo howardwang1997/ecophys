@@ -35,7 +35,8 @@ Branch `liquity-agentic-queue-feasibility-2026-08-20` freezes D0 before event-su
 D0 decodes only event type, operation code, Trove/manager identity, canonical log identity, branch and time from
 TroveOperation, BatchedTroveUpdated, BatchUpdated and Redemption. It must not decode rates, debt, collateral,
 redemption values/prices, queue rank, adjustment direction, liquidation outcomes or market prices. Blockscout
-and dRPC must reproduce the complete log-identity union exactly. Frozen support minima include 500 opened Troves,
+and OnFinality must reproduce the complete log-identity union exactly, while dRPC independently witnesses
+historical deployment bytecode. Frozen support minima include 500 opened Troves,
 100 ever-batched, 50 official-ARM Troves, 30 ARM rate updates, 200 manual adjustments, 50 redemption transactions
 and 20 same-branch redemption-proximal ARM updates, with explicit cross-branch/date requirements.
 
@@ -55,3 +56,21 @@ the end block. Version 2 therefore uses Blockscout formal logs, OnFinality full 
 header/bytecode state. The runner proves source, chain, event, window, thresholds, forbidden fields, stop rules and
 resources identical to parent SHA-256 `b4a45e62...90c14`. No numerical outcome, queue rank, support-gate breakdown,
 EcoMD or GPU was opened. Amendment: `papers/proposal/liquity_agentic_queue_d0_transport_amendment_2026-08-20.md`.
+
+## Resumable transport recovery v3 (17:30 NZST)
+
+The clean v2 run reproduced qualification counts 0/50/38, completed Blockscout's 24,291-event formal scan and
+matched OnFinality exactly at cumulative chunks 25/50/75/100 (2,507/3,939/6,110/8,126). Before printed
+checkpoint 125, OnFinality returned HTTP 429 after all seven frozen retries. The runner exited without a result
+manifest and before timestamps or the support summarizer, so this is an incomplete transport witness, not a
+sample-gate or hypothesis failure.
+
+Version 3 binds parent SHA-256 `221145272f...d7be`, leaves every scientific and existing transport field equal,
+and adds only two recovery mechanisms: query OnFinality's three TroveManagers in one standard address-array
+filter, and atomically checkpoint every completed chunk outside Git. The checkpoint stores only block number and
+canonical log identity fields, binds config hash/Git SHA/provider/range/addresses/topics, and rejects any
+non-contiguous, duplicate, non-canonical or digest-mismatched state. A capability diagnostic on already disclosed
+chunk 110 returned the same 42 identities under Blockscout's three filters and OnFinality's combined filter,
+digest `c42e2b7...6649d`. Ten focused tests, Ruff and strict mypy pass. No support breakdown, numerical outcome,
+EcoMD or GPU has been opened. Recovery amendment:
+`papers/proposal/liquity_agentic_queue_d0_recovery_amendment_2026-08-20.md`.

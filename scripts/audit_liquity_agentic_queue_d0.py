@@ -182,6 +182,103 @@ def _validate_freeze_contract(
         if str(contract["status"]) != ("frozen_before_event_log_support_counts_or_any_queue_outcomes"):
             raise RuntimeError("D0 v1 lacks the required outcome-blind freeze status")
         return {"is_transport_amendment": False}
+    if version == 3:
+        if str(contract["status"]) != (
+            "transport_only_recovery_after_onfinality_rate_limit_before_support_gate"
+        ):
+            raise RuntimeError("D0 v3 lacks the required transport-recovery status")
+        amendment = config.get("amendment")
+        if not isinstance(amendment, Mapping):
+            raise RuntimeError("D0 v3 has no transport-recovery record")
+        expected_amendment_fields = {
+            "parent_config_path",
+            "parent_config_sha256",
+            "scope",
+            "no_scientific_field_changed",
+            "support_gate_breakdown_computed_before_amendment",
+            "numerical_protocol_outcome_decoded_before_amendment",
+            "observations_before_amendment",
+            "changed_fields",
+        }
+        if set(amendment) != expected_amendment_fields:
+            raise RuntimeError("D0 v3 amendment fields differ from the reviewed recovery schema")
+        if (
+            amendment.get("scope")
+            != "make_onfinality_replication_resumable_and_reduce_requests_without_changing_coverage"
+            or amendment.get("no_scientific_field_changed") is not True
+            or amendment.get("support_gate_breakdown_computed_before_amendment") is not False
+            or amendment.get("numerical_protocol_outcome_decoded_before_amendment") is not False
+        ):
+            raise RuntimeError("D0 v3 does not preserve outcome-blind scientific invariance")
+        parent_relative = Path(str(amendment["parent_config_path"]))
+        parent_path = (REPO_ROOT / parent_relative).resolve()
+        if not parent_path.is_relative_to(REPO_ROOT) or not parent_path.is_file():
+            raise RuntimeError("D0 v3 parent config is outside the repository or absent")
+        parent_digest = _sha256_file(parent_path)
+        if parent_digest != str(amendment["parent_config_sha256"]):
+            raise RuntimeError("D0 v3 parent config digest mismatch")
+        parent = _load_yaml(parent_path)
+        parent_audit = _validate_freeze_contract(parent, config_path=parent_path)
+        if int(parent["contract"]["version"]) != 2 or parent_audit.get(
+            "is_transport_amendment"
+        ) is not True:
+            raise RuntimeError("D0 v3 parent is not the reviewed v2 transport amendment")
+        if set(config) != set(parent):
+            raise RuntimeError("D0 v3 added an unreviewed top-level section")
+        if set(contract) != set(parent["contract"]):
+            raise RuntimeError("D0 v3 contract fields differ from its parent")
+        for field in {"name", "purpose"}:
+            if contract.get(field) != parent["contract"].get(field):
+                raise RuntimeError(f"D0 v3 changed the contract {field}")
+        invariant_sections = set(parent) - {"contract", "amendment", "transport"}
+        for section in invariant_sections:
+            if config.get(section) != parent.get(section):
+                raise RuntimeError(f"D0 v3 changed frozen scientific section: {section}")
+        transport = config["transport"]
+        parent_transport = parent["transport"]
+        recovery_fields = {
+            "replication_addresses_together",
+            "replication_checkpoint_schema_version",
+            "replication_checkpoint_every_chunks",
+        }
+        if set(transport) != set(parent_transport) | recovery_fields:
+            raise RuntimeError("D0 v3 transport fields exceed the reviewed recovery scope")
+        for field, value in parent_transport.items():
+            if transport.get(field) != value:
+                raise RuntimeError(f"D0 v3 changed frozen parent transport field: {field}")
+        if (
+            transport["replication_addresses_together"] is not True
+            or int(transport["replication_checkpoint_schema_version"]) != 1
+            or int(transport["replication_checkpoint_every_chunks"]) != 1
+        ):
+            raise RuntimeError("D0 v3 recovery transport settings are invalid")
+        expected_changed_fields = {
+            "contract.version",
+            "contract.status",
+            "contract.frozen_utc",
+            "amendment",
+            "transport.replication_addresses_together",
+            "transport.replication_checkpoint_schema_version",
+            "transport.replication_checkpoint_every_chunks",
+        }
+        if set(map(str, amendment["changed_fields"])) != expected_changed_fields:
+            raise RuntimeError("D0 v3 changed-fields declaration is incomplete")
+        observations = amendment["observations_before_amendment"]
+        if not isinstance(observations, Mapping) or observations.get(
+            "support_gate_breakdown_computed"
+        ) is not False or observations.get("numerical_protocol_outcome_decoded") is not False:
+            raise RuntimeError("D0 v3 pre-amendment observations violate the blind recovery scope")
+        if config_path != config_path.resolve() or not config_path.is_relative_to(REPO_ROOT):
+            raise RuntimeError("formal D0 config must resolve inside the repository")
+        return {
+            "is_transport_amendment": True,
+            "is_resumable_transport_recovery": True,
+            "parent_config_path": str(parent_relative),
+            "parent_config_sha256": parent_digest,
+            "scientific_sections_equal_to_parent": True,
+            "d0_support_breakdown_computed_before_amendment": False,
+            "numerical_protocol_outcomes_decoded_before_amendment": False,
+        }
     if version != 2 or str(contract["status"]) != (
         "transport_only_amendment_after_drpc_identity_omission_before_support_gate"
     ):
@@ -288,18 +385,20 @@ def _query_logs(
     to_block: int,
     maximum_span: int,
     label: str,
+    addresses_together: bool = False,
 ) -> list[Mapping[str, Any]]:
     if maximum_span <= 0:
         raise ValueError("maximum log span must be positive")
     logs: list[Mapping[str, Any]] = []
     chunk_count = (to_block - from_block) // maximum_span + 1
+    address_groups = [list(addresses)] if addresses_together else [[address] for address in addresses]
     for chunk_index, start in enumerate(range(from_block, to_block + 1, maximum_span), start=1):
         end = min(start + maximum_span - 1, to_block)
-        for address in addresses:
+        for address_group in address_groups:
             logs.extend(
                 _get_logs_with_split(
                     client,
-                    addresses=[address],
+                    addresses=address_group,
                     topics=topics,
                     start_block=start,
                     end_block_inclusive=end,
@@ -309,10 +408,258 @@ def _query_logs(
             )
         if chunk_index == 1 or chunk_index % 25 == 0 or chunk_index == chunk_count:
             print(
-                f"{label}: {chunk_index}/{chunk_count} chunks x {len(addresses)} addresses, {len(logs)} logs",
+                f"{label}: {chunk_index}/{chunk_count} chunks x {len(address_groups)} address filters, "
+                f"{len(logs)} logs",
                 flush=True,
             )
     return logs
+
+
+def _checkpoint_event(event: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "block_number": int(event["block_number"]),
+        "block_hash": normalize_topic(str(event["block_hash"])),
+        "transaction_hash": normalize_topic(str(event["transaction_hash"])),
+        "log_index": int(event["log_index"]),
+        "contract_address": normalize_address(str(event["contract_address"])),
+        "topic0": normalize_topic(str(event["topic0"])),
+    }
+
+
+def _write_replica_checkpoint(path: Path, payload: Mapping[str, Any]) -> str:
+    body = dict(payload)
+    body.pop("canonical_payload_sha256", None)
+    digest = canonical_sha256(body)
+    serialized = {**body, "canonical_payload_sha256": digest}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(serialized, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.replace(path)
+    return digest
+
+
+def _validate_checkpoint_chunks(
+    chunks: Any,
+    *,
+    from_block: int,
+    to_block: int,
+    maximum_span: int,
+    addresses: Sequence[str],
+    topics: Sequence[str],
+) -> list[dict[str, Any]]:
+    if not isinstance(chunks, list):
+        raise RuntimeError("replica checkpoint chunks are not a list")
+    allowed_addresses = {normalize_address(address) for address in addresses}
+    allowed_topics = {normalize_topic(topic) for topic in topics}
+    normalized_chunks: list[dict[str, Any]] = []
+    seen: set[tuple[str, str, int, str, str]] = set()
+    expected_event_fields = {
+        "block_number",
+        "block_hash",
+        "transaction_hash",
+        "log_index",
+        "contract_address",
+        "topic0",
+    }
+    for expected_index, chunk in enumerate(chunks, start=1):
+        if not isinstance(chunk, Mapping):
+            raise RuntimeError("replica checkpoint chunk is not an object")
+        expected_start = from_block + (expected_index - 1) * maximum_span
+        expected_end = min(expected_start + maximum_span - 1, to_block)
+        if set(chunk) != {
+            "chunk_index",
+            "from_block",
+            "to_block",
+            "event_count",
+            "events",
+            "canonical_log_identity_sha256",
+        }:
+            raise RuntimeError("replica checkpoint chunk fields differ from schema")
+        if (
+            int(chunk["chunk_index"]) != expected_index
+            or int(chunk["from_block"]) != expected_start
+            or int(chunk["to_block"]) != expected_end
+        ):
+            raise RuntimeError("replica checkpoint chunks are not a contiguous frozen prefix")
+        events = chunk["events"]
+        if not isinstance(events, list) or int(chunk["event_count"]) != len(events):
+            raise RuntimeError("replica checkpoint event count is invalid")
+        normalized_events: list[dict[str, Any]] = []
+        for event in events:
+            if not isinstance(event, Mapping) or set(event) != expected_event_fields:
+                raise RuntimeError("replica checkpoint event fields differ from schema")
+            normalized = _checkpoint_event(event)
+            if normalized != dict(event):
+                raise RuntimeError("replica checkpoint event is not canonically encoded")
+            if not expected_start <= int(normalized["block_number"]) <= expected_end:
+                raise RuntimeError("replica checkpoint event lies outside its chunk")
+            if normalized["contract_address"] not in allowed_addresses:
+                raise RuntimeError("replica checkpoint contains an unexpected address")
+            if normalized["topic0"] not in allowed_topics:
+                raise RuntimeError("replica checkpoint contains an unexpected topic")
+            identity = log_identity(normalized)
+            if identity in seen:
+                raise RuntimeError("replica checkpoint contains duplicate log identities")
+            seen.add(identity)
+            normalized_events.append(normalized)
+        normalized_events.sort(key=log_identity)
+        digest = _identity_digest(normalized_events)
+        if digest != str(chunk["canonical_log_identity_sha256"]):
+            raise RuntimeError("replica checkpoint chunk identity digest mismatch")
+        normalized_chunks.append(
+            {
+                "chunk_index": expected_index,
+                "from_block": expected_start,
+                "to_block": expected_end,
+                "event_count": len(normalized_events),
+                "events": normalized_events,
+                "canonical_log_identity_sha256": digest,
+            }
+        )
+    return normalized_chunks
+
+
+def _load_replica_checkpoint(
+    path: Path,
+    *,
+    expected_identity: Mapping[str, Any],
+    from_block: int,
+    to_block: int,
+    maximum_span: int,
+    addresses: Sequence[str],
+    topics: Sequence[str],
+) -> dict[str, Any]:
+    if not path.exists():
+        return {
+            "schema_version": 1,
+            "identity": dict(expected_identity),
+            "completed_chunks": [],
+            "contains_only_sanitized_log_identity_fields": True,
+            "raw_rpc_responses_persisted": False,
+        }
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, Mapping) or set(payload) != {
+        "schema_version",
+        "identity",
+        "completed_chunks",
+        "contains_only_sanitized_log_identity_fields",
+        "raw_rpc_responses_persisted",
+        "canonical_payload_sha256",
+    }:
+        raise RuntimeError("replica checkpoint top-level schema is invalid")
+    body = {key: value for key, value in payload.items() if key != "canonical_payload_sha256"}
+    if canonical_sha256(body) != str(payload["canonical_payload_sha256"]):
+        raise RuntimeError("replica checkpoint payload digest mismatch")
+    if (
+        int(payload["schema_version"]) != 1
+        or payload["identity"] != dict(expected_identity)
+        or payload["contains_only_sanitized_log_identity_fields"] is not True
+        or payload["raw_rpc_responses_persisted"] is not False
+    ):
+        raise RuntimeError("replica checkpoint identity or blinding contract is invalid")
+    chunks = _validate_checkpoint_chunks(
+        payload["completed_chunks"],
+        from_block=from_block,
+        to_block=to_block,
+        maximum_span=maximum_span,
+        addresses=addresses,
+        topics=topics,
+    )
+    return {**body, "completed_chunks": chunks}
+
+
+def _query_replica_with_checkpoint(
+    client: _RpcClient,
+    *,
+    checkpoint_path: Path,
+    checkpoint_identity: Mapping[str, Any],
+    addresses: Sequence[str],
+    topics: Sequence[str],
+    branches_by_trove_manager: Mapping[str, str],
+    signatures_by_topic: Mapping[str, str],
+    trove_operations_by_code: Mapping[int, str],
+    batch_operations_by_code: Mapping[int, str],
+    from_block: int,
+    to_block: int,
+    maximum_span: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    if checkpoint_path.is_relative_to(REPO_ROOT):
+        raise RuntimeError("formal replica checkpoint must be outside the Git worktree")
+    payload = _load_replica_checkpoint(
+        checkpoint_path,
+        expected_identity=checkpoint_identity,
+        from_block=from_block,
+        to_block=to_block,
+        maximum_span=maximum_span,
+        addresses=addresses,
+        topics=topics,
+    )
+    chunks = list(payload["completed_chunks"])
+    resumed_chunks = len(chunks)
+    events = [dict(event) for chunk in chunks for event in chunk["events"]]
+    seen = set(map(log_identity, events))
+    chunk_count = (to_block - from_block) // maximum_span + 1
+    if resumed_chunks:
+        print(
+            f"full.replica: resuming after {resumed_chunks}/{chunk_count} verified chunks, "
+            f"{len(events)} logs",
+            flush=True,
+        )
+    for chunk_index in range(resumed_chunks + 1, chunk_count + 1):
+        start = from_block + (chunk_index - 1) * maximum_span
+        end = min(start + maximum_span - 1, to_block)
+        raw = _get_logs_with_split(
+            client,
+            addresses=addresses,
+            topics=topics,
+            start_block=start,
+            end_block_inclusive=end,
+            remaining_split_depth=24,
+            split_topics_first=True,
+        )
+        decoded = _decode_logs(
+            raw,
+            branches_by_trove_manager=branches_by_trove_manager,
+            signatures_by_topic=signatures_by_topic,
+            trove_operations_by_code=trove_operations_by_code,
+            batch_operations_by_code=batch_operations_by_code,
+            from_block=start,
+            to_block=end,
+        )
+        sanitized = sorted((_checkpoint_event(event) for event in decoded), key=log_identity)
+        identities = set(map(log_identity, sanitized))
+        if seen & identities:
+            raise RuntimeError("replica checkpoint query produced duplicate cross-chunk identities")
+        seen.update(identities)
+        events.extend(sanitized)
+        chunk = {
+            "chunk_index": chunk_index,
+            "from_block": start,
+            "to_block": end,
+            "event_count": len(sanitized),
+            "events": sanitized,
+            "canonical_log_identity_sha256": _identity_digest(sanitized),
+        }
+        chunks.append(chunk)
+        payload = {**payload, "completed_chunks": chunks}
+        checkpoint_digest = _write_replica_checkpoint(checkpoint_path, payload)
+        if chunk_index == 1 or chunk_index % 25 == 0 or chunk_index == chunk_count:
+            print(
+                f"full.replica: {chunk_index}/{chunk_count} chunks x 1 address filter, "
+                f"{len(events)} logs; checkpoint={checkpoint_digest[:12]}",
+                flush=True,
+            )
+    final_digest = _write_replica_checkpoint(checkpoint_path, payload)
+    return events, {
+        "schema_version": 1,
+        "resumed_chunks_at_start": resumed_chunks,
+        "completed_chunks": len(chunks),
+        "canonical_payload_sha256": final_digest,
+        "contains_only_sanitized_log_identity_fields": True,
+        "raw_rpc_responses_persisted": False,
+        "path_outside_git_worktree": True,
+        "reported_replica_request_stats_cover_current_attempt_only": True,
+    }
 
 
 def _decode_logs(
@@ -450,10 +797,13 @@ def audit(
     bold_root: Path,
     arm_root: Path,
     output_path: Path,
+    replica_checkpoint_path: Path | None = None,
 ) -> dict[str, Any]:
     """Execute D0 without decoding queue position or numerical protocol outcomes."""
     if _git("status", "--porcelain"):
         raise RuntimeError("formal Liquity D0 requires a clean EcoPhys worktree")
+    git_sha = _git("rev-parse", "HEAD")
+    config_sha256 = _sha256_file(config_path)
     config = _load_yaml(config_path)
     amendment_audit = _validate_freeze_contract(config, config_path=config_path)
     source_audit = _source_audit(config, bold_root=bold_root, arm_root=arm_root)
@@ -521,6 +871,7 @@ def audit(
         int(code): str(name) for name, code in config["operation_codes"]["batch"].items()
     }
     maximum_span = int(transport["maximum_get_logs_span"])
+    replica_addresses_together = bool(transport.get("replication_addresses_together", False))
 
     qualification: list[dict[str, Any]] = []
     nonempty_qualification_shards = 0
@@ -544,6 +895,7 @@ def audit(
             to_block=shard_end,
             maximum_span=maximum_span,
             label=f"qualification[{index}].replica",
+            addresses_together=replica_addresses_together,
         )
         formal_events = _decode_logs(
             formal_raw,
@@ -588,15 +940,6 @@ def audit(
         maximum_span=maximum_span,
         label="full.formal",
     )
-    replica_raw = _query_logs(
-        replica,
-        addresses=addresses,
-        topics=topics,
-        from_block=from_block,
-        to_block=to_block,
-        maximum_span=maximum_span,
-        label="full.replica",
-    )
     formal_events = _decode_logs(
         formal_raw,
         branches_by_trove_manager=branches_by_trove_manager,
@@ -606,15 +949,59 @@ def audit(
         from_block=from_block,
         to_block=to_block,
     )
-    replica_events = _decode_logs(
-        replica_raw,
-        branches_by_trove_manager=branches_by_trove_manager,
-        signatures_by_topic=signatures_by_topic,
-        trove_operations_by_code=trove_operations_by_code,
-        batch_operations_by_code=batch_operations_by_code,
-        from_block=from_block,
-        to_block=to_block,
-    )
+    checkpoint_audit: dict[str, Any] | None = None
+    if int(config["contract"]["version"]) >= 3:
+        if replica_checkpoint_path is None:
+            raise RuntimeError("D0 v3 requires an explicit external replica checkpoint path")
+        if int(transport["replication_checkpoint_schema_version"]) != 1 or int(
+            transport["replication_checkpoint_every_chunks"]
+        ) != 1:
+            raise RuntimeError("D0 v3 checkpoint settings differ from the implemented protocol")
+        checkpoint_identity = {
+            "config_path": str(config_path.relative_to(REPO_ROOT)),
+            "config_sha256": config_sha256,
+            "git_sha": git_sha,
+            "replication_rpc": str(transport["replication_rpc"]),
+            "from_block": from_block,
+            "to_block": to_block,
+            "maximum_get_logs_span": maximum_span,
+            "addresses": addresses,
+            "topics": topics,
+            "addresses_together": replica_addresses_together,
+        }
+        replica_events, checkpoint_audit = _query_replica_with_checkpoint(
+            replica,
+            checkpoint_path=replica_checkpoint_path,
+            checkpoint_identity=checkpoint_identity,
+            addresses=addresses,
+            topics=topics,
+            branches_by_trove_manager=branches_by_trove_manager,
+            signatures_by_topic=signatures_by_topic,
+            trove_operations_by_code=trove_operations_by_code,
+            batch_operations_by_code=batch_operations_by_code,
+            from_block=from_block,
+            to_block=to_block,
+            maximum_span=maximum_span,
+        )
+    else:
+        replica_raw = _query_logs(
+            replica,
+            addresses=addresses,
+            topics=topics,
+            from_block=from_block,
+            to_block=to_block,
+            maximum_span=maximum_span,
+            label="full.replica",
+        )
+        replica_events = _decode_logs(
+            replica_raw,
+            branches_by_trove_manager=branches_by_trove_manager,
+            signatures_by_topic=signatures_by_topic,
+            trove_operations_by_code=trove_operations_by_code,
+            batch_operations_by_code=batch_operations_by_code,
+            from_block=from_block,
+            to_block=to_block,
+        )
     identity_digest = _assert_exact_replication(formal_events, replica_events, label="full frozen interval")
     relevant_header_count = _attach_relevant_timestamps(
         formal, formal_events, official_arms_by_branch=official_arms
@@ -648,10 +1035,10 @@ def audit(
         "decision": decision,
         "amendment_audit": amendment_audit,
         "repository": {
-            "git_sha": _git("rev-parse", "HEAD"),
+            "git_sha": git_sha,
             "clean_worktree_at_start": True,
             "config_path": str(config_path.relative_to(REPO_ROOT)),
-            "config_sha256": _sha256_file(config_path),
+            "config_sha256": config_sha256,
         },
         "source_audit": source_audit,
         "ethereum": {
@@ -688,6 +1075,7 @@ def audit(
             "formal": _request_stats(formal),
             "replica": _request_stats(replica),
             "state_witness": _request_stats(state_witness),
+            "replica_checkpoint": checkpoint_audit,
         },
         "blinding": {
             "only_event_type_operation_identity_and_canonical_time_decoded": True,
@@ -721,12 +1109,16 @@ def main() -> int:
     parser.add_argument("--bold-root", type=Path, required=True)
     parser.add_argument("--arm-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--replica-checkpoint", type=Path)
     args = parser.parse_args()
     result = audit(
         args.config.resolve(),
         bold_root=args.bold_root.resolve(),
         arm_root=args.arm_root.resolve(),
         output_path=args.output.resolve(),
+        replica_checkpoint_path=(
+            args.replica_checkpoint.resolve() if args.replica_checkpoint is not None else None
+        ),
     )
     print(
         json.dumps(

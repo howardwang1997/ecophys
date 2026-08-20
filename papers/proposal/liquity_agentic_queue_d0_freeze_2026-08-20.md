@@ -66,10 +66,13 @@ Without those additions, the appropriate ambition is NMI or a strong computation
 ## D0: support-only audit
 
 The original scientific contract is `configs/empirical_physics/liquity_agentic_queue_d0_v1.yaml`. Formal
-execution uses the transport-only child
-`configs/empirical_physics/liquity_agentic_queue_d0_v2.yaml`; it programmatically proves every scientific
-section equal to v1 and changes only the disqualified log-replication provider and state-witness role. See
-`liquity_agentic_queue_d0_transport_amendment_2026-08-20.md`. The contract pins:
+execution now uses the resumable transport child
+`configs/empirical_physics/liquity_agentic_queue_d0_v3.yaml`; it recursively proves every scientific section
+equal through v2 to v1. Version 2 replaced the incomplete dRPC log witness with OnFinality while retaining dRPC
+for historical state. Version 3 only groups OnFinality's address filter and adds a sanitized per-chunk
+checkpoint after the public endpoint exhausted its rate limit. See
+`liquity_agentic_queue_d0_transport_amendment_2026-08-20.md` and
+`liquity_agentic_queue_d0_recovery_amendment_2026-08-20.md`. The contract pins:
 
 - official Liquity core and ARM repositories by commit and file hash;
 - all three mainnet branches and official ARM addresses;
@@ -91,7 +94,8 @@ D0 must not decode or retain rates, debt, collateral, redemption amount, redempt
 
 All gates must pass:
 
-- exact full log-identity replication across Blockscout and dRPC;
+- exact full log-identity replication across Blockscout and OnFinality, with dRPC as the independent historical
+  bytecode witness;
 - nonempty contract code at the frozen height for every branch's TroveManager and BorrowerOperations;
 - at least 500 unique opened Troves and 100 ever-batched Troves;
 - at least 50 official-ARM Troves, with at least 15 in each of two branches;
@@ -207,6 +211,6 @@ D0 source + transport + support
 ## Immediate execution order
 
 1. Commit and push this freeze plus the audited D0 implementation and tests.
-2. Run the v2 multi-provider D0 on a clean worktree.
+2. Run or resume the v3 multi-provider D0 from a clean worktree and an external sanitized checkpoint.
 3. Publish the immutable manifest and a concise pass/fail decision.
 4. If and only if D0 passes, draft and commit a separate D1 preregistration before decoding numerical outcomes.

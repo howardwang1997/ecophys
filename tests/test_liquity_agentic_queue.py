@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -336,6 +337,130 @@ def test_runner_queries_each_trove_manager_as_a_single_address(
     assert observed == [(TM,), ("0x" + "44" * 20,), (TM,), ("0x" + "44" * 20,)]
 
 
+def test_runner_can_query_replica_addresses_together(monkeypatch: pytest.MonkeyPatch) -> None:
+    observed: list[tuple[str, ...]] = []
+
+    def fake_get_logs(
+        client: object,
+        *,
+        addresses: list[str],
+        topics: list[str],
+        start_block: int,
+        end_block_inclusive: int,
+        remaining_split_depth: int,
+        split_topics_first: bool,
+    ) -> list[dict[str, Any]]:
+        del client, topics, start_block, end_block_inclusive
+        del remaining_split_depth, split_topics_first
+        observed.append(tuple(addresses))
+        return []
+
+    other = "0x" + "44" * 20
+    monkeypatch.setattr(runner, "_get_logs_with_split", fake_get_logs)
+    runner._query_logs(  # type: ignore[arg-type]
+        object(),
+        addresses=[TM, other],
+        topics=list(TOPICS.values()),
+        from_block=1,
+        to_block=20,
+        maximum_span=10,
+        label="test",
+        addresses_together=True,
+    )
+    assert observed == [(TM, other), (TM, other)]
+
+
+def test_replica_checkpoint_is_bound_tamper_evident_and_resumable(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    checkpoint = tmp_path / "replica.json"
+    addresses = [TM, "0x" + "44" * 20]
+    topics = list(TOPICS.values())
+    identity = {
+        "config_path": "configs/test.yaml",
+        "config_sha256": "ab" * 32,
+        "git_sha": "cd" * 20,
+        "replication_rpc": "https://example.invalid",
+        "from_block": 1,
+        "to_block": 20,
+        "maximum_get_logs_span": 10,
+        "addresses": addresses,
+        "topics": topics,
+        "addresses_together": True,
+    }
+    payload = runner._load_replica_checkpoint(
+        checkpoint,
+        expected_identity=identity,
+        from_block=1,
+        to_block=20,
+        maximum_span=10,
+        addresses=addresses,
+        topics=topics,
+    )
+    payload["completed_chunks"] = [
+        {
+            "chunk_index": 1,
+            "from_block": 1,
+            "to_block": 10,
+            "event_count": 0,
+            "events": [],
+            "canonical_log_identity_sha256": runner._identity_digest([]),
+        }
+    ]
+    runner._write_replica_checkpoint(checkpoint, payload)
+
+    observed_ranges: list[tuple[int, int, tuple[str, ...]]] = []
+
+    def fake_get_logs(
+        client: object,
+        *,
+        addresses: list[str],
+        topics: list[str],
+        start_block: int,
+        end_block_inclusive: int,
+        remaining_split_depth: int,
+        split_topics_first: bool,
+    ) -> list[dict[str, Any]]:
+        del client, topics, remaining_split_depth, split_topics_first
+        observed_ranges.append((start_block, end_block_inclusive, tuple(addresses)))
+        return []
+
+    monkeypatch.setattr(runner, "_get_logs_with_split", fake_get_logs)
+    events, audit = runner._query_replica_with_checkpoint(  # type: ignore[arg-type]
+        object(),
+        checkpoint_path=checkpoint,
+        checkpoint_identity=identity,
+        addresses=addresses,
+        topics=topics,
+        branches_by_trove_manager={TM: "WETH", addresses[1]: "wstETH"},
+        signatures_by_topic={topic: name for name, topic in TOPICS.items()},
+        trove_operations_by_code=TROVE_OPERATIONS,
+        batch_operations_by_code=BATCH_OPERATIONS,
+        from_block=1,
+        to_block=20,
+        maximum_span=10,
+    )
+    assert events == []
+    assert observed_ranges == [(11, 20, tuple(addresses))]
+    assert audit["resumed_chunks_at_start"] == 1
+    assert audit["completed_chunks"] == 2
+
+    tampered = json.loads(checkpoint.read_text(encoding="utf-8"))
+    tampered["completed_chunks"][0]["event_count"] = 1
+    checkpoint.write_text(json.dumps(tampered), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="payload digest"):
+        runner._load_replica_checkpoint(
+            checkpoint,
+            expected_identity=identity,
+            from_block=1,
+            to_block=20,
+            maximum_span=10,
+            addresses=addresses,
+            topics=topics,
+        )
+
+
 def test_transport_amendment_preserves_every_scientific_section() -> None:
     config_path = Path("configs/empirical_physics/liquity_agentic_queue_d0_v2.yaml").resolve()
     config = runner._load_yaml(config_path)
@@ -351,4 +476,27 @@ def test_transport_amendment_preserves_every_scientific_section() -> None:
     tampered = deepcopy(config)
     tampered["transport"]["state_witness_rpc"] = "https://example.invalid"
     with pytest.raises(RuntimeError, match="state witness"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+
+def test_transport_recovery_v3_preserves_parent_and_scientific_contract() -> None:
+    config_path = Path("configs/empirical_physics/liquity_agentic_queue_d0_v3.yaml").resolve()
+    config = runner._load_yaml(config_path)
+    audit = runner._validate_freeze_contract(config, config_path=config_path)
+    assert audit["is_resumable_transport_recovery"] is True
+    assert audit["scientific_sections_equal_to_parent"] is True
+
+    tampered = deepcopy(config)
+    tampered["pass_thresholds"]["minimum_unique_opened_troves"] = 499
+    with pytest.raises(RuntimeError, match="pass_thresholds"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+    tampered = deepcopy(config)
+    tampered["transport"]["minimum_request_interval_seconds"] = 0.5
+    with pytest.raises(RuntimeError, match="parent transport"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+    tampered = deepcopy(config)
+    tampered["transport"]["replication_checkpoint_every_chunks"] = 2
+    with pytest.raises(RuntimeError, match="recovery transport"):
         runner._validate_freeze_contract(tampered, config_path=config_path)
