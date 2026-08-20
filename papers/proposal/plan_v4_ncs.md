@@ -66,6 +66,10 @@ D0。计划和结果分别见 `papers/proposal/morpho_public_allocator_pressure_
 该冻结已在提交 `9edea240a` 推送；full-topic SQD/RPC identity sanitation、receipt 顺序分组和
 qualification/full 两阶段 runner 已完成本地检查，50 个相关回归测试、Ruff 与 strict mypy 通过。当前
 仍未运行 qualification、未知任何事件计数；必须先提交推送实现，再从干净 SHA 只跑六个固定 shard。
+正式 qualification 已从干净推送提交 `15faa4027` 完成：Ethereum 三个 shard 为 0/335/231，Base 为
+0/220/2，六组 SQD/full-RPC full-topic identity 均完全一致，canonical SHA 为 `d59b0184…edfe`。这只通过
+transport gate；尚未读取 receipt/Borrow，也不知道 500/100-per-chain 候选门槛。必须先提交该 artifact，
+才可从新的干净 SHA 执行一次 full D0。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、

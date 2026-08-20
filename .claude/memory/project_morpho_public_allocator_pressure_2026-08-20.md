@@ -68,3 +68,10 @@ receipt-order allocation grouping, later target-matched Borrow classification, c
 aggregate-only support summaries. The formal runner enforces a committed qualification artifact before full D0.
 Pinned-source audit, 50 affected regression tests, Ruff and strict mypy pass. This is implementation evidence
 only: qualification has not run, no event count or identity is known, and no GPU/remote worker has been used.
+
+Formal qualification from clean pushed `15faa4027` passed all six frozen shards. Ethereum event counts are
+0/335/231 and Base 0/220/2 for deployment/midpoint/cutoff; every SQD identity set exactly equals its full-RPC set,
+and all cutoff headers match. Canonical payload SHA is `d59b0184…edfe`, independently reproduced. No receipt,
+Borrow event or full interval was opened, so these are transport counts rather than candidate support. The first
+execution channel hid console output but completed the artifact; the identical diagnostic retry stopped at the
+existing-output guard before network access. Commit/push the qualification before the one authorized full D0.
