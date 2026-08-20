@@ -1,0 +1,107 @@
+contract:
+  name: morpho_controller_coupling_d0a_deployment_identity
+  version: 1
+  status: frozen_before_allocator_role_queries_or_reallocation_history
+  purpose: qualify_independent_automated_allocator_identities_before_event_history
+
+api:
+  provider: Morpho Association public API
+  documentation: https://docs.morpho.org/developers/api/morpho-vaults/
+  request_timeout_seconds: 30
+  maximum_attempts: 3
+  retry_backoff_seconds: 2
+  maximum_requests: 3
+
+official_public_allocators:
+  ethereum_v1:
+    - "0xfd32fA2ca22c76dD6E550706Ad913FC6CE91c75D"
+
+candidates:
+  - operator: steakhouse
+    anchor_name: Steakhouse USDC
+    policy_family: proprietary_predictive_reallocation_engine
+    chain_id: 1
+    vault_version: v1
+    vault_address: "0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB"
+    allocator_endpoint: https://api.morpho.org/v1/vaults-v1/1:0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB/allocators
+    operator_authored_automation_binding: true
+    evidence:
+      - https://forum.morpho.org/t/steakhouse-usdc-metamorpho-vault-safu-guardian-drill-report/434
+      - https://www.steakhouse.financial/docs/risk-management/monitoring/portfolio-monitoring
+  - operator: gauntlet
+    anchor_name: Gauntlet USDC Prime
+    policy_family: continuous_yield_risk_optimization_engine
+    chain_id: 1
+    vault_version: v1
+    vault_address: "0xdd0f28e19C1780eb6396170735D45153D261490d"
+    allocator_endpoint: https://api.morpho.org/v1/vaults-v1/1:0xdd0f28e19C1780eb6396170735D45153D261490d/allocators
+    operator_authored_automation_binding: true
+    evidence:
+      - https://www.gauntlet.xyz/resources/sustainable-apys-at-scale-how-gauntlets-active-curation-on-morpho-handled-a-775-million-supply-event
+      - https://app.gauntlet.xyz/vaults/eth%3A0xdd0f28e19c1780eb6396170735d45153d261490d
+  - operator: sky_money
+    anchor_name: sky.money USDS Flagship
+    policy_family: constrained_eighty_twenty_allocator_bot
+    chain_id: 1
+    vault_version: v2
+    vault_address: "0xE15fcC81118895b67b6647BBd393182dF44E11E0"
+    allocator_endpoint: https://api.morpho.org/v1/vaults-v2/1:0xE15fcC81118895b67b6647BBd393182dF44E11E0/allocators
+    operator_authored_automation_binding: true
+    evidence:
+      - https://forum.morpho.org/t/announcing-the-sky-money-usdt-savings-vault-usds-flagship-vault/2199
+      - https://app.morpho.org/ethereum/vault/0xE15fcC81118895b67b6647BBd393182dF44E11E0/skymoney-usds-flagship
+
+hard_gates:
+  required_candidate_count: 3
+  minimum_independent_operator_clusters: 3
+  exactly_one_nonpublic_allocator_per_anchor: true
+  minimum_distinct_nonpublic_allocator_addresses: 3
+  minimum_distinct_policy_families: 2
+  require_operator_authored_automation_binding: true
+
+allowed_retained_fields:
+  - operator
+  - anchor_name
+  - policy_family
+  - chain_id
+  - vault_version
+  - vault_address
+  - allocator_address
+  - allocator_role_grant_tx_hash
+  - response_sha256
+  - http_status
+  - retrieved_utc
+  - evidence_urls
+
+forbidden_endpoints:
+  - allocations/history
+  - transactions
+  - positions
+  - state
+  - apy
+
+forbidden_data:
+  - reallocation_history
+  - transaction_cadence
+  - asset_amounts
+  - supply_or_borrow_balances
+  - rates
+  - utilization
+  - prices
+  - liquidations
+  - yields
+  - market_outcomes
+  - raw_api_responses
+
+stop_rules:
+  any_hard_gate_failure_closes_field_route_before_history: true
+  no_candidate_addition_or_threshold_relaxation_after_result: true
+  no_behavioral_bot_inference: true
+  no_d0b_without_clean_d0a_pass: true
+  no_gpu_or_ecomd: true
+
+resources:
+  maximum_cpu_core_hours: 1
+  maximum_retained_derived_mb: 10
+  maximum_public_api_requests: 3
+  gpu_hours: 0

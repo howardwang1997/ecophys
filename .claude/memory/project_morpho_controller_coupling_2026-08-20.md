@@ -40,18 +40,26 @@ multi-market curation but not AdaptiveCurveIRM, `rateAtTarget`, PID or allocator
 control already covers lack of parameter convergence without persistent excitation. A high-impact claim must
 therefore be a prospective field result about interaction modes and pressure displacement, not the identity.
 
-T0 is frozen in `papers/proposal/morpho_controller_coupling_t0_plan_2026-08-20.md` and
-`configs/empirical_physics/morpho_controller_coupling_t0_v1.yaml`. The typed module
-`ecomd/physics/resource_pressure.py`, deterministic runner and seven tests are implemented. A preformal
-10,000-trial smoke has maximum normalized continuity/global residuals `2.65e-16`/`3.78e-16`, equalisation spread
-`2.22e-16`, differential-memory residual `2.66e-15`, 9,846 nonzero common-mode trials and all gates passing.
-Because the worktree was dirty, these are smoke diagnostics only; the formal artifact must be generated from a
-clean pushed SHA with both pinned source worktrees.
+T0 is complete. The clean formal run from pushed commit `7bb63f2d811de1211cdd60c5eed69e8ca7b52240`
+passed all seven gates in 10,000 trials; canonical result SHA-256 is
+`91a4738beff17da6d16972faa1ddcbc844a76643678aec300ec9c6ca0cc3f64e`. Maximum normalized continuity/global
+residuals are `2.65e-16`/`3.78e-16`, equalisation spread is `2.22e-16`, differential-memory residual is
+`2.66e-15`, and 9,846 trials have a nonzero common-mode update. This is a PASS for implementation only; novelty,
+field support and venue fit remain AMBER.
 
 No historical reallocation event, amount, rate, utilization history, price, liquidation or outcome has been
-queried. No EcoMD or GPU job is authorized. If the formal math check passes, a separately frozen D0 may inspect
-only deployment/role/event identities. The field route requires at least three independently controlled bot
-clusters, two chains or implementations, 12 active edges, 300 complete reallocations, 90 days and receipt/finalized-
-index equality. Labels inferred only from periodic behavior are forbidden. Failure closes the route before
-amounts and outcomes.
+queried. No EcoMD or GPU job is authorized.
 
+D0A is frozen before current allocator-role queries in
+`papers/proposal/morpho_controller_coupling_d0a_freeze_2026-08-20.md`. Primary operator sources support three
+fixed documentary anchors: Steakhouse USDC (`0xBEEF017…`), Gauntlet USDC Prime (`0xdd0f28…`) and sky.money USDS
+Flagship (`0xE15fcC…`). The first describes an off-chain/proprietary reallocation bot, the second an automatic
+optimization engine, and the third an allocator bot under exposure constraints. These are operator self-reports,
+not strategy-code proofs. The official open bot's vault-specific config cannot prove deployment because its EOA
+key and vault whitelist are environment secrets.
+
+D0A requires each fixed anchor to have exactly one current non-public explicit allocator after excluding the
+official Public Allocator, all three private addresses to differ, and all documentary bindings to remain fixed.
+Any failure closes the field route before history. A pass authorizes only a separately frozen D0B for event
+identity/support: at least 12 active edges, 300 complete reallocations, 90 days, 50 multi-non-idle-market
+transactions and receipt/finalized-index equality. Periodicity and repeated senders never establish bot identity.

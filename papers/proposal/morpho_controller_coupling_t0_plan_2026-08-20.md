@@ -1,5 +1,10 @@
 # Morpho controller coupling T0: conserved pressure in agent-managed markets
 
+**Formal status (2026-08-20):** all seven mathematical gates passed from clean pushed commit `7bb63f2d8`;
+canonical result SHA-256 `91a4738beff17da6d16972faa1ddcbc844a76643678aec300ec9c6ca0cc3f64e`. This is
+a PASS for the encoding only and leaves the route AMBER. The next frozen stage is the deployment-identity D0A in
+`morpho_controller_coupling_d0a_freeze_2026-08-20.md`; historical events and market values remain unopened.
+
 ## Decision before experiments
 
 This is a fresh **AMBER feasibility route**, not a continuation or repair of the closed Liquity study and not a
@@ -204,4 +209,3 @@ only for a justified learned response component; more GPUs cannot repair weak de
 - [Chitra, A Curationary Tale](https://arxiv.org/abs/2503.18237)
 - [AgileRate](https://arxiv.org/abs/2410.13105)
 - [Bai and Sastry, persistency of excitation and parameter convergence](https://doi.org/10.1016/0167-6911(85)90035-0)
-
