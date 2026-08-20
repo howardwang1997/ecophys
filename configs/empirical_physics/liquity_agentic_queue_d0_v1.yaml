@@ -1,0 +1,160 @@
+contract:
+  name: liquity_agentic_queue_d0_support
+  version: 1
+  status: frozen_before_event_log_support_counts_or_any_queue_outcomes
+  frozen_utc: "2026-08-20T03:45:42Z"
+  purpose: test_whether_the_public_field_sample_can_support_an_agentic_priority_queue_study
+
+official_sources:
+  bold:
+    remote: https://github.com/liquity/bold.git
+    expected_git_sha: c8a5a4ee2e9dc024905856b6698a77d849c68c7e
+    license: GPL-3.0_and_BUSL-1.1_components_as_declared
+    files:
+      contracts/addresses/1.json: e5ad2915ed6979962088bee2f7f18b300b82c4b78371b5bb118c8935644c188d
+      contracts/src/Interfaces/ITroveEvents.sol: e1d98a066dbb9e8132fdffa0d9babf3a0352ec8b793485d89a8820e0f81ccf75
+      frontend/app/src/abi/TroveManager.ts: 9b9767f62c9b5149765a7280ef8032943969d7e724f1251d6102368c38d2ecb6
+      subgraph/networks.json: 7cd5175444c05fd48f4e3c0e84a93919c69781abaadd54c1b074972573afd99a
+      subgraph/src/TroveManager.mapping.ts: 58cbf0baa234a5e36c630904c15430b9a7da4b110c69f38dfc8ed4e28f3c2e51
+      README.md: 3b44bc0d870b5a1d4172c77586917a1f9ef2de9b022e567cd59b9a5cc623e864
+  autonomous_rate_manager:
+    remote: https://github.com/liquity/bold-ir-management.git
+    expected_git_sha: 5877a9e0c4b50eb495d572f1a21d5b05ffd55708
+    license: GPL-3.0_as_declared
+    files:
+      README.md: 8dd8b79be67426fd07fcfda08e3f932ea202f520fdbfb8cee396a3fc22b0578d
+      contracts/src/BatchManager.sol: 82a1f3d20fb216d981920ed9c94b4db322cca412758ddccdc74eaaddf1e36f45
+      ir_manager/src/canister.rs: eb338a09d766a525cc19d4b71fe18dcb7012aec93c312dea430b48d2903444a0
+      ir_manager/src/strategy/executable.rs: 6e1d4d2846fd978d7cdf28a945985e103c5839974f975f4728e425e46e3e5f67
+      ir_manager/src/strategy/run.rs: e3847ce428bfa8827f5639f3f87a9edf15ae93445a00679a1868e5a730df9b44
+      ir_manager/src/strategy/settings.rs: 1f641b213eae7a35b8a4df4e36f12e7cf1ca91bbcc6b95c054715b0900343db5
+  official_arm_directory:
+    url: https://docs.liquity.org/faq/lusd-redemptions
+    retrieved_utc: "2026-08-20"
+    labels_addresses_as_autonomous_rate_manager: true
+
+transport:
+  formal_rpc: https://eth.blockscout.com/api/eth-rpc
+  replication_rpc: https://eth.drpc.org
+  rpc_is_replaceable_transport: true
+  minimum_request_interval_seconds: 0.25
+  rate_limit_retries: 7
+  rate_limit_backoff_initial_seconds: 1
+  rate_limit_backoff_max_seconds: 30
+  maximum_get_logs_span: 10000
+  full_log_identity_replication_required: true
+  qualification_shards_frozen_without_event_counts:
+    - {from_block: 22483043, to_block: 22493042}
+    - {from_block: 24130000, to_block: 24139999}
+    - {from_block: 25780000, to_block: 25789999}
+  minimum_nonempty_qualification_shards: 1
+
+ethereum:
+  chain_id: 1
+  from_block: 22483043
+  to_block: 25792512
+  to_block_hash: "0x608302fd6986a6d476f58dcff6d8f272c64966ca4ab512fb27348db42344106d"
+  to_block_timestamp: 1787182931
+  to_block_utc: "2026-08-19T23:42:11+00:00"
+  branches:
+    WETH:
+      borrower_operations: "0x372abd1810eaf23cb9d941bbe7596dfb2c46bc65"
+      trove_manager: "0x7bcb64b2c9206a5b699ed43363f6f98d4776cf5a"
+      sorted_troves: "0xa25269e41bd072513849f2e64ad221e84f3063f4"
+      official_arm: "0xe507e4d0763851a6287238aadd243948d18ab60a"
+    wstETH:
+      borrower_operations: "0xa741a32f9dcfe6adba088fd0f97e90742d7d5da3"
+      trove_manager: "0xa2895d6a3bf110561dfe4b71ca539d84e1928b22"
+      sorted_troves: "0x84eb85a8c25049255614f0536bea8f31682e86f1"
+      official_arm: "0x8869a6fb59a8df330f90d9fbf46ebfaff6d4bc14"
+    rETH:
+      borrower_operations: "0xe8119fc02953b27a1b48d2573855738485a17329"
+      trove_manager: "0xb2b2abeb5c357a234363ff5d180912d319e3e19e"
+      sorted_troves: "0x14d8d8011df2b396ed2bbc4959bb73250324f386"
+      official_arm: "0x7700b2d305f47ae82e9598bab6d7ccb57299a82b"
+
+event_signatures:
+  TroveOperation:
+    signature: TroveOperation(uint256,uint8,uint256,uint256,uint256,int256,uint256,int256)
+    topic0: "0x962110f281c1213763cd97a546b337b3cbfd25a31ea9723e9d8b7376ba45da1a"
+    decoded_fields: [trove_id, operation]
+  BatchedTroveUpdated:
+    signature: BatchedTroveUpdated(uint256,address,uint256,uint256,uint256,uint256,uint256)
+    topic0: "0x6464838e073667756f10746b26734b60870fdcad31d7861c6e5603430bccac61"
+    decoded_fields: [trove_id, interest_batch_manager]
+  BatchUpdated:
+    signature: BatchUpdated(address,uint8,uint256,uint256,uint256,uint256,uint256,uint256)
+    topic0: "0xecf6daab6f1facdfdd8dfe32b525744d8a7a940824dd52e2b53c24028ee5faa0"
+    decoded_fields: [interest_batch_manager, operation]
+  Redemption:
+    signature: Redemption(uint256,uint256,uint256,uint256,uint256,uint256)
+    topic0: "0x84ec8e1674d62e3a8ff294b1a7f53527d2d10291765fadf94e0ce431b2334334"
+    decoded_fields: []
+
+operation_codes:
+  trove:
+    open_trove: 0
+    close_trove: 1
+    adjust_trove: 2
+    adjust_trove_interest_rate: 3
+    apply_pending_debt: 4
+    liquidate: 5
+    redeem_collateral: 6
+    open_trove_and_join_batch: 7
+    set_interest_batch_manager: 8
+    remove_from_batch: 9
+  batch:
+    register_batch_manager: 0
+    lower_batch_manager_annual_fee: 1
+    set_batch_manager_annual_interest_rate: 2
+    apply_batch_interest_and_fee: 3
+    join_batch: 4
+    exit_batch: 5
+    trove_change: 6
+
+support_window:
+  redemption_proximity_seconds: 86400
+  same_branch_required: true
+
+pass_thresholds:
+  minimum_unique_opened_troves: 500
+  minimum_unique_ever_batched_troves: 100
+  minimum_unique_official_arm_troves: 50
+  minimum_official_arm_troves_each_qualifying_branch: 15
+  minimum_official_arm_trove_branches: 2
+  minimum_registered_batch_managers: 5
+  minimum_distinct_batch_managers_with_two_rate_updates: 3
+  minimum_official_arm_rate_updates: 30
+  minimum_official_arm_rate_updates_each_qualifying_branch: 8
+  minimum_official_arm_update_branches: 2
+  minimum_manual_interest_rate_adjustments: 200
+  minimum_unique_manual_interest_rate_troves: 75
+  minimum_redemption_transactions: 50
+  minimum_redemption_utc_dates: 25
+  minimum_redemption_branches: 2
+  minimum_redemption_proximal_official_arm_updates: 20
+  minimum_proximal_update_utc_dates: 10
+  minimum_proximal_update_branches: 2
+  minimum_event_classification_rate: 1.0
+
+forbidden_before_d0_pass:
+  - annual_interest_rate_values
+  - debt_or_collateral_values
+  - redemption_amounts_or_prices
+  - queue_rank_or_debt_in_front
+  - direction_or_size_of_rate_changes
+  - liquidation_outcomes
+  - bold_or_collateral_market_prices
+  - causal_or_predictive_effect_estimates
+
+stop_rules:
+  any_support_or_transport_failure_stops_this_nmi_route: true
+  no_threshold_relaxation_after_counts: true
+  no_d1_queue_or_market_outcomes_on_failure: true
+  no_ecomd_or_gpu_on_failure: true
+
+resources:
+  maximum_cpu_core_hours: 12
+  maximum_retained_derived_gb: 0.25
+  gpu_hours: 0
+  paid_data_usd: 0
