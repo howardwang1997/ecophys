@@ -40,8 +40,14 @@ EcoMD and GPUs remain forbidden. A mathematical pass authorizes nothing beyond a
 D0. NMI requires a prospective agent externality/design intervention; NCS additionally needs a general
 reaction--transport inference method and a second independent adaptive-resource system.
 
-Implementation was completed locally after the frozen plan commit `f26595061`: typed pressure/cap/capacity
-utilities, a deterministic 10,000-trial formal runner, and focused tests. The runner also rejects dirty tracked
-worktrees in either pinned upstream source clone, closing the `HEAD`-matches-but-files-differ audit hole. Seventeen
-targeted tests, Ruff and strict mypy pass. This is not yet a formal scientific result: commit/push and a clean-SHA
-run remain required, and all historical/event/outcome data plus GPUs remain untouched.
+Implementation was committed and pushed at `4a480108e1090dc88460b52c4f8ffd6a81738b72`: typed
+pressure/cap/capacity utilities, a deterministic 10,000-trial formal runner, and focused tests. The runner also
+rejects dirty tracked worktrees in either pinned upstream source clone, closing the
+`HEAD`-matches-but-files-differ audit hole. Seventeen targeted tests, Ruff and strict mypy pass.
+
+The one formal T0 run from that clean upstream-matched SHA passed all seven frozen gates. Canonical payload
+SHA-256 is `f6b765d249ca75a0355db3007508201b41eab257367a15194c0e52a8625ea2a6`; independent read-back matches.
+The largest normalized residual was `4.3482e-16`. Scientific decision remains
+`math_encoding_pass_novelty_and_field_support_remain_amber`: this verifies accounting only. All historical,
+event and outcome data plus EcoMD and GPUs remained untouched. Next authorized step is a separately frozen D0
+event-identity/support audit; do not retrieve history before that contract is committed and pushed.

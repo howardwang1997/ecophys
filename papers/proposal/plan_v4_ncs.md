@@ -51,8 +51,11 @@ Public Allocator 后恰有一个非公共 allocator，且三地址互异。正�
 是方向位移预算而非随时间补充的速率限制。这些仍是 accounting lemmas；官方文档已说明共享流动性
 与 donor rate effect，现有 curator-network 工作已说明 liquidity stress mutualization，行业分析也已
 讨论 Resolv 放大。只有冻结的前瞻 event-level IRM memory/participant response 和独立第二系统迁移
-可能解锁 NMI/NCS。当前仅授权 source-bound synthetic T0，历史事件、市场结果和 GPU 仍关闭。计划见
-`papers/proposal/morpho_public_allocator_pressure_t0_plan_2026-08-20.md`。
+可能解锁 NMI/NCS。正式 source-bound T0 已从干净且推送的提交 `4a480108e` 完成 10,000 次试验，七项
+gate 全部通过，canonical payload SHA-256 为 `f6b765d2…a2a6`；这只确认源码绑定的代数实现正确，路线
+仍为 **AMBER**。历史事件、市场结果和 GPU 仍关闭；下一步只能先冻结一个只看事件身份与支持度的
+D0。计划和结果分别见 `papers/proposal/morpho_public_allocator_pressure_t0_plan_2026-08-20.md` 与
+`papers/proposal/morpho_public_allocator_pressure_t0_result_2026-08-20.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、
