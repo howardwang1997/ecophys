@@ -87,3 +87,10 @@ independently launched Ethereum/Base chain artifacts and a same-SHA exact merge.
 the 65-test affected suite, Ruff and strict mypy pass. A new exact-digest qualification must be committed and pass
 before both V100 hosts may run one CPU/network chain each with CUDA hidden. No amount, outcome or GPU use is
 authorized.
+
+Formal v2 qualification from clean pushed `68bf0ecef` passed. All 48 disjoint 1,250-block pieces completed; each
+of the six reconstructed unions exactly reproduces its v1 event count and canonical identity digest and remains
+exactly equal to the fixed full-RPC set. Canonical payload SHA is `d9b28e65…65de`, independently reproduced; file
+SHA is `4c42da0e…4343`. Wall time was 96.62 s. Ethereum/Base had one recoverable Portal retry each and no RPC split
+or retry. No receipt, Borrow, value or outcome was opened. Commit this immutable qualification before launching
+both formal chain jobs together; no standalone chain result may drive whether the other chain runs.
