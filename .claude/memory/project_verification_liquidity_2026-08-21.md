@@ -32,6 +32,15 @@ D-1 is Mac CPU only, under 20 core-hours/5 GB, with no GPU, paid data, H20 or Ec
 the formal frame query. Full plan:
 `papers/proposal/dependabot_cooldown_verification_liquidity_plan_2026-08-21.md`.
 
+Implementation now includes `ecomd/data/github_verification_liquidity.py` and
+`scripts/audit_github_dependabot_cooldown_dminus1.py`: typed sanitizers, historical config classification, a
+recursive forbidden-key guard, deterministic per-repository checkpoints and immutable allowed-record manifests.
+The final ten-repository smoke used 49 public requests in 21.25 seconds, saw 51 bot PRs/20 24-hour clusters and
+passed outcome-seal, config-recovery, workflow-access, queue-field-presence and hash checks. Its scale gates failed
+by design. Allowed-record canonical SHA is `7d9af87a…c62b`; no queue/review/merge/security value was persisted.
+Because live star counts changed across smoke snapshots, formal acquisition now freezes its first frame to disk and
+keeps an append-only response-hash journal; resume cannot silently select a new repository ranking.
+
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely
 new admission/scheduling result with a guarantee and a second independent computational domain.
