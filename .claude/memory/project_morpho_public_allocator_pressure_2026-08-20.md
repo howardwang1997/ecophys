@@ -39,3 +39,9 @@ T0 uses pinned source and synthetic arrays only. Historical events, flows, rates
 EcoMD and GPUs remain forbidden. A mathematical pass authorizes nothing beyond a separately frozen event-support
 D0. NMI requires a prospective agent externality/design intervention; NCS additionally needs a general
 reaction--transport inference method and a second independent adaptive-resource system.
+
+Implementation was completed locally after the frozen plan commit `f26595061`: typed pressure/cap/capacity
+utilities, a deterministic 10,000-trial formal runner, and focused tests. The runner also rejects dirty tracked
+worktrees in either pinned upstream source clone, closing the `HEAD`-matches-but-files-differ audit hole. Seventeen
+targeted tests, Ruff and strict mypy pass. This is not yet a formal scientific result: commit/push and a clean-SHA
+run remain required, and all historical/event/outcome data plus GPUs remain untouched.
