@@ -179,6 +179,16 @@ The frame contains no explicit zero-day opt-out. D0 therefore cannot use opt-out
 freeze a match from the 447 no-Dependabot controls and reserve the 63 already-cooled repositories as a negative
 control before opening outcomes.
 
+### D0 freeze status (2026-08-21)
+
+The outcome-blind candidate ledger now freezes 72 high-support default-treated repositories, 447 eligible
+no-Dependabot controls and the 33 high-support members of the already-cooled negative-control cohort. The D0
+contract fixes symmetric 28-day primary windows, a three-day rollout blackout, a `push`-only primary human-run
+definition, deterministic per-repository-day run sampling, pre-period-only 1:3 matching, intentional workflow-wait
+exclusions, official incident sensitivity and support gates before acquisition. Prospective outcomes from
+2026-08-22 through 2026-10-16 remain embargoed until 2026-10-17 UTC. Full freeze:
+`papers/proposal/dependabot_cooldown_verification_liquidity_d0_freeze_2026-08-21.md`.
+
 1. **D0:** freeze the eligible repository IDs, exact pre/post windows, matching and minimum effective clusters;
    verify treatment/config and root-job mapping while outcomes stay sealed.
 2. **D1-retrospective:** open the pre-registered queue outcomes once, report the event study including nulls and
@@ -231,11 +241,12 @@ collection after the Mac smoke test; GPU memory should remain idle until a learn
 
 ## Immediate execution order
 
-1. Commit and push this plan and D-1 contract before the formal frame query.
-2. Implement a typed, tested API client and an outcome-blind sanitizer that fails closed on forbidden persistence.
-3. Run a 10-repository smoke test, then the frozen D-1 frame from a clean pushed SHA.
-4. Archive request hashes, allowed raw shards, a derived manifest and the GREEN/AMBER/RED result.
-5. Freeze D0 only if every D-1 gate passes; otherwise record RED and return to problem selection.
+1. **Completed:** commit/push the D-1 plan and contract, implement the fail-closed collector and run the formal
+   fixed frame from a clean pushed SHA.
+2. **Completed:** archive request hashes, allowed records, manifest and the 11/11-gate GREEN result.
+3. **Current:** commit/push the D0 scientific contract and exact candidate ledger before D0 API access.
+4. Implement and smoke-test a D0 collector that never persists sealed values.
+5. Run D0 once from a clean pushed SHA; freeze exact D1 repository/run IDs only if its gates pass.
 
 ## Verified starting references
 

@@ -1,0 +1,280 @@
+schema_version: 1
+
+contract:
+  name: github_dependabot_cooldown_d0
+  status: frozen_before_outcome_blind_d0_identity_acquisition
+  branch: dependabot-cooldown-verification-liquidity-2026-08-21
+  claim_limit: >-
+    D0 may freeze identities, pre-outcome covariates, workflow structure, runner-label overlap, matching and field
+    presence. It cannot estimate queue delay, a cooldown first stage, review or merge effects, security benefit,
+    policy value, a causal effect, NMI fit or NCS fit.
+
+source:
+  dminus1_result_path: results/agent_markets/github_dependabot_cooldown_dminus1_v1.json
+  dminus1_result_canonical_sha256: e697028ee06bf5ef4f042bc5297e7c2449a9f15b54dc69ad21905d6c253fc37e
+  candidate_ledger_path: data/manifests/github_dependabot_cooldown_d0_candidate_ids_v1.json
+  candidate_ledger_file_sha256: b5dc728cd79d42a6be9b5107b3fa6e1f02247680c0b41bc8485687b85680cd82
+  candidate_ledger_canonical_sha256: b6c21ed897594471051f8f21cdaef009e6f98416f0980324fdc1b791d65c5c62
+  candidate_cohort_hashes:
+    default_treated_high_support: d3db4f05320cf143455ac4ad1fe7449c6557b096b1f34e55853a90fa6ad03b15
+    no_dependabot_candidate_controls: abeeea5100f78b3fe17fe81fa8bc8f1e00432fbf03e65066e8463e11770065eb
+    already_cooled_high_support_negative_controls: a857b58fa30545b750e0a95e4afb5a5c3e866213b4d8afb2cae1760168d30d42
+
+intervention:
+  announcement_date_utc: "2026-07-14"
+  config_cutoff_utc: "2026-07-13T23:59:59Z"
+  default_cooldown_days_before: 0
+  default_cooldown_days_after: 3
+  treatment_assignment: cutoff_default_treated_intention_to_treat
+  security_updates_exempt: true
+
+windows:
+  identity_acquisition_from_utc: "2026-05-19T00:00:00Z"
+  identity_acquisition_to_utc: "2026-08-13T23:59:59Z"
+  extended_pre_from_utc: "2026-05-19T00:00:00Z"
+  primary_pre_from_utc: "2026-06-16T00:00:00Z"
+  primary_pre_to_utc: "2026-07-13T23:59:59Z"
+  rollout_blackout_from_utc: "2026-07-14T00:00:00Z"
+  rollout_blackout_to_utc: "2026-07-16T23:59:59Z"
+  primary_post_from_utc: "2026-07-17T00:00:00Z"
+  primary_post_to_utc: "2026-08-13T23:59:59Z"
+  retrospective_embargo_from_utc: "2026-08-14T00:00:00Z"
+  prospective_holdout_from_utc: "2026-08-22T00:00:00Z"
+  prospective_holdout_to_utc: "2026-10-16T23:59:59Z"
+  prospective_outcomes_may_not_be_accessed_before_utc: "2026-10-17T00:00:00Z"
+
+cohorts:
+  treated:
+    ledger_key: default_treated_high_support
+    frozen_count: 72
+  primary_control_candidates:
+    ledger_key: no_dependabot_candidate_controls
+    frozen_count: 447
+  negative_control:
+    ledger_key: already_cooled_high_support_negative_controls
+    frozen_count: 33
+  opt_out:
+    frozen_count: 0
+    use_forbidden: true
+
+github:
+  api_version: "2026-03-10"
+  rest_base_url: https://api.github.com
+  timeout_seconds: 30.0
+  attempts: 3
+  backoff_seconds: [1.0, 2.0, 4.0]
+  maximum_parallel_requests: 4
+  minimum_remaining_core_requests: 250
+  workflow_runs_per_page: 100
+  maximum_results_per_filtered_search: 1000
+  recursive_time_shard_threshold: 900
+  workflow_jobs_filter: latest
+  workflow_jobs_per_page: 100
+  user_agent: EcoPhys-verification-liquidity-d0/1.0
+
+run_identity:
+  primary_human:
+    actor_type: User
+    event_types: [push]
+    run_attempt: 1
+    exclude_dependabot_login: "dependabot[bot]"
+  secondary_human:
+    actor_type: User
+    event_types: [pull_request, pull_request_target, workflow_dispatch]
+    run_attempt: 1
+  bot_mapping:
+    dependabot_login: "dependabot[bot]"
+    require_actor_or_pull_request_link: true
+  deterministic_d1_sampling:
+    key: sha256_repository_id_colon_run_id
+    strata: [repository_id, utc_date, primary_or_secondary, pre_or_post]
+    maximum_primary_runs_per_repository_utc_date: 2
+    maximum_secondary_runs_per_repository_utc_date: 1
+    select_lowest_hashes: true
+  pagination:
+    recursively_bisect_utc_interval_above_threshold: true
+    minimum_shard_seconds: 3600
+    reject_any_unresolved_truncation: true
+
+workflow_structure:
+  content_reference: run_head_sha_and_normalized_workflow_path
+  normalize_path_by_removing_at_ref_suffix: true
+  root_job_definition: job_without_nonempty_needs
+  intentional_wait_flags:
+    - workflow_level_concurrency
+    - root_job_concurrency
+    - root_job_environment
+  primary_d1_excludes_any_intentional_wait_flag: true
+  persist_raw_workflow_yaml: false
+
+runner_pool:
+  self_hosted_marker: self-hosted
+  canonicalization:
+    self_hosted: sorted_full_label_set
+    other: sorted_full_label_set
+    empty: unknown
+  preperiod_probe_runs_per_repository_actor_class: 3
+  shared_pool_definition: exact_nonempty_canonical_label_set_used_by_both_dependabot_and_human_jobs
+  disjoint_pool_definition: observed_nonempty_sets_with_empty_intersection
+
+matching:
+  uses_preperiod_fields_only: true
+  treated_pool: all_frozen_treated
+  control_pool: frozen_primary_control_candidates
+  ratio: 3
+  replacement: false
+  algorithm: globally_optimal_mahalanobis_assignment
+  exact_strata: [preperiod_runner_pool_class]
+  continuous_covariates:
+    - log1p_pre_primary_human_run_count
+    - log1p_pre_all_human_run_count
+    - log1p_pre_human_pr_lower_bound_capped_100
+    - log1p_workflow_path_count
+    - log1p_stargazers_count
+    - repository_age_days_at_cutoff
+    - pre_push_fraction_of_human_runs
+    - pre_pull_request_fraction_of_human_runs
+    - pre_workflow_dispatch_fraction_of_human_runs
+  scaling: pooled_candidate_median_and_mad_with_unit_fallback_for_zero_mad
+  distance_caliper:
+    covariate: log1p_pre_primary_human_run_count
+    maximum_scaled_absolute_difference: 1.0
+  tie_break: sha256_treated_id_colon_control_id
+  maximum_absolute_standardized_mean_difference: 0.20
+  maximum_mean_absolute_standardized_mean_difference: 0.10
+
+incident_sensitivity:
+  primary_keeps_incident_epochs_with_utc_day_and_hour_of_week_effects: true
+  official_source_api: https://www.githubstatus.com/api/v2/incidents.json
+  official_source_history_pages:
+    - https://www.githubstatus.com/history?page=1
+    - https://www.githubstatus.com/history?page=2
+  freeze_before_d1: true
+  sensitivity_exclusion_rule: >-
+    Exclude the reported start through resolution interval, padded by one UTC hour on each side, for every official
+    incident whose affected components include Actions or whose official title/body explicitly states that Actions
+    runs, jobs, hosted runners, workflow starts or workflow queues were affected.
+
+d1_estimand_freeze:
+  primary_outcome: log1p_seconds_from_workflow_run_created_at_to_earliest_nonnull_job_started_at
+  primary_population: matched_primary_human_runs_without_intentional_wait_flags
+  treatment: cutoff_default_treated_intention_to_treat
+  primary_model_effects:
+    - repository
+    - utc_calendar_day
+    - utc_hour_of_week
+    - workflow_path
+  uncertainty: two_way_cluster_repository_and_utc_calendar_day
+  primary_test: two_sided_95_percent_confidence_interval
+  first_stage_required_for_mechanism_claim: true
+  pretrend_and_placebo_failures_must_be_reported: true
+  negative_control_must_be_reported: already_cooled_high_support
+  raw_seconds_and_median_p95_must_be_reported: true
+  no_winsorization: true
+
+allowed_persisted_fields:
+  repository:
+    - repository_id
+    - node_id
+    - full_name
+    - cohort
+    - frozen_preperiod_covariates
+  workflow_run:
+    - run_id
+    - workflow_id
+    - run_number
+    - run_attempt
+    - created_at
+    - actor_class
+    - event_type
+    - workflow_path
+    - head_sha
+    - head_branch
+    - pull_request_ids
+    - check_suite_id
+  job_schema:
+    - run_id
+    - job_id
+    - job_name
+    - runner_labels
+    - required_field_presence
+  workflow_structure:
+    - content_sha256
+    - root_job_keys
+    - runs_on_schema
+    - intentional_wait_flags
+  matching:
+    - preperiod_covariates
+    - scaled_distances
+    - matched_repository_ids
+    - balance_diagnostics
+  transport:
+    - endpoint_class
+    - request_count
+    - response_sha256
+    - etag
+    - pagination
+    - rate_limit_metadata
+  external_incident:
+    - incident_id
+    - title
+    - started_at
+    - resolved_at
+    - affected_component_names
+    - source_response_sha256
+
+forbidden_persisted_fields:
+  - workflow_run_started_at_value
+  - workflow_run_updated_at_value
+  - job_started_at_value
+  - job_completed_at_value
+  - workflow_or_job_status
+  - workflow_or_job_conclusion
+  - duration_or_queue_wait
+  - pre_post_queue_summary_or_test
+  - pre_post_dependabot_first_stage_contrast
+  - pull_request_closed_or_merged_state
+  - pull_request_review_or_comment_response
+  - package_release_timestamp_or_release_age
+  - vulnerability_or_security_outcome
+  - outcome_based_matching_or_sample_selection
+  - raw_api_payload_containing_any_forbidden_field
+
+gates:
+  minimum_repository_run_api_access_rate: 0.95
+  maximum_unresolved_truncated_run_queries: 0
+  maximum_conflicting_duplicate_run_ids: 0
+  minimum_prequalified_treated_repositories: 60
+  minimum_prequalified_control_candidates: 250
+  minimum_matched_treated_repositories: 60
+  minimum_matched_control_repositories: 180
+  minimum_treated_primary_selected_runs_each_period: 750
+  minimum_control_primary_selected_runs_each_period: 1500
+  minimum_matched_treated_with_five_primary_runs_each_period: 50
+  minimum_matched_controls_with_five_primary_runs_each_period: 120
+  minimum_negative_controls_with_five_primary_runs_each_period: 20
+  minimum_treated_repositories_with_shared_bot_human_pool: 30
+  minimum_workflow_structure_recovery_rate: 0.90
+  minimum_schema_probe_job_start_presence_rate: 0.95
+  minimum_schema_probe_access_rate: 0.90
+  require_matching_balance: true
+  require_candidate_hashes_exact: true
+  require_no_forbidden_persisted_field: true
+  require_deterministic_derived_hash: true
+
+decision:
+  green: all_gates_pass_freeze_exact_d1_run_and_repository_ids_before_outcomes
+  amber: >-
+    identity_matching_and_field_gates_pass_but_shared_pool_support_fails; stop and freeze a narrower reduced-form
+    claim before D1 rather than silently dropping the mechanism test
+  red: stop_before_queue_first_stage_review_merge_security_model_gpu_paid_data_or_window_rescue
+
+compute:
+  maximum_cpu_core_hours: 100
+  maximum_local_storage_gb: 50
+  mac_allowed: true
+  v100_host_cpu_allowed: true
+  gpu_allowed: false
+  rtx2060_gpu_allowed: false
+  h20_allowed: false
+  paid_data_allowed: false

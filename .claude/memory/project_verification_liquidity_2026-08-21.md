@@ -51,6 +51,15 @@ so D0 must match against the frozen no-Dependabot pool and use the 63 already-co
 negative control. GREEN authorizes freezing D0, not opening outcomes or claiming an effect. Full result:
 `papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`.
 
+D0 is now drafted and machine-frozen before its identity acquisition. The deterministic candidate ledger contains
+72 treated, 447 primary-control candidates and 33 high-support already-cooled negative controls; canonical SHA is
+`b6c21ed8…5c62`. Primary pre/post windows are 2026-06-16--07-13 and 2026-07-17--08-13 with 07-14--07-16 blacked
+out. Primary human runs are first-attempt user `push` runs; PR/manual runs are secondary. D0 fixes hash-based daily
+sampling, pre-only optimal 1:3 matching, intentional workflow-wait flags, official incident sensitivity and a
+30-treated shared-runner-pool gate. The 2026-08-22--10-16 prospective holdout cannot be opened before 10-17 UTC.
+D0 remains outcome-blind and CPU/API-only. Full freeze:
+`papers/proposal/dependabot_cooldown_verification_liquidity_d0_freeze_2026-08-21.md`.
+
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely
 new admission/scheduling result with a guarantee and a second independent computational domain.
