@@ -42,6 +42,59 @@ def parse_allocator_registry(payload: Mapping[str, Any]) -> list[dict[str, str]]
     return sorted(parsed, key=lambda item: item["address"])
 
 
+def parse_allocator_graphql_response(
+    payload: Mapping[str, Any],
+    *,
+    entity_field: str,
+    vault_version: str,
+    expected_vault_address: str,
+) -> tuple[str, list[dict[str, str]]]:
+    """Parse one exact-vault GraphQL role response without market fields."""
+    errors = payload.get("errors")
+    if errors not in (None, []):
+        raise ValueError("Morpho GraphQL response contains errors")
+    data = payload.get("data")
+    if not isinstance(data, Mapping):
+        raise ValueError("Morpho GraphQL data must be an object")
+    entity = data.get(entity_field)
+    if not isinstance(entity, Mapping):
+        raise ValueError(f"Morpho GraphQL entity is missing: {entity_field}")
+    returned_address = entity.get("address")
+    name = entity.get("name")
+    allocators = entity.get("allocators")
+    if not isinstance(returned_address, str) or normalize_address(returned_address) != normalize_address(
+        expected_vault_address
+    ):
+        raise ValueError("Morpho GraphQL returned the wrong vault address")
+    if not isinstance(name, str) or not name:
+        raise ValueError("Morpho GraphQL vault name must be a nonempty string")
+    if not isinstance(allocators, list):
+        raise ValueError("Morpho GraphQL allocators must be a list")
+
+    records: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for item in allocators:
+        if not isinstance(item, Mapping):
+            raise ValueError("Morpho GraphQL allocator item must be an object")
+        if vault_version == "v1":
+            address_value = item.get("address")
+        elif vault_version == "v2":
+            allocator = item.get("allocator")
+            if not isinstance(allocator, Mapping):
+                raise ValueError("Morpho V2 GraphQL allocator wrapper is missing")
+            address_value = allocator.get("address")
+        else:
+            raise ValueError(f"unsupported vault version: {vault_version}")
+        if not isinstance(address_value, str):
+            raise ValueError("Morpho GraphQL allocator address must be a string")
+        address = normalize_address(address_value)
+        if address in seen:
+            raise ValueError(f"duplicate allocator address: {address}")
+        seen.add(address)
+        records.append({"address": address})
+    return name, sorted(records, key=lambda item: item["address"])
+
+
 def assess_deployment_identity(
     candidates: Sequence[Mapping[str, Any]],
     *,
@@ -76,14 +129,14 @@ def assess_deployment_identity(
         for record in records:
             address_value = record.get("address")
             tx_hash_value = record.get("tx_hash")
-            if not isinstance(address_value, str) or not isinstance(tx_hash_value, str):
-                raise ValueError("allocator record fields must be strings")
-            normalized_records.append(
-                {
-                    "address": normalize_address(address_value),
-                    "tx_hash": tx_hash_value.lower(),
-                }
-            )
+            if not isinstance(address_value, str):
+                raise ValueError("allocator record address must be a string")
+            normalized = {"address": normalize_address(address_value)}
+            if tx_hash_value is not None:
+                if not isinstance(tx_hash_value, str) or _TX_HASH_RE.fullmatch(tx_hash_value) is None:
+                    raise ValueError("allocator role-grant transaction hash is invalid")
+                normalized["tx_hash"] = tx_hash_value.lower()
+            normalized_records.append(normalized)
         private_records = [record for record in normalized_records if record["address"] not in public]
         unambiguous = len(private_records) == 1
         all_unambiguous = all_unambiguous and unambiguous

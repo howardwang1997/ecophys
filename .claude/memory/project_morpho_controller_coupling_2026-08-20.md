@@ -63,3 +63,9 @@ official Public Allocator, all three private addresses to differ, and all docume
 Any failure closes the field route before history. A pass authorizes only a separately frozen D0B for event
 identity/support: at least 12 active edges, 300 complete reallocations, 90 days, 50 multi-non-idle-market
 transactions and receipt/finalized-index equality. Periodicity and repeated senders never establish bot identity.
+
+The first clean v1 invocation at `e49a331b6` failed at transport before any role payload: the documented REST
+allocator path returned HTTP 404 `Cannot GET` on all three bounded attempts, and no result artifact exists. V1
+remains immutable at config SHA `49ab2ae1…04c3`. D0A v2 is a transport-only amendment using the documented
+GraphQL exact-vault role query. It changes no candidate or scientific threshold; GraphQL does not expose the
+REST-documented grant transaction hash, so exact grant-event provenance is deferred to D0B.

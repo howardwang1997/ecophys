@@ -18,6 +18,7 @@ import yaml
 
 from ecomd.data.morpho_deployment_identity import (
     assess_deployment_identity,
+    parse_allocator_graphql_response,
     parse_allocator_registry,
 )
 
@@ -75,6 +76,69 @@ def _fetch_json(
     raise RuntimeError(f"allocator endpoint failed after {maximum_attempts} attempts: {url}") from last_error
 
 
+def _fetch_graphql(
+    url: str,
+    *,
+    query: str,
+    variables: Mapping[str, Any],
+    timeout_seconds: float,
+    maximum_attempts: int,
+    retry_backoff_seconds: float,
+) -> tuple[dict[str, Any], bytes, int]:
+    body = json.dumps({"query": query, "variables": dict(variables)}).encode()
+    request = urllib.request.Request(
+        url,
+        data=body,
+        method="POST",
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": "EcoPhys-D0A/2",
+        },
+    )
+    last_error: Exception | None = None
+    for attempt in range(maximum_attempts):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+                raw = response.read()
+                status = int(response.status)
+            payload = json.loads(raw)
+            if not isinstance(payload, dict):
+                raise ValueError("GraphQL endpoint returned a non-object JSON value")
+            return payload, raw, status
+        except (OSError, ValueError, urllib.error.URLError) as error:
+            last_error = error
+            if attempt + 1 < maximum_attempts:
+                time.sleep(retry_backoff_seconds * (attempt + 1))
+    raise RuntimeError(f"GraphQL endpoint failed after {maximum_attempts} attempts: {url}") from last_error
+
+
+def _allocator_query(vault_version: str) -> tuple[str, str]:
+    if vault_version == "v1":
+        return (
+            "vaultByAddress",
+            """query D0A($address: String!, $chainId: Int!) {
+  vaultByAddress(address: $address, chainId: $chainId) {
+    address
+    name
+    allocators { address }
+  }
+}""",
+        )
+    if vault_version == "v2":
+        return (
+            "vaultV2ByAddress",
+            """query D0A($address: String!, $chainId: Int!) {
+  vaultV2ByAddress(address: $address, chainId: $chainId) {
+    address
+    name
+    allocators { allocator { address } }
+  }
+}""",
+        )
+    raise ValueError(f"unsupported vault version: {vault_version}")
+
+
 def _flatten_public_allocators(config: Mapping[str, Any]) -> list[str]:
     groups = config.get("official_public_allocators")
     if not isinstance(groups, Mapping):
@@ -91,9 +155,11 @@ def run_audit(config_path: Path, output_path: Path) -> dict[str, Any]:
     """Execute D0A and write only sanitized deployment-role metadata."""
     config = _load_config(config_path)
     contract = config.get("contract")
-    if not isinstance(contract, Mapping) or contract.get("status") != (
-        "frozen_before_allocator_role_queries_or_reallocation_history"
-    ):
+    allowed_statuses = {
+        "frozen_before_allocator_role_queries_or_reallocation_history",
+        "frozen_after_v1_rest_404_before_any_role_payload_or_reallocation_history",
+    }
+    if not isinstance(contract, Mapping) or contract.get("status") not in allowed_statuses:
         raise ValueError("D0A contract is not frozen")
     if _git("status", "--porcelain", "--untracked-files=all"):
         raise RuntimeError("formal D0A requires a clean worktree")
@@ -108,20 +174,48 @@ def run_audit(config_path: Path, output_path: Path) -> dict[str, Any]:
 
     assessed_candidates: list[dict[str, Any]] = []
     retrievals: list[dict[str, Any]] = []
+    transport = str(api.get("transport", "rest_get"))
     for candidate in candidates_config:
         if not isinstance(candidate, Mapping):
             raise ValueError("candidate must be an object")
-        endpoint = str(candidate["allocator_endpoint"])
+        endpoint = str(candidate.get("allocator_endpoint", api.get("endpoint", "")))
         if any(forbidden in endpoint.lower() for forbidden in config["forbidden_endpoints"]):
             raise ValueError(f"candidate endpoint contains a forbidden path: {endpoint}")
-        payload, raw, status = _fetch_json(
-            endpoint,
-            timeout_seconds=float(api["request_timeout_seconds"]),
-            maximum_attempts=int(api["maximum_attempts"]),
-            retry_backoff_seconds=float(api["retry_backoff_seconds"]),
-        )
-        records = parse_allocator_registry(payload)
-        assessed_candidates.append({**dict(candidate), "allocator_records": records})
+        returned_vault_name: str | None = None
+        if transport == "rest_get":
+            payload, raw, status = _fetch_json(
+                endpoint,
+                timeout_seconds=float(api["request_timeout_seconds"]),
+                maximum_attempts=int(api["maximum_attempts"]),
+                retry_backoff_seconds=float(api["retry_backoff_seconds"]),
+            )
+            records = parse_allocator_registry(payload)
+        elif transport == "graphql_post":
+            vault_version = str(candidate["vault_version"])
+            entity_field, query = _allocator_query(vault_version)
+            payload, raw, status = _fetch_graphql(
+                endpoint,
+                query=query,
+                variables={
+                    "address": str(candidate["vault_address"]),
+                    "chainId": int(candidate["chain_id"]),
+                },
+                timeout_seconds=float(api["request_timeout_seconds"]),
+                maximum_attempts=int(api["maximum_attempts"]),
+                retry_backoff_seconds=float(api["retry_backoff_seconds"]),
+            )
+            returned_vault_name, records = parse_allocator_graphql_response(
+                payload,
+                entity_field=entity_field,
+                vault_version=vault_version,
+                expected_vault_address=str(candidate["vault_address"]),
+            )
+        else:
+            raise ValueError(f"unsupported D0A transport: {transport}")
+        enriched_candidate = {**dict(candidate), "allocator_records": records}
+        if returned_vault_name is not None:
+            enriched_candidate["returned_vault_name"] = returned_vault_name
+        assessed_candidates.append(enriched_candidate)
         retrievals.append(
             {
                 "operator": str(candidate["operator"]),
@@ -129,6 +223,7 @@ def run_audit(config_path: Path, output_path: Path) -> dict[str, Any]:
                 "http_status": status,
                 "response_sha256": hashlib.sha256(raw).hexdigest(),
                 "allocator_record_count": len(records),
+                "transport": transport,
             }
         )
 
@@ -155,13 +250,21 @@ def run_audit(config_path: Path, output_path: Path) -> dict[str, Any]:
                 "vault_version": str(candidate["vault_version"]),
                 "vault_address": str(candidate["vault_address"]).lower(),
                 "evidence_urls": list(candidate["evidence"]),
+                "returned_vault_name": next(
+                    (
+                        item.get("returned_vault_name")
+                        for item in assessed_candidates
+                        if item["operator"] == operator
+                    ),
+                    None,
+                ),
                 **metadata_by_operator[operator],
             }
         )
 
     body: dict[str, Any] = {
         "schema_version": 1,
-        "experiment_id": "morpho_controller_coupling_d0a_v1",
+        "experiment_id": str(contract.get("experiment_id", "morpho_controller_coupling_d0a_v1")),
         "created_utc": datetime.now(UTC).isoformat(),
         "repository": {
             "git_sha": _git("rev-parse", "HEAD"),
@@ -182,7 +285,7 @@ def run_audit(config_path: Path, output_path: Path) -> dict[str, Any]:
             else "d0a_fail_close_field_route_before_reallocation_history"
         ),
         "data_contract": {
-            "queries": "three_fixed_current_allocator_role_endpoints_only",
+            "queries": f"three_fixed_current_allocator_role_queries_only_via_{transport}",
             "raw_responses_retained": False,
             "market_outcomes_used": False,
             "gpu_used": False,
@@ -204,12 +307,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--config",
         type=Path,
-        default=REPO_ROOT / "configs/empirical_physics/morpho_controller_coupling_d0a_v1.yaml",
+        default=REPO_ROOT / "configs/empirical_physics/morpho_controller_coupling_d0a_v2.yaml",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=REPO_ROOT / "results/empirical_physics/morpho_controller_coupling_d0a_v1.json",
+        default=REPO_ROOT / "results/empirical_physics/morpho_controller_coupling_d0a_v2.json",
     )
     return parser
 

@@ -1,5 +1,9 @@
 # Morpho allocator--IRM coupling — D0A deployment-identity freeze
 
+**Transport status:** the first v1 call returned HTTP 404 before any role payload and wrote no result. The
+scientific contract below is unchanged. Its one allowed transport repair is frozen in
+`morpho_controller_coupling_d0a_graphql_transport_amendment_2026-08-20.md`; the formal successor config is v2.
+
 ## Decision boundary
 
 This protocol is frozen before requesting any reallocation history. D0A asks whether three independent Morpho

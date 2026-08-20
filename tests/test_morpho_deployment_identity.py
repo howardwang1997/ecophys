@@ -5,6 +5,7 @@ import pytest
 from ecomd.data.morpho_deployment_identity import (
     assess_deployment_identity,
     normalize_address,
+    parse_allocator_graphql_response,
     parse_allocator_registry,
 )
 
@@ -48,6 +49,63 @@ def test_parse_allocator_registry_rejects_duplicates() -> None:
     }
     with pytest.raises(ValueError, match="duplicate"):
         parse_allocator_registry({"data": [record, record]})
+
+
+@pytest.mark.parametrize(
+    ("version", "entity_field", "allocators"),
+    [
+        (
+            "v1",
+            "vaultByAddress",
+            [{"address": "0x1111111111111111111111111111111111111111"}],
+        ),
+        (
+            "v2",
+            "vaultV2ByAddress",
+            [{"allocator": {"address": "0x1111111111111111111111111111111111111111"}}],
+        ),
+    ],
+)
+def test_parse_allocator_graphql_response(
+    version: str, entity_field: str, allocators: list[dict[str, object]]
+) -> None:
+    address = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    payload = {
+        "data": {
+            entity_field: {
+                "address": address,
+                "name": "Anchor",
+                "allocators": allocators,
+                "ignored_market_state": {"totalAssets": "forbidden"},
+            }
+        }
+    }
+    name, records = parse_allocator_graphql_response(
+        payload,
+        entity_field=entity_field,
+        vault_version=version,
+        expected_vault_address=address,
+    )
+    assert name == "Anchor"
+    assert records == [{"address": "0x1111111111111111111111111111111111111111"}]
+
+
+def test_parse_allocator_graphql_response_rejects_wrong_vault() -> None:
+    with pytest.raises(ValueError, match="wrong vault"):
+        parse_allocator_graphql_response(
+            {
+                "data": {
+                    "vaultByAddress": {
+                        "address": "0x2222222222222222222222222222222222222222",
+                        "name": "Wrong",
+                        "allocators": [],
+                    }
+                }
+            },
+            entity_field="vaultByAddress",
+            vault_version="v1",
+            expected_vault_address="0x1111111111111111111111111111111111111111",
+        )
 
 
 def test_assessment_passes_three_distinct_documented_clusters() -> None:
