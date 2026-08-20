@@ -57,6 +57,13 @@ gate 全部通过，canonical payload SHA-256 为 `f6b765d2…a2a6`；这只确�
 D0。计划和结果分别见 `papers/proposal/morpho_public_allocator_pressure_t0_plan_2026-08-20.md` 与
 `papers/proposal/morpho_public_allocator_pressure_t0_result_2026-08-20.md`。
 
+该 D0 已在任何事件计数前完成草案冻结：只固定 Ethereum 与 Base，以同一 receipt 中
+`PublicWithdrawal -> PublicReallocateTo -> target-matched Morpho Borrow` 的 topic/顺序身份作为不解码金额的
+候选代理。门槛为 pooled 500、每链 100、每链 90 天/30 个活跃日期/3 个 vault/4 条边以及 pooled 12
+条边，并要求 SQD、full-range RPC 与 receipt 审计无未解释差异。因为 D0 禁止金额和 IRM 参数，这些
+不能称为 genuine JIT；后续 D1 仍须在 `0<r<=x` 和官方 AdaptiveCurveIRM 过滤后留下至少 300 个事件。
+冻结文件为 `papers/proposal/morpho_public_allocator_pressure_d0_freeze_2026-08-20.md`。
+
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、
 2025 PCD 理论和 ICML 2026 SOSMC 又分别覆盖 warm-started 参数依赖 kernel、跨参数加权粒子复用、

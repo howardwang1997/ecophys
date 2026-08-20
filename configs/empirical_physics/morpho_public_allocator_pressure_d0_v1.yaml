@@ -1,0 +1,154 @@
+contract:
+  name: morpho_public_allocator_pressure_d0_support
+  version: 1
+  status: frozen_before_public_allocator_event_counts_or_protocol_values
+  frozen_utc: "2026-08-20T10:09:00Z"
+  purpose: test_two_chain_atomic_routing_borrow_identity_support
+
+official_sources:
+  morpho_sdks:
+    remote: https://github.com/morpho-org/sdks.git
+    expected_git_sha: eb27628b88300665405e0bd0bde395b834cae969
+    files:
+      packages/morpho-ts/src/addresses.ts: 89416b6848df21d48d8002b14a1a23865ca5b0bc62fd4fcd755a050c389d28c5
+      packages/morpho-ts/src/abis.ts: 067533afeb513ef1946781444f762706babcdc5df7bf2675e780ae743d01d322
+      packages/morpho-ts/src/chain.ts: 2267ce1f276ef52ce01b7ba07877195b02462f3cfab1cb74665f630248f5718d
+  public_allocator:
+    remote: https://github.com/morpho-org/public-allocator.git
+    expected_git_sha: 51f92e57624099c5c3a4c9fdd88ed1ec2b16ac84
+    files:
+      src/PublicAllocator.sol: b29c14540863b77666a997293752de3601945c32df5d5e27eed4ecc587ea8062
+      src/libraries/EventsLib.sol: 4dd3057389e99eaefb39326221b5b95a9fe7eb1904bd98eb9ecf3dae99661e90
+  morpho_blue:
+    remote: https://github.com/morpho-org/morpho-blue.git
+    expected_git_sha: d09dd1c4b9c7d9d05f976faa7ebfdc424dae5e8c
+    files:
+      src/libraries/EventsLib.sol: c267b23c5a3086ed00a712b841ef12b674be508ac8b8cf2e3f289ae09bd1677a
+      src/interfaces/IMorpho.sol: 1d5ff96761bf41bdba188860dcc12d53260bbdfd5fa7b3b5adf1624e801f7535
+
+event_signatures:
+  PublicWithdrawal:
+    signature: PublicWithdrawal(address,address,bytes32,uint256)
+    topic0: "0x6218cdb9e8efb3d0e8136d32c91d9446eaf19e2e486bc67dfcb3d574ca60d504"
+    indexed_topics: [sender, vault, donor_market_id]
+  PublicReallocateTo:
+    signature: PublicReallocateTo(address,address,bytes32,uint256)
+    topic0: "0xf8ae80b0854dfc3c73d3eb4b6160df1996a5859e6c1d11d10f3980a7f4691991"
+    indexed_topics: [sender, vault, target_market_id]
+  Borrow:
+    signature: Borrow(bytes32,address,address,address,uint256,uint256)
+    topic0: "0x570954540bed6b1304a87dfe815a5eda4a648f7097a16240dcd85c9b5fd42a43"
+    indexed_topics: [market_id, on_behalf, receiver]
+
+chains:
+  ethereum:
+    chain_id: 1
+    morpho: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
+    public_allocator: "0xfd32fA2ca22c76dD6E550706Ad913FC6CE91c75D"
+    from_block: 19375099
+    to_block: 25795523
+    to_block_hash: "0x95f88569b407a1c3619efdbc7f99e7e59589a57c92488ed87bb3d6d2a53d6926"
+    to_block_timestamp: 1787219159
+    portal_url: https://portal.sqd.dev/datasets/ethereum-mainnet
+    portal_expected_metadata: {dataset: ethereum-mainnet, start_block: 0, real_time: true}
+    full_scan_rpc: https://eth.blockscout.com/api/eth-rpc
+    receipt_rpc: https://eth.drpc.org
+    initial_get_logs_span: 100000
+    qualification_shards:
+      - {from_block: 19375099, to_block: 19385098}
+      - {from_block: 22580312, to_block: 22590311}
+      - {from_block: 25785524, to_block: 25795523}
+  base:
+    chain_id: 8453
+    morpho: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
+    public_allocator: "0xA090dD1a701408Df1d4d0B85b716c87565f90467"
+    from_block: 13979545
+    to_block: 50214705
+    to_block_hash: "0x7b2f535e8b08fdef902f1260dfc66e33ffc28506b7c8a1dafa0ba2a4b69f156d"
+    to_block_timestamp: 1787218757
+    portal_url: https://portal.sqd.dev/datasets/base-mainnet
+    portal_expected_metadata: {dataset: base-mainnet, start_block: 0, real_time: true}
+    full_scan_rpc: https://base.gateway.tenderly.co
+    receipt_rpc: https://mainnet.base.org
+    initial_get_logs_span: 300000
+    qualification_shards:
+      - {from_block: 13979545, to_block: 13989544}
+      - {from_block: 32092126, to_block: 32102125}
+      - {from_block: 50204706, to_block: 50214705}
+
+transport:
+  portal_timeout_seconds: 60
+  portal_retry_attempts: 4
+  portal_retry_backoff_seconds: 1
+  rpc_timeout_seconds: 30
+  rpc_retry_attempts: 6
+  rpc_retry_backoff_seconds: 1
+  rpc_minimum_request_interval_seconds: 0.15
+  split_log_ranges_on_failure: true
+  minimum_split_span: 1
+  maximum_index_only_events_each_chain: 10
+  maximum_index_only_fraction_each_chain: 0.001
+  maximum_rpc_only_events_each_chain: 0
+  dense_blocks_checked_each_chain: 20
+  require_exact_cutoff_header_all_sources: true
+  require_all_index_only_receipt_verified: true
+  require_all_candidate_receipts_verified: true
+  retain_raw_responses: false
+  retain_event_identities: false
+  decode_log_data: false
+
+classification:
+  terminal_consumes_preceding_unconsumed_withdrawals: true
+  require_same_sender_and_vault: true
+  require_at_least_one_withdrawal: true
+  require_later_borrow_in_same_receipt: true
+  require_borrow_emitted_by_exact_morpho: true
+  require_borrow_market_equals_target_market: true
+  count_unique_transactions: true
+  edge_unit: donor_market_id_to_target_market_id
+  call_true_jit_before_amount_gate: false
+
+pass_thresholds:
+  required_chains: [ethereum, base]
+  minimum_target_matched_candidate_transactions_total: 500
+  minimum_target_matched_candidate_transactions_each_chain: 100
+  minimum_active_span_days_each_chain: 90
+  minimum_active_utc_dates_each_chain: 30
+  minimum_distinct_vaults_each_chain: 3
+  minimum_distinct_edges_each_chain: 4
+  minimum_distinct_edges_total: 12
+  minimum_public_allocator_sequence_classification_rate: 1.0
+  minimum_candidate_receipt_verification_rate: 1.0
+  maximum_unresolved_identity_discrepancies: 0
+
+d1_future_gates_not_tested_here:
+  minimum_amount_compatible_adaptive_curve_events: 300
+  require_positive_routed_assets: true
+  require_routed_assets_not_above_borrow_assets: true
+  require_target_uses_official_adaptive_curve_irm: true
+
+forbidden_before_d0_pass:
+  - supplied_withdrawn_or_borrowed_amounts_and_shares
+  - flow_cap_values
+  - balances
+  - utilization
+  - interest_rates
+  - participant_response
+  - prices_or_yields
+  - liquidations_losses_or_bad_debt
+  - incident_labels_or_resolv_window
+  - causal_or_predictive_effects
+  - ecomd_or_learned_models
+
+stop_rules:
+  any_source_transport_identity_or_support_gate_failure_stops_route: true
+  no_chain_addition_cutoff_change_or_threshold_relaxation_after_counts: true
+  no_amount_decode_or_d1_on_failure: true
+  no_market_outcome_gpu_or_paid_data_on_failure: true
+
+resources:
+  maximum_cpu_core_hours: 25
+  maximum_transferred_gb: 50
+  maximum_retained_derived_gb: 1
+  gpu_hours: 0
+  paid_data_usd: 0

@@ -51,3 +51,13 @@ The largest normalized residual was `4.3482e-16`. Scientific decision remains
 `math_encoding_pass_novelty_and_field_support_remain_amber`: this verifies accounting only. All historical,
 event and outcome data plus EcoMD and GPUs remained untouched. Next authorized step is a separately frozen D0
 event-identity/support audit; do not retrieve history before that contract is committed and pushed.
+
+D0 was subsequently designed without opening event history. It fixes only Ethereum and Base from the official
+SDK at `eb27628b8`, with finalized endpoints at Ethereum block 25,795,523 and Base block 50,214,705; SQD and
+independent RPC headers match. The outcome-blind identity proxy requires a Public Allocator withdrawal/terminal
+sequence followed later in the same receipt by an exact-Morpho Borrow whose market topic matches the target.
+Amounts remain undecoded, so these are atomic routing--borrow candidates, not yet genuine JIT events. Frozen
+support requires 500 pooled, 100 per chain, 90-day spans, 30 active dates, 3 vaults and 4 edges per chain, 12
+edges pooled, exact classification/receipt verification and no unresolved transport discrepancy. D1 must later
+retain 300 after amount compatibility and AdaptiveCurveIRM binding. Plan/config are pending commit; no event count
+has been queried and no D0 implementation exists yet.
