@@ -199,20 +199,21 @@ def _query_logs(
     chunk_count = (to_block - from_block) // maximum_span + 1
     for chunk_index, start in enumerate(range(from_block, to_block + 1, maximum_span), start=1):
         end = min(start + maximum_span - 1, to_block)
-        logs.extend(
-            _get_logs_with_split(
-                client,
-                addresses=addresses,
-                topics=topics,
-                start_block=start,
-                end_block_inclusive=end,
-                remaining_split_depth=24,
-                split_topics_first=True,
+        for address in addresses:
+            logs.extend(
+                _get_logs_with_split(
+                    client,
+                    addresses=[address],
+                    topics=topics,
+                    start_block=start,
+                    end_block_inclusive=end,
+                    remaining_split_depth=24,
+                    split_topics_first=True,
+                )
             )
-        )
         if chunk_index == 1 or chunk_index % 25 == 0 or chunk_index == chunk_count:
             print(
-                f"{label}: {chunk_index}/{chunk_count} chunks, {len(logs)} logs",
+                f"{label}: {chunk_index}/{chunk_count} chunks x {len(addresses)} addresses, {len(logs)} logs",
                 flush=True,
             )
     return logs

@@ -9,6 +9,7 @@ from ecomd.data.liquity_agentic_queue import (
     log_identity,
     summarize_agentic_queue_support,
 )
+from scripts import audit_liquity_agentic_queue_d0 as runner
 
 TM = "0x" + "11" * 20
 ARM_WETH = "0x" + "22" * 20
@@ -298,3 +299,36 @@ def test_support_gate_fails_without_frozen_sample_size() -> None:
     assert result["passed"] is False
     failed = {check["name"] for check in result["checks"] if not check["passed"]}
     assert "unique_opened_troves" in failed
+
+
+def test_runner_queries_each_trove_manager_as_a_single_address(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed: list[tuple[str, ...]] = []
+
+    def fake_get_logs(
+        client: object,
+        *,
+        addresses: list[str],
+        topics: list[str],
+        start_block: int,
+        end_block_inclusive: int,
+        remaining_split_depth: int,
+        split_topics_first: bool,
+    ) -> list[dict[str, Any]]:
+        del client, topics, start_block, end_block_inclusive
+        del remaining_split_depth, split_topics_first
+        observed.append(tuple(addresses))
+        return []
+
+    monkeypatch.setattr(runner, "_get_logs_with_split", fake_get_logs)
+    runner._query_logs(  # type: ignore[arg-type]
+        object(),
+        addresses=[TM, "0x" + "44" * 20],
+        topics=list(TOPICS.values()),
+        from_block=1,
+        to_block=20,
+        maximum_span=10,
+        label="test",
+    )
+    assert observed == [(TM,), ("0x" + "44" * 20,), (TM,), ("0x" + "44" * 20,)]
