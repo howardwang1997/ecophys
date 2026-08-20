@@ -1,6 +1,6 @@
 ---
 name: verification-liquidity-2026-08-21
-description: "AMBER problem-first route: use GitHub's 2026-07-14 default Dependabot cooldown to test whether agent arrival controls change validation service for unrelated human work. P0 and exploratory outcome-blind support pass; formal D-1 is frozen before acquisition."
+description: "GREEN through formal outcome-blind D-1: GitHub's 2026-07-14 default Dependabot cooldown has enough public support for D0, while all queue/review/merge/security outcomes remain sealed."
 metadata:
   node_type: memory
   type: project
@@ -40,6 +40,16 @@ passed outcome-seal, config-recovery, workflow-access, queue-field-presence and 
 by design. Allowed-record canonical SHA is `7d9af87a…c62b`; no queue/review/merge/security value was persisted.
 Because live star counts changed across smoke snapshots, formal acquisition now freezes its first frame to disk and
 keeps an append-only response-hash journal; resume cannot silently select a new repository ranking.
+
+Formal D-1 ran from clean pushed implementation commit `bf23db8d3` and passed all eleven frozen gates. The fixed
+1,000-repository frame contains 226 default-treated repositories with Actions, 72 high-support treated
+repositories, 447 eligible no-Dependabot controls, 9,280 pre-event bot PRs and 2,499 24-hour arrival clusters.
+Historical-config recovery is 97.44%; workflow access and required queue-field presence are both 100% in the
+frozen probe. The outcome seal and independent 1,003-file recursive scan pass. Allowed-record canonical SHA is
+`ae7c9f36…b423`; formal result canonical SHA is `e697028e…c37e`. No explicit zero-day opt-out exists in the frame,
+so D0 must match against the frozen no-Dependabot pool and use the 63 already-cooled repositories only as a
+negative control. GREEN authorizes freezing D0, not opening outcomes or claiming an effect. Full result:
+`papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`.
 
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely

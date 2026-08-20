@@ -90,6 +90,19 @@ eligible-coupled `2<10`，因此为 **RED**。冻结实现另把五个只改变 
 CoW 不进入 T1，也不构成新的 NMI/NCS 主线。正式结果见
 `papers/proposal/computational_liquidity_t0_result_2026-08-21.md`。
 
+CoW 关闭后另开的 verification-liquidity 候选利用 GitHub 在 2026-07-14 将未配置的 Dependabot 版本
+更新 cooldown 从 0 天改为 3 天这一真实平台干预，研究 agent 到达节流是否改变无关人工任务得到的
+验证服务。正式 outcome-blind D-1 从干净推送提交 `bf23db8d3` 扫描固定的 1,000 个高星仓库，得到
+226 个带 Actions 的默认处理仓库、72 个高支持处理仓库、447 个合格无 Dependabot 对照、9,280 个
+干预前 bot PR 和 2,499 个 24 小时到达簇；历史配置恢复率为 97.44%，workflow access 与所需排队字段
+presence 均为 100%，11 项冻结门槛全部通过。独立扫描 1,003 个本地文件未发现禁用结果字段，因此
+当前为 **GREEN，仅授权先冻结 D0**；尚未读取任何 queue/review/merge/security outcome，也没有因果
+结果、GPU、EcoMD 或付费数据。当前 frame 没有显式 zero-day opt-out，D0 主对照必须从冻结的 447 个
+无 Dependabot 仓库选择，63 个 already-cooled 仓库只作负对照。单一 GitHub event study 的上限仍是
+软件/agent-systems 论文；NMI 还需前瞻政策价值与 coding-agent transfer，NCS 另需有保证的新方法和
+第二独立计算域。正式结果见
+`papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`。
+
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、
 2025 PCD 理论和 ICML 2026 SOSMC 又分别覆盖 warm-started 参数依赖 kernel、跨参数加权粒子复用、

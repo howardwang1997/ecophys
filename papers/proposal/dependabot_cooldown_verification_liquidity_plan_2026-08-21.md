@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-21  
 **Branch:** `dependabot-cooldown-verification-liquidity-2026-08-21`  
-**Status:** P0 passed; formal outcome-blind D-1 frozen before acquisition  
+**Status:** P0 and formal outcome-blind D-1 passed; GREEN to freeze D0, outcomes still sealed
 **Intervention:** GitHub's default three-day Dependabot version-update cooldown, effective 2026-07-14
 
 ## Decision in one paragraph
@@ -164,6 +164,20 @@ both GitHub-hosted and custom/self-hosted pools. No `run_started_at`, job start/
 merge outcome was inspected. These figures calibrated D-1 gates only; they are not paper evidence.
 
 ## After D-1
+
+### Formal D-1 result (2026-08-21)
+
+The clean run from implementation commit `bf23db8d3` passed all eleven frozen gates: 1,000 frame repositories,
+226 default-treated repositories with Actions, 72 high-support treated repositories, 447 eligible controls,
+9,280 pre-event bot PRs and 2,499 24-hour arrival clusters. Historical-config recovery was 97.44%; workflow access
+and required queue-field presence were both 100% in the frozen probe. An independent recursive scan of all 1,003
+raw/checkpoint files found no forbidden outcome key. The formal decision is **GREEN to freeze D0**, not evidence
+of an effect. Full immutable accounting is in
+`papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`.
+
+The frame contains no explicit zero-day opt-out. D0 therefore cannot use opt-out as its primary control. It must
+freeze a match from the 447 no-Dependabot controls and reserve the 63 already-cooled repositories as a negative
+control before opening outcomes.
 
 1. **D0:** freeze the eligible repository IDs, exact pre/post windows, matching and minimum effective clusters;
    verify treatment/config and root-job mapping while outcomes stay sealed.
