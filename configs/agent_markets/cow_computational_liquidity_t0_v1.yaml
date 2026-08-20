@@ -1,0 +1,88 @@
+schema_version: 1
+
+contract:
+  name: cow_computational_liquidity_t0
+  status: frozen_before_formal_window_event_or_competition_access
+  branch: problem-first-computational-liquidity-2026-08-21
+  claim_limit: >-
+    T0 tests free-data transport, official counterfactual usability and task-coupling support only. It cannot
+    establish novelty, causality, a phase transition, a universal law, NMI fit or NCS fit.
+
+source:
+  chain: ethereum
+  chain_id: 1
+  settlement_contract: "0x9008d19f58aabd9ed0d60971565aa8510560ab41"
+  settlement_topic0: "0x40338ce1a7c49204f0099533b1e9a7ee0a3d261f84974ab7af36105b8c4e9db4"
+  blockscout_logs_endpoint: "https://eth.blockscout.com/api"
+  cow_competition_endpoint_template: >-
+    https://api.cow.fi/mainnet/api/v2/solver_competition/by_tx_hash/{transaction_hash}
+  cow_openapi_url: >-
+    https://raw.githubusercontent.com/cowprotocol/services/v2.375.0/crates/orderbook/openapi.yml
+  cow_openapi_tag: v2.375.0
+
+formal_window:
+  from_block: 25780000
+  to_block: 25780499
+  exploratory_exclusions:
+    auction_ids: [13600000, 13628466, 13628554]
+    block_from: 25795500
+    block_to: 25796557
+  selection: all_unique_settlement_transaction_hashes_sorted_by_block_log_index_then_hash
+
+transport:
+  timeout_seconds: 30.0
+  attempts: 3
+  backoff_seconds: [1.0, 2.0, 4.0]
+  cow_minimum_request_interval_seconds: 0.65
+  user_agent: EcoPhys-cow-computational-liquidity-t0/1.0
+
+retention:
+  save_raw_blockscout_response: true
+  save_raw_cow_responses: true
+  canonical_json_sort_keys: true
+  required_competition_fields:
+    - auctionId
+    - auctionStartBlock
+    - auctionDeadlineBlock
+    - transactionHashes
+    - referenceScores
+    - auction
+    - solutions
+  required_solution_fields:
+    - ranking
+    - solverAddress
+    - score
+    - referenceScore
+    - txHash
+    - orders
+    - isWinner
+    - filteredOut
+
+definitions:
+  low_criticality_maximum: 0.001
+  high_criticality_minimum: 0.01
+  minimum_orders_for_multi_order_solution: 2
+  coupling_requires_different_solver_overlap: true
+
+gates:
+  minimum_unique_settlement_transactions: 200
+  minimum_transaction_mapping_rate: 0.98
+  minimum_distinct_competitions: 180
+  minimum_complete_winner_reference_fraction: 0.90
+  minimum_valid_winner_removals: 100
+  minimum_low_criticality_removals: 20
+  minimum_high_criticality_removals: 20
+  minimum_submitted_coupled_competitions: 30
+  minimum_eligible_coupled_competitions_for_green: 10
+  require_no_conflicting_duplicate_auction_payloads: true
+  require_exact_queried_transaction_membership: true
+
+forbidden:
+  - any_block_or_auction_outside_the_frozen_formal_window
+  - endpoint_substitution_after_failure
+  - paid_data
+  - gpu_use
+  - EcoMD_training_or_calibration
+  - association_or_hypothesis_test_before_support_decision
+  - post_hoc_coupling_definition_change
+  - causal_or_phase_transition_language
