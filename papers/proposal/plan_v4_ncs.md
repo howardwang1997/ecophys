@@ -44,6 +44,16 @@ Public Allocator 后恰有一个非公共 allocator，且三地址互异。正�
 `papers/proposal/morpho_controller_coupling_d0a_freeze_2026-08-20.md`；D0A 结果见
 `papers/proposal/morpho_controller_coupling_d0a_v2_result_2026-08-20.md`。
 
+在上述关闭提交之后另开的 Public Allocator 候选不再依赖隐藏 bot 身份，而只研究官方、公开可调用、
+代码绑定的 JIT liquidity router。其 T0 发现候选是空间控制信号错位：目标借款 `x` 若由 `r` 的跨市场
+供给路由支持，则 donor 合计获得 `0.9r` 的压力，target 获得 `x-0.9r`；全 JIT 时 90% 新压力落在
+没有借款的 donor。合约的 `maxIn+maxOut` 对每个 market 在 curator reset 之间不变，因此 flow cap
+是方向位移预算而非随时间补充的速率限制。这些仍是 accounting lemmas；官方文档已说明共享流动性
+与 donor rate effect，现有 curator-network 工作已说明 liquidity stress mutualization，行业分析也已
+讨论 Resolv 放大。只有冻结的前瞻 event-level IRM memory/participant response 和独立第二系统迁移
+可能解锁 NMI/NCS。当前仅授权 source-bound synthetic T0，历史事件、市场结果和 GPU 仍关闭。计划见
+`papers/proposal/morpho_public_allocator_pressure_t0_plan_2026-08-20.md`。
+
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、
 2025 PCD 理论和 ICML 2026 SOSMC 又分别覆盖 warm-started 参数依赖 kernel、跨参数加权粒子复用、

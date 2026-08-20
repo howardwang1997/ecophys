@@ -1,0 +1,65 @@
+contract:
+  name: morpho_public_allocator_pressure_t0
+  version: 1
+  status: frozen_before_synthetic_trials_or_market_history
+  purpose: verify_source_bound_jit_pressure_and_flow_cap_identities
+
+source_audit:
+  public_allocator:
+    remote: https://github.com/morpho-org/public-allocator.git
+    expected_git_sha: 51f92e57624099c5c3a4c9fdd88ed1ec2b16ac84
+    file_sha256:
+      src/PublicAllocator.sol: b29c14540863b77666a997293752de3601945c32df5d5e27eed4ecc587ea8062
+      src/interfaces/IPublicAllocator.sol: bc62bac8dbd1e71c35b5bba0e1ffb17c59da20ef7e46eb9844dff9362d87bb52
+      src/libraries/EventsLib.sol: 4dd3057389e99eaefb39326221b5b95a9fe7eb1904bd98eb9ecf3dae99661e90
+  adaptive_curve_irm:
+    remote: https://github.com/morpho-org/morpho-blue-irm.git
+    expected_git_sha: 7f32443bf6dd1e9d1cf9afd51a8d626b2f38267f
+    target_utilization: 0.9
+
+simulation:
+  seed: 20821
+  trials: 10000
+  minimum_donors: 1
+  maximum_donors: 12
+  minimum_vaults: 1
+  maximum_vaults: 8
+  tolerance: 1.0e-12
+
+gates:
+  maximum_pressure_continuity_residual: 1.0e-12
+  maximum_network_source_residual: 1.0e-12
+  maximum_partition_residual: 1.0e-12
+  maximum_full_jit_fraction_residual: 1.0e-12
+  maximum_flow_cap_invariant_residual: 1.0e-12
+  maximum_capacity_bound_residual: 1.0e-12
+  require_nonnegative_jit_pressure: true
+
+allowed_data:
+  - synthetic_arrays
+  - pinned_contract_source
+  - pinned_irm_constants
+
+forbidden_data:
+  - historical_public_allocator_events
+  - transaction_calldata_or_receipts
+  - flow_cap_deployments_or_values
+  - asset_amounts
+  - supply_or_borrow_balances
+  - rates
+  - utilization_history
+  - prices
+  - liquidations
+  - market_outcomes
+
+stop_rules:
+  any_math_gate_failure_stops_route: true
+  pass_does_not_establish_novelty_or_field_effect: true
+  no_d0_without_separate_freeze: true
+  no_resolv_tuning_or_clean_holdout_claim: true
+  no_gpu_or_ecomd: true
+
+resources:
+  maximum_cpu_core_hours: 10
+  maximum_retained_derived_gb: 1
+  gpu_hours: 0
