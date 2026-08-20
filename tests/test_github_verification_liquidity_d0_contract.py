@@ -9,7 +9,8 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v1.yaml"
+V1_CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v1.yaml"
+CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v2.yaml"
 LEDGER_PATH = ROOT / "data/manifests/github_dependabot_cooldown_d0_candidate_ids_v1.json"
 
 
@@ -55,6 +56,18 @@ def test_d0_candidate_ledger_is_bound_to_the_formal_outcome_blind_source() -> No
         "default_treated_high_support": 72,
         "no_dependabot_candidate_controls": 447,
     }
+
+
+def test_d0_v2_supersedes_v1_before_acquisition_without_changing_science() -> None:
+    config = _load_yaml(CONFIG_PATH)
+    v1 = _load_yaml(V1_CONFIG_PATH)
+    assert config["contract"]["supersedes"] == str(V1_CONFIG_PATH.relative_to(ROOT))
+    assert config["contract"]["superseded_config_sha256"] == _file_sha256(V1_CONFIG_PATH)
+    for key in ("source", "intervention", "windows", "cohorts", "run_identity", "decision", "compute"):
+        assert config[key] == v1[key]
+    v2_gates = {key: value for key, value in config["gates"].items() if key != "denominator_definitions"}
+    assert v2_gates == v1["gates"]
+    assert config["prequalification"]["never_uses_postperiod_counts_or_field_presence"] is True
 
 
 def test_d0_candidate_ids_and_cohort_hashes_are_exact_and_disjoint() -> None:

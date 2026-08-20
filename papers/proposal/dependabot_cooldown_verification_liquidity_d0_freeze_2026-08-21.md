@@ -7,8 +7,12 @@ audit**. D0 does not estimate whether queueing improved. It freezes exactly whic
 would enter a later one-shot D1, while queue start values, conclusions, reviews, merges, release ages and security
 outcomes remain sealed.
 
-The machine-readable contract is
-`configs/agent_markets/github_dependabot_cooldown_d0_v1.yaml`. The candidate ledger is
+The authoritative machine-readable contract is
+`configs/agent_markets/github_dependabot_cooldown_d0_v2.yaml`. It supersedes v1 before any D0 API acquisition:
+v1 had frozen the right candidate IDs, windows, estimand and numerical gates but did not fully define which
+prequalified treated repositories survive if a complete 1:3 match is infeasible. V2 preserves every scientific
+field and threshold while fixing prequalification, the deterministic maximal-prefix rule and schema denominators.
+The candidate ledger is
 `data/manifests/github_dependabot_cooldown_d0_candidate_ids_v1.json`, with file SHA-256
 `b5dc728cd79d42a6be9b5107b3fa6e1f02247680c0b41bc8485687b85680cd82` and canonical payload SHA-256
 `b6c21ed897594471051f8f21cdaef009e6f98416f0980324fdc1b791d65c5c62`.
@@ -76,6 +80,12 @@ D0 uses only pre-period covariates. It globally matches three no-Dependabot cont
 treated repository using robust-scaled Mahalanobis distance, exact runner-pool class and a pre-human-run activity
 caliper. The covariates are frozen in the YAML contract and include pre human-run volume and event mix, the capped
 human-PR lower bound, workflow count, stars and repository age. Tie-breaking is a hash of repository IDs.
+
+Prequalification requires at least five pre-period primary human run identities, finite covariates, a known
+pre-period human runner-pool class and a successful human job-schema probe. It never uses a post-period count or
+field-presence flag. Repositories are ordered by the number of feasible controls and then a repository-ID hash;
+the globally optimal assignment is solved for the largest deterministic prefix with a complete 1:3 match. If no
+prefix of at least 60 treated repositories is feasible, D0 fails.
 
 GREEN requires at least 60 matched treated and 180 distinct controls, maximum absolute standardized mean
 difference at most 0.20 and mean absolute standardized mean difference at most 0.10. Matching never uses a post

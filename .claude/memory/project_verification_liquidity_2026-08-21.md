@@ -59,6 +59,10 @@ sampling, pre-only optimal 1:3 matching, intentional workflow-wait flags, offici
 30-treated shared-runner-pool gate. The 2026-08-22--10-16 prospective holdout cannot be opened before 10-17 UTC.
 D0 remains outcome-blind and CPU/API-only. Full freeze:
 `papers/proposal/dependabot_cooldown_verification_liquidity_d0_freeze_2026-08-21.md`.
+Before any D0 API acquisition, v2 superseded v1 to resolve one implementation ambiguity: prequalification now
+requires five pre primary runs, finite covariates, known human runner class and a successful human schema probe;
+the matched treated set is the largest deterministic feasible prefix of at least 60. V2 does not change candidate
+IDs, windows, estimand, forbidden outcomes or numerical gates and is the authoritative execution contract.
 
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely

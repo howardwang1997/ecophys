@@ -188,6 +188,9 @@ definition, deterministic per-repository-day run sampling, pre-period-only 1:3 m
 exclusions, official incident sensitivity and support gates before acquisition. Prospective outcomes from
 2026-08-22 through 2026-10-16 remain embargoed until 2026-10-17 UTC. Full freeze:
 `papers/proposal/dependabot_cooldown_verification_liquidity_d0_freeze_2026-08-21.md`.
+Before any D0 API call, contract v2 superseded v1 solely to define prequalification, deterministic maximal-match
+subset selection and schema denominators; candidate IDs, windows, estimand, forbidden fields and gates did not
+change. V2 is the execution contract.
 
 1. **D0:** freeze the eligible repository IDs, exact pre/post windows, matching and minimum effective clusters;
    verify treatment/config and root-job mapping while outcomes stay sealed.
