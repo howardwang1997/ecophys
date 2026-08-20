@@ -65,7 +65,11 @@ Without those additions, the appropriate ambition is NMI or a strong computation
 
 ## D0: support-only audit
 
-The executable contract is `configs/empirical_physics/liquity_agentic_queue_d0_v1.yaml`. It pins:
+The original scientific contract is `configs/empirical_physics/liquity_agentic_queue_d0_v1.yaml`. Formal
+execution uses the transport-only child
+`configs/empirical_physics/liquity_agentic_queue_d0_v2.yaml`; it programmatically proves every scientific
+section equal to v1 and changes only the disqualified log-replication provider and state-witness role. See
+`liquity_agentic_queue_d0_transport_amendment_2026-08-20.md`. The contract pins:
 
 - official Liquity core and ARM repositories by commit and file hash;
 - all three mainnet branches and official ARM addresses;
@@ -203,6 +207,6 @@ D0 source + transport + support
 ## Immediate execution order
 
 1. Commit and push this freeze plus the audited D0 implementation and tests.
-2. Run dual-RPC D0 on a clean worktree.
+2. Run the v2 multi-provider D0 on a clean worktree.
 3. Publish the immutable manifest and a concise pass/fail decision.
 4. If and only if D0 passes, draft and commit a separate D1 preregistration before decoding numerical outcomes.

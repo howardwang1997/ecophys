@@ -44,3 +44,14 @@ reconstruction, EcoMD and GPU. A pass authorizes only a separately frozen D1. Th
 idle because D0 is a free public-RPC CPU audit. NMI requires a robust field externality plus held-out prospective
 test; NCS additionally requires a genuinely new stochastic-priority identification/calibration method and
 cross-system validation. Full plan: `papers/proposal/liquity_agentic_queue_d0_freeze_2026-08-20.md`.
+
+## Transport-only v2 amendment (16:28 NZST)
+
+The clean v1 run saw Blockscout's complete allowed-event count of 24,291, but no support breakdown. dRPC matched
+through chunk 109, then returned only 15 versus Blockscout's 42 identities in blocks 23,573,043–23,583,042; an
+identical repeat returned 14. dRPC is disqualified as a log witness. OnFinality exactly reproduced all 42
+identities and all three frozen qualification shards (0/50/38), but its public endpoint lacks historical state at
+the end block. Version 2 therefore uses Blockscout formal logs, OnFinality full log replication and dRPC only for
+header/bytecode state. The runner proves source, chain, event, window, thresholds, forbidden fields, stop rules and
+resources identical to parent SHA-256 `b4a45e62...90c14`. No numerical outcome, queue rank, support-gate breakdown,
+EcoMD or GPU was opened. Amendment: `papers/proposal/liquity_agentic_queue_d0_transport_amendment_2026-08-20.md`.

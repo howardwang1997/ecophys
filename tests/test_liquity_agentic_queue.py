@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -332,3 +334,21 @@ def test_runner_queries_each_trove_manager_as_a_single_address(
         label="test",
     )
     assert observed == [(TM,), ("0x" + "44" * 20,), (TM,), ("0x" + "44" * 20,)]
+
+
+def test_transport_amendment_preserves_every_scientific_section() -> None:
+    config_path = Path("configs/empirical_physics/liquity_agentic_queue_d0_v2.yaml").resolve()
+    config = runner._load_yaml(config_path)
+    audit = runner._validate_freeze_contract(config, config_path=config_path)
+    assert audit["is_transport_amendment"] is True
+    assert audit["scientific_sections_equal_to_parent"] is True
+
+    tampered = deepcopy(config)
+    tampered["pass_thresholds"]["minimum_unique_opened_troves"] = 499
+    with pytest.raises(RuntimeError, match="pass_thresholds"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+    tampered = deepcopy(config)
+    tampered["transport"]["state_witness_rpc"] = "https://example.invalid"
+    with pytest.raises(RuntimeError, match="state witness"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)

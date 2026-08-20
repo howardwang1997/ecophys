@@ -171,6 +171,102 @@ def _source_audit(
     }
 
 
+def _validate_freeze_contract(
+    config: Mapping[str, Any],
+    *,
+    config_path: Path,
+) -> dict[str, Any]:
+    contract = config["contract"]
+    version = int(contract["version"])
+    if version == 1:
+        if str(contract["status"]) != ("frozen_before_event_log_support_counts_or_any_queue_outcomes"):
+            raise RuntimeError("D0 v1 lacks the required outcome-blind freeze status")
+        return {"is_transport_amendment": False}
+    if version != 2 or str(contract["status"]) != (
+        "transport_only_amendment_after_drpc_identity_omission_before_support_gate"
+    ):
+        raise RuntimeError("unsupported Liquity D0 contract version or status")
+
+    amendment = config.get("amendment")
+    if not isinstance(amendment, Mapping):
+        raise RuntimeError("D0 v2 has no transport-amendment record")
+    if (
+        amendment.get("no_scientific_field_changed") is not True
+        or amendment.get("support_gate_breakdown_computed_before_amendment") is not False
+        or amendment.get("numerical_protocol_outcome_decoded_before_amendment") is not False
+    ):
+        raise RuntimeError("D0 v2 does not preserve outcome-blind scientific invariance")
+    parent_relative = Path(str(amendment["parent_config_path"]))
+    parent_path = (REPO_ROOT / parent_relative).resolve()
+    if not parent_path.is_relative_to(REPO_ROOT) or not parent_path.is_file():
+        raise RuntimeError("D0 v2 parent config is outside the repository or absent")
+    parent_digest = _sha256_file(parent_path)
+    if parent_digest != str(amendment["parent_config_sha256"]):
+        raise RuntimeError("D0 v2 parent config digest mismatch")
+    parent = _load_yaml(parent_path)
+    if int(parent["contract"]["version"]) != 1 or str(parent["contract"]["status"]) != (
+        "frozen_before_event_log_support_counts_or_any_queue_outcomes"
+    ):
+        raise RuntimeError("D0 v2 parent is not the original outcome-blind version")
+    if str(contract["name"]) != str(parent["contract"]["name"]) or str(contract["purpose"]) != str(
+        parent["contract"]["purpose"]
+    ):
+        raise RuntimeError("D0 v2 changed the contract name or scientific purpose")
+    if set(config) != set(parent) | {"amendment"}:
+        raise RuntimeError("D0 v2 added an unreviewed top-level section")
+
+    invariant_sections = {
+        "official_sources",
+        "ethereum",
+        "event_signatures",
+        "operation_codes",
+        "support_window",
+        "pass_thresholds",
+        "forbidden_before_d0_pass",
+        "stop_rules",
+        "resources",
+    }
+    for section in invariant_sections:
+        if config.get(section) != parent.get(section):
+            raise RuntimeError(f"D0 v2 changed frozen scientific section: {section}")
+    invariant_transport_fields = {
+        "formal_rpc",
+        "rpc_is_replaceable_transport",
+        "minimum_request_interval_seconds",
+        "rate_limit_retries",
+        "rate_limit_backoff_initial_seconds",
+        "rate_limit_backoff_max_seconds",
+        "maximum_get_logs_span",
+        "full_log_identity_replication_required",
+        "qualification_shards_frozen_without_event_counts",
+        "minimum_nonempty_qualification_shards",
+    }
+    transport = config["transport"]
+    parent_transport = parent["transport"]
+    if set(transport) != set(parent_transport) | {
+        "state_witness_rpc",
+        "preformal_identity_diagnostics",
+    }:
+        raise RuntimeError("D0 v2 transport fields exceed the frozen amendment scope")
+    for field in invariant_transport_fields:
+        if transport.get(field) != parent_transport.get(field):
+            raise RuntimeError(f"D0 v2 changed frozen transport protocol field: {field}")
+    if str(transport["state_witness_rpc"]) != str(parent_transport["replication_rpc"]):
+        raise RuntimeError("D0 v2 did not preserve dRPC as the state witness")
+    if str(transport["replication_rpc"]) == str(parent_transport["replication_rpc"]):
+        raise RuntimeError("D0 v2 did not replace the disqualified log replication RPC")
+    if config_path != config_path.resolve() or not config_path.is_relative_to(REPO_ROOT):
+        raise RuntimeError("formal D0 config must resolve inside the repository")
+    return {
+        "is_transport_amendment": True,
+        "parent_config_path": str(parent_relative),
+        "parent_config_sha256": parent_digest,
+        "scientific_sections_equal_to_parent": True,
+        "d0_support_breakdown_computed_before_amendment": False,
+        "numerical_protocol_outcomes_decoded_before_amendment": False,
+    }
+
+
 def _rpc_client(url: str, transport: Mapping[str, Any]) -> _RpcClient:
     return _RpcClient(
         url=url,
@@ -359,8 +455,7 @@ def audit(
     if _git("status", "--porcelain"):
         raise RuntimeError("formal Liquity D0 requires a clean EcoPhys worktree")
     config = _load_yaml(config_path)
-    if str(config["contract"]["status"]) != ("frozen_before_event_log_support_counts_or_any_queue_outcomes"):
-        raise RuntimeError("D0 contract lacks the required outcome-blind freeze status")
+    amendment_audit = _validate_freeze_contract(config, config_path=config_path)
     source_audit = _source_audit(config, bold_root=bold_root, arm_root=arm_root)
     if _keccak_topic("Transfer(address,address,uint256)") != (
         "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
@@ -370,8 +465,14 @@ def audit(
     transport = config["transport"]
     formal = _rpc_client(str(transport["formal_rpc"]), transport)
     replica = _rpc_client(str(transport["replication_rpc"]), transport)
+    state_witness_url = str(transport.get("state_witness_rpc", transport["replication_rpc"]))
+    state_witness = (
+        replica
+        if state_witness_url == str(transport["replication_rpc"])
+        else _rpc_client(state_witness_url, transport)
+    )
     chain_id = hex(int(config["ethereum"]["chain_id"]))
-    if formal.call("eth_chainId", []) != chain_id or replica.call("eth_chainId", []) != chain_id:
+    if any(client.call("eth_chainId", []) != chain_id for client in (formal, replica, state_witness)):
         raise RuntimeError("one or more D0 RPC transports are on the wrong chain")
 
     ethereum = config["ethereum"]
@@ -379,9 +480,10 @@ def audit(
     to_block = int(ethereum["to_block"])
     formal_end = formal.block(to_block)
     replica_end = replica.block(to_block)
+    state_witness_end = state_witness.block(to_block)
     expected_hash = normalize_topic(str(ethereum["to_block_hash"]))
     expected_timestamp = int(ethereum["to_block_timestamp"])
-    if formal_end != replica_end:
+    if formal_end != replica_end or formal_end != state_witness_end:
         raise RuntimeError("frozen end-block headers differ across RPC transports")
     if str(formal_end["hash"]) != expected_hash or int(formal_end["timestamp"]) != expected_timestamp:
         raise RuntimeError("frozen D0 end block differs from the preregistration")
@@ -401,7 +503,7 @@ def audit(
         deployment_addresses[f"{branch}.borrower_operations"] = str(record["borrower_operations"])
     deployment_audit = _code_audit(
         formal,
-        replica,
+        state_witness,
         addresses=deployment_addresses,
         block_number=to_block,
     )
@@ -544,6 +646,7 @@ def audit(
         "contract_name": str(config["contract"]["name"]),
         "contract_version": int(config["contract"]["version"]),
         "decision": decision,
+        "amendment_audit": amendment_audit,
         "repository": {
             "git_sha": _git("rev-parse", "HEAD"),
             "clean_worktree_at_start": True,
@@ -578,11 +681,13 @@ def audit(
         "transport": {
             "formal_rpc": str(transport["formal_rpc"]),
             "replication_rpc": str(transport["replication_rpc"]),
+            "state_witness_rpc": state_witness_url,
             "qualification_shards": qualification,
             "nonempty_qualification_shards": nonempty_qualification_shards,
             "full_log_identity_sets_equal": True,
             "formal": _request_stats(formal),
             "replica": _request_stats(replica),
+            "state_witness": _request_stats(state_witness),
         },
         "blinding": {
             "only_event_type_operation_identity_and_canonical_time_decoded": True,
