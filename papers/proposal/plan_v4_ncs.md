@@ -29,6 +29,13 @@ SQD 均证明多出的 `BatchUpdated` 是真实 canonical log，根因是 Blocks
 NCS 仍额外需要新方法、形式保证和第二系统验证。正式结果见
 `papers/proposal/liquity_agentic_queue_d0_v5_result_2026-08-20.md`。
 
+Liquity 关闭后新建的 Morpho allocator--IRM coupling 候选目前仅为 **AMBER T0**，详见
+`papers/proposal/morpho_controller_coupling_t0_plan_2026-08-20.md`。其精确核算层把
+`q_i=B_i-0.9S_i` 视为可由资金重分配搬运但不能消灭的控制压力；利用率拉齐达到不可避免的 minimax
+共同误差，同时使各 AdaptiveCurveIRM 获得相同误差信号并冻结差异 rate-memory 模态。该恒等式和
+consensus/PE 解释不作为新定理。只有在正式 T0、部署身份/样本 D0、前瞻场上预测和跨系统方法均通过
+后，才可能成为新的 NMI/NCS 候选；当前不重开原 v4 G0，不读取历史市场结果，也不授权 GPU。
+
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、
 2025 PCD 理论和 ICML 2026 SOSMC 又分别覆盖 warm-started 参数依赖 kernel、跨参数加权粒子复用、

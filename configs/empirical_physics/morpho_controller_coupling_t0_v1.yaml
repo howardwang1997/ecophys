@@ -1,0 +1,54 @@
+experiment_id: morpho_controller_coupling_t0_v1
+seed: 20820
+trials: 10000
+n_markets_min: 2
+n_markets_max: 12
+target_utilization: 0.9
+adjustment_speed_per_year: 50.0
+elapsed_seconds: 900.0
+flow_fraction_max: 0.2
+min_utilization: 0.15
+max_utilization: 0.99
+min_aggregate_utilization_gap: 0.02
+tolerance: 1.0e-10
+source:
+  bot:
+    repository: https://github.com/morpho-org/morpho-blue-reallocation-bot
+    commit: 564eafde188ae81b1439b01da9c356d0964dbb35
+    files:
+      apps/client/src/strategies/equilizeUtilizations/index.ts: e20d18ba8ffc054416434410b5fc70c3653e5878b96488f9ed2776e343007157
+      apps/client/src/strategies/apyRange/index.ts: e3c87fc2cb1334e301467273d83fbe50076a83e65dcfe9fd59a33f968932cad7
+      apps/client/src/utils/maths.ts: 381c756a65cb4f075fa80ccf89cdd2c6fc92d2479754445f4fdaacf8213b3172
+      apps/config/src/config.ts: e59e473a7823db3c90e11ccb9bb926130f4fae4efe08e12024d729150ad503c2
+      apps/config/src/strategies/apyRange.ts: a53c83be8db8a2dbc2c175557f911422f7f3d0e26ab044f9ab476637eb3c56d7
+      apps/config/src/strategies/equilizeUtilizations.ts: d13c9f4cb61a47056d8f2cb6f63fa284e677def0614b3caac39818eba8feb800
+  irm:
+    repository: https://github.com/morpho-org/morpho-blue-irm
+    commit: 7f32443bf6dd1e9d1cf9afd51a8d626b2f38267f
+    files:
+      src/adaptive-curve-irm/AdaptiveCurveIrm.sol: 40ee4764e8eebfee290e07314af38fee7e30323a258d27bdb481e6c00187186d
+      src/adaptive-curve-irm/libraries/ConstantsLib.sol: 63abf640bd64295e39b7b32f22159e49927c2156c9445b17fd856f447f634afa
+  target_utilization_constant: 0.9
+  adjustment_speed_constant_per_year: 50.0
+allowed_data:
+  - synthetic_arrays
+  - pinned_source_constants
+forbidden_data:
+  - historical_reallocation_events
+  - asset_amounts
+  - rates
+  - utilization_history
+  - prices
+  - liquidations
+  - market_outcomes
+resources:
+  max_cpu_core_hours: 50
+  max_storage_gb: 1
+  gpu_forbidden: true
+gates:
+  pressure_continuity_max_residual: 1.0e-10
+  global_conservation_max_residual: 1.0e-10
+  minimax_bound_max_violation: 1.0e-10
+  equalization_spread_max: 1.0e-10
+  differential_rate_memory_max_residual: 1.0e-10
+  require_nonzero_common_mode_trials: true
