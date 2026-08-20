@@ -69,3 +69,12 @@ allocator path returned HTTP 404 `Cannot GET` on all three bounded attempts, and
 remains immutable at config SHA `49ab2ae1…04c3`. D0A v2 is a transport-only amendment using the documented
 GraphQL exact-vault role query. It changes no candidate or scientific threshold; GraphQL does not expose the
 REST-documented grant transaction hash, so exact grant-event provenance is deferred to D0B.
+
+D0A v2 is now a formal **FAIL** from clean pushed commit `c7b9fe3e85e48c17758bcdfc14cbf98cd3422a35`;
+canonical result SHA-256 is `72cc38bdee28af7109e7e60e5d0ad7ebcb1d7a7876fb9730aca81e80463231b0`.
+Gauntlet USDC Prime has one private plus the public allocator; sky.money USDS Flagship has one private allocator;
+Steakhouse USDC has one public plus three non-public allocators. Therefore the frozen one-private-address-per-
+anchor gate fails. Do not identify a Steakhouse bot from cadence, inspect histories, add another anchor or run
+D0B. The Morpho field route is closed before outcomes. Reopening needs a new prospective design with operator-
+signed executor/policy epochs, a code-bound on-chain strategy, or a claim that does not depend on hidden bot
+identity. The T0 algebra survives only as reusable infrastructure.

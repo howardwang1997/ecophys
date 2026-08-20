@@ -4,6 +4,10 @@
 scientific contract below is unchanged. Its one allowed transport repair is frozen in
 `morpho_controller_coupling_d0a_graphql_transport_amendment_2026-08-20.md`; the formal successor config is v2.
 
+**Formal result:** v2 failed the unique non-public allocator gate because Steakhouse USDC has three non-public
+explicit allocators after excluding the official Public Allocator. The route is closed before history; see
+`morpho_controller_coupling_d0a_v2_result_2026-08-20.md`.
+
 ## Decision boundary
 
 This protocol is frozen before requesting any reallocation history. D0A asks whether three independent Morpho

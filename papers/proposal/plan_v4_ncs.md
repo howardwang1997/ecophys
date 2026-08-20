@@ -36,11 +36,13 @@ Liquity 关闭后新建的 Morpho allocator--IRM coupling 候选目前为 **AMBE
 consensus/PE 解释不作为新定理。正式 T0 从干净提交 `7bb63f2d8` 完成 10,000 次试验，七项 gate
 全过，结果 SHA-256 为 `91a4738b…f64e`，但只验证代数编码。随后在任何历史事件前冻结 D0A：固定
 Steakhouse、Gauntlet 与 sky.money 三个 operator-authored automation 锚点，要求每个锚点在排除官方
-Public Allocator 后恰有一个非公共 allocator，且三地址互异；失败即在 history 前关闭。只有 D0A、
-部署样本 D0B、前瞻场上预测和跨系统方法均通过后，才可能成为新的 NMI/NCS 候选；当前不重开原
-v4 G0，不读取历史市场结果，也不授权 GPU。正式 T0 结果与 D0A 冻结分别见
+Public Allocator 后恰有一个非公共 allocator，且三地址互异。正式 v2 查询中 Gauntlet 与 sky.money
+各有一个非公共 allocator，但 Steakhouse 在排除 Public Allocator 后仍有三个，唯一身份 gate 失败。
+按预注册停止规则，Morpho 场上路线已在 history、D0B、市场结果和 GPU 前关闭；T0 仅保留为可复用
+代数基础设施。它不能成为新的 NMI/NCS 候选，当前也不重开原 v4 G0。正式 T0 结果与 D0A 冻结见
 `papers/proposal/morpho_controller_coupling_t0_result_2026-08-20.md` 和
-`papers/proposal/morpho_controller_coupling_d0a_freeze_2026-08-20.md`。
+`papers/proposal/morpho_controller_coupling_d0a_freeze_2026-08-20.md`；D0A 结果见
+`papers/proposal/morpho_controller_coupling_d0a_v2_result_2026-08-20.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、

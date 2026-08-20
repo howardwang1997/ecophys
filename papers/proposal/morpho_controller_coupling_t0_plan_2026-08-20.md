@@ -2,8 +2,9 @@
 
 **Formal status (2026-08-20):** all seven mathematical gates passed from clean pushed commit `7bb63f2d8`;
 canonical result SHA-256 `91a4738beff17da6d16972faa1ddcbc844a76643678aec300ec9c6ca0cc3f64e`. This is
-a PASS for the encoding only and leaves the route AMBER. The next frozen stage is the deployment-identity D0A in
-`morpho_controller_coupling_d0a_freeze_2026-08-20.md`; historical events and market values remain unopened.
+a PASS for the encoding only. D0A subsequently failed its frozen unique-identity gate: Steakhouse USDC has three
+non-public allocator roles, so no single address can be called its bot without post-hoc behavioral inference.
+The field route is closed before historical events and market values; the T0 algebra remains infrastructure.
 
 ## Decision before experiments
 
