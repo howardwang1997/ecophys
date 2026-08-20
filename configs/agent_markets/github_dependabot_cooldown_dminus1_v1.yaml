@@ -1,0 +1,133 @@
+schema_version: 1
+
+contract:
+  name: github_dependabot_cooldown_dminus1
+  status: frozen_before_formal_frame_acquisition
+  branch: dependabot-cooldown-verification-liquidity-2026-08-21
+  claim_limit: >-
+    D-1 tests public-data scale, historical-config recovery, schema access and missingness only. It cannot establish
+    a cooldown effect, queueing externality, security benefit, causal claim, universal mechanism, NMI fit or NCS fit.
+
+intervention:
+  announcement_date_utc: "2026-07-14"
+  config_cutoff_utc: "2026-07-13T23:59:59Z"
+  default_cooldown_days_before: 0
+  default_cooldown_days_after: 3
+  security_updates_exempt: true
+  announcement_url: >-
+    https://github.blog/changelog/2026-07-14-dependabot-version-updates-introduce-default-package-cooldown/
+
+frame:
+  endpoint: https://api.github.com/search/repositories
+  query: "stars:>1000 created:<2026-01-01 archived:false fork:false"
+  sort: stars
+  order: desc
+  pages: 10
+  per_page: 100
+  selection: unique_repository_ids_in_page_then_rank_order
+
+calibration_window:
+  from_utc: "2026-05-19T00:00:00Z"
+  to_utc: "2026-07-13T23:59:59Z"
+  cluster_gap_hours: 24
+  minimum_bot_prs_for_high_support_repository: 20
+
+exploratory_calibration:
+  query: "stars:>1000 pushed:>=2026-05-23 archived:false fork:false"
+  pages: 1
+  window_from_utc: "2026-06-01T00:00:00Z"
+  window_to_utc: "2026-07-31T23:59:59Z"
+  purpose: threshold_and_transport_calibration_only
+
+github:
+  api_version: "2026-03-10"
+  rest_base_url: https://api.github.com
+  dependabot_config_path: .github/dependabot.yml
+  dependabot_login: "dependabot[bot]"
+  timeout_seconds: 30.0
+  attempts: 3
+  backoff_seconds: [1.0, 2.0, 4.0]
+  maximum_parallel_requests: 4
+  minimum_remaining_core_requests: 250
+  user_agent: EcoPhys-verification-liquidity-dminus1/1.0
+
+allowed_persisted_fields:
+  repository:
+    - id
+    - node_id
+    - full_name
+    - created_at
+    - archived
+    - fork
+    - stargazers_count
+    - default_branch
+    - frame_rank
+  event:
+    - id
+    - created_at
+    - actor_class
+    - event_type
+    - workflow_path
+    - head_sha
+    - pull_request_ids
+  configuration:
+    - commit_sha
+    - commit_timestamp
+    - content_sha256
+    - parse_status
+    - treatment_class
+    - schedule_schema
+    - grouping_present
+  job_schema:
+    - run_id
+    - job_id
+    - runner_labels
+    - required_field_presence
+  transport:
+    - endpoint_class
+    - request_count
+    - response_sha256
+    - etag
+    - pagination
+    - rate_limit_metadata
+
+forbidden_persisted_fields:
+  - workflow_run_started_at_value
+  - workflow_run_updated_at_value
+  - job_started_at_value
+  - job_completed_at_value
+  - workflow_or_job_status
+  - workflow_or_job_conclusion
+  - pull_request_closed_or_merged_state
+  - pull_request_review_or_comment_response
+  - duration_or_queue_wait
+  - package_release_timestamp_or_release_age
+  - vulnerability_or_security_outcome
+  - price_market_or_ecomd_value
+  - raw_api_payload_containing_any_forbidden_field
+
+gates:
+  minimum_unique_frame_repositories: 800
+  minimum_default_treated_with_actions: 100
+  minimum_high_support_default_treated: 50
+  minimum_pre_event_dependabot_pull_requests: 1000
+  minimum_pre_event_24h_clusters: 200
+  minimum_eligible_no_dependabot_controls: 100
+  minimum_historical_config_recovery_rate: 0.90
+  minimum_workflow_run_access_rate: 0.90
+  minimum_required_queue_field_presence_rate: 0.95
+  require_no_forbidden_persisted_field: true
+  require_deterministic_derived_summary_hash: true
+
+decision:
+  green: all_gates_pass_and_d0_sample_can_be_powered_without_opening_outcomes
+  amber: >-
+    transport_and_scale_pass_but_runner_pool_or_control_support_requires_a_predeclared_narrower_claim_before_d0
+  red: stop_before_queue_outcomes_model_gpu_paid_data_or_window_rescue
+
+compute:
+  maximum_mac_core_hours: 20
+  maximum_local_storage_gb: 5
+  gpu_allowed: false
+  paid_data_allowed: false
+  h20_allowed: false

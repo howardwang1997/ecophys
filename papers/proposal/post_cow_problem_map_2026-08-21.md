@@ -2,9 +2,13 @@
 
 ## Current decision
 
-There is no endorsed archival main route after the formal CoW computational-liquidity T0 stopped RED. CoW is
-not reopened with a longer window, and ERCOT RTC+B is not promoted merely because it is the remaining named
-candidate. The latter has real physical control but only two announced, bundled production-switch clusters.
+CoW remains closed after its formal RED result, and ERCOT RTC+B remains parked. A fresh AMBER route was selected
+after this map was written: GitHub's 2026-07-14 default Dependabot cooldown supplies a real, platform-wide safety
+intervention for testing **verification liquidity**—whether autonomous proposal timing changes the validation
+service received by unrelated human work. The broad bot-burden claim is occupied; only the causal spillover and
+runner-pool mechanism remain candidates. P0 and exploratory outcome-blind support passed, and the formal D-1 is
+frozen in `papers/proposal/dependabot_cooldown_verification_liquidity_plan_2026-08-21.md`. It has not opened queue,
+review or merge outcomes and does not yet authorize D0, GPU, EcoMD or an NMI/NCS claim.
 
 The repeated failures now expose a process problem as well as scientific nulls: transport and event-rate
 uncertainty have too often been mixed into the first hypothesis-consuming holdout. The next candidate must pass
