@@ -195,13 +195,12 @@ v1 files remain diagnostic-only. This changes no chain, block union, event famil
 rule. GPUs, EcoMD, D1 and outcomes remain locked.
 
 Version 2 was committed and pushed as clean SHA `c9ab42a64295ec6bd3ea6868050cb9ca4dd05d15`, then deployed to
-isolated exact-SHA roots on both V100 hosts and the RTX 2060 host with CUDA hidden. Eight primary chain artifacts
-are complete and independently digest-verified locally: Arbitrum `1b02c48b...`, Avalanche `810fc3b4...`, Base
-`6554a05c...`, Gnosis `ea60ec3c...`, Linea `cdf9cec6...`, Optimism `552bdb4c...`, Plasma `832af1cb...` and
-Polygon `327f8ae5...`. Together they contain 366 raw proposals, 211 eligible proposals, 155 audited exclusions
-and 198 injections. These partial counts do not authorize a pass; BNB remains mandatory and is running through
-Sentio at the frozen 10,000-block/0.75-second cadence. Plasma was safely migrated from a slow official-RPC
-checkpoint to a fresh RTX/Sentio run after the new checkpoint proved its SHA/config/endpoint identity.
+isolated exact-SHA roots on both V100 hosts and the RTX 2060 host with CUDA hidden. All nine primary chain
+artifacts completed and were independently digest-verified locally. BNB's final artifact digest is
+`c43b3c16...`; it contains 12 raw proposals, four eligible proposals, eight exclusions and four injections after
+14,293 paced `eth_getLogs` requests with no split or retry. The correct exact-SHA merge contains 378 raw proposals,
+215 eligible proposals, 163 audited exclusions, 202 exact injections and 151 action batches. Its canonical
+payload digest is `89309106c370404049ad27247ee8e0efe3d01a787cb4e0f1feae689e2de960e8`.
 
 The first full-union transport comparison found Gnosis and Linea action surfaces byte-for-byte equal between v1
 independent providers and v2 fast primaries. Arbitrum did not match: the v1 Blockscout artifact has 89 Hub events
@@ -213,6 +212,16 @@ one v1 proposal from falsely expired to correctly injected and proves that one m
 insufficient to guarantee full-window completeness. A full official-Arbitrum v2 replication completed on
 V100-A with artifact digest `d5eed01f...`; its complete action surface is byte-identical to the
 Tenderly primary, canonical action-surface digest `11ee6f153425f1ddb34c692af9e2bf242ca2533f279af59856282248159237c2`.
-Blockscout cannot serve as the final Arbitrum full-union reference. The eight complete primary artifacts are now
-staged beside the running BNB task on the RTX host; watchdog PID 286331 will merge only if BNB writes a result,
-and otherwise records failure without attempting a partial merge. No market outcome was queried.
+Blockscout cannot serve as the final Arbitrum full-union reference. The official replication artifact digest is
+`d5eed01f2b6666a18e8c588c80fe5ea52ea82b5898df71cdcc11c7db5f22922b`. No market outcome was queried.
+
+The formal D0H v2 decision is a **hard stop before D1 and market outcomes**. Every global inventory, diversity,
+batching, non-immediate-resolution and classification gate passes, but zero delay boundaries on zero chains pass
+the frozen local-support gate; two boundaries on two chains were required. Plasma agent 0 has 60 scores but no
+positive score inside the 25% neighborhood (closest positive 85,767 seconds versus radius 64,800). Optimism agent
+0 has near-boundary support but only 16 rows, four negative and four near-negative (frozen minima 20/5/5). A
+one-third radius alone qualifies only Plasma; 16/4/4 row minima alone qualify only Optimism; both post-hoc changes
+would be needed to manufacture the required two-chain pass. Do not make either change. Stop further provider
+replication, exact-state replay, outcome access, EcoMD and GPU use for this route. Preserve the event-ledger and
+transport audit as measurement infrastructure only. Formal result:
+`papers/proposal/aave_agent_guardrail_holdout_d0_v2_result_2026-08-20.md`.

@@ -12,14 +12,15 @@ also stop here:
    specification mining, data-driven safety verification and controller-conformance bounds already cover the
    broad problem.
 
-One narrower field question remains **AMBER**:
+One narrower field question was advanced to a prospectively frozen nine-chain holdout and is now **RED**:
 
 > Can deterministic safety guardrails around a deployed automated economic controller create usable threshold
 > variation for identifying the effect of the controller's actions, and when do those same guardrails make the
 > intended response infeasible or too slow?
 
-This authorizes only a result-blind, policy-log D0 on Aave. It does not authorize market outcomes, a paper claim,
-GPU work or an EcoMD model.
+The holdout contains ample global action data but zero qualifying local delay boundaries on zero chains, against
+two required on two chains. It therefore stops before market outcomes, a paper-level causal claim, GPU work or an
+EcoMD model.
 
 ## Why this is a larger story
 
@@ -46,10 +47,10 @@ flowchart TD
     C --> CR[RED: persistent excitation defeats scalar law]
     V --> VR[RED: verification/specification-mining prior art]
     B --> BA[AMBER as empirical mechanism; standard control theory]
-    G --> D0[AMBER: outcome-blind proposal/execution support gate]
+    G --> D0[Outcome-blind proposal/execution support gate]
 
     D0 --> S{Two-sided threshold support?}
-    S -- no --> STOP[Stop causal route before market outcomes]
+    S -- no --> STOP[Observed: 0 boundaries on 0 chains; close route]
     S -- yes --> D1[Freeze exact eligibility reconstruction]
     D1 --> D2[Chronological market-response pilot]
     D2 --> X[Independent controller transfer]
@@ -100,7 +101,7 @@ claim.
 
 | Rank | Candidate | Status | Binding reason |
 |---:|---|---|---|
-| 1 | guardrail threshold variation in deployed automated economic control | **AMBER; D0 only** | potentially clean proposed-versus-executed action split; two-sided support unknown |
+| 1 | guardrail threshold variation in deployed automated economic control | **RED after D0H v2** | globally rich ledger, but zero qualifying local boundaries on zero chains; two on two chains required |
 | 2 | safety--responsiveness frontier across live lending controllers | **AMBER/RED** | real field question, but rate-limited control and adaptivity--robustness theory are established |
 | 3 | source-grounded controller conformance benchmark | **RED as main claim** | specification mining and runtime verification dominate; useful infrastructure only |
 | 4 | intervention-frequency/mixing-time law | **RED** | explicit persistent-excitation and confounding counterexamples |
@@ -123,7 +124,8 @@ claim.
 
 | Gate | Data | Frozen purpose | Status |
 |---|---|---|---|
-| D0 | Aave official source/address commits; AgentHub configuration, Risk Oracle proposal and injection events only | determine whether proposals and executions provide support for a guardrail design | **completed: formal stop; 85.81% terminal classification missed the frozen 90% gate** |
+| D0 pilot | Ethereum official source/address commits; AgentHub configuration, Risk Oracle proposal and injection events only | identify risk-set defects before any outcome access | **completed: formal stop; 85.81% terminal classification missed the frozen 90% gate** |
+| D0H v2 | untouched nine-chain policy-event holdout with activation-conditioned eligibility and independent action batches | prospectively test two-sided local support on at least two boundaries and two chains | **completed: hard stop; 0/2 boundaries on 0/2 chains despite 215 eligible proposals and 202 injections** |
 | D1 | historical policy state required to compute exact validation scores; still no market behavior | reconstruct every eligible, blocked, expired and overwritten action | locked until D0 passes |
 | D2 | utilization, rate, supply/borrow and transaction response around pre-specified thresholds | chronological causal pilot | locked until D1 passes |
 | D3 | Morpho, Euler, Sky or another independently implemented controller | transfer and mechanism contrast | locked until D2 passes |
@@ -137,7 +139,7 @@ actions.
 
 | Stage | CPU/storage | GPU | Rule |
 |---|---|---|---|
-| D0 | below 20 core-hours and 2 GB | forbidden | event/configuration support only |
+| D0/D0H | at most 50 core-hours and 5 GB | forbidden | completed event/configuration support audit; route now closed |
 | D1 | below 100 core-hours and 20 GB | forbidden | exact replay and validation classification |
 | D2 | 100--1,000 core-hours and 0.1--1 TB | normally none | causal/event analysis; non-neural baselines first |
 | D3--D4 | scale only from measured throughput | 20--200 V100-equivalent hours only if a frozen learned component beats non-neural baselines | transfer and prospective prediction |
@@ -149,7 +151,15 @@ workers only after the scientific gates pass.
 ## Immediate action
 
 `aave_agent_guardrail_d0_v1` was frozen before reading any Risk Oracle proposal value or matching it to execution.
-The formal audit then stopped before outcomes: eight of nine support gates passed, but only 133 of 155 proposals
-had an unambiguous terminal class, below the frozen 90% minimum. The result and post-hoc left-truncation diagnosis
-are recorded in `papers/proposal/aave_agent_guardrail_d0_result_2026-08-20.md`. No D1 or market-outcome query is
-authorized on the strength of this Ethereum result.
+Its failed classification gate motivated a genuinely untouched, activation-conditioned nine-chain holdout rather
+than a reclassification of the pilot. D0H v2 then completed from clean SHA `c9ab42a64` with 215 eligible
+proposals, 202 exact injections and 151 action batches. Every global gate passes, but zero local delay boundaries
+qualify on zero chains. Plasma has a scheduled-action support hole; Optimism has real local overlap but misses the
+frozen row minima. Passing would require simultaneous post-hoc changes to the neighborhood and row-count rules.
+
+The final result is recorded in
+`papers/proposal/aave_agent_guardrail_holdout_d0_v2_result_2026-08-20.md`, canonical payload digest
+`89309106c370404049ad27247ee8e0efe3d01a787cb4e0f1feae689e2de960e8`. Close the threshold-causal route. Do
+not run D1, read market outcomes, relax thresholds, simulate rejected actions or use EcoMD/GPU for this question.
+Retain only the source, event-ledger, batching and transport-completeness infrastructure for a differently frozen
+future problem.

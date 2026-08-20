@@ -272,11 +272,11 @@ provider. All nine primary artifacts must also come from one clean repository SH
 ### Version-2 execution and first full-union audit
 
 Version 2 was committed and pushed at clean SHA `c9ab42a64295ec6bd3ea6868050cb9ca4dd05d15`. Exact-SHA roots on
-the two V100 hosts and RTX 2060 host launched all nine chains with CUDA hidden. Eight primary artifacts have
-completed and passed independent canonical-digest, SHA, config, blinding and compute checks: Arbitrum, Avalanche,
-Base, Gnosis, Linea, Optimism, Plasma and Polygon. Their current combined inventory is 366 raw proposals, 211
-eligible proposals, 155 exclusions and 198 injections. BNB is still running at its frozen 10,000-block cadence;
-there is no partial-panel decision.
+the two V100 hosts and RTX 2060 host launched all nine chains with CUDA hidden. All nine primary artifacts
+completed and passed independent canonical-digest, SHA, config, blinding and compute checks. The formal merge
+contains 378 raw proposals, of which 215 are eligible and 163 are audited exclusions; it contains 202 exact
+injections and 151 proposal batches. The merged canonical payload digest is
+`89309106c370404049ad27247ee8e0efe3d01a787cb4e0f1feae689e2de960e8`.
 
 The first no-new-RPC full-union comparison reused v1 files only as transport diagnostics. Gnosis and Linea have
 byte-identical complete action surfaces across their independent v1 providers and v2 fast primaries. Arbitrum
@@ -292,13 +292,36 @@ full action surface is byte-identical to the Tenderly primary, with canonical
 digest `11ee6f153425f1ddb34c692af9e2bf242ca2533f279af59856282248159237c2`. The independent result therefore
 confirms the v2 Arbitrum ledger and isolates the fault to Blockscout.
 
+### Frozen decision
+
+The complete panel passes every global action-volume, diversity, batching, resolved-action and classification
+gate. It has 215 eligible proposals, 202 exact injections, four update types, 49 chain-market pairs, 18
+chain-agents on all nine chains, 42 resolved non-immediate proposals in 28 batches, and a 100% terminal
+classification rate. It fails only the two conjunctive local-support gates: zero qualifying delay boundaries
+versus two required, on zero chains versus two required. The machine decision is
+`stop_multichain_threshold_route_before_d1_and_market_outcomes`.
+
+Plasma agent 0 has 60 row scores and 25 batch medians around its 259,200-second boundary, but no positive row or
+batch median lies within the frozen 64,800-second neighborhood; the closest positive row is 85,767 seconds.
+Optimism agent 0 has genuine near-boundary observations but only 16 rows with four negative and four
+near-negative values, below the frozen 20/5/5 row minima. A post-hoc one-third neighborhood qualifies only
+Plasma; a post-hoc 16/4/4 row rule qualifies only Optimism. Both non-authorized changes are required to reach two
+chains, so the design cannot be rescued by one robustness perturbation.
+
+The immutable artifacts, independent recomputation and full interpretation are recorded in
+`papers/proposal/aave_agent_guardrail_holdout_d0_v2_result_2026-08-20.md`. The hard stop applies before exact
+state replay, market outcomes, EcoMD and GPU use. Because D0H fails, further complete-provider replications cannot
+change the scientific decision and are stopped; the completed official-Arbitrum replication remains a transport
+validation artifact.
+
 ## Resources and interpretation
 
 D0H is capped at 50 CPU core-hours, 5 GB retained derived data, zero paid-data spend and zero GPU hours. The two
 V100 32 GB workers and RTX 2060 remain available for other justified work; this audit cannot benefit from them.
 Future planning excludes H20.
 
-Even a pass is not an NMI/NCS result. It would show that a prospectively defined, multi-deployment action ledger
-has sufficient real variation to justify exact mechanism replay. The paper-level claim still requires a valid
-treatment definition, real market outcomes, interference-aware inference, independent mechanism transfer and a
-frozen future confirmation.
+The result is a scientifically useful negative feasibility test, not an NMI/NCS result. It shows that a rich
+multichain action ledger alone does not provide continuous local variation around deterministic execution delays:
+scheduled/discrete proposer behavior can skip the nominal threshold. Preserve the measurement and transport
+infrastructure, close this threshold-causal route, and require the next main-article candidate to demonstrate its
+real identification or prediction surface before simulator-scale computation.
