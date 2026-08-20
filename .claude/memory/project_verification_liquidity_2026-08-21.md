@@ -62,7 +62,12 @@ D0 remains outcome-blind and CPU/API-only. Full freeze:
 Before any D0 API acquisition, v2 superseded v1 to resolve one implementation ambiguity: prequalification now
 requires five pre primary runs, finite covariates, known human runner class and a successful human schema probe;
 the matched treated set is the largest deterministic feasible prefix of at least 60. V2 does not change candidate
-IDs, windows, estimand, forbidden outcomes or numerical gates and is the authoritative execution contract.
+IDs, windows, estimand, forbidden outcomes or numerical gates. The first deterministic 11-repository smoke then
+completed its identity checkpoints but generated no result because the generic outcome guard rejected the external
+GitHub Status field name `started_at`. RSSHub alone exposed 21,024 run identities in the frozen window, so formal
+collection is expected to cross several API-rate windows and must use checkpoints rather than excluding large
+repositories. V3 renames only the external incident fields to `reported_start_utc` and
+`reported_resolution_utc`; it is now authoritative and leaves all scientific design content unchanged.
 
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely

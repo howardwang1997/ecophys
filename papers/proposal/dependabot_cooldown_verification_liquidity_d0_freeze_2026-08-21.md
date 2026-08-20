@@ -8,10 +8,15 @@ would enter a later one-shot D1, while queue start values, conclusions, reviews,
 outcomes remain sealed.
 
 The authoritative machine-readable contract is
-`configs/agent_markets/github_dependabot_cooldown_d0_v2.yaml`. It supersedes v1 before any D0 API acquisition:
-v1 had frozen the right candidate IDs, windows, estimand and numerical gates but did not fully define which
-prequalified treated repositories survive if a complete 1:3 match is infeasible. V2 preserves every scientific
-field and threshold while fixing prequalification, the deterministic maximal-prefix rule and schema denominators.
+`configs/agent_markets/github_dependabot_cooldown_d0_v3.yaml`. V2 had superseded v1 before any D0 API acquisition:
+v1 froze the right candidate IDs, windows, estimand and numerical gates but did not fully define which prequalified
+treated repositories survive if a complete 1:3 match is infeasible. V2 preserved every scientific field and
+threshold while fixing prequalification, the deterministic maximal-prefix rule and schema denominators. The first
+deterministic 11-repository smoke then completed its identity checkpoints but deliberately produced no final
+artifact: the generic outcome-seal guard rejected the external GitHub Status field name `started_at`, even though
+that value describes a public incident rather than a sampled workflow/job outcome. V3 changes only the external
+incident ledger names to `reported_start_utc` and `reported_resolution_utc`. Candidate IDs, time windows, estimand,
+matching, forbidden sample outcomes, thresholds and gates are unchanged.
 The candidate ledger is
 `data/manifests/github_dependabot_cooldown_d0_candidate_ids_v1.json`, with file SHA-256
 `b5dc728cd79d42a6be9b5107b3fa6e1f02247680c0b41bc8485687b85680cd82` and canonical payload SHA-256
@@ -135,9 +140,13 @@ training as a rescue.
 ## Data and compute
 
 D0 uses only public GitHub REST metadata, historical public workflow YAML and official GitHub Status history. Raw
-responses are sanitized in memory; only approved identity/schema records and response hashes may persist. Expected
-storage is below 50 GB and work below 100 CPU core-hours. The Mac or CPUs on the two V100 hosts may perform
-collection, but the run is API-bound. V100/RTX 2060 GPU execution, H20, paid data and EcoMD are forbidden.
+responses are sanitized in memory; only approved identity/schema records and response hashes may persist. The
+first smoke's largest repository, RSSHub, alone has 21,024 workflow-run identities in the fixed acquisition window;
+this is transport-scale evidence only and is not an outcome. Formal acquisition must therefore preserve per-repo
+checkpoints and may span several authenticated API-rate windows; it may not drop high-load repositories after
+observing their size. Expected storage is below 50 GB and work below 100 CPU core-hours. The Mac or CPUs on the two
+V100 hosts may perform collection, but the run is API-bound. V100/RTX 2060 GPU execution, H20, paid data and EcoMD
+are forbidden.
 
 ## Venue boundary
 

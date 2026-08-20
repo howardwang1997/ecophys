@@ -190,7 +190,10 @@ exclusions, official incident sensitivity and support gates before acquisition. 
 `papers/proposal/dependabot_cooldown_verification_liquidity_d0_freeze_2026-08-21.md`.
 Before any D0 API call, contract v2 superseded v1 solely to define prequalification, deterministic maximal-match
 subset selection and schema denominators; candidate IDs, windows, estimand, forbidden fields and gates did not
-change. V2 is the execution contract.
+change. The first deterministic 11-repository smoke later failed closed after completing identity checkpoints and
+before producing any result: the external GitHub Status key `started_at` collided with the generic sample-outcome
+guard. Contract v3 renames only that external incident field pair; all scientific content remains unchanged. V3 is
+the execution contract.
 
 1. **D0:** freeze the eligible repository IDs, exact pre/post windows, matching and minimum effective clusters;
    verify treatment/config and root-job mapping while outcomes stay sealed.
@@ -247,9 +250,10 @@ collection after the Mac smoke test; GPU memory should remain idle until a learn
 1. **Completed:** commit/push the D-1 plan and contract, implement the fail-closed collector and run the formal
    fixed frame from a clean pushed SHA.
 2. **Completed:** archive request hashes, allowed records, manifest and the 11/11-gate GREEN result.
-3. **Current:** commit/push the D0 scientific contract and exact candidate ledger before D0 API access.
-4. Implement and smoke-test a D0 collector that never persists sealed values.
-5. Run D0 once from a clean pushed SHA; freeze exact D1 repository/run IDs only if its gates pass.
+3. **Completed:** commit/push the D0 scientific contract and exact candidate ledger before formal D0 access.
+4. **Current:** commit the outcome-seal field-name amendment and resume the D0 smoke from its identity checkpoints.
+5. Commit/push the verified collector, then run D0 from a clean pushed SHA; freeze exact D1 repository/run IDs only
+   if its gates pass.
 
 ## Verified starting references
 

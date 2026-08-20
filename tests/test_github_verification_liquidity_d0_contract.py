@@ -10,7 +10,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 V1_CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v1.yaml"
-CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v2.yaml"
+V2_CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v2.yaml"
+CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v3.yaml"
 LEDGER_PATH = ROOT / "data/manifests/github_dependabot_cooldown_d0_candidate_ids_v1.json"
 
 
@@ -59,7 +60,7 @@ def test_d0_candidate_ledger_is_bound_to_the_formal_outcome_blind_source() -> No
 
 
 def test_d0_v2_supersedes_v1_before_acquisition_without_changing_science() -> None:
-    config = _load_yaml(CONFIG_PATH)
+    config = _load_yaml(V2_CONFIG_PATH)
     v1 = _load_yaml(V1_CONFIG_PATH)
     assert config["contract"]["supersedes"] == str(V1_CONFIG_PATH.relative_to(ROOT))
     assert config["contract"]["superseded_config_sha256"] == _file_sha256(V1_CONFIG_PATH)
@@ -68,6 +69,29 @@ def test_d0_v2_supersedes_v1_before_acquisition_without_changing_science() -> No
     v2_gates = {key: value for key, value in config["gates"].items() if key != "denominator_definitions"}
     assert v2_gates == v1["gates"]
     assert config["prequalification"]["never_uses_postperiod_counts_or_field_presence"] is True
+
+
+def test_d0_v3_only_resolves_the_external_incident_key_collision() -> None:
+    config = _load_yaml(CONFIG_PATH)
+    v2 = _load_yaml(V2_CONFIG_PATH)
+    assert config["contract"]["supersedes"] == str(V2_CONFIG_PATH.relative_to(ROOT))
+    assert config["contract"]["superseded_config_sha256"] == _file_sha256(V2_CONFIG_PATH)
+    unchanged = set(v2) - {"contract", "allowed_persisted_fields"}
+    for key in unchanged:
+        assert config[key] == v2[key]
+    v3_allowed = dict(config["allowed_persisted_fields"])
+    v2_allowed = dict(v2["allowed_persisted_fields"])
+    assert {key: value for key, value in v3_allowed.items() if key != "external_incident"} == {
+        key: value for key, value in v2_allowed.items() if key != "external_incident"
+    }
+    assert v3_allowed["external_incident"] == [
+        "incident_id",
+        "title",
+        "reported_start_utc",
+        "reported_resolution_utc",
+        "affected_component_names",
+        "source_response_sha256",
+    ]
 
 
 def test_d0_candidate_ids_and_cohort_hashes_are_exact_and_disjoint() -> None:
@@ -113,7 +137,7 @@ def test_d0_windows_are_symmetric_and_the_prospective_holdout_is_embargoed() -> 
 
 def test_d0_matching_sampling_and_outcome_seal_are_explicit() -> None:
     config = _load_yaml(CONFIG_PATH)
-    assert config["contract"]["status"] == "frozen_before_outcome_blind_d0_identity_acquisition"
+    assert config["contract"]["status"] == "frozen_before_formal_outcome_blind_d0_acquisition"
     assert config["run_identity"]["primary_human"] == {
         "actor_type": "User",
         "event_types": ["push"],

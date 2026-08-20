@@ -100,7 +100,11 @@ presence 均为 100%，11 项冻结门槛全部通过。独立扫描 1,003 个�
 结果、GPU、EcoMD 或付费数据。当前 frame 没有显式 zero-day opt-out，D0 主对照必须从冻结的 447 个
 无 Dependabot 仓库选择，63 个 already-cooled 仓库只作负对照。单一 GitHub event study 的上限仍是
 软件/agent-systems 论文；NMI 还需前瞻政策价值与 coding-agent transfer，NCS 另需有保证的新方法和
-第二独立计算域。正式结果见
+第二独立计算域。D0 v2 在首次 API 采集前补全了 prequalification 和最大可匹配前缀；随后确定性的
+11-repository smoke 在完成 identity checkpoints 后被 outcome seal 正确拦截，原因只是外部 GitHub
+Status 的 `started_at` 字段名与通用样本结果禁词冲突，且没有生成最终工件。权威 v3 仅把外部事故
+字段重命名为 `reported_start_utc`/`reported_resolution_utc`，不改候选、窗口、estimand、matching、
+forbidden outcome、阈值或 gate。正式结果见
 `papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
