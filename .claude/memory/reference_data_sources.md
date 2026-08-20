@@ -52,6 +52,15 @@ See `ecomd/data/buy_order_v2_{en,zh}.md` for purchasing decision flow tied to pl
 - **ABIDES** — agent-based reference simulator (JP Morgan / CMU). GitHub baseline. https://github.com/jpmorganchase/abides-jpmc-public
 - **Tick data processing**: zstd-compressed Parquet. Typical compression ~3–4× over raw CSV. Schema: `timestamp, symbol, price, volume, side, trade_id`.
 
+## Deployed autonomous-market mechanisms
+
+| Source | Cost | Access | Verified scope and limitation |
+|---|---|---|---|
+| CoW Orderbook competition API | Free, no key in 2026-08 T0 | `https://api.cow.fi/{network}/api/v2/solver_competition/by_tx_hash/{hash}` | Full proposed solutions, winners, filtering, order sets and official winner-removal reference scores. No bulk enumeration endpoint. Pin the deployed OpenAPI tag from Swagger. Public API data licence is not explicit. |
+| Ethereum Blockscout logs API | Free, no key | `module=logs&action=getLogs` with contract/topic/block filters | Can enumerate CoW `Settlement(address)` transaction hashes efficiently. It is an indexer, not consensus; paper-level data require canonical-receipt or second-index reconciliation. Detect response caps. |
+| CoW raw T0 local shard | Free | `data/raw/cow_computational_liquidity_t0_v1/` (ignored by git) | Blocks 25780000--25780499 only; 132 settlement transactions, 131 valid responses. Manifest and hashes are tracked at `data/manifests/cow_computational_liquidity_t0_v1.json`. This interval is a closed RED holdout and cannot be widened or reused as independent confirmation. |
+| ERCOT 60-day SCED disclosure | Free public files | ERCOT NP3-965-ER | Resource/offer/telemetry data for RTC+B analysis. Public API access has geographic and registration constraints; corrected supplemental files must be used around 2025-12-05. Two 2025 RTC+B live tests are bundled system-wide clusters, not high-frequency independent treatments. |
+
 ## Storage cost estimates
 
 - S&P 500 minute (1 yr, Parquet+zstd): ~100–400 MB → <$0.01/mo on S3.

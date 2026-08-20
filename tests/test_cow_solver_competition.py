@@ -10,6 +10,7 @@ from ecomd.data.cow_solver_competition import (
     RemovalObservation,
     evaluate_t0_support,
     parse_blockscout_settlement_events,
+    semantic_competition_sha256,
     summarize_competition,
 )
 
@@ -186,6 +187,18 @@ def test_missing_query_membership_is_fatal() -> None:
         _summarize(payload)
 
 
+def test_semantic_hash_ignores_transaction_and_solution_array_order() -> None:
+    left = _competition_payload()
+    left["transactionHashes"] = [TX, OTHER_TX]
+    right = _competition_payload()
+    right["transactionHashes"] = [OTHER_TX, TX]
+    right["solutions"] = list(reversed(right["solutions"]))
+    assert semantic_competition_sha256(left) == semantic_competition_sha256(right)
+
+    right["solutions"][0]["score"] = "999"
+    assert semantic_competition_sha256(left) != semantic_competition_sha256(right)
+
+
 def test_reference_above_winning_total_is_invalid_not_clipped() -> None:
     payload = _competition_payload()
     payload["referenceScores"][SOLVER_A] = "101"
@@ -226,6 +239,7 @@ def _support_rows(*, eligible_coupled: int, submitted_coupled: int) -> list[Comp
                 queried_transaction_hash=transaction_hash,
                 transaction_hashes=(transaction_hash,),
                 payload_sha256=f"{index + 1:064x}",
+                semantic_payload_sha256=f"{index + 1:064x}",
                 submitted_coupled=is_submitted,
                 eligible_coupled=is_eligible,
                 removals=(removal,),
@@ -277,6 +291,7 @@ def test_conflicting_duplicate_auction_payload_is_fail_visible() -> None:
         queried_transaction_hash=OTHER_TX,
         transaction_hashes=(TX, OTHER_TX),
         payload_sha256="f" * 64,
+        semantic_payload_sha256="f" * 64,
     )
     result = evaluate_t0_support(
         [base, duplicate],

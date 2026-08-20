@@ -65,6 +65,28 @@ def canonical_json_sha256(payload: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def semantic_competition_sha256(payload: Mapping[str, Any]) -> str:
+    """Hash a competition after sorting API arrays whose order has no declared meaning."""
+    normalized = json.loads(json.dumps(payload))
+    if not isinstance(normalized, dict):
+        raise ValueError("competition payload must normalize to an object")
+    transaction_hashes = normalized.get("transactionHashes")
+    if isinstance(transaction_hashes, list):
+        transaction_hashes.sort(key=str)
+    auction = normalized.get("auction")
+    if isinstance(auction, dict) and isinstance(auction.get("orders"), list):
+        auction["orders"].sort(key=lambda value: json.dumps(value, sort_keys=True, separators=(",", ":")))
+    solutions = normalized.get("solutions")
+    if isinstance(solutions, list):
+        for solution in solutions:
+            if isinstance(solution, dict) and isinstance(solution.get("orders"), list):
+                solution["orders"].sort(
+                    key=lambda value: json.dumps(value, sort_keys=True, separators=(",", ":"))
+                )
+        solutions.sort(key=lambda value: json.dumps(value, sort_keys=True, separators=(",", ":")))
+    return canonical_json_sha256(normalized)
+
+
 @dataclass(frozen=True)
 class SettlementEvent:
     """One source-exact CoW Settlement event returned by an EVM indexer."""
@@ -152,6 +174,7 @@ class CompetitionSummary:
     queried_transaction_hash: str
     transaction_hashes: tuple[str, ...]
     payload_sha256: str
+    semantic_payload_sha256: str
     auction_order_count: int
     solution_count: int
     distinct_solver_count: int
@@ -287,6 +310,7 @@ def summarize_competition(
         queried_transaction_hash=queried_hash,
         transaction_hashes=transaction_hashes,
         payload_sha256=canonical_json_sha256(payload),
+        semantic_payload_sha256=semantic_competition_sha256(payload),
         auction_order_count=len(auction_orders),
         solution_count=len(solutions),
         distinct_solver_count=len({solution.solver for solution in solutions}),
@@ -352,7 +376,7 @@ def evaluate_t0_support(
     conflicting_auction_ids = sorted(
         auction_id
         for auction_id, rows in by_auction.items()
-        if len({row.payload_sha256 for row in rows}) > 1
+        if len({row.semantic_payload_sha256 for row in rows}) > 1
     )
     unique = [sorted(rows, key=lambda row: row.queried_transaction_hash)[0] for rows in by_auction.values()]
     unique.sort(key=lambda row: row.auction_id)
@@ -397,7 +421,11 @@ def evaluate_t0_support(
         decision = "red_stop_route_no_window_chain_or_definition_rescue"
 
     competition_identity = [
-        {"auction_id": summary.auction_id, "payload_sha256": summary.payload_sha256} for summary in unique
+        {
+            "auction_id": summary.auction_id,
+            "semantic_payload_sha256": summary.semantic_payload_sha256,
+        }
+        for summary in unique
     ]
     return {
         "metrics": {

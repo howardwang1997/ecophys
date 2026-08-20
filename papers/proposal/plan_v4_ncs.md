@@ -1,7 +1,7 @@
 # EcoPhys / EcoMD — Plan v4：面向 Nature Computational Science 的不变测度校准路线
 
 **日期：** 2026-08-09
-**最近更新：** 2026-08-20
+**最近更新：** 2026-08-21
 
 **状态：** **G0 FAIL；当前 NCS 方法路线已停止，本文件保留为 gate/预算审计记录**
 
@@ -77,6 +77,18 @@ qualification/full 两阶段 runner 已完成本地检查，50 个相关回归�
 artifact 保持字节不变。依冻结规则，D0 为 transport FAIL，路线在金额、IRM、结果、D1、EcoMD、GPU、
 付费数据、端点替换和重跑前关闭。正式结果见
 `papers/proposal/morpho_public_allocator_pressure_d0_v2_result_2026-08-20.md`。
+
+Morpho 关闭后另开的 CoW solver-market 候选研究“名义 agent 数量是否等于固定期限内的真实替代
+能力”，以官方 leave-one-winner `referenceScores` 定义 computational liquidity，并在任何正式区间
+访问前由提交 `b2153f396` 冻结 500 个 Ethereum blocks、支持阈值和 GREEN/AMBER/RED 分叉；执行
+实现由干净提交 `3b1ce6f3f` 锁定。正式 T0 得到 132 个唯一 settlement、131 个有效 API 映射和
+119 个 distinct competitions；官方反事实覆盖与 132 个 removal 算术均通过，但 settlement
+`132<200`、competition `119<180`、low-criticality `12<20`、submitted-coupled `12<30`、
+eligible-coupled `2<10`，因此为 **RED**。冻结实现另把五个只改变 `transactionHashes` 数组顺序的
+响应误报为 payload conflict；post-run semantic-hash 修复不能回写 formal artifact，而且移除该误报
+后其余四类失败仍足以停止路线。没有 association test、扩窗口、换链、模型、GPU 或付费数据；
+CoW 不进入 T1，也不构成新的 NMI/NCS 主线。正式结果见
+`papers/proposal/computational_liquidity_t0_result_2026-08-21.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、

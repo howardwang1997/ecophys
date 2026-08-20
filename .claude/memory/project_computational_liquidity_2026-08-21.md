@@ -30,3 +30,18 @@ chains are replications, not independent-system transfer. NMI would require anot
 prospective policy value and an operator decision. NCS additionally needs an irreducible method with a guarantee
 and a second independent, preferably non-finance or physically grounded system. Full plan:
 `papers/proposal/computational_liquidity_t0_plan_2026-08-21.md`.
+
+## Formal result
+
+The formal run from clean implementation SHA `3b1ce6f3f` is **RED**. Blocks `25780000--25780499` contained 132
+unique settlement transactions, 131 valid mappings and 119 distinct competitions. Reference coverage was
+119/119 and all 132 winner removals were arithmetically valid, but settlement `132<200`, competition `119<180`,
+low-criticality `12<20`, submitted coupling `12<30` and eligible coupling `2<10`. No association test was run.
+
+The formal duplicate gate also flagged five auction IDs because the frozen canonical hash treated reversed
+`transactionHashes` arrays as different. A post-run semantic audit found zero substantive duplicate conflicts;
+future code sorts unordered arrays and has a regression test. The formal artifact remains unchanged and RED
+still follows from the independent support failures. Do not widen the window, switch chains or start T1/GPU.
+
+Result: `papers/proposal/computational_liquidity_t0_result_2026-08-21.md`. Post-route process decision: future
+candidates require an outcome-blind event-rate/schema D-1 before freezing an absolute formal sample threshold.
