@@ -65,11 +65,18 @@ D0。计划和结果分别见 `papers/proposal/morpho_public_allocator_pressure_
 冻结文件为 `papers/proposal/morpho_public_allocator_pressure_d0_freeze_2026-08-20.md`。
 该冻结已在提交 `9edea240a` 推送；full-topic SQD/RPC identity sanitation、receipt 顺序分组和
 qualification/full 两阶段 runner 已完成本地检查，50 个相关回归测试、Ruff 与 strict mypy 通过。当前
-仍未运行 qualification、未知任何事件计数；必须先提交推送实现，再从干净 SHA 只跑六个固定 shard。
+实现提交时尚未运行 qualification、未知任何事件计数；当时的下一步是先提交推送实现，再从干净 SHA
+只跑六个固定 shard。
 正式 qualification 已从干净推送提交 `15faa4027` 完成：Ethereum 三个 shard 为 0/335/231，Base 为
-0/220/2，六组 SQD/full-RPC full-topic identity 均完全一致，canonical SHA 为 `d59b0184…edfe`。这只通过
-transport gate；尚未读取 receipt/Borrow，也不知道 500/100-per-chain 候选门槛。必须先提交该 artifact，
-才可从新的干净 SHA 执行一次 full D0。
+0/220/2，六组 SQD/full-RPC full-topic identity 均完全一致，canonical SHA 为 `d59b0184…edfe`。串行 full
+执行因预计需 8--24 小时而在没有产物、计数或 support 前技术性停止；随后冻结的纯传输 v2 不改任何
+科学字段，以 48 个确定性小分片精确复现 v1 qualification，canonical SHA 为 `d9b28e65…65de`。从干净
+推送提交 `78cfc09e0` 同时启动的 Ethereum/Base 正式任务分别在 243.06/199.80 秒因 Blockscout RPC
+连接超时和 SQD Portal shard 错误结束；两链 `support` 都为 `null`，因此没有候选数或边数可解释。
+合并 artifact 中的 pooled `0` 是旧合并器的缺失值 sentinel，并非观测零；未来代码已改为 `null`，正式
+artifact 保持字节不变。依冻结规则，D0 为 transport FAIL，路线在金额、IRM、结果、D1、EcoMD、GPU、
+付费数据、端点替换和重跑前关闭。正式结果见
+`papers/proposal/morpho_public_allocator_pressure_d0_v2_result_2026-08-20.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、

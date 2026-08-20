@@ -1014,14 +1014,16 @@ def _load_verified_chain_artifact(
 
 def _support_gates(
     chain_results: Mapping[str, Mapping[str, Any]], thresholds: Mapping[str, Any]
-) -> tuple[dict[str, Any], dict[str, Any], int, int]:
+) -> tuple[dict[str, Any], dict[str, Any], int | None, int | None]:
     chain_gates: dict[str, Any] = {}
     pooled_candidates = 0
     pooled_edges = 0
+    all_support_available = True
     for chain_name in thresholds["required_chains"]:
         result = chain_results[str(chain_name)]
         summary = result.get("support")
         if not isinstance(summary, Mapping):
+            all_support_available = False
             chain_gates[str(chain_name)] = {
                 "transport": False,
                 "candidate_transactions": False,
@@ -1053,13 +1055,17 @@ def _support_gates(
             "receipts": float(transport["receipt_verification_rate"])
             >= float(thresholds["minimum_candidate_receipt_verification_rate"]),
         }
+    candidate_count = pooled_candidates if all_support_available else None
+    edge_count = pooled_edges if all_support_available else None
     pooled_gates = {
-        "all_required_chains_available": set(chain_results) == set(map(str, thresholds["required_chains"])),
-        "candidate_transactions": pooled_candidates
-        >= int(thresholds["minimum_target_matched_candidate_transactions_total"]),
-        "directed_edges": pooled_edges >= int(thresholds["minimum_distinct_edges_total"]),
+        "all_required_chains_available": all_support_available
+        and set(chain_results) == set(map(str, thresholds["required_chains"])),
+        "candidate_transactions": candidate_count is not None
+        and candidate_count >= int(thresholds["minimum_target_matched_candidate_transactions_total"]),
+        "directed_edges": edge_count is not None
+        and edge_count >= int(thresholds["minimum_distinct_edges_total"]),
     }
-    return chain_gates, pooled_gates, pooled_candidates, pooled_edges
+    return chain_gates, pooled_gates, candidate_count, edge_count
 
 
 def run_merge_v2(

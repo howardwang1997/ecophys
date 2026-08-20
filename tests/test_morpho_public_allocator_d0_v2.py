@@ -310,6 +310,53 @@ def test_support_gates_recompute_original_conjunction() -> None:
     assert edges == 12
 
 
+def test_support_gates_do_not_encode_missing_support_as_zero() -> None:
+    thresholds = runner._load_yaml(runner.CONFIG_PATH)["pass_thresholds"]
+    failed = {
+        "status": "transport_fail_before_support_interpretation",
+        "transport_error_type": "ConnectTimeout",
+        "support": None,
+    }
+    chain_gates, pooled_gates, candidates, edges = runner._support_gates(
+        {"ethereum": failed, "base": failed}, thresholds
+    )
+    assert not any(chain_gates["ethereum"].values())
+    assert not any(chain_gates["base"].values())
+    assert not any(pooled_gates.values())
+    assert candidates is None
+    assert edges is None
+
+
+def test_support_gates_do_not_partially_pool_one_missing_chain() -> None:
+    thresholds = runner._load_yaml(runner.CONFIG_PATH)["pass_thresholds"]
+    support = {
+        "candidate_transaction_count": 250,
+        "active_span_days": 100.0,
+        "active_utc_date_count": 40,
+        "distinct_vault_count": 4,
+        "distinct_directed_edge_count": 6,
+        "classification_rate": 1.0,
+    }
+    passed = {
+        "status": "transport_pass_support_computed",
+        "transport": {"transport_pass": True, "receipt_verification_rate": 1.0},
+        "support": support,
+    }
+    failed = {
+        "status": "transport_fail_before_support_interpretation",
+        "transport_error_type": "ValueError",
+        "support": None,
+    }
+    chain_gates, pooled_gates, candidates, edges = runner._support_gates(
+        {"ethereum": passed, "base": failed}, thresholds
+    )
+    assert all(chain_gates["ethereum"].values())
+    assert not any(chain_gates["base"].values())
+    assert not any(pooled_gates.values())
+    assert candidates is None
+    assert edges is None
+
+
 def test_chain_artifact_output_is_required() -> None:
     with pytest.raises(SystemExit):
         runner.main(

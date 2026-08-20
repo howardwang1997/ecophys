@@ -1,6 +1,6 @@
 ---
 name: morpho-public-allocator-pressure-2026-08-20
-description: "Fresh AMBER source-bound route for JIT liquidity routing, spatial demand-signal displacement, and AdaptiveCurveIRM memory."
+description: "Closed source-bound Public Allocator route: T0 accounting passed, but the single formal D0 v2 failed at transport before support interpretation."
 metadata:
   node_type: memory
   type: project
@@ -94,3 +94,20 @@ exactly equal to the fixed full-RPC set. Canonical payload SHA is `d9b28e65…65
 SHA is `4c42da0e…4343`. Wall time was 96.62 s. Ethereum/Base had one recoverable Portal retry each and no RPC split
 or retry. No receipt, Borrow, value or outcome was opened. Commit this immutable qualification before launching
 both formal chain jobs together; no standalone chain result may drive whether the other chain runs.
+
+The qualification was committed and pushed at `78cfc09e0`. The exact commit and three pinned source trees were
+provisioned on both V100 hosts in isolated `ecophys-d0v2` Conda environments. Preflight reproduced the parent and
+amendment hashes, qualification digest, source audit, worker identities, hidden CUDA setting and common batch ID
+`e35adb81…6c59`. Base and Ethereum were then launched before either result was read.
+
+The one formal full D0 is a transport FAIL. Base stopped after 199.80 s when Portal shard 5 raised a sanitized
+`SqdPortalError`; Ethereum stopped after 243.06 s when the frozen Blockscout RPC endpoint exhausted connection
+timeout retries. Both chain artifacts have `support: null`, so no candidate, edge, span, date, vault,
+classification or receipt statistic exists. Canonical hashes are `bb330b79…c16ca` (Base),
+`181d11c9…1b2c1` (Ethereum) and `cf97beb8…d8dab` (merged). The merged file hash is `6b261b78…a5c4`.
+
+The merged artifact's pooled zero values are legacy unavailable-data sentinels, not observed zeros. Preserve that
+formal file unchanged; future merger behavior emits `null` when any required chain lacks support. The frozen stop
+rule closes the route before values, outcomes, D1, provider substitution, rerun, EcoMD, GPU or paid data. This
+failure neither proves low support nor falsifies the mechanism, but it leaves no empirical result and therefore
+no NMI/NCS claim. T0 survives only as accounting infrastructure.
