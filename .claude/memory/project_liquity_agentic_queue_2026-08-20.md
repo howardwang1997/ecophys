@@ -74,3 +74,20 @@ chunk 110 returned the same 42 identities under Blockscout's three filters and O
 digest `c42e2b7...6649d`. Ten focused tests, Ruff and strict mypy pass. No support breakdown, numerical outcome,
 EcoMD or GPU has been opened. Recovery amendment:
 `papers/proposal/liquity_agentic_queue_d0_recovery_amendment_2026-08-20.md`.
+
+## Weight-aware public-limit recovery v4 (18:01 NZST)
+
+The clean v3 attempt again matched qualification 0/50/38 and Blockscout total 24,291, then checkpointed four
+OnFinality chunks/129 identities before chunk 5 exhausted the public HTTP 429 retry budget. No result, timestamp
+attachment or support summary was produced. Official OnFinality documentation lists Ethereum's public limit as
+10 response units/minute with burst 10 and says intensive Ethereum methods may carry higher response-unit
+weights. The inherited 0.25-second replica pacing was therefore unsuitable.
+
+Chunk 5 contains 105 already allowed events (WETH/wstETH/rETH 45/50/10). A post-cooldown combined query returned
+all 105 and exactly matched Blockscout, digest `355a754e...31e6`, so the response is not intrinsically above the
+burst cap; the narrow diagnosis is insufficient bucket balance at v3 retry times. Version 4 keeps every parent
+field and adds a replica-only 6.1-second interval, two retries, then deterministic address-first/range-second
+partitioning on exhausted 429/-32029. The outer 10,000-block chunk is checkpointed only after all disjoint
+subqueries succeed. The four v3 chunks are not migrated across the config/Git binding. Thirteen tests, Ruff and
+strict mypy pass. No scientific gate or forbidden outcome has been opened. Amendment:
+`papers/proposal/liquity_agentic_queue_d0_weighted_rate_limit_amendment_2026-08-20.md`.

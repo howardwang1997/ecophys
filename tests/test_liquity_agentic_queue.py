@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -440,6 +441,8 @@ def test_replica_checkpoint_is_bound_tamper_evident_and_resumable(
         from_block=1,
         to_block=20,
         maximum_span=10,
+        split_on_exhausted_rate_limit=False,
+        maximum_rate_limit_split_depth=0,
     )
     assert events == []
     assert observed_ranges == [(11, 20, tuple(addresses))]
@@ -499,4 +502,108 @@ def test_transport_recovery_v3_preserves_parent_and_scientific_contract() -> Non
     tampered = deepcopy(config)
     tampered["transport"]["replication_checkpoint_every_chunks"] = 2
     with pytest.raises(RuntimeError, match="recovery transport"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+
+def test_rate_limit_recovery_splits_addresses_before_block_range(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[tuple[str, ...], int, int]] = []
+
+    def fake_get_logs(
+        client: object,
+        *,
+        addresses: list[str],
+        topics: list[str],
+        start_block: int,
+        end_block_inclusive: int,
+        remaining_split_depth: int,
+        split_topics_first: bool,
+    ) -> list[dict[str, Any]]:
+        del client, topics, remaining_split_depth, split_topics_first
+        calls.append((tuple(addresses), start_block, end_block_inclusive))
+        if len(addresses) > 1:
+            raise runner.RpcError("limited", http_status=429)
+        return []
+
+    monkeypatch.setattr(runner, "_get_logs_with_split", fake_get_logs)
+    counts: Counter[str] = Counter()
+    addresses = [TM, "0x" + "44" * 20, "0x" + "55" * 20]
+    result = runner._get_replica_logs_with_rate_limit_split(  # type: ignore[arg-type]
+        object(),
+        addresses=addresses,
+        topics=list(TOPICS.values()),
+        start_block=1,
+        end_block_inclusive=10,
+        remaining_split_depth=4,
+        split_counts=counts,
+    )
+    assert result == []
+    assert calls == [
+        (tuple(addresses), 1, 10),
+        ((addresses[0],), 1, 10),
+        ((addresses[1], addresses[2]), 1, 10),
+        ((addresses[1],), 1, 10),
+        ((addresses[2],), 1, 10),
+    ]
+    assert counts == {"address": 2}
+
+
+def test_rate_limit_recovery_bisects_single_address_block_range(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[int, int]] = []
+
+    def fake_get_logs(
+        client: object,
+        *,
+        addresses: list[str],
+        topics: list[str],
+        start_block: int,
+        end_block_inclusive: int,
+        remaining_split_depth: int,
+        split_topics_first: bool,
+    ) -> list[dict[str, Any]]:
+        del client, addresses, topics, remaining_split_depth, split_topics_first
+        calls.append((start_block, end_block_inclusive))
+        if start_block < end_block_inclusive:
+            raise runner.RpcError("limited", rpc_code=-32029)
+        return []
+
+    monkeypatch.setattr(runner, "_get_logs_with_split", fake_get_logs)
+    counts: Counter[str] = Counter()
+    result = runner._get_replica_logs_with_rate_limit_split(  # type: ignore[arg-type]
+        object(),
+        addresses=[TM],
+        topics=list(TOPICS.values()),
+        start_block=1,
+        end_block_inclusive=4,
+        remaining_split_depth=4,
+        split_counts=counts,
+    )
+    assert result == []
+    assert calls == [(1, 4), (1, 2), (1, 1), (2, 2), (3, 4), (3, 3), (4, 4)]
+    assert counts == {"block_range": 3}
+
+
+def test_weight_aware_transport_recovery_v4_preserves_every_parent_field() -> None:
+    config_path = Path("configs/empirical_physics/liquity_agentic_queue_d0_v4.yaml").resolve()
+    config = runner._load_yaml(config_path)
+    audit = runner._validate_freeze_contract(config, config_path=config_path)
+    assert audit["is_weight_aware_transport_recovery"] is True
+    assert audit["scientific_sections_equal_to_parent"] is True
+
+    tampered = deepcopy(config)
+    tampered["support_window"]["redemption_proximity_seconds"] = 86_399
+    with pytest.raises(RuntimeError, match="support_window"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+    tampered = deepcopy(config)
+    tampered["transport"]["maximum_get_logs_span"] = 5_000
+    with pytest.raises(RuntimeError, match="parent transport"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+    tampered = deepcopy(config)
+    tampered["transport"]["replication_minimum_request_interval_seconds"] = 6.0
+    with pytest.raises(RuntimeError, match="weight-aware recovery"):
         runner._validate_freeze_contract(tampered, config_path=config_path)

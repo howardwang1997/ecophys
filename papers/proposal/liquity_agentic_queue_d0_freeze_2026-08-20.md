@@ -66,13 +66,15 @@ Without those additions, the appropriate ambition is NMI or a strong computation
 ## D0: support-only audit
 
 The original scientific contract is `configs/empirical_physics/liquity_agentic_queue_d0_v1.yaml`. Formal
-execution now uses the resumable transport child
-`configs/empirical_physics/liquity_agentic_queue_d0_v3.yaml`; it recursively proves every scientific section
-equal through v2 to v1. Version 2 replaced the incomplete dRPC log witness with OnFinality while retaining dRPC
-for historical state. Version 3 only groups OnFinality's address filter and adds a sanitized per-chunk
-checkpoint after the public endpoint exhausted its rate limit. See
+execution now uses the weight-aware resumable transport child
+`configs/empirical_physics/liquity_agentic_queue_d0_v4.yaml`; it recursively proves every scientific section
+equal through v3 and v2 to v1. Version 2 replaced the incomplete dRPC log witness with OnFinality while retaining
+dRPC for historical state. Version 3 grouped OnFinality's address filter and added a sanitized per-chunk
+checkpoint. Version 4 paces the replica to the provider's documented public limit and adaptively partitions only
+responses that still exhaust the limit. See
 `liquity_agentic_queue_d0_transport_amendment_2026-08-20.md` and
-`liquity_agentic_queue_d0_recovery_amendment_2026-08-20.md`. The contract pins:
+`liquity_agentic_queue_d0_recovery_amendment_2026-08-20.md` and
+`liquity_agentic_queue_d0_weighted_rate_limit_amendment_2026-08-20.md`. The contract pins:
 
 - official Liquity core and ARM repositories by commit and file hash;
 - all three mainnet branches and official ARM addresses;
@@ -211,6 +213,6 @@ D0 source + transport + support
 ## Immediate execution order
 
 1. Commit and push this freeze plus the audited D0 implementation and tests.
-2. Run or resume the v3 multi-provider D0 from a clean worktree and an external sanitized checkpoint.
+2. Run or resume the v4 multi-provider D0 from a clean worktree and an external sanitized checkpoint.
 3. Publish the immutable manifest and a concise pass/fail decision.
 4. If and only if D0 passes, draft and commit a separate D1 preregistration before decoding numerical outcomes.

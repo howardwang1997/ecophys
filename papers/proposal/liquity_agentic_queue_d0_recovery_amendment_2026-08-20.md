@@ -1,5 +1,9 @@
 # Liquity Agentic Queue D0: Resumable Transport Recovery v3
 
+**Operational status:** superseded by v4 after the first v3 attempt preserved four chunks but again exhausted
+OnFinality's documented public response-unit bucket. The scientific contract and this audit history remain
+binding; see `liquity_agentic_queue_d0_weighted_rate_limit_amendment_2026-08-20.md`.
+
 **Parent transport freeze:** `liquity_agentic_queue_d0_v2.yaml`, SHA-256
 `221145272f3549e8a773e314fa788a6986ebc8b5fd291b5879e8f3377e66d7be`
 

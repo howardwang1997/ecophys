@@ -22,6 +22,7 @@ from ecomd.data.liquity_agentic_queue import (
     summarize_agentic_queue_support,
 )
 from scripts.audit_aave_rate_response_d1b import (
+    RpcError,
     _get_logs_with_split,
     _git,
     _keccak_topic,
@@ -182,6 +183,120 @@ def _validate_freeze_contract(
         if str(contract["status"]) != ("frozen_before_event_log_support_counts_or_any_queue_outcomes"):
             raise RuntimeError("D0 v1 lacks the required outcome-blind freeze status")
         return {"is_transport_amendment": False}
+    if version == 4:
+        if str(contract["status"]) != (
+            "transport_only_weight_aware_recovery_after_onfinality_429_before_support_gate"
+        ):
+            raise RuntimeError("D0 v4 lacks the required weight-aware recovery status")
+        amendment = config.get("amendment")
+        if not isinstance(amendment, Mapping):
+            raise RuntimeError("D0 v4 has no weight-aware transport record")
+        expected_amendment_fields = {
+            "parent_config_path",
+            "parent_config_sha256",
+            "scope",
+            "no_scientific_field_changed",
+            "support_gate_breakdown_computed_before_amendment",
+            "numerical_protocol_outcome_decoded_before_amendment",
+            "observations_before_amendment",
+            "changed_fields",
+            "official_rate_limit_source",
+        }
+        if set(amendment) != expected_amendment_fields:
+            raise RuntimeError("D0 v4 amendment fields differ from the reviewed recovery schema")
+        if (
+            amendment.get("scope")
+            != "pace_replication_to_official_public_limit_and_split_overweight_log_responses"
+            or amendment.get("no_scientific_field_changed") is not True
+            or amendment.get("support_gate_breakdown_computed_before_amendment") is not False
+            or amendment.get("numerical_protocol_outcome_decoded_before_amendment") is not False
+        ):
+            raise RuntimeError("D0 v4 does not preserve outcome-blind scientific invariance")
+        parent_relative = Path(str(amendment["parent_config_path"]))
+        parent_path = (REPO_ROOT / parent_relative).resolve()
+        if not parent_path.is_relative_to(REPO_ROOT) or not parent_path.is_file():
+            raise RuntimeError("D0 v4 parent config is outside the repository or absent")
+        parent_digest = _sha256_file(parent_path)
+        if parent_digest != str(amendment["parent_config_sha256"]):
+            raise RuntimeError("D0 v4 parent config digest mismatch")
+        parent = _load_yaml(parent_path)
+        parent_audit = _validate_freeze_contract(parent, config_path=parent_path)
+        if int(parent["contract"]["version"]) != 3 or parent_audit.get(
+            "is_resumable_transport_recovery"
+        ) is not True:
+            raise RuntimeError("D0 v4 parent is not the reviewed v3 recovery amendment")
+        if set(config) != set(parent):
+            raise RuntimeError("D0 v4 added an unreviewed top-level section")
+        if set(contract) != set(parent["contract"]):
+            raise RuntimeError("D0 v4 contract fields differ from its parent")
+        for field in {"name", "purpose"}:
+            if contract.get(field) != parent["contract"].get(field):
+                raise RuntimeError(f"D0 v4 changed the contract {field}")
+        invariant_sections = set(parent) - {"contract", "amendment", "transport"}
+        for section in invariant_sections:
+            if config.get(section) != parent.get(section):
+                raise RuntimeError(f"D0 v4 changed frozen scientific section: {section}")
+        transport = config["transport"]
+        parent_transport = parent["transport"]
+        recovery_fields = {
+            "replication_minimum_request_interval_seconds",
+            "replication_rate_limit_retries",
+            "replication_split_on_exhausted_rate_limit",
+            "replication_rate_limit_split_order",
+            "replication_maximum_rate_limit_split_depth",
+        }
+        if set(transport) != set(parent_transport) | recovery_fields:
+            raise RuntimeError("D0 v4 transport fields exceed the reviewed recovery scope")
+        for field, value in parent_transport.items():
+            if transport.get(field) != value:
+                raise RuntimeError(f"D0 v4 changed frozen parent transport field: {field}")
+        if (
+            float(transport["replication_minimum_request_interval_seconds"]) != 6.1
+            or int(transport["replication_rate_limit_retries"]) != 2
+            or transport["replication_split_on_exhausted_rate_limit"] is not True
+            or list(transport["replication_rate_limit_split_order"])
+            != ["addresses", "block_range"]
+            or int(transport["replication_maximum_rate_limit_split_depth"]) != 32
+        ):
+            raise RuntimeError("D0 v4 weight-aware recovery settings are invalid")
+        expected_changed_fields = {
+            "contract.version",
+            "contract.status",
+            "contract.frozen_utc",
+            "amendment",
+            "transport.replication_minimum_request_interval_seconds",
+            "transport.replication_rate_limit_retries",
+            "transport.replication_split_on_exhausted_rate_limit",
+            "transport.replication_rate_limit_split_order",
+            "transport.replication_maximum_rate_limit_split_depth",
+        }
+        if set(map(str, amendment["changed_fields"])) != expected_changed_fields:
+            raise RuntimeError("D0 v4 changed-fields declaration is incomplete")
+        source = amendment["official_rate_limit_source"]
+        if (
+            not isinstance(source, Mapping)
+            or source.get("url") != "https://documentation.onfinality.io/support/public-rate-limits"
+            or int(source.get("ethereum_response_units_per_minute", -1)) != 10
+            or int(source.get("ethereum_burst_response_units", -1)) != 10
+        ):
+            raise RuntimeError("D0 v4 lacks the frozen official Ethereum public-limit evidence")
+        observations = amendment["observations_before_amendment"]
+        if not isinstance(observations, Mapping) or observations.get(
+            "support_gate_breakdown_computed"
+        ) is not False or observations.get("numerical_protocol_outcome_decoded") is not False:
+            raise RuntimeError("D0 v4 pre-amendment observations violate the blind recovery scope")
+        if config_path != config_path.resolve() or not config_path.is_relative_to(REPO_ROOT):
+            raise RuntimeError("formal D0 config must resolve inside the repository")
+        return {
+            "is_transport_amendment": True,
+            "is_resumable_transport_recovery": True,
+            "is_weight_aware_transport_recovery": True,
+            "parent_config_path": str(parent_relative),
+            "parent_config_sha256": parent_digest,
+            "scientific_sections_equal_to_parent": True,
+            "d0_support_breakdown_computed_before_amendment": False,
+            "numerical_protocol_outcomes_decoded_before_amendment": False,
+        }
     if version == 3:
         if str(contract["status"]) != (
             "transport_only_recovery_after_onfinality_rate_limit_before_support_gate"
@@ -364,13 +479,27 @@ def _validate_freeze_contract(
     }
 
 
-def _rpc_client(url: str, transport: Mapping[str, Any]) -> _RpcClient:
+def _rpc_client(
+    url: str,
+    transport: Mapping[str, Any],
+    *,
+    minimum_request_interval_seconds: float | None = None,
+    rate_limit_retries: int | None = None,
+) -> _RpcClient:
     return _RpcClient(
         url=url,
         timeout=60,
         transport_retries=3,
-        minimum_request_interval_seconds=float(transport["minimum_request_interval_seconds"]),
-        rate_limit_retries=int(transport["rate_limit_retries"]),
+        minimum_request_interval_seconds=(
+            float(transport["minimum_request_interval_seconds"])
+            if minimum_request_interval_seconds is None
+            else minimum_request_interval_seconds
+        ),
+        rate_limit_retries=(
+            int(transport["rate_limit_retries"])
+            if rate_limit_retries is None
+            else rate_limit_retries
+        ),
         rate_limit_backoff_initial_seconds=float(transport["rate_limit_backoff_initial_seconds"]),
         rate_limit_backoff_max_seconds=float(transport["rate_limit_backoff_max_seconds"]),
     )
@@ -424,6 +553,83 @@ def _checkpoint_event(event: Mapping[str, Any]) -> dict[str, Any]:
         "contract_address": normalize_address(str(event["contract_address"])),
         "topic0": normalize_topic(str(event["topic0"])),
     }
+
+
+def _get_replica_logs_with_rate_limit_split(
+    client: _RpcClient,
+    *,
+    addresses: Sequence[str],
+    topics: Sequence[str],
+    start_block: int,
+    end_block_inclusive: int,
+    remaining_split_depth: int,
+    split_counts: Counter[str],
+) -> list[Mapping[str, Any]]:
+    try:
+        return _get_logs_with_split(
+            client,
+            addresses=addresses,
+            topics=topics,
+            start_block=start_block,
+            end_block_inclusive=end_block_inclusive,
+            remaining_split_depth=24,
+            split_topics_first=True,
+        )
+    except RpcError as error:
+        rate_limited = error.http_status == 429 or error.rpc_code == -32029
+        if not rate_limited or remaining_split_depth <= 0:
+            raise
+        if len(addresses) > 1:
+            split_counts["address"] += 1
+            middle = len(addresses) // 2
+            print(
+                f"full.replica: rate-limit split {len(addresses)} addresses at "
+                f"blocks {start_block}-{end_block_inclusive}",
+                flush=True,
+            )
+            return _get_replica_logs_with_rate_limit_split(
+                client,
+                addresses=addresses[:middle],
+                topics=topics,
+                start_block=start_block,
+                end_block_inclusive=end_block_inclusive,
+                remaining_split_depth=remaining_split_depth - 1,
+                split_counts=split_counts,
+            ) + _get_replica_logs_with_rate_limit_split(
+                client,
+                addresses=addresses[middle:],
+                topics=topics,
+                start_block=start_block,
+                end_block_inclusive=end_block_inclusive,
+                remaining_split_depth=remaining_split_depth - 1,
+                split_counts=split_counts,
+            )
+        if start_block < end_block_inclusive:
+            split_counts["block_range"] += 1
+            middle_block = (start_block + end_block_inclusive) // 2
+            print(
+                f"full.replica: rate-limit split blocks {start_block}-{end_block_inclusive} "
+                f"at {middle_block}",
+                flush=True,
+            )
+            return _get_replica_logs_with_rate_limit_split(
+                client,
+                addresses=addresses,
+                topics=topics,
+                start_block=start_block,
+                end_block_inclusive=middle_block,
+                remaining_split_depth=remaining_split_depth - 1,
+                split_counts=split_counts,
+            ) + _get_replica_logs_with_rate_limit_split(
+                client,
+                addresses=addresses,
+                topics=topics,
+                start_block=middle_block + 1,
+                end_block_inclusive=end_block_inclusive,
+                remaining_split_depth=remaining_split_depth - 1,
+                split_counts=split_counts,
+            )
+        raise
 
 
 def _write_replica_checkpoint(path: Path, payload: Mapping[str, Any]) -> str:
@@ -582,6 +788,8 @@ def _query_replica_with_checkpoint(
     from_block: int,
     to_block: int,
     maximum_span: int,
+    split_on_exhausted_rate_limit: bool,
+    maximum_rate_limit_split_depth: int,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     if checkpoint_path.is_relative_to(REPO_ROOT):
         raise RuntimeError("formal replica checkpoint must be outside the Git worktree")
@@ -598,6 +806,7 @@ def _query_replica_with_checkpoint(
     resumed_chunks = len(chunks)
     events = [dict(event) for chunk in chunks for event in chunk["events"]]
     seen = set(map(log_identity, events))
+    split_counts: Counter[str] = Counter()
     chunk_count = (to_block - from_block) // maximum_span + 1
     if resumed_chunks:
         print(
@@ -608,15 +817,26 @@ def _query_replica_with_checkpoint(
     for chunk_index in range(resumed_chunks + 1, chunk_count + 1):
         start = from_block + (chunk_index - 1) * maximum_span
         end = min(start + maximum_span - 1, to_block)
-        raw = _get_logs_with_split(
-            client,
-            addresses=addresses,
-            topics=topics,
-            start_block=start,
-            end_block_inclusive=end,
-            remaining_split_depth=24,
-            split_topics_first=True,
-        )
+        if split_on_exhausted_rate_limit:
+            raw = _get_replica_logs_with_rate_limit_split(
+                client,
+                addresses=addresses,
+                topics=topics,
+                start_block=start,
+                end_block_inclusive=end,
+                remaining_split_depth=maximum_rate_limit_split_depth,
+                split_counts=split_counts,
+            )
+        else:
+            raw = _get_logs_with_split(
+                client,
+                addresses=addresses,
+                topics=topics,
+                start_block=start,
+                end_block_inclusive=end,
+                remaining_split_depth=24,
+                split_topics_first=True,
+            )
         decoded = _decode_logs(
             raw,
             branches_by_trove_manager=branches_by_trove_manager,
@@ -659,6 +879,7 @@ def _query_replica_with_checkpoint(
         "raw_rpc_responses_persisted": False,
         "path_outside_git_worktree": True,
         "reported_replica_request_stats_cover_current_attempt_only": True,
+        "rate_limit_split_counts_current_attempt": dict(sorted(split_counts.items())),
     }
 
 
@@ -814,7 +1035,19 @@ def audit(
 
     transport = config["transport"]
     formal = _rpc_client(str(transport["formal_rpc"]), transport)
-    replica = _rpc_client(str(transport["replication_rpc"]), transport)
+    replica = _rpc_client(
+        str(transport["replication_rpc"]),
+        transport,
+        minimum_request_interval_seconds=float(
+            transport.get(
+                "replication_minimum_request_interval_seconds",
+                transport["minimum_request_interval_seconds"],
+            )
+        ),
+        rate_limit_retries=int(
+            transport.get("replication_rate_limit_retries", transport["rate_limit_retries"])
+        ),
+    )
     state_witness_url = str(transport.get("state_witness_rpc", transport["replication_rpc"]))
     state_witness = (
         replica
@@ -968,6 +1201,21 @@ def audit(
             "addresses": addresses,
             "topics": topics,
             "addresses_together": replica_addresses_together,
+            "minimum_request_interval_seconds": float(
+                transport.get(
+                    "replication_minimum_request_interval_seconds",
+                    transport["minimum_request_interval_seconds"],
+                )
+            ),
+            "rate_limit_retries": int(
+                transport.get("replication_rate_limit_retries", transport["rate_limit_retries"])
+            ),
+            "split_on_exhausted_rate_limit": bool(
+                transport.get("replication_split_on_exhausted_rate_limit", False)
+            ),
+            "maximum_rate_limit_split_depth": int(
+                transport.get("replication_maximum_rate_limit_split_depth", 0)
+            ),
         }
         replica_events, checkpoint_audit = _query_replica_with_checkpoint(
             replica,
@@ -982,6 +1230,12 @@ def audit(
             from_block=from_block,
             to_block=to_block,
             maximum_span=maximum_span,
+            split_on_exhausted_rate_limit=bool(
+                transport.get("replication_split_on_exhausted_rate_limit", False)
+            ),
+            maximum_rate_limit_split_depth=int(
+                transport.get("replication_maximum_rate_limit_split_depth", 0)
+            ),
         )
     else:
         replica_raw = _query_logs(
