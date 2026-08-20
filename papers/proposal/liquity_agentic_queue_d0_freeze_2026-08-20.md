@@ -4,11 +4,20 @@
 
 **Target:** conditional *Nature Machine Intelligence* field study; *Nature Computational Science* only with a new general method and cross-system validation
 
-**Status:** D0 support audit authorized; outcomes, queue reconstruction, EcoMD, and GPU work forbidden until D0 passes
+**Status:** **D0 FAIL at full transport replication; route closed before support evaluation**
 
 ## Decision in one sentence
 
 Test whether Liquity V2 provides a sufficiently large, auditable field setting in which autonomous rate managers and self-managing borrowers compete for position in the same redemption-priority queue; stop the route if the frozen support and transport gates fail.
+
+## Formal outcome
+
+The clean v5 run stopped before the support summarizer because Blockscout returned 24,291 identities and the
+finalized SQD Portal returned 24,292 (`formal_only=0`, `replica_only=1`). dRPC and OnFinality independently verify
+the sole SQD-only log, diagnosing a Blockscout omission without changing the frozen failure decision. No support
+metric or numerical protocol outcome was decoded. See
+`liquity_agentic_queue_d0_v5_result_2026-08-20.md` and
+`../../results/empirical_physics/liquity_agentic_queue_d0_v5_failure.json`.
 
 ## Scientific question
 
@@ -213,9 +222,9 @@ D0 source + transport + support
     └── plus new general method + cross-system validation -> conditional NCS candidate
 ```
 
-## Immediate execution order
+## Closed execution record
 
-1. Commit and push this freeze plus the audited D0 implementation and tests.
-2. Run or resume the v5 multi-provider D0 from a clean worktree and a new external sanitized checkpoint.
-3. Publish the immutable manifest and a concise pass/fail decision.
-4. If and only if D0 passes, draft and commit a separate D1 preregistration before decoding numerical outcomes.
+1. The v5 freeze and audited implementation were committed and pushed before the formal run.
+2. The Portal completed 331/331 chunks, but exact full replication failed by one canonical Blockscout omission.
+3. The immutable failure manifest and result report record the hard stop.
+4. D1, numerical outcomes, queue reconstruction, EcoMD, and GPU work are not authorized for this route.

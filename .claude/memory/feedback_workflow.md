@@ -48,3 +48,17 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 - **Only introduce JAX/diffrax if** a specific Phase 4 experiment shows a concrete performance or API blocker with `torchsde` (e.g., batched reverse-time SDE integration > 10⁵ trajectories with adjoint, which is where diffrax/vmap shines).
 - Original plan v1 labeled JAX as "optional physics extra" — this is still accurate but the default has shifted from "use if convenient" to "do not use unless needed".
 - The `pyproject.toml` keeps `[physics]` extra with JAX/diffrax for future opt-in, but baseline installs should use `.[dev]` not `.[dev,physics]`.
+
+## Canonical event-log acquisition
+
+- A public explorer-backed JSON-RPC is not a canonical log witness merely because it matches small random shards.
+  Liquity D0 v5 found one real `BatchUpdated` omitted by Blockscout from both `eth_getLogs` and its transaction
+  receipt, while finalized SQD, dRPC, and OnFinality all contained the same identity.
+- Before freezing a new event-log study, include adversarial capability shards: unusually high block/log counts,
+  high log indices, known batch transactions, exact-block filters, and receipt-level triangulation.
+- Require complete identity equality between independent indexes before decoding scientific outcomes. On mismatch,
+  preserve only sanitized identities, diagnose with exact-block/receipt queries, and honor the preregistered stop;
+  do not rerun or swap providers after seeing the discrepancy merely to obtain a pass.
+- Prefer a finalized canonical archive/Portal plus independently verified receipts for future formal acquisition.
+  Explorer APIs may remain diagnostics or convenience indexes, but their completeness must be proved for the
+  frozen surface rather than assumed.

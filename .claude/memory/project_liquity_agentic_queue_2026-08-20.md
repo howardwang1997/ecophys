@@ -1,6 +1,6 @@
 ---
 name: liquity-agentic-priority-queue-2026-08-20
-description: "Outcome-blind Liquity V2 D0: qualify a public human-versus-autonomous priority-queue field study before any numerical outcomes, queue reconstruction, EcoMD, or GPU work."
+description: "Closed Liquity V2 D0: exact full transport replication failed by one canonical Blockscout omission before support or numerical outcomes."
 metadata:
   node_type: memory
   type: project
@@ -120,3 +120,30 @@ run. Every scientific field remains equal to v1. Nineteen focused tests, Ruff an
 identity replication and original support gate remain pending; V100/RTX, EcoMD, paid data and forbidden numerical
 fields remain unused. Amendment:
 `papers/proposal/liquity_agentic_queue_d0_finalized_portal_amendment_2026-08-20.md`.
+
+## Formal v5 result: transport FAIL and route closure (19:55 NZST)
+
+The clean v5 run completed source/deployment/finality checks, exact qualification `0/50/38`, Blockscout's full
+331 chunks and SQD's full 331 checkpointed chunks. Every previously disclosed OnFinality prefix was reproduced:
+2,507/3,939/6,110/8,126 at chunks 25/50/75/100. Final exact replication failed with Blockscout 24,291 versus
+SQD 24,292, `formal_only=0`, `replica_only=1`. The runner exited inside identity comparison before timestamp
+attachment or support summarization and wrote no normal result.
+
+The sole mismatch is a wstETH TroveManager `BatchUpdated` at block 25,401,761, transaction `1b0d...f109`, log
+index 1,756. A repeat of chunks 276--300 reproduced SQD 118 versus Blockscout 117 in chunk 292. Exact-block
+`eth_getLogs` and transaction-receipt checks both found the identity in dRPC and OnFinality; finalized SQD also
+has it. Blockscout omitted it in the full query, repeated chunk, exact-block query and receipt. Thus it is a real
+canonical log omitted by Blockscout, not a Portal false positive.
+
+The diagnosis does not change the preregistered decision: full declared-source equality failed, so the Liquity
+NMI route is closed before D1. Do not rerun until Blockscout happens to change, delete the extra event, swap the
+formal source as v6 on the observed interval, relax thresholds, decode support or numerical outcomes, reconstruct
+the queue, or invoke EcoMD/GPU. A future Liquity study would require an entirely new preregistration and untouched
+prospective interval. Failure manifest canonical SHA-256 `2767a17f...ecf73`; result report:
+`papers/proposal/liquity_agentic_queue_d0_v5_result_2026-08-20.md`.
+
+Lasting workflow lesson: future event-log studies must qualify adversarial high-log-index blocks and triangulate
+receipts, not merely random shards. An explorer-backed JSON-RPC that passes small filters is not a canonical log
+witness. The research program has no active NMI/NCS candidate after this closure and must return to question
+selection; current V100/RTX resources should remain idle until a new preregistered feasibility gate actually
+requires compute.

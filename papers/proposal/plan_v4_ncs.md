@@ -20,13 +20,14 @@ holdout 虽有 215 条合格提案、202 次精确注入和 151 个批次，但�
 覆盖链为 0/2，因此在市场结果、EcoMD 和 GPU 之前硬停。Aave 正式结果见
 `papers/proposal/aave_agent_guardrail_holdout_d0_v2_result_2026-08-20.md`。此后选中的 Liquity V2 候选
 比较同一赎回优先队列中的自主管理利率与官方自动利率管理器，问题是自动控制是否把 rank exposure
-转移给自主管理借款人并形成同步拥挤。原始 D0 科学门槛在任何支持计数前冻结；Blockscout 已看到
-24,291 条允许事件，但支持 breakdown 仍未计算。dRPC 因日志遗漏被降为状态见证，OnFinality 因持续
-公共限流被替换；当前 v5 仅用免费 finalized SQD Portal 复制日志 identity，并保持 v1 的样本阈值、
-禁止字段与停止规则不变。五个预筛区间（42、0、50、38、105 条）已与 Blockscout 逐日志一致，完整
-区间尚未运行。D0 通过只会授权另行冻结的 D1；NMI 需要稳健的真实外部性与前瞻验证，NCS 还需要
-新的随机优先系统识别/校准方法、形式保证和第二系统验证。D0 前继续禁止 EcoMD、GPU、付费数据与
-数值队列结果。详见 `papers/proposal/liquity_agentic_queue_d0_freeze_2026-08-20.md`。
+转移给自主管理借款人并形成同步拥挤。原始 D0 科学门槛在任何支持计数前冻结，v5 也保持 v1 的样本
+阈值、禁止字段与停止规则不变。正式全量扫描得到 Blockscout 24,291 条、finalized SQD Portal 24,292
+条，完整 identity 集合相差一条，因此按硬门槛在 support summary 前 **FAIL**。dRPC、OnFinality 与
+SQD 均证明多出的 `BatchUpdated` 是真实 canonical log，根因是 Blockscout omission；这解释数据源
+故障但不能事后改判或更换 formal source。没有任何支持 breakdown、数值队列结果、EcoMD、GPU 或
+付费数据结果。Liquity 路线现已关闭，当前重新回到问题选型；NMI 仍需稳健真实外部性与前瞻验证，
+NCS 仍额外需要新方法、形式保证和第二系统验证。正式结果见
+`papers/proposal/liquity_agentic_queue_d0_v5_result_2026-08-20.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、
