@@ -1,0 +1,65 @@
+contract:
+  name: morpho_public_allocator_pressure_d0_transport_amendment
+  version: 2
+  status: frozen_before_completed_full_support_result
+  frozen_utc: "2026-08-20T10:55:14Z"
+  parent_config_path: configs/empirical_physics/morpho_public_allocator_pressure_d0_v1.yaml
+  parent_config_sha256: bc6fc21cfd6b782280ace89d4d854b603dd19370bdad3c6d4803c72557333c60
+  parent_qualification_path: results/empirical_physics/morpho_public_allocator_pressure_d0_qualification_v1.json
+  parent_qualification_canonical_sha256: d59b0184cc2a3e616abbbd158d47dc6952643dd9fecd31567e37811728b3edfe
+
+incomplete_v1_attempt:
+  repository_git_sha: 05c74b71b2a4e5be3fd2d91e6dcd1f8ec6804fc0
+  started_local: "2026-08-20T22:40:00+12:00"
+  stopped_local: "2026-08-20T22:51:00+12:00"
+  formal_artifact_written: false
+  console_or_support_counts_observed: false
+  reason: serial_portal_worker_range_pagination_projected_to_exceed_practical_wall_time
+
+execution:
+  mode: independent_chain_artifacts_then_exact_merge
+  qualification:
+    portal_block_shard_span: 1250
+    portal_max_workers: 8
+  full_chain:
+    portal_block_shard_span: 100000
+    portal_max_workers: 8
+    receipt_max_workers: 4
+    receipt_minimum_request_interval_seconds_per_worker: 0.5
+  progress_interval_seconds: 30
+  maximum_chains_per_host: 1
+  launch_all_required_chains_before_reading_any_chain_result: true
+  cuda_visible_devices: ""
+
+transport_invariance:
+  required_parent_sections_unchanged:
+    - official_sources
+    - event_signatures
+    - chains
+    - transport
+    - classification
+    - pass_thresholds
+    - d1_future_gates_not_tested_here
+    - forbidden_before_d0_pass
+    - stop_rules
+    - resources
+  block_shards_are_disjoint_inclusive_and_cover_parent_interval_exactly: true
+  canonical_identity_union_is_order_independent: true
+  duplicate_canonical_identity_is_fatal: true
+  every_shard_uses_parent_portal_url_filter_fields_and_retry_policy: true
+  full_rpc_receipt_and_support_rules_unchanged: true
+  raw_responses_or_event_identities_persisted: false
+
+qualification_gate:
+  reproduce_parent_six_shard_event_counts: true
+  reproduce_parent_six_shard_canonical_identity_sha256: true
+  preserve_exact_portal_rpc_identity_equality: true
+  require_complete_disjoint_shard_coverage: true
+
+formal_run:
+  required_chains: [ethereum, base]
+  ethereum_worker: v100_a_cpu_network_only
+  base_worker: v100_b_cpu_network_only
+  merge_requires_same_git_sha_parent_config_and_transport_amendment: true
+  merge_recomputes_original_v1_support_gates_once: true
+  chain_artifacts_retain_aggregate_summaries_only: true

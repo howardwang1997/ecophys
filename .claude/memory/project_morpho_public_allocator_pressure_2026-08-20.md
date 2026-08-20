@@ -74,4 +74,16 @@ Formal qualification from clean pushed `15faa4027` passed all six frozen shards.
 and all cutoff headers match. Canonical payload SHA is `d59b0184…edfe`, independently reproduced. No receipt,
 Borrow event or full interval was opened, so these are transport counts rather than candidate support. The first
 execution channel hid console output but completed the artifact; the identical diagnostic retry stopped at the
-existing-output guard before network access. Commit/push the qualification before the one authorized full D0.
+existing-output guard before network access.
+
+The first serial full-v1 invocation from clean pushed `05c74b71b` was technically stopped after about eleven
+minutes. It had a live network connection but wrote no artifact and exposed no event/support count. Qualification
+pagination implies roughly 5,800 Ethereum and 59,000 Base Portal pages at the observed mean, or an optimistic
+pooled lower bound near 22,000; the serial design therefore projected to roughly 8--24 hours before receipt work.
+This is not a D0 result. Transport amendment v2 (`b549efa4…34a4`) keeps the parent-config hash and every
+scientific/data gate fixed, but uses exact disjoint block shards, eight Portal workers, four paced receipt workers,
+independently launched Ethereum/Base chain artifacts and a same-SHA exact merge. The amendment implementation has
+12 focused tests;
+the 65-test affected suite, Ruff and strict mypy pass. A new exact-digest qualification must be committed and pass
+before both V100 hosts may run one CPU/network chain each with CUDA hidden. No amount, outcome or GPU use is
+authorized.
