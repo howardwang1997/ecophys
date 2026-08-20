@@ -607,3 +607,108 @@ def test_weight_aware_transport_recovery_v4_preserves_every_parent_field() -> No
     tampered["transport"]["replication_minimum_request_interval_seconds"] = 6.0
     with pytest.raises(RuntimeError, match="weight-aware recovery"):
         runner._validate_freeze_contract(tampered, config_path=config_path)
+
+
+def test_finalized_portal_recovery_v5_preserves_every_scientific_field() -> None:
+    config_path = Path("configs/empirical_physics/liquity_agentic_queue_d0_v5.yaml").resolve()
+    config = runner._load_yaml(config_path)
+    audit = runner._validate_freeze_contract(config, config_path=config_path)
+    assert audit["is_finalized_portal_transport_recovery"] is True
+    assert audit["scientific_sections_equal_to_parent"] is True
+
+    tampered = deepcopy(config)
+    tampered["pass_thresholds"]["minimum_redemption_transactions"] = 49
+    with pytest.raises(RuntimeError, match="pass_thresholds"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+    tampered = deepcopy(config)
+    tampered["transport"]["formal_rpc"] = "https://example.invalid"
+    with pytest.raises(RuntimeError, match="parent transport"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+    tampered = deepcopy(config)
+    tampered["transport"]["replication_portal_dataset_url"] = "https://example.invalid"
+    with pytest.raises(RuntimeError, match="Portal settings"):
+        runner._validate_freeze_contract(tampered, config_path=config_path)
+
+
+def test_portal_checkpoint_resumes_only_unfinished_chunks(tmp_path: Path) -> None:
+    checkpoint = tmp_path / "portal-replica.json"
+    addresses = [TM]
+    topics = [TOPICS["Redemption"]]
+    identity = {
+        "config_path": "configs/test.yaml",
+        "config_sha256": "ab" * 32,
+        "git_sha": "cd" * 20,
+        "replication_transport_kind": "sqd_finalized_portal",
+        "from_block": 1,
+        "to_block": 20,
+        "maximum_get_logs_span": 10,
+        "addresses": addresses,
+        "topics": topics,
+    }
+    payload = runner._load_replica_checkpoint(
+        checkpoint,
+        expected_identity=identity,
+        from_block=1,
+        to_block=20,
+        maximum_span=10,
+        addresses=addresses,
+        topics=topics,
+    )
+    payload["completed_chunks"] = [
+        {
+            "chunk_index": 1,
+            "from_block": 1,
+            "to_block": 10,
+            "event_count": 0,
+            "events": [],
+            "canonical_log_identity_sha256": runner._identity_digest([]),
+        }
+    ]
+    runner._write_replica_checkpoint(checkpoint, payload)
+
+    class FakePortal:
+        def __init__(self) -> None:
+            self.calls: list[tuple[int, int]] = []
+
+        def finalized_log_identities(
+            self,
+            *,
+            addresses: list[str],
+            topics: list[str],
+            from_block: int,
+            to_block: int,
+        ) -> tuple[list[dict[str, Any]], dict[str, int]]:
+            del addresses, topics
+            self.calls.append((from_block, to_block))
+            return [], {
+                "page_count": 2,
+                "header_count": 3,
+                "request_count": 2,
+                "retry_count": 0,
+                "bytes_received": 100,
+            }
+
+    portal = FakePortal()
+    events, audit = runner._query_portal_with_checkpoint(  # type: ignore[arg-type]
+        portal,
+        checkpoint_path=checkpoint,
+        checkpoint_identity=identity,
+        addresses=addresses,
+        topics=topics,
+        from_block=1,
+        to_block=20,
+        maximum_span=10,
+    )
+    assert events == []
+    assert portal.calls == [(11, 20)]
+    assert audit["resumed_chunks_at_start"] == 1
+    assert audit["completed_chunks"] == 2
+    assert audit["portal_stats_current_attempt"] == {
+        "bytes_received": 100,
+        "header_count": 3,
+        "page_count": 2,
+        "request_count": 2,
+        "retry_count": 0,
+    }

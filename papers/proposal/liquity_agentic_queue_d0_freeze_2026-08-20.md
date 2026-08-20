@@ -66,21 +66,24 @@ Without those additions, the appropriate ambition is NMI or a strong computation
 ## D0: support-only audit
 
 The original scientific contract is `configs/empirical_physics/liquity_agentic_queue_d0_v1.yaml`. Formal
-execution now uses the weight-aware resumable transport child
-`configs/empirical_physics/liquity_agentic_queue_d0_v4.yaml`; it recursively proves every scientific section
-equal through v3 and v2 to v1. Version 2 replaced the incomplete dRPC log witness with OnFinality while retaining
-dRPC for historical state. Version 3 grouped OnFinality's address filter and added a sanitized per-chunk
-checkpoint. Version 4 paces the replica to the provider's documented public limit and adaptively partitions only
-responses that still exhaust the limit. See
+execution now uses the finalized-Portal resumable transport child
+`configs/empirical_physics/liquity_agentic_queue_d0_v5.yaml`; it recursively proves every scientific section
+equal through v4, v3, and v2 to v1. Version 2 replaced the incomplete dRPC log witness with OnFinality while
+retaining dRPC for historical state. Version 3 grouped OnFinality's address filter and added a sanitized per-chunk
+checkpoint. Version 4 paced the replica to the provider's documented public limit and adaptively partitioned
+responses, but repeated HTTP 429 persisted even near ten-block subranges. Version 5 replaces only that overloaded
+log replica with SQD's finalized Ethereum Portal identity stream. See
 `liquity_agentic_queue_d0_transport_amendment_2026-08-20.md` and
 `liquity_agentic_queue_d0_recovery_amendment_2026-08-20.md` and
-`liquity_agentic_queue_d0_weighted_rate_limit_amendment_2026-08-20.md`. The contract pins:
+`liquity_agentic_queue_d0_weighted_rate_limit_amendment_2026-08-20.md` and
+`liquity_agentic_queue_d0_finalized_portal_amendment_2026-08-20.md`. The contract pins:
 
 - official Liquity core and ARM repositories by commit and file hash;
 - all three mainnet branches and official ARM addresses;
 - one immutable end block and block hash;
 - four event signatures and the only fields that may be decoded;
-- two independent public RPC transports and three source-blind qualification shards;
+- independent Blockscout and finalized SQD Portal log indexes, a dRPC historical-state witness, and three
+  source-blind qualification shards;
 - sample-size gates chosen before any event counts.
 
 D0 may decode only:
@@ -96,7 +99,7 @@ D0 must not decode or retain rates, debt, collateral, redemption amount, redempt
 
 All gates must pass:
 
-- exact full log-identity replication across Blockscout and OnFinality, with dRPC as the independent historical
+- exact full log-identity replication across Blockscout and the finalized SQD Portal, with dRPC as the historical
   bytecode witness;
 - nonempty contract code at the frozen height for every branch's TroveManager and BorrowerOperations;
 - at least 500 unique opened Troves and 100 ever-batched Troves;
@@ -213,6 +216,6 @@ D0 source + transport + support
 ## Immediate execution order
 
 1. Commit and push this freeze plus the audited D0 implementation and tests.
-2. Run or resume the v4 multi-provider D0 from a clean worktree and an external sanitized checkpoint.
+2. Run or resume the v5 multi-provider D0 from a clean worktree and a new external sanitized checkpoint.
 3. Publish the immutable manifest and a concise pass/fail decision.
 4. If and only if D0 passes, draft and commit a separate D1 preregistration before decoding numerical outcomes.

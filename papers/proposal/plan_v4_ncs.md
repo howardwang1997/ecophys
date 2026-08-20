@@ -18,8 +18,15 @@
 定时资金费候选在 D1A 因合格处理单元仅 1/21（要求 15）停止；Aave 自动风控代理的九链前瞻
 holdout 虽有 215 条合格提案、202 次精确注入和 151 个批次，但冻结要求的局部延迟边界为 0/2、
 覆盖链为 0/2，因此在市场结果、EcoMD 和 GPU 之前硬停。Aave 正式结果见
-`papers/proposal/aave_agent_guardrail_holdout_d0_v2_result_2026-08-20.md`。当前没有已授权的 NCS
-主干实验；下一候选仍须先用免费数据证明真实识别或冻结预测面，再扩数据和算力。
+`papers/proposal/aave_agent_guardrail_holdout_d0_v2_result_2026-08-20.md`。此后选中的 Liquity V2 候选
+比较同一赎回优先队列中的自主管理利率与官方自动利率管理器，问题是自动控制是否把 rank exposure
+转移给自主管理借款人并形成同步拥挤。原始 D0 科学门槛在任何支持计数前冻结；Blockscout 已看到
+24,291 条允许事件，但支持 breakdown 仍未计算。dRPC 因日志遗漏被降为状态见证，OnFinality 因持续
+公共限流被替换；当前 v5 仅用免费 finalized SQD Portal 复制日志 identity，并保持 v1 的样本阈值、
+禁止字段与停止规则不变。五个预筛区间（42、0、50、38、105 条）已与 Blockscout 逐日志一致，完整
+区间尚未运行。D0 通过只会授权另行冻结的 D1；NMI 需要稳健的真实外部性与前瞻验证，NCS 还需要
+新的随机优先系统识别/校准方法、形式保证和第二系统验证。D0 前继续禁止 EcoMD、GPU、付费数据与
+数值队列结果。详见 `papers/proposal/liquity_agentic_queue_d0_freeze_2026-08-20.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、

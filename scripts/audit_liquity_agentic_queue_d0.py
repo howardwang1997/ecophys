@@ -21,6 +21,7 @@ from ecomd.data.liquity_agentic_queue import (
     log_identity,
     summarize_agentic_queue_support,
 )
+from ecomd.data.sqd_portal import SqdPortalClient
 from scripts.audit_aave_rate_response_d1b import (
     RpcError,
     _get_logs_with_split,
@@ -183,6 +184,139 @@ def _validate_freeze_contract(
         if str(contract["status"]) != ("frozen_before_event_log_support_counts_or_any_queue_outcomes"):
             raise RuntimeError("D0 v1 lacks the required outcome-blind freeze status")
         return {"is_transport_amendment": False}
+    if version == 5:
+        if str(contract["status"]) != (
+            "transport_only_finalized_portal_recovery_after_onfinality_overload_before_support_gate"
+        ):
+            raise RuntimeError("D0 v5 lacks the required finalized-Portal recovery status")
+        amendment = config.get("amendment")
+        if not isinstance(amendment, Mapping):
+            raise RuntimeError("D0 v5 has no finalized-Portal transport record")
+        expected_amendment_fields = {
+            "parent_config_path",
+            "parent_config_sha256",
+            "scope",
+            "no_scientific_field_changed",
+            "support_gate_breakdown_computed_before_amendment",
+            "numerical_protocol_outcome_decoded_before_amendment",
+            "observations_before_amendment",
+            "changed_fields",
+            "official_portal_sources",
+        }
+        if set(amendment) != expected_amendment_fields:
+            raise RuntimeError("D0 v5 amendment fields differ from the reviewed Portal schema")
+        if (
+            amendment.get("scope")
+            != "replace_overloaded_public_json_rpc_replica_with_finalized_sqd_portal_identity_stream"
+            or amendment.get("no_scientific_field_changed") is not True
+            or amendment.get("support_gate_breakdown_computed_before_amendment") is not False
+            or amendment.get("numerical_protocol_outcome_decoded_before_amendment") is not False
+        ):
+            raise RuntimeError("D0 v5 does not preserve outcome-blind scientific invariance")
+        parent_relative = Path(str(amendment["parent_config_path"]))
+        parent_path = (REPO_ROOT / parent_relative).resolve()
+        if not parent_path.is_relative_to(REPO_ROOT) or not parent_path.is_file():
+            raise RuntimeError("D0 v5 parent config is outside the repository or absent")
+        parent_digest = _sha256_file(parent_path)
+        if parent_digest != str(amendment["parent_config_sha256"]):
+            raise RuntimeError("D0 v5 parent config digest mismatch")
+        parent = _load_yaml(parent_path)
+        parent_audit = _validate_freeze_contract(parent, config_path=parent_path)
+        if (
+            int(parent["contract"]["version"]) != 4
+            or parent_audit.get("is_weight_aware_transport_recovery") is not True
+        ):
+            raise RuntimeError("D0 v5 parent is not the reviewed v4 recovery amendment")
+        if set(config) != set(parent):
+            raise RuntimeError("D0 v5 added an unreviewed top-level section")
+        if set(contract) != set(parent["contract"]):
+            raise RuntimeError("D0 v5 contract fields differ from its parent")
+        for field in {"name", "purpose"}:
+            if contract.get(field) != parent["contract"].get(field):
+                raise RuntimeError(f"D0 v5 changed the contract {field}")
+        invariant_sections = set(parent) - {"contract", "amendment", "transport"}
+        for section in invariant_sections:
+            if config.get(section) != parent.get(section):
+                raise RuntimeError(f"D0 v5 changed frozen scientific section: {section}")
+
+        transport = config["transport"]
+        parent_transport = parent["transport"]
+        portal_fields = {
+            "replication_transport_kind",
+            "replication_portal_dataset_url",
+            "replication_portal_stream_endpoint",
+            "replication_portal_expected_metadata",
+            "replication_portal_timeout_seconds",
+            "replication_portal_retry_attempts",
+            "replication_portal_retry_backoff_seconds",
+            "replication_legacy_rpc_fields_inactive",
+        }
+        if set(transport) != set(parent_transport) | portal_fields:
+            raise RuntimeError("D0 v5 transport fields exceed the reviewed Portal scope")
+        for field, value in parent_transport.items():
+            if field != "replication_rpc" and transport.get(field) != value:
+                raise RuntimeError(f"D0 v5 changed frozen parent transport field: {field}")
+        inactive_fields = {
+            "replication_addresses_together",
+            "replication_minimum_request_interval_seconds",
+            "replication_rate_limit_retries",
+            "replication_split_on_exhausted_rate_limit",
+            "replication_rate_limit_split_order",
+            "replication_maximum_rate_limit_split_depth",
+        }
+        if (
+            transport.get("replication_rpc") is not None
+            or transport.get("replication_transport_kind") != "sqd_finalized_portal"
+            or transport.get("replication_portal_dataset_url")
+            != "https://portal.sqd.dev/datasets/ethereum-mainnet"
+            or transport.get("replication_portal_stream_endpoint") != "finalized-stream"
+            or transport.get("replication_portal_expected_metadata")
+            != {"dataset": "ethereum-mainnet", "start_block": 0, "real_time": True}
+            or float(transport.get("replication_portal_timeout_seconds", 0)) != 60.0
+            or int(transport.get("replication_portal_retry_attempts", -1)) != 4
+            or float(transport.get("replication_portal_retry_backoff_seconds", -1)) != 1.0
+            or set(map(str, transport.get("replication_legacy_rpc_fields_inactive", []))) != inactive_fields
+        ):
+            raise RuntimeError("D0 v5 finalized-Portal settings are invalid")
+        expected_changed_fields = {
+            "contract.version",
+            "contract.status",
+            "contract.frozen_utc",
+            "amendment",
+            "transport.replication_rpc",
+            *{f"transport.{field}" for field in portal_fields},
+        }
+        if set(map(str, amendment["changed_fields"])) != expected_changed_fields:
+            raise RuntimeError("D0 v5 changed-fields declaration is incomplete")
+        sources = amendment["official_portal_sources"]
+        if (
+            not isinstance(sources, Mapping)
+            or sources.get("api_documentation_url")
+            != "https://docs.sqd.ai/migrate-to-portal-with-real-time-data-on-evm/"
+            or sources.get("portal_client_npm_package") != "@subsquid/portal-client"
+            or str(sources.get("portal_client_npm_version")) != "0.4.0"
+            or sources.get("portal_client_npm_shasum") != "410f563cb33776c480e36ff2146a238fe2d63663"
+        ):
+            raise RuntimeError("D0 v5 lacks the frozen official Portal protocol evidence")
+        observations = amendment["observations_before_amendment"]
+        if (
+            not isinstance(observations, Mapping)
+            or observations.get("support_gate_breakdown_computed") is not False
+            or observations.get("numerical_protocol_outcome_decoded") is not False
+        ):
+            raise RuntimeError("D0 v5 pre-amendment observations violate the blind recovery scope")
+        if config_path != config_path.resolve() or not config_path.is_relative_to(REPO_ROOT):
+            raise RuntimeError("formal D0 config must resolve inside the repository")
+        return {
+            "is_transport_amendment": True,
+            "is_resumable_transport_recovery": True,
+            "is_finalized_portal_transport_recovery": True,
+            "parent_config_path": str(parent_relative),
+            "parent_config_sha256": parent_digest,
+            "scientific_sections_equal_to_parent": True,
+            "d0_support_breakdown_computed_before_amendment": False,
+            "numerical_protocol_outcomes_decoded_before_amendment": False,
+        }
     if version == 4:
         if str(contract["status"]) != (
             "transport_only_weight_aware_recovery_after_onfinality_429_before_support_gate"
@@ -221,9 +355,10 @@ def _validate_freeze_contract(
             raise RuntimeError("D0 v4 parent config digest mismatch")
         parent = _load_yaml(parent_path)
         parent_audit = _validate_freeze_contract(parent, config_path=parent_path)
-        if int(parent["contract"]["version"]) != 3 or parent_audit.get(
-            "is_resumable_transport_recovery"
-        ) is not True:
+        if (
+            int(parent["contract"]["version"]) != 3
+            or parent_audit.get("is_resumable_transport_recovery") is not True
+        ):
             raise RuntimeError("D0 v4 parent is not the reviewed v3 recovery amendment")
         if set(config) != set(parent):
             raise RuntimeError("D0 v4 added an unreviewed top-level section")
@@ -254,8 +389,7 @@ def _validate_freeze_contract(
             float(transport["replication_minimum_request_interval_seconds"]) != 6.1
             or int(transport["replication_rate_limit_retries"]) != 2
             or transport["replication_split_on_exhausted_rate_limit"] is not True
-            or list(transport["replication_rate_limit_split_order"])
-            != ["addresses", "block_range"]
+            or list(transport["replication_rate_limit_split_order"]) != ["addresses", "block_range"]
             or int(transport["replication_maximum_rate_limit_split_depth"]) != 32
         ):
             raise RuntimeError("D0 v4 weight-aware recovery settings are invalid")
@@ -281,9 +415,11 @@ def _validate_freeze_contract(
         ):
             raise RuntimeError("D0 v4 lacks the frozen official Ethereum public-limit evidence")
         observations = amendment["observations_before_amendment"]
-        if not isinstance(observations, Mapping) or observations.get(
-            "support_gate_breakdown_computed"
-        ) is not False or observations.get("numerical_protocol_outcome_decoded") is not False:
+        if (
+            not isinstance(observations, Mapping)
+            or observations.get("support_gate_breakdown_computed") is not False
+            or observations.get("numerical_protocol_outcome_decoded") is not False
+        ):
             raise RuntimeError("D0 v4 pre-amendment observations violate the blind recovery scope")
         if config_path != config_path.resolve() or not config_path.is_relative_to(REPO_ROOT):
             raise RuntimeError("formal D0 config must resolve inside the repository")
@@ -334,9 +470,7 @@ def _validate_freeze_contract(
             raise RuntimeError("D0 v3 parent config digest mismatch")
         parent = _load_yaml(parent_path)
         parent_audit = _validate_freeze_contract(parent, config_path=parent_path)
-        if int(parent["contract"]["version"]) != 2 or parent_audit.get(
-            "is_transport_amendment"
-        ) is not True:
+        if int(parent["contract"]["version"]) != 2 or parent_audit.get("is_transport_amendment") is not True:
             raise RuntimeError("D0 v3 parent is not the reviewed v2 transport amendment")
         if set(config) != set(parent):
             raise RuntimeError("D0 v3 added an unreviewed top-level section")
@@ -379,9 +513,11 @@ def _validate_freeze_contract(
         if set(map(str, amendment["changed_fields"])) != expected_changed_fields:
             raise RuntimeError("D0 v3 changed-fields declaration is incomplete")
         observations = amendment["observations_before_amendment"]
-        if not isinstance(observations, Mapping) or observations.get(
-            "support_gate_breakdown_computed"
-        ) is not False or observations.get("numerical_protocol_outcome_decoded") is not False:
+        if (
+            not isinstance(observations, Mapping)
+            or observations.get("support_gate_breakdown_computed") is not False
+            or observations.get("numerical_protocol_outcome_decoded") is not False
+        ):
             raise RuntimeError("D0 v3 pre-amendment observations violate the blind recovery scope")
         if config_path != config_path.resolve() or not config_path.is_relative_to(REPO_ROOT):
             raise RuntimeError("formal D0 config must resolve inside the repository")
@@ -496,9 +632,7 @@ def _rpc_client(
             else minimum_request_interval_seconds
         ),
         rate_limit_retries=(
-            int(transport["rate_limit_retries"])
-            if rate_limit_retries is None
-            else rate_limit_retries
+            int(transport["rate_limit_retries"]) if rate_limit_retries is None else rate_limit_retries
         ),
         rate_limit_backoff_initial_seconds=float(transport["rate_limit_backoff_initial_seconds"]),
         rate_limit_backoff_max_seconds=float(transport["rate_limit_backoff_max_seconds"]),
@@ -883,6 +1017,87 @@ def _query_replica_with_checkpoint(
     }
 
 
+def _query_portal_with_checkpoint(
+    client: SqdPortalClient,
+    *,
+    checkpoint_path: Path,
+    checkpoint_identity: Mapping[str, Any],
+    addresses: Sequence[str],
+    topics: Sequence[str],
+    from_block: int,
+    to_block: int,
+    maximum_span: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    if checkpoint_path.is_relative_to(REPO_ROOT):
+        raise RuntimeError("formal replica checkpoint must be outside the Git worktree")
+    payload = _load_replica_checkpoint(
+        checkpoint_path,
+        expected_identity=checkpoint_identity,
+        from_block=from_block,
+        to_block=to_block,
+        maximum_span=maximum_span,
+        addresses=addresses,
+        topics=topics,
+    )
+    chunks = list(payload["completed_chunks"])
+    resumed_chunks = len(chunks)
+    events = [dict(event) for chunk in chunks for event in chunk["events"]]
+    seen = set(map(log_identity, events))
+    chunk_count = (to_block - from_block) // maximum_span + 1
+    portal_stats: Counter[str] = Counter()
+    if resumed_chunks:
+        print(
+            f"full.replica: resuming after {resumed_chunks}/{chunk_count} verified chunks, "
+            f"{len(events)} logs",
+            flush=True,
+        )
+    for chunk_index in range(resumed_chunks + 1, chunk_count + 1):
+        start = from_block + (chunk_index - 1) * maximum_span
+        end = min(start + maximum_span - 1, to_block)
+        queried, stats = client.finalized_log_identities(
+            addresses=addresses,
+            topics=topics,
+            from_block=start,
+            to_block=end,
+        )
+        portal_stats.update(stats)
+        sanitized = sorted((_checkpoint_event(event) for event in queried), key=log_identity)
+        identities = set(map(log_identity, sanitized))
+        if seen & identities:
+            raise RuntimeError("Portal checkpoint query produced duplicate cross-chunk identities")
+        seen.update(identities)
+        events.extend(sanitized)
+        chunk = {
+            "chunk_index": chunk_index,
+            "from_block": start,
+            "to_block": end,
+            "event_count": len(sanitized),
+            "events": sanitized,
+            "canonical_log_identity_sha256": _identity_digest(sanitized),
+        }
+        chunks.append(chunk)
+        payload = {**payload, "completed_chunks": chunks}
+        checkpoint_digest = _write_replica_checkpoint(checkpoint_path, payload)
+        if chunk_index == 1 or chunk_index % 25 == 0 or chunk_index == chunk_count:
+            print(
+                f"full.replica: {chunk_index}/{chunk_count} chunks via finalized Portal, "
+                f"{len(events)} logs; checkpoint={checkpoint_digest[:12]}",
+                flush=True,
+            )
+    final_digest = _write_replica_checkpoint(checkpoint_path, payload)
+    return events, {
+        "schema_version": 1,
+        "resumed_chunks_at_start": resumed_chunks,
+        "completed_chunks": len(chunks),
+        "canonical_payload_sha256": final_digest,
+        "contains_only_sanitized_log_identity_fields": True,
+        "raw_portal_responses_persisted": False,
+        "path_outside_git_worktree": True,
+        "reported_portal_request_stats_cover_current_attempt_only": True,
+        "portal_stats_current_attempt": dict(sorted(portal_stats.items())),
+    }
+
+
 def _decode_logs(
     logs: Sequence[Mapping[str, Any]],
     *,
@@ -1035,41 +1250,79 @@ def audit(
 
     transport = config["transport"]
     formal = _rpc_client(str(transport["formal_rpc"]), transport)
-    replica = _rpc_client(
-        str(transport["replication_rpc"]),
-        transport,
-        minimum_request_interval_seconds=float(
-            transport.get(
-                "replication_minimum_request_interval_seconds",
-                transport["minimum_request_interval_seconds"],
-            )
-        ),
-        rate_limit_retries=int(
-            transport.get("replication_rate_limit_retries", transport["rate_limit_retries"])
-        ),
-    )
+    replication_kind = str(transport.get("replication_transport_kind", "json_rpc"))
+    replica_rpc: _RpcClient | None = None
+    portal: SqdPortalClient | None = None
+    if replication_kind == "sqd_finalized_portal":
+        portal = SqdPortalClient(
+            str(transport["replication_portal_dataset_url"]),
+            timeout_seconds=float(transport["replication_portal_timeout_seconds"]),
+            retry_attempts=int(transport["replication_portal_retry_attempts"]),
+            retry_backoff_seconds=float(transport["replication_portal_retry_backoff_seconds"]),
+        )
+    elif replication_kind == "json_rpc":
+        replica_rpc = _rpc_client(
+            str(transport["replication_rpc"]),
+            transport,
+            minimum_request_interval_seconds=float(
+                transport.get(
+                    "replication_minimum_request_interval_seconds",
+                    transport["minimum_request_interval_seconds"],
+                )
+            ),
+            rate_limit_retries=int(
+                transport.get("replication_rate_limit_retries", transport["rate_limit_retries"])
+            ),
+        )
+    else:
+        raise RuntimeError(f"unsupported D0 replication transport: {replication_kind}")
     state_witness_url = str(transport.get("state_witness_rpc", transport["replication_rpc"]))
     state_witness = (
-        replica
-        if state_witness_url == str(transport["replication_rpc"])
+        replica_rpc
+        if replica_rpc is not None and state_witness_url == str(transport["replication_rpc"])
         else _rpc_client(state_witness_url, transport)
     )
     chain_id = hex(int(config["ethereum"]["chain_id"]))
-    if any(client.call("eth_chainId", []) != chain_id for client in (formal, replica, state_witness)):
+    rpc_clients = [formal, state_witness]
+    if replica_rpc is not None:
+        rpc_clients.append(replica_rpc)
+    if any(client.call("eth_chainId", []) != chain_id for client in rpc_clients):
         raise RuntimeError("one or more D0 RPC transports are on the wrong chain")
 
     ethereum = config["ethereum"]
     from_block = int(ethereum["from_block"])
     to_block = int(ethereum["to_block"])
     formal_end = formal.block(to_block)
-    replica_end = replica.block(to_block)
     state_witness_end = state_witness.block(to_block)
     expected_hash = normalize_topic(str(ethereum["to_block_hash"]))
     expected_timestamp = int(ethereum["to_block_timestamp"])
-    if formal_end != replica_end or formal_end != state_witness_end:
-        raise RuntimeError("frozen end-block headers differ across RPC transports")
+    portal_audit: dict[str, Any] | None = None
+    if formal_end != state_witness_end:
+        raise RuntimeError("frozen end-block headers differ across RPC state witnesses")
     if str(formal_end["hash"]) != expected_hash or int(formal_end["timestamp"]) != expected_timestamp:
         raise RuntimeError("frozen D0 end block differs from the preregistration")
+    if portal is not None:
+        metadata = portal.metadata()
+        expected_metadata = dict(transport["replication_portal_expected_metadata"])
+        observed_metadata = {key: metadata.get(key) for key in expected_metadata}
+        if observed_metadata != expected_metadata:
+            raise RuntimeError("SQD Portal metadata differs from the frozen dataset identity")
+        finalized_head = portal.finalized_head()
+        if int(finalized_head["number"]) < to_block:
+            raise RuntimeError("SQD Portal finalized head does not cover the frozen D0 interval")
+        portal_end = portal.finalized_block_header(to_block)
+        if str(portal_end["hash"]) != expected_hash or int(portal_end["timestamp"]) != expected_timestamp:
+            raise RuntimeError("SQD Portal frozen end block differs from the preregistration")
+        portal_audit = {
+            "metadata": observed_metadata,
+            "finalized_head_at_start": finalized_head,
+            "frozen_end_header": portal_end,
+            "frozen_end_header_matches_rpc_witnesses": True,
+        }
+    elif replica_rpc is not None:
+        replica_end = replica_rpc.block(to_block)
+        if formal_end != replica_end:
+            raise RuntimeError("frozen end-block headers differ across RPC transports")
 
     branch_records = ethereum["branches"]
     branches_by_trove_manager = {
@@ -1120,16 +1373,6 @@ def audit(
             maximum_span=maximum_span,
             label=f"qualification[{index}].formal",
         )
-        replica_raw = _query_logs(
-            replica,
-            addresses=addresses,
-            topics=topics,
-            from_block=shard_start,
-            to_block=shard_end,
-            maximum_span=maximum_span,
-            label=f"qualification[{index}].replica",
-            addresses_together=replica_addresses_together,
-        )
         formal_events = _decode_logs(
             formal_raw,
             branches_by_trove_manager=branches_by_trove_manager,
@@ -1139,15 +1382,42 @@ def audit(
             from_block=shard_start,
             to_block=shard_end,
         )
-        replica_events = _decode_logs(
-            replica_raw,
-            branches_by_trove_manager=branches_by_trove_manager,
-            signatures_by_topic=signatures_by_topic,
-            trove_operations_by_code=trove_operations_by_code,
-            batch_operations_by_code=batch_operations_by_code,
-            from_block=shard_start,
-            to_block=shard_end,
-        )
+        replica_transport_stats: dict[str, Any] | None = None
+        if portal is not None:
+            replica_events, replica_transport_stats = portal.finalized_log_identities(
+                addresses=addresses,
+                topics=topics,
+                from_block=shard_start,
+                to_block=shard_end,
+            )
+            print(
+                f"qualification[{index}].replica: "
+                f"{replica_transport_stats['page_count']} Portal pages, "
+                f"{len(replica_events)} logs",
+                flush=True,
+            )
+        else:
+            if replica_rpc is None:
+                raise RuntimeError("JSON-RPC replication client is absent")
+            replica_raw = _query_logs(
+                replica_rpc,
+                addresses=addresses,
+                topics=topics,
+                from_block=shard_start,
+                to_block=shard_end,
+                maximum_span=maximum_span,
+                label=f"qualification[{index}].replica",
+                addresses_together=replica_addresses_together,
+            )
+            replica_events = _decode_logs(
+                replica_raw,
+                branches_by_trove_manager=branches_by_trove_manager,
+                signatures_by_topic=signatures_by_topic,
+                trove_operations_by_code=trove_operations_by_code,
+                batch_operations_by_code=batch_operations_by_code,
+                from_block=shard_start,
+                to_block=shard_end,
+            )
         digest = _assert_exact_replication(
             formal_events, replica_events, label=f"qualification shard {index}"
         )
@@ -1159,6 +1429,7 @@ def audit(
                 "event_count": len(formal_events),
                 "canonical_log_identity_sha256": digest,
                 "exact_identity_sets_equal": True,
+                "replica_transport_stats": replica_transport_stats,
             }
         )
     if nonempty_qualification_shards < int(transport["minimum_nonempty_qualification_shards"]):
@@ -1185,61 +1456,101 @@ def audit(
     checkpoint_audit: dict[str, Any] | None = None
     if int(config["contract"]["version"]) >= 3:
         if replica_checkpoint_path is None:
-            raise RuntimeError("D0 v3 requires an explicit external replica checkpoint path")
-        if int(transport["replication_checkpoint_schema_version"]) != 1 or int(
-            transport["replication_checkpoint_every_chunks"]
-        ) != 1:
-            raise RuntimeError("D0 v3 checkpoint settings differ from the implemented protocol")
-        checkpoint_identity = {
+            raise RuntimeError("D0 v3+ requires an explicit external replica checkpoint path")
+        if (
+            int(transport["replication_checkpoint_schema_version"]) != 1
+            or int(transport["replication_checkpoint_every_chunks"]) != 1
+        ):
+            raise RuntimeError("D0 v3+ checkpoint settings differ from the implemented protocol")
+        checkpoint_identity: dict[str, Any] = {
             "config_path": str(config_path.relative_to(REPO_ROOT)),
             "config_sha256": config_sha256,
             "git_sha": git_sha,
-            "replication_rpc": str(transport["replication_rpc"]),
             "from_block": from_block,
             "to_block": to_block,
             "maximum_get_logs_span": maximum_span,
             "addresses": addresses,
             "topics": topics,
-            "addresses_together": replica_addresses_together,
-            "minimum_request_interval_seconds": float(
-                transport.get(
-                    "replication_minimum_request_interval_seconds",
-                    transport["minimum_request_interval_seconds"],
-                )
-            ),
-            "rate_limit_retries": int(
-                transport.get("replication_rate_limit_retries", transport["rate_limit_retries"])
-            ),
-            "split_on_exhausted_rate_limit": bool(
-                transport.get("replication_split_on_exhausted_rate_limit", False)
-            ),
-            "maximum_rate_limit_split_depth": int(
-                transport.get("replication_maximum_rate_limit_split_depth", 0)
-            ),
         }
-        replica_events, checkpoint_audit = _query_replica_with_checkpoint(
-            replica,
-            checkpoint_path=replica_checkpoint_path,
-            checkpoint_identity=checkpoint_identity,
-            addresses=addresses,
-            topics=topics,
-            branches_by_trove_manager=branches_by_trove_manager,
-            signatures_by_topic=signatures_by_topic,
-            trove_operations_by_code=trove_operations_by_code,
-            batch_operations_by_code=batch_operations_by_code,
-            from_block=from_block,
-            to_block=to_block,
-            maximum_span=maximum_span,
-            split_on_exhausted_rate_limit=bool(
-                transport.get("replication_split_on_exhausted_rate_limit", False)
-            ),
-            maximum_rate_limit_split_depth=int(
-                transport.get("replication_maximum_rate_limit_split_depth", 0)
-            ),
-        )
+        if portal is not None:
+            checkpoint_identity.update(
+                {
+                    "replication_transport_kind": replication_kind,
+                    "replication_portal_dataset_url": str(transport["replication_portal_dataset_url"]),
+                    "replication_portal_stream_endpoint": str(
+                        transport["replication_portal_stream_endpoint"]
+                    ),
+                    "replication_portal_expected_metadata": dict(
+                        transport["replication_portal_expected_metadata"]
+                    ),
+                    "replication_portal_timeout_seconds": float(
+                        transport["replication_portal_timeout_seconds"]
+                    ),
+                    "replication_portal_retry_attempts": int(transport["replication_portal_retry_attempts"]),
+                    "replication_portal_retry_backoff_seconds": float(
+                        transport["replication_portal_retry_backoff_seconds"]
+                    ),
+                }
+            )
+            replica_events, checkpoint_audit = _query_portal_with_checkpoint(
+                portal,
+                checkpoint_path=replica_checkpoint_path,
+                checkpoint_identity=checkpoint_identity,
+                addresses=addresses,
+                topics=topics,
+                from_block=from_block,
+                to_block=to_block,
+                maximum_span=maximum_span,
+            )
+        else:
+            if replica_rpc is None:
+                raise RuntimeError("JSON-RPC replication client is absent")
+            checkpoint_identity.update(
+                {
+                    "replication_rpc": str(transport["replication_rpc"]),
+                    "addresses_together": replica_addresses_together,
+                    "minimum_request_interval_seconds": float(
+                        transport.get(
+                            "replication_minimum_request_interval_seconds",
+                            transport["minimum_request_interval_seconds"],
+                        )
+                    ),
+                    "rate_limit_retries": int(
+                        transport.get("replication_rate_limit_retries", transport["rate_limit_retries"])
+                    ),
+                    "split_on_exhausted_rate_limit": bool(
+                        transport.get("replication_split_on_exhausted_rate_limit", False)
+                    ),
+                    "maximum_rate_limit_split_depth": int(
+                        transport.get("replication_maximum_rate_limit_split_depth", 0)
+                    ),
+                }
+            )
+            replica_events, checkpoint_audit = _query_replica_with_checkpoint(
+                replica_rpc,
+                checkpoint_path=replica_checkpoint_path,
+                checkpoint_identity=checkpoint_identity,
+                addresses=addresses,
+                topics=topics,
+                branches_by_trove_manager=branches_by_trove_manager,
+                signatures_by_topic=signatures_by_topic,
+                trove_operations_by_code=trove_operations_by_code,
+                batch_operations_by_code=batch_operations_by_code,
+                from_block=from_block,
+                to_block=to_block,
+                maximum_span=maximum_span,
+                split_on_exhausted_rate_limit=bool(
+                    transport.get("replication_split_on_exhausted_rate_limit", False)
+                ),
+                maximum_rate_limit_split_depth=int(
+                    transport.get("replication_maximum_rate_limit_split_depth", 0)
+                ),
+            )
     else:
+        if replica_rpc is None:
+            raise RuntimeError("JSON-RPC replication client is absent")
         replica_raw = _query_logs(
-            replica,
+            replica_rpc,
             addresses=addresses,
             topics=topics,
             from_block=from_block,
@@ -1282,6 +1593,18 @@ def audit(
             int(event["log_index"]),
         ),
     )
+    if portal is not None:
+        replica_request_stats: dict[str, Any] = {
+            "transport_kind": replication_kind,
+            "request_count": portal.request_count,
+            "retry_count": portal.retry_count,
+            "ndjson_bytes_received": portal.bytes_received,
+            "portal_audit": portal_audit,
+        }
+    else:
+        if replica_rpc is None:
+            raise RuntimeError("JSON-RPC replication client is absent")
+        replica_request_stats = _request_stats(replica_rpc)
     result: dict[str, Any] = {
         "schema_version": 1,
         "contract_name": str(config["contract"]["name"]),
@@ -1321,13 +1644,15 @@ def audit(
         "support_gate": support,
         "transport": {
             "formal_rpc": str(transport["formal_rpc"]),
-            "replication_rpc": str(transport["replication_rpc"]),
+            "replication_transport_kind": replication_kind,
+            "replication_rpc": transport["replication_rpc"],
+            "replication_portal_dataset_url": transport.get("replication_portal_dataset_url"),
             "state_witness_rpc": state_witness_url,
             "qualification_shards": qualification,
             "nonempty_qualification_shards": nonempty_qualification_shards,
             "full_log_identity_sets_equal": True,
             "formal": _request_stats(formal),
-            "replica": _request_stats(replica),
+            "replica": replica_request_stats,
             "state_witness": _request_stats(state_witness),
             "replica_checkpoint": checkpoint_audit,
         },

@@ -91,3 +91,32 @@ partitioning on exhausted 429/-32029. The outer 10,000-block chunk is checkpoint
 subqueries succeed. The four v3 chunks are not migrated across the config/Git binding. Thirteen tests, Ruff and
 strict mypy pass. No scientific gate or forbidden outcome has been opened. Amendment:
 `papers/proposal/liquity_agentic_queue_d0_weighted_rate_limit_amendment_2026-08-20.md`.
+
+## Finalized SQD Portal recovery v5 (19:02 NZST)
+
+The clean v4 attempt reproduced qualification `0/50/38` and Blockscout's 24,291 allowed events, but OnFinality
+continued returning HTTP 429 on chunk 5 after the frozen pacing, bounded retries, address splitting and block
+bisection; subranges near ten blocks still failed. The attempt was stopped under the free 12-core-hour resource
+contract. Its external checkpoint has four chunks/129 identities. No result manifest, timestamp attachment,
+support breakdown or numerical protocol outcome exists.
+
+Free-source screening selected SQD's finalized Ethereum Portal. Google Blockchain Analytics would process about
+0.87 TiB and could be billable; the Liquity subgraph has no canonical event identities; BlastAPI is deprecated;
+and 1RPC failed the historical-header capability screen. SQD metadata identifies `ethereum-mainnet` from block 0,
+its finalized head covers the sample, and it returned the exact frozen end hash/timestamp. The Portal cursor
+protocol is pinned to `@subsquid/portal-client` 0.4.0, npm shasum `410f563c...3663`.
+
+SQD exactly equals Blockscout on the known 42-log dRPC omission interval, all three frozen qualifications
+`0/50/38`, and the previously blocked 105-log chunk 5. Digests are respectively `c42e2b7...6649d`, empty-list
+`4f53cda1...b945`, `5b11b4fc...d179`, `65572283...970c`, and `355a754e...31e6`. The exact five-interval screen
+used 50 Portal requests, zero retries and 275,792 NDJSON bytes. This qualifies the transport but does not prove
+the full interval.
+
+Version 5 is frozen at SHA-256 `22046333...30edb` against v4 SHA-256 `e0652a56...3996`. Blockscout remains the
+formal decoded source, dRPC remains the historical deployment witness, and SQD supplies only sanitized log
+identities through the finalized stream. It validates dataset/finality/header anchors and strict cursor-parent
+continuity, checkpoints every 10,000-block chunk outside Git, and rejects overload exhaustion as an incomplete
+run. Every scientific field remains equal to v1. Nineteen focused tests, Ruff and strict mypy pass. The full
+identity replication and original support gate remain pending; V100/RTX, EcoMD, paid data and forbidden numerical
+fields remain unused. Amendment:
+`papers/proposal/liquity_agentic_queue_d0_finalized_portal_amendment_2026-08-20.md`.
