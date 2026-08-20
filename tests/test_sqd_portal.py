@@ -11,6 +11,7 @@ from ecomd.data.sqd_portal import SqdPortalClient, SqdPortalError
 ADDRESS = "0x" + "11" * 20
 OTHER_ADDRESS = "0x" + "22" * 20
 TOPIC = "0x" + "33" * 32
+TOPIC_1 = "0x" + "34" * 32
 TX_HASH = "0x" + "44" * 32
 HASH_9 = "0x" + "09" * 32
 HASH_10 = "0x" + "10" * 32
@@ -141,6 +142,49 @@ def test_finalized_log_identities_reject_log_outside_filter() -> None:
             from_block=10,
             to_block=10,
         )
+
+
+def test_finalized_log_identities_can_retain_topics_and_timestamp() -> None:
+    response = _Response(
+        200,
+        [
+            {
+                "header": {
+                    "number": 10,
+                    "hash": HASH_10,
+                    "parentHash": HASH_9,
+                    "timestamp": 1234,
+                },
+                "logs": [
+                    {
+                        "logIndex": 0,
+                        "transactionIndex": 0,
+                        "transactionHash": TX_HASH,
+                        "address": ADDRESS,
+                        "topics": [TOPIC, TOPIC_1],
+                    }
+                ],
+            }
+        ],
+    )
+    session = _Session([response])
+    client = SqdPortalClient(
+        "https://portal.example/datasets/ethereum-mainnet",
+        session=cast(requests.Session, session),
+    )
+
+    events, _ = client.finalized_log_identities(
+        addresses=[ADDRESS],
+        topics=[TOPIC],
+        from_block=10,
+        to_block=10,
+        include_topics=True,
+        include_block_timestamp=True,
+    )
+
+    assert events[0]["topics"] == [TOPIC, TOPIC_1]
+    assert events[0]["block_timestamp"] == 1234
+    assert session.calls[0]["json"]["fields"]["block"]["timestamp"] is True
 
 
 def test_portal_retries_overload_status(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -106,6 +106,8 @@ class SqdPortalClient:
         topics: Sequence[str],
         from_block: int,
         to_block: int,
+        include_topics: bool = False,
+        include_block_timestamp: bool = False,
     ) -> tuple[list[dict[str, Any]], dict[str, int]]:
         """Return sanitized log identity fields for one finalized inclusive interval."""
         if from_block < 0 or to_block < from_block:
@@ -126,12 +128,15 @@ class SqdPortalClient:
         started_bytes = self.bytes_received
 
         while current <= to_block:
+            block_fields = {"number": True, "hash": True, "parentHash": True}
+            if include_block_timestamp:
+                block_fields["timestamp"] = True
             query: dict[str, Any] = {
                 "type": "evm",
                 "fromBlock": current,
                 "toBlock": to_block,
                 "fields": {
-                    "block": {"number": True, "hash": True, "parentHash": True},
+                    "block": block_fields,
                     "log": {
                         "logIndex": True,
                         "transactionIndex": True,
@@ -163,10 +168,13 @@ class SqdPortalClient:
                 number = header.get("number")
                 block_hash = header.get("hash")
                 parent_hash = header.get("parentHash")
+                timestamp = header.get("timestamp")
                 if not isinstance(number, int) or not current <= number <= to_block:
                     raise SqdPortalError("SQD Portal block number is outside the requested page")
                 if not _is_hash(block_hash) or not _is_hash(parent_hash):
                     raise SqdPortalError("SQD Portal block has an invalid hash")
+                if include_block_timestamp and (not isinstance(timestamp, int) or timestamp < 0):
+                    raise SqdPortalError("SQD Portal block has an invalid timestamp")
                 normalized_block_hash = str(block_hash).lower()
                 normalized_parent_hash = str(parent_hash).lower()
                 if previous_number is not None and number <= previous_number:
@@ -194,7 +202,10 @@ class SqdPortalClient:
                         block_hash=normalized_block_hash,
                         allowed_addresses=normalized_addresses,
                         allowed_topics=normalized_topics,
+                        include_topics=include_topics,
                     )
+                    if include_block_timestamp:
+                        event["block_timestamp"] = timestamp
                     identity = (
                         str(event["block_hash"]),
                         str(event["transaction_hash"]),
@@ -303,6 +314,7 @@ def _sanitize_log(
     block_hash: str,
     allowed_addresses: set[str],
     allowed_topics: set[str],
+    include_topics: bool,
 ) -> dict[str, Any]:
     if not isinstance(raw_log, Mapping):
         raise SqdPortalError("SQD Portal log is not an object")
@@ -317,10 +329,11 @@ def _sanitize_log(
     raw_topics = raw_log.get("topics")
     if not isinstance(raw_topics, list) or not raw_topics:
         raise SqdPortalError("SQD Portal log topics are invalid")
-    topic0 = _normalize_hash(raw_topics[0], label="topic0")
+    normalized_log_topics = [_normalize_hash(value, label="topic") for value in raw_topics]
+    topic0 = normalized_log_topics[0]
     if address not in allowed_addresses or topic0 not in allowed_topics:
         raise SqdPortalError("SQD Portal returned a log outside the frozen filter")
-    return {
+    event = {
         "block_number": block_number,
         "block_hash": block_hash,
         "transaction_hash": transaction_hash,
@@ -329,6 +342,9 @@ def _sanitize_log(
         "contract_address": address,
         "topic0": topic0,
     }
+    if include_topics:
+        event["topics"] = normalized_log_topics
+    return event
 
 
 def _normalize_address(value: Any) -> str:

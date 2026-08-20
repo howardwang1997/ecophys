@@ -63,6 +63,9 @@ D0。计划和结果分别见 `papers/proposal/morpho_public_allocator_pressure_
 条边，并要求 SQD、full-range RPC 与 receipt 审计无未解释差异。因为 D0 禁止金额和 IRM 参数，这些
 不能称为 genuine JIT；后续 D1 仍须在 `0<r<=x` 和官方 AdaptiveCurveIRM 过滤后留下至少 300 个事件。
 冻结文件为 `papers/proposal/morpho_public_allocator_pressure_d0_freeze_2026-08-20.md`。
+该冻结已在提交 `9edea240a` 推送；full-topic SQD/RPC identity sanitation、receipt 顺序分组和
+qualification/full 两阶段 runner 已完成本地检查，50 个相关回归测试、Ruff 与 strict mypy 通过。当前
+仍未运行 qualification、未知任何事件计数；必须先提交推送实现，再从干净 SHA 只跑六个固定 shard。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0
 候选是 PCD、hybrid pathwise/LR、Rhee--Glynn 与 diagnostics 的直接组合；SOUL、Jarzynski/JALA、

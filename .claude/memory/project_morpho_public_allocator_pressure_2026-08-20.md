@@ -61,3 +61,10 @@ support requires 500 pooled, 100 per chain, 90-day spans, 30 active dates, 3 vau
 edges pooled, exact classification/receipt verification and no unresolved transport discrepancy. D1 must later
 retain 300 after amount compatibility and AdaptiveCurveIRM binding. Plan/config are pending commit; no event count
 has been queried and no D0 implementation exists yet.
+
+The D0 freeze was committed and pushed at `9edea240a`; config SHA is `bc6fc21c…c60`. The local implementation now
+adds opt-in full-topic/timestamp SQD identities, an identity-only RPC sanitizer that never accesses log `data`,
+receipt-order allocation grouping, later target-matched Borrow classification, canonical digests and
+aggregate-only support summaries. The formal runner enforces a committed qualification artifact before full D0.
+Pinned-source audit, 50 affected regression tests, Ruff and strict mypy pass. This is implementation evidence
+only: qualification has not run, no event count or identity is known, and no GPU/remote worker has been used.
