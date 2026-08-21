@@ -88,7 +88,16 @@ completed ≤900-run time shard is immutable. The nine whole-repository checkpoi
 uncheckpointed responses will be repeated. A new end-to-end v2 engineering smoke reused all 11 sanitized smoke
 checkpoints, completed with 43 status responses, strict `null` balance, a zero-line gzip sample and a passing
 recursive seal scan. Canonical/file SHAs are `b097af1f…55ef`/`ce81d11d…8e67`. It is non-scientific. All 38 related
-tests, Ruff, strict mypy and compilation pass. Formal resume has not started; outcomes remain sealed.
+tests, Ruff, strict mypy and compilation pass.
+
+Formal runtime-v2 acquisition resumed from clean pushed `f64d3c509` and has crossed five GitHub core-rate
+windows. As of 2026-08-22 00:17 NZST it has 126/552 complete repository checkpoints, 2,950 immutable completed
+time-shard checkpoints and 26,398 append-only transport observations. The first three window boundaries preserved
+40/670/7,847, 76/1,303/12,598 and 102/1,931/17,349 whole/shard/journal counts. A later `nodejs/node` leaf exhausted
+the SSL EOF retry policy at 116/2,430/21,644; bounded shutdown preserved peer successes, and the next window
+retried that leaf successfully. Every rate-reserve stop was fail-closed. No formal result or manifest exists, the
+worktree was clean at each audit, and all D1 outcomes remain sealed. These counts are transport progress, not a
+feasibility or effect result.
 
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely
