@@ -316,27 +316,31 @@ class D0RepositoryIdentityRecord:
         return payload
 
 
+def workflow_run_from_payload(payload: Mapping[str, Any]) -> D0WorkflowRunIdentity:
+    """Restore a sanitized workflow-run identity."""
+    run = D0WorkflowRunIdentity(
+        run_id=int(payload["run_id"]),
+        workflow_id=int(payload["workflow_id"]),
+        run_number=int(payload["run_number"]),
+        run_attempt=int(payload["run_attempt"]),
+        created_at=str(payload["created_at"]),
+        actor_class=str(payload["actor_class"]),
+        event_type=str(payload["event_type"]),
+        workflow_path=str(payload["workflow_path"]),
+        head_sha=str(payload["head_sha"]),
+        head_branch=(str(payload["head_branch"]) if payload.get("head_branch") is not None else None),
+        pull_request_ids=tuple(int(value) for value in payload["pull_request_ids"]),
+        check_suite_id=int(payload["check_suite_id"]),
+    )
+    parse_utc(run.created_at)
+    assert_outcome_blind_payload(run.allowed_payload())
+    return run
+
+
 def repository_record_from_payload(payload: Mapping[str, Any]) -> D0RepositoryIdentityRecord:
     """Restore a sanitized repository checkpoint."""
     runs = tuple(
-        D0WorkflowRunIdentity(
-            run_id=int(_mapping(raw, label="run")["run_id"]),
-            workflow_id=int(_mapping(raw, label="run")["workflow_id"]),
-            run_number=int(_mapping(raw, label="run")["run_number"]),
-            run_attempt=int(_mapping(raw, label="run")["run_attempt"]),
-            created_at=str(_mapping(raw, label="run")["created_at"]),
-            actor_class=str(_mapping(raw, label="run")["actor_class"]),
-            event_type=str(_mapping(raw, label="run")["event_type"]),
-            workflow_path=str(_mapping(raw, label="run")["workflow_path"]),
-            head_sha=str(_mapping(raw, label="run")["head_sha"]),
-            head_branch=(
-                str(_mapping(raw, label="run")["head_branch"])
-                if _mapping(raw, label="run").get("head_branch") is not None
-                else None
-            ),
-            pull_request_ids=tuple(int(value) for value in _mapping(raw, label="run")["pull_request_ids"]),
-            check_suite_id=int(_mapping(raw, label="run")["check_suite_id"]),
-        )
+        workflow_run_from_payload(_mapping(raw, label="run"))
         for raw in _sequence(payload.get("runs"), label="runs")
     )
     probes: list[D0SchemaProbe] = []

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import base64
+import gzip
 import json
+import threading
 import time
 from dataclasses import replace
 from pathlib import Path
@@ -33,9 +35,12 @@ from ecomd.data.github_verification_liquidity_d0 import (
     summarize_workflow_structure,
 )
 from scripts.audit_github_dependabot_cooldown_d0 import (
+    _acquire_run_interval,
     _acquire_selected_primary_structures,
+    _run_bounded_stage,
     _sanitize_status_incident,
     _smoke_raw_directory,
+    _write_gzip_jsonl,
 )
 
 
@@ -373,6 +378,89 @@ def test_identity_prerequisite_uses_conservative_upper_bounds() -> None:
         "no_dependabot_candidate_controls": 2,
     }
     assert result["probe_stage_authorized"] is True
+
+
+def test_bounded_stage_stops_submission_and_preserves_peer_success() -> None:
+    started: list[int] = []
+    persisted: list[int] = []
+
+    def worker(item: int, stop_event: threading.Event) -> int:
+        started.append(item)
+        if item == 0:
+            time.sleep(0.02)
+            raise ConnectionError("synthetic transport failure")
+        stop_event.wait(timeout=1.0)
+        return item
+
+    with pytest.raises(RuntimeError, match="bounded test failure"):
+        _run_bounded_stage(
+            list(range(10)),
+            maximum_workers=2,
+            worker=worker,
+            on_success=lambda _item, result: persisted.append(result),
+            error_message="bounded test failure",
+        )
+    assert sorted(started) == [0, 1]
+    assert persisted == [1]
+
+
+def test_workflow_run_time_shards_are_immutable_and_resumable(tmp_path: Path) -> None:
+    import yaml
+
+    config_path = (
+        Path(__file__).resolve().parents[1] / "configs/agent_markets/github_dependabot_cooldown_d0_v3.yaml"
+    )
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    raw_run = {
+        "id": 11,
+        "workflow_id": 12,
+        "run_number": 13,
+        "run_attempt": 1,
+        "check_suite_id": 14,
+        "created_at": "2026-07-01T00:00:00Z",
+        "actor": {"login": "alice", "type": "User"},
+        "event": "push",
+        "path": ".github/workflows/ci.yml@main",
+        "head_sha": "a" * 40,
+        "head_branch": "main",
+        "pull_requests": [],
+    }
+
+    class FakeClient:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def request_json(self, *_: Any, **__: Any) -> dict[str, Any]:
+            self.calls += 1
+            return {"total_count": 1, "workflow_runs": [raw_run]}
+
+    client = FakeClient()
+    kwargs = {
+        "repository_id": 42,
+        "full_name": "owner/repo",
+        "lower": parse_utc("2026-07-01T00:00:00Z"),
+        "upper": parse_utc("2026-07-01T23:59:59Z"),
+        "config": config,
+        "shard_checkpoint_directory": tmp_path,
+        "stop_event": threading.Event(),
+    }
+    first = _acquire_run_interval(client, **kwargs)  # type: ignore[arg-type]
+    second = _acquire_run_interval(client, **kwargs)  # type: ignore[arg-type]
+    assert first == second
+    assert client.calls == 1
+    assert list(first[0]) == [11]
+    assert len(list(tmp_path.rglob("*.json"))) == 1
+
+
+def test_empty_gzip_jsonl_is_zero_rows_and_immutable(tmp_path: Path) -> None:
+    path = tmp_path / "empty.jsonl.gz"
+    canonical, file_hash = _write_gzip_jsonl(path, [])
+    with gzip.open(path, "rt", encoding="utf-8") as handle:
+        assert list(handle) == []
+    assert len(canonical) == 64
+    assert len(file_hash) == 64
+    with pytest.raises(FileExistsError, match="immutable gzip artifact"):
+        _write_gzip_jsonl(path, [])
 
 
 def test_workflow_structure_flags_intentional_waits_without_persisting_yaml() -> None:

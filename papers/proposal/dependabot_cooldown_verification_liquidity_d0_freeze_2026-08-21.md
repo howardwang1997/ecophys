@@ -148,7 +148,7 @@ observing their size. Expected storage is below 50 GB and work below 100 CPU cor
 V100 hosts may perform collection, but the run is API-bound. V100/RTX 2060 GPU execution, H20, paid data and EcoMD
 are forbidden.
 
-## Implementation verification before formal D0
+## Implementation and transport verification
 
 The v3 resume completed the original 11-repository engineering smoke from its immutable identity checkpoints. It
 covered 46,862 run identities, 28 schema/workflow probes, 22 official Actions-related incidents and 692 journaled
@@ -170,8 +170,22 @@ Formal execution also applies a logically necessary outcome-blind stop before sc
 with at least five pre-period primary run identities and treats every inaccessible/truncated repository as if it
 could still qualify. Only if even this conservative upper bound clears the frozen 60 treated/250 control minima
 may schema probes proceed. This changes no candidate, threshold, estimand or gate; it prevents spending later API
-windows after a failure has already been mathematically established. The complete verification-liquidity suite is
-34/34 passing, with Ruff, strict mypy and bytecode compilation also passing.
+windows after a failure has already been mathematically established.
+
+The first formal transport attempt started from clean pushed implementation `c98b4ed86` at 2026-08-21 04:41 UTC.
+It preserved nine complete repository checkpoints and 3,095 response hashes, but generated no result or manifest:
+one `rust-lang/rust` time shard ended in three consecutive SSL EOFs. Runtime v1 also revealed an executor lifecycle
+bug: all missing repositories had been submitted eagerly, so shutdown continued consuming requests after the first
+failed future while the result loop no longer checkpointed completed work. Runtime v2 supersedes v1 without any
+scientific change. It permits at most four in-flight tasks, drains and persists peer successes on failure, and
+atomically checkpoints every completed time shard containing at most 900 run identities. The existing nine whole-
+repository checkpoints and append-only journal remain immutable inputs; uncheckpointed responses are repeated.
+
+A new v2 engineering smoke reused the 11 sanitized whole-repository checkpoints and completed in 29.0 seconds with
+43 fresh public-status responses. It found the expected empty scientific sample, wrote a zero-line gzip JSONL,
+round-tripped strict JSON successfully and passed an independent recursive outcome-seal scan. Its canonical result
+SHA-256 is `b097af1f…55ef` and file SHA-256 is `ce81d11d…8e67`; it remains non-scientific. The complete related suite
+is now 38/38 passing, with Ruff, strict mypy and bytecode compilation also passing.
 
 ## Venue boundary
 

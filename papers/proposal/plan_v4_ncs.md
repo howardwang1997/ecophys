@@ -107,8 +107,12 @@ Status 的 `started_at` 字段名与通用样本结果禁词冲突，且没有�
 forbidden outcome、阈值或 gate。恢复后的 11-repository 工程 smoke 覆盖 46,862 个 run identities、28 个
 schema/workflow probes 和 22 个官方 Actions incidents；其 6 个小样本对照中没有 prequalified control，
 不能解释成 D0 结果。正式实现已在 outcome 打开前修复严格 JSON、为每个入选 primary run 按历史
-head SHA 冻结 workflow structure，并允许在必要的 60/250 identity-support 上界失败时提前 RED；34 项
-相关测试、Ruff 与 strict mypy 全过。正式结果见
+head SHA 冻结 workflow structure，并允许在必要的 60/250 identity-support 上界失败时提前 RED；
+实现回归、Ruff 与 strict mypy 当时全过。首次 formal transport 从干净 `c98b4ed86` 开始，保存 9 个整仓
+checkpoint 与 3,095 个 response hashes 后在 `rust-lang/rust` 分片遇到连续三次 SSL EOF；没有 result、
+manifest 或 outcome。纯传输 runtime v2 改为最多 4 个在途任务并为每个 ≤900-run 分片原子 checkpoint。
+复用净化 smoke checkpoints 的 v2 端到端验证已通过严格 JSON、空 JSONL round-trip 和 outcome seal；
+当前相关测试为 38/38。正式结果见
 `papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0

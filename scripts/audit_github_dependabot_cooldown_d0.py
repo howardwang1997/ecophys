@@ -15,12 +15,12 @@ import subprocess
 import threading
 import time
 from collections import Counter
-from collections.abc import Mapping, Sequence
-from concurrent.futures import Future, ThreadPoolExecutor, as_completed
+from collections.abc import Callable, Mapping, Sequence
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 from urllib.parse import quote
 
 import requests
@@ -53,12 +53,67 @@ from ecomd.data.github_verification_liquidity_d0 import (
     select_d1_run_identities,
     selected_workflow_structure_key,
     summarize_workflow_structure,
+    workflow_run_from_payload,
     workflow_structure_from_payload,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO_ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v3.yaml"
-RUNTIME_PATH = REPO_ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_runtime_v1.yaml"
+RUNTIME_PATH = REPO_ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_runtime_v2.yaml"
+
+ItemT = TypeVar("ItemT")
+ResultT = TypeVar("ResultT")
+
+
+def _run_bounded_stage(
+    items: Sequence[ItemT],
+    *,
+    maximum_workers: int,
+    worker: Callable[[ItemT, threading.Event], ResultT],
+    on_success: Callable[[ItemT, ResultT], None],
+    error_message: str,
+) -> int:
+    """Run at most maximum_workers tasks and preserve successes before failing."""
+    if maximum_workers <= 0:
+        raise ValueError("maximum_workers must be positive")
+    stop_event = threading.Event()
+    item_iterator = iter(items)
+    futures: dict[Future[ResultT], ItemT] = {}
+    first_error: Exception | None = None
+    completed = 0
+    executor = ThreadPoolExecutor(max_workers=maximum_workers)
+
+    def submit_next() -> bool:
+        try:
+            item = next(item_iterator)
+        except StopIteration:
+            return False
+        futures[executor.submit(worker, item, stop_event)] = item
+        return True
+
+    try:
+        for _ in range(min(maximum_workers, len(items))):
+            submit_next()
+        while futures:
+            done, _ = wait(futures, return_when=FIRST_COMPLETED)
+            for future in done:
+                item = futures.pop(future)
+                try:
+                    result = future.result()
+                    on_success(item, result)
+                    completed += 1
+                except Exception as error:
+                    if first_error is None:
+                        first_error = error
+                        stop_event.set()
+                if first_error is None:
+                    submit_next()
+    finally:
+        stop_event.set()
+        executor.shutdown(wait=True, cancel_futures=True)
+    if first_error is not None:
+        raise RuntimeError(error_message) from first_error
+    return completed
 
 
 def _git(*args: str) -> str:
@@ -157,7 +212,10 @@ def _verify_contract(
     runtime_contract = _mapping(runtime.get("contract"), label="runtime contract")
     if contract.get("status") != "frozen_before_formal_outcome_blind_d0_acquisition":
         raise RuntimeError("D0 scientific contract is not frozen")
-    if runtime_contract.get("status") != "implementation_runtime_before_formal_acquisition":
+    if runtime_contract.get("status") not in {
+        "implementation_runtime_before_formal_acquisition",
+        "implementation_runtime_before_formal_resume",
+    }:
         raise RuntimeError("D0 runtime contract has an unexpected status")
     expected_path = config_path.relative_to(REPO_ROOT).as_posix()
     if runtime_contract.get("parent_config_path") != expected_path:
@@ -395,14 +453,114 @@ def _run_identity_map(raw_runs: Sequence[Any], *, dependabot_login: str) -> dict
     return identities
 
 
+def _run_shard_checkpoint_path(
+    directory: Path,
+    *,
+    repository_id: int,
+    lower: datetime,
+    upper: datetime,
+) -> Path:
+    digest = canonical_json_sha256([repository_id, lower.isoformat(), upper.isoformat()])
+    return directory / str(repository_id) / f"{digest}.json"
+
+
+def _write_run_shard_checkpoint(
+    path: Path,
+    *,
+    repository_id: int,
+    full_name: str,
+    lower: datetime,
+    upper: datetime,
+    identities: Mapping[int, D0WorkflowRunIdentity],
+    unresolved_truncation_count: int,
+    conflicting_duplicate_run_ids: int,
+    run_api_access: bool,
+    reported_total_count: int | None,
+) -> None:
+    payload: dict[str, Any] = {
+        "repository_id": repository_id,
+        "full_name": full_name,
+        "lower_utc": lower.isoformat(),
+        "upper_utc": upper.isoformat(),
+        "run_api_access": run_api_access,
+        "reported_total_count": reported_total_count,
+        "unresolved_truncation_count": unresolved_truncation_count,
+        "conflicting_duplicate_run_ids": conflicting_duplicate_run_ids,
+        "runs": [identities[run_id].allowed_payload() for run_id in sorted(identities)],
+    }
+    _write_json(path, payload)
+
+
+def _load_run_shard_checkpoint(
+    path: Path,
+    *,
+    repository_id: int,
+    full_name: str,
+    lower: datetime,
+    upper: datetime,
+) -> tuple[dict[int, D0WorkflowRunIdentity], int, int, bool]:
+    payload = _load_json(path)
+    assert_outcome_blind_payload(payload)
+    if payload.get("canonical_payload_sha256") != _canonical_without_digest(payload):
+        raise RuntimeError("workflow-run shard checkpoint hash mismatch")
+    observed_source = (
+        int(payload["repository_id"]),
+        str(payload["full_name"]),
+        parse_utc(str(payload["lower_utc"])),
+        parse_utc(str(payload["upper_utc"])),
+    )
+    if observed_source != (repository_id, full_name, lower, upper):
+        raise RuntimeError("workflow-run shard checkpoint source mismatch")
+    identities: dict[int, D0WorkflowRunIdentity] = {}
+    for raw in _sequence(payload.get("runs"), label="workflow-run shard identities"):
+        run = workflow_run_from_payload(_mapping(raw, label="workflow-run shard identity"))
+        if run.run_id in identities:
+            raise RuntimeError("duplicate workflow-run ID in shard checkpoint")
+        identities[run.run_id] = run
+    reported_total = payload.get("reported_total_count")
+    unresolved_truncation_count = int(payload["unresolved_truncation_count"])
+    if (
+        reported_total is not None
+        and unresolved_truncation_count == 0
+        and bool(payload["run_api_access"])
+        and int(reported_total) != len(identities)
+    ):
+        raise RuntimeError("workflow-run shard checkpoint count mismatch")
+    return (
+        identities,
+        unresolved_truncation_count,
+        int(payload["conflicting_duplicate_run_ids"]),
+        bool(payload["run_api_access"]),
+    )
+
+
 def _acquire_run_interval(
     client: GitHubApiClient,
     *,
+    repository_id: int,
     full_name: str,
     lower: datetime,
     upper: datetime,
     config: Mapping[str, Any],
+    shard_checkpoint_directory: Path,
+    stop_event: threading.Event,
 ) -> tuple[dict[int, D0WorkflowRunIdentity], int, int, bool]:
+    if stop_event.is_set():
+        raise RuntimeError("workflow-run acquisition cancelled after a peer transport failure")
+    checkpoint_path = _run_shard_checkpoint_path(
+        shard_checkpoint_directory,
+        repository_id=repository_id,
+        lower=lower,
+        upper=upper,
+    )
+    if checkpoint_path.exists():
+        return _load_run_shard_checkpoint(
+            checkpoint_path,
+            repository_id=repository_id,
+            full_name=full_name,
+            lower=lower,
+            upper=upper,
+        )
     github = _mapping(config.get("github"), label="GitHub config")
     per_page = int(github["workflow_runs_per_page"])
     threshold = int(github["recursive_time_shard_threshold"])
@@ -417,6 +575,18 @@ def _acquire_run_interval(
         allow_not_found=True,
     )
     if first_payload is None:
+        _write_run_shard_checkpoint(
+            checkpoint_path,
+            repository_id=repository_id,
+            full_name=full_name,
+            lower=lower,
+            upper=upper,
+            identities={},
+            unresolved_truncation_count=0,
+            conflicting_duplicate_run_ids=0,
+            run_api_access=False,
+            reported_total_count=None,
+        )
         return {}, 0, 0, False
     first_root = _mapping(first_payload, label="workflow runs response")
     total_count = first_root.get("total_count")
@@ -425,23 +595,41 @@ def _acquire_run_interval(
     span_seconds = int((upper - lower).total_seconds()) + 1
     if total_count > threshold:
         if span_seconds <= minimum_seconds:
+            _write_run_shard_checkpoint(
+                checkpoint_path,
+                repository_id=repository_id,
+                full_name=full_name,
+                lower=lower,
+                upper=upper,
+                identities={},
+                unresolved_truncation_count=1,
+                conflicting_duplicate_run_ids=0,
+                run_api_access=True,
+                reported_total_count=total_count,
+            )
             return {}, 1, 0, True
         left_seconds = span_seconds // 2
         left_upper = lower + timedelta(seconds=left_seconds - 1)
         right_lower = left_upper + timedelta(seconds=1)
         left, left_truncated, left_conflicts, left_access = _acquire_run_interval(
             client,
+            repository_id=repository_id,
             full_name=full_name,
             lower=lower,
             upper=left_upper,
             config=config,
+            shard_checkpoint_directory=shard_checkpoint_directory,
+            stop_event=stop_event,
         )
         right, right_truncated, right_conflicts, right_access = _acquire_run_interval(
             client,
+            repository_id=repository_id,
             full_name=full_name,
             lower=right_lower,
             upper=upper,
             config=config,
+            shard_checkpoint_directory=shard_checkpoint_directory,
+            stop_event=stop_event,
         )
         conflicts = left_conflicts + right_conflicts
         for run_id, run in right.items():
@@ -454,6 +642,8 @@ def _acquire_run_interval(
     raw_runs = list(_sequence(first_root.get("workflow_runs", []), label="workflow runs"))
     pages = math.ceil(total_count / per_page) if total_count else 0
     for page in range(2, pages + 1):
+        if stop_event.is_set():
+            raise RuntimeError("workflow-run acquisition cancelled after a peer transport failure")
         payload = client.request_json(
             f"/repos/{full_name}/actions/runs",
             endpoint_class="workflow_run_identity",
@@ -475,6 +665,18 @@ def _acquire_run_interval(
         raise RuntimeError(
             f"workflow run identity count mismatch for {full_name}: {len(identities)} != {total_count}"
         )
+    _write_run_shard_checkpoint(
+        checkpoint_path,
+        repository_id=repository_id,
+        full_name=full_name,
+        lower=lower,
+        upper=upper,
+        identities=identities,
+        unresolved_truncation_count=0,
+        conflicting_duplicate_run_ids=conflicts,
+        run_api_access=True,
+        reported_total_count=total_count,
+    )
     return identities, 0, conflicts, True
 
 
@@ -482,16 +684,21 @@ def _acquire_repository_runs(
     client: GitHubApiClient,
     candidate: Mapping[str, Any],
     config: Mapping[str, Any],
+    shard_checkpoint_directory: Path,
+    stop_event: threading.Event,
 ) -> D0RepositoryIdentityRecord:
     windows = _mapping(config.get("windows"), label="windows")
     lower = parse_utc(str(windows["identity_acquisition_from_utc"]))
     upper = parse_utc(str(windows["identity_acquisition_to_utc"]))
     identities, truncation_count, conflict_count, run_api_access = _acquire_run_interval(
         client,
+        repository_id=int(candidate["repository_id"]),
         full_name=str(candidate["full_name"]),
         lower=lower,
         upper=upper,
         config=config,
+        shard_checkpoint_directory=shard_checkpoint_directory,
+        stop_event=stop_event,
     )
     return D0RepositoryIdentityRecord(
         repository_id=int(candidate["repository_id"]),
@@ -555,7 +762,7 @@ def _acquire_workflow_structure(
     full_name: str,
     run: D0WorkflowRunIdentity,
     maximum_bytes: int,
-) -> Any:
+) -> WorkflowStructureSummary | None:
     try:
         normalized_path = normalize_workflow_path(run.workflow_path)
     except ValueError:
@@ -590,6 +797,7 @@ def _acquire_repository_probes(
     record: D0RepositoryIdentityRecord,
     config: Mapping[str, Any],
     runtime: Mapping[str, Any],
+    stop_event: threading.Event,
 ) -> D0RepositoryIdentityRecord:
     windows = _mapping(config.get("windows"), label="windows")
     per_actor = int(config["runner_pool"]["preperiod_probe_runs_per_repository_actor_class"])
@@ -602,6 +810,8 @@ def _acquire_repository_probes(
     maximum_bytes = int(runtime["execution"]["workflow_content_maximum_bytes"])
     probes: list[D0SchemaProbe] = []
     for actor_class, run in selected:
+        if stop_event.is_set():
+            raise RuntimeError("schema-probe acquisition cancelled after a peer transport failure")
         access, jobs = _acquire_jobs(
             client,
             full_name=record.full_name,
@@ -691,48 +901,63 @@ def _acquire_selected_primary_structures(
         else:
             missing[key] = source
     last_progress = time.monotonic()
-    with ThreadPoolExecutor(max_workers=maximum_workers) as executor:
-        futures: dict[
-            Future[WorkflowStructureSummary | None],
-            tuple[WorkflowStructureKey, str, D0WorkflowRunIdentity],
-        ] = {
-            executor.submit(
-                _acquire_workflow_structure,
-                client,
-                full_name=full_name,
-                run=run,
-                maximum_bytes=maximum_bytes,
-            ): (key, full_name, run)
-            for key, (full_name, run) in missing.items()
+    missing_items = [(key, full_name, run) for key, (full_name, run) in missing.items()]
+    completed_structures = 0
+
+    def acquire_structure_worker(
+        item: tuple[WorkflowStructureKey, str, D0WorkflowRunIdentity],
+        stop_event: threading.Event,
+    ) -> WorkflowStructureSummary | None:
+        if stop_event.is_set():
+            raise RuntimeError("selected workflow-structure acquisition cancelled after a peer failure")
+        _, full_name, run = item
+        return _acquire_workflow_structure(
+            client,
+            full_name=full_name,
+            run=run,
+            maximum_bytes=maximum_bytes,
+        )
+
+    def persist_structure(
+        item: tuple[WorkflowStructureKey, str, D0WorkflowRunIdentity],
+        structure: WorkflowStructureSummary | None,
+    ) -> None:
+        nonlocal completed_structures, last_progress
+        key, _, _ = item
+        payload: dict[str, Any] = {
+            "repository_id": key[0],
+            "head_sha": key[1],
+            "workflow_path": key[2],
+            "workflow_structure": structure.allowed_payload() if structure is not None else None,
         }
-        for completed, future in enumerate(as_completed(futures), start=1):
-            key, _, _ = futures[future]
-            structure = future.result()
-            payload: dict[str, Any] = {
-                "repository_id": key[0],
-                "head_sha": key[1],
-                "workflow_path": key[2],
-                "workflow_structure": structure.allowed_payload() if structure is not None else None,
-            }
-            _write_json(_selected_structure_checkpoint_path(checkpoint_directory, key), payload)
-            structures[key] = structure
-            now = time.monotonic()
-            if now - last_progress >= float(execution["progress_interval_seconds"]):
-                print(
-                    json.dumps(
-                        {
-                            "stage": "selected_workflow_structures",
-                            "completed_this_run": completed,
-                            "total_missing": len(missing),
-                            "total_unique_sources": len(source_runs),
-                            "elapsed_seconds": round(now - started, 1),
-                        },
-                        sort_keys=True,
-                        allow_nan=False,
-                    ),
-                    flush=True,
-                )
-                last_progress = now
+        _write_json(_selected_structure_checkpoint_path(checkpoint_directory, key), payload)
+        structures[key] = structure
+        completed_structures += 1
+        now = time.monotonic()
+        if now - last_progress >= float(execution["progress_interval_seconds"]):
+            print(
+                json.dumps(
+                    {
+                        "stage": "selected_workflow_structures",
+                        "completed_this_run": completed_structures,
+                        "total_missing": len(missing),
+                        "total_unique_sources": len(source_runs),
+                        "elapsed_seconds": round(now - started, 1),
+                    },
+                    sort_keys=True,
+                    allow_nan=False,
+                ),
+                flush=True,
+            )
+            last_progress = now
+
+    _run_bounded_stage(
+        missing_items,
+        maximum_workers=maximum_workers,
+        worker=acquire_structure_worker,
+        on_success=persist_structure,
+        error_message=("selected workflow-structure acquisition stopped after preserving checkpoints"),
+    )
     if set(structures) != set(source_runs):
         raise RuntimeError("selected workflow-structure acquisition is incomplete")
     return structures
@@ -904,10 +1129,8 @@ def _write_gzip_jsonl(path: Path, payloads: Sequence[Mapping[str, Any]]) -> tupl
     rows = [dict(payload) for payload in payloads]
     assert_outcome_blind_payload(rows)
     canonical_hash = canonical_json_sha256(rows)
-    raw = (
-        "\n".join(json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False) for row in rows)
-        + "\n"
-    ).encode()
+    lines = [json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False) for row in rows]
+    raw = (("\n".join(lines) + "\n") if lines else "").encode()
     path.parent.mkdir(parents=True, exist_ok=True)
     partial = path.with_name(path.name + ".partial")
     with (
@@ -1010,34 +1233,54 @@ def _run(
     max_workers = int(config["github"]["maximum_parallel_requests"])
     started = time.monotonic()
     last_progress = started
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures: dict[Future[D0RepositoryIdentityRecord], Mapping[str, Any]] = {
-            executor.submit(_acquire_repository_runs, github_client, candidate, config): candidate
-            for candidate in missing_runs
-        }
-        for completed, future in enumerate(as_completed(futures), start=1):
-            future_candidate = futures[future]
-            record = future.result()
-            if record.repository_id != int(future_candidate["repository_id"]):
-                raise RuntimeError("D0 future returned the wrong repository")
-            _checkpoint_write(checkpoint_directory / f"{record.repository_id}.json", record)
-            records_by_id[record.repository_id] = record
-            now = time.monotonic()
-            if now - last_progress >= float(runtime["execution"]["progress_interval_seconds"]):
-                print(
-                    json.dumps(
-                        {
-                            "stage": "run_identities",
-                            "completed_this_run": completed,
-                            "total_missing": len(missing_runs),
-                            "total_candidates": len(candidates),
-                            "elapsed_seconds": round(now - started, 1),
-                        },
-                        sort_keys=True,
-                    ),
-                    flush=True,
-                )
-                last_progress = now
+    shard_checkpoint_directory = raw_directory / str(
+        runtime["execution"]["repository_time_shard_checkpoint_directory"]
+    )
+    completed_this_run = 0
+
+    def acquire_runs_worker(
+        candidate: Mapping[str, Any], stop_event: threading.Event
+    ) -> D0RepositoryIdentityRecord:
+        return _acquire_repository_runs(
+            github_client,
+            candidate,
+            config,
+            shard_checkpoint_directory,
+            stop_event,
+        )
+
+    def persist_run_record(candidate: Mapping[str, Any], record: D0RepositoryIdentityRecord) -> None:
+        nonlocal completed_this_run, last_progress
+        if record.repository_id != int(candidate["repository_id"]):
+            raise RuntimeError("D0 future returned the wrong repository")
+        _checkpoint_write(checkpoint_directory / f"{record.repository_id}.json", record)
+        records_by_id[record.repository_id] = record
+        completed_this_run += 1
+        now = time.monotonic()
+        if now - last_progress >= float(runtime["execution"]["progress_interval_seconds"]):
+            print(
+                json.dumps(
+                    {
+                        "stage": "run_identities",
+                        "completed_this_run": completed_this_run,
+                        "total_missing": len(missing_runs),
+                        "total_candidates": len(candidates),
+                        "elapsed_seconds": round(now - started, 1),
+                    },
+                    sort_keys=True,
+                    allow_nan=False,
+                ),
+                flush=True,
+            )
+            last_progress = now
+
+    _run_bounded_stage(
+        missing_runs,
+        maximum_workers=max_workers,
+        worker=acquire_runs_worker,
+        on_success=persist_run_record,
+        error_message=("workflow-run acquisition stopped after preserving every completed bounded task"),
+    )
     identity_records = [records_by_id[repository_id] for repository_id in sorted(records_by_id)]
     windows = _mapping(config.get("windows"), label="windows")
     minimum_primary_runs = int(config["prequalification"]["minimum_primary_human_run_identities"])
@@ -1051,31 +1294,45 @@ def _run(
     missing_probes = (
         [record for record in identity_records if not record.schema_probes] if acquire_probes else []
     )
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        probe_futures: dict[Future[D0RepositoryIdentityRecord], D0RepositoryIdentityRecord] = {
-            executor.submit(_acquire_repository_probes, github_client, record, config, runtime): record
-            for record in missing_probes
-        }
-        for completed, future in enumerate(as_completed(probe_futures), start=1):
-            record = future.result()
-            _checkpoint_write(checkpoint_directory / f"{record.repository_id}.json", record)
-            records_by_id[record.repository_id] = record
-            now = time.monotonic()
-            if now - last_progress >= float(runtime["execution"]["progress_interval_seconds"]):
-                print(
-                    json.dumps(
-                        {
-                            "stage": "schema_probes",
-                            "completed_this_run": completed,
-                            "total_missing": len(missing_probes),
-                            "total_candidates": len(candidates),
-                            "elapsed_seconds": round(now - started, 1),
-                        },
-                        sort_keys=True,
-                    ),
-                    flush=True,
-                )
-                last_progress = now
+    completed_probes = 0
+
+    def acquire_probe_worker(
+        record: D0RepositoryIdentityRecord, stop_event: threading.Event
+    ) -> D0RepositoryIdentityRecord:
+        return _acquire_repository_probes(github_client, record, config, runtime, stop_event)
+
+    def persist_probe_record(source: D0RepositoryIdentityRecord, record: D0RepositoryIdentityRecord) -> None:
+        nonlocal completed_probes, last_progress
+        if source.repository_id != record.repository_id:
+            raise RuntimeError("schema-probe future returned the wrong repository")
+        _checkpoint_write(checkpoint_directory / f"{record.repository_id}.json", record)
+        records_by_id[record.repository_id] = record
+        completed_probes += 1
+        now = time.monotonic()
+        if now - last_progress >= float(runtime["execution"]["progress_interval_seconds"]):
+            print(
+                json.dumps(
+                    {
+                        "stage": "schema_probes",
+                        "completed_this_run": completed_probes,
+                        "total_missing": len(missing_probes),
+                        "total_candidates": len(candidates),
+                        "elapsed_seconds": round(now - started, 1),
+                    },
+                    sort_keys=True,
+                    allow_nan=False,
+                ),
+                flush=True,
+            )
+            last_progress = now
+
+    _run_bounded_stage(
+        missing_probes,
+        maximum_workers=max_workers,
+        worker=acquire_probe_worker,
+        on_success=persist_probe_record,
+        error_message="schema-probe acquisition stopped after preserving completed records",
+    )
     records = [records_by_id[repository_id] for repository_id in sorted(records_by_id)]
     features = [
         build_match_features(
@@ -1227,8 +1484,12 @@ def _run(
         "mode": "smoke" if smoke else "formal",
         "generated_at_utc": datetime.now(UTC).isoformat(),
         "git_sha": _git("rev-parse", "HEAD"),
+        "worktree_clean_at_finalization": not bool(_git("status", "--porcelain", "--untracked-files=all")),
         "config_sha256": _sha256_file(config_path),
         "runtime_sha256": _sha256_file(runtime_path),
+        "execution_history": dict(
+            _mapping(runtime["contract"].get("execution_history", {}), label="execution history")
+        ),
         "candidate_ledger": {
             "file_sha256": config["source"]["candidate_ledger_file_sha256"],
             "canonical_payload_sha256": config["source"]["candidate_ledger_canonical_sha256"],
@@ -1269,10 +1530,12 @@ def _run(
         "audit": "github_dependabot_cooldown_d0",
         "mode": result["mode"],
         "git_sha": result["git_sha"],
+        "worktree_clean_at_finalization": result["worktree_clean_at_finalization"],
         "config_path": config_path.relative_to(REPO_ROOT).as_posix(),
         "config_sha256": result["config_sha256"],
         "runtime_path": runtime_path.relative_to(REPO_ROOT).as_posix(),
         "runtime_sha256": result["runtime_sha256"],
+        "execution_history": result["execution_history"],
         "candidate_ledger_path": str(config["source"]["candidate_ledger_path"]),
         "candidate_ledger_file_sha256": config["source"]["candidate_ledger_file_sha256"],
         "raw_artifacts": {

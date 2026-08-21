@@ -253,9 +253,11 @@ collection after the Mac smoke test; GPU memory should remain idle until a learn
 3. **Completed:** commit/push the D0 scientific contract and exact candidate ledger before formal D0 access.
 4. **Completed:** commit the outcome-seal field-name amendment and resume the D0 smoke from its identity
    checkpoints. The sanitizer completed end to end; the small smoke's zero prequalified controls is non-scientific.
-5. **Current:** commit/push the verified collector with strict JSON, necessary-gate early stopping and per-selected-
-   run historical workflow-structure exclusion.
-6. Run D0 from that clean pushed SHA; freeze exact D1 repository/run IDs only if its gates pass.
+5. **Completed:** commit/push the verified collector with strict JSON, necessary-gate early stopping and per-
+   selected-run historical workflow-structure exclusion (`c98b4ed86`).
+6. **Current:** preserve the nine checkpoints/3,095 response hashes from the failed first formal transport attempt;
+   commit/push runtime v2 with bounded scheduling, ≤900-run shard checkpoints and the verified empty-JSONL fix.
+7. Resume D0 from the new clean pushed SHA; freeze exact D1 repository/run IDs only if its gates pass.
 
 ## Verified starting references
 

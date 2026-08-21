@@ -12,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 V1_CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v1.yaml"
 V2_CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v2.yaml"
 CONFIG_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_v3.yaml"
+RUNTIME_V1_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_runtime_v1.yaml"
+RUNTIME_V2_PATH = ROOT / "configs/agent_markets/github_dependabot_cooldown_d0_runtime_v2.yaml"
 LEDGER_PATH = ROOT / "data/manifests/github_dependabot_cooldown_d0_candidate_ids_v1.json"
 
 
@@ -48,8 +50,9 @@ def test_d0_candidate_ledger_is_bound_to_the_formal_outcome_blind_source() -> No
     assert _file_sha256(LEDGER_PATH) == config["source"]["candidate_ledger_file_sha256"]
     assert ledger["canonical_payload_sha256"] == _canonical(body)
     assert ledger["canonical_payload_sha256"] == config["source"]["candidate_ledger_canonical_sha256"]
-    assert ledger["source"]["dminus1_result_canonical_sha256"] == (
-        config["source"]["dminus1_result_canonical_sha256"]
+    assert (
+        ledger["source"]["dminus1_result_canonical_sha256"]
+        == (config["source"]["dminus1_result_canonical_sha256"])
     )
     assert ledger["outcomes_opened"] is False
     assert ledger["cohort_counts"] == {
@@ -94,6 +97,34 @@ def test_d0_v3_only_resolves_the_external_incident_key_collision() -> None:
     ]
 
 
+def test_d0_runtime_v2_is_transport_only_and_preserves_the_failed_attempt() -> None:
+    runtime = _load_yaml(RUNTIME_V2_PATH)
+    v1 = _load_yaml(RUNTIME_V1_PATH)
+    contract = runtime["contract"]
+    assert contract["supersedes"] == str(RUNTIME_V1_PATH.relative_to(ROOT))
+    assert contract["superseded_runtime_sha256"] == _file_sha256(RUNTIME_V1_PATH)
+    for key in (
+        "parent_config_path",
+        "parent_config_sha256",
+        "preregistration_git_sha",
+        "scientific_candidates_windows_estimand_gates_and_forbidden_fields_unchanged",
+    ):
+        assert contract[key] == v1["contract"][key]
+    assert runtime["execution"] == {
+        **v1["execution"],
+        "repository_time_shard_checkpoint_directory": "repository_time_shard_checkpoints",
+    }
+    assert contract["execution_history"] == {
+        "initial_attempt_git_sha": "c98b4ed86d82741ca12631c103373ecaeaa476f1",
+        "initial_attempt_started_at_utc": "2026-08-21T04:41:34Z",
+        "initial_attempt_final_artifact_created": False,
+        "initial_attempt_completed_repository_checkpoints": 9,
+        "initial_attempt_journaled_responses": 3095,
+        "failure_class": "three_consecutive_ssl_unexpected_eof_on_workflow_run_identity",
+        "sealed_outcomes_opened_or_persisted": False,
+    }
+
+
 def test_d0_candidate_ids_and_cohort_hashes_are_exact_and_disjoint() -> None:
     config = _load_yaml(CONFIG_PATH)
     ledger = _load_json(LEDGER_PATH)
@@ -116,15 +147,13 @@ def test_d0_windows_are_symmetric_and_the_prospective_holdout_is_embargoed() -> 
         _parse(windows["primary_pre_to_utc"]) - _parse(windows["primary_pre_from_utc"])
     ).total_seconds() + one_second
     blackout_seconds = (
-        _parse(windows["rollout_blackout_to_utc"])
-        - _parse(windows["rollout_blackout_from_utc"])
+        _parse(windows["rollout_blackout_to_utc"]) - _parse(windows["rollout_blackout_from_utc"])
     ).total_seconds() + one_second
     post_seconds = (
         _parse(windows["primary_post_to_utc"]) - _parse(windows["primary_post_from_utc"])
     ).total_seconds() + one_second
     prospective_seconds = (
-        _parse(windows["prospective_holdout_to_utc"])
-        - _parse(windows["prospective_holdout_from_utc"])
+        _parse(windows["prospective_holdout_to_utc"]) - _parse(windows["prospective_holdout_from_utc"])
     ).total_seconds() + one_second
 
     assert pre_seconds == post_seconds == 28 * 24 * 3600

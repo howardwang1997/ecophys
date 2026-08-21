@@ -77,8 +77,18 @@ non-finite JSON; missing balance is `null`. A second contract audit found that p
 exclude intentional waits for every selected primary D1 run. The implementation now checkpoints historical
 workflow structure per unique repository/head-SHA/path and freezes IDs only after missing/flagged primary runs are
 removed. Formal acquisition may stop before probes only when a conservative identity-support upper bound—counting
-inaccessible/truncated repositories as possible passes—already fails a frozen necessary gate. All 34 related tests,
-Ruff and strict mypy pass. Formal D0 has not started; outcomes remain sealed.
+inaccessible/truncated repositories as possible passes—already fails a frozen necessary gate.
+
+Formal D0 first started from clean pushed `c98b4ed86` at 2026-08-21 04:41 UTC. It preserved nine complete
+repository checkpoints and 3,095 response hashes but produced no result/manifest: one `rust-lang/rust` shard hit
+three consecutive SSL EOFs. Runtime v1 had eagerly submitted every missing repository, so executor shutdown kept
+using requests after the failed future while the main loop no longer persisted completions. Runtime v2 is a
+transport-only supersession: at most four tasks are in flight, peer successes are drained/persisted, and each
+completed ≤900-run time shard is immutable. The nine whole-repository checkpoints and journal remain valid;
+uncheckpointed responses will be repeated. A new end-to-end v2 engineering smoke reused all 11 sanitized smoke
+checkpoints, completed with 43 status responses, strict `null` balance, a zero-line gzip sample and a passing
+recursive seal scan. Canonical/file SHAs are `b097af1f…55ef`/`ce81d11d…8e67`. It is non-scientific. All 38 related
+tests, Ruff, strict mypy and compilation pass. Formal resume has not started; outcomes remain sealed.
 
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely
