@@ -148,6 +148,31 @@ observing their size. Expected storage is below 50 GB and work below 100 CPU cor
 V100 hosts may perform collection, but the run is API-bound. V100/RTX 2060 GPU execution, H20, paid data and EcoMD
 are forbidden.
 
+## Implementation verification before formal D0
+
+The v3 resume completed the original 11-repository engineering smoke from its immutable identity checkpoints. It
+covered 46,862 run identities, 28 schema/workflow probes, 22 official Actions-related incidents and 692 journaled
+responses in total. The sanitizer and outcome seal passed, but the deterministic smoke subset contained two
+prequalified treated repositories and zero prequalified controls. That is neither a D0 estimate nor a formal gate:
+the smoke deliberately contains only 3/6/2 treated/control/negative-control candidates and cannot stand in for the
+frozen 72/447/33 cohorts.
+
+The resume exposed two implementation defects before formal acquisition. First, an empty match serialized a
+Python `Infinity`; all output writers now reject non-finite JSON and report unavailable balance metrics as `null`.
+The old `/tmp` smoke result is therefore an engineering trace only and cannot be cited as a scientific artifact.
+Second, schema probes alone did not implement the frozen rule that primary D1 runs with workflow concurrency,
+root-job concurrency or root-job environments must be removed before timing outcomes open. The collector now
+deduplicates every provisionally selected primary run by repository, head SHA and workflow path, checkpoints its
+historical workflow structure, excludes missing or intentionally waiting structures, and only then writes exact D1
+IDs. This stage is not run when matching or balance has already failed.
+
+Formal execution also applies a logically necessary outcome-blind stop before schema probes: it counts repositories
+with at least five pre-period primary run identities and treats every inaccessible/truncated repository as if it
+could still qualify. Only if even this conservative upper bound clears the frozen 60 treated/250 control minima
+may schema probes proceed. This changes no candidate, threshold, estimand or gate; it prevents spending later API
+windows after a failure has already been mathematically established. The complete verification-liquidity suite is
+34/34 passing, with Ruff, strict mypy and bytecode compilation also passing.
+
 ## Venue boundary
 
 A passed D0 still is not a result. A credible retrospective effect plus the untouched prospective interval could

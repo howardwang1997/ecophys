@@ -51,8 +51,8 @@ so D0 must match against the frozen no-Dependabot pool and use the 63 already-co
 negative control. GREEN authorizes freezing D0, not opening outcomes or claiming an effect. Full result:
 `papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`.
 
-D0 is now drafted and machine-frozen before its identity acquisition. The deterministic candidate ledger contains
-72 treated, 447 primary-control candidates and 33 high-support already-cooled negative controls; canonical SHA is
+D0 is now drafted and machine-frozen before its formal identity acquisition. The deterministic candidate ledger
+contains 72 treated, 447 primary-control candidates and 33 high-support already-cooled negative controls; canonical SHA is
 `b6c21ed8…5c62`. Primary pre/post windows are 2026-06-16--07-13 and 2026-07-17--08-13 with 07-14--07-16 blacked
 out. Primary human runs are first-attempt user `push` runs; PR/manual runs are secondary. D0 fixes hash-based daily
 sampling, pre-only optimal 1:3 matching, intentional workflow-wait flags, official incident sensitivity and a
@@ -68,6 +68,17 @@ GitHub Status field name `started_at`. RSSHub alone exposed 21,024 run identitie
 collection is expected to cross several API-rate windows and must use checkpoints rather than excluding large
 repositories. V3 renames only the external incident fields to `reported_start_utc` and
 `reported_resolution_utc`; it is now authoritative and leaves all scientific design content unchanged.
+
+The v3 resume completed end to end over 46,862 run identities, 28 schema/workflow probes, 22 official incidents
+and 692 journaled responses. Its deterministic 3/6/2 smoke subset has two prequalified treated and zero
+prequalified controls, which is an engineering observation only. The resulting `/tmp` artifact exposed Python
+`Infinity` on the empty-match path and is superseded as non-strict JSON. Before formal D0, writers now reject
+non-finite JSON; missing balance is `null`. A second contract audit found that probe-only workflow parsing did not
+exclude intentional waits for every selected primary D1 run. The implementation now checkpoints historical
+workflow structure per unique repository/head-SHA/path and freezes IDs only after missing/flagged primary runs are
+removed. Formal acquisition may stop before probes only when a conservative identity-support upper bound—counting
+inaccessible/truncated repositories as possible passes—already fails a frozen necessary gate. All 34 related tests,
+Ruff and strict mypy pass. Formal D0 has not started; outcomes remain sealed.
 
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely

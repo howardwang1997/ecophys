@@ -104,7 +104,11 @@ presence 均为 100%，11 项冻结门槛全部通过。独立扫描 1,003 个�
 11-repository smoke 在完成 identity checkpoints 后被 outcome seal 正确拦截，原因只是外部 GitHub
 Status 的 `started_at` 字段名与通用样本结果禁词冲突，且没有生成最终工件。权威 v3 仅把外部事故
 字段重命名为 `reported_start_utc`/`reported_resolution_utc`，不改候选、窗口、estimand、matching、
-forbidden outcome、阈值或 gate。正式结果见
+forbidden outcome、阈值或 gate。恢复后的 11-repository 工程 smoke 覆盖 46,862 个 run identities、28 个
+schema/workflow probes 和 22 个官方 Actions incidents；其 6 个小样本对照中没有 prequalified control，
+不能解释成 D0 结果。正式实现已在 outcome 打开前修复严格 JSON、为每个入选 primary run 按历史
+head SHA 冻结 workflow structure，并允许在必要的 60/250 identity-support 上界失败时提前 RED；34 项
+相关测试、Ruff 与 strict mypy 全过。正式结果见
 `papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md`。
 
 **2026-08-10 执行状态：** G0 已由 AMBER 降为 **FAIL**。33 篇一手文献 forward audit 表明，v0

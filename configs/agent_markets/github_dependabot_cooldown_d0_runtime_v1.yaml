@@ -1,0 +1,32 @@
+schema_version: 1
+
+contract:
+  name: github_dependabot_cooldown_d0_runtime
+  status: implementation_runtime_before_formal_acquisition
+  parent_config_path: configs/agent_markets/github_dependabot_cooldown_d0_v3.yaml
+  parent_config_sha256: ed0c516a9c865dc5946f3fa80f5404be57dbeacf2ca3f8a864c268c7eb5fb8d6
+  preregistration_git_sha: da7b7eb0b382dbe915cd64f9187ef72f02ea5e0c
+  scientific_candidates_windows_estimand_gates_and_forbidden_fields_unchanged: true
+
+execution:
+  raw_directory: data/raw/github_dependabot_cooldown_d0_v1
+  repository_checkpoint_directory: repository_checkpoints
+  selected_workflow_structure_checkpoint_directory: selected_workflow_structure_checkpoints
+  allowed_identity_records_filename: allowed_identity_records.jsonl.gz
+  selected_d1_sample_filename: selected_d1_sample.jsonl.gz
+  incident_ledger_filename: official_actions_incidents.json
+  manifest_path: data/manifests/github_dependabot_cooldown_d0_v1.json
+  result_path: results/agent_markets/github_dependabot_cooldown_d0_v1.json
+  progress_interval_seconds: 30.0
+  request_start_interval_seconds: 0.12
+  workflow_content_maximum_bytes: 1000000
+
+smoke:
+  treated_repositories: 3
+  control_repositories: 6
+  negative_control_repositories: 2
+  output_directory: /tmp/ecophys_github_dependabot_cooldown_d0_smoke
+  resume_requires_existing_immediate_child_without_final_artifacts: true
+  checkpoint_origin_config_sha256: 2887997b251e7487bb207e930a802996a4441e2f56d1f02f454b0cb3e4f415de
+  checkpoint_compatibility: v3_changes_only_external_incident_output_names_after_repository_checkpoints
+  scientific_decision: smoke_not_scientific_and_cannot_open_outcomes
