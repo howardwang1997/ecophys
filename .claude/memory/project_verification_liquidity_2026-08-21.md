@@ -90,14 +90,17 @@ checkpoints, completed with 43 status responses, strict `null` balance, a zero-l
 recursive seal scan. Canonical/file SHAs are `b097af1f…55ef`/`ce81d11d…8e67`. It is non-scientific. All 38 related
 tests, Ruff, strict mypy and compilation pass.
 
-Formal runtime-v2 acquisition resumed from clean pushed `f64d3c509` and has crossed five GitHub core-rate
-windows. As of 2026-08-22 00:17 NZST it has 126/552 complete repository checkpoints, 2,950 immutable completed
-time-shard checkpoints and 26,398 append-only transport observations. The first three window boundaries preserved
-40/670/7,847, 76/1,303/12,598 and 102/1,931/17,349 whole/shard/journal counts. A later `nodejs/node` leaf exhausted
-the SSL EOF retry policy at 116/2,430/21,644; bounded shutdown preserved peer successes, and the next window
-retried that leaf successfully. Every rate-reserve stop was fail-closed. No formal result or manifest exists, the
-worktree was clean at each audit, and all D1 outcomes remain sealed. These counts are transport progress, not a
-feasibility or effect result.
+Formal runtime-v2 acquisition resumed from clean pushed `f64d3c509` and has crossed seven GitHub core-rate
+windows/resumes. As of 2026-08-22 17:39 NZST it has 134/552 complete repository checkpoints, 3,470 immutable
+completed time-shard checkpoints and 32,375 append-only transport observations. The first three window boundaries
+preserved 40/670/7,847, 76/1,303/12,598 and 102/1,931/17,349 whole/shard/journal counts. A later `nodejs/node` leaf
+exhausted the SSL EOF retry policy at 116/2,430/21,644; bounded shutdown preserved peer successes, and the next
+window retried that leaf successfully. The sixth resume ended at 127/2,987/27,621 before its terminal console
+buffer could be retained; all 1,223 new journal rows were HTTP 200, but its exact exception is unknowable. The
+seventh resume therefore persisted complete stdout/stderr and stopped normally at the frozen reserve with
+134/3,470/32,375 and a final core balance of 246; all 4,754 new rows were HTTP 200. Every observed rate-reserve
+stop was fail-closed. No formal result or manifest exists, the worktree was clean during acquisition, and all D1
+outcomes remain sealed. These counts are transport progress, not a feasibility or effect result.
 
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely
