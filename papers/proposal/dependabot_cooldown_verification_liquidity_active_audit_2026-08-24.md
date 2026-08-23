@@ -133,6 +133,14 @@ unparseable workflow YAML could therefore create post-treatment selection withou
 These findings do not invalidate checkpoint transport or reveal outcomes, but they block D1 until a versioned
 D0.5 contract freezes corrected support and attrition gates.
 
+A second source/schema audit found that four D0.5 requirements are derivable from the current identity records or
+an independent evaluator, while exact PR-open-versus-revision history and stable owner IDs require new public API
+sidecars. The hardest boundary is version-versus-security ground truth: public cross-repository workflow runs do
+not distinguish them, Dependabot job logs require write access and alert metadata require repository-specific
+permission. Accordingly, failure of authoritative classification closes the version-specific mechanism and
+top-venue branch; only an explicitly contaminated all-Dependabot reduced form with worst-case bounds may remain.
+The precise feasibility matrix and outcome-blind floors are frozen as requirements in the D0.5 artifact.
+
 ## Gate 4: novelty after the 2026 literature update
 
 The broad narrative is now occupied. Prior work already measures Dependabot adoption, lag and notification
@@ -178,7 +186,9 @@ Relevant primary and official sources:
 3. Stop before D1 if any frozen identity, matching, run-support, workflow-structure, field-presence, corrected
    matched-treated shared-pool, owner-support, attrition, seal or deterministic-hash gate fails.
 4. Require version-update-specific proposal/update/root-job first stages with a frozen practical-equivalence
-   margin. An effect equivalent to zero closes the cooldown mechanism even if a queue contrast is significant.
+   margin. If authoritative version/security classification is unavailable, close that claim and permit only a
+   labelled all-Dependabot reduced form with contamination bounds. A first stage equivalent to zero closes the
+   cooldown mechanism even if a queue contrast is significant.
 5. Report the repository/account-local relative ITT separately from platform-wide total spillover. Permanently
    close the total-effect claim absent platform load/capacity telemetry, an explicit exposure mapping or an
    unexposed external platform.
