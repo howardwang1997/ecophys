@@ -1,0 +1,165 @@
+project: ecomd_random_clock_collision_t0
+version: 1
+frozen_date: 2026-08-23
+status: selected_t0
+parent_selection: papers/proposal/ecomd_new_problem_selection_2026-08-23.md
+freeze_artifact: papers/proposal/ecomd_random_clock_collision_t0_freeze_2026-08-23.md
+stop_at_first_failure: true
+
+question: >-
+  Can externally randomized market matching times identify the observable free-flight semigroup through a hard
+  collision operator and support a calibrated in-support prediction under a frozen change of the clock law,
+  while certifying the directions that the collision observation destroys?
+
+candidate:
+  name: random_clock_free_flight_hard_collision_dynamics
+  primary_venue: nature_computational_science
+  conditional_venue: nature_machine_intelligence
+  t0_survival_prior: [0.10, 0.18]
+  complete_nature_package_prior: [0.02, 0.05]
+
+formal_object:
+  pre_collision_transition: "X_minus[n+1] ~ P_{tau[n]}(X_plus[n], .)"
+  collision_transition: "X_plus[n+1] ~ C(X_minus[n+1], .)"
+  observed_family: H_C_P_t
+  primary_counterfactual: in_support_clock_law_shift
+  required_nuisance_declarations:
+    - observation_filtration
+    - clock_randomization_unit
+    - clock_exogeneity_condition
+    - collision_state_sufficiency
+    - C_P_factorization_equivalence_class
+    - support_and_overlap
+
+allowed_inputs:
+  - primary_papers_and_supplements
+  - official_rules_protocols_and_regulatory_filings
+  - outcome_blind_data_dictionaries_and_license_terms
+  - repository_source_and_tests
+  - handwritten_finite_toy_systems
+  - symbolic_derivations
+
+forbidden_inputs:
+  - real_market_outcomes
+  - event_window_statistics
+  - paid_or_bulk_market_data
+  - hidden_or_sealed_evaluation_periods
+  - proxy_reconstruction_of_unobserved_clock_draws
+  - synthetic_benchmark_implementation
+  - ecomd_training_fitting_or_rollouts
+  - gpu_use
+
+protocol_schema_gate:
+  stage: D_minus_1
+  minimum_independently_governed_protocols: 2
+  minimum_independent_clock_draws_for_later_confirmatory_stage: 500
+  all_required:
+    - exact_realized_clock_draw_or_phase_transition
+    - independent_unit_and_shared_clock_clusters_identified
+    - pre_collision_state_observed_or_sufficient_declared_projection
+    - post_collision_state_observed
+    - collision_rule_and_hidden_parameters_resolved
+    - empty_collision_events_observable
+    - timestamps_precise_relative_to_clock_support
+    - compatible_license_and_reproducible_access_contract
+  explicit_nonqualifiers:
+    - public_TRF_prints_without_match_event_identity
+    - weekly_FINRA_ATS_aggregates
+    - one_security_as_one_unit_under_a_shared_system_close
+    - inferred_empty_events_from_absence_of_trades
+    - indicative_close_time_without_pre_post_state
+  anchor_candidates:
+    - alpha_x_us_periodic_match_events
+    - xetra_random_end_auctions
+    - hkex_closing_auction_random_end
+
+prior_art_minima:
+  random_interval_markov_estimation: 6
+  semigroup_inverse_problems_and_embedding: 6
+  control_observability_and_hidden_operator_identification: 6
+  irregular_time_koopman_and_neural_operator_learning: 5
+  continuous_treatment_and_stopping_time_causal_inference: 5
+  periodic_batch_auction_and_random_end_design: 6
+  pdmp_kinetic_and_hard_collision_processes: 6
+  minimum_unique_primary_works: 40
+
+non_novel_baselines:
+  - duffie_glynn_random_time_markov_gmm
+  - standard_linear_system_observability
+  - generic_semigroup_embedding_or_inverse_problem
+  - irregular_time_koopman_regression
+  - continuous_dose_conditional_regression
+  - inverse_probability_reweighting_under_clock_shift
+  - generic_periodic_auction_comparison
+  - standard_pdmp_or_linear_boltzmann_propagation
+
+toy_systems:
+  - finite_price_time_queue_with_known_uncrossing
+  - linear_gaussian_free_flight_with_many_to_one_collision_projection
+  - nonfinancial_piecewise_deterministic_hard_collision_process
+toy_requirements:
+  - at_least_one_identifiable_case
+  - at_least_one_exact_nonidentifiable_case
+  - exact_baseline_reduction_attempts
+  - no_implementation_before_t0_pass
+
+eligible_exits:
+  e1:
+    name: collision_obscured_identifiability
+    required:
+      - necessary_and_sufficient_conditions_for_H_C_P_t
+      - constructive_nonidentification_equivalence_class
+      - result_strictly_beyond_standard_rank_or_observability
+    immediate_failures:
+      - renamed_linear_observability
+      - generic_markov_embedding_result
+      - C_P_separation_assumed_without_evidence
+  e2:
+    name: calibrated_semigroup_estimator
+    required:
+      - semigroup_consistency
+      - finite_sample_uniform_band
+      - matching_rate_or_lower_bound
+      - off_support_abstention
+    immediate_failures:
+      - pointwise_GMM_only
+      - generic_koopman_fit
+      - ordinary_conditional_neural_regression
+      - asymptotics_without_collision_specific_result
+  e3:
+    name: in_support_clock_law_transport
+    required:
+      - frozen_target_under_nu_to_nu_prime
+      - valid_confidence_set
+      - explicit_overlap_and_feedback_conditions
+      - lower_bound_or_sharp_abstention_boundary
+    immediate_failures:
+      - integrate_a_fitted_dose_response_only
+      - ordinary_importance_reweighting
+      - off_support_clock_counterfactual
+
+reviewer_statement_gate:
+  forbidden_phrases:
+    - first_in_markets
+    - MD_inspired
+    - powered_by_EcoMD
+  required:
+    - one_true_important_method_contribution
+    - one_nonfinancial_transfer_system
+    - model_free_regression_does_not_remove_method_need
+
+pass_rule:
+  all_required:
+    - protocol_schema_gate_passes
+    - at_least_one_of_e1_e2_e3_survives
+    - no_exact_primary_work_reduction
+    - finite_toys_distinguish_all_frozen_baselines
+    - reviewer_statement_gate_passes
+  on_fail: close_before_outcomes_implementation_data_purchase_or_compute
+
+resource_ceiling:
+  duration_calendar_days: 10
+  gpu_hours: 0
+  paid_data_usd: 0
+  benchmark_runs: 0
+  market_outcome_queries: 0

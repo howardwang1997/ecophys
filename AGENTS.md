@@ -1,6 +1,6 @@
 # EcoPhys — Project Instructions for Codex
 
-This file supplements the global `~/.Codex/AGENTS.md` with project-specific guidance for the EcoPhys research project. Read these alongside the persistent memory at `.Codex/memory/` (canonical, in-repo) — the path `~/.Codex/projects/-Users-howardwang-Desktop-playground-ecophys/memory/` is a symlink to that in-repo location (see `.Codex/README.md`). Edit either path; the file lives in git.
+This file supplements the global Codex instructions with project-specific guidance for the EcoPhys research project. Read these alongside the persistent memory at `.claude/memory/` (canonical, in-repo) — the path `~/.claude/projects/-Users-howardwang-Desktop-playground-ecophys/memory/` is a symlink to that in-repo location (see `.claude/README.md`). Edit the in-repo path; the files live in git.
 
 ## Role
 
@@ -20,7 +20,7 @@ After every work session, append or create `logs/YYYY-MM-DD.md` with:
 - Open questions / blockers
 - Next steps
 
-Also update long-term memory in `.Codex/memory/` (in-repo; see `.Codex/README.md` for symlink story) when lasting facts change. See `memory/feedback_long_memory_and_logs.md`.
+Also update long-term memory in `.claude/memory/` (in-repo; see `.claude/README.md` for symlink story) when lasting facts change. See `memory/feedback_long_memory_and_logs.md`.
 
 ## Workflow (Mac + R2 + GitHub + scalable non-H20 compute)
 

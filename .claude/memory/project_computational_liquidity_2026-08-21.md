@@ -1,6 +1,6 @@
 ---
 name: computational-liquidity-2026-08-21
-description: "Fresh AMBER route: test whether nominal solver competition supplies functional fallback capability under coupled tasks, using CoW's official leave-one-winner scores. Formal T0 is frozen before blocks 25780000--25780499."
+description: "Closed RED route: CoW leave-one-winner computational-liquidity T0 failed every frozen density/coupling support minimum despite complete reference coverage and valid counterfactual arithmetic."
 metadata:
   node_type: memory
   type: project

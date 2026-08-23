@@ -1,0 +1,830 @@
+schema_version: 1
+
+graph:
+  id: ecophys_research_routes
+  updated_at: "2026-08-23"
+  scope:
+    start_date: "2026-08-09"
+    end_date: null
+    granularity: route_level_decisions
+    completeness: core_routes_only
+    historical_backfill_complete: false
+    notes:
+      - This graph covers core route-level decisions from 2026-08-09 onward.
+      - Intermediate transport attempts, experiment-level failures, and pre-2026-08-09 branches are not exhaustively backfilled.
+      - Markdown memories remain narrative evidence; this file is the canonical machine-readable route registry for its declared scope.
+
+schema:
+  allowed_statuses:
+    - candidate
+    - active
+    - parked
+    - passed_closed
+    - failed_closed
+    - superseded
+  allowed_edge_types:
+    - next_selected_route
+    - derived_from
+    - supersedes
+    - aggregates
+    - blocks
+  allowed_locator_availability:
+    - present
+    - missing_legacy
+    - external
+  node:
+    required_fields:
+      - id
+      - node_type
+      - title
+      - status
+      - opened_at
+      - closed_at
+      - phase
+      - terminal_gate
+      - failure_codes
+      - summary
+      - evidence
+      - artifacts
+      - reusable_assets
+      - reopen_conditions
+      - forbidden_actions
+  edge:
+    required_fields:
+      - id
+      - source
+      - type
+      - target
+      - rationale
+      - evidence_refs
+  locator:
+    required_fields:
+      - id
+      - kind
+      - availability
+
+nodes:
+  - id: ncs_invariant_calibration_v4
+    node_type: research_route
+    title: NCS invariant-measure and long-horizon calibration
+    status: failed_closed
+    opened_at: "2026-08-09"
+    closed_at: "2026-08-10"
+    phase: G0
+    terminal_gate: novelty_and_irreducible_method
+    failure_codes:
+      - reducible_to_existing_method_components
+      - no_new_coupling_or_weak_assumption_theorem
+      - no_new_variance_cost_result
+    summary: The 33-primary-paper forward audit found no irreducible method beyond established invariant-gradient, unbiased-estimation, stochastic-AD, and generalized-ensemble components.
+    evidence:
+      - id: ncs_v4_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_ncs_plan_v4.md
+    artifacts:
+      - id: ncs_v4_formal_audit
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ncs_g0_forward_audit_2026-08-10.md
+      - id: ncs_v4_plan
+        kind: frozen_plan
+        availability: present
+        path: papers/proposal/plan_v4_ncs.md
+    reusable_assets:
+      - state_complete_simulator_semantics
+      - exact_resume_harness
+      - observation_bridge_diagnostics
+    reopen_conditions:
+      - State a genuinely new estimator or theorem with assumptions and a result not decomposable into the audited components.
+      - Validate the method on at least two independent non-EcoMD systems before returning to the market application.
+    forbidden_actions:
+      - Do not resume WP3 or WP4 under the closed v4 claim.
+      - Do not purchase data or expand compute to rescue the failed novelty gate.
+
+  - id: generic_simulator_audit_v4a
+    node_type: research_route
+    title: Generic simulator-audit method and TMLR route
+    status: failed_closed
+    opened_at: "2026-08-10"
+    closed_at: "2026-08-10"
+    phase: F0
+    terminal_gate: prior_art_novelty
+    failure_codes:
+      - generic_audit_claims_occupied
+      - injected_failure_and_conclusion_change_claims_occupied
+    summary: The proposed general simulator-audit contribution reduced to existing testing, metamorphic-audit, and simulation-validation work; only EcoMD-specific transparent failure disclosure survived.
+    evidence:
+      - id: simulator_audit_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_simulator_audit_plan_v4a.md
+    artifacts:
+      - id: simulator_audit_formal_audit
+        kind: formal_result
+        availability: present
+        path: papers/proposal/simulator_audit_f0_prior_art_2026-08-10.md
+      - id: simulator_audit_plan
+        kind: frozen_plan
+        availability: present
+        path: papers/proposal/plan_v4a_simulator_audit_release.md
+    reusable_assets:
+      - EcoMD_specific_audit_tests
+      - transparent_failure_disclosure
+    reopen_conditions:
+      - Produce a non-generic audit theorem or algorithm with a guarantee and cross-system evidence beyond the audited prior art.
+    forbidden_actions:
+      - Do not present EcoMD-specific QA as a general simulator-audit method.
+      - Do not restart external adapter or audit-driven compute expansion under this claim.
+
+  - id: ecomd_v1_positive_model_release
+    node_type: research_route
+    title: EcoMD v1 positive model and production release
+    status: failed_closed
+    opened_at: "2026-08-10"
+    closed_at: "2026-08-11"
+    phase: M1
+    terminal_gate: frozen_stationary_fidelity
+    failure_codes:
+      - two_of_eleven_fidelity
+      - target_matched_dynamics_missing
+      - evaluator_band_semantics_defective
+    summary: Every frozen state-complete window scored 2/11; stationarity transfer passed, but the positive model-paper and production-expansion claims failed.
+    evidence:
+      - id: ecomd_v1_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_ecomd_release_v1_2026-08-10.md
+    artifacts:
+      - id: ecomd_v1_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_v1_m1_result_2026-08-11.md
+      - id: ecomd_v1_scope
+        kind: frozen_scope
+        availability: present
+        path: papers/proposal/ecomd_v1_release_scope_2026-08-10.md
+    reusable_assets:
+      - source_preview
+      - state_complete_checkpoint
+      - stationarity_transfer_harness
+    reopen_conditions:
+      - Repair train-inference semantics and pass a newly frozen, valid stationary-fidelity evaluator on untouched data.
+    forbidden_actions:
+      - Do not retune the exposed M1 bands or windows.
+      - Do not call the source preview empirically validated.
+
+  - id: real_market_physics_zero_cost
+    node_type: research_route
+    title: Zero-cost real-market physics program
+    status: failed_closed
+    opened_at: "2026-08-11"
+    closed_at: "2026-08-11"
+    phase: program_closure
+    terminal_gate: no_surviving_real_market_law
+    failure_codes:
+      - evaluator_not_qualified
+      - regime_memory_not_significant
+      - taker_flow_not_transferable
+      - crash_tail_transfer_not_real
+    summary: EcoMD fidelity, real-crash tail transfer, static evaluator, daily regime memory, and one-minute taker-flow relaxation did not yield a surviving real-market law.
+    evidence:
+      - id: real_physics_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_real_physics_zero_cost_decision_2026-08-11.md
+    artifacts:
+      - id: real_physics_closure
+        kind: closure_decision
+        availability: present
+        path: papers/proposal/real_physics_zero_cost_decision_2026-08-11.md
+      - id: evaluator_v2_feasibility_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/evaluator_v2_feasibility_result_2026-08-11.md
+      - id: evaluator_v2_fresh_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/evaluator_v2_fresh_market_confirmation_result_2026-08-11.md
+      - id: regime_memory_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/regime_memory_exploratory_result_2026-08-11.md
+      - id: taker_flow_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/taker_flow_response_feasibility_result_2026-08-11.md
+    reusable_assets:
+      - market_data_parsers
+      - estimator_sample_complexity_floors
+      - temporal_holdout_guardrails
+    reopen_conditions:
+      - Start from a new externally anchored market mechanism and irreducible claim before accessing outcomes.
+      - Use a genuinely untouched time or market holdout appropriate to the new claim.
+    forbidden_actions:
+      - Do not retune the failed hypotheses on spent data.
+      - Do not bulk-download data or train EcoMD to rescue a closed law.
+
+  - id: entropy_tur_observability
+    node_type: research_route
+    title: Entropy production and TUR under partial market observation
+    status: failed_closed
+    opened_at: "2026-08-11"
+    closed_at: "2026-08-11"
+    phase: G0
+    terminal_gate: novelty_and_identifiability
+    failure_codes:
+      - total_entropy_not_identified_from_partial_observation
+      - estimator_and_tur_exits_occupied
+      - apparent_saturation_does_not_imply_total_saturation
+    summary: All four frozen exits failed; an exact observed-path counterexample separated apparent and total entropy production, while the nearest methods occupied the proposed estimators and TUR claims.
+    evidence:
+      - id: entropy_tur_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_entropy_tur_t0_g0_2026-08-11.md
+    artifacts:
+      - id: entropy_tur_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/entropy_tur_observability_t0_g0_result_2026-08-11.md
+      - id: entropy_tur_freeze
+        kind: frozen_protocol
+        availability: present
+        path: papers/proposal/entropy_tur_observability_t0_freeze_2026-08-11.md
+    reusable_assets:
+      - partial_observation_counterexample
+      - entropy_identifiability_guardrail
+    reopen_conditions:
+      - Supply a new identifiable observable, a sharp partial-information theorem, or a new market-specific TUR not covered by the audit.
+    forbidden_actions:
+      - Do not infer total entropy or efficiency-limit saturation from apparent TUR saturation.
+      - Do not restart L2, EcoMD, or GPU work for the closed B3 claim.
+
+  - id: performative_dispatch
+    node_type: research_route
+    title: Public forecast performativity in rolling electricity dispatch
+    status: failed_closed
+    opened_at: "2026-08-19"
+    closed_at: "2026-08-19"
+    phase: T0
+    terminal_gate: novelty_identifiability_and_instrument_support
+    failure_codes:
+      - hidden_common_information_nonidentification
+      - zero_eligible_instruments
+      - constraint_law_reduces_to_existing_lmp_sensitivity
+    summary: The identification exit failed, no eligible publication-only instrument met the frozen event rule, and the proposed constraint-mediated law reduced to established critical-region and LMP sensitivity theory.
+    evidence:
+      - id: performative_dispatch_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_problem_first_dispatch_2026-08-19.md
+    artifacts:
+      - id: performative_dispatch_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/performative_dispatch_t0_result_2026-08-19.md
+      - id: performative_dispatch_freeze
+        kind: frozen_protocol
+        availability: present
+        path: papers/proposal/performative_dispatch_t0_freeze_2026-08-19.md
+    reusable_assets:
+      - observational_equivalence_counterexample
+      - instrument_eligibility_rules
+    reopen_conditions:
+      - Obtain at least five defensible publication-only events or a preregistered randomized or staggered publication design.
+      - State an identification theorem or non-KKT constraint law that survives a fresh nearest-work audit.
+    forbidden_actions:
+      - Do not download AEMO or NZEM outcome rows for this closed design.
+      - Do not implement a synthetic rescue or run CPU or GPU experiments under the failed claim.
+
+  - id: scheduled_funding_carry
+    node_type: research_route
+    title: Scheduled dYdX fixed-funding-carry intervention
+    status: failed_closed
+    opened_at: "2026-08-19"
+    closed_at: "2026-08-20"
+    phase: D1A
+    terminal_gate: treated_unit_activity_support
+    failure_codes:
+      - one_of_twenty_one_active_markets
+      - below_fifteen_market_stop_line
+    summary: T0 and D0 passed, but only HYPE met the frozen activity rule, leaving insufficient treated-unit support for the causal estimand.
+    evidence:
+      - id: funding_carry_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_scheduled_funding_carry_2026-08-19.md
+    artifacts:
+      - id: funding_carry_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/dydx_funding_carry_d1a_activity_result_2026-08-20.md
+      - id: funding_carry_t0_result
+        kind: gate_result
+        availability: present
+        path: papers/proposal/dydx_funding_carry_t0_result_2026-08-20.md
+    reusable_assets:
+      - governance_transition_ledger
+      - outcome_blind_activity_pipeline
+    reopen_conditions:
+      - A new domain must show at least fifteen active treated units or repeated independent interventions at metadata stage.
+    forbidden_actions:
+      - Do not lower the activity threshold or promote HYPE as a one-market anecdote.
+      - Do not open proposal 317 or 220 outcomes or acquire bulk ticks under this design.
+
+  - id: aave_rate_response
+    node_type: research_route
+    title: Aave rate-step response spectroscopy
+    status: failed_closed
+    opened_at: "2026-08-20"
+    closed_at: "2026-08-20"
+    phase: D1B
+    terminal_gate: clean_intervention_identification
+    failure_codes:
+      - all_executions_anticipated
+      - three_of_eighteen_clean_units
+      - two_of_six_staggered_proposals
+    summary: All target executions resolved, but anticipation, overlapping policy changes, and inadequate cross-chain stagger killed the causal route before behavioral outcomes.
+    evidence:
+      - id: aave_rate_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_aave_rate_response_2026-08-20.md
+    artifacts:
+      - id: aave_rate_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/aave_rate_response_d1b_identification_result_2026-08-20.md
+      - id: aave_rate_config
+        kind: frozen_protocol
+        availability: present
+        path: configs/empirical_physics/aave_rate_response_d1b_identification_v1.yaml
+    reusable_assets:
+      - intervention_ledger
+      - preperiod_activity_pipeline
+    reopen_conditions:
+      - Freeze a new descriptive scope or obtain genuinely unanticipated or sufficiently staggered interventions with clean windows.
+    forbidden_actions:
+      - Do not open response outcomes, weaken stagger rules, or treat assets from one proposal as independent shocks.
+      - Do not run D1C, EcoMD, or GPU work for the closed causal route.
+
+  - id: aave_agent_guardrail
+    node_type: research_route
+    title: Aave automated-agent guardrail field design
+    status: failed_closed
+    opened_at: "2026-08-20"
+    closed_at: "2026-08-20"
+    phase: D0H_v2
+    terminal_gate: two_chain_local_boundary_support
+    failure_codes:
+      - zero_of_two_qualifying_boundaries
+      - zero_of_two_required_chains
+      - rescue_requires_two_posthoc_relaxations
+    summary: The nine-chain inventory passed global gates, but no chain supplied a frozen two-sided delay boundary; simultaneous post-hoc changes would be required to manufacture a pass.
+    evidence:
+      - id: aave_guardrail_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_aave_agent_guardrail_2026-08-20.md
+    artifacts:
+      - id: aave_guardrail_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/aave_agent_guardrail_holdout_d0_v2_result_2026-08-20.md
+      - id: aave_guardrail_config
+        kind: frozen_protocol
+        availability: present
+        path: configs/empirical_physics/aave_agent_guardrail_holdout_d0_v2.yaml
+    reusable_assets:
+      - multichain_agent_event_ledger
+      - provider_omission_audit
+    reopen_conditions:
+      - A new prospectively frozen system must supply two-sided local support without relaxing both radius and row minima after inspection.
+    forbidden_actions:
+      - Do not open market outcomes or weaken the frozen local-support gates.
+      - Do not continue provider replication, state replay, EcoMD, or GPU work for this route.
+
+  - id: morpho_controller_coupling
+    node_type: research_route
+    title: Morpho allocator and IRM controller coupling
+    status: failed_closed
+    opened_at: "2026-08-20"
+    closed_at: "2026-08-20"
+    phase: D0A_v2
+    terminal_gate: unique_operator_identity
+    failure_codes:
+      - multiple_nonpublic_allocators_for_required_vault
+      - identity_gate_failed_before_history
+    summary: One required vault had three non-public allocators after excluding the official Public Allocator, so the frozen unique-identity design could not proceed.
+    evidence:
+      - id: morpho_controller_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_morpho_controller_coupling_2026-08-20.md
+    artifacts:
+      - id: morpho_controller_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/morpho_controller_coupling_d0a_v2_result_2026-08-20.md
+      - id: morpho_controller_t0_result
+        kind: gate_result
+        availability: present
+        path: papers/proposal/morpho_controller_coupling_t0_result_2026-08-20.md
+    reusable_assets:
+      - source_bound_controller_algebra
+    reopen_conditions:
+      - Obtain operator-signed address and policy epochs, code-bound on-chain strategy, or formulate an identity-free claim.
+    forbidden_actions:
+      - Do not choose one allocator post hoc by cadence or inspect histories under the failed identity design.
+      - Do not run D0B, outcomes, EcoMD, or GPU work for this route.
+
+  - id: morpho_public_allocator_pressure
+    node_type: research_route
+    title: Morpho Public Allocator pressure displacement
+    status: failed_closed
+    opened_at: "2026-08-20"
+    closed_at: "2026-08-20"
+    phase: D0_v2
+    terminal_gate: dual_chain_transport
+    failure_codes:
+      - portal_shard_error
+      - blockscout_rpc_timeout
+      - support_unobserved
+    summary: Both jointly launched chain jobs failed before support interpretation; null support values and legacy pooled zero sentinels are not empirical zeros.
+    evidence:
+      - id: morpho_allocator_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_morpho_public_allocator_pressure_2026-08-20.md
+    artifacts:
+      - id: morpho_allocator_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/morpho_public_allocator_pressure_d0_v2_result_2026-08-20.md
+      - id: morpho_allocator_t0_result
+        kind: gate_result
+        availability: present
+        path: papers/proposal/morpho_public_allocator_pressure_t0_result_2026-08-20.md
+    reusable_assets:
+      - source_bound_accounting_algebra
+      - transport_diagnostics
+    reopen_conditions:
+      - Use a newly frozen prospective design with a separately qualified transport contract and untouched support gate.
+    forbidden_actions:
+      - Do not interpret missing support as zero or pool legacy sentinels as observations.
+      - Do not swap providers or rerun the same frozen route after outcome-adjacent inspection.
+
+  - id: liquity_agentic_priority_queue
+    node_type: research_route
+    title: Liquity V2 agentic priority queue
+    status: failed_closed
+    opened_at: "2026-08-20"
+    closed_at: "2026-08-20"
+    phase: D0_v5
+    terminal_gate: exact_full_log_identity_replication
+    failure_codes:
+      - one_event_provider_omission
+      - frozen_source_equality_failed
+    summary: Three independent sources verified one canonical BatchUpdated event omitted by Blockscout, so the frozen full-source equality gate failed before support evaluation.
+    evidence:
+      - id: liquity_queue_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_liquity_agentic_queue_2026-08-20.md
+    artifacts:
+      - id: liquity_queue_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/liquity_agentic_queue_d0_v5_result_2026-08-20.md
+      - id: liquity_queue_failure_manifest
+        kind: result_manifest
+        availability: present
+        path: results/empirical_physics/liquity_agentic_queue_d0_v5_failure.json
+    reusable_assets:
+      - provider_completeness_diagnostic
+      - canonical_log_identity_comparator
+    reopen_conditions:
+      - A new preregistration must replace the impossible full-source equality rule with an independently justified completeness contract before querying support.
+    forbidden_actions:
+      - Do not run a v6 provider swap or reconstruct the queue under the closed v5 route.
+      - Do not inspect support, run D1, EcoMD, or GPU work for this route.
+
+  - id: computational_liquidity
+    node_type: research_route
+    title: Computational liquidity in autonomous-agent markets
+    status: failed_closed
+    opened_at: "2026-08-21"
+    closed_at: "2026-08-21"
+    phase: T0
+    terminal_gate: coupled_competition_support
+    failure_codes:
+      - settlement_count_below_floor
+      - competition_count_below_floor
+      - low_criticality_support_below_floor
+      - eligible_coupling_support_below_floor
+    summary: CoW leave-one-winner arithmetic was valid, but every independent scale and coupled-support minimum failed; no association test was run.
+    evidence:
+      - id: computational_liquidity_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_computational_liquidity_2026-08-21.md
+    artifacts:
+      - id: computational_liquidity_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/computational_liquidity_t0_result_2026-08-21.md
+      - id: computational_liquidity_plan
+        kind: frozen_protocol
+        availability: present
+        path: papers/proposal/computational_liquidity_t0_plan_2026-08-21.md
+    reusable_assets:
+      - official_leave_one_winner_parser
+      - outcome_blind_event_rate_lesson
+    reopen_conditions:
+      - A new candidate must pass an outcome-blind event-rate and schema D-minus-1 before freezing absolute support thresholds.
+    forbidden_actions:
+      - Do not widen the window, switch chains, or relax coupling definitions to rescue T0.
+      - Do not run T1, EcoMD, or GPU work for this route.
+
+  - id: verification_liquidity
+    node_type: research_route
+    title: Verification liquidity after an agent safety throttle
+    status: active
+    opened_at: "2026-08-21"
+    closed_at: null
+    phase: D0_transport
+    terminal_gate: null
+    failure_codes: []
+    summary: D-minus-1 passed; formal D0 identity acquisition is in transport, while queue, first-stage, review, merge, security, and prospective holdout outcomes remain sealed.
+    evidence:
+      - id: verification_liquidity_memory
+        kind: active_memory
+        availability: present
+        path: .claude/memory/project_verification_liquidity_2026-08-21.md
+    artifacts:
+      - id: verification_liquidity_dminus1_result
+        kind: gate_result
+        availability: present
+        path: papers/proposal/dependabot_cooldown_verification_liquidity_dminus1_result_2026-08-21.md
+      - id: verification_liquidity_d0_freeze
+        kind: frozen_protocol
+        availability: present
+        path: papers/proposal/dependabot_cooldown_verification_liquidity_d0_freeze_2026-08-21.md
+    reusable_assets:
+      - outcome_sealed_identity_pipeline
+      - immutable_api_shards
+      - rate_window_resume_protocol
+    reopen_conditions: []
+    forbidden_actions:
+      - Do not interpret transport progress as feasibility or an effect.
+      - Do not open the prospective holdout before 2026-10-17 UTC.
+      - Do not claim NMI or NCS from a single GitHub result without transfer, policy value, and the required method contribution.
+
+  - id: observation_quotient_response
+    node_type: research_route
+    title: Observation-quotient response identification and intervention-preserving coarse graining
+    status: failed_closed
+    opened_at: "2026-08-22"
+    closed_at: "2026-08-22"
+    phase: T0
+    terminal_gate: novelty_and_exact_reduction
+    failure_codes:
+      - fibre_factorization_is_definitional
+      - local_form_reduces_to_rank
+      - active_design_reduces_to_set_cover_or_information_design
+      - no_uniform_certificate_or_new_joint_rate
+      - coarse_error_decomposition_not_new
+    summary: Q0, Q1, Q2, and C0 all failed exact reduction or statement-completeness gates before metadata, implementation, data, or compute.
+    evidence:
+      - id: observation_quotient_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_ecomd_observation_quotient_t0_2026-08-22.md
+    artifacts:
+      - id: observation_quotient_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_observation_quotient_t0_result_2026-08-22.md
+      - id: observation_quotient_prior_art
+        kind: prior_art_matrix
+        availability: present
+        path: papers/proposal/ecomd_observation_quotient_t0_prior_art_matrix_2026-08-22.md
+      - id: observation_quotient_config
+        kind: frozen_protocol
+        availability: present
+        path: configs/empirical_physics/ecomd_observation_quotient_t0_v1.yaml
+    reusable_assets:
+      - passive_equivalent_opposite_response_counterexample
+      - actuator_semantics_guardrail
+    reopen_conditions:
+      - Begin with a concrete irreducible theorem, certificate, or algorithm that survives a new nearest-work gate.
+      - Externally anchor actor, channel, and sign semantics before making intervention claims.
+    forbidden_actions:
+      - Do not rebrand identification, rank, set cover, learned GLE, or triangle-inequality primitives as novelty.
+      - Do not implement, access outcomes, purchase data, train EcoMD, or use GPU for the closed cards.
+
+  - id: partial_order_hard_event_dynamics
+    node_type: research_route
+    title: Resolution-certified partially ordered hard-event dynamics
+    status: failed_closed
+    opened_at: "2026-08-22"
+    closed_at: "2026-08-23"
+    phase: T0
+    terminal_gate: mathematical_object_and_e1_e2_e3_reduction
+    failure_codes:
+      - static_linear_extension_semantics_incomplete
+      - e1_reduces_to_linearizability_reachability_dpor_and_linear_extension_counting
+      - e2_has_pac_robust_game_baselines_and_standard_nonidentification_bound
+      - e3_reduces_to_observational_determinism_and_product_reachability
+      - flat_poset_cannot_encode_atomic_grouping
+      - md_set_valued_ordering_claim_occupied
+    summary: After correcting enabledness, accepting-state, observer, and recorded-return semantics, no frozen exit survived the 55-source exact-reduction audit.
+    evidence:
+      - id: partial_order_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_ecomd_partial_order_event_t0_2026-08-23.md
+    artifacts:
+      - id: partial_order_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_partial_order_event_t0_result_2026-08-23.md
+      - id: partial_order_prior_art
+        kind: prior_art_matrix
+        availability: present
+        path: papers/proposal/ecomd_partial_order_event_t0_prior_art_matrix_2026-08-23.md
+      - id: partial_order_math
+        kind: mathematical_derivation
+        availability: present
+        path: papers/proposal/ecomd_partial_order_event_t0_math_scratch_2026-08-22.md
+      - id: partial_order_config
+        kind: frozen_protocol
+        availability: present
+        path: configs/empirical_physics/ecomd_partial_order_event_t0_v1.yaml
+    reusable_assets:
+      - four_queue_toy_regression_cases
+      - accepting_state_and_observer_semantics
+      - atomic_grouping_guardrail
+    reopen_conditions:
+      - A future restricted order-book problem must state a new object and result that do not reduce to the audited concurrency, verification, possible-world, or simultaneous-impact baselines.
+      - Any new card requires a fresh preregistration and nearest-work audit; no reserve card is promoted automatically.
+    forbidden_actions:
+      - Do not combine this route with hard-event gradients or the failed observation-quotient cards as a rescue.
+      - Do not inspect market outcomes, implement the benchmark, acquire data, train EcoMD, or use GPU for this card.
+
+  - id: random_clock_collision_dynamics
+    node_type: research_route
+    title: Random-clock free-flight and hard-collision market dynamics
+    status: active
+    opened_at: "2026-08-23"
+    closed_at: null
+    phase: T0_D_minus_1
+    terminal_gate: null
+    failure_codes: []
+    summary: A zero-outcome protocol/schema and reduction audit tests whether externally randomized matching times identify the observable free-flight semigroup through a hard collision map and permit calibrated in-support clock-law transport.
+    evidence:
+      - id: random_clock_memory
+        kind: active_memory
+        availability: present
+        path: .claude/memory/project_ecomd_random_clock_collision_t0_2026-08-23.md
+    artifacts:
+      - id: random_clock_selection
+        kind: selection_decision
+        availability: present
+        path: papers/proposal/ecomd_new_problem_selection_2026-08-23.md
+      - id: random_clock_freeze
+        kind: frozen_protocol
+        availability: present
+        path: papers/proposal/ecomd_random_clock_collision_t0_freeze_2026-08-23.md
+      - id: random_clock_config
+        kind: frozen_protocol
+        availability: present
+        path: configs/empirical_physics/ecomd_random_clock_collision_t0_v1.yaml
+    reusable_assets:
+      - externally_randomized_clock_protocol_registry
+      - free_flight_collision_operator_toys
+      - shared_clock_cluster_guardrail
+    reopen_conditions: []
+    forbidden_actions:
+      - Do not infer hidden Match Events from public TRF prints or absence of trades.
+      - Do not access market outcomes, buy data, implement benchmarks, fit EcoMD, or use GPU before T0 passes.
+      - Do not rescue a failed schema or reduction gate through venue substitution, proxy clocks, threshold relaxation, or synthetic evidence.
+
+edges:
+  - id: ncs_v4_to_simulator_audit
+    source: ncs_invariant_calibration_v4
+    type: next_selected_route
+    target: generic_simulator_audit_v4a
+    rationale: The generic audit route was evaluated after the invariant-calibration method failed G0.
+    evidence_refs:
+      - ncs_v4_formal_audit
+      - simulator_audit_plan
+
+  - id: simulator_audit_to_ecomd_v1
+    source: generic_simulator_audit_v4a
+    type: next_selected_route
+    target: ecomd_v1_positive_model_release
+    rationale: The generic method claim closed while an EcoMD-specific transparent model-release gate remained testable.
+    evidence_refs:
+      - simulator_audit_formal_audit
+      - ecomd_v1_scope
+
+  - id: ecomd_v1_to_real_physics
+    source: ecomd_v1_positive_model_release
+    type: next_selected_route
+    target: real_market_physics_zero_cost
+    rationale: The failed positive model release led to outcome-gated real-market feasibility tests rather than more simulator tuning.
+    evidence_refs:
+      - ecomd_v1_formal_result
+      - real_physics_closure
+
+  - id: real_physics_to_entropy_tur
+    source: real_market_physics_zero_cost
+    type: next_selected_route
+    target: entropy_tur_observability
+    rationale: Entropy and TUR observability was the final theory-first exit retained by the zero-cost closure and then failed G0.
+    evidence_refs:
+      - real_physics_closure
+      - entropy_tur_formal_result
+
+  - id: entropy_tur_to_dispatch
+    source: entropy_tur_observability
+    type: next_selected_route
+    target: performative_dispatch
+    rationale: Fresh problem selection moved from the closed stochastic-thermodynamics line to an externally anchored electricity-market mechanism.
+    evidence_refs:
+      - entropy_tur_formal_result
+      - performative_dispatch_freeze
+
+  - id: dispatch_to_funding_carry
+    source: performative_dispatch
+    type: next_selected_route
+    target: scheduled_funding_carry
+    rationale: The intervention-first search selected a repeated governance-timed funding change after dispatch failed T0.
+    evidence_refs:
+      - performative_dispatch_formal_result
+      - funding_carry_t0_result
+
+  - id: funding_carry_to_aave_rate
+    source: scheduled_funding_carry
+    type: next_selected_route
+    target: aave_rate_response
+    rationale: The search moved to repeated Aave rate interventions after dYdX lacked active treated units.
+    evidence_refs:
+      - funding_carry_formal_result
+      - aave_rate_config
+
+  - id: aave_rate_to_guardrail
+    source: aave_rate_response
+    type: next_selected_route
+    target: aave_agent_guardrail
+    rationale: The guardrail design reused source and event-ledger infrastructure after anticipation closed the rate-response route.
+    evidence_refs:
+      - aave_rate_formal_result
+      - aave_guardrail_config
+
+  - id: morpho_controller_to_allocator
+    source: morpho_controller_coupling
+    type: next_selected_route
+    target: morpho_public_allocator_pressure
+    rationale: The identity-free public allocator route was evaluated after unique non-public controller identity failed.
+    evidence_refs:
+      - morpho_controller_formal_result
+      - morpho_allocator_t0_result
+
+  - id: allocator_to_computational_liquidity
+    source: morpho_public_allocator_pressure
+    type: next_selected_route
+    target: computational_liquidity
+    rationale: Problem selection moved from failed allocator transport to functional fallback capacity in solver competition.
+    evidence_refs:
+      - morpho_allocator_formal_result
+      - computational_liquidity_plan
+
+  - id: computational_to_verification_liquidity
+    source: computational_liquidity
+    type: next_selected_route
+    target: verification_liquidity
+    rationale: The outcome-blind D-minus-1 lesson from sparse CoW support was applied to the active verification-liquidity route.
+    evidence_refs:
+      - computational_liquidity_formal_result
+      - verification_liquidity_dminus1_result
+
+  - id: observation_to_partial_order
+    source: observation_quotient_response
+    type: next_selected_route
+    target: partial_order_hard_event_dynamics
+    rationale: Fresh selection activated the partial-order card only after every observation-quotient and coarse-graining exit closed.
+    evidence_refs:
+      - observation_quotient_formal_result
+      - partial_order_config
+
+  - id: partial_order_to_random_clock
+    source: partial_order_hard_event_dynamics
+    type: next_selected_route
+    target: random_clock_collision_dynamics
+    rationale: Fresh NCS and NMI screens selected an externally randomized waiting-time object after the unknown-order semantics card failed every frozen exit.
+    evidence_refs:
+      - partial_order_formal_result
+      - random_clock_selection
