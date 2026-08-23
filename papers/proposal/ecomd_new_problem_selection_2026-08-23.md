@@ -1,5 +1,10 @@
 # EcoMD new-problem selection after the partial-order closure — 2026-08-23
 
+**Terminal update (2026-08-24):** the sole activated card failed the frozen D-1 protocol/schema gate with zero
+of two required independently governed protocols. The AMBER selection below is historical, no reserve card is
+automatically promoted, and the binding result is
+`papers/proposal/ecomd_random_clock_collision_t0_result_2026-08-24.md`.
+
 **Decision:** no candidate is GREEN. Advance exactly one **AMBER / T0-only** question:
 
 > **Random-clock free-flight / hard-collision market dynamics:** can externally randomized matching times identify

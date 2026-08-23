@@ -1,6 +1,6 @@
 ---
 name: ecomd-random-clock-collision-t0-2026-08-23
-description: "Active AMBER/T0-only route: test whether externally randomized matching times identify an observable free-flight semigroup through a hard collision operator. Protocol/schema and reduction audit only; zero outcomes, paid data, EcoMD and GPU."
+description: "FAIL/RED at the outcome-blind D-1 protocol/schema gate: zero of two required independently governed clocks exposed the realized event, independent unit, sufficient synchronized pre/post state and empty collisions. No outcomes, paid data, implementation, EcoMD or GPU."
 metadata:
   node_type: memory
   type: project
@@ -16,27 +16,33 @@ randomized interval $\tau$. The target is the observable family $HCP_t$ and an i
 with explicit certification of collision-erased directions. This is not an unknown event-order problem and must
 not reuse linear extensions, linearizability, DPOR or the failed partial-order response-set claim.
 
-Current status is **AMBER / selected T0**, not a scientific pass. Planning priors are 10--18% for T0 survival
-and 2--5% for assembling a complete NCS package from the current starting point.
+The route **closed FAIL/RED at D-1 on 2026-08-24**. Zero of the two required independently governed protocols
+qualified, so the frozen first-failure rule stopped G0--G3 and the 40-work audit. The former 10--18% T0 and 2--5%
+complete-package priors are historical selection priors, not current probabilities.
 
-The first gate is outcome-blind protocol/schema feasibility. Two independently governed clocks must expose the
-actual realized draw or phase transition, the correct shared-clock cluster, empty collision events, sufficient
-pre/post state and collision semantics. AlphaX US is a high-frequency rule anchor, but its non-displayed book
-means public TRF trades do not qualify; a participant or exchange contract would have to expose the hidden Match
-Events. Xetra and HKEX random auction ends are lower-frequency candidates. Never count multiple securities under
-one system closing draw as independent units.
+The outcome-blind protocol/schema audit found no qualifying anchor. AlphaX US specifies a security-specific
+random Match Event rule, but public TRF prints expose neither empty events nor the hidden global book. Xetra T7
+14.1 emits a useful per-instrument state transition even without a trade, but the public rule does not certify the
+randomization cluster and enhanced auction transparency omits hidden state used by the AVD uncrossing. HKEX CAS
+draws one market-segment close per day; its second-resolution status channel is asynchronous to order/trade data,
+and FullTick withholds individual auction orders. Securities under the shared close are not replications.
 
-T0 then audits random-time Markov estimation, semigroup inverse problems, observability, irregular-time Koopman,
-continuous-treatment inference, randomized auction design and PDMP/kinetic collision theory. A standard rank
-condition, GMM/Koopman fit, conditional regression or importance reweighting is an immediate reduction failure.
+Because D-1 failed, T0 did not complete the 40-primary-work novelty minimum and makes no E1--E3 theorem verdict.
+A preliminary reduction check nevertheless warns that full-state random sampling begins with Duffie--Glynn,
+partial observation with observability quotients, flow-plus-jump dynamics with PDMP/hybrid processes and
+clock-law transport with conditional-response integration or reweighting. These are reopen warnings, not a
+literature-complete theorem audit.
 
-Resource boundary: ten calendar days, Mac CPU only, zero market outcomes, GPU hours, paid-data dollars and
-benchmark runs. No EcoMD training, synthetic rescue, proxy reconstruction of hidden clocks, venue substitution
-after failure or threshold relaxation.
+No market outcome, event-window statistic, paid/bulk dataset, benchmark, implementation, EcoMD fit/training or
+GPU was used. Reopen only under a new preregistration with two independently governed versioned access contracts
+that explicitly expose the event including empty events, clock cluster, sufficient synchronized pre/post state,
+relevant hidden matching parameters, timestamp precision and reproducible licensing. A generic full-book offer
+or paid-data purchase does not qualify.
 
 Artifacts:
 
 - Selection: `papers/proposal/ecomd_new_problem_selection_2026-08-23.md`
 - Freeze: `papers/proposal/ecomd_random_clock_collision_t0_freeze_2026-08-23.md`
 - Machine gate: `configs/empirical_physics/ecomd_random_clock_collision_t0_v1.yaml`
+- Formal result: `papers/proposal/ecomd_random_clock_collision_t0_result_2026-08-24.md`
 - Route graph: `.claude/memory/research_route_knowledge_graph.yaml`

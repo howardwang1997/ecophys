@@ -1,20 +1,24 @@
-schema_version: 1
+schema_version: 2
 
 graph:
   id: ecophys_research_routes
-  updated_at: "2026-08-23"
+  updated_at: "2026-08-24"
   scope:
-    start_date: "2026-08-09"
+    start_date: "2026-04-24"
     end_date: null
     granularity: route_level_decisions
-    completeness: core_routes_only
+    completeness: verified_terminal_routes_and_subroutes
     historical_backfill_complete: false
     notes:
-      - This graph covers core route-level decisions from 2026-08-09 onward.
-      - Intermediate transport attempts, experiment-level failures, and pre-2026-08-09 branches are not exhaustively backfilled.
+      - This graph covers verified terminal route and independent subroute decisions from 2026-04-24 onward, plus active routes needed to preserve current lineage.
+      - Historical backfill remains non-exhaustive; parked hypotheses, invalid runs, single ablations, transport failures, and routes without a formal terminal decision are intentionally excluded.
+      - Cross-branch evidence is pinned to immutable commits and validated offline; a moving branch name is provenance, not the evidence identity.
       - Markdown memories remain narrative evidence; this file is the canonical machine-readable route registry for its declared scope.
 
 schema:
+  allowed_node_types:
+    - research_route
+    - research_subroute
   allowed_statuses:
     - candidate
     - active
@@ -32,6 +36,7 @@ schema:
     - present
     - missing_legacy
     - external
+    - git_ref
   node:
     required_fields:
       - id
@@ -62,8 +67,1170 @@ schema:
       - id
       - kind
       - availability
+    availability_fields:
+      present:
+        - path
+      missing_legacy:
+        - path
+        - note
+      external:
+        - uri
+      git_ref:
+        - ref
+        - commit
+        - path
 
 nodes:
+  - id: mace_lite_v1_architecture
+    node_type: research_subroute
+    title: MACE-lite v1 learned-potential architecture
+    status: failed_closed
+    opened_at: "2026-04-24"
+    closed_at: "2026-04-24"
+    phase: architecture_ablation
+    terminal_gate: force_scale_and_stylized_fact_fidelity
+    failure_codes:
+      - zero_to_four_of_eleven_fidelity
+      - force_magnitude_sixty_to_one_hundred_ninety_times_too_small
+      - biased_knn_lost_long_range_pair_signal
+    summary: MACE-lite v1 failed across eight ablations because nodewise readout over-smoothed the force and biased k-nearest-neighbour sparsification removed long-range pair information.
+    evidence:
+      - id: mace_v1_failure_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_mace_lite_failure.md
+    artifacts:
+      - id: mace_v1_ablation_result
+        kind: formal_result
+        availability: present
+        path: experiments/008_ecomd_v1_ablation/results/ablation_summary.md
+      - id: mace_v1_force_probe_result
+        kind: formal_result
+        availability: present
+        path: experiments/018_force_probe/results/force_magnitude_table.md
+    reusable_assets:
+      - force_magnitude_preflight
+      - stochastic_pair_sampling_replacement
+      - immutable_failed_architecture_fixture
+    reopen_conditions:
+      - A new learned-potential module must remove both diagnosed causes and pass a force-ratio smoke gate before any remote run.
+    forbidden_actions:
+      - Do not rerun the v1 architecture or edit it into a nominally new model.
+      - Do not spend accelerator time before the force-magnitude preflight passes.
+
+  - id: tier42_stylized_fidelity_breakthrough_claim
+    node_type: research_subroute
+    title: Tier 4.2 nine-of-eleven stylized-fidelity breakthrough claim
+    status: failed_closed
+    opened_at: "2026-04-29"
+    closed_at: "2026-05-04"
+    phase: m3_fidelity
+    terminal_gate: multiseed_uncontaminated_stylized_fidelity
+    failure_codes:
+      - best_seed_lottery
+      - multiseed_mean_near_five_of_eleven
+      - ar1_return_drift_contamination
+      - stylized_fact_credit_invalid
+    summary: The headline nine-of-eleven Tier 4.2 score was a best-seed result; the broad multiseed mean stayed near five and the return autocorrelation credit was contaminated by a structural AR(1) drift.
+    evidence:
+      - id: tier42_closure_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_arch_state_2026-05-04.md
+      - id: tier42_ar1_memory
+        kind: diagnostic_memory
+        availability: present
+        path: .claude/memory/project_ar1_drift_artifact.md
+    artifacts:
+      - id: tier42_ar1_formal_result
+        kind: formal_result
+        availability: present
+        path: experiments/067_ar1_diagnostics/ar1_full_summary.md
+      - id: tier42_residual_result
+        kind: formal_result
+        availability: present
+        path: experiments/067_ar1_diagnostics/ar1_residual_analysis.md
+    reusable_assets:
+      - tier42_multiseed_protocol
+      - ar1_whitening_diagnostic
+      - evaluator_contamination_guardrail
+    reopen_conditions:
+      - A renewed fidelity claim needs repaired state semantics, a frozen evaluator, multiseed means and confidence intervals rather than a selected seed.
+    forbidden_actions:
+      - Do not present a single Tier 4.2 seed scoring nine or ten facts as population fidelity.
+      - Do not award an autocorrelation pass without the AR(1)-residual audit.
+
+  - id: ecomd_beats_learned_baselines_claim
+    node_type: research_subroute
+    title: EcoMD globally outperforms learned generative baselines
+    status: failed_closed
+    opened_at: "2026-05-15"
+    closed_at: "2026-05-26"
+    phase: paper_a_baseline_gate
+    terminal_gate: common_fact_multiseed_baseline_advantage
+    failure_codes:
+      - trajcast_and_wgan_won_spx_or_ndx
+      - global_best_cell_was_a_baseline
+      - original_five_seed_claim_did_not_replicate
+    summary: The n=30 common-ten-fact comparison refuted the broad claim that EcoMD beat every learned baseline; TrajCast or WGAN won on SPX and NDX and the best global cell was a baseline.
+    evidence:
+      - id: baseline_claim_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_pareto_ceiling.md
+    artifacts:
+      - id: baseline_claim_formal_result
+        kind: formal_result
+        availability: present
+        path: experiments/095b_baselines_n30/baseline_vs_ecomd_10fact.md
+    reusable_assets:
+      - matched_common_fact_table
+      - multiseed_baseline_protocol
+      - asset_specific_capability_comparison
+    reopen_conditions:
+      - A new model must beat frozen strong baselines on untouched assets with multiplicity control and identical observables.
+    forbidden_actions:
+      - Do not state a global EcoMD baseline advantage from the five-seed screen.
+      - Do not mix EcoMD-only volume facts into a common-observable superiority claim.
+
+  - id: paper_a_memory_kernel_track
+    node_type: research_subroute
+    title: Paper A non-Markov memory-kernel solve track
+    status: failed_closed
+    opened_at: "2026-05-21"
+    closed_at: "2026-05-26"
+    phase: track_a
+    terminal_gate: significant_multiseed_frontier_improvement
+    failure_codes:
+      - best_mean_five_of_eleven
+      - nonsignificant_against_baseline
+      - no_hidden_operating_point
+    summary: The frozen memory-kernel sweep reached 5.00/11 at n=28 but was not significantly above baseline and exposed no hidden operating point, so Track A was formally demoted and closed.
+    evidence:
+      - id: memk_track_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_paper_a_neurips_2027.md
+    artifacts:
+      - id: memk_track_formal_result
+        kind: formal_result
+        availability: present
+        path: logs/2026-05-26.md
+    reusable_assets:
+      - memory_kernel_implementation
+      - multiseed_operating_point_sweep
+    reopen_conditions:
+      - A materially different memory architecture must specify a new mechanism and pass a preregistered significance gate on untouched seeds.
+    forbidden_actions:
+      - Do not select the top memory-kernel cell as evidence of improvement without the null result.
+      - Do not rerun the same hyperparameter family to search for a significant cell.
+
+  - id: explicit_objective_coverage_path_a
+    node_type: research_subroute
+    title: Explicit per-fact objective coverage breaks the fidelity ceiling
+    status: failed_closed
+    opened_at: "2026-05-27"
+    closed_at: "2026-05-29"
+    phase: path_a_exp107
+    terminal_gate: preregistered_bonferroni_improvement
+    failure_codes:
+      - objective_coverage_p_value_point_eight_one
+      - no_score_improvement
+      - fixed_mechanism_ceiling_not_broken
+    summary: Experiment 107 gave explicit long-rollout per-fact objectives their valid preregistered test, but the full objective cell was indistinguishable from baseline at p=0.81 and did not break the ceiling.
+    evidence:
+      - id: objective_coverage_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_paper_a_neurips_2027.md
+    artifacts:
+      - id: objective_coverage_formal_result
+        kind: formal_result
+        availability: present
+        path: experiments/107_multifact_longroll_n30/scoreboard.md
+    reusable_assets:
+      - differentiable_per_fact_surrogates
+      - long_rollout_objective_protocol
+      - multiplicity_controlled_gate
+    reopen_conditions:
+      - Reopening requires a new mechanism class rather than new loss weights on the same fixed dynamics.
+    forbidden_actions:
+      - Do not cite invalid Experiment 102 as the falsification; Experiment 107 is the valid terminal test.
+      - Do not tune further per-fact weights on the spent Experiment 107 seeds.
+
+  - id: beyond_langevin_solve_tournament
+    node_type: research_subroute
+    title: Broad neural-SDE, mixture and diffusion solve tournament
+    status: failed_closed
+    opened_at: "2026-05-29"
+    closed_at: "2026-06-01"
+    phase: path_b_tournament
+    terminal_gate: break_five_fact_architectural_ceiling
+    failure_codes:
+      - all_families_remained_near_five_fact_ceiling
+      - neural_sde_destroyed_clustering
+      - diffusion_and_mixture_failed_joint_dynamics
+    summary: The preregistered broad tournament across MMD, mixture, stochastic-volatility, neural-SDE and diffusion families produced distinct failure corners but no architecture that broke the joint tail-and-dynamics ceiling.
+    evidence:
+      - id: solve_tournament_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_neural_sde_tournament.md
+    artifacts:
+      - id: tournament_neural_sde_result
+        kind: formal_result
+        availability: present
+        path: experiments/108_neural_sde_scout/scoreboard.md
+      - id: tournament_tail_attack_result
+        kind: formal_result
+        availability: present
+        path: experiments/109_tail_attack/scoreboard.md
+      - id: tournament_moe_result
+        kind: formal_result
+        availability: present
+        path: experiments/110_moe_tournament/scoreboard.md
+      - id: solve_tournament_formal_result
+        kind: formal_result
+        availability: present
+        path: experiments/111_diffusion/scoreboard.md
+    reusable_assets:
+      - architecture_tournament_runner
+      - failure_corner_map
+      - tails_xor_dynamics_diagnostic
+    reopen_conditions:
+      - A successor must introduce a mechanistically distinct state or interaction layer and predeclare a joint tail-and-dynamics gate.
+    forbidden_actions:
+      - Do not call the best tournament cell a solve based on pass-count parity.
+      - Do not rerun the same families under post-hoc loss or seed selection.
+
+  - id: first_differentiable_langevin_market_claim
+    node_type: research_subroute
+    title: Broad first differentiable or Langevin market-simulator novelty claim
+    status: failed_closed
+    opened_at: "2026-04-24"
+    closed_at: "2026-06-03"
+    phase: paper_a_novelty_audit
+    terminal_gate: broad_first_claim_prior_art
+    failure_codes:
+      - langevin_market_prior_art
+      - differentiable_abm_prior_art
+      - differentiable_financial_simulator_prior_art
+    summary: A primary-literature audit falsified every broad first differentiable or first Langevin market-simulator formulation; only narrower implementation and mechanism-decomposition claims survived.
+    evidence:
+      - id: differentiable_prior_art_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/reference_differentiable_priorart.md
+    artifacts:
+      - id: differentiable_claim_formal_result
+        kind: formal_audit
+        availability: present
+        path: logs/2026-06-03.md
+    reusable_assets:
+      - verified_prior_art_map
+      - narrow_md_style_positioning
+    reopen_conditions:
+      - A new novelty claim must name a precise object absent from the audited differentiable-ABM and Langevin-market literature.
+    forbidden_actions:
+      - Do not use broad first differentiable market simulator wording.
+      - Do not use broad first Langevin market model wording.
+
+  - id: composition_beats_sota_gate
+    node_type: research_subroute
+    title: Concave-impact plus stochastic-volatility composition beats SOTA
+    status: failed_closed
+    opened_at: "2026-06-03"
+    closed_at: "2026-06-09"
+    phase: g1_exp115_exp119
+    terminal_gate: exceed_frozen_five_point_nine_six_champion
+    failure_codes:
+      - composition_gate_failed
+      - pooled_champion_four_point_nine_below_five_point_nine_six
+      - stochastic_volatility_did_not_compose
+    summary: Experiments 115 and 119 failed the frozen composition gate twice; the pooled champion scored 4.90 below the 5.96 comparator and the stochastic-volatility component did not add cleanly.
+    evidence:
+      - id: composition_gate_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_paper_a_neurips_2027.md
+    artifacts:
+      - id: composition_gate_formal_result
+        kind: formal_result
+        availability: present
+        path: experiments/115_composition/g1_verdict.json
+      - id: composition_champion_formal_result
+        kind: formal_result
+        availability: present
+        path: experiments/119_champion_confirm/scoreboard.md
+    reusable_assets:
+      - frozen_composition_gate
+      - cross_asset_champion_protocol
+    reopen_conditions:
+      - A new composition must predict non-overlapping corrected errors and pass on untouched assets against the frozen comparator.
+    forbidden_actions:
+      - Do not re-chase the concave-impact plus stochastic-volatility composition.
+      - Do not compare a selected seed against the 5.96 multiseed champion.
+
+  - id: paper_b_criticality_fss
+    node_type: research_subroute
+    title: Finite-size criticality and Nature Physics fork
+    status: failed_closed
+    opened_at: "2026-06-03"
+    closed_at: "2026-06-09"
+    phase: exp116_exp120
+    terminal_gate: intrinsic_transition_under_finite_size_scaling
+    failure_codes:
+      - smooth_crossover_not_critical_point
+      - transition_failed_to_sharpen_with_size
+      - train_at_n_did_not_rescue_interpretation
+    summary: The finite-size sweep and train-at-N control showed a smooth aggregate-flow crossover rather than a sharpening intrinsic transition, closing the Paper B criticality and Nature Physics fork.
+    evidence:
+      - id: criticality_fss_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_neural_sde_tournament.md
+    artifacts:
+      - id: criticality_fss_formal_result
+        kind: formal_result
+        availability: present
+        path: logs/2026-06-09.md
+    reusable_assets:
+      - finite_size_scaling_scorer
+      - train_at_n_control
+      - crossover_diagnostic
+    reopen_conditions:
+      - Reopen only with a new order parameter and an untouched scale range showing preregistered sharpening and collapse.
+    forbidden_actions:
+      - Do not call the observed smooth crossover a critical point.
+      - Do not revive the Nature Physics fork from Experiment 116 alone.
+
+  - id: concave_impact_stationary_cube_law_solve
+    node_type: research_subroute
+    title: Concave square-root impact solves the stationary cube law
+    status: failed_closed
+    opened_at: "2026-06-01"
+    closed_at: "2026-06-19"
+    phase: stationary_tail_solve
+    terminal_gate: warmup_free_stationary_heavy_tail
+    failure_codes:
+      - warmup_inclusive_hill_scoring
+      - apparent_in_band_tail_was_transient
+      - steady_state_tail_too_thin
+    summary: The apparent concave-impact solve in Experiments 113 and 114 depended on startup observations; trajectory rescoring and long-run controls moved the stationary tail far outside the cube-law band.
+    evidence:
+      - id: concave_stationary_solve_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_burnin_artifact.md
+    artifacts:
+      - id: concave_stationary_warmup_result
+        kind: formal_result
+        availability: present
+        path: experiments/123_driven_transient/r1_warmup_report.json
+      - id: concave_stationary_closure_result
+        kind: formal_result
+        availability: present
+        path: logs/2026-06-19.md
+    reusable_assets:
+      - concave_impact_module
+      - warmup_resolved_hill_scorer
+      - stationary_initialization_requirement
+    reopen_conditions:
+      - A successor needs a stationary heavy-tailed source, repaired initialization semantics and untouched multiseed confirmation.
+    forbidden_actions:
+      - Do not cite Experiments 113 or 114 as a stationary cube-law solve.
+      - Do not recover the claim by changing the warmup cutoff after observing the tail curve.
+
+  - id: empirical_tail_transfer_delta_validation
+    node_type: research_subroute
+    title: Empirical tail-transfer and derived delta validation
+    status: failed_closed
+    opened_at: "2026-06-13"
+    closed_at: "2026-06-18"
+    phase: phase0_burnin_audit
+    terminal_gate: warmup_robust_stationary_tail_law
+    failure_codes:
+      - cube_law_was_startup_transient
+      - warmup_discard_made_tail_too_thin
+      - project_wide_hill_score_included_burnin
+    summary: The mathematical tail-transfer identity remained reusable, but its empirical validation failed because the apparent excess-demand exponent near 1.5 existed only during startup, invalidating the claim that delta near one half was derived rather than fitted.
+    evidence:
+      - id: stationary_tail_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_burnin_artifact.md
+    artifacts:
+      - id: stationary_tail_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/paper_a_methods/burnin_artifact_finding_2026-06-18.md
+      - id: stationary_tail_blast_radius
+        kind: formal_audit
+        availability: present
+        path: papers/paper_a_methods/phase0_burnin_blastradius_2026-06-18.md
+    reusable_assets:
+      - warmup_sensitivity_curve
+      - trajectory_rescoring_protocol
+      - burnin_measurement_correction
+    reopen_conditions:
+      - A stationary tail claim requires frozen initialization or burn-in, long trajectories and untouched multiseed confirmation.
+    forbidden_actions:
+      - Do not report the burn-in-inclusive Hill estimate as a stationary law.
+      - Do not use the June concave-impact score as an uncontaminated cube-law solve.
+
+  - id: real_crash_transient_transfer
+    node_type: research_subroute
+    title: EcoMD driven-transient tail law transfers to real crashes
+    status: failed_closed
+    opened_at: "2026-06-18"
+    closed_at: "2026-06-19"
+    phase: ncs_gate_2
+    terminal_gate: real_crash_directional_replication
+    failure_codes:
+      - luna_tail_lightened
+      - ftx_effect_was_null
+      - expanded_five_crash_test_confirmed_negative
+    summary: The frozen real-crash test did not reproduce EcoMD's predicted tail thickening; Luna and Celsius significantly lightened while FTX was null, and the expanded five-event analysis removed the underpowered-rescue argument.
+    evidence:
+      - id: real_crash_transfer_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_burnin_artifact.md
+    artifacts:
+      - id: real_crash_transfer_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/paper_a_methods/stage3_realdata_pilot_2026-06-19.md
+      - id: real_crash_model_channel_result
+        kind: formal_result
+        availability: present
+        path: experiments/123_driven_transient/verdict_spx_jump.json
+      - id: real_crash_null_test_result
+        kind: formal_result
+        availability: present
+        path: experiments/123_driven_transient/null_test_report.json
+    reusable_assets:
+      - volatility_standardized_crash_test
+      - calm_period_null_distribution
+      - five_event_directional_gate
+    reopen_conditions:
+      - A new real-transfer hypothesis must specify another observable mechanism and use untouched events with a frozen directional test.
+    forbidden_actions:
+      - Do not sell the simulator transient as a real-market discovery.
+      - Do not retune the event set or tail window to reverse the failed direction.
+
+  - id: clt_on_excess_demand_mechanism
+    node_type: research_subroute
+    title: Central-limit self-averaging acts directly on excess demand
+    status: failed_closed
+    opened_at: "2026-06-29"
+    closed_at: "2026-06-30"
+    phase: exp125_mechanism_test
+    terminal_gate: excess_demand_tail_index_increases_with_system_size
+    failure_codes:
+      - excess_demand_tail_index_flat_across_n
+      - return_stage_not_excess_demand_stage_carried_scaling
+      - single_stage_clt_story_refuted
+    summary: Experiment 125 found the excess-demand tail index flat across N from 100 to 30000 while the return tail changed, refuting the single-stage CLT-on-excess-demand mechanism and replacing it with a two-stage interpretation.
+    evidence:
+      - id: clt_excess_demand_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_light_tail_rootcause.md
+    artifacts:
+      - id: clt_excess_demand_formal_result
+        kind: formal_result
+        availability: present
+        path: logs/2026-06-30.md
+    reusable_assets:
+      - system_size_tail_sweep
+      - raw_ed_return_stage_decomposition
+      - two_stage_scaling_hypothesis
+    reopen_conditions:
+      - A direct excess-demand CLT claim needs a new intervention that changes dependence length while holding the nonlinear return stage fixed.
+    forbidden_actions:
+      - Do not describe Experiment 125 as evidence that CLT acts directly on excess demand.
+      - Do not collapse the observed two-stage mechanism back into the superseded headline.
+
+  - id: stody_short_paper_route
+    node_type: research_subroute
+    title: Standalone STODY EcoMD short paper
+    status: failed_closed
+    opened_at: "2026-08-07"
+    closed_at: "2026-08-09"
+    phase: workshop_claim_gate
+    terminal_gate: independent_four_page_scientific_burden
+    failure_codes:
+      - no_complete_current_manuscript
+      - insufficient_independent_dynamics_claim
+      - overlap_with_sim2science_audit
+    summary: The standalone STODY route was formally cancelled because it lacked a complete independent scientific claim and would fragment the defensible Sim2Science audit contribution.
+    evidence:
+      - id: stody_cancellation_memory
+        kind: closure_memory
+        availability: present
+        path: .claude/memory/project_workshop_submission_2026-08-07.md
+    artifacts:
+      - id: stody_cancellation_decision
+        kind: closure_decision
+        availability: present
+        path: papers/proposal/workshop_claim_gates_and_merge_plan_2026-08-07.md
+    reusable_assets:
+      - simulator_equation_description
+      - transparent_negative_audit_material
+    reopen_conditions:
+      - A standalone paper requires a genuinely independent frozen claim, complete results and a non-overlapping manuscript.
+    forbidden_actions:
+      - Do not revive the four-page STODY paper in its cancelled conceptual form.
+      - Do not split negative audit evidence across overlapping workshop submissions.
+
+  - id: theory_reduction_nmi_v1
+    node_type: research_subroute
+    title: Theory-reduction v1 NMI mechanism-excitation lead
+    status: failed_closed
+    opened_at: "2026-08-12"
+    closed_at: "2026-08-12"
+    phase: dual_track_v1
+    terminal_gate: irreducible_nmi_mechanism
+    failure_codes:
+      - nmi_no_survivor
+      - five_candidates_reduced_or_retired
+      - order_effect_reproduced_by_fixed_stochastic_operator
+    summary: The first dual-track search retired S1 through S5 and the narrowed NMI excitation lead; Experiment 144 showed ordinary stacked observability and a fixed-operator order-effect witness, while only a non-admitted NCS conjecture remained.
+    evidence:
+      - id: theory_v1_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/theory-exploration-nmi-ncs-v1
+        commit: ba437a7d89bef3c78b7789f1f1fee2e864d88919
+        path: .claude/memory/project_theory_exploration_nmi_ncs_v1.md
+    artifacts:
+      - id: theory_v1_formal_result
+        kind: formal_result
+        availability: git_ref
+        ref: refs/remotes/origin/theory-exploration-nmi-ncs-v1
+        commit: ba437a7d89bef3c78b7789f1f1fee2e864d88919
+        path: experiments/144_theory_reduction_witnesses/RESULTS.md
+    reusable_assets:
+      - typed_source_candidate_graph
+      - stacked_observability_control
+      - fixed_operator_order_effect_witness
+    reopen_conditions:
+      - A new NMI route must state an irreducible mechanism beyond the reductions and fixed-operator witness.
+    forbidden_actions:
+      - Do not promote the surviving contraction-envelope conjecture as a theorem or NMI result.
+      - Do not relabel Experiment 144 as evidence of hidden adaptive mechanism.
+
+  - id: theory_exploration_identification_v2
+    node_type: research_route
+    title: Dual-track target completeness and relaxation-envelope v2
+    status: failed_closed
+    opened_at: "2026-08-12"
+    closed_at: "2026-08-12"
+    phase: dual_track_v2
+    terminal_gate: ncs_c0_identification
+    failure_codes:
+      - nmi_no_survivor
+      - ncs_c0_fail_identification
+      - finite_path_reproducible_by_fixed_hidden_state
+    summary: The v2 route preserved every v1 retirement and failed NCS identification because fixed non-adaptive hidden state can exceed the declared relaxation envelope or reproduce any bounded finite path.
+    evidence:
+      - id: theory_v2_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/theory-exploration-nmi-ncs-v2
+        commit: accdbf6d2bbd2197801ad310954b40fffec01510
+        path: .claude/memory/project_theory_exploration_nmi_ncs_v2.md
+    artifacts:
+      - id: theory_v2_formal_result
+        kind: formal_result
+        availability: git_ref
+        ref: refs/remotes/origin/theory-exploration-nmi-ncs-v2
+        commit: accdbf6d2bbd2197801ad310954b40fffec01510
+        path: experiments/145_relaxation_exceedance_negative_controls/RESULTS.md
+    reusable_assets:
+      - target_task_prior_art_map
+      - attribution_counterexamples
+      - validated_rule_metadata
+    reopen_conditions:
+      - Reopen only with an identified target that distinguishes adaptation from all admissible fixed hidden-state alternatives.
+    forbidden_actions:
+      - Do not interpret rejection of the selected model class as identification of adaptation.
+      - Do not unlock data or GPU work under the closed v2 certificate.
+
+  - id: theory_exploration_equation_audit_v3
+    node_type: research_route
+    title: Controlled state-closure and long-horizon operator search v3
+    status: failed_closed
+    opened_at: "2026-08-12"
+    closed_at: "2026-08-13"
+    phase: dual_track_v3
+    terminal_gate: equation_level_novelty
+    failure_codes:
+      - v3_no_survivor
+      - state_closure_reduced_to_predictive_state_prior_art
+      - memory_and_operator_methods_occupied
+      - omitted_state_not_repaired_by_long_horizon_calibration
+    summary: State closure, semigroup memory and Poisson-weighted calibration reduced to established predictive-state, Mori-Zwanzig, Stein, Koopman and invariant-measure methods; a noisy-XOR witness showed long-horizon calibration cannot repair missing state.
+    evidence:
+      - id: theory_v3_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/theory-exploration-nmi-ncs-v3
+        commit: 8283e77f75e1b4c1b11fe805db00159c25fb0812
+        path: .claude/memory/project_theory_exploration_nmi_ncs_v3.md
+    artifacts:
+      - id: theory_v3_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/theory-exploration-nmi-ncs-v3
+        commit: 8283e77f75e1b4c1b11fe805db00159c25fb0812
+        path: research/theory_exploration/formal_cards_v3.md
+    reusable_assets:
+      - one_hundred_thirty_five_node_prior_art_graph
+      - noisy_xor_missing_state_witness
+      - equation_reduction_cards
+    reopen_conditions:
+      - A successor must survive equation-level reduction and the missing-state counterexample before experiments.
+    forbidden_actions:
+      - Do not claim a new closure, memory or operator method from the audited components.
+      - Do not run the cancelled Experiment 146 under the v3 claim.
+
+  - id: phenomenon_first_audit_v4
+    node_type: research_route
+    title: Phenomenon-first human and LLM market comparison search v4
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: phenomenon_first_v4
+    terminal_gate: unoccupied_phenomenon_and_witness
+    failure_codes:
+      - v4_no_survivor
+      - broad_response_spectrum_occupied
+      - no_randomized_memory_replay_witness
+      - surrogate_interference_extension_reducible
+    summary: Broad human/LLM response spectra and matched-protocol comparisons were occupied, while no free randomized memory-erasure or replay dataset supplied an independent witness; the narrower interference extension was only a composition of existing frameworks.
+    evidence:
+      - id: phenomenon_v4_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/phenomenon-first-nmi-ncs-v4
+        commit: 268050126fda8276797f20fbca2f61bb112ca4c1
+        path: .claude/memory/project_phenomenon_first_nmi_ncs_v4.md
+    artifacts:
+      - id: phenomenon_v4_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/phenomenon-first-nmi-ncs-v4
+        commit: 268050126fda8276797f20fbca2f61bb112ca4c1
+        path: research/theory_exploration/phenomenon_audit_v4.md
+    reusable_assets:
+      - phenomenon_prior_art_map
+      - explicit_no_witness_registry
+      - matched_protocol_design_controls
+    reopen_conditions:
+      - Reopen only with a prospective randomized witness and a phenomenon not reducible to the audited comparison frameworks.
+    forbidden_actions:
+      - Do not open human, API or purchased-data outcomes under the closed v4 framing.
+      - Do not present commensurability discipline as a Nature-level phenomenon.
+
+  - id: market_rule_feedback_v5
+    node_type: research_route
+    title: Endogenous annual market-rule feedback v5
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: generated_identification_preflight
+    terminal_gate: blind_metadata_scale_power_and_type_one_error
+    failure_codes:
+      - v5_no_survivor
+      - nine_of_sixteen_cells_passed
+      - rounded_null_over_rejected
+      - all_five_percent_effect_cells_underpowered
+    summary: The NMI prior-art route closed and the NCS generated preflight passed only nine of sixteen cells; the blind metadata-supported scale failed both type-I and 80-percent power gates without opening market outcomes.
+    evidence:
+      - id: market_rule_v5_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/endogenous-market-rule-feedback-v5
+        commit: efe14ad44a0ce208d082672e2c2f7d55de119606
+        path: .claude/memory/project_endogenous_market_rule_feedback_v5.md
+    artifacts:
+      - id: market_rule_v5_formal_result
+        kind: formal_result
+        availability: git_ref
+        ref: refs/remotes/origin/endogenous-market-rule-feedback-v5
+        commit: efe14ad44a0ce208d082672e2c2f7d55de119606
+        path: experiments/148_generated_market_rule_feedback_rd_serial/RESULTS.md
+    reusable_assets:
+      - statutory_rule_clock
+      - esma_fca_metadata_contract
+      - generated_power_and_type_one_preflight
+    reopen_conditions:
+      - A new design must meet frozen power and calibration gates at its prospectively supported sample scale.
+    forbidden_actions:
+      - Do not open real FITRS or market outcomes to rescue the failed design.
+      - Do not treat the generated failure as evidence that the real feedback mechanism is absent.
+
+  - id: algorithmic_fee_market_v6
+    node_type: research_route
+    title: Algorithmic execution and blob-fee controller dynamics v6
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: identifiability_audit
+    terminal_gate: behavioral_response_identifiability
+    failure_codes:
+      - v6_no_survivor_identifiability
+      - normalized_controller_alias
+      - regime_specific_dynamics_restore_equivalence
+      - no_falsifiable_invariance_contract
+    summary: Exact controller conformance and repaired alias/rank controls passed, but scale-normalized controller aliases and unrestricted regime-specific demand dynamics restored observational equivalence, leaving no identified response or replication route.
+    evidence:
+      - id: fee_market_v6_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/algorithmic-fee-market-dynamics-v6
+        commit: fb0c7678f571d931d42ed1e081906e0ec51dbcae
+        path: .claude/memory/project_algorithmic_fee_market_dynamics_v6.md
+    artifacts:
+      - id: fee_market_v6_formal_closure
+        kind: closure_decision
+        availability: git_ref
+        ref: refs/remotes/origin/algorithmic-fee-market-dynamics-v6
+        commit: fb0c7678f571d931d42ed1e081906e0ec51dbcae
+        path: research/theory_exploration/fee_controller_identifiability_closure_v6.md
+    reusable_assets:
+      - official_controller_oracle
+      - scale_alias_negative_control
+      - base_topology_provenance
+    reopen_conditions:
+      - Reopen only with a falsifiable cross-regime invariance contract or a prospective non-proportional intervention with independent replication.
+    forbidden_actions:
+      - Do not infer behavioral response from controller conformance alone.
+      - Do not resurrect the permanently void Experiment 150.
+
+  - id: gauge_invariant_controller_v7
+    node_type: research_route
+    title: Gauge-invariant adaptive controller probes v7
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: quotient_probe_audit
+    terminal_gate: finite_probe_adaptation_identification
+    failure_codes:
+      - v7_no_survivor
+      - input_output_target_standard
+      - set_membership_geometry_standard
+      - fixed_transducer_matches_finite_probe_tree
+    summary: Standard input-output and set-membership reductions occupied the first two cards, while a fixed history-state transducer duplicated every finite randomized probe tree, defeating adaptation identification before outcomes.
+    evidence:
+      - id: gauge_v7_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/gauge-invariant-controller-probes-v7
+        commit: d4692733829cc24669ec79ce130344ff69fada82
+        path: .claude/memory/project_gauge_invariant_controller_probes_v7.md
+    artifacts:
+      - id: gauge_v7_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/gauge-invariant-controller-probes-v7
+        commit: d4692733829cc24669ec79ce130344ff69fada82
+        path: research/theory_exploration/gauge_invariant_probe_audit_v7.md
+    reusable_assets:
+      - quotient_factorization
+      - exact_drift_set_width
+      - fixed_probe_tree_transducer
+    reopen_conditions:
+      - A new route must observe information that no fixed hidden-memory transducer can reproduce under the admitted intervention tree.
+    forbidden_actions:
+      - Do not claim randomization alone identifies adaptation rather than fixed hidden memory.
+      - Do not run outcomes or workers under the closed probe cards.
+
+  - id: causal_memory_transplant_v8
+    node_type: research_route
+    title: Causal memory transplantation in agentic economies v8
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: observable_state_prior_art_audit
+    terminal_gate: irreducible_transplant_method_or_phenomenon
+    failure_codes:
+      - v8_no_survivor_prior_art
+      - memory_transplant_and_perturbation_occupied
+      - factorial_interaction_standard
+      - no_signed_economic_law
+    summary: Memory transplantation, perturbation and carry-over were direct prior art and the frozen source-by-capsule contrast reduced to a standard factorial interaction; strong shams survived only as design discipline.
+    evidence:
+      - id: memory_transplant_v8_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/observable-state-mechanism-search-v8
+        commit: c41576c846c7102acda54dae6f644f23c8935835
+        path: .claude/memory/project_causal_memory_transplant_v8.md
+    artifacts:
+      - id: memory_transplant_v8_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/observable-state-mechanism-search-v8
+        commit: c41576c846c7102acda54dae6f644f23c8935835
+        path: research/theory_exploration/causal_memory_transplant_audit_v8.md
+    reusable_assets:
+      - explicit_state_reset_audit
+      - sham_capsule_controls
+      - factorial_interaction_reduction
+    reopen_conditions:
+      - Reopen only with an observable state intervention and a nonstandard causal estimand surviving the audited transplant literature.
+    forbidden_actions:
+      - Do not present a standard source-by-capsule interaction as method novelty.
+      - Do not generate outcomes or use model APIs under the closed v8 claim.
+
+  - id: age_structured_liquidity_v9
+    node_type: research_route
+    title: Age-structured standing-liquidity recovery v9
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: scope_and_prior_art_audit
+    terminal_gate: signed_law_with_independent_witness
+    failure_codes:
+      - v9_no_survivor_scope_and_prior_art
+      - queue_survival_construction_occupied
+      - cancellation_execution_sign_ambiguous
+      - data_scope_lacked_by_date_replication
+    summary: Queue survival, lifecycle filtration, competing hazards and resilience prior art occupied the proposed construction; cancellation versus execution prevented a signed fragility law and available streams could not support independent by-date replication.
+    evidence:
+      - id: age_liquidity_v9_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/age-structured-liquidity-audit-v9
+        commit: 318ec521930a72af729f3c428a0dcfd809eec8f7
+        path: .claude/memory/project_age_structured_liquidity_v9.md
+    artifacts:
+      - id: age_liquidity_v9_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/age-structured-liquidity-audit-v9
+        commit: 318ec521930a72af729f3c428a0dcfd809eec8f7
+        path: research/theory_exploration/age_structured_liquidity_audit_v9.md
+    reusable_assets:
+      - queue_survival_source_map
+      - competing_risk_design_controls
+      - dataset_scope_floor
+    reopen_conditions:
+      - Reopen only with a prospectively signed mechanism and independent multi-day event replication.
+    forbidden_actions:
+      - Do not infer fragility sign from cancellation and execution pooled together.
+      - Do not fit hazards on the insufficient one-day streams as confirmation.
+
+  - id: prediction_market_coherence_v10
+    node_type: research_route
+    title: Prediction-market coherence relaxation law v10
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: intrinsic_observable_audit
+    terminal_gate: basis_invariant_market_logic_law
+    failure_codes:
+      - v10_no_survivor_nonintrinsic_and_prior_art
+      - local_correction_is_kaczmarz
+      - spectrum_changes_under_equivalent_row_basis
+      - certified_graph_scope_insufficient
+    summary: Coherent correction reduced to projection or Kaczmarz, and an invertible row-basis change preserved the payoff set while changing the local-correction spectrum, proving the proposed topology-only rate nonintrinsic.
+    evidence:
+      - id: prediction_coherence_v10_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/prediction-market-coherence-audit-v10
+        commit: 0ad0d59c27a811cb243b72e0707c5ecbc3be18f1
+        path: .claude/memory/project_prediction_market_coherence_v10.md
+    artifacts:
+      - id: prediction_coherence_v10_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/prediction-market-coherence-audit-v10
+        commit: 0ad0d59c27a811cb243b72e0707c5ecbc3be18f1
+        path: research/theory_exploration/prediction_market_coherence_audit_v10.md
+    reusable_assets:
+      - equivalent_basis_counterexample
+      - certified_graph_data_boundary
+      - executable_depth_prior_art_map
+    reopen_conditions:
+      - A successor must define an invariant observable and a certified nontrivial event graph before collecting prices.
+    forbidden_actions:
+      - Do not interpret a basis-dependent spectrum as intrinsic market logic.
+      - Do not manually construct a semantic graph and call it platform-certified.
+
+  - id: multi_stationary_drift_tomography_v11
+    node_type: research_route
+    title: Multi-stationary drift tomography v11
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: conjecture_boundary
+    terminal_gate: theorem_and_method_admission
+    failure_codes:
+      - v11_conjecture_only
+      - ordinary_estimator_route_prior_art
+      - global_environment_count_interpretation_false
+      - no_data_or_method_survivor
+    summary: Exact audits confirmed full-rank recovery and several obstructions, but the ordinary method route was occupied and only a narrow closed-manifold density-ratio obstruction remained conjectural; a circle witness defeated the global count reading.
+    evidence:
+      - id: drift_tomography_v11_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/multi-stationary-drift-tomography-audit-v11
+        commit: 0abd99131b02e4841b7104788ba998cf192952bd
+        path: .claude/memory/project_multi_stationary_drift_tomography_v11.md
+    artifacts:
+      - id: drift_tomography_v11_formal_result
+        kind: formal_result
+        availability: git_ref
+        ref: refs/remotes/origin/multi-stationary-drift-tomography-audit-v11
+        commit: 0abd99131b02e4841b7104788ba998cf192952bd
+        path: experiments/152_multi_stationary_drift_tomography/RESULTS.md
+      - id: drift_tomography_v11_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/multi-stationary-drift-tomography-audit-v11
+        commit: 0abd99131b02e4841b7104788ba998cf192952bd
+        path: research/theory_exploration/multi_stationary_drift_tomography_audit_v11.md
+    reusable_assets:
+      - ambiguity_current_criterion
+      - rank_obstruction_fixtures
+      - density_ratio_geometry
+    reopen_conditions:
+      - Reopen only after proving the narrow obstruction and identifying a method not reduced to the audited estimators.
+    forbidden_actions:
+      - Do not present the remaining obstruction as a theorem.
+      - Do not convert the failed global count interpretation into an environment requirement.
+
+  - id: solenoidal_excitation_gap_v12
+    node_type: research_route
+    title: Global drift identifiability and solenoidal excitation gap v12
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: theorem_only_boundary
+    terminal_gate: admitted_method_actuator_and_real_mechanism
+    failure_codes:
+      - v12_theorem_only
+      - stable_design_routes_occupied
+      - no_feasible_actuator
+      - no_stationary_sample_method_or_market_route
+    summary: The route proved exact and unstable identification regimes plus a sharp fold modulus, but known localization, inverse-PDE and immersion tools occupied the design exits and no feasible actuator, estimator or real mechanism survived.
+    evidence:
+      - id: solenoidal_v12_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/global-drift-identifiability-gap-audit-v12
+        commit: 557e0e94c8739a10533e77263bc61f4658b1ec5e
+        path: .claude/memory/project_solenoidal_excitation_gap_v12.md
+    artifacts:
+      - id: solenoidal_v12_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/global-drift-identifiability-gap-audit-v12
+        commit: 557e0e94c8739a10533e77263bc61f4658b1ec5e
+        path: research/theory_exploration/solenoidal_excitation_gap_audit_v12.md
+    reusable_assets:
+      - solenoidal_ambiguity_theorem
+      - sharp_fold_modulus
+      - localized_current_construction
+    reopen_conditions:
+      - A successor must add a feasible actuator or stationary-sample method and an admitted real mechanism beyond the theorem.
+    forbidden_actions:
+      - Do not label the theorem-only outcome an NMI or NCS route pass.
+      - Do not run the unregistered Experiment 154 under the closed route.
+
+  - id: prospective_agent_market_v13
+    node_type: research_route
+    title: Prospective algorithmic-agent market mechanism scout v13
+    status: failed_closed
+    opened_at: "2026-08-13"
+    closed_at: "2026-08-13"
+    phase: common_observable_audit
+    terminal_gate: sealed_pre_post_observable_and_replication
+    failure_codes:
+      - v13_no_common_observable
+      - pre_post_clock_and_selection_mismatch
+      - losing_payload_and_private_flow_unobserved
+      - no_sealed_isomorphic_replication
+    summary: The ePBS-centered scout failed before experimentation because pre- and post-rule bids have incompatible clocks and selection, key private state is absent, and CoW or Jito do not supply a sealed isomorphic replication.
+    evidence:
+      - id: prospective_agents_v13_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/prospective-agent-market-mechanism-scout-v13
+        commit: 03bb964429ab3674b2c1c6c8a01c74252811d0fc
+        path: .claude/memory/project_prospective_agent_market_mechanisms_v13.md
+    artifacts:
+      - id: prospective_agents_v13_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/prospective-agent-market-mechanism-scout-v13
+        commit: 03bb964429ab3674b2c1c6c8a01c74252811d0fc
+        path: research/theory_exploration/prospective_agent_market_audit_v13.md
+    reusable_assets:
+      - protocol_clock_audit
+      - relay_selection_identification_controls
+      - empty_slot_equivalence_witness
+    reopen_conditions:
+      - Reopen only after deployment supplies a common pre/post observable and an untouched sealed independent replication.
+    forbidden_actions:
+      - Do not treat missing bids or empty slots as identified strategic withholding.
+      - Do not launch Experiment 155 without a new frozen observable contract.
+
+  - id: uniswap_preperiod_exposure_support_v14
+    node_type: research_subroute
+    title: Uniswap V3 pre-period behavioral exposure support
+    status: failed_closed
+    opened_at: "2026-08-15"
+    closed_at: "2026-08-15"
+    phase: v14_u1r_population_census
+    terminal_gate: distributed_preperiod_exposure_support
+    failure_codes:
+      - fail_full_preperiod_exposure_support
+      - swap_event_count_concentration_above_cap
+      - controls_and_behavioral_panel_locked
+    summary: The exact 1,000-pool census passed ten of eleven gates but one pool supplied 30.096 percent of swaps, above the frozen 25-percent concentration cap, retiring Uniswap as a behavioral M3 route while preserving exact M2 use.
+    evidence:
+      - id: uniswap_v14_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: 6e71239366b1b1f64006a1cfc2cc563d13b9423e
+        path: .claude/memory/project_economic_world_model_lucas_test_v14.md
+    artifacts:
+      - id: uniswap_v14_formal_result
+        kind: formal_result
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: 6e71239366b1b1f64006a1cfc2cc563d13b9423e
+        path: experiments/v14_uniswap_v3_preperiod_exposure_census/RESULTS.md
+    reusable_assets:
+      - exact_uniswap_transition_operator
+      - full_population_exposure_counts
+      - channel_specific_routing_diagnostics
+    reopen_conditions:
+      - A behavioral Uniswap route requires a separately frozen population and control design not tuned to the exposed concentration result.
+    forbidden_actions:
+      - Do not top up or threshold-relax U1R.
+      - Do not open U2, participant responses or GPU work under the failed support gate.
+
+  - id: compound_supply_cap_activation_v14
+    node_type: research_subroute
+    title: Compound III supply-cap activation causal route
+    status: failed_closed
+    opened_at: "2026-08-15"
+    closed_at: "2026-08-16"
+    phase: v14_d1a_activation_preflight
+    terminal_gate: exact_t_minus_one_supply_cap_saturation
+    failure_codes:
+      - no_exact_t_minus_one_saturation
+      - no_candidate_saturated_at_any_frozen_lookback
+      - participant_level_estimand_not_enumerable
+    summary: The source-verified 105-operation preflight found no exact T-minus-one saturation in any of four candidates or twenty-four lookbacks, formally retiring the Compound M3 causal route despite near-boundary diagnostics.
+    evidence:
+      - id: compound_v14_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: 538f109c0b4ceb09b8d363aa9d9dbf3973bca2bf
+        path: .claude/memory/project_economic_world_model_lucas_test_v14.md
+    artifacts:
+      - id: compound_v14_formal_result
+        kind: formal_result
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: 538f109c0b4ceb09b8d363aa9d9dbf3973bca2bf
+        path: experiments/v14_compound_v3_supply_cap_activation_preflight/RESULTS_V2.md
+    reusable_assets:
+      - source_matched_compound_implementations
+      - historical_state_integrity_protocol
+      - hard_constraint_boundary_diagnostics
+    reopen_conditions:
+      - A new cross-protocol hard-boundary study needs a new protocol and untouched events; the exact-saturation threshold remains immutable for this route.
+    forbidden_actions:
+      - Do not relax exact saturation to rescue near-boundary values.
+      - Do not open Compound participant rows, D1b, G1 or GPU training.
+
+  - id: aave_scalar_lt_shock_v14
+    node_type: research_subroute
+    title: Aave V3 isolated scalar liquidation-threshold shock
+    status: failed_closed
+    opened_at: "2026-08-16"
+    closed_at: "2026-08-16"
+    phase: v14_a1a_event_directory
+    terminal_gate: strict_isolated_lt_decrease_support
+    failure_codes:
+      - zero_strict_isolated_candidates
+      - all_emitted_lt_decreases_bundled
+      - source_fix_did_not_change_zero_support
+    summary: The exhaustive Ethereum directory found four emitted LT-only decreases, but all occurred inside two transactions with thirteen or sixteen configurator logs; correcting the initial-upgrade assumption left zero strict candidates and retired the scalar-LT route.
+    evidence:
+      - id: aave_lt_v14_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: 1241ecb842437f77b061ef75ef934de2d1e4da43
+        path: .claude/memory/project_economic_world_model_lucas_test_v14.md
+    artifacts:
+      - id: aave_lt_v14_formal_result
+        kind: formal_result
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: 1241ecb842437f77b061ef75ef934de2d1e4da43
+        path: experiments/v14_aave_v3_lt_event_directory/RESULTS.md
+    reusable_assets:
+      - source_corrected_aave_version_directory
+      - bundled_policy_vector_rows
+      - transaction_isolation_gate
+    reopen_conditions:
+      - A new route must use a newly frozen cross-deployment strict directory or explicitly model bundled vector shocks.
+    forbidden_actions:
+      - Do not relax transaction isolation or run A1b on the exposed Ethereum directory.
+      - Do not interpret a bundled policy program as independent scalar LT causality.
+
+  - id: estir_standalone_evm_ir_claim_v14
+    node_type: research_subroute
+    title: Standalone ESTIR EVM-semantics and intermediate-representation claim
+    status: failed_closed
+    opened_at: "2026-08-17"
+    closed_at: "2026-08-17"
+    phase: v14_estir_prior_art
+    terminal_gate: standalone_semantics_or_ir_novelty
+    failure_codes:
+      - executable_evm_semantics_occupied
+      - bytecode_ir_occupied
+      - trace_infrastructure_occupied
+      - only_normalized_evidence_vocabulary_survived
+    summary: The primary-source audit found executable EVM semantics, analyzable bytecode IR and call/state trace infrastructure already occupied, cancelling ESTIR as a standalone contribution while retaining it as internal evidence vocabulary.
+    evidence:
+      - id: estir_v14_closure_memory
+        kind: closure_memory
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: a60b019703f42823767f21937dbda1266cb06a0a
+        path: .claude/memory/project_economic_world_model_lucas_test_v14.md
+    artifacts:
+      - id: estir_v14_formal_audit
+        kind: formal_audit
+        availability: git_ref
+        ref: refs/remotes/origin/economic-world-model-lucas-test-scout-v14
+        commit: a60b019703f42823767f21937dbda1266cb06a0a
+        path: papers/proposal/v14_estir_prior_art_and_scope_decision_2026-08-17.md
+    reusable_assets:
+      - normalized_execution_evidence_vocabulary
+      - trace_hash_fixture
+      - provider_adapter_scope_controls
+    reopen_conditions:
+      - Reopen only with an irreducible research object beyond established EVM semantics, IR and tracing systems.
+    forbidden_actions:
+      - Do not implement known EVM semantics or IR capabilities as a research novelty claim.
+      - Do not promote ESTIR beyond internal evidence normalization without a new audit.
+
   - id: ncs_invariant_calibration_v4
     node_type: research_route
     title: NCS invariant-measure and long-horizon calibration
@@ -571,6 +1738,14 @@ nodes:
         kind: frozen_protocol
         availability: present
         path: papers/proposal/dependabot_cooldown_verification_liquidity_d0_freeze_2026-08-21.md
+      - id: verification_liquidity_active_audit
+        kind: formal_audit
+        availability: present
+        path: papers/proposal/dependabot_cooldown_verification_liquidity_active_audit_2026-08-24.md
+      - id: verification_liquidity_d05_requirement
+        kind: required_addendum
+        availability: present
+        path: papers/proposal/dependabot_cooldown_verification_liquidity_d05_required_2026-08-24.md
     reusable_assets:
       - outcome_sealed_identity_pipeline
       - immutable_api_shards
@@ -578,6 +1753,8 @@ nodes:
     reopen_conditions: []
     forbidden_actions:
       - Do not interpret transport progress as feasibility or an effect.
+      - Do not let a D0 GREEN authorize D1 before the outcome-blind D0.5 contract is frozen, implemented, and validated.
+      - Do not claim platform-wide total spillover from a repository/account-local relative comparison.
       - Do not open the prospective holdout before 2026-10-17 UTC.
       - Do not claim NMI or NCS from a single GitHub result without transfer, policy value, and the required method contribution.
 
@@ -676,16 +1853,20 @@ nodes:
   - id: random_clock_collision_dynamics
     node_type: research_route
     title: Random-clock free-flight and hard-collision market dynamics
-    status: active
+    status: failed_closed
     opened_at: "2026-08-23"
-    closed_at: null
-    phase: T0_D_minus_1
-    terminal_gate: null
-    failure_codes: []
-    summary: A zero-outcome protocol/schema and reduction audit tests whether externally randomized matching times identify the observable free-flight semigroup through a hard collision map and permit calibrated in-support clock-law transport.
+    closed_at: "2026-08-24"
+    phase: D_minus_1
+    terminal_gate: protocol_schema_two_independent_clocks
+    failure_codes:
+      - zero_of_two_qualifying_protocols
+      - alphax_empty_match_events_and_global_state_unobserved
+      - xetra_clock_cluster_undocumented_and_avd_state_hidden
+      - hkex_shared_asynchronous_clock_and_auction_orders_hidden
+    summary: The first-failure D-minus-1 audit found zero of two required independently governed protocols with observable empty events, clock clusters, sufficient synchronized state, collision semantics, timing and reproducible access; G0-G3 and outcomes stopped.
     evidence:
       - id: random_clock_memory
-        kind: active_memory
+        kind: closure_memory
         availability: present
         path: .claude/memory/project_ecomd_random_clock_collision_t0_2026-08-23.md
     artifacts:
@@ -701,17 +1882,320 @@ nodes:
         kind: frozen_protocol
         availability: present
         path: configs/empirical_physics/ecomd_random_clock_collision_t0_v1.yaml
+      - id: random_clock_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_random_clock_collision_t0_result_2026-08-24.md
     reusable_assets:
       - externally_randomized_clock_protocol_registry
       - free_flight_collision_operator_toys
       - shared_clock_cluster_guardrail
-    reopen_conditions: []
+    reopen_conditions:
+      - A new preregistration must name two independently governed versioned access contracts that expose realized events including empty events, clock clusters, sufficient synchronized pre/post state, relevant hidden matching parameters, timestamp precision and reproducible licensing.
     forbidden_actions:
       - Do not infer hidden Match Events from public TRF prints or absence of trades.
       - Do not access market outcomes, buy data, implement benchmarks, fit EcoMD, or use GPU before T0 passes.
       - Do not rescue a failed schema or reduction gate through venue substitution, proxy clocks, threshold relaxation, or synthetic evidence.
+      - Do not present the preliminary reduction warnings as a completed forty-work novelty audit or theorem verdict.
 
 edges:
+  - id: mace_v1_to_tier42_claim
+    source: mace_lite_v1_architecture
+    type: next_selected_route
+    target: tier42_stylized_fidelity_breakthrough_claim
+    rationale: The SPS-based dynamic-graph successor was evaluated after the MACE-lite v1 force and sparsity failure.
+    evidence_refs:
+      - mace_v1_failure_memory
+      - tier42_closure_memory
+
+  - id: tier42_derived_from_mace_failure
+    source: tier42_stylized_fidelity_breakthrough_claim
+    type: derived_from
+    target: mace_lite_v1_architecture
+    rationale: Tier 4.2 reused the stochastic-pair-sampling response to MACE-lite's biased-neighbour failure.
+    evidence_refs:
+      - mace_v1_ablation_result
+      - tier42_ar1_formal_result
+
+  - id: baseline_superiority_derived_from_tier42
+    source: ecomd_beats_learned_baselines_claim
+    type: derived_from
+    target: tier42_stylized_fidelity_breakthrough_claim
+    rationale: The strong learned-baseline test audited the broader fidelity headline that the selected Tier 4.2 result had helped motivate.
+    evidence_refs:
+      - tier42_closure_memory
+      - baseline_claim_formal_result
+
+  - id: memory_kernel_derived_from_tier42
+    source: paper_a_memory_kernel_track
+    type: derived_from
+    target: tier42_stylized_fidelity_breakthrough_claim
+    rationale: The memory-kernel track was an explicit successor mechanism intended to escape the multiseed fidelity ceiling.
+    evidence_refs:
+      - tier42_residual_result
+      - memk_track_formal_result
+
+  - id: memory_kernel_to_objective_coverage
+    source: paper_a_memory_kernel_track
+    type: next_selected_route
+    target: explicit_objective_coverage_path_a
+    rationale: After the principal capacity tracks failed significance, the solve ladder moved to live per-fact objective coverage.
+    evidence_refs:
+      - memk_track_formal_result
+      - objective_coverage_formal_result
+
+  - id: objective_coverage_to_tournament
+    source: explicit_objective_coverage_path_a
+    type: next_selected_route
+    target: beyond_langevin_solve_tournament
+    rationale: The preregistered Path A failure triggered the beyond-framework Path B architecture tournament.
+    evidence_refs:
+      - objective_coverage_formal_result
+      - solve_tournament_formal_result
+
+  - id: tournament_to_composition_gate
+    source: beyond_langevin_solve_tournament
+    type: next_selected_route
+    target: composition_beats_sota_gate
+    rationale: The tournament's failure-corner map motivated a targeted composition of concave impact with the demoted stochastic-volatility component.
+    evidence_refs:
+      - solve_tournament_formal_result
+      - composition_gate_formal_result
+
+  - id: tournament_to_concave_solve
+    source: beyond_langevin_solve_tournament
+    type: next_selected_route
+    target: concave_impact_stationary_cube_law_solve
+    rationale: The broad tournament failed, after which concave price impact became the selected mechanistic tail solve.
+    evidence_refs:
+      - solve_tournament_formal_result
+      - concave_stationary_warmup_result
+
+  - id: criticality_derived_from_tournament
+    source: paper_b_criticality_fss
+    type: derived_from
+    target: beyond_langevin_solve_tournament
+    rationale: The observed size-dependent tail crossover in the tournament spawned the finite-size criticality audit.
+    evidence_refs:
+      - solve_tournament_memory
+      - criticality_fss_formal_result
+
+  - id: composition_supersedes_tier42_headline
+    source: composition_beats_sota_gate
+    type: supersedes
+    target: tier42_stylized_fidelity_breakthrough_claim
+    rationale: The frozen multiseed SOTA gate replaced selected single-cell pass counts as the admissible breakthrough criterion.
+    evidence_refs:
+      - tier42_ar1_formal_result
+      - composition_gate_formal_result
+
+  - id: empirical_tail_validation_derived_from_concave_solve
+    source: empirical_tail_transfer_delta_validation
+    type: derived_from
+    target: concave_impact_stationary_cube_law_solve
+    rationale: The derived-delta claim was the empirical theory validation for the concave-impact stationary solve.
+    evidence_refs:
+      - stationary_tail_formal_result
+      - concave_stationary_warmup_result
+
+  - id: empirical_tail_to_real_crash_transfer
+    source: empirical_tail_transfer_delta_validation
+    type: next_selected_route
+    target: real_crash_transient_transfer
+    rationale: Refutation of the stationary validation triggered the driven-transient route and its real-crash venue gate.
+    evidence_refs:
+      - stationary_tail_blast_radius
+      - real_crash_transfer_formal_result
+
+  - id: clt_mechanism_derived_from_concave_closure
+    source: clt_on_excess_demand_mechanism
+    type: derived_from
+    target: concave_impact_stationary_cube_law_solve
+    rationale: The CLT-on-excess-demand mechanism was proposed as the root cause of the light stationary state exposed by the burn-in closure.
+    evidence_refs:
+      - concave_stationary_closure_result
+      - clt_excess_demand_formal_result
+
+  - id: real_physics_aggregates_crash_transfer
+    source: real_market_physics_zero_cost
+    type: aggregates
+    target: real_crash_transient_transfer
+    rationale: The later zero-cost real-physics program closure explicitly carried forward and aggregated the already failed real-crash tail-transfer result.
+    evidence_refs:
+      - real_physics_closure
+      - real_crash_transfer_formal_result
+
+  - id: broad_novelty_blocks_positive_release_wording
+    source: first_differentiable_langevin_market_claim
+    type: blocks
+    target: ecomd_v1_positive_model_release
+    rationale: The prior-art closure permanently blocks broad first-differentiable or first-Langevin novelty wording for any EcoMD positive release.
+    evidence_refs:
+      - differentiable_claim_formal_result
+      - ecomd_v1_scope
+
+  - id: stody_cancellation_derived_from_crash_transfer
+    source: stody_short_paper_route
+    type: derived_from
+    target: real_crash_transient_transfer
+    rationale: The negative real-market anchor became part of the evidence burden that the later standalone STODY route could not satisfy.
+    evidence_refs:
+      - real_crash_transfer_formal_result
+      - stody_cancellation_decision
+
+  - id: entropy_tur_to_theory_v1
+    source: entropy_tur_observability
+    type: next_selected_route
+    target: theory_reduction_nmi_v1
+    rationale: After the observability route closed, the program entered a theorem-and-mechanism reduction search before any new outcomes.
+    evidence_refs:
+      - entropy_tur_formal_result
+      - theory_v1_formal_result
+
+  - id: theory_v1_to_v2
+    source: theory_reduction_nmi_v1
+    type: next_selected_route
+    target: theory_exploration_identification_v2
+    rationale: The v1 NMI closure left only a contraction-envelope conjecture, which v2 subjected to an explicit identification attack.
+    evidence_refs:
+      - theory_v1_formal_result
+      - theory_v2_formal_result
+
+  - id: theory_v2_to_v3
+    source: theory_exploration_identification_v2
+    type: next_selected_route
+    target: theory_exploration_equation_audit_v3
+    rationale: V3 moved from the failed certificate identification route to equation-level closure, memory and operator candidates.
+    evidence_refs:
+      - theory_v2_formal_result
+      - theory_v3_formal_audit
+
+  - id: theory_v3_to_phenomenon_v4
+    source: theory_exploration_equation_audit_v3
+    type: next_selected_route
+    target: phenomenon_first_audit_v4
+    rationale: With every equation-level method reduced to prior art, selection switched to phenomenon-first candidates.
+    evidence_refs:
+      - theory_v3_formal_audit
+      - phenomenon_v4_formal_audit
+
+  - id: phenomenon_v4_to_market_rule_v5
+    source: phenomenon_first_audit_v4
+    type: next_selected_route
+    target: market_rule_feedback_v5
+    rationale: The no-witness phenomenon audit was followed by an exact externally clocked annual rule-feedback design.
+    evidence_refs:
+      - phenomenon_v4_formal_audit
+      - market_rule_v5_formal_result
+
+  - id: market_rule_v5_to_fee_market_v6
+    source: market_rule_feedback_v5
+    type: next_selected_route
+    target: algorithmic_fee_market_v6
+    rationale: The failed blind-scale power preflight led to a controller-exact route with generated identifiability gates.
+    evidence_refs:
+      - market_rule_v5_formal_result
+      - fee_market_v6_formal_closure
+
+  - id: fee_market_v6_to_gauge_v7
+    source: algorithmic_fee_market_v6
+    type: next_selected_route
+    target: gauge_invariant_controller_v7
+    rationale: V7 attempted gauge-invariant input-output probes after unrestricted adaptive demand defeated V6 identification.
+    evidence_refs:
+      - fee_market_v6_formal_closure
+      - gauge_v7_formal_audit
+
+  - id: gauge_v7_to_memory_v8
+    source: gauge_invariant_controller_v7
+    type: next_selected_route
+    target: causal_memory_transplant_v8
+    rationale: The fixed-transducer obstruction shifted selection from hidden adaptation labels to explicit observable-state interventions.
+    evidence_refs:
+      - gauge_v7_formal_audit
+      - memory_transplant_v8_formal_audit
+
+  - id: memory_v8_to_age_liquidity_v9
+    source: causal_memory_transplant_v8
+    type: next_selected_route
+    target: age_structured_liquidity_v9
+    rationale: The prior-art failure of generated-agent memory transplantation moved the search to a real queue-lifecycle observable.
+    evidence_refs:
+      - memory_transplant_v8_formal_audit
+      - age_liquidity_v9_formal_audit
+
+  - id: age_liquidity_v9_to_prediction_v10
+    source: age_structured_liquidity_v9
+    type: next_selected_route
+    target: prediction_market_coherence_v10
+    rationale: After queue-survival scope and prior art closed V9, the audit moved to certified logical coherence in prediction markets.
+    evidence_refs:
+      - age_liquidity_v9_formal_audit
+      - prediction_coherence_v10_formal_audit
+
+  - id: prediction_v10_to_drift_v11
+    source: prediction_market_coherence_v10
+    type: next_selected_route
+    target: multi_stationary_drift_tomography_v11
+    rationale: The basis-dependence witness closed the coherence law and motivated a continuous-state density-ratio identifiability route.
+    evidence_refs:
+      - prediction_coherence_v10_formal_audit
+      - drift_tomography_v11_formal_result
+
+  - id: drift_v11_to_solenoidal_v12
+    source: multi_stationary_drift_tomography_v11
+    type: next_selected_route
+    target: solenoidal_excitation_gap_v12
+    rationale: V12 converted the conjecture boundary from V11 into exact, unstable and stable excitation theorems before auditing method admission.
+    evidence_refs:
+      - drift_tomography_v11_formal_audit
+      - solenoidal_v12_formal_audit
+
+  - id: solenoidal_v12_to_agents_v13
+    source: solenoidal_excitation_gap_v12
+    type: next_selected_route
+    target: prospective_agent_market_v13
+    rationale: The theorem-only boundary forced a return to a prospective real algorithmic-agent mechanism with an outcome-blind observable audit.
+    evidence_refs:
+      - solenoidal_v12_formal_audit
+      - prospective_agents_v13_formal_audit
+
+  - id: agents_v13_to_uniswap_v14
+    source: prospective_agent_market_v13
+    type: next_selected_route
+    target: uniswap_preperiod_exposure_support_v14
+    rationale: After the ePBS scout lacked a common observable, the v14 program tested executable policy systems beginning with Uniswap exposure support.
+    evidence_refs:
+      - prospective_agents_v13_formal_audit
+      - uniswap_v14_formal_result
+
+  - id: uniswap_v14_to_compound_v14
+    source: uniswap_preperiod_exposure_support_v14
+    type: next_selected_route
+    target: compound_supply_cap_activation_v14
+    rationale: The failed Uniswap exposure-support gate kept only exact M2 and moved the behavioral M3 search to Compound hard-cap activations.
+    evidence_refs:
+      - uniswap_v14_formal_result
+      - compound_v14_formal_result
+
+  - id: compound_v14_to_aave_v14
+    source: compound_supply_cap_activation_v14
+    type: next_selected_route
+    target: aave_scalar_lt_shock_v14
+    rationale: No exact Compound cap activation survived, so the frozen handoff moved to Aave liquidation-threshold events.
+    evidence_refs:
+      - compound_v14_formal_result
+      - aave_lt_v14_formal_result
+
+  - id: aave_v14_to_estir_v14
+    source: aave_scalar_lt_shock_v14
+    type: next_selected_route
+    target: estir_standalone_evm_ir_claim_v14
+    rationale: Bundled Aave governance programs motivated an execution-trace representation, whose standalone novelty was then audited and closed.
+    evidence_refs:
+      - aave_lt_v14_formal_result
+      - estir_v14_formal_audit
+
   - id: ncs_v4_to_simulator_audit
     source: ncs_invariant_calibration_v4
     type: next_selected_route

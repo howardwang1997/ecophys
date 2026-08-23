@@ -1,6 +1,6 @@
 ---
 name: verification-liquidity-2026-08-21
-description: "GREEN through formal outcome-blind D-1: GitHub's 2026-07-14 default Dependabot cooldown has enough public support for D0, while all queue/review/merge/security outcomes remain sealed."
+description: "D-1 GREEN and sealed D0 transport remain active only for value of information. A 2026-08-24 audit requires an outcome-blind D0.5 before D1: account-level interference, decomposed version-update first stages, matched-treated support and cohort-period attrition gates."
 metadata:
   node_type: memory
   type: project
@@ -105,3 +105,28 @@ outcomes remain sealed. These counts are transport progress, not a feasibility o
 Venue ceiling: a single GitHub result is a software/agent-systems paper. NMI requires a general agent-validation
 externality plus prospective policy value and transfer to coding agents. NCS additionally requires a genuinely
 new admission/scheduling result with a guarantee and a second independent computational domain.
+
+An independent outcome-blind audit on 2026-08-24 keeps D0 transport active only as a low-cost value-of-information
+exercise. It corrects the pure-delay null: shifting one stationary stream preserves its law, but need not preserve
+a shared queue when human/background load, weekday capacity or account quotas are dependent or nonstationary.
+GitHub's actual mechanism continues scheduled update checks, skips ineligible releases, can select the latest
+eligible release and can update an existing PR; it is not a uniform 72-hour translation.
+
+The defensible estimand is a repository/account-local relative ITT, not platform-wide total spillover. GitHub
+documents account-level concurrency, so owner/account is a required interference cluster. The audit also found
+that the current shared-pool gate counts all frozen treated repositories rather than `matched_treated`, the bot
+probe does not separate dynamic updater jobs from PR-triggered validation, and workflow-structure recovery is not
+gated by cohort × period. These do not invalidate sealed checkpoint transport, but a D0 GREEN no longer
+automatically authorizes D1.
+
+Before outcome opening, the required D0.5 contract must freeze decomposed version-update first stages and a
+practical-equivalence margin, owner support/concentration and inference, a version/security classifier,
+matched-treated shared-pool support, cohort-period attrition gates and few-day-cluster sensitivity. A null first
+stage or failed support/negative-control/prospective gate closes the mechanism. Current outcome-blind planning
+priors are 35--55% for D0 feasibility, 3--10% for a credible nonzero account-local effect, 5--12% for a strong
+software-engineering paper, 0.3--1.5% for current single-system NMI and below 0.5% for current-form NCS.
+
+Audit artifacts:
+
+- `papers/proposal/dependabot_cooldown_verification_liquidity_active_audit_2026-08-24.md`
+- `papers/proposal/dependabot_cooldown_verification_liquidity_d05_required_2026-08-24.md`

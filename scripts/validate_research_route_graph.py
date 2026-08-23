@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import os
 import re
+import subprocess
 import sys
 from collections import Counter
 from collections.abc import Mapping
@@ -11,7 +13,8 @@ from typing import cast
 
 import yaml
 
-EXPECTED_SCHEMA_VERSION = 1
+EXPECTED_SCHEMA_VERSION = 2
+EXPECTED_NODE_TYPES = {"research_route", "research_subroute"}
 EXPECTED_STATUSES = {
     "candidate",
     "active",
@@ -27,7 +30,7 @@ EXPECTED_EDGE_TYPES = {
     "aggregates",
     "blocks",
 }
-EXPECTED_AVAILABILITY = {"present", "missing_legacy", "external"}
+EXPECTED_AVAILABILITY = {"present", "missing_legacy", "external", "git_ref"}
 EXPECTED_NODE_FIELDS = {
     "id",
     "node_type",
@@ -58,6 +61,14 @@ TERMINAL_STATUSES = {"failed_closed", "passed_closed", "superseded"}
 OPEN_STATUSES = {"candidate", "active", "parked"}
 TERMINAL_EVIDENCE_KINDS = {"formal_result", "closure_decision", "formal_audit"}
 ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
+COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40}$")
+REF_PATTERN = re.compile(r"^refs/(?:heads|remotes|tags)/[A-Za-z0-9._/-]+$")
+EXPECTED_LOCATOR_AVAILABILITY_FIELDS = {
+    "present": {"path"},
+    "missing_legacy": {"path", "note"},
+    "external": {"uri"},
+    "git_ref": {"ref", "commit", "path"},
+}
 
 
 class GraphValidationError(ValueError):
@@ -155,6 +166,17 @@ def validate_declared_schema(root: Mapping[str, object]) -> tuple[date, date]:
     require_string_list(scope.get("notes"), "graph.scope.notes", allow_empty=False)
 
     schema = require_mapping(root.get("schema"), "schema")
+    node_types = set(
+        require_string_list(
+            schema.get("allowed_node_types"),
+            "schema.allowed_node_types",
+            allow_empty=False,
+        )
+    )
+    if node_types != EXPECTED_NODE_TYPES:
+        raise GraphValidationError(
+            f"schema.allowed_node_types must equal {sorted(EXPECTED_NODE_TYPES)}"
+        )
     statuses = set(
         require_string_list(
             schema.get("allowed_statuses"),
@@ -229,6 +251,27 @@ def validate_declared_schema(root: Mapping[str, object]) -> tuple[date, date]:
             "schema.locator.required_fields must equal "
             f"{sorted(EXPECTED_LOCATOR_FIELDS)}"
         )
+    availability_fields = require_mapping(
+        locator_schema.get("availability_fields"),
+        "schema.locator.availability_fields",
+    )
+    if set(availability_fields) != set(EXPECTED_LOCATOR_AVAILABILITY_FIELDS):
+        raise GraphValidationError(
+            "schema.locator.availability_fields must declare every availability"
+        )
+    for availability_name, expected_fields in EXPECTED_LOCATOR_AVAILABILITY_FIELDS.items():
+        declared_fields = set(
+            require_string_list(
+                availability_fields.get(availability_name),
+                f"schema.locator.availability_fields.{availability_name}",
+                allow_empty=False,
+            )
+        )
+        if declared_fields != expected_fields:
+            raise GraphValidationError(
+                "schema.locator.availability_fields."
+                f"{availability_name} must equal {sorted(expected_fields)}"
+            )
     return scope_start, updated_at
 
 
@@ -243,6 +286,76 @@ def validate_local_path(repo_root: Path, raw_path: str, context: str) -> Path:
     except ValueError as exc:
         raise GraphValidationError(f"{context} resolves outside the repository") from exc
     return resolved
+
+
+def run_offline_git(repo_root: Path, args: list[str], context: str) -> str:
+    environment = os.environ.copy()
+    environment.update(
+        {
+            "GIT_NO_LAZY_FETCH": "1",
+            "GIT_OPTIONAL_LOCKS": "0",
+            "GIT_TERMINAL_PROMPT": "0",
+        }
+    )
+    try:
+        completed = subprocess.run(
+            ["git", *args],
+            cwd=repo_root,
+            env=environment,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as exc:
+        raise GraphValidationError(f"{context}: cannot execute git: {exc}") from exc
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip() or "git failed"
+        raise GraphValidationError(f"{context}: {detail}")
+    return completed.stdout.strip()
+
+
+def validate_git_ref_locator(
+    locator: Mapping[str, object],
+    context: str,
+    repo_root: Path,
+) -> None:
+    ref = require_string(locator.get("ref"), f"{context}.ref")
+    if REF_PATTERN.fullmatch(ref) is None:
+        raise GraphValidationError(
+            f"{context}.ref must be a full local heads/remotes/tags ref"
+        )
+    commit = require_string(locator.get("commit"), f"{context}.commit")
+    if COMMIT_PATTERN.fullmatch(commit) is None:
+        raise GraphValidationError(
+            f"{context}.commit must be a full lowercase 40-hex object id"
+        )
+    raw_path = require_string(locator.get("path"), f"{context}.path")
+    validate_local_path(repo_root, raw_path, f"{context}.path")
+
+    resolved_ref = run_offline_git(
+        repo_root,
+        ["rev-parse", "--verify", f"{ref}^{{commit}}"],
+        f"{context}.ref is not an available commit",
+    )
+    run_offline_git(
+        repo_root,
+        ["rev-parse", "--verify", f"{commit}^{{commit}}"],
+        f"{context}.commit is not locally available",
+    )
+    run_offline_git(
+        repo_root,
+        ["merge-base", "--is-ancestor", commit, resolved_ref],
+        f"{context}.commit is not reachable from ref {ref!r}",
+    )
+    object_type = run_offline_git(
+        repo_root,
+        ["cat-file", "-t", f"{commit}:{raw_path}"],
+        f"{context}.path is not available at pinned commit",
+    )
+    if object_type != "blob":
+        raise GraphValidationError(
+            f"{context}.path at pinned commit must resolve to a blob"
+        )
 
 
 def validate_locator(
@@ -282,12 +395,14 @@ def validate_locator(
                 raise GraphValidationError(
                     f"{context} is marked missing_legacy but exists: {raw_path}"
                 )
-    else:
+    elif availability == "external":
         uri = require_string(locator.get("uri"), f"{context}.uri")
         if not uri.startswith(("https://", "http://")):
             raise GraphValidationError(
                 f"{context}.uri must be an HTTP(S) URI for external evidence"
             )
+    else:
+        validate_git_ref_locator(locator, context, repo_root)
     return locator_id, kind, availability
 
 
@@ -303,6 +418,7 @@ def validate_nodes(
     set[str],
     Counter[str],
     int,
+    int,
 ]:
     raw_nodes = require_list(root.get("nodes"), "nodes")
     if not raw_nodes:
@@ -314,6 +430,7 @@ def validate_nodes(
     locator_ids: set[str] = set()
     status_counts: Counter[str] = Counter()
     missing_legacy_count = 0
+    git_ref_count = 0
 
     for index, raw_node in enumerate(raw_nodes):
         context = f"nodes[{index}]"
@@ -325,9 +442,10 @@ def validate_nodes(
         node_id = require_id(node.get("id"), f"{context}.id")
         if node_id in nodes:
             raise GraphValidationError(f"duplicate node id: {node_id}")
-        if node.get("node_type") != "research_route":
+        node_type = require_string(node.get("node_type"), f"{context}.node_type")
+        if node_type not in EXPECTED_NODE_TYPES:
             raise GraphValidationError(
-                f"{context}.node_type must equal 'research_route'"
+                f"{context}.node_type is unknown: {node_type!r}"
             )
         require_string(node.get("title"), f"{context}.title")
         status = require_string(node.get("status"), f"{context}.status")
@@ -411,6 +529,8 @@ def validate_nodes(
                 del locator_id
                 if availability == "missing_legacy":
                     missing_legacy_count += 1
+                if availability == "git_ref":
+                    git_ref_count += 1
                 if kind in TERMINAL_EVIDENCE_KINDS:
                     terminal_evidence = True
         if status in TERMINAL_STATUSES and not terminal_evidence:
@@ -431,6 +551,7 @@ def validate_nodes(
         locator_ids,
         status_counts,
         missing_legacy_count,
+        git_ref_count,
     )
 
 
@@ -525,8 +646,10 @@ def validate_edges(
     return len(raw_edges)
 
 
-def validate_graph(path: Path) -> str:
-    repo_root = path.resolve().parents[2]
+def validate_graph(path: Path, repo_root: Path | None = None) -> str:
+    resolved_repo_root = (
+        path.resolve().parents[2] if repo_root is None else repo_root.resolve()
+    )
     root = load_graph(path)
     required_top_level = {"schema_version", "graph", "schema", "nodes", "edges"}
     missing_top_level = required_top_level - set(root)
@@ -542,7 +665,13 @@ def validate_graph(path: Path) -> str:
         locator_ids,
         status_counts,
         missing_legacy_count,
-    ) = validate_nodes(root, repo_root, scope_start, graph_updated_at)
+        git_ref_count,
+    ) = validate_nodes(
+        root,
+        resolved_repo_root,
+        scope_start,
+        graph_updated_at,
+    )
     edge_count = validate_edges(
         root,
         nodes,
@@ -556,7 +685,7 @@ def validate_graph(path: Path) -> str:
     return (
         f"OK: {len(nodes)} route nodes ({counts}), {edge_count} typed edges, "
         f"{len(locator_ids)} evidence/artifact locators verified, "
-        f"missing_legacy={missing_legacy_count}"
+        f"git_ref={git_ref_count}, missing_legacy={missing_legacy_count}"
     )
 
 

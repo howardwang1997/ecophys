@@ -2,7 +2,8 @@
 
 **Frozen:** 2026-08-23
 
-**Status:** AMBER; T0 only
+**Status:** **CLOSED FAIL/RED at D-1 on 2026-08-24.** This file preserves the preregistration; the binding result
+is `papers/proposal/ecomd_random_clock_collision_t0_result_2026-08-24.md`.
 
 **Primary target:** *Nature Computational Science*
 
