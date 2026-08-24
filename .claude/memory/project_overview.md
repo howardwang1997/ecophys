@@ -1,6 +1,6 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. Plan v4 remains the quality, compute and data-governance frame, but its invariant-calibration and subsequent theorem cards closed RED. No Nature-grade market-simulation route is active; FCC clock-1 pseudorandom tie-order propagation is one D-minus-1 candidate, while verification-liquidity remains an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
+description: EcoPhys/EcoMD research overview. Plan v4 remains the quality, compute and data-governance frame, but its invariant-calibration and subsequent theorem cards closed RED. No Nature-grade market-simulation route is active; FCC clock-1 and OASIS random-priority network response are D-minus-1 candidates, DCRDEX is parked, and verification-liquidity remains an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
@@ -10,11 +10,14 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > **Current route state (2026-08-24).** The Plan-v4 invariant-calibration, generic audit, observation quotient,
 > partial-order, random-clock, collision-cone, agent-composition, coordination, clone and A′ influence-tail routes
 > are formally closed RED. A contract-first G−1 then closed 17 additional AI-agent, MD and field-protocol cards.
-> No Nature-grade market-simulation route is active. The sole new candidate is FCC clock-1 pseudorandom tie-order
-> propagation, restricted to an outcome-free D−1 support, exchangeability, exact-replay, 20-work novelty and
-> simulator-feasibility audit; its 12% T0 prior is below the 15% activation floor. No effect estimate, bid/result
-> outcome, implementation, EcoMD, model call or GPU is authorized. Verification-liquidity remains a separate active
-> field protocol with prospective outcomes sealed until 2026-10-17 UTC. Canonical route state:
+> No Nature-grade market-simulation route is active. FCC clock-1 pseudorandom tie-order propagation remains a
+> 12%-T0 auction candidate below the 15% activation floor. A subsequent non-auction search retained OASIS
+> simultaneous-window random-priority network response as an 18%-T0 D−1 candidate and parked DCRDEX verifiable
+> sequencing pending prospective support and a second system. Historical PSX and ten other exchange, blockchain
+> and resource-allocation cards are failed-closed under exact public-state, realization, support, market-status or
+> prior-art gates. No effect estimate, candidate outcome, implementation, EcoMD, model call or GPU is authorized.
+> Verification-liquidity remains a separate active field protocol with prospective outcomes sealed until
+> 2026-10-17 UTC. Canonical route state:
 > `research_route_knowledge_graph.yaml`.
 
 > **Plan-of-record update (2026-08-09).** For the next archival project, use
