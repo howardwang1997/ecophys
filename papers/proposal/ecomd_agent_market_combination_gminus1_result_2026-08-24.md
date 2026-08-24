@@ -9,6 +9,13 @@ implementation, benchmark run, model API call, EcoMD execution or GPU
 
 ## Decision
 
+> **Subsequent G0 resolution (2026-08-24):** the allowed A′ paper preflight was run and closed **RED**. Small
+> normalized replace-one influence does not imply a high-order Möbius/path-law tail; \(q_H=1\) is not a necessary
+> boundary; valid repairs reduce to established semigroup or spacetime-cluster assumptions; and the proposed
+> Power TAC--SCML transfer changes both platform and dose. See
+> `papers/proposal/ecomd_aprime_influence_tail_g0_result_2026-08-24.md`. The table and probabilities below retain
+> the information state at the earlier G−1 screen.
+
 **No card or combination is activated.** The correct state is not “all three ideas are impossible”:
 
 - the broad harmful-coordination and clone/monoculture headlines close **RED** at G−1;
@@ -202,7 +209,7 @@ agent artifacts in the needed roles; define a common path-law observable; and sh
 system produces a no-retuning high-dose prediction in the other. Power TAC currently has broker-version replay
 risk, and SCML has different bilateral negotiation and supply-chain semantics. No common contract is yet frozen.
 
-## Binding next action
+## Historical binding next action at G−1
 
 Write one page, not code. The page must state:
 
@@ -216,3 +223,5 @@ Write one page, not code. The page must state:
 If those five items cannot be written without assuming high-order decay or changing the estimand between systems,
 close A and return to contract-first problem selection. Until they are written, no agent download, environment
 setup, API/model call, simulation, outcome query, EcoMD run or GPU is authorized.
+
+That condition was subsequently tested and failed; A is now closed and this action is no longer pending.

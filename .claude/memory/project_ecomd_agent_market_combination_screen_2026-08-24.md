@@ -1,12 +1,16 @@
 ---
 name: ecomd-agent-market-combination-screen-2026-08-24
-description: "G−1 portfolio result: no card activated. Broad coordination-certificate and clone-phase routes closed RED; composition-conditioned path-kernel card is PARKED, not failed, pending an exchange-derived uniform influence-tail theorem and a common Power TAC–SCML contract."
+description: "Historical G−1 portfolio result: no card activated. Its sole parked residual, the composition-conditioned path kernel, subsequently closed RED at A′ G0 because first-order replace-one influence does not control the high-order path-law tail and the Power TAC–SCML transfer changes the estimand."
 metadata:
   node_type: memory
   type: project
 ---
 
 # EcoMD agent-market combination screen
+
+**Subsequent resolution:** the permitted A′ paper-only preflight closed the parked composition card **FAIL/RED**
+on 2026-08-24. The exact closure is recorded in
+`project_ecomd_aprime_influence_tail_g0_2026-08-24.md`; the text below preserves the earlier G−1 information state.
 
 On 2026-08-24, three post-collision-cone cards were screened alone, pairwise and jointly under a zero-compute G−1:
 
@@ -52,4 +56,5 @@ Artifacts:
 
 - Machine gate: `configs/empirical_physics/ecomd_agent_market_combination_gminus1_v1.yaml`
 - Formal result: `papers/proposal/ecomd_agent_market_combination_gminus1_result_2026-08-24.md`
+- A′ terminal result: `papers/proposal/ecomd_aprime_influence_tail_g0_result_2026-08-24.md`
 - Route graph: `.claude/memory/research_route_knowledge_graph.yaml`
