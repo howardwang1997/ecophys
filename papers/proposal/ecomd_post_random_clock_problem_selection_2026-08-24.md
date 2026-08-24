@@ -6,6 +6,12 @@ causal effects, while generic self-adjusting computation supplies the correspond
 trace-distance theory. The binding result is
 `papers/proposal/ecomd_collision_cone_replay_t0_result_2026-08-24.md`. No reserve below is automatically active.
 
+**Later portfolio update:** the many-body reserve was screened with active coordination and clone-susceptibility
+cards, alone and in combination. It remains **PARKED**, not active or failed: the connected parameterization is
+Möbius/Newton, but the full dynamic path-law target is not exactly an EGTA payoff. The other two broad headlines
+closed RED. The binding combination result is
+`papers/proposal/ecomd_agent_market_combination_gminus1_result_2026-08-24.md`.
+
 ## Selection decision before the audit
 
 No candidate was GREEN. The highest-ranked zero-compute card was activated as **AMBER / theorem-first T0**:
@@ -24,7 +30,7 @@ to state a collision-specific theorem.
 | Rank | Independent question | Venue shape | T0 survival | Complete package | Decision |
 |---:|---|---|---:|---:|---|
 | 1 | exact collision-cone counterfactual replay | NCS | 4--8% | 1--2.5% | **activate T0; subsequently RED** |
-| 2 | size-extensive connected many-body response across unseen market-agent compositions | NMI | 5--10% | 1--3% | reserve only |
+| 2 | size-extensive connected many-body response across unseen market-agent compositions | NMI | 5--10% | 1--3% | reserve only; subsequently PARKED |
 | 3 | differentiable event-time sensitivity through hard market events | NCS/NMI | 3--7% | below 2% | comparator only |
 
 Rank 2 would need a theorem showing that a learned connected interaction expansion predicts held-out agent types,

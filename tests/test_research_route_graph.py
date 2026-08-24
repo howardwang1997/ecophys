@@ -53,7 +53,7 @@ def node_locators(node: dict[str, object], field: str) -> list[dict[str, object]
 def test_canonical_graph_validates_offline() -> None:
     result = validate_graph(GRAPH_PATH, REPO_ROOT)
 
-    assert "49 route nodes" in result
+    assert "53 route nodes" in result
     assert "git_ref=35" in result
 
 
