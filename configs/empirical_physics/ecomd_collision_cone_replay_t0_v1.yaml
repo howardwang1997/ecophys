@@ -1,0 +1,134 @@
+project: ecomd_collision_cone_replay_t0
+version: 1
+frozen_date: 2026-08-24
+status: failed_closed
+closed_date: 2026-08-24
+failed_stage: G0_exact_reduction
+verdict: fail_red
+failure_codes:
+  - direct_prior_exact_differential_simulation
+  - generic_from_scratch_consistency_specialization
+  - output_sensitive_trace_distance_occupied
+  - subcritical_bound_is_standard_branching_corollary
+  - market_or_collision_specialization_not_irreducible
+parent_selection: papers/proposal/ecomd_post_random_clock_problem_selection_2026-08-24.md
+freeze_artifact: papers/proposal/ecomd_collision_cone_replay_t0_freeze_2026-08-24.md
+result_artifact: papers/proposal/ecomd_collision_cone_replay_t0_result_2026-08-24.md
+stop_at_first_failure: true
+
+question: >-
+  Can a local rule intervention in a deterministic-replayable event-driven simulator be evaluated exactly by
+  replaying only its dynamically affected collision cone, with work controlled by that cone rather than the full
+  baseline trajectory and with a non-circular subcritical certificate for expected cone size?
+
+candidate:
+  name: collision_cone_exact_counterfactual_replay
+  primary_venue: nature_computational_science
+  conditional_venue: nature_machine_intelligence
+  t0_survival_prior: [0.04, 0.08]
+  complete_nature_package_prior: [0.01, 0.025]
+
+formal_object:
+  trajectory: "T_R(s0, omega) = ((t_i, q_i, e_i, s_i_minus, s_i_plus))_{i=1}^M"
+  event_order: [time, declared_priority, immutable_semantic_event_key]
+  randomness: immutable_event_keyed_random_field
+  intervention: local_rule_change_R_to_R_prime
+  output: persistent_trace_delta_and_terminal_state_delta
+  dependency_types:
+    - last_writer_to_read
+    - creation_cancellation_and_rescheduling
+    - minimum_event_and_absence_certificate
+    - changed_time_priority_or_event_order
+
+eligible_theorems:
+  - from_scratch_event_and_state_exactness
+  - per_intervention_work_output_sensitive_in_affected_cone
+  - pre_intervention_certifiable_subcritical_expected_cone_bound
+  - matching_omega_affected_cone_lower_bound
+
+allowed_inputs:
+  - primary_papers_and_supplements
+  - official_source_repositories_and_documentation
+  - software_license_terms
+  - handwritten_finite_toy_systems
+  - symbolic_derivations
+  - repository_source_and_tests
+
+forbidden_inputs:
+  - market_outcomes
+  - paid_or_bulk_market_data
+  - ecomd_implementation_training_or_rollouts
+  - benchmark_code_or_runs
+  - gpu_use
+  - post_hoc_branching_ratio_fit
+
+prior_art_minima:
+  rollback_and_cancellation: 8
+  incremental_simulation_and_dynamic_slicing: 7
+  self_adjusting_and_incremental_computation: 7
+  coupled_and_counterfactual_simulation: 7
+  event_driven_md_and_collision_invalidation: 6
+  dynamic_algorithms_and_influence_propagation: 5
+  minimum_unique_primary_works: 40
+
+toy_systems:
+  - price_time_queue_with_removed_and_newly_exposed_matches
+  - three_particle_collision_with_changed_future_event_order
+  - newly_enabled_event_absent_from_factual_trace
+  - exact_recoupling_and_suffix_reuse
+  - local_change_with_global_hazard_dependency
+
+external_system_gate:
+  minimum_independent_non_ecomd_systems: 2
+  required_classes:
+    - order_level_price_time_priority_market_simulator
+    - event_driven_hard_particle_simulator
+  all_required:
+    - deterministic_replay
+    - stable_event_identity
+    - complete_state_transition_access
+    - event_calendar_mutation_access
+    - immutable_event_keyed_randomness_or_bounded_retrofit
+    - snapshot_or_persistent_state_support
+    - dependency_metadata_or_bounded_instrumentation
+    - publishable_derived_benchmark_license
+
+immediate_failures:
+  - exact_primary_work_reduction
+  - generic_from_scratch_consistency_specialization
+  - full_trace_scan_required_per_intervention
+  - new_event_discovery_requires_global_scan
+  - unstable_event_identity_or_randomness
+  - post_hoc_only_subcritical_certificate
+  - theorem_unchanged_for_arbitrary_event_callbacks
+  - external_system_contract_failure
+  - engineering_speedup_or_first_market_application_only
+
+pass_rule:
+  all_required:
+    - all_eligible_theorems_survive
+    - at_least_40_unique_primary_works_audited
+    - all_five_toys_resolved_on_paper
+    - two_external_system_contracts_pass
+    - reviewer_statement_gate_passes
+  on_fail: close_before_implementation_outcomes_data_purchase_or_compute
+
+closure:
+  primary_work_trigger:
+    title: Exact-Differential Simulation
+    year: 2019
+    doi: 10.1145/3301499
+  t1: directly_occupied
+  t2: generic_trace_distance_and_branching_corollary_not_independent
+  t3: output_size_observation_not_a_separating_lower_bound
+  primary_works_reviewed_before_first_failure_stop: 8
+  forty_work_minimum_reached: false
+  external_system_gate_reached: false
+  implementation_authorized: false
+
+resource_ceiling:
+  duration_calendar_days: 7
+  gpu_hours: 0
+  paid_data_usd: 0
+  benchmark_runs: 0
+  market_outcome_queries: 0
