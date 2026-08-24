@@ -1,21 +1,21 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. Plan v4 remains the quality, compute and data-governance frame, but its invariant-calibration method branch closed RED. The sole active new archival claim card is a zero-outcome T0 on random-clock free-flight/hard-collision dynamics; verification-liquidity transport remains an independent sealed field protocol. Compute starts at 2×V100 32 GB and excludes H20.
+description: EcoPhys/EcoMD research overview. Plan v4 remains the quality, compute and data-governance frame, but its invariant-calibration and subsequent theorem cards closed RED. No Nature-grade market-simulation route is active; FCC clock-1 pseudorandom tie-order propagation is one D-minus-1 candidate, while verification-liquidity remains an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 
 # EcoPhys — Project Overview
 
-> **Current route state (2026-08-23).** The original Plan-v4 invariant-calibration branch, generic simulator-
-> audit branch, observation-quotient/coarse-graining cards and partial-order hard-event card are formally closed
-> RED. Plan v4 remains the venue-quality, compute and data-governance frame, not an authorization to revive its
-> failed method. A fresh screen found no GREEN candidate and activated one AMBER, zero-outcome T0:
-> random-clock free-flight / hard-collision dynamics. Its first gate is whether two externally randomized market
-> clocks expose the actual draw, independent unit, sufficient pre/post state and collision semantics. No market
-> outcomes, paid data, EcoMD, benchmark implementation or GPU are authorized. The verification-liquidity D0
-> transport is an independent active field protocol with prospective outcomes sealed until 2026-10-17 UTC.
-> Canonical route state: `research_route_knowledge_graph.yaml`.
+> **Current route state (2026-08-24).** The Plan-v4 invariant-calibration, generic audit, observation quotient,
+> partial-order, random-clock, collision-cone, agent-composition, coordination, clone and A′ influence-tail routes
+> are formally closed RED. A contract-first G−1 then closed 17 additional AI-agent, MD and field-protocol cards.
+> No Nature-grade market-simulation route is active. The sole new candidate is FCC clock-1 pseudorandom tie-order
+> propagation, restricted to an outcome-free D−1 support, exchangeability, exact-replay, 20-work novelty and
+> simulator-feasibility audit; its 12% T0 prior is below the 15% activation floor. No effect estimate, bid/result
+> outcome, implementation, EcoMD, model call or GPU is authorized. Verification-liquidity remains a separate active
+> field protocol with prospective outcomes sealed until 2026-10-17 UTC. Canonical route state:
+> `research_route_knowledge_graph.yaml`.
 
 > **Plan-of-record update (2026-08-09).** For the next archival project, use
 > `papers/proposal/plan_v4_ncs.md`, not the hardware/data assumptions below. The NCS route is gated on a

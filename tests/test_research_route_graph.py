@@ -53,8 +53,25 @@ def node_locators(node: dict[str, object], field: str) -> list[dict[str, object]
 def test_canonical_graph_validates_offline() -> None:
     result = validate_graph(GRAPH_PATH, REPO_ROOT)
 
-    assert "54 route nodes" in result
+    assert "73 route nodes" in result
     assert "git_ref=35" in result
+
+
+def test_only_declared_routes_remain_open() -> None:
+    document = load_document()
+    open_routes: dict[str, str] = {}
+    for node in document_nodes(document):
+        route_id = node["id"]
+        status = node["status"]
+        assert isinstance(route_id, str)
+        assert isinstance(status, str)
+        if status in {"candidate", "active", "parked"}:
+            open_routes[route_id] = status
+
+    assert open_routes == {
+        "fcc_clock1_random_rank_cascade": "candidate",
+        "verification_liquidity": "active",
+    }
 
 
 def test_unknown_edge_endpoint_is_rejected(tmp_path: Path) -> None:
