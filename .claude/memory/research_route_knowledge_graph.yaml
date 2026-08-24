@@ -2867,13 +2867,21 @@ nodes:
   - id: oasis_ssw_random_priority_network_response
     node_type: research_route
     title: OASIS simultaneous-window random-priority network response
-    status: candidate
+    status: failed_closed
     opened_at: "2026-08-24"
-    closed_at: null
+    closed_at: "2026-08-24"
     phase: D_minus_1_public_realization_state_and_support_audit
-    terminal_gate: null
-    failure_codes: []
-    summary: MISO and SPP rules randomize customer order for same-priority simultaneous transmission requests that sequentially consume constrained transfer capability; the candidate remains outcome-blind until public lottery rank, exact flowgate pre-state, linkable post-state, binding support and shared-vendor risks pass in both operators.
+    terminal_gate: public_lottery_realization_and_atomic_network_state_contract
+    failure_codes:
+      - lottery_realization_machine_export_unverified
+      - ssw_window_identifier_export_unverified
+      - event_linked_afc_prestate_unavailable
+      - event_linked_afc_poststate_unavailable
+      - programmatic_reuse_contract_unestablished
+      - shared_oati_mechanism_replication
+      - random_order_packing_reduction
+      - connection_order_path_dependence_prior
+    summary: MISO, SPP and BPA rules establish random customer order and sequential AFC evaluation, but the current public machine contract does not establish a stable lottery-order export or atomic request-linked pre/post flowgate state; the audit stopped before records and support counts, with the remaining centerpiece reducing to random-order packing and connection-order path dependence.
     evidence:
       - id: oasis_ssw_miso_tariff
         kind: official_protocol
@@ -2891,6 +2899,26 @@ nodes:
         kind: official_regulation
         availability: external
         uri: https://www.law.cornell.edu/cfr/text/18/37.6
+      - id: oasis_ssw_standard_data_dictionary
+        kind: official_schema
+        availability: external
+        uri: https://pjmoasis.pjm.com/OASIS/PJM/datadic.htm
+      - id: oasis_ssw_oati_access_policy
+        kind: official_access_policy
+        availability: external
+        uri: https://www.oasis.oati.com/OATI_OASIS_Access_Policy.pdf
+      - id: oasis_ssw_miso_atcid
+        kind: official_state_methodology
+        availability: external
+        uri: https://www.oasis.oati.com/woa/docs/MISO/MISOdocs/TP-OP-005_Available_Transfer_Capability_Implementation_Document_v30.pdf
+      - id: oasis_ssw_spp_reference_manual
+        kind: official_schema_guide
+        availability: external
+        uri: https://www.oasis.oati.com/SWPP/SWPPdocs/Transmission_Service_Reference_Manual.pdf
+      - id: oasis_ssw_cfr_audit_retention
+        kind: official_regulation
+        availability: external
+        uri: https://www.ecfr.gov/current/title-18/chapter-I/subchapter-B/part-37/section-37.7
     artifacts:
       - id: oasis_ssw_selection_result
         kind: formal_audit
@@ -2900,17 +2928,32 @@ nodes:
         kind: frozen_protocol
         availability: present
         path: papers/proposal/oasis_ssw_random_priority_network_response_dminus1_freeze_2026-08-24.md
+      - id: oasis_ssw_dminus1_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/oasis_ssw_random_priority_network_response_dminus1_result_2026-08-24.md
+      - id: oasis_ssw_dminus1_config
+        kind: machine_record
+        availability: present
+        path: configs/empirical_physics/oasis_ssw_random_priority_network_response_dminus1_v1.yaml
+      - id: oasis_ssw_dminus1_memory
+        kind: lasting_memory
+        availability: present
+        path: .claude/memory/project_oasis_ssw_random_priority_network_response_2026-08-24.md
     reusable_assets:
       - equal_priority_equal_price_nonauction_subset
       - multi_flowgate_third_party_nontriviality_gate
-      - miso_spp_operator_replication
+      - customer_permutation_round_robin_assignment_unit
+      - cross_network_shared_vendor_replication_label
       - outcome_blind_linkage_and_replay_audit
     reopen_conditions:
-      - Promote beyond candidate only if MISO and SPP both expose linkable lottery realization, exact pre-state and post-state, pass support and replay gates, and a 20-primary-work audit leaves a result beyond sequential capacity allocation and standard randomization inference.
+      - Reopen only after both MISO and SPP or OATI provide versioned field-level written confirmation of a supported machine export for SSW run, customer lottery, round and request evaluation order, plus the complete eligible set and exact assignment probabilities.
+      - Require an atomic request-position join to versioned immediate pre/post AFC and flowgate state, explicit historical automation and publication rights, and a newly frozen blinded support pass before records are queried.
+      - Require a non-OATI system for any implementation-independence claim and a central result beyond online packing, exact constrained-permutation inference and connection-order path dependence.
     forbidden_actions:
-      - Do not inspect or estimate customer, path, award, price or response effects during D-minus-1.
-      - Do not treat public-display regulation as proof that the required current observer export exists.
-      - Do not implement a simulator, run EcoMD, call a model or use GPU before a separately frozen T0 passes.
+      - Do not infer lottery position from ordinary queue time, update timestamps, assignment references or result order.
+      - Do not scrape authenticated OATI interfaces, query outcomes or support, buy access, register an entity, or send external inquiries without new authorization.
+      - Do not describe MISO and SPP as independent software or mechanism replications or relabel mechanical AFC depletion as market or molecular dynamics.
 
   - id: dcrdex_verifiable_sequencing_response
     node_type: research_route
@@ -3946,12 +3989,13 @@ edges:
     source: nonauction_random_priority_search_gminus1
     type: aggregates
     target: oasis_ssw_random_priority_network_response
-    rationale: OASIS was the only true non-auction card to cross the frozen T0 screening floor, while remaining a candidate pending realization, state, support, replay, vendor and novelty gates.
+    rationale: OASIS was the only true non-auction card to cross the frozen screening floor, then failed its frozen D-minus-1 because the public machine contract did not establish lottery realization or atomic event-linked AFC state.
     evidence_refs:
       - nonauction_search_formal_result
       - oasis_ssw_miso_tariff
       - oasis_ssw_spp_practice
       - oasis_ssw_dminus1_freeze
+      - oasis_ssw_dminus1_result
 
   - id: nonauction_search_aggregates_dcrdex
     source: nonauction_random_priority_search_gminus1

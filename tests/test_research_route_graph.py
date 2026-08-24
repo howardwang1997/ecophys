@@ -71,7 +71,6 @@ def test_only_declared_routes_remain_open() -> None:
     assert open_routes == {
         "dcrdex_verifiable_sequencing_response": "parked",
         "fcc_clock1_random_rank_cascade": "candidate",
-        "oasis_ssw_random_priority_network_response": "candidate",
         "verification_liquidity": "active",
     }
 

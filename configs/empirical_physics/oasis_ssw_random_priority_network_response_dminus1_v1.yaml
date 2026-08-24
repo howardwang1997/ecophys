@@ -1,0 +1,112 @@
+project: oasis_ssw_random_priority_network_response_dminus1
+version: 1
+frozen_date: 2026-08-24
+closed_date: 2026-08-24
+status: failed_closed
+verdict: fail_red
+failed_stage: D_minus_1_public_realization_and_state_contract
+parent_route: nonauction_random_priority_search_gminus1
+freeze_artifact: papers/proposal/oasis_ssw_random_priority_network_response_dminus1_freeze_2026-08-24.md
+result_artifact: papers/proposal/oasis_ssw_random_priority_network_response_dminus1_result_2026-08-24.md
+memory_artifact: .claude/memory/project_oasis_ssw_random_priority_network_response_2026-08-24.md
+stop_at_first_failure: true
+
+question: >-
+  Do MISO and SPP expose a legally reusable and linkable public record of each simultaneous-window customer
+  lottery, the resulting request evaluation order, and the exact flowgate state immediately before and after each
+  evaluation, with enough multi-constraint support for a later outcome-blind replay?
+
+resource_boundary:
+  official_rules_schemas_access_terms_and_primary_literature: allowed
+  transaction_outcome_records: 0
+  support_queries: 0
+  external_schema_inquiries: 0
+  paid_data_usd: 0
+  parsers_or_simulators: 0
+  model_api_calls: 0
+  ecomd_runs: 0
+  gpu_hours: 0
+
+systems:
+  primary:
+    - MISO
+    - SPP
+  backup:
+    - BPA
+  shared_vendor_family: OATI_webTrans_webSmartOASIS
+
+gate_results:
+  rule_gate:
+    status: pass
+    finding: >-
+      MISO and SPP formally randomize customer order after deterministic priority rules and expand it through
+      round-robin request positions evaluated sequentially against available capacity.
+  realization_gate:
+    status: fail
+    finding: >-
+      The inspected public standard machine contract does not document a stable SSW identifier, customer lottery
+      order, lottery round or derived TSR evaluation-position export. Ordinary queue and update times are not valid
+      substitutes.
+  state_gate:
+    status: fail
+    finding: >-
+      Current and horizon flowgate reports do not establish an atomic, versioned request-to-immediate-pre/post AFC
+      state join with complete topology, outage, impact and counteroffer inputs.
+  access_and_reuse_gate:
+    status: fail
+    finding: >-
+      Programmatic OATI access requires supported templates and credentials; UI scraping is prohibited and no open
+      bulk research/publication licence for the required custom fields was found.
+  support_gate:
+    status: not_run
+    reason: stopped_before_transaction_records_after_realization_and_state_failure
+  nontriviality_gate:
+    status: not_run
+    reason: stopped_before_transaction_records_after_realization_and_state_failure
+  replay_gate:
+    status: not_run
+    reason: no_complete_public_input_contract
+  replication_gate:
+    status: fail
+    finding: >-
+      MISO and SPP are distinct networks and operators but use the same OATI product family and essentially the same
+      customer-random-order, round-robin, sequential-AFC mechanism; they are not independent implementations.
+  novelty_gate:
+    status: stopped_with_reduction_warning
+    finding: >-
+      No exact OASIS SSW empirical application was found in a partial 18-work audit, but immediate network response
+      reduces to random-order multidimensional packing and established connection-order path dependence.
+
+failure_codes:
+  - lottery_realization_machine_export_unverified
+  - ssw_window_identifier_export_unverified
+  - event_linked_afc_prestate_unavailable
+  - event_linked_afc_poststate_unavailable
+  - programmatic_reuse_contract_unestablished
+  - shared_oati_mechanism_replication
+  - random_order_packing_reduction
+  - connection_order_path_dependence_prior
+
+probability_update:
+  frozen_t0_survival_prior: 0.18
+  public_contract_rescue_probability: 0.03
+  novelty_survival_given_complete_data: [0.08, 0.10]
+  combined_current_survival_probability: 0.003
+  nature_route_active: false
+
+reopen_requires:
+  - versioned_machine_export_of_ssw_run_customer_lottery_round_and_request_evaluation_position_for_both_operators
+  - complete_eligible_set_and_exact_assignment_probability_or_verifiable_randomization_log
+  - atomic_versioned_pre_and_post_afc_flowgate_state_join_for_each_evaluation
+  - explicit_history_access_cost_rate_limit_reuse_and_publication_terms
+  - blinded_support_pass_in_both_operators_after_a_new_freeze
+  - non_oati_system_for_any_implementation_independence_claim
+  - central_result_beyond_online_packing_permutation_inference_and_connection_order_path_dependence
+
+forbidden_actions:
+  - infer_lottery_order_from_queue_or_update_timestamps
+  - scrape_authenticated_oati_user_interfaces
+  - query_transaction_outcomes_or_support_under_this_closed_protocol
+  - buy_data_certificates_or_register_market_access_without_new_authorization
+  - implement_replay_simulator_or_ecomd_under_this_route
+  - describe_miso_and_spp_as_independent_software_or_mechanism_replications
