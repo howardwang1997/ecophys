@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import shutil
 import subprocess
+import tarfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
@@ -298,10 +300,10 @@ def add_authorized_sandbox(
             "image_digest": f"sha256:{'1' * 64}",
             "network": "none",
             "root_filesystem": "read_only",
-            "repository_mount": "none",
-            "exploration_mount": "read_only_enumerated_units_only",
+            "repository_tree_mount": "none",
+            "input_channel": "read_only_config_with_enumerated_units_only",
             "confirmation_materialization": "not_generated_not_staged_not_mounted",
-            "output_mount": "sandbox_artifact_root_only",
+            "output_channel": "bounded_stdout_tar",
             "secrets": "none",
             "device_access": "cpu_only",
         },
@@ -431,10 +433,16 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
     branch_root.mkdir(parents=True)
     code_manifest = branch_root / "code_manifest.json"
     config = branch_root / "config.yaml"
+    request = branch_root / "request.yaml"
     receipt = branch_root / "receipt.json"
-    output = branch_root / "screening_summary.txt"
+    output = branch_root / "bundle.tar"
     write_json(code_manifest, {"git_sha": "0" * 40, "files": []})
-    write_mapping(config, {"seed": 17, "tests": ["signal_exists"]})
+    write_mapping(config, {"unit_ids": ["unit_a"], "tests": ["signal_exists"]})
+    payload = b"exploratory only\n"
+    with tarfile.open(output, mode="w") as archive:
+        member = tarfile.TarInfo("screening_summary.txt")
+        member.size = len(payload)
+        archive.addfile(member, io.BytesIO(payload))
     write_json(
         receipt,
         {
@@ -442,11 +450,14 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
             "sandbox_id": sandbox_id,
             "branch_id": "branch_one",
             "started_at": "2026-08-25T02:11:00Z",
-            "finished_at": "2026-08-25T02:19:00Z",
+            "finished_at": "2026-08-25T02:13:00Z",
             "cpu_seconds": 120,
-            "storage_bytes": 64,
+            "storage_bytes": output.stat().st_size,
             "monetary_cost_usd_micros": 0,
             "gpu_seconds": 0,
+            "run_status": "completed",
+            "container_exit_code": 0,
+            "wall_seconds": 120,
             "executor": "oci_container",
             "launcher_sha256": hashlib.sha256(
                 (
@@ -461,15 +472,42 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
             "image_digest": f"sha256:{'1' * 64}",
             "network": "none",
             "root_filesystem": "read_only",
-            "repository_mount": "none",
-            "exploration_mount": "read_only_enumerated_units_only",
+            "repository_tree_mount": "none",
+            "input_channel": "read_only_config_with_enumerated_units_only",
             "confirmation_materialization": "not_generated_not_staged_not_mounted",
-            "output_mount": "sandbox_artifact_root_only",
+            "output_channel": "bounded_stdout_tar",
             "secrets": "none",
             "device_access": "cpu_only",
         },
     )
-    output.write_text("exploratory only\n", encoding="utf-8")
+    request_value: dict[str, object] = {
+        "schema_version": 1,
+        "sandbox_id": sandbox_id,
+        "branch_id": "branch_one",
+        "hypothesis_id": "hypothesis_one",
+        "hypothesis": "A measurable signal exists on the disposable split.",
+        "falsifier": "The frozen effect estimate is inside the null margin.",
+        "multiplicity_family_id": "fixture_family",
+        "test_ids": ["signal_exists"],
+        "unit_ids": ["unit_a"],
+        "cpu_seconds": 120,
+        "output_bytes": 20_000,
+        "code_manifest": {
+            "ref": (
+                f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
+                "branch_one/code_manifest.json"
+            ),
+            "sha256": hashlib.sha256(code_manifest.read_bytes()).hexdigest(),
+        },
+        "config": {
+            "ref": (
+                f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
+                "branch_one/config.yaml"
+            ),
+            "sha256": hashlib.sha256(config.read_bytes()).hexdigest(),
+        },
+    }
+    write_mapping(request, request_value)
     ledger_path = artifact_root / "events.jsonl"
     entries = load_event_log(ledger_path)
     entries.extend(
@@ -485,20 +523,17 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
                 "falsifier": "The frozen effect estimate is inside the null margin.",
                 "multiplicity_family_id": "fixture_family",
                 "test_ids": ["signal_exists"],
-                "seed_ids": [17],
-                "code_manifest": {
+                "unit_ids": ["unit_a"],
+                "cpu_seconds": 120,
+                "output_bytes": 20_000,
+                "code_manifest": request_value["code_manifest"],
+                "config": request_value["config"],
+                "request": {
                     "ref": (
                         f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
-                        "branch_one/code_manifest.json"
+                        "branch_one/request.yaml"
                     ),
-                    "sha256": hashlib.sha256(code_manifest.read_bytes()).hexdigest(),
-                },
-                "config": {
-                    "ref": (
-                        f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
-                        "branch_one/config.yaml"
-                    ),
-                    "sha256": hashlib.sha256(config.read_bytes()).hexdigest(),
+                    "sha256": hashlib.sha256(request.read_bytes()).hexdigest(),
                 },
             },
             {
@@ -518,7 +553,7 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
                     {
                         "ref": (
                             f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
-                            "branch_one/screening_summary.txt"
+                            "branch_one/bundle.tar"
                         ),
                         "sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
                         "bytes": output.stat().st_size,
@@ -835,6 +870,91 @@ def test_hash_chained_branch_receipt_and_terminal_result_validate(tmp_path: Path
     result = validate_discovery(repo, as_of=FIXED_AS_OF)
 
     assert "1 sandbox-tainted results" in result
+
+
+def test_branch_request_cannot_select_confirmation_unit(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    branch_root = (
+        repo
+        / "research"
+        / "discovery"
+        / "sandbox_artifacts"
+        / SANDBOX_ID
+        / "branches"
+        / "branch_one"
+    )
+    config_path = branch_root / "config.yaml"
+    request_path = branch_root / "request.yaml"
+    write_mapping(config_path, {"unit_ids": ["unit_b"], "tests": ["signal_exists"]})
+    request = load_mapping(request_path)
+    request["unit_ids"] = ["unit_b"]
+    child_mapping(request, "config")["sha256"] = hashlib.sha256(
+        config_path.read_bytes()
+    ).hexdigest()
+    write_mapping(request_path, request)
+    ledger_path = branch_root.parents[1] / "events.jsonl"
+    entries = load_event_log(ledger_path)
+    entries[1]["unit_ids"] = ["unit_b"]
+    entries[1]["config"] = request["config"]
+    child_mapping(entries[1], "request")["sha256"] = hashlib.sha256(
+        request_path.read_bytes()
+    ).hexdigest()
+    write_event_log(ledger_path, entries)
+
+    with pytest.raises(DiscoveryValidationError, match="uses non-exploration units"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_branch_event_must_repeat_frozen_request(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    ledger_path = (
+        repo
+        / "research"
+        / "discovery"
+        / "sandbox_artifacts"
+        / SANDBOX_ID
+        / "events.jsonl"
+    )
+    entries = load_event_log(ledger_path)
+    entries[1]["hypothesis"] = "A post-request replacement hypothesis."
+    write_event_log(ledger_path, entries)
+
+    with pytest.raises(DiscoveryValidationError, match="differs from the frozen branch request"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_receipt_storage_must_equal_declared_artifacts(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    branch_root = (
+        repo
+        / "research"
+        / "discovery"
+        / "sandbox_artifacts"
+        / SANDBOX_ID
+        / "branches"
+        / "branch_one"
+    )
+    receipt_path = branch_root / "receipt.json"
+    receipt_obj = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert isinstance(receipt_obj, dict)
+    receipt = cast(dict[str, object], receipt_obj)
+    receipt["storage_bytes"] = 0
+    write_json(receipt_path, receipt)
+    ledger_path = branch_root.parents[1] / "events.jsonl"
+    entries = load_event_log(ledger_path)
+    child_mapping(entries[2], "receipt")["sha256"] = hashlib.sha256(
+        receipt_path.read_bytes()
+    ).hexdigest()
+    write_event_log(ledger_path, entries)
+
+    with pytest.raises(DiscoveryValidationError, match="storage_bytes differs from artifacts"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
 
 
 def test_branch_ledger_hash_tampering_is_rejected(tmp_path: Path) -> None:

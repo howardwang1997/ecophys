@@ -37,16 +37,19 @@ jobs:
       - name: Run governance mutation tests
         run: >-
           conda run -n ecophys python -m pytest
-          tests/test_research_discovery.py tests/test_research_route_graph.py -q
+          tests/test_research_discovery.py tests/test_run_research_discovery_sandbox.py
+          tests/test_research_route_graph.py -q
 
       - name: Lint governance code
         run: >-
           conda run -n ecophys ruff check
-          scripts/validate_research_discovery.py scripts/validate_research_route_graph.py
-          tests/test_research_discovery.py tests/test_research_route_graph.py
+          scripts/run_research_discovery_sandbox.py scripts/validate_research_discovery.py
+          scripts/validate_research_route_graph.py tests/test_research_discovery.py
+          tests/test_run_research_discovery_sandbox.py tests/test_research_route_graph.py
 
       - name: Type-check governance code
         run: >-
           conda run -n ecophys mypy --strict --explicit-package-bases
-          scripts/validate_research_discovery.py scripts/validate_research_route_graph.py
-          tests/test_research_discovery.py tests/test_research_route_graph.py
+          scripts/run_research_discovery_sandbox.py scripts/validate_research_discovery.py
+          scripts/validate_research_route_graph.py tests/test_research_discovery.py
+          tests/test_run_research_discovery_sandbox.py tests/test_research_route_graph.py

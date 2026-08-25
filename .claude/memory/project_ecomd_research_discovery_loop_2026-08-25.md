@@ -80,17 +80,18 @@ An optional asset-level DX sandbox sits outside route status. It repairs the cir
 which all empirical feedback was forbidden until a topic had already passed a high-confidence
 activation gate. Schema v2 requires hashed provenance/snapshot/partition inputs, explicit
 unit membership, cumulative asset-campaign reservations, and one canonical event chain that
-freezes each hypothesis, falsifier, multiplicity family, test set, seed set and code/config
+    freezes each hypothesis, falsifier, multiplicity family, test set, unit set and code/config
 before its receipt. Every terminal result is `sandbox_exploratory_tainted`: it can appear
 only in `sandbox_motivation_refs`, never in novelty, killer, decision, D2 or paper-claim
 evidence. The validator now has a protected-base mode: old manifests, decisions, inputs and
 artifacts are immutable, event ledgers and the taint registry are prefix-only, and a new
-sandbox must be merged as authorization-only before it can execute. The PR workflow exists,
-but the repository owner must still make it required and forbid force pushes. Schema v2 also
-binds an OCI image and launcher digest, no network, a read-only root, no repository or
-secrets mount, CPU-only access, an exploration-only mount, absent confirmation outcomes and
-an artifact-only output mount. Receipts repeat the contract, but a reviewed launcher must
-still enforce it. Synthetic confirmation must use a frozen future-public-randomness seed
+    sandbox must be merged as authorization-only before it can execute. The research baseline
+    now requires the PR workflow check and forbids force pushes/deletion and administrator bypass.
+    Schema v2 also binds an OCI image and launcher digest, no network, a read-only root, no
+    repository-tree or secrets mount, CPU-only access, a single frozen config-file input, absent
+    confirmation outcomes and a byte-bounded stdout tar. The launcher enforces and receipts this
+    contract, but remains unqualified until an outcome-free pinned-image conformance run and
+    independent runtime review. Synthetic confirmation must use a frozen future-public-randomness seed
 derivation; known reserved seed numbers are not a holdout. No sandbox is authorized.
 
 The first proposed synthetic generator is retained only as the outcome-blind Bourse

@@ -99,7 +99,7 @@ The forward stages are:
    map the topic against reusable failure families from the route graph;
 3. **optional DX:** after a separate asset-level authorization, use only an explicitly
    enumerated disposable split for a zero-cost, CPU-only probe whose hypotheses, falsifiers,
-   test family, seeds, code/config hashes, receipts, and terminal result share one hash chain;
+   test family, unit IDs, code/config hashes, receipts, and terminal result share one hash chain;
 4. **D-1:** try to kill it with exact-prior reductions, at least two minimal counterexamples,
    two independent simulator contracts, a real-observation bridge, and a contamination audit;
 5. **D0:** hash and freeze the estimand, baselines, budget, stop rules, confirmation split,
@@ -116,13 +116,13 @@ an OCI execution contract, and a terminal taint-registry entry. A sandbox result
 `sandbox_motivation_refs`; novelty, killer, decision, D2, and paper-claim uses fail closed.
 The validator now has a `--base-ref` mode that requires old manifests, decisions, inputs and
 artifacts to remain byte-identical and old ledgers to remain exact byte prefixes. A new
-sandbox must be merged as authorization-only before any branch can run. The pull-request
-workflow exists, but it is not a protected-branch setting: the repository owner must still
-make `research-governance` required and forbid force pushes before a first authorization.
-The manifest also freezes an OCI image and launcher digest, no network, a read-only root,
-no repository/secrets mount, CPU-only access, an exploration-only input mount, and an
-artifact-only output mount. These declarations and receipts do not replace an independently
-reviewed enforcing launcher. Synthetic confirmation must derive its seeds from public
+sandbox must be merged as authorization-only before any branch can run. The research baseline
+branch requires `research-governance`, forbids force pushes and deletion, enforces linear
+history and conversation resolution, and disables administrator bypass. The manifest also
+freezes an OCI image and launcher digest, no network, a read-only root, no repository-tree or
+secrets mount, CPU-only access, a single frozen read-only config-file input, and a byte-bounded
+stdout tar output. The launcher enforces and receipts that contract, but it has not yet passed
+a real-image conformance run or independent runtime review. Synthetic confirmation must derive its seeds from public
 randomness emitted only after sandbox termination and the D0 freeze; known reserved seeds
 are rejected as a false holdout. No sandbox is currently authorized.
 
@@ -147,10 +147,11 @@ The subsequent asset-first truth-contract audit is in the
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py
-conda run -n ecophys python scripts/validate_research_discovery.py --base-ref origin/main
+conda run -n ecophys python scripts/validate_research_discovery.py \
+  --base-ref origin/dependabot-cooldown-verification-liquidity-2026-08-21
 conda run -n ecophys python scripts/validate_research_route_graph.py
 conda run -n ecophys python -m pytest tests/test_research_discovery.py \
-  tests/test_research_route_graph.py -q
+  tests/test_run_research_discovery_sandbox.py tests/test_research_route_graph.py -q
 ```
 
 ## Current software-release gates

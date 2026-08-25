@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import subprocess
 import sys
@@ -36,6 +37,7 @@ SANDBOX_HARD_MAX_MONETARY_COST_USD_MICROS = 0
 SANDBOX_HARD_MAX_GPU_SECONDS = 0
 SANDBOX_HARD_MAX_BRANCHES = 16
 SANDBOX_HARD_MAX_TTL_SECONDS = 604_800
+SANDBOX_STDERR_LIMIT_BYTES = 1_000_000
 SANDBOX_REQUIRED_FORBIDDEN_ACTIONS = {
     "confirmation_holdout_access",
     "dataset_purchase",
@@ -133,12 +135,27 @@ SANDBOX_EXECUTION_FIELDS = {
     "image_digest",
     "network",
     "root_filesystem",
-    "repository_mount",
-    "exploration_mount",
+    "repository_tree_mount",
+    "input_channel",
     "confirmation_materialization",
-    "output_mount",
+    "output_channel",
     "secrets",
     "device_access",
+}
+SANDBOX_BRANCH_REQUEST_FIELDS = {
+    "schema_version",
+    "sandbox_id",
+    "branch_id",
+    "hypothesis_id",
+    "hypothesis",
+    "falsifier",
+    "multiplicity_family_id",
+    "test_ids",
+    "unit_ids",
+    "cpu_seconds",
+    "output_bytes",
+    "code_manifest",
+    "config",
 }
 SANDBOX_CONFIRMATION_FIELDS = {
     "mode",
@@ -200,10 +217,10 @@ class SandboxExecutionContract:
     image_digest: str
     network: str
     root_filesystem: str
-    repository_mount: str
-    exploration_mount: str
+    repository_tree_mount: str
+    input_channel: str
     confirmation_materialization: str
-    output_mount: str
+    output_channel: str
     secrets: str
     device_access: str
 
@@ -1333,6 +1350,107 @@ def validate_partition_v2(
     return namespace, frozenset(exploration), frozenset(confirmation)
 
 
+def validate_branch_request_v1(
+    value: object,
+    repo_root: Path,
+    schema: Mapping[str, object],
+    sandbox_id: str,
+    branch_id: str,
+    exploration_units: frozenset[str],
+    artifact_root: Path,
+    reservation: Mapping[str, int],
+    context: str,
+) -> Mapping[str, object]:
+    _, request_path, _ = require_digest_ref(repo_root, value, f"{context}.request")
+    branch_root = artifact_root / "branches" / branch_id
+    expected_request = branch_root / "request.yaml"
+    if request_path != expected_request:
+        raise DiscoveryValidationError(f"{context}.request must use the canonical branch path")
+    request = load_yaml(request_path, f"branch request for {sandbox_id}/{branch_id}")
+    validate_json_instance(
+        schema,
+        request,
+        f"branch request for {sandbox_id}/{branch_id}",
+    )
+    require_exact_fields(
+        request,
+        SANDBOX_BRANCH_REQUEST_FIELDS,
+        f"branch request for {sandbox_id}/{branch_id}",
+    )
+    require_schema_version_one(
+        request.get("schema_version"),
+        f"branch request for {sandbox_id}/{branch_id}.schema_version",
+    )
+    if request.get("sandbox_id") != sandbox_id or request.get("branch_id") != branch_id:
+        raise DiscoveryValidationError(f"branch request identity mismatch for {sandbox_id}/{branch_id}")
+    require_id(
+        request.get("hypothesis_id"),
+        f"branch request for {sandbox_id}/{branch_id}.hypothesis_id",
+    )
+    for field in ("hypothesis", "falsifier"):
+        require_string(
+            request.get(field),
+            f"branch request for {sandbox_id}/{branch_id}.{field}",
+        )
+    require_id(
+        request.get("multiplicity_family_id"),
+        f"branch request for {sandbox_id}/{branch_id}.multiplicity_family_id",
+    )
+    require_string_list(
+        request.get("test_ids"),
+        f"branch request for {sandbox_id}/{branch_id}.test_ids",
+        allow_empty=False,
+    )
+    unit_ids = require_string_list(
+        request.get("unit_ids"),
+        f"branch request for {sandbox_id}/{branch_id}.unit_ids",
+        allow_empty=False,
+    )
+    outside_exploration = set(unit_ids) - exploration_units
+    if outside_exploration:
+        raise DiscoveryValidationError(
+            f"branch request for {sandbox_id}/{branch_id} uses non-exploration units: "
+            f"{sorted(outside_exploration)[:3]}"
+        )
+    cpu_seconds = require_positive_integer(
+        request.get("cpu_seconds"),
+        f"branch request for {sandbox_id}/{branch_id}.cpu_seconds",
+    )
+    output_bytes = require_positive_integer(
+        request.get("output_bytes"),
+        f"branch request for {sandbox_id}/{branch_id}.output_bytes",
+    )
+    if cpu_seconds > reservation["cpu_seconds"]:
+        raise DiscoveryValidationError("branch request CPU budget exceeds sandbox reservation")
+    if output_bytes > reservation["storage_bytes"]:
+        raise DiscoveryValidationError("branch request output budget exceeds sandbox reservation")
+    for field, expected_name in (
+        ("code_manifest", "code_manifest.json"),
+        ("config", "config.yaml"),
+    ):
+        _, referenced_path, _ = require_digest_ref(
+            repo_root,
+            request.get(field),
+            f"branch request for {sandbox_id}/{branch_id}.{field}",
+        )
+        if referenced_path != branch_root / expected_name:
+            raise DiscoveryValidationError(
+                f"branch request for {sandbox_id}/{branch_id}.{field} is not canonical"
+            )
+        if field == "config":
+            config = load_yaml(referenced_path, f"branch config for {sandbox_id}/{branch_id}")
+            config_units = require_string_list(
+                config.get("unit_ids"),
+                f"branch config for {sandbox_id}/{branch_id}.unit_ids",
+                allow_empty=False,
+            )
+            if config_units != unit_ids:
+                raise DiscoveryValidationError(
+                    f"branch config/request unit mismatch for {sandbox_id}/{branch_id}"
+                )
+    return request
+
+
 def load_canonical_event_log(path: Path, context: str) -> list[Mapping[str, object]]:
     raw = path.read_bytes()
     if not raw or not raw.endswith(b"\n") or b"\r" in raw:
@@ -1401,7 +1519,7 @@ def validate_receipt_v2(
     branch_id: str,
     context: str,
     execution_contract: SandboxExecutionContract,
-) -> tuple[dict[str, int], datetime, datetime]:
+) -> tuple[dict[str, int], datetime, datetime, str]:
     try:
         raw = path.read_bytes()
         receipt_obj = cast(object, json.loads(raw.decode("utf-8")))
@@ -1422,15 +1540,18 @@ def validate_receipt_v2(
         "storage_bytes",
         "monetary_cost_usd_micros",
         "gpu_seconds",
+        "run_status",
+        "container_exit_code",
+        "wall_seconds",
         "executor",
         "launcher_sha256",
         "image_digest",
         "network",
         "root_filesystem",
-        "repository_mount",
-        "exploration_mount",
+        "repository_tree_mount",
+        "input_channel",
         "confirmation_materialization",
-        "output_mount",
+        "output_channel",
         "secrets",
         "device_access",
     }
@@ -1444,16 +1565,27 @@ def validate_receipt_v2(
         "image_digest": execution_contract.image_digest,
         "network": execution_contract.network,
         "root_filesystem": execution_contract.root_filesystem,
-        "repository_mount": execution_contract.repository_mount,
-        "exploration_mount": execution_contract.exploration_mount,
+        "repository_tree_mount": execution_contract.repository_tree_mount,
+        "input_channel": execution_contract.input_channel,
         "confirmation_materialization": execution_contract.confirmation_materialization,
-        "output_mount": execution_contract.output_mount,
+        "output_channel": execution_contract.output_channel,
         "secrets": execution_contract.secrets,
         "device_access": execution_contract.device_access,
     }
     for field, expected_value in expected_execution.items():
         if receipt.get(field) != expected_value:
             raise DiscoveryValidationError(f"{context}.{field} differs from execution contract")
+    run_status = require_string(receipt.get("run_status"), f"{context}.run_status")
+    if run_status not in {"completed", "container_failed", "timeout", "output_limit"}:
+        raise DiscoveryValidationError(f"{context}.run_status is invalid")
+    exit_code = receipt.get("container_exit_code")
+    if exit_code is not None and type(exit_code) is not int:
+        raise DiscoveryValidationError(f"{context}.container_exit_code must be integer or null")
+    if run_status == "completed" and exit_code != 0:
+        raise DiscoveryValidationError(f"{context} completed without a zero exit code")
+    wall_seconds = require_nonnegative_integer(
+        receipt.get("wall_seconds"), f"{context}.wall_seconds"
+    )
     started = require_utc_timestamp(receipt.get("started_at"), f"{context}.started_at")
     finished = require_utc_timestamp(receipt.get("finished_at"), f"{context}.finished_at")
     if finished < started:
@@ -1475,7 +1607,12 @@ def validate_receipt_v2(
     }
     if usage["monetary_cost_usd_micros"] != 0 or usage["gpu_seconds"] != 0:
         raise DiscoveryValidationError(f"{context} reports forbidden monetary or GPU use")
-    return usage, started, finished
+    if usage["cpu_seconds"] != wall_seconds:
+        raise DiscoveryValidationError(f"{context}.cpu_seconds must equal charged one-CPU wall time")
+    timestamp_elapsed = max(0, math.ceil((finished - started).total_seconds()))
+    if abs(timestamp_elapsed - wall_seconds) > 1:
+        raise DiscoveryValidationError(f"{context}.wall_seconds disagrees with receipt timestamps")
+    return usage, started, finished, run_status
 
 
 def tree_file_bytes(path: Path, context: str) -> int:
@@ -1678,6 +1815,7 @@ def validate_sandbox_v2(
     partition_schema: Mapping[str, object],
     decision_schema: Mapping[str, object],
     result_schema: Mapping[str, object],
+    branch_request_schema: Mapping[str, object],
     route_ids: set[str],
     clean_evidence_ids: set[str],
     policy: Mapping[str, object],
@@ -1911,10 +2049,10 @@ def validate_sandbox_v2(
     required_execution_values = {
         "network": "none",
         "root_filesystem": "read_only",
-        "repository_mount": "none",
-        "exploration_mount": "read_only_enumerated_units_only",
+        "repository_tree_mount": "none",
+        "input_channel": "read_only_config_with_enumerated_units_only",
         "confirmation_materialization": "not_generated_not_staged_not_mounted",
-        "output_mount": "sandbox_artifact_root_only",
+        "output_channel": "bounded_stdout_tar",
         "secrets": "none",
         "device_access": "cpu_only",
     }
@@ -1934,10 +2072,10 @@ def validate_sandbox_v2(
         image_digest=image_digest,
         network=execution_values["network"],
         root_filesystem=execution_values["root_filesystem"],
-        repository_mount=execution_values["repository_mount"],
-        exploration_mount=execution_values["exploration_mount"],
+        repository_tree_mount=execution_values["repository_tree_mount"],
+        input_channel=execution_values["input_channel"],
         confirmation_materialization=execution_values["confirmation_materialization"],
-        output_mount=execution_values["output_mount"],
+        output_channel=execution_values["output_channel"],
         secrets=execution_values["secrets"],
         device_access=execution_values["device_access"],
     )
@@ -2007,6 +2145,7 @@ def validate_sandbox_v2(
         raise DiscoveryValidationError(f"sandbox decision for {sandbox_id} genesis hash mismatch")
 
     opened: dict[str, datetime] = {}
+    branch_budgets: dict[str, tuple[int, int]] = {}
     finished: set[str] = set()
     usage = {
         "cpu_seconds": 0,
@@ -2038,41 +2177,35 @@ def validate_sandbox_v2(
             "entry_sha256",
         }
         if event_type == "branch_opened":
-            fields = common | {
-                "branch_id",
-                "hypothesis_id",
-                "hypothesis",
-                "falsifier",
-                "multiplicity_family_id",
-                "test_ids",
-                "seed_ids",
-                "code_manifest",
-                "config",
-            }
+            request_entry_fields = SANDBOX_BRANCH_REQUEST_FIELDS - {"schema_version", "sandbox_id"}
+            fields = common | request_entry_fields | {"request"}
             require_exact_fields(entry, fields, entry_context)
             if occurred_at >= expires_at:
                 raise DiscoveryValidationError(f"{entry_context} opened at or after expiry")
             branch_id = require_id(entry.get("branch_id"), f"{entry_context}.branch_id")
             if branch_id in opened:
                 raise DiscoveryValidationError(f"duplicate branch id in {sandbox_id}: {branch_id}")
-            opened[branch_id] = occurred_at
-            require_id(entry.get("hypothesis_id"), f"{entry_context}.hypothesis_id")
-            for field in ("hypothesis", "falsifier"):
-                require_string(entry.get(field), f"{entry_context}.{field}")
-            require_id(
-                entry.get("multiplicity_family_id"),
-                f"{entry_context}.multiplicity_family_id",
+            request = validate_branch_request_v1(
+                entry.get("request"),
+                repo_root,
+                branch_request_schema,
+                sandbox_id,
+                branch_id,
+                exploration_units,
+                artifact_root,
+                reservation,
+                entry_context,
             )
-            require_string_list(entry.get("test_ids"), f"{entry_context}.test_ids", allow_empty=False)
-            seed_values = require_list(entry.get("seed_ids"), f"{entry_context}.seed_ids")
-            seeds = [
-                require_nonnegative_integer(seed, f"{entry_context}.seed_ids[{seed_index}]")
-                for seed_index, seed in enumerate(seed_values)
-            ]
-            if not seeds or len(seeds) != len(set(seeds)):
-                raise DiscoveryValidationError(f"{entry_context}.seed_ids must be nonempty and unique")
-            require_digest_ref(repo_root, entry.get("code_manifest"), f"{entry_context}.code_manifest")
-            require_digest_ref(repo_root, entry.get("config"), f"{entry_context}.config")
+            for field in request_entry_fields:
+                if entry.get(field) != request.get(field):
+                    raise DiscoveryValidationError(
+                        f"{entry_context}.{field} differs from the frozen branch request"
+                    )
+            branch_budgets[branch_id] = (
+                require_positive_integer(request.get("cpu_seconds"), f"{entry_context}.cpu_seconds"),
+                require_positive_integer(request.get("output_bytes"), f"{entry_context}.output_bytes"),
+            )
+            opened[branch_id] = occurred_at
         elif event_type == "branch_finished":
             fields = common | {"branch_id", "receipt", "artifacts"}
             require_exact_fields(entry, fields, entry_context)
@@ -2090,28 +2223,79 @@ def validate_sandbox_v2(
             )
             if not receipt_ref.endswith("/receipt.json"):
                 raise DiscoveryValidationError(f"{entry_context}.receipt must end in receipt.json")
-            receipt_usage, receipt_started, receipt_finished = validate_receipt_v2(
+            branch_root = artifact_root / "branches" / branch_id
+            if receipt_path != branch_root / "receipt.json":
+                raise DiscoveryValidationError(
+                    f"{entry_context}.receipt must use the canonical branch path"
+                )
+            receipt_usage, receipt_started, receipt_finished, run_status = validate_receipt_v2(
                 receipt_path,
                 sandbox_id,
                 branch_id,
                 f"receipt for {sandbox_id}/{branch_id}",
                 execution_contract,
             )
+            branch_cpu_limit, branch_output_limit = branch_budgets[branch_id]
+            if receipt_usage["cpu_seconds"] > branch_cpu_limit:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its branch CPU budget"
+                )
+            if receipt_usage["storage_bytes"] > branch_output_limit + SANDBOX_STDERR_LIMIT_BYTES:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its branch output budget"
+                )
             if receipt_started < opened[branch_id] or receipt_finished > occurred_at:
                 raise DiscoveryValidationError(
                     f"receipt for {sandbox_id}/{branch_id} lies outside its branch event window"
                 )
             for field, value in receipt_usage.items():
                 usage[field] += value
+            artifact_storage = 0
+            artifact_names: set[str] = set()
+            artifact_sizes: dict[str, int] = {}
             for artifact_index, artifact in enumerate(
                 require_list(entry.get("artifacts"), f"{entry_context}.artifacts")
             ):
-                require_artifact_digest(
+                _, artifact_path, _, artifact_bytes = require_artifact_digest(
                     repo_root,
                     artifact,
                     f"{entry_context}.artifacts[{artifact_index}]",
                     artifact_root,
                     require_bytes=True,
+                )
+                if artifact_path.parent != branch_root:
+                    raise DiscoveryValidationError(
+                        f"{entry_context}.artifacts[{artifact_index}] is outside its branch root"
+                    )
+                if artifact_path.name in artifact_names:
+                    raise DiscoveryValidationError(f"{entry_context}.artifacts contains duplicates")
+                artifact_names.add(artifact_path.name)
+                size = cast(int, artifact_bytes)
+                artifact_sizes[artifact_path.name] = size
+                artifact_storage += size
+            allowed_names = (
+                {"bundle.tar", "stderr.log"}
+                if run_status == "completed"
+                else {"bundle.tar.partial", "stderr.log"}
+            )
+            if not artifact_names <= allowed_names:
+                raise DiscoveryValidationError(
+                    f"{entry_context}.artifacts do not match run_status {run_status}"
+                )
+            if run_status == "completed" and "bundle.tar" not in artifact_names:
+                raise DiscoveryValidationError(f"{entry_context} completed without bundle.tar")
+            bundle_name = "bundle.tar" if run_status == "completed" else "bundle.tar.partial"
+            if artifact_sizes.get(bundle_name, 0) > branch_output_limit:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its stdout bundle budget"
+                )
+            if artifact_sizes.get("stderr.log", 0) > SANDBOX_STDERR_LIMIT_BYTES:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its stderr budget"
+                )
+            if receipt_usage["storage_bytes"] != artifact_storage:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id}.storage_bytes differs from artifacts"
                 )
             finished.add(branch_id)
         elif event_type == "state_transition":
@@ -2378,6 +2562,10 @@ def validate_discovery(
         discovery_root / "exploration_sandbox_result.schema.json",
         "exploration sandbox result JSON schema",
     )
+    branch_request_schema = load_json_schema(
+        discovery_root / "exploration_branch_request.schema.json",
+        "exploration branch request JSON schema",
+    )
 
     sandbox_paths = sorted((discovery_root / "sandboxes").glob("*.yaml"))
     sandbox_records: list[SandboxRecord] = []
@@ -2391,6 +2579,7 @@ def validate_discovery(
             partition_schema,
             sandbox_decision_schema,
             sandbox_result_schema,
+            branch_request_schema,
             set(route_statuses),
             set(clean_evidence),
             sandbox_policy,

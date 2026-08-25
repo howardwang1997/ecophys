@@ -36,8 +36,9 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > external parties, or change route status. Sandbox output may only create a new child topic card that starts
 > again at D-3. Schema v2 checks current-tree hashes, actual unit overlap, cumulative asset-campaign budgets,
 > a single event chain, receipts and permanent result taint. Protected-base prefix validation and a pinned OCI
-> execution contract are now machine-readable, and the pull-request workflow exists; GitHub still needs the check
-> marked required and force pushes disabled, and an enforcing launcher remains unimplemented. The Bourse 0.4.0
+> execution contract are now machine-readable. The research baseline requires the `research-governance` check,
+> forbids force pushes/deletion and administrator bypass, and the fail-closed OCI launcher is implemented on a
+> child review branch; it still needs a pinned-image conformance run and independent runtime review. The Bourse 0.4.0
 > counterexample-search design is only a preflight with no manifest or authorization. No sandbox is currently authorized.
 
 > **Forward-authority update (2026-08-25).** Plan v4's invariant-calibration paper route is closed. Retain

@@ -201,20 +201,24 @@ registry must preserve its prior entry prefix. A sandbox absent from the base ma
 only the authorization genesis and no run artifacts or terminal result. This enforces a
 separate authorization merge before execution. The pull-request workflow is installed in
 `.github/workflows/research-governance.yml`, with third-party actions and validator
-dependencies pinned. A workflow file is not itself branch protection: the repository owner
-must make `research-governance` a required check, forbid force pushes/deletion, and protect
-governance-code review before a first authorization.
+dependencies pinned. The research baseline branch requires the `research-governance` check,
+forbids force pushes and deletion, enforces linear history and conversation resolution, and
+does not permit administrator bypass. Runtime changes are developed on child branches and
+reviewed through pull requests to that baseline.
 
 The governance validator is not an operating-system security boundary. Schema v2 now binds
 every authorization to an OCI image digest and launcher digest, no network, a read-only root
-filesystem, no host-repository or secrets mount, CPU-only device access, a read-only mount of
-enumerated exploration units, no generated/staged/mounted confirmation outcomes, and an
-artifact-only output mount. Each branch receipt must repeat those values. These are
-machine-auditable declarations; an independently reviewed launcher must still enforce them
-on the host. For a synthetic simulator, known withheld seed numbers are not an admissible
+filesystem, no host repository-tree or secrets mount, CPU-only device access, a single
+read-only frozen config-file input enumerating exploration units, no generated/staged/mounted
+confirmation outcomes, and a byte-bounded stdout tar channel. Each branch request freezes its
+hypothesis, falsifier, multiplicity family, tests, units, CPU/output bounds and code/config
+digests before execution; each receipt repeats the execution contract. The fail-closed launcher
+enforces these constraints, but still requires an outcome-free conformance run against a
+pinned test image and independent runtime review before any sandbox may be authorized. For a
+synthetic simulator, known withheld seed numbers are not an admissible
 confirmation split: seeds must be derived from a frozen public-randomness rule whose pulse
-values do not exist until after sandbox termination and D0 freeze. Until the launcher and
-branch settings are deployed, the repository truthfully reports zero authorized sandboxes.
+values do not exist until after sandbox termination and D0 freeze. Until runtime qualification,
+the repository truthfully reports zero authorized sandboxes.
 
 The first possible generator is specified only as an outcome-blind
 [Bourse counterexample preflight](../papers/proposal/bourse_disposable_market_counterexample_preflight_2026-08-25.md).
@@ -283,7 +287,10 @@ The machine validator fails closed on these rules:
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py
-conda run -n ecophys python -m pytest tests/test_research_discovery.py -q
+conda run -n ecophys python scripts/validate_research_discovery.py \
+  --base-ref origin/dependabot-cooldown-verification-liquidity-2026-08-21
+conda run -n ecophys python -m pytest tests/test_research_discovery.py \
+  tests/test_run_research_discovery_sandbox.py -q
 ```
 
 The route graph is validated separately because it records terminal decisions and lineage,
