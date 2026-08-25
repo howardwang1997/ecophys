@@ -1,0 +1,48 @@
+schema_version: 1
+route_id: market_physics_reselection_20260825
+date: "2026-08-25"
+stage: G_minus_1
+status: passed_closed
+decision: no_new_market_physics_route_above_activation_floor
+scope:
+  require_simulated_market: true
+  require_market_physics_object: true
+  require_financial_physics_mainline: true
+  require_real_observation_bridge: true
+  exclude_agent_program_source_as_physical_state: true
+selection_rule:
+  minimum_t0_probability: 0.15
+  require_irreducible_central_claim: true
+  require_two_independent_simulators: true
+  require_versioned_observation_contract: true
+  outcome_blind: true
+selected_watchlist:
+  id: trajectory_space_liquidity_dpt
+  initial_status: parked
+  status: failed_closed
+  stage: D_minus_1_paper_theorem
+  initial_t0_probability: [0.06, 0.10]
+  initial_complete_ncs_probability: [0.01, 0.03]
+  closed_at: "2026-08-25"
+  residual_t0_probability: [0.00, 0.02]
+  complete_ncs_probability_upper_bound: 0.005
+  freeze: papers/proposal/trajectory_space_liquidity_dpt_dminus1_freeze_2026-08-25.md
+  result: papers/proposal/trajectory_space_liquidity_dpt_dminus1_result_2026-08-25.md
+superseded_route_ids:
+  - program_trace_market_tom
+failed_route_ids:
+  - finite_knudsen_boundary_aware_market_hybrid
+  - finite_noise_liquidity_nucleus
+unchanged_existing_routes:
+  verification_liquidity: active
+  fcc_clock1_random_rank_cascade: candidate
+  dcrdex_verifiable_sequencing_response: parked
+forbidden_actions:
+  - outcome_inspection
+  - simulator_execution
+  - model_implementation
+  - ecomd_integration
+  - dataset_purchase
+  - gpu_use
+  - treating_parked_watchlist_as_candidate
+  - combining_failed_components_to_raise_novelty

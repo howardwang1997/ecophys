@@ -1,0 +1,52 @@
+name: Research governance
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  research-governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          fetch-depth: 0
+
+      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        with:
+          activate-environment: ecophys
+          python-version: "3.11"
+          auto-activate-base: false
+
+      - name: Install governance dependencies
+        run: >-
+          conda run -n ecophys pip install
+          PyYAML==6.0.3 jsonschema==4.26.0 pytest==9.0.3 ruff==0.15.11
+          mypy==1.20.2 types-PyYAML==6.0.12.20260724
+
+      - name: Validate current governance and protected sandbox history
+        run: >-
+          conda run -n ecophys python scripts/validate_research_discovery.py
+          --base-ref "origin/${{ github.base_ref }}"
+
+      - name: Validate route graph
+        run: conda run -n ecophys python scripts/validate_research_route_graph.py
+
+      - name: Run governance mutation tests
+        run: >-
+          conda run -n ecophys python -m pytest
+          tests/test_research_discovery.py tests/test_research_route_graph.py -q
+
+      - name: Lint governance code
+        run: >-
+          conda run -n ecophys ruff check
+          scripts/validate_research_discovery.py scripts/validate_research_route_graph.py
+          tests/test_research_discovery.py tests/test_research_route_graph.py
+
+      - name: Type-check governance code
+        run: >-
+          conda run -n ecophys mypy --strict --explicit-package-bases
+          scripts/validate_research_discovery.py scripts/validate_research_route_graph.py
+          tests/test_research_discovery.py tests/test_research_route_graph.py

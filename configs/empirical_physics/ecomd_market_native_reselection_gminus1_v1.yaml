@@ -1,0 +1,60 @@
+schema_version: 1
+route_id: market_native_reselection_20260825
+date: "2026-08-25"
+stage: G_minus_1
+status: passed_closed
+decision: no_qualifying_market_native_physics_route
+scope:
+  require_simulated_market: true
+  require_protocol_native_state_or_operation: true
+  require_financial_physics_mainline: true
+  require_real_observation_bridge: true
+  reject_imported_physics_label_as_novelty: true
+selection_rule:
+  minimum_t0_probability: 0.15
+  require_unit_label_clock_invariance: true
+  require_irreducible_market_specific_theorem: true
+  require_complete_admissible_action_grammar: true
+  require_two_independent_implementations: true
+  require_versioned_real_state_contract: true
+  outcome_blind: true
+screened_routes:
+  capital_preserving_market_thermodynamic_limit:
+    status: failed_closed
+    t0_probability: 0.04
+    complete_ncs_probability: 0.005
+    terminal_reduction: branching_infinite_divisibility_and_markov_lumpability
+  clmm_range_coupled_burn_robustness:
+    status: failed_closed
+    t0_probability: [0.02, 0.05]
+    complete_ncs_probability_upper_bound: 0.02
+    terminal_reduction: fractional_knapsack_and_burn_collect_remint_collapse
+  concentrated_liquidity_tick_pinning:
+    status: failed_closed
+    t0_probability: [0.10, 0.14]
+    complete_ncs_probability: [0.01, 0.03]
+    terminal_reduction: fixed_charge_no_trade_band
+  ballistic_inflight_liquidity_phase_space:
+    status: failed_closed
+    t0_probability: 0.03
+    complete_ncs_probability_upper_bound: 0.01
+    terminal_reduction: pdmp_transport_direct_prior_and_hidden_send_state
+  lob_void_split_merge_kinetics:
+    status: failed_closed
+    t0_probability: [0.04, 0.08]
+    complete_ncs_probability: [0.01, 0.02]
+    terminal_reduction: nonmarkov_projection_and_existing_queue_reactive_lob
+unchanged_existing_routes:
+  verification_liquidity: active
+  fcc_clock1_random_rank_cascade: candidate
+  dcrdex_verifiable_sequencing_response: parked
+forbidden_actions:
+  - outcome_inspection
+  - simulator_execution
+  - model_implementation
+  - ecomd_integration
+  - dataset_purchase
+  - gpu_use
+  - combining_failed_cards
+  - renaming_fixed_cost_as_depinning
+  - treating_agent_count_as_physical_without_refinement_invariance

@@ -1,0 +1,74 @@
+schema_version: 1
+route_id: trajectory_space_liquidity_dpt
+date: "2026-08-25"
+stage: D_minus_1_paper_theorem
+status: failed_closed
+active: false
+closed_at: "2026-08-25"
+result: papers/proposal/trajectory_space_liquidity_dpt_dminus1_result_2026-08-25.md
+estimand:
+  activity: best_queue_or_spread_changing_events
+  current: signed_midprice_displacement
+  object: scaled_cumulant_generating_function
+qualification_disjunction:
+  - unbiased_s_zero_open_set_transition
+  - exact_single_market_rule_doob_equivalence
+required_proofs:
+  - finite_n_generator_and_irreducibility
+  - declared_n_then_t_limit_order
+  - tilted_spectral_gap_closure
+  - noninteracting_observable_negative_control
+  - slow_regime_mixture_negative_control
+  - irreducibility_beyond_standard_tilted_generator_theory
+post_qualification_simulator_pool:
+  abides:
+    commit: f9cbe513
+    license: BSD-3-Clause
+  pams:
+    version: 0.2.2
+    commit: 28cbb861
+    license: EPL-1.0
+    runner: SequentialRunner
+  bourse:
+    version: 0.4.0
+    commit: 17285fde
+    license: MIT
+excluded_systems:
+  bse: negative_control_only
+  shift: license_and_server_contract_missing
+  jax_lob: license_and_release_contract_missing
+hard_stop:
+  - no_s_zero_transition_and_no_exact_doob_rule
+  - fixed_n_crossover_only
+  - observable_induced_transition_only
+  - exogenous_regime_mixture_explains_signal
+  - incomplete_fork_state_or_rng_lineage
+  - cross_engine_estimand_mismatch
+  - passive_l3_used_for_s_nonzero_causal_claim
+  - standard_trajectory_method_presented_as_novelty
+triggered_failure_codes:
+  - finite_irreducible_tilted_generator_analytic
+  - s_zero_cusp_requires_multiple_zero_cost_activity_phases
+  - positive_rate_fifo_unique_activity_no_go
+  - multistability_reduces_to_generic_reaction_network_dpt
+  - hard_constraint_reduces_to_kinetically_constrained_model
+  - queue_current_dpt_direct_prior
+  - scalar_doob_cycle_condition_fails
+  - scalar_doob_constant_escape_condition_fails
+  - constant_rate_clock_rescaling_is_trivial
+  - activity_current_thermodynamic_scaling_mismatch
+forbidden_actions_before_qualification:
+  - run_simulator
+  - implement_cloning
+  - inspect_market_outcomes
+  - purchase_data
+  - modify_ecomd
+  - use_gpu
+probability:
+  t0: [0.00, 0.02]
+  complete_ncs_upper_bound: 0.005
+reopen_only_if:
+  - market_specific_s_zero_phase_not_reducible_to_multistability_kcm_slow_mixture_or_queue_condensation
+  - predeclared_low_information_rule_satisfies_cycle_and_constant_escape_conditions_on_open_s_interval
+  - rule_changes_embedded_jump_chain_and_does_not_query_doob_eigenfunction
+  - same_native_rule_semantics_hold_in_two_independent_market_mechanisms

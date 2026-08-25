@@ -1,0 +1,146 @@
+schema_version: 1
+protocol_id: ecomd_research_discovery_loop_v1
+effective_at: "2026-08-25"
+scope:
+  scientific_domain:
+    - simulated_markets
+    - market_physics
+    - financial_physics
+  target_venues:
+    - nature_machine_intelligence
+    - nature_computational_science
+  route_registry: .claude/memory/research_route_knowledge_graph.yaml
+  prior_plan_record: papers/proposal/plan_v4_ncs.md
+  authority_note: >-
+    Plan v4 is a closed gate and budget record. This protocol selects only successor
+    routes; it cannot reopen a failed route or overwrite its evidence.
+stages:
+  - id: D_minus_3
+    name: question_framing
+    outcome_access: forbidden
+    required_output: native scientific object, intervention, observable, invariances, and explicit nonclaims
+  - id: D_minus_2
+    name: scenario_and_evidence_map
+    outcome_access: forbidden
+    required_output: primary-work manifest, route-graph failure reuse, and unresolved collisions
+  - id: D_minus_1
+    name: hostile_falsification
+    outcome_access: forbidden
+    required_output: killer tests, parent-problem reductions, simulator contracts, real bridge, and calibrated probabilities
+  - id: D0
+    name: outcome_blind_freeze
+    outcome_access: forbidden
+    required_output: immutable decision manifest, exact estimand, stop rules, budget, and authorized actions
+  - id: D1
+    name: exploratory_evidence_loop
+    outcome_access: explicitly_authorized_only
+    required_output: immutable branch traces with selection and confirmation evidence separated
+  - id: D2
+    name: held_out_confirmation
+    outcome_access: preregistered_holdout_only
+    required_output: cross-system or real-data transfer, claim ledger, uncertainty, and abstentions
+status_semantics:
+  screening: no route-level decision; literature, source, schema, and theorem work only
+  candidate: bounded outcome-blind qualification only; no simulation or outcome inspection
+  parked: no current authorization
+  active: only actions explicitly authorized by a frozen decision manifest
+  failed_closed: terminal under the frozen formulation; reopen conditions are mandatory
+provenance_rules:
+  scientific_revision: Create a child card; never overwrite the failed or superseded claim.
+  terminal_status_transition: >-
+    A later outcome-blind gate may move the same frozen claim from candidate or parked to
+    failed_closed only after the formal result appends the prior card hash, prior decision
+    hash, new evidence, and terminal rationale.
+activation_gate:
+  hostile_t0_lower_bound_minimum: 0.15
+  minimum_primary_works: 15
+  minimum_killer_tests: 2
+  minimum_independent_simulator_lineages: 2
+  require_no_unresolved_direct_collision: true
+  require_all_killer_tests_survived: true
+  require_real_data_bridge_qualified: true
+  require_all_failure_families_distinguished: true
+  require_outcome_blind_decision: true
+  require_explicit_authorization: true
+  require_contamination_control: true
+  require_confirmation_split: true
+nature_scale_evidence:
+  irreducible_core_required: >-
+    The central object, theorem, or algorithm must survive exact-primary-work and
+    standard-parent reduction; a market-labelled specialization or diagnostic is not enough.
+  same_estimand_truth_required: >-
+    Evaluation must compare the claimed quantity with analytic truth, a gold-standard
+    simulator, or a real system implementing the same action-state-observation loop.
+  breadth_required:
+    - independent_system_classes_or_mechanisms
+    - out_of_distribution_or_scale_transfer
+    - hard_negative_and_known_failure_regimes
+  error_control_required: true
+  sim_to_real_same_loop_required_when_claimed: true
+  strong_baseline_and_cost_pareto_required_for_method_claim: true
+  honest_limitations_and_open_artifacts_required: true
+forbidden_before_active:
+  - outcome_inspection
+  - simulator_execution
+  - model_implementation
+  - ecomd_integration
+  - dataset_purchase
+  - gpu_use
+disposable_exploration_sandbox:
+  purpose: >-
+    Permit a separately authorized, low-cost propose--run--learn probe on an immutable
+    disposable split without treating the probe as route evidence or confirmation.
+  status_effect: none
+  maximum_cpu_seconds: 28800
+  maximum_storage_bytes: 5000000000
+  maximum_monetary_cost_usd_micros: 0
+  maximum_gpu_seconds: 0
+  maximum_branches: 16
+  maximum_ttl_seconds: 604800
+  allowed_actions:
+    - free_dataset_acquisition
+    - disposable_outcome_inspection
+    - cpu_simulator_probe
+    - sandbox_analysis_implementation
+  required_forbidden_actions:
+    - confirmation_holdout_access
+    - dataset_purchase
+    - gpu_use
+    - production_model_implementation
+    - ecomd_integration
+    - external_outreach
+    - paper_claim_support
+    - topic_status_promotion
+  require_separate_authorization: true
+  require_asset_provenance: true
+  require_immutable_partition: true
+  require_append_only_hypothesis_ledger: true
+  require_multiplicity_ledger: true
+  require_nonoverlapping_confirmation_holdout: true
+  require_protected_base_prefix_ci: true
+  require_oci_runtime_isolation: true
+  require_confirmation_unmaterialized: true
+  scientific_claims_allowed: false
+  route_activation_allowed: false
+selection_metrics:
+  - scientific_validity
+  - residual_novelty_precision
+  - falsification_efficiency
+  - value_of_information_per_cost
+  - uncertainty_calibration_and_abstention
+  - cross_system_transfer
+  - provenance_and_stage_attribution
+rejected_proxy_metrics:
+  - number_of_generated_topics
+  - number_of_agent_rounds
+  - paper_like_fluency
+  - workshop_acceptance_alone
+  - stylized_fact_count_without_mechanism
+validation:
+  validator: scripts/validate_research_discovery.py
+  test: tests/test_research_discovery.py
+  sandbox_schema: research/discovery/exploration_sandbox.schema.json
+  sandbox_partition_schema: research/discovery/exploration_partition.schema.json
+  sandbox_decision_schema: research/discovery/exploration_sandbox_decision.schema.json
+  sandbox_result_schema: research/discovery/exploration_sandbox_result.schema.json
+  sandbox_taint_registry: research/discovery/sandbox_taint_registry.yaml

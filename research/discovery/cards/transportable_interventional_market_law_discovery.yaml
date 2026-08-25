@@ -1,0 +1,175 @@
+schema_version: 1
+id: transportable_interventional_market_law_discovery
+title: Proof-carrying discovery of transportable interventional laws in adaptive market simulators
+created_at: "2026-08-25"
+closed_at: "2026-08-25"
+status: failed_closed
+stage: D_minus_1
+parent_route_ids:
+  - discovery_loop_reselection_20260825
+scope:
+  scientific_domain:
+    - simulated_markets
+    - market_physics
+    - financial_physics
+    - ai_for_scientific_discovery
+  target_venues:
+    - nature_machine_intelligence
+    - nature_computational_science
+  outcome_access: none
+object:
+  native_state: >-
+    A family of controlled stochastic market simulators M_k=(X_k,A_k,K_k,O_k),
+    together with candidate macro-state maps tau_k into a common state Z.
+  intervention: >-
+    A predeclared market intervention i, compiled by an engine-specific map omega_k into
+    native actions without changing its economic dose or admissible action grammar.
+  observable: >-
+    The pushed-forward response path law R_k(i)=(tau_k)_# P_{M_k}^{omega_k(i)}, with
+    simultaneous uncertainty bands on held-out interventions and simulator families.
+  invariances:
+    - event labels and agent identifiers that do not change native priority semantics
+    - declared units for price, volume, and physical time
+    - representation-preserving state refinements
+    - equivalent intervention encodings inside each native action grammar
+claim:
+  exact_question: >-
+    Can a discovery system jointly find common market-state and intervention maps plus a
+    response law that transfers across independent adaptive market simulators, while
+    returning a machine-checkable non-identifiability witness whenever the allowed
+    experiment budget cannot support that law?
+  falsifiable_statement: >-
+    On generator-family-held-out market worlds, a selective law-or-abstain procedure will
+    control false-law risk at a frozen level while producing nontrivial law coverage and
+    lower held-out intervention error than equal-cost system-identification, symbolic-
+    regression, active-causal-discovery, OFAT, factorial, and random-policy baselines.
+  theorem_or_phenomenon: >-
+    A finite-sample selective guarantee for dependent market trajectories with unknown
+    clock maps, partial observation, adaptive agents, and approximate simulator adapters;
+    when identification fails, the procedure returns two transcript-equivalent worlds
+    and a target intervention on which their response laws separate.
+  explicit_nonclaims:
+    - Hidden-parameter identification in one simulated market is not new.
+    - Generic causal abstraction, transportability, system identification, or abstention is not new.
+    - Cross-simulator agreement alone is not evidence of a real-market universal law.
+    - An AI-agent leaderboard is not the primary scientific result.
+contracts:
+  simulators:
+    - id: abides
+      lineage_group: abides_jpmc_message_driven
+      repository: https://github.com/jpmorganchase/abides-jpmc-public
+      version: f9cbe51342b7dedd9587e4e069040d68a5c6477f
+      license: BSD-3-Clause
+      state_mapping: Proposed marked add, cancel, execute, best quotes, depth, volume, event index, and native nanosecond clock.
+      intervention_mapping: Proposed normalized parent-order schedule and optional common fundamental shock.
+      observable_mapping: Proposed path law of normalized price, spread, depth, order flow, and execution response.
+      status: rejected
+    - id: pams
+      lineage_group: pams_plham_step_session
+      repository: https://github.com/masanorihirano/pams
+      version: 0.2.2_28cbb86192a019ddff00f9192d27e1ba87d381a8
+      license: EPL-1.0
+      state_mapping: Proposed SequentialRunner logs for orders, cancellations, executions, quotes, book, volume, event index, and market step.
+      intervention_mapping: Proposed normalized parent-order schedule through a native submit_orders agent and optional fundamental shock.
+      observable_mapping: Proposed path law of normalized price, spread, depth, order flow, and execution response.
+      status: rejected
+  real_data_bridge:
+    status: rejected
+    source: No venue passed the common state, intervention, simulator-compiler, identification, prospective-holdout, and publication-rights contract.
+    version: outcome_blind_contract_audit_2026_08_25
+    observable_mapping: CME SR3 was the strongest residual, but direct MBO omits implied liquidity and no common ABIDES--PAMS physical-clock state exists.
+    intervention_mapping: The recurring SR3 tick transition is nonrandom and confounded by maturity and roll; it belongs to a separate screening question, not this generic card.
+    license: not_frozen
+    stop_condition: >-
+      Stop if no real market exposes the common intervention and state without latent
+      identity, send-time, or policy confounding, or if only aggregate stylized facts map.
+novelty_manifest: research/discovery/novelty/transportable_interventional_market_law_discovery.yaml
+killer_tests:
+  - id: schedule_nullspace_alias
+    type: identifiability
+    construction: >-
+      Let training schedules form a rank-deficient matrix Q for a linear response kernel G.
+      Choose nonzero h in ker(Q), set G_1=G and G_2=G+h, and choose a held-out schedule
+      q_star with q_star h nonzero.
+    claim_prediction: The procedure must abstain and return h and q_star as a separating certificate.
+    kill_condition: It emits a transferable impact law or a certificate that the deterministic verifier cannot validate.
+    status: killed
+    evidence_refs:
+      - causal_consistency
+      - observation_quotient_formal_result
+      - interventional_simulator_surrogates
+      - interventional_crl_sample_complexity
+  - id: identity_clock_erasure
+    type: invariance
+    construction: >-
+      Match aggregate signed flow and price tapes in two markets; one responds to trader
+      identity, parent-order splitting, and physical latency, while the other responds only
+      to aggregate flow and event index. Apply a held-out split/merge or event-rate intervention.
+    claim_prediction: The procedure must abstain unless its maps retain the state and clock needed to distinguish the worlds.
+    kill_condition: It reports an invariant law after deleting identity or conflating event time with physical time.
+    status: killed
+    evidence_refs:
+      - observation_quotient_formal_result
+      - causalds
+      - selective_conformal_interventions
+      - interventional_simulator_surrogates
+failure_reuse:
+  - family_id: direct_prior_collision
+    disposition: blocked
+    distinguishing_test_ref: schedule_nullspace_alias
+    source_route_ids:
+      - partial_order_hard_event_dynamics
+  - family_id: standard_parent_reduction
+    disposition: blocked
+    distinguishing_test_ref: schedule_nullspace_alias
+    source_route_ids:
+      - market_native_reselection_20260825
+  - family_id: observation_quotient_nonidentification
+    disposition: blocked
+    distinguishing_test_ref: identity_clock_erasure
+    source_route_ids:
+      - observation_quotient_response
+  - family_id: two_system_contract_missing
+    disposition: blocked
+    distinguishing_test_ref: identity_clock_erasure
+    source_route_ids:
+      - market_physics_reselection_20260825
+  - family_id: evaluation_contamination
+    disposition: blocked
+    distinguishing_test_ref: schedule_nullspace_alias
+    source_route_ids:
+      - tier42_stylized_fidelity_breakthrough_claim
+probabilities:
+  hostile_t0:
+    lower: 0.01
+    upper: 0.07
+    point: 0.035
+  complete_by_venue:
+    nature_machine_intelligence:
+      lower: 0.005
+      upper: 0.015
+    nature_computational_science:
+      lower: 0.002
+      upper: 0.01
+contamination_control:
+  exploration_sources: Public literature and paper-only counterexamples; no simulator outcomes.
+  confirmation_holdout: Planned private generator families, interventions, seeds, units, variable names, and time warps.
+  multiplicity_control: Planned simultaneous confidence bands or an e-process over the full declared law family.
+  provenance: Planned commit-reveal task hashes and immutable discovery DAG artifacts.
+  status: planned
+evidence_uses:
+  sandbox_motivation_refs: []
+  d2_confirmation_refs: []
+  paper_claim_refs: []
+authorization:
+  authorized_actions: []
+  forbidden_actions:
+    - outcome_inspection
+    - simulator_execution
+    - model_implementation
+    - ecomd_integration
+    - dataset_purchase
+    - gpu_use
+  outcome_blind: true
+  budget_boundary: The generic card is terminally closed; any market-native restricted theorem must be a new descendant card with its own audit and authorization.
+decision_ref: research/discovery/decisions/transportable_interventional_market_law_discovery.yaml

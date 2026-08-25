@@ -1,35 +1,53 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. Plan v4 remains the quality, compute and data-governance frame, but its invariant-calibration and subsequent theorem cards closed RED. No Nature-grade market-simulation route is active; FCC clock-1 remains a below-threshold candidate, OASIS is failed-closed, DCRDEX is parked, and verification-liquidity remains an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
+description: EcoPhys/EcoMD research overview. The forward Discovery Loop and route knowledge graph govern topic selection; Plan v4 remains a closed quality, compute, and data-governance record. No Nature-grade market-simulation route is active after five protocol-governed reselection rounds. DCRDEX remains parked, FCC remains a below-threshold candidate, and verification-liquidity is an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 
 # EcoPhys — Project Overview
 
-> **Current route state (2026-08-24).** The Plan-v4 invariant-calibration, generic audit, observation quotient,
-> partial-order, random-clock, collision-cone, agent-composition, coordination, clone and A′ influence-tail routes
-> are formally closed RED. A contract-first G−1 then closed 17 additional AI-agent, MD and field-protocol cards.
-> No Nature-grade market-simulation route is active. FCC clock-1 pseudorandom tie-order propagation remains a
-> 12%-T0 auction candidate below the 15% activation floor. The subsequent OASIS D−1 is failed-closed because the
-> public machine contract does not establish lottery realization or atomic request-linked pre/post AFC state;
-> no transaction record or support count was queried. DCRDEX verifiable sequencing remains parked pending
-> prospective support and a second system. Historical PSX and ten other exchange, blockchain and
-> resource-allocation cards are failed-closed under exact public-state, realization, support, market-status or
-> prior-art gates. No effect estimate, candidate outcome, implementation, EcoMD, model call or GPU is authorized.
-> Verification-liquidity remains a separate active field protocol with prospective outcomes sealed until
-> 2026-10-17 UTC. Canonical route state:
-> `research_route_knowledge_graph.yaml`.
+> **Current route state (2026-08-25).** No Nature-grade simulated-market or financial-physics route is active.
+> The forward selection authority is `research/discovery/protocol.yaml`; the canonical terminal-state and veto
+> registry is `research_route_knowledge_graph.yaml`. The graph currently has 148 nodes and 154 typed edges:
+> 134 failed-closed, ten passed-and-closed selections, one parked route, one FCC candidate, one active
+> verification-liquidity field protocol, and one superseded route. The first Discovery-Loop rerun initially
+> parked `transportable_interventional_market_law_discovery`, but its D-1 continuation failed the generic-theorem,
+> ABIDES--PAMS same-estimand, and real-bridge gates. Hostile T0 is now 1--7% (3.5% point). The strongest next
+> residual, a recurring CME SR3 price-grid refinement, remained at 4--12% under an independent hostile audit and
+> did not become a topic card. A subsequent controlled/on-chain rerun also produced no card; Solana SIMD-0525
+> was strongest at 12--17% but its lower bound was 12% and its treatment bundled slot, leader-window, capacity
+> and accounting changes. A third structural-complement/prospective-mechanism round also produced no card:
+> conditional-order closure, queue-priority holonomy and iceberg regeneration reduced to established parent
+> problems, while the strongest prospective setting, Project EnergyConnect, had only a 6% hostile-T0 lower
+> bound under test-contingent capacity release. A fourth round over atomic credit, cross-margin action grammar,
+> implied matching and public laboratory markets again produced no card: its best conservative lower bound was
+> 10%, and every route failed an exact-parent, invariance, same-estimand, real-bridge or sealed-holdout gate.
+> A fifth asset-first round also produced no card or sandbox: TSE's announced 2027 closed-loop tick controller
+> was strongest at a 10--17% hostile-T0 interval, but its lower bound, bundled rules, paid data and absent second
+> exact implementation failed activation; the other laboratory, on-chain and exchange assets were weaker.
+> These routes authorize no simulation, implementation, data download or purchase, EcoMD integration, outreach,
+> or GPU. DCRDEX remains separately parked; verification-liquidity retains its pre-existing sealed status with
+> prospective outcomes embargoed until 2026-10-17 UTC.
 
-> **Plan-of-record update (2026-08-09).** For the next archival project, use
-> `papers/proposal/plan_v4_ncs.md`, not the hardware/data assumptions below. The NCS route is gated on a
-> genuinely novel invariant-measure/long-horizon calibration method, validation on at least two model
-> families beyond EcoMD, state-complete and train/inference-consistent EcoMD dynamics, a validated L2
-> observation operator, and a frozen method-dependent real-data result. Current compute is 2×V100
-> 32 GB and can expand to more non-H20 GPU/CPU nodes; H20 is excluded from future plans. Current data
-> are a starting tier, not a ceiling. Plan v3 remains historical/parallel physics context.
+> **Disposable-exploration exception (2026-08-25).** The Discovery Loop now permits a separately authorized
+> DX sandbox on an explicitly enumerated exploration split under a maximum of 8 CPU-hours, 5 GB, 16 branches, zero GPU
+> and zero monetary cost. It cannot access confirmation data, support a paper claim, integrate EcoMD, contact
+> external parties, or change route status. Sandbox output may only create a new child topic card that starts
+> again at D-3. Schema v2 checks current-tree hashes, actual unit overlap, cumulative asset-campaign budgets,
+> a single event chain, receipts and permanent result taint. Protected-base prefix validation and a pinned OCI
+> execution contract are now machine-readable, and the pull-request workflow exists; GitHub still needs the check
+> marked required and force pushes disabled, and an enforcing launcher remains unimplemented. The Bourse 0.4.0
+> counterexample-search design is only a preflight with no manifest or authorization. No sandbox is currently authorized.
 
-> **Zero-cost preflight (2026-08-09).** G0 is AMBER rather than passed. The broad estimator novelty claim is
+> **Forward-authority update (2026-08-25).** Plan v4's invariant-calibration paper route is closed. Retain
+> `papers/proposal/plan_v4_ncs.md` only for its state-completeness, observation-bridge, compute, data, and
+> reproducibility requirements; it cannot activate a paper topic. New topics must pass the Discovery Loop's
+> primary-work, killer-test, two-lineage, real-bridge, contamination, hostile-probability, and outcome-blind
+> authorization gates. Current compute is 2×V100 32 GB and can expand to non-H20 GPU/CPU nodes; H20 is excluded.
+> Plan v3 and all older flagship probabilities, purchase commitments, and timelines are historical only.
+
+> **Historical zero-cost preflight (2026-08-09; superseded by later G0 closure).** G0 was initially AMBER rather than passed. The broad estimator novelty claim is
 > occupied; exp129 confirms that persistent detached state alone is biased under slow mixing. A state-complete
 > single-process API and corrected force/jump semantics now pass CPU and versioned single-V100 mechanics tests,
 > and a two-rank CPU/Gloo atomic exact-resume test is bit-exact. The single-V100 exact-resume and production
@@ -40,15 +58,18 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > `project_ncs_zero_cost_preflight_2026-08-09.md` and
 > `project_ncs_preflight_continuation_2026-08-10.md`.
 
-## Research goal
+The remaining sections preserve historical architecture, publication, hardware, and data decisions. They are
+provenance, not authority to run or revive a route.
+
+## Historical research goal
 Build **EcoMD**: a differentiable, equivariant, learned-potential molecular-dynamics-style simulator for financial markets. Agents = particles in latent feature space; dynamics = Langevin; interaction potentials learned end-to-end from high-frequency order flow / return data.
 
-## Three contribution pillars
+## Historical contribution pillars
 - **C1 (methods)**: a differentiable MD-style market simulator with learned equivariant interaction potentials (MACE-lite GNN), end-to-end pathwise BPTT. ⚠️ **NOT "first differentiable / first Langevin"** — lit check 2026-06-03 ([[reference_differentiable_priorart]]) found Bouchaud-Cont 1998 (Langevin markets) + Dyer/Quera-Bofarull 2023–25 (differentiable financial ABMs) occupy the broad claim. Demoted to a SECONDARY contribution; Paper A LEADS with the finding (concave-impact tail solve), not the artifact. Targets NeurIPS/ICML main.
 - **C2 (physics)**: non-equilibrium thermodynamics of markets — extract entropy production rate σ(t), effective temperature T_eff(t) from trained simulator, test cross-market universality via critical scaling + Jarzynski identity. **Paper B → Nature Physics flagship**; retreat to PRL.
 - **C3 (applications)**: crash early warning + optimal execution under regime shift. Targets QF/JEDC/ICAIF.
 
-## Publication strategy (plan v3 + Path C, 2026-04-24 evening — supersedes v3 early draft)
+## Historical publication strategy (plan v3 + Path C, 2026-04-24 evening)
 **Flagship-with-retreat + high-frequency data commitment (Path C)**. User reviewed daily-only data feasibility for Nature Physics physics claims and explicitly chose to commit $8-12k to high-freq data (Tardis L2 6mo + FirstRate minute 3y + LOBSTER 3y) because daily-only would leave the three main NP reviewer attacks (Jarzynski work protocol undefined at daily, TUR non-stationary over 30y, T_eff novelty weak vs Mantegna-Stanley 1995) unanswered. With Path C, joint NP probability moves from 10–15% → 15–22%. Total timeline 52w → 58w. Accepted three pre-registration/rigor clauses.
 - **Paper A** (methods): NeurIPS/ICML main. **arXiv preprint at Wk 28 (M3)** stakes priority regardless of flagship outcome. Timeline shifted +2 weeks from v3 early draft to accommodate high-freq data ingestion.
 - **Paper B** (physics) → **Nature Physics**. Primary: A1 (T_eff critical scaling on ≥3 timescales: daily + minute + L2) + B2 (Jarzynski with FOMC/earnings intraday protocol). Secondary: A2 (hyperscaling). Wk 54 submission.

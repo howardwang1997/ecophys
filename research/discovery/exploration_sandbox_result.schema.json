@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecomd.local/schemas/research-discovery-exploration-sandbox-result-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "sandbox_id",
+    "campaign_id",
+    "created_at",
+    "manifest_sha256",
+    "partition_sha256",
+    "ledger_head_before_terminal_sha256",
+    "outcome_status",
+    "taint",
+    "confirmation_accessed",
+    "scientific_claim_support_allowed",
+    "route_activation_allowed",
+    "admissible_use",
+    "branch_ids",
+    "usage",
+    "artifacts",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "sandbox_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "campaign_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "partition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ledger_head_before_terminal_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outcome_status": {"enum": ["completed", "null", "failed", "stopped"]},
+    "taint": {"const": "sandbox_exploratory_tainted"},
+    "confirmation_accessed": {"const": false},
+    "scientific_claim_support_allowed": {"const": false},
+    "route_activation_allowed": {"const": false},
+    "admissible_use": {"const": "screening_question_motivation_only"},
+    "branch_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cpu_seconds", "storage_bytes", "monetary_cost_usd_micros", "gpu_seconds", "branches"],
+      "properties": {
+        "cpu_seconds": {"type": "integer", "minimum": 0},
+        "storage_bytes": {"type": "integer", "minimum": 0},
+        "monetary_cost_usd_micros": {"const": 0},
+        "gpu_seconds": {"const": 0},
+        "branches": {"type": "integer", "minimum": 0}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "sha256", "bytes"],
+        "properties": {
+          "ref": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "summary": {"type": "string", "minLength": 1}
+  }
+}

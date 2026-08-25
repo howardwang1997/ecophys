@@ -1,0 +1,427 @@
+schema_version: 1
+retrieved_at: "2026-08-25"
+sources:
+  - id: discovery_loop_vision
+    kind: official_project_page
+    title: Discovery Loop — Continuous Exploration
+    uri: https://www.discoveryloop.com/
+    version: retrieved_2026_08_25
+    license: no_public_code
+    role: Vision for parallel propose-run-learn experimental loops.
+    limitation: No public technical paper, repository, benchmark, or reusable implementation was found in this audit.
+  - id: science_discovery_aether
+    kind: official_repository
+    title: Aether
+    uri: https://github.com/Science-Discovery/Aether/commit/b08e936e83107aa81528c804142202596b5a65d1
+    version: b08e936e83107aa81528c804142202596b5a65d1
+    license: MIT
+    role: Research workbench with literature, RAG, skills, sessions, and workflow memory.
+    limitation: A general assistant platform, not evidence that its loop produces valid or novel science.
+  - id: science_discovery_ai_newton
+    kind: official_repository
+    title: AI-Newton
+    uri: https://github.com/Science-Discovery/AI-Newton/commit/c143e865be42e067faf64cd8117cbeffd0fccfb6
+    version: c143e865be42e067faf64cd8117cbeffd0fccfb6
+    license: MIT
+    role: Structured concept and law memory plus experiment selection for physical-law rediscovery.
+    limitation: Proof of concept over human-specified classical-mechanics experiments, objects, and a physical DSL.
+  - id: ai_newton_paper
+    kind: primary_work
+    title: AI-Newton — A Concept-Driven Physical Law Discovery System without Prior Physical Knowledge
+    uri: https://arxiv.org/abs/2504.01538
+    version: arxiv_2504_01538
+    license: arxiv_terms
+    role: Primary description of concept-driven cross-experiment law construction.
+    limitation: Rediscovery in a bounded domain is not open problem selection or novelty verification.
+  - id: measuring_ai_scientists_perspective
+    kind: primary_work
+    title: "Measuring AI Scientists: From Exams to Discovery"
+    uri: https://doi.org/10.26434/chemrxiv.15007582/v1
+    version: chemrxiv_v1_2026_08_18
+    license: chemrxiv_terms
+    role: Motivates evaluation of decision-and-evidence trajectories rather than exam answers.
+    limitation: A Perspective with no companion task set, scoring protocol, code, data, or leaderboard; do not treat it as a released benchmark.
+  - id: humanitys_last_exam
+    kind: primary_work
+    title: A benchmark of expert-level academic questions to assess AI capabilities
+    uri: https://doi.org/10.1038/s41586-025-09962-4
+    version: nature_649_1139_1146_2026
+    license: open_access_article_terms
+    role: Closed-ended expert knowledge and calibration benchmark with a private held-out component.
+    limitation: The paper explicitly measures academic question answering; a high score is not evidence of autonomous research or discovery.
+  - id: frontier_science
+    kind: primary_work
+    title: "FrontierScience: Evaluating AI's Ability to Perform Expert-Level Scientific Tasks"
+    uri: https://arxiv.org/abs/2601.21165
+    version: arxiv_2601_21165
+    license: arxiv_terms
+    role: Original Olympiad problems and expert-written PhD research subtasks with granular rubrics.
+    limitation: The research problem is supplied and mainly answered in text, so hypothesis selection, execution, and revision are only weakly measured.
+  - id: baisbench
+    kind: primary_work
+    title: Benchmarking AI scientists for omics data-driven biological discovery
+    uri: https://doi.org/10.1093/bioinformatics/btag227
+    version: bioinformatics_42_supplement_1_btag227_2026
+    license: publisher_and_dataset_terms
+    role: Real single-cell analysis plus biological questions grounded in expert labels and published studies.
+    limitation: Its discovery task asks for established conclusions from published studies, so it is a data-driven rediscovery benchmark rather than prospective novelty evidence.
+  - id: researchclawbench
+    kind: primary_work
+    title: "ResearchClawBench: A Benchmark for End-to-End Autonomous Scientific Research"
+    uri: https://arxiv.org/abs/2606.07591
+    version: arxiv_2606_07591
+    license: arxiv_and_repository_terms
+    role: End-to-end code, artifact, and report evaluation on forty published-paper-derived tasks across ten domains.
+    limitation: Hiding the target paper from the initial prompt does not make its published result a new discovery, and a score above the target rubric is not external validation of novelty.
+  - id: nlpcc_aisb
+    kind: official_repository
+    title: NLPCC 2026 Task 9 — AI Scientist Benchmark
+    uri: https://github.com/ResearAI/NLPCC-2026-Task9-AISB/commit/a5ae30df2d8f756c601a8413f43c610caa7e0155
+    version: a5ae30df2d8f756c601a8413f43c610caa7e0155
+    license: GPL-3.0
+    role: Separate shared task with idea, experiment, report, replay, canary, and fabrication-disqualification rules.
+    limitation: It is unrelated to the ChemRxiv Perspective and had no final public leaderboard at the audit date; the name AISB also collides with other projects.
+  - id: mira_report
+    kind: system_report
+    title: "MIRA: Towards a General AI Scientist"
+    uri: https://agentmira.io/blog/mira-towards-a-general-ai-scientist
+    version: report_2026_08_03
+    license: no_public_core_code
+    role: Separates hypothesis, execution, interpretation, and scientific-memory layers.
+    limitation: Reported case studies are mainly single-pass; longer multi-round programs are stated as future work.
+  - id: sde_primary
+    kind: primary_work
+    title: Evaluating Large Language Models in Scientific Discovery
+    uri: https://arxiv.org/abs/2512.15567
+    version: arxiv_2512_15567_v2
+    license: arxiv_terms
+    role: Scenario-grounded and project-level evaluation of the iterative discovery loop.
+    limitation: Project tasks mainly optimize supplied computable oracles; they do not establish topic novelty or causal validity.
+  - id: sde_harness
+    kind: official_repository
+    title: SDE-Harness
+    uri: https://github.com/HowieHwong/sde-harness/commit/cd41a5558e97762e507e43b888cc086368b92b43
+    version: cd41a5558e97762e507e43b888cc086368b92b43
+    license: MIT
+    role: Iterative history-aware multi-round discovery workflow and evaluation harness.
+    limitation: Workflow plumbing is reusable, but oracle improvement is not a sufficient measure of scientific value.
+  - id: petri_bench
+    kind: benchmark_report
+    title: petri-bench — Scoring the Scientific Method of LLM Agents
+    uri: https://www.petri-labs.org/bench/report
+    version: working_draft_v0_5_retrieved_2026_08_25
+    license: zenodo_software_record
+    role: Fresh seeded causal-discovery tasks, objective process scoring, multiplicity audit, and a market simulator.
+    limitation: Hidden one- or two-parameter identification is narrower than open law discovery; the working draft is not yet an archival peer-reviewed paper.
+  - id: ai_scientist_v2
+    kind: official_repository
+    title: The AI Scientist-v2
+    uri: https://github.com/SakanaAI/AI-Scientist-v2/commit/96bd51617cfdbb494a9fc283af00fe090edfae48
+    version: 96bd51617cfdbb494a9fc283af00fe090edfae48
+    license: ai_scientist_source_code_license
+    role: Progressive experiment tree with parallel branches, debugging, abandonment, and write-up.
+    limitation: The repository warns of lower success than a strong template and executes untrusted model-written code; do not vendor without license review.
+  - id: autodiscovery
+    kind: official_repository
+    title: Asta AutoDiscovery
+    uri: https://github.com/allenai/asta-autodiscovery/commit/ebf75d55c0b15d465ec61578e9a9091ee6fd3a77
+    version: ebf75d55c0b15d465ec61578e9a9091ee6fd3a77
+    license: Apache-2.0
+    role: Progressive-widening tree search using belief change to prioritize data-driven hypotheses.
+    limitation: Model surprise is an exploratory acquisition score, not correctness, novelty, or confirmatory evidence.
+  - id: research_agent
+    kind: official_repository
+    title: ResearchAgent
+    uri: https://github.com/JinheonBaek/ResearchAgent/commit/babb49b51ebfcebedc39ccde12c9785be7bef46c
+    version: babb49b51ebfcebedc39ccde12c9785be7bef46c
+    license: no_repository_license
+    role: Seed-paper citation and entity graph for problem-method-experiment generation and review.
+    limitation: Does not execute or falsify experiments; the repository must not be vendored without permission.
+  - id: popper
+    kind: official_repository
+    title: POPPER
+    uri: https://github.com/snap-stanford/POPPER/commit/59611864e09dd15d7528e240ad87c7ddbb4a701c
+    version: 59611864e09dd15d7528e240ad87c7ddbb4a701c
+    license: no_repository_license
+    role: Sequential falsification and evidence aggregation for a pre-specified hypothesis.
+    limitation: Does not select topics; validity can fail if adaptive variable, window, or test selection reuses the same data.
+  - id: discoveryworld
+    kind: official_repository
+    title: DiscoveryWorld
+    uri: https://github.com/allenai/discoveryworld/commit/fd591323920be0d3786ef350955de1945aa571e5
+    version: fd591323920be0d3786ef350955de1945aa571e5
+    license: Apache-2.0
+    role: Interactive virtual worlds with procedural tasks, actions, scorecards, and full histories.
+    limitation: Fixed task families test discovery behavior but do not decide whether a new research topic matters.
+  - id: discoverybench
+    kind: official_repository
+    title: DiscoveryBench
+    uri: https://github.com/allenai/discoverybench/commit/c31fcf011e070f021a5f5b906896d0821f6880e8
+    version: c31fcf011e070f021a5f5b906896d0821f6880e8
+    license: repository_license_requires_review
+    role: Data-driven hypothesis and workflow reconstruction from real and synthetic datasets.
+    limitation: Many targets originate in published findings and therefore reward rediscovery as well as method.
+  - id: science_agent_bench
+    kind: official_repository
+    title: ScienceAgentBench
+    uri: https://github.com/OSU-NLP-Group/ScienceAgentBench/commit/c26e151ed601ba109dc4d35e057ff8e73fec469d
+    version: c26e151ed601ba109dc4d35e057ff8e73fec469d
+    license: MIT
+    role: Executable scientific workflow tasks with output, code, and cost evaluation.
+    limitation: Workflow replication from papers is not open-ended topic discovery.
+  - id: robin
+    kind: official_repository
+    title: Robin
+    uri: https://github.com/Future-House/robin/commit/4a5cce310f3bc7663a67117db88af43b84733ffe
+    version: 4a5cce310f3bc7663a67117db88af43b84733ffe
+    license: Apache-2.0
+    role: Multi-stage literature, mechanism, assay, and experiment prioritization loop.
+    limitation: Human wet-lab design and execution remain decisive; agent ranking is not experimental evidence.
+  - id: finch
+    kind: official_repository
+    title: Finch
+    uri: https://github.com/Future-House/finch/commit/aea66fdf2dd2be827727de50a73cae60dff59972
+    version: aea66fdf2dd2be827727de50a73cae60dff59972
+    license: Apache-2.0
+    role: Multiple analysis trajectories and consensus over experimental data.
+    limitation: Agreement among analyses is not independent replication unless implementations and assumptions differ.
+  - id: xscientist
+    kind: official_repository
+    title: XScientist
+    uri: https://github.com/smileformylove/XScientist/commit/adc4501d4e7d29579b1e828c1070cce111da28e9
+    version: adc4501d4e7d29579b1e828c1070cce111da28e9
+    license: Apache-2.0
+    role: Immutable exploration DAG, failure branches, hashes, truth contracts, and claim-to-evidence anchors.
+    limitation: Auditability supports but does not prove scientific correctness or novelty.
+  - id: discover_physics
+    kind: official_repository
+    title: DiscoverPhysics
+    uri: https://github.com/SampsonML/DiscoverPhysics/commit/33b7fa9df96de9c35744efd181ca7e5a8dd60ad5
+    version: 33b7fa9df96de9c35744efd181ca7e5a8dd60ad5
+    license: MIT
+    role: Experiment design and hidden-law recovery in procedurally varied physical worlds.
+    limitation: Known generator families and held-out trajectories do not by themselves test field novelty.
+  - id: newtonbench
+    kind: primary_work
+    title: NewtonBench — Benchmarking Generalizable Scientific Law Discovery in LLM Agents
+    uri: https://arxiv.org/abs/2510.07172
+    version: arxiv_2510_07172_v3
+    license: arxiv_terms
+    role: Interactive, counterfactual-shifted, memorization-resistant physical-law discovery.
+    limitation: Does not require a shared law and intervention abstraction across independently implemented simulators.
+  - id: causalab
+    kind: primary_work
+    title: CausaLab — A Scalable Environment for Interactive Causal Discovery Toward AI Scientists
+    uri: https://arxiv.org/abs/2605.26029
+    version: arxiv_2605_26029_v2
+    license: arxiv_terms
+    role: Fresh SCMs, active interventions, mechanism recovery, and transfer to a held-out instance.
+    limitation: Operates inside sampled SCM families rather than heterogeneous market engines.
+  - id: causalds
+    kind: primary_work
+    title: CausalDS — Benchmarking Causal Reasoning in Data-Science Agents
+    uri: https://arxiv.org/abs/2607.08093
+    version: arxiv_2607_08093_v1
+    license: arxiv_terms
+    role: Scores identifiability, uncertainty, and warranted abstention on fresh causal scenes.
+    limitation: Makes the broad abstention contribution non-novel; only a market-specific proof-carrying residual could remain.
+  - id: causalgame
+    kind: primary_work
+    title: CausalGame — Benchmarking Causal Thinking of LLM Agents in Games
+    uri: https://arxiv.org/abs/2607.04293
+    version: arxiv_2607_04293_v1
+    license: arxiv_terms
+    role: Interactive experiment design under hidden confounding, selection bias, and measurement error.
+    limitation: Does not target cross-engine market response laws.
+  - id: boxinggym
+    kind: primary_work
+    title: BoxingGym — Benchmarking Progress in Automated Experimental Design and Model Discovery
+    uri: https://arxiv.org/abs/2501.01540
+    version: arxiv_2501_01540_v2
+    license: arxiv_terms
+    role: Interactive experiments, expected information gain, model discovery, and predictive evaluation.
+    limitation: A generic active-model-discovery baseline that any proposed discovery method must beat.
+  - id: causal_consistency
+    kind: primary_work
+    title: Causal Consistency of Structural Equation Models
+    uri: https://arxiv.org/abs/1707.00819
+    version: uai_2017_arxiv_1707_00819
+    license: arxiv_terms
+    role: Exact transformations with state and intervention maps that preserve causal effects.
+    limitation: Directly occupies the basic commuting-diagram formulation across model levels.
+  - id: transportability
+    kind: primary_work
+    title: "External Validity: From Do-Calculus to Transportability Across Populations"
+    uri: https://doi.org/10.1214/14-STS486
+    version: statistical_science_2014
+    license: publisher_terms
+    role: Decides and constructs transport of causal effects across environments.
+    limitation: A cross-simulator law must add more than standard selection diagrams and do-calculus transport.
+  - id: multi_level_causal_embeddings
+    kind: primary_work
+    title: Multi-Level Causal Embeddings
+    uri: https://arxiv.org/abs/2602.22287
+    version: arxiv_2602_22287_v2
+    license: arxiv_terms
+    role: Embeds multiple detailed causal models into a shared coarser causal model.
+    limitation: Leaves little novelty in merely merging simulator representations.
+  - id: unsupervised_causal_abstractions
+    kind: primary_work
+    title: Unsupervised Causal Abstractions Discovery
+    uri: https://arxiv.org/abs/2606.19594
+    version: arxiv_2606_19594_v1
+    license: arxiv_terms
+    role: Learns high-level causal abstractions from low-level measurements with identifiability results.
+    limitation: A successor theorem must handle market trajectories, clocks, adaptive agents, and selective law-or-certificate guarantees.
+  - id: boxinggym_popper_adjacent
+    kind: primary_work
+    title: Automated Hypothesis Validation with Agentic Sequential Falsifications
+    uri: https://arxiv.org/abs/2502.09858
+    version: arxiv_2502_09858_v1
+    license: arxiv_terms
+    role: Sequential falsification with Type-I error control for free-form hypotheses.
+    limitation: Hypotheses and valid tests must already be specified; adaptive market time-series reuse remains a separate threat.
+  - id: baby_aigs
+    kind: primary_work
+    title: "AIGS: Generating Science from AI-Powered Automated Falsification"
+    uri: https://arxiv.org/abs/2411.11910
+    version: arxiv_2411_11910_v2
+    license: arxiv_terms
+    role: Full-process agent framing with an explicit falsification agent.
+    limitation: Preliminary three-task evidence and no objective cross-engine market-law guarantee.
+  - id: abides_simulator
+    kind: official_repository
+    title: ABIDES JPMC Public
+    uri: https://github.com/jpmorganchase/abides-jpmc-public/tree/f9cbe51342b7dedd9587e4e069040d68a5c6477f
+    version: f9cbe51342b7dedd9587e4e069040d68a5c6477f
+    license: BSD-3-Clause
+    role: Independent asynchronous message-driven limit-order-market simulator lineage.
+    limitation: Archived repository with no documented full agent, queue, and RNG branch-state checkpoint contract.
+  - id: pams_simulator
+    kind: official_repository
+    title: PAMS
+    uri: https://github.com/masanorihirano/pams/tree/28cbb86192a019ddff00f9192d27e1ba87d381a8
+    version: 0.2.2_28cbb86192a019ddff00f9192d27e1ba87d381a8
+    license: EPL-1.0
+    role: Independent step-and-session artificial-market simulator lineage.
+    limitation: The common intervention and observation adapter is not frozen; deterministic order requires SequentialRunner.
+  - id: bourse_simulator
+    kind: official_repository
+    title: Bourse
+    uri: https://github.com/zombie-einstein/bourse/tree/17285fde5a5293b55fed9236c7f35a859160a5f5
+    version: 0.4.0_17285fde5a5293b55fed9236c7f35a859160a5f5
+    license: MIT
+    role: Small seeded Rust and Python limit-order-book simulator suitable for CPU-only disposable question generation.
+    limitation: Fixed-step shuffled instruction processing is not an independent reproduction of asynchronous continuous-market dynamics, and the public contract does not provide a full agent-plus-RNG branch checkpoint.
+  - id: bourse_de_docs
+    kind: official_documentation
+    title: bourse-de 0.4.0 documentation
+    uri: https://docs.rs/bourse-de/0.4.0/bourse_de/
+    version: 0.4.0
+    license: MIT
+    role: Documents fixed-size time steps, shuffled end-of-step instruction processing, and seeded deterministic simulation.
+    limitation: Determinism supports from-scratch exploratory replay, not equivalence to a continuous-time venue or a full-state causal bridge.
+  - id: bourse_book_docs
+    kind: official_documentation
+    title: bourse-book 0.4.0 documentation
+    uri: https://docs.rs/bourse-book/0.4.0/bourse_book/
+    version: 0.4.0
+    license: MIT
+    role: Documents price-time priority, integer ticks, order and trade histories, L2 snapshots, and JSON order-book persistence.
+    limitation: Order-book persistence excludes the full agent population, scheduler state, and all RNG state required for bit-complete mid-trajectory branching.
+  - id: researchbench
+    kind: primary_work
+    title: "ResearchBench: Benchmarking LLMs in Scientific Discovery via Inspiration-Based Task Decomposition"
+    uri: https://aclanthology.org/2026.findings-acl.644/
+    version: acl_findings_2026_10_18653_v1_2026_findings_acl_644
+    license: CC-BY-4.0-paper_MIT-code
+    role: Decomposes ideation into inspiration retrieval, hypothesis composition, and pairwise ranking.
+    limitation: Uses published successful hypotheses as gold and does not execute experiments, retain nulls, or revise from external feedback.
+  - id: interventional_simulator_surrogates
+    kind: primary_work
+    title: Interventionally Consistent Surrogates for Complex Simulation Models
+    uri: https://proceedings.neurips.cc/paper_files/paper/2024/hash/26b8e3dc3a21fcd660d80c63b767f324-Abstract-Conference.html
+    version: neurips_2024_main_10_52202_079017_0686
+    license: proceedings_terms
+    role: Learns state and intervention abstractions for complex simulators and controls interventional surrogate error with high probability over interventions of interest.
+    limitation: Does not provide uniform market-family discovery or a complete law-or-witness procedure, but directly occupies the proposed simulator-abstraction object.
+  - id: interventional_crl_sample_complexity
+    kind: primary_work
+    title: Sample Complexity of Interventional Causal Representation Learning
+    uri: https://proceedings.neurips.cc/paper_files/paper/2024/hash/458fa8ee331566383d8e74bdb647f829-Abstract-Conference.html
+    version: neurips_2024_main_10_52202_079017_1243
+    license: proceedings_terms
+    role: Gives finite-sample recovery guarantees for latent causal variables and structure under stochastic soft interventions.
+    limitation: Uses a restricted latent causal model and linear observation map, but removes finite-sample unknown-representation as a generic novelty claim.
+  - id: structural_causal_bandit_transportability
+    kind: primary_work
+    title: On Transportability for Structural Causal Bandits
+    uri: https://proceedings.mlr.press/v337/park26a.html
+    version: uai_2026_pmlr_337_5266_5288
+    license: PMLR_terms
+    role: Combines multi-environment causal transport with adaptive intervention choice and sample-efficient target action identification.
+    limitation: Targets structural causal bandits rather than market path laws, but occupies transport plus adaptive probing as a generic theorem ingredient.
+  - id: certified_interventional_fidelity
+    kind: primary_work
+    title: "Certified Interventional Fidelity: Anytime-Valid, Adaptive Evaluation of Causal Claims in Mechanistic Interpretability"
+    uri: https://proceedings.mlr.press/v337/asiaee26d.html
+    version: uai_2026_pmlr_337_210_227
+    license: PMLR_terms
+    role: Supplies confidence intervals and anytime-valid confidence sequences for bounded causal fidelity estimands under adaptive intervention sampling.
+    limitation: Evaluates a declared intervention distribution rather than discovering a market law, but occupies the adaptive finite-sample certification layer.
+  - id: selective_conformal_interventions
+    kind: primary_work
+    title: Partial Causal Structure Learning for Valid Selective Conformal Inference under Interventions
+    uri: https://proceedings.mlr.press/v337/asiaee26b.html
+    version: uai_2026_pmlr_337_161_184
+    license: PMLR_terms
+    role: Quantifies and corrects finite-sample selective-coverage loss when intervention invariance structure is learned rather than known.
+    limitation: Does not study adaptive market trajectories, but removes unknown invariance plus selective finite-sample validity as a generic residual.
+  - id: ncs_machine_guided_path_sampling
+    kind: primary_work
+    title: Machine-guided path sampling to discover mechanisms of molecular self-organization
+    uri: https://doi.org/10.1038/s43588-023-00428-z
+    version: nature_computational_science_2023
+    license: publisher_terms
+    role: Demonstrates a closed-loop computational method across four molecular systems with transition-path interpretation, transferable mechanism discovery, and large sampling gains.
+    limitation: The evidentiary pattern is transferable, but its molecular path-sampling algorithm is not a market mechanism or a reusable market-specific novelty claim.
+  - id: nmi_trajcast
+    kind: primary_work
+    title: TrajCast
+    uri: https://doi.org/10.1038/s42256-026-01227-7
+    version: nature_machine_intelligence_2026
+    license: publisher_terms
+    role: Validates a new equivariant trajectory operator across molecules, crystals, and liquids, including physical observables, out-of-distribution regimes, scaling, and explicit limitations.
+    limitation: Shows the breadth and truth requirements for a trajectory-simulator method; it does not validate a market-labelled operator without comparable cross-system ground truth.
+  - id: nmi_synthetic_lagrangian_turbulence
+    kind: primary_work
+    title: Synthetic Lagrangian turbulence by generative diffusion models
+    uri: https://doi.org/10.1038/s42256-024-00810-0
+    version: nature_machine_intelligence_2024
+    license: publisher_terms
+    role: Tests multiscale and high-order turbulence statistics, extreme events, and small-scale failure against DNS and experimental truth.
+    limitation: A market simulator cannot claim comparable evidence by reproducing a familiar heavy tail or a few stylized facts.
+  - id: nmi_pysted
+    kind: primary_work
+    title: pySTED
+    uri: https://doi.org/10.1038/s42256-024-00903-w
+    version: nature_machine_intelligence_2024
+    license: publisher_terms
+    role: Validates a microscope simulator component by component and deploys a simulator-trained policy in the same action-observation loop on a real microscope.
+    limitation: Establishes a stringent sim-to-real pattern; historical market observations without the same controlled action are not an equivalent bridge.
+  - id: ncs_chemical_digital_twin
+    kind: primary_work
+    title: Digital Twin for Chemical Science
+    uri: https://doi.org/10.1038/s43588-025-00857-y
+    version: nature_computational_science_2025
+    license: publisher_terms
+    role: Closes forward and inverse mechanistic inference against measured spectra while treating accuracy and degeneracy as explicit stopping conditions.
+    limitation: A simulator fidelity score without forward-inverse closure on a real observable does not meet this digital-twin standard.
+  - id: ncs_parallel_symbolic_enumeration
+    kind: primary_work
+    title: Parallel symbolic enumeration for scientific discovery
+    uri: https://doi.org/10.1038/s43588-025-00904-8
+    version: nature_computational_science_2026
+    license: publisher_terms
+    role: Establishes recovery-runtime performance over hundreds of truth-defined synthetic and experimental problems, strong baselines, and repeated seeds.
+    limitation: Provides a method-evidence template rather than permission to substitute retrospective benchmark breadth for a real market intervention.

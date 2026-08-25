@@ -8,7 +8,12 @@ You are an **AI academic research partner + independent reviewer-2** for a solo 
 
 ## Research program (one-paragraph version)
 
-EcoMD — a differentiable, equivariant, large-scale molecular-dynamics-style simulator for financial markets. Agents are particles in latent feature space; dynamics are Langevin with learned interaction potentials (MACE-lite). Three contribution pillars: **C1** methods (first differentiable MD market simulator), **C2** physics (non-equilibrium thermodynamics, entropy production, effective temperature as universal crash precursor), **C3** applications (crash early warning, optimal execution). **Plan v3 + Path C (2026-04-24)**: Paper B targets **Nature Physics flagship** with **15–22% joint probability**, backed by $8–12k high-frequency data commitment (Tardis L2 6mo + FirstRate minute 3y + LOBSTER 3y) so the three main NP reviewer attacks (Jarzynski work protocol, TUR stationarity, T_eff novelty) have physics-defensible responses. Four pre-registered "one-line laws" (A1 T_eff critical scaling **on ≥3 timescales**, A2 hyperscaling, B2 Jarzynski with FOMC/earnings intraday protocol, B3 TUR saturation on L2) and three binding rigor clauses (surrogate kill, sanity-check cascade, arXiv pre-registration). Paper A (NeurIPS/ICML), companion PRL, and QF retreat papers guaranteed — the $8–12k high-freq purchase is not wasted in any retreat scenario. Full plan: `papers/proposal/plan_v3.md`. Core decisions in `memory/project_overview.md` and `memory/feedback_preregistration.md`. Data buy order: `ecomd/data/buy_order_v2_{en,zh}.md`. Total timeline 58 weeks to M6.
+EcoMD is a differentiable, stateful, molecular-dynamics-style simulator for financial markets; broad “first differentiable/Langevin market simulator” claims are ruled out by prior art. **No Nature-grade simulated-market or financial-physics route is currently active.** Plan v3 is historical, and Plan v4's invariant-calibration route and successor theorem cards are formally closed. Forward topic selection is governed by `research/discovery/protocol.yaml`, `docs/research_discovery_loop.md`, and the canonical registry `.claude/memory/research_route_knowledge_graph.yaml`. The first protocol-governed residual—proof-carrying transportable interventional market-law discovery—is now failed-closed after its theorem reduced to established causal-abstraction/selective-inference modules and ABIDES–PAMS failed the native clock/RNG contract. A recurring CME SR3 grid-refinement idea remained below the 15% hostile-T0 floor and did not become a topic card. A subsequent controlled/on-chain rerun also produced no card; Solana SIMD-0525 was strongest at 12–17% hostile T0 but its 12% lower bound and bundled slot/window/capacity/accounting treatment fail activation. The structural-complement/prospective-mechanism round also produced no card: hosted conditional orders, queue priority and iceberg regeneration reduced to established parent problems, while Project EnergyConnect had only a 6% hostile-T0 lower bound under test-contingent capacity release. The latest atomic/cross-margin/implied-liquidity/experimental-market round again produced no card: its best conservative hostile-T0 lower bound was 10%, and every formulation failed an exact-parent, invariance, same-estimand, real-bridge or uncontaminated-holdout gate. A subsequent external-truth asset-first round also produced no card or sandbox; TSE's announced 2027 closed-loop tick controller was strongest at 10--17%, but its 10% lower bound, bundled rule changes, paid data and absent exact second implementation failed activation. These routes authorize no simulation, implementation, data download or purchase, EcoMD integration, external outreach, or GPU. The only possible pre-active exception is a separately hashed, zero-cost CPU-only disposable exploration sandbox under `research/discovery/protocol.yaml`; schema v2 restricts its terminal result to tainted topic motivation, and no sandbox is authorized. Verification-liquidity remains a separate sealed field protocol, not an active market-physics thesis. Current compute begins with 2×V100 32 GB and may expand to compatible non-H20 workers; no forward plan may assume H20.
+
+The disposable-sandbox validator now includes protected-base prefix checks and a pinned OCI
+execution contract. This does not authorize execution: the GitHub check must first be made
+required, force pushes disabled, and an enforcing launcher reviewed. The Bourse 0.4.0 design
+is preflight-only and requires a separate authorization-only merge before any branch runs.
 
 ## Work log discipline (non-negotiable)
 
@@ -22,15 +27,16 @@ After every work session, append or create `logs/YYYY-MM-DD.md` with:
 
 Also update long-term memory in `.claude/memory/` (in-repo; see `.claude/README.md` for symlink story) when lasting facts change. See `memory/feedback_long_memory_and_logs.md`.
 
-## Workflow (Mac + R2 + GitHub + 8×H20 NVLink)
+## Workflow (Mac + R2 + GitHub + scalable non-H20 compute)
 
 - **Mac**: code editing, tests, small smoke training (N ≤ 500). Conda env `ecophys` (Python 3.11, per global CLAUDE.md). Always use `conda run -n ecophys python …` not bare `python`.
-- **Cloudflare R2**: transit + canonical bulk data store. Mac cannot mount company NFS directly, so Mac↔H20 data goes via `r2://ecophys/`.
+- **Cloudflare R2**: transit + canonical bulk data store. Compute workers stage immutable inputs from `r2://ecophys/` and upload manifests/results afterward.
 - **GitHub**: canonical code store. `main` stays runnable; experiments on feature branches.
-- **8×H20 NVLink (remote)**: all production training + inference. Pulls code via git, data via R2 (`bash scripts/h20_pull_from_r2.sh`). **The H20 machine is NOT accessible from this Claude session** — for H20 tasks, produce runnable scripts + hand back commands for the user to execute via SSH. See `scripts/README.md` for the full launch sequence.
-- Distributed training via `ecomd/training/train_distributed.py` (torchrun DDP, 4-card default, 8-card via `NPROC=8`). Checkpoints saved every 30 min; W&B `resume="allow"` for interruption safety.
+- **GPU workers**: the current floor is two independent V100 32 GB nodes. Future capacity may add compatible GPU/CPU workers, but H20 is excluded. Keep heterogeneous GPU types in separate benchmarked pools.
+- Use `ecomd/training/train_distributed.py` only when a qualified scientific experiment needs multi-GPU training. Checkpoints save every 30 minutes; local manifests are canonical and W&B is optional with `resume="allow"`.
 
-See `memory/feedback_workflow.md` for full details.
+See `docs/research_discovery_loop.md`, `.claude/memory/project_overview.md`, and
+`.claude/memory/feedback_workflow.md` for current decision and workflow details.
 
 ## Code & experiment standards
 
@@ -66,5 +72,7 @@ Actively push back if:
 
 ## Directory map
 
-See `README.md` for the current layout. `papers/proposal/plan_v3.md` is the authoritative
-plan document; `plan_v1.md` and `plan_v2.md` are kept for history but **superseded** by v3.
+See `README.md` for the current layout. `research/discovery/protocol.yaml` is authoritative for
+forward topic selection and `.claude/memory/research_route_knowledge_graph.yaml` is authoritative
+for route status and veto lineage. Plan v4 retains compute/data quality constraints but its paper
+route is closed; Plan v1--v3 are historical only.

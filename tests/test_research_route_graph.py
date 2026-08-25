@@ -53,7 +53,7 @@ def node_locators(node: dict[str, object], field: str) -> list[dict[str, object]
 def test_canonical_graph_validates_offline() -> None:
     result = validate_graph(GRAPH_PATH, REPO_ROOT)
 
-    assert "107 route nodes" in result
+    assert "148 route nodes" in result
     assert "git_ref=35" in result
 
 
@@ -71,7 +71,6 @@ def test_only_declared_routes_remain_open() -> None:
     assert open_routes == {
         "dcrdex_verifiable_sequencing_response": "parked",
         "fcc_clock1_random_rank_cascade": "candidate",
-        "program_trace_market_tom": "parked",
         "verification_liquidity": "active",
     }
 

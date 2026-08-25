@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecomd.local/schemas/research-discovery-exploration-partition-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "sandbox_id", "asset_fingerprint_sha256", "unit_namespace", "splits"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "sandbox_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "asset_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "unit_namespace": {"type": "string", "minLength": 1},
+    "splits": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role", "members_ref", "members_sha256", "member_count"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "role": {"enum": ["exploration", "confirmation"]},
+          "members_ref": {"type": "string", "minLength": 1},
+          "members_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "member_count": {"type": "integer", "minimum": 1}
+        }
+      }
+    }
+  }
+}

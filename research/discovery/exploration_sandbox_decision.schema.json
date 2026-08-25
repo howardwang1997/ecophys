@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecomd.local/schemas/research-discovery-exploration-sandbox-decision-v2.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "sandbox_id",
+    "decision",
+    "decided_at",
+    "authorized_by",
+    "manifest_sha256",
+    "genesis_entry_sha256",
+    "rationale"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "sandbox_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "decision": {"const": "authorized"},
+    "decided_at": {"type": "string", "format": "date-time"},
+    "authorized_by": {"type": "string", "minLength": 1},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "genesis_entry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rationale": {"type": "string", "minLength": 1}
+  }
+}
