@@ -38,7 +38,9 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > a single event chain, receipts and permanent result taint. Protected-base prefix validation and a pinned OCI
 > execution contract are now machine-readable. The research baseline requires the `research-governance` check,
 > forbids force pushes/deletion and administrator bypass, and the fail-closed OCI launcher is implemented on a
-> child review branch; it still needs a pinned-image conformance run and independent runtime review. The Bourse 0.4.0
+> child review branch. Its source-bound, outcome-free local Colima/arm64 conformance run passed isolation,
+> timeout, output-limit and invalid-tar checks; ambiguous interruptions are terminally quarantined with full
+> branch-budget charge. It still needs independent runtime review and a separate asset-level authorization. The Bourse 0.4.0
 > counterexample-search design is only a preflight with no manifest or authorization. No sandbox is currently authorized.
 
 > **Forward-authority update (2026-08-25).** Plan v4's invariant-calibration paper route is closed. Retain

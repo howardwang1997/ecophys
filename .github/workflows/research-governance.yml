@@ -34,22 +34,39 @@ jobs:
       - name: Validate route graph
         run: conda run -n ecophys python scripts/validate_research_route_graph.py
 
+      - name: Verify recorded outcome-free OCI conformance
+        run: >-
+          conda run -n ecophys python
+          scripts/test_research_discovery_oci_conformance.py
+          --verify-recorded-report
+
       - name: Run governance mutation tests
         run: >-
           conda run -n ecophys python -m pytest
           tests/test_research_discovery.py tests/test_run_research_discovery_sandbox.py
+          tests/test_research_discovery_oci_conformance.py
           tests/test_research_route_graph.py -q
 
       - name: Lint governance code
         run: >-
           conda run -n ecophys ruff check
-          scripts/run_research_discovery_sandbox.py scripts/validate_research_discovery.py
+          research/discovery/conformance/oci_probe.py
+          scripts/quarantine_research_discovery_sandbox.py
+          scripts/run_research_discovery_sandbox.py
+          scripts/test_research_discovery_oci_conformance.py
+          scripts/validate_research_discovery.py
           scripts/validate_research_route_graph.py tests/test_research_discovery.py
+          tests/test_research_discovery_oci_conformance.py
           tests/test_run_research_discovery_sandbox.py tests/test_research_route_graph.py
 
       - name: Type-check governance code
         run: >-
           conda run -n ecophys mypy --strict --explicit-package-bases
-          scripts/run_research_discovery_sandbox.py scripts/validate_research_discovery.py
+          research/discovery/conformance/oci_probe.py
+          scripts/quarantine_research_discovery_sandbox.py
+          scripts/run_research_discovery_sandbox.py
+          scripts/test_research_discovery_oci_conformance.py
+          scripts/validate_research_discovery.py
           scripts/validate_research_route_graph.py tests/test_research_discovery.py
+          tests/test_research_discovery_oci_conformance.py
           tests/test_run_research_discovery_sandbox.py tests/test_research_route_graph.py

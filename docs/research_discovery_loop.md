@@ -213,12 +213,19 @@ read-only frozen config-file input enumerating exploration units, no generated/s
 confirmation outcomes, and a byte-bounded stdout tar channel. Each branch request freezes its
 hypothesis, falsifier, multiplicity family, tests, units, CPU/output bounds and code/config
 digests before execution; each receipt repeats the execution contract. The fail-closed launcher
-enforces these constraints, but still requires an outcome-free conformance run against a
-pinned test image and independent runtime review before any sandbox may be authorized. For a
-synthetic simulator, known withheld seed numbers are not an admissible
+enforces these constraints. A pinned, outcome-free local Colima/arm64 probe passed UID/GID,
+capability, seccomp, network, read-only mount, cgroup, device, secret, repository-mount and
+tar-channel checks, including forced timeout, stdout overflow and invalid-tar failures. Its
+[recorded report](../research/discovery/conformance/local_colima_arm64_report_2026-08-25.json)
+is tied to the exact Dockerfile, probe, launcher, incident handler and conformance runner
+hashes. Independent runtime review and a separate asset-level authorization remain required
+before any scientific sandbox can run. An interruption after `branch_opened` is never retried:
+the separately hashed incident handler removes the named container, assumes outcome exposure,
+charges the full ambiguous branch reservation, emits a canonical incident, and terminalizes
+the sandbox as `quarantined`. For a synthetic simulator, known withheld seed numbers are not an admissible
 confirmation split: seeds must be derived from a frozen public-randomness rule whose pulse
-values do not exist until after sandbox termination and D0 freeze. Until runtime qualification,
-the repository truthfully reports zero authorized sandboxes.
+values do not exist until after sandbox termination and D0 freeze. Until independent review
+and a separate asset decision, the repository truthfully reports zero authorized sandboxes.
 
 The first possible generator is specified only as an outcome-blind
 [Bourse counterexample preflight](../papers/proposal/bourse_disposable_market_counterexample_preflight_2026-08-25.md).
@@ -290,7 +297,10 @@ conda run -n ecophys python scripts/validate_research_discovery.py
 conda run -n ecophys python scripts/validate_research_discovery.py \
   --base-ref origin/dependabot-cooldown-verification-liquidity-2026-08-21
 conda run -n ecophys python -m pytest tests/test_research_discovery.py \
-  tests/test_run_research_discovery_sandbox.py -q
+  tests/test_run_research_discovery_sandbox.py \
+  tests/test_research_discovery_oci_conformance.py -q
+conda run -n ecophys python scripts/test_research_discovery_oci_conformance.py \
+  --verify-recorded-report
 ```
 
 The route graph is validated separately because it records terminal decisions and lineage,

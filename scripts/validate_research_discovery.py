@@ -24,7 +24,7 @@ OCI_IMAGE_DIGEST_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
 CARD_STATUSES = {"screening", "candidate", "parked", "active", "failed_closed"}
 DECIDED_STATUSES = CARD_STATUSES - {"screening"}
 STAGES = {"D_minus_3", "D_minus_2", "D_minus_1", "D0", "D1", "D2"}
-SANDBOX_EFFECTIVE_STATES = {"authorized", "expired", "exhausted", "closed"}
+SANDBOX_EFFECTIVE_STATES = {"authorized", "expired", "exhausted", "closed", "quarantined"}
 SANDBOX_ACTIONS = {
     "free_dataset_acquisition",
     "disposable_outcome_inspection",
@@ -38,6 +38,11 @@ SANDBOX_HARD_MAX_GPU_SECONDS = 0
 SANDBOX_HARD_MAX_BRANCHES = 16
 SANDBOX_HARD_MAX_TTL_SECONDS = 604_800
 SANDBOX_STDERR_LIMIT_BYTES = 1_000_000
+SANDBOX_AMBIGUOUS_INTERRUPTION_POLICY = (
+    "Remove and prove absence of the named container, assume outcome exposure, charge the "
+    "full branch CPU and output reservation, and terminalize the sandbox as quarantined; "
+    "retry is forbidden."
+)
 SANDBOX_REQUIRED_FORBIDDEN_ACTIONS = {
     "confirmation_holdout_access",
     "dataset_purchase",
@@ -132,6 +137,7 @@ SANDBOX_FIELDS = {
 SANDBOX_EXECUTION_FIELDS = {
     "executor",
     "launcher",
+    "incident_handler",
     "image_digest",
     "network",
     "root_filesystem",
@@ -214,6 +220,7 @@ class SandboxRecord:
 class SandboxExecutionContract:
     executor: str
     launcher_sha256: str
+    incident_handler_sha256: str
     image_digest: str
     network: str
     root_filesystem: str
@@ -338,6 +345,18 @@ def load_yaml(path: Path, context: str) -> Mapping[str, object]:
     except (OSError, yaml.YAMLError) as exc:
         raise DiscoveryValidationError(f"cannot load {context} at {path}: {exc}") from exc
     return require_mapping(loaded, context)
+
+
+def load_canonical_json_mapping(path: Path, context: str) -> Mapping[str, object]:
+    try:
+        raw = path.read_bytes()
+        loaded = cast(object, json.loads(raw.decode("utf-8")))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise DiscoveryValidationError(f"cannot load {context} at {path}: {exc}") from exc
+    mapping = require_mapping(loaded, context)
+    if canonical_json_bytes(mapping) != raw:
+        raise DiscoveryValidationError(f"{context} must be canonical compact JSON")
+    return mapping
 
 
 def load_json_schema(path: Path, context: str) -> Mapping[str, object]:
@@ -562,6 +581,8 @@ def load_protocol(
         "require_nonoverlapping_confirmation_holdout",
         "require_protected_base_prefix_ci",
         "require_oci_runtime_isolation",
+        "require_source_bound_oci_conformance_report",
+        "ambiguous_runtime_interruption",
         "require_confirmation_unmaterialized",
         "scientific_claims_allowed",
         "route_activation_allowed",
@@ -617,10 +638,19 @@ def load_protocol(
         "require_nonoverlapping_confirmation_holdout",
         "require_protected_base_prefix_ci",
         "require_oci_runtime_isolation",
+        "require_source_bound_oci_conformance_report",
         "require_confirmation_unmaterialized",
     ):
         if require_bool(sandbox.get(field), f"protocol.sandbox.{field}") is not True:
             raise DiscoveryValidationError(f"protocol sandbox {field} must be true")
+    interruption_policy = require_string(
+        sandbox.get("ambiguous_runtime_interruption"),
+        "protocol.sandbox.ambiguous_runtime_interruption",
+    )
+    if interruption_policy != SANDBOX_AMBIGUOUS_INTERRUPTION_POLICY:
+        raise DiscoveryValidationError(
+            "protocol sandbox ambiguous interruption policy differs from validator"
+        )
     for field in ("scientific_claims_allowed", "route_activation_allowed"):
         if require_bool(sandbox.get(field), f"protocol.sandbox.{field}") is not False:
             raise DiscoveryValidationError(f"protocol sandbox {field} must be false")
@@ -1545,6 +1575,7 @@ def validate_receipt_v2(
         "wall_seconds",
         "executor",
         "launcher_sha256",
+        "incident_handler_sha256",
         "image_digest",
         "network",
         "root_filesystem",
@@ -1562,6 +1593,7 @@ def validate_receipt_v2(
     expected_execution = {
         "executor": execution_contract.executor,
         "launcher_sha256": execution_contract.launcher_sha256,
+        "incident_handler_sha256": execution_contract.incident_handler_sha256,
         "image_digest": execution_contract.image_digest,
         "network": execution_contract.network,
         "root_filesystem": execution_contract.root_filesystem,
@@ -1816,6 +1848,7 @@ def validate_sandbox_v2(
     decision_schema: Mapping[str, object],
     result_schema: Mapping[str, object],
     branch_request_schema: Mapping[str, object],
+    runtime_incident_schema: Mapping[str, object],
     route_ids: set[str],
     clean_evidence_ids: set[str],
     policy: Mapping[str, object],
@@ -2042,6 +2075,11 @@ def validate_sandbox_v2(
         execution_raw.get("launcher"),
         f"{sandbox_id}.execution_contract.launcher",
     )
+    _, _, incident_handler_sha256 = require_digest_ref(
+        repo_root,
+        execution_raw.get("incident_handler"),
+        f"{sandbox_id}.execution_contract.incident_handler",
+    )
     image_digest = require_oci_image_digest(
         execution_raw.get("image_digest"),
         f"{sandbox_id}.execution_contract.image_digest",
@@ -2069,6 +2107,7 @@ def validate_sandbox_v2(
     execution_contract = SandboxExecutionContract(
         executor=executor,
         launcher_sha256=launcher_sha256,
+        incident_handler_sha256=incident_handler_sha256,
         image_digest=image_digest,
         network=execution_values["network"],
         root_filesystem=execution_values["root_filesystem"],
@@ -2147,6 +2186,7 @@ def validate_sandbox_v2(
     opened: dict[str, datetime] = {}
     branch_budgets: dict[str, tuple[int, int]] = {}
     finished: set[str] = set()
+    quarantined: set[str] = set()
     usage = {
         "cpu_seconds": 0,
         "storage_bytes": 0,
@@ -2212,7 +2252,7 @@ def validate_sandbox_v2(
             if occurred_at >= expires_at:
                 raise DiscoveryValidationError(f"{entry_context} finished at or after expiry")
             branch_id = require_id(entry.get("branch_id"), f"{entry_context}.branch_id")
-            if branch_id not in opened or branch_id in finished:
+            if branch_id not in opened or branch_id in finished or branch_id in quarantined:
                 raise DiscoveryValidationError(f"{entry_context} references an unopened or finished branch")
             receipt_ref, receipt_path, _, _ = require_artifact_digest(
                 repo_root,
@@ -2298,16 +2338,108 @@ def validate_sandbox_v2(
                     f"receipt for {sandbox_id}/{branch_id}.storage_bytes differs from artifacts"
                 )
             finished.add(branch_id)
+        elif event_type == "branch_quarantined":
+            fields = common | {"branch_id", "incident", "charged_usage"}
+            require_exact_fields(entry, fields, entry_context)
+            branch_id = require_id(entry.get("branch_id"), f"{entry_context}.branch_id")
+            if branch_id not in opened or branch_id in finished or branch_id in quarantined:
+                raise DiscoveryValidationError(
+                    f"{entry_context} references an unopened or already resolved branch"
+                )
+            branch_root = artifact_root / "branches" / branch_id
+            _, incident_path, _, _ = require_artifact_digest(
+                repo_root,
+                entry.get("incident"),
+                f"{entry_context}.incident",
+                artifact_root,
+                require_bytes=False,
+            )
+            if incident_path != branch_root / "runtime_incident.json":
+                raise DiscoveryValidationError(
+                    f"{entry_context}.incident must use the canonical branch path"
+                )
+            incident = load_canonical_json_mapping(
+                incident_path,
+                f"runtime incident for {sandbox_id}/{branch_id}",
+            )
+            validate_json_instance(
+                runtime_incident_schema,
+                incident,
+                f"runtime incident for {sandbox_id}/{branch_id}",
+            )
+            if incident.get("sandbox_id") != sandbox_id or incident.get("branch_id") != branch_id:
+                raise DiscoveryValidationError(
+                    f"runtime incident identity mismatch for {sandbox_id}/{branch_id}"
+                )
+            if require_utc_timestamp(
+                incident.get("recorded_at"),
+                f"runtime incident for {sandbox_id}/{branch_id}.recorded_at",
+            ) != occurred_at:
+                raise DiscoveryValidationError(
+                    f"runtime incident time mismatch for {sandbox_id}/{branch_id}"
+                )
+            require_string(
+                incident.get("reason"),
+                f"runtime incident for {sandbox_id}/{branch_id}.reason",
+            )
+            require_string(
+                incident.get("operator"),
+                f"runtime incident for {sandbox_id}/{branch_id}.operator",
+            )
+            charged = require_mapping(entry.get("charged_usage"), f"{entry_context}.charged_usage")
+            incident_charged = require_mapping(
+                incident.get("charged_usage"),
+                f"runtime incident for {sandbox_id}/{branch_id}.charged_usage",
+            )
+            charged_fields = {
+                "cpu_seconds",
+                "storage_bytes",
+                "monetary_cost_usd_micros",
+                "gpu_seconds",
+            }
+            require_exact_fields(charged, charged_fields, f"{entry_context}.charged_usage")
+            require_exact_fields(
+                incident_charged,
+                charged_fields,
+                f"runtime incident for {sandbox_id}/{branch_id}.charged_usage",
+            )
+            if dict(charged) != dict(incident_charged):
+                raise DiscoveryValidationError(
+                    f"{entry_context}.charged_usage differs from the incident report"
+                )
+            branch_cpu_limit, branch_output_limit = branch_budgets[branch_id]
+            expected_charge = {
+                "cpu_seconds": branch_cpu_limit,
+                "storage_bytes": branch_output_limit + SANDBOX_STDERR_LIMIT_BYTES,
+                "monetary_cost_usd_micros": 0,
+                "gpu_seconds": 0,
+            }
+            if dict(charged) != expected_charge:
+                raise DiscoveryValidationError(
+                    f"{entry_context}.charged_usage must reserve the full ambiguous branch budget"
+                )
+            for field, value in expected_charge.items():
+                usage[field] += value
+            quarantined.add(branch_id)
         elif event_type == "state_transition":
             fields = common | {"from_state", "to_state", "reason", "result"}
             require_exact_fields(entry, fields, entry_context)
             if entry.get("from_state") != "authorized":
                 raise DiscoveryValidationError(f"{entry_context}.from_state must be authorized")
             to_state = require_string(entry.get("to_state"), f"{entry_context}.to_state")
-            if to_state not in {"closed", "exhausted"}:
+            if to_state not in {"closed", "exhausted", "quarantined"}:
                 raise DiscoveryValidationError(f"{entry_context}.to_state is invalid")
-            if set(opened) != finished:
+            resolved_branches = finished | quarantined
+            if set(opened) != resolved_branches:
                 raise DiscoveryValidationError(f"{entry_context} has unfinished branches")
+            if quarantined and to_state != "quarantined":
+                raise DiscoveryValidationError(
+                    f"{entry_context} must quarantine a sandbox with an ambiguous branch"
+                )
+            if to_state == "quarantined" and not quarantined:
+                raise DiscoveryValidationError(
+                    f"{entry_context} cannot quarantine without a branch incident"
+                )
             require_string(entry.get("reason"), f"{entry_context}.reason")
             result_ref, result_path, result_sha, _ = require_artifact_digest(
                 repo_root,
@@ -2327,6 +2459,14 @@ def validate_sandbox_v2(
                 raise DiscoveryValidationError(f"sandbox result manifest hash mismatch for {sandbox_id}")
             if result.get("partition_sha256") != partition_sha:
                 raise DiscoveryValidationError(f"sandbox result partition hash mismatch for {sandbox_id}")
+            if to_state == "quarantined" and result.get("outcome_status") != "quarantined":
+                raise DiscoveryValidationError(
+                    f"quarantined sandbox result status mismatch for {sandbox_id}"
+                )
+            if to_state != "quarantined" and result.get("outcome_status") == "quarantined":
+                raise DiscoveryValidationError(
+                    f"non-quarantined sandbox has a quarantined result for {sandbox_id}"
+                )
             if require_utc_timestamp(
                 result.get("created_at"), f"sandbox result for {sandbox_id}.created_at"
             ) != occurred_at:
@@ -2338,7 +2478,7 @@ def validate_sandbox_v2(
             result_branches = require_string_list(
                 result.get("branch_ids"), f"sandbox result for {sandbox_id}.branch_ids"
             )
-            if set(result_branches) != finished:
+            if set(result_branches) != resolved_branches:
                 raise DiscoveryValidationError(f"sandbox result branch ids mismatch for {sandbox_id}")
             result_usage = require_mapping(
                 result.get("usage"), f"sandbox result for {sandbox_id}.usage"
@@ -2352,7 +2492,7 @@ def validate_sandbox_v2(
                     )
             if require_nonnegative_integer(
                 result_usage.get("branches"), f"sandbox result for {sandbox_id}.usage.branches"
-            ) != len(finished):
+            ) != len(resolved_branches):
                 raise DiscoveryValidationError(f"sandbox result branch count mismatch for {sandbox_id}")
             for artifact_index, artifact in enumerate(
                 require_list(result.get("artifacts"), f"sandbox result for {sandbox_id}.artifacts")
@@ -2492,7 +2632,7 @@ def materialize_tainted_evidence(
         record = by_sandbox.get(sandbox_id)
         if record is None:
             raise DiscoveryValidationError(f"{context} references unknown sandbox {sandbox_id}")
-        if record.effective_state not in {"closed", "exhausted"}:
+        if record.effective_state not in {"closed", "exhausted", "quarantined"}:
             raise DiscoveryValidationError(f"{context} references a nonterminal sandbox")
         artifact_ref = require_string(entry.get("artifact_ref"), f"{context}.artifact_ref")
         artifact_sha = require_sha256(entry.get("artifact_sha256"), f"{context}.artifact_sha256")
@@ -2509,7 +2649,7 @@ def materialize_tainted_evidence(
     terminal_sandboxes = {
         record.sandbox_id
         for record in records
-        if record.effective_state in {"closed", "exhausted"}
+        if record.effective_state in {"closed", "exhausted", "quarantined"}
     }
     missing = terminal_sandboxes - registered_sandboxes
     if missing:
@@ -2566,6 +2706,10 @@ def validate_discovery(
         discovery_root / "exploration_branch_request.schema.json",
         "exploration branch request JSON schema",
     )
+    runtime_incident_schema = load_json_schema(
+        discovery_root / "exploration_runtime_incident.schema.json",
+        "exploration runtime incident JSON schema",
+    )
 
     sandbox_paths = sorted((discovery_root / "sandboxes").glob("*.yaml"))
     sandbox_records: list[SandboxRecord] = []
@@ -2580,6 +2724,7 @@ def validate_discovery(
             sandbox_decision_schema,
             sandbox_result_schema,
             branch_request_schema,
+            runtime_incident_schema,
             set(route_statuses),
             set(clean_evidence),
             sandbox_policy,

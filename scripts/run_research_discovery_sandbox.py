@@ -19,6 +19,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import IO, cast
 
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from scripts.validate_research_discovery import (
     DiscoveryValidationError,
     canonical_json_bytes,
@@ -64,6 +67,7 @@ class RuntimePlan:
     config_path: Path
     image_digest: str
     launcher_sha256: str
+    incident_handler_sha256: str
     cpu_seconds: int
     output_bytes: int
     expires_at: datetime
@@ -260,6 +264,23 @@ def load_runtime_plan(
     )
     if sha256_file(launcher_path) != launcher_sha256:
         raise SandboxRuntimeError("runtime launcher digest differs from the authorization")
+    incident_handler_ref = require_mapping(
+        execution.get("incident_handler"),
+        "execution.incident_handler",
+    )
+    incident_handler_path = repo_root / require_string(
+        incident_handler_ref.get("ref"),
+        "execution.incident_handler.ref",
+    )
+    expected_incident_handler = repo_root / "scripts" / "quarantine_research_discovery_sandbox.py"
+    if incident_handler_path.resolve() != expected_incident_handler.resolve():
+        raise SandboxRuntimeError("sandbox is bound to a different incident handler")
+    incident_handler_sha256 = require_sha256(
+        incident_handler_ref.get("sha256"),
+        "execution.incident_handler.sha256",
+    )
+    if sha256_file(incident_handler_path) != incident_handler_sha256:
+        raise SandboxRuntimeError("incident handler digest differs from the authorization")
     image_digest = require_string(execution.get("image_digest"), "execution.image_digest")
     expires_at = require_utc_timestamp(manifest.get("expires_at"), "sandbox.expires_at")
     remaining_ttl = (expires_at - datetime.now(UTC)).total_seconds()
@@ -279,6 +300,7 @@ def load_runtime_plan(
         config_path=config_path,
         image_digest=image_digest,
         launcher_sha256=launcher_sha256,
+        incident_handler_sha256=incident_handler_sha256,
         cpu_seconds=cpu_seconds,
         output_bytes=output_bytes,
         expires_at=expires_at,
@@ -526,6 +548,7 @@ def execute_plan(plan: RuntimePlan) -> dict[str, object]:
         "wall_seconds": wall_seconds,
         "executor": plan.execution["executor"],
         "launcher_sha256": plan.launcher_sha256,
+        "incident_handler_sha256": plan.incident_handler_sha256,
         "image_digest": plan.image_digest,
         "network": plan.execution["network"],
         "root_filesystem": plan.execution["root_filesystem"],

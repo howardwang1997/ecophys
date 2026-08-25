@@ -119,6 +119,11 @@ disposable_exploration_sandbox:
   require_nonoverlapping_confirmation_holdout: true
   require_protected_base_prefix_ci: true
   require_oci_runtime_isolation: true
+  require_source_bound_oci_conformance_report: true
+  ambiguous_runtime_interruption: >-
+    Remove and prove absence of the named container, assume outcome exposure, charge the
+    full branch CPU and output reservation, and terminalize the sandbox as quarantined;
+    retry is forbidden.
   require_confirmation_unmaterialized: true
   scientific_claims_allowed: false
   route_activation_allowed: false
@@ -142,6 +147,7 @@ validation:
   sandbox_schema: research/discovery/exploration_sandbox.schema.json
   sandbox_partition_schema: research/discovery/exploration_partition.schema.json
   sandbox_branch_request_schema: research/discovery/exploration_branch_request.schema.json
+  sandbox_runtime_incident_schema: research/discovery/exploration_runtime_incident.schema.json
   sandbox_decision_schema: research/discovery/exploration_sandbox_decision.schema.json
   sandbox_result_schema: research/discovery/exploration_sandbox_result.schema.json
   sandbox_taint_registry: research/discovery/sandbox_taint_registry.yaml

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ecomd.local/schemas/research-discovery-runtime-incident-v1.json",
+  "title": "EcoMD disposable exploration runtime incident v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "sandbox_id",
+    "branch_id",
+    "recorded_at",
+    "reason_code",
+    "reason",
+    "outcome_exposure_assumed",
+    "confirmation_accessed",
+    "container_cleanup_status",
+    "charged_usage",
+    "operator"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "sandbox_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "branch_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "reason_code": {
+      "enum": [
+        "host_interruption",
+        "launcher_exception",
+        "operator_abort",
+        "container_state_unknown_resolved"
+      ]
+    },
+    "reason": {"type": "string", "minLength": 1},
+    "outcome_exposure_assumed": {"const": true},
+    "confirmation_accessed": {"const": false},
+    "container_cleanup_status": {"enum": ["absent", "removed"]},
+    "charged_usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpu_seconds",
+        "storage_bytes",
+        "monetary_cost_usd_micros",
+        "gpu_seconds"
+      ],
+      "properties": {
+        "cpu_seconds": {"type": "integer", "minimum": 1},
+        "storage_bytes": {"type": "integer", "minimum": 1},
+        "monetary_cost_usd_micros": {"const": 0},
+        "gpu_seconds": {"const": 0}
+      }
+    },
+    "operator": {"type": "string", "minLength": 1}
+  }
+}

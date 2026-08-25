@@ -88,8 +88,10 @@ therefore creates neither a topic card nor a disposable sandbox.
 
 Topic selection is a versioned scientific process rather than idea generation followed by
 experimentation. The [protocol](research/discovery/protocol.yaml) and
-[method note](docs/research_discovery_loop.md) evaluate a complete discovery episode:
+[method note](docs/research_discovery_loop.md) evaluate a complete discovery episode across
 question formation, execution, interpretation, revision, nulls, failures, and provenance.
+The [topic-exploration runbook](docs/research_topic_exploration_runbook.md) gives the
+operational worksheet, killer-twin, prior-art, ranking, and escalation sequence.
 
 The forward stages are:
 
@@ -119,10 +121,16 @@ artifacts to remain byte-identical and old ledgers to remain exact byte prefixes
 sandbox must be merged as authorization-only before any branch can run. The research baseline
 branch requires `research-governance`, forbids force pushes and deletion, enforces linear
 history and conversation resolution, and disables administrator bypass. The manifest also
-freezes an OCI image and launcher digest, no network, a read-only root, no repository-tree or
+freezes an OCI image, launcher digest and incident-handler digest, no network, a read-only root, no repository-tree or
 secrets mount, CPU-only access, a single frozen read-only config-file input, and a byte-bounded
 stdout tar output. The launcher enforces and receipts that contract, but it has not yet passed
-a real-image conformance run or independent runtime review. Synthetic confirmation must derive its seeds from public
+an independent runtime review. Its pinned, outcome-free local Colima/arm64 conformance run
+passed all isolation checks plus timeout, output-limit, and invalid-tar rejection; the
+[recorded report](research/discovery/conformance/local_colima_arm64_report_2026-08-25.json)
+is source-hash bound and CI rejects it after relevant runtime changes. An ambiguous interruption
+cannot be retried: the incident handler removes the named container, assumes outcome exposure,
+charges the branch's full reserved CPU/output budget, and terminalizes the sandbox as
+`quarantined`. Synthetic confirmation must derive its seeds from public
 randomness emitted only after sandbox termination and the D0 freeze; known reserved seeds
 are rejected as a false holdout. No sandbox is currently authorized.
 
@@ -151,7 +159,10 @@ conda run -n ecophys python scripts/validate_research_discovery.py \
   --base-ref origin/dependabot-cooldown-verification-liquidity-2026-08-21
 conda run -n ecophys python scripts/validate_research_route_graph.py
 conda run -n ecophys python -m pytest tests/test_research_discovery.py \
-  tests/test_run_research_discovery_sandbox.py tests/test_research_route_graph.py -q
+  tests/test_run_research_discovery_sandbox.py \
+  tests/test_research_discovery_oci_conformance.py tests/test_research_route_graph.py -q
+conda run -n ecophys python scripts/test_research_discovery_oci_conformance.py \
+  --verify-recorded-report
 ```
 
 ## Current software-release gates

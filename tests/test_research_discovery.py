@@ -13,6 +13,10 @@ from typing import cast
 import pytest
 import yaml
 
+from scripts.quarantine_research_discovery_sandbox import (
+    execute_quarantine,
+    load_quarantine_plan,
+)
 from scripts.validate_research_discovery import (
     DiscoveryValidationError,
     validate_discovery,
@@ -64,6 +68,12 @@ def copy_fixture(tmp_path: Path) -> Path:
     shutil.copy2(
         REPO_ROOT / "papers" / "proposal" / "ecomd_discovery_loop_reselection_result_2026-08-25.md",
         result_dir / "ecomd_discovery_loop_reselection_result_2026-08-25.md",
+    )
+    scripts_dir = repo / "scripts"
+    scripts_dir.mkdir(parents=True)
+    shutil.copy2(
+        REPO_ROOT / "scripts" / "quarantine_research_discovery_sandbox.py",
+        scripts_dir / "quarantine_research_discovery_sandbox.py",
     )
     return repo
 
@@ -180,6 +190,7 @@ def add_authorized_sandbox(
     snapshot = inputs / "snapshot_manifest.json"
     partition = inputs / "partition.yaml"
     launcher = inputs / "sandbox_launcher.sh"
+    incident_handler = repo / "scripts" / "quarantine_research_discovery_sandbox.py"
     write_mapping(
         provenance,
         {"source": "https://example.org/disposable-market-asset", "license": "CC-BY-4.0"},
@@ -296,6 +307,10 @@ def add_authorized_sandbox(
                     f"research/discovery/sandbox_inputs/{sandbox_id}/sandbox_launcher.sh"
                 ),
                 "sha256": hashlib.sha256(launcher.read_bytes()).hexdigest(),
+            },
+            "incident_handler": {
+                "ref": "scripts/quarantine_research_discovery_sandbox.py",
+                "sha256": hashlib.sha256(incident_handler.read_bytes()).hexdigest(),
             },
             "image_digest": f"sha256:{'1' * 64}",
             "network": "none",
@@ -469,6 +484,13 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
                     / "sandbox_launcher.sh"
                 ).read_bytes()
             ).hexdigest(),
+            "incident_handler_sha256": hashlib.sha256(
+                (
+                    repo
+                    / "scripts"
+                    / "quarantine_research_discovery_sandbox.py"
+                ).read_bytes()
+            ).hexdigest(),
             "image_digest": f"sha256:{'1' * 64}",
             "network": "none",
             "root_filesystem": "read_only",
@@ -563,6 +585,17 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
         ]
     )
     write_event_log(ledger_path, entries)
+
+
+def add_open_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
+    add_finished_branch(repo, sandbox_id)
+    artifact_root = repo / "research" / "discovery" / "sandbox_artifacts" / sandbox_id
+    ledger_path = artifact_root / "events.jsonl"
+    entries = load_event_log(ledger_path)
+    write_event_log(ledger_path, entries[:2])
+    branch_root = artifact_root / "branches" / "branch_one"
+    (branch_root / "receipt.json").unlink()
+    (branch_root / "bundle.tar").unlink()
 
 
 def set_graph_status(repo: Path, status: str) -> None:
@@ -870,6 +903,35 @@ def test_hash_chained_branch_receipt_and_terminal_result_validate(tmp_path: Path
     result = validate_discovery(repo, as_of=FIXED_AS_OF)
 
     assert "1 sandbox-tainted results" in result
+
+
+def test_interrupted_branch_is_irreversibly_quarantined(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    initialize_git_base(repo)
+    add_open_branch(repo)
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.cleanup_container",
+        lambda _name: "absent",
+    )
+    plan = load_quarantine_plan(repo, SANDBOX_ID, "branch_one", "HEAD")
+
+    result = execute_quarantine(
+        plan,
+        "host_interruption",
+        "Fixture host interruption after branch_opened.",
+        "fixture_operator",
+    )
+
+    assert result["outcome_status"] == "quarantined"
+    usage = child_mapping(result, "usage")
+    assert usage["cpu_seconds"] == 120
+    assert usage["storage_bytes"] == 1_020_000
+    validation = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+    assert "1 exploration sandboxes (quarantined=1)" in validation
 
 
 def test_branch_request_cannot_select_confirmation_unit(tmp_path: Path) -> None:

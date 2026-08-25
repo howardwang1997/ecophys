@@ -68,7 +68,17 @@ vendored.
 - Evidence registry: `research/discovery/evidence_registry.yaml`
 - Validator: `scripts/validate_research_discovery.py`
 - Pull-request history check: `.github/workflows/research-governance.yml`
-- Mutation tests: `tests/test_research_discovery.py`
+- Fail-closed launcher and incident handler: `scripts/run_research_discovery_sandbox.py` and
+  `scripts/quarantine_research_discovery_sandbox.py`
+- Outcome-free OCI probe, source-bound report and verifier:
+  `research/discovery/conformance/` and
+  `scripts/test_research_discovery_oci_conformance.py`
+- Operational topic-search runbook and worksheet:
+  `docs/research_topic_exploration_runbook.md` and
+  `research/discovery/templates/screening_topic_worksheet.md`
+- Mutation tests: `tests/test_research_discovery.py`,
+  `tests/test_run_research_discovery_sandbox.py`, and
+  `tests/test_research_discovery_oci_conformance.py`
 - First formal rerun: `papers/proposal/ecomd_discovery_loop_reselection_result_2026-08-25.md`
 
 The protocol stages are D-3 question framing, D-2 evidence compilation, D-1 hostile
@@ -87,12 +97,25 @@ evidence. The validator now has a protected-base mode: old manifests, decisions,
 artifacts are immutable, event ledgers and the taint registry are prefix-only, and a new
     sandbox must be merged as authorization-only before it can execute. The research baseline
     now requires the PR workflow check and forbids force pushes/deletion and administrator bypass.
-    Schema v2 also binds an OCI image and launcher digest, no network, a read-only root, no
+    Schema v2 also binds an OCI image, launcher and incident-handler digest, no network, a read-only root, no
     repository-tree or secrets mount, CPU-only access, a single frozen config-file input, absent
     confirmation outcomes and a byte-bounded stdout tar. The launcher enforces and receipts this
-    contract, but remains unqualified until an outcome-free pinned-image conformance run and
-    independent runtime review. Synthetic confirmation must use a frozen future-public-randomness seed
+    contract. Its source-bound, outcome-free local Colima/arm64 probe passed UID/GID, capability,
+    seccomp, network, mount, cgroup, device, secret, repository and tar checks, including timeout,
+    output-limit and invalid-tar rejection. An ambiguous interruption is never retried: the named
+    container is removed, outcome exposure is assumed, the full branch budget is charged and the
+    sandbox becomes permanently `quarantined`. Independent runtime review and separate asset-level
+    authorization remain mandatory. Synthetic confirmation must use a frozen future-public-randomness seed
 derivation; known reserved seed numbers are not a holdout. No sandbox is authorized.
+
+The operational search process now uses three source lanes: market-native mechanism/action
+semantics, same-estimand discrepancies between independent simulators, and prospective real
+truth assets. Each worksheet freezes `(state, intervention, response, competing mechanism,
+truth contract)`, writes two killer twins before a novelty narrative, searches exact-market,
+parent-mathematics, empirical-identification and impossibility neighborhoods, and ranks by
+the weakest link. Evidence escalates from algebraic toy to source/schema, deterministic
+fixture, identifiability, sham control, baseline, second engine and only then prospective
+external confirmation. At most one D-1 candidate survives a cycle.
 
 The first proposed synthetic generator is retained only as the outcome-blind Bourse
 counterexample preflight in

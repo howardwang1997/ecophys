@@ -31,6 +31,7 @@ def make_plan(tmp_path: Path) -> RuntimePlan:
         config_path=config_path,
         image_digest=f"sha256:{'1' * 64}",
         launcher_sha256="2" * 64,
+        incident_handler_sha256="3" * 64,
         cpu_seconds=120,
         output_bytes=1_000_000,
         expires_at=datetime(2026, 8, 26, tzinfo=UTC),
