@@ -10,6 +10,17 @@ type: project
 The formal audit is
 `papers/proposal/ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md`.
 
+## Canonical thesis statement (2026-08-27 Session 22)
+
+`papers/proposal/ecomd_truth_asset_thesis_statement_2026-08-27.md` records it in full. The
+topic: **does randomizing within-tie matching priority change real-market liquidity, and
+which model family (statistical queue vs strategic market-maker) predicts the answer?**
+Participants are structurally necessary, not accessory: robots inject their own response
+(Cycles 8/16 circularity), no field randomization exists (C1), and all five H0 failure
+channels are human-population properties — the human market is the only third-party
+adjudicator of the fork. Everything built so far is truth-asset construction (A-2); human
+sessions (A-1/A0) remain unauthorized.
+
 ## Durable diagnosis
 
 - Cycles 10--16 contain 84 raw programs, 187 primary sources, 59 killer toys, zero simulator
