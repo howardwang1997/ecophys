@@ -207,6 +207,16 @@ deduplicated against existing hosted-order and implied-liquidity closures. The
 [Cycle 14 result](papers/proposal/ecomd_discovery_loop_topic_cycle_14_residual_state_result_2026-08-26.md)
 creates zero cards and no F3 forecast.
 
+Cycle 15 then tested whether public market-making obligations and liquidity rewards supply a
+stronger control object. MRX/Phlx role aggregation reduced to compliance feasible-set pooling plus
+private member policy; JPX daily sponsorship bundled its clock with selected securities, weights,
+targets, payments, rankings and quote requirements; and Polymarket/dYdX normalized rewards reduced
+to proportional contests that fail common-scale and quote-owner-permutation invariance. A MOEX
+volume hit merely releases an obligation at an endogenous stopping time. The
+[Cycle 15 result](papers/proposal/ecomd_discovery_loop_topic_cycle_15_market_maker_obligation_result_2026-08-26.md)
+therefore creates zero cards and no F3 forecast. Its reusable rule is simple: a compliance or
+reward controller is not an assigned market action.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
@@ -333,6 +343,11 @@ The residual-state and loss-transfer follow-up is in the
 twelve raw questions became six quick screens and two collision screens; the deferred echo,
 ranked ADL, stored pending impact, parked pegs, and synthetic allocation all closed or
 deduplicated before F3, with zero cards and no new forecast.
+The market-maker obligation and liquidity-reward follow-up is in the
+[Cycle 15 result](papers/proposal/ecomd_discovery_loop_topic_cycle_15_market_maker_obligation_result_2026-08-26.md):
+twelve raw questions became six quick screens and three collision screens; compliance pooling,
+selected temporal contracts, normalized reward contests and endogenous obligation release all
+closed before F3, with zero cards and no new forecast.
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py

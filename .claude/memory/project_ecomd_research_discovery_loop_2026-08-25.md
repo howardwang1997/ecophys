@@ -189,6 +189,18 @@ allocation deduplicated against existing closures. The funnel now tests any echo
 phase coordinate and a legal state-preserving phase operation. No card, forecast, sandbox, outcome,
 data action, simulation, implementation, outreach, purchase or compute was authorized.
 
+Cycle 15 screened publicly specified market-maker obligations and liquidity-reward controllers.
+Twelve programs became six quick screens and three collision screens; none reached F3. MRX
+cross-role compliance aggregation strictly enlarges a feasible set but does not assign quote
+migration; Phlx is the same Nasdaq rule family. JPX daily sponsorship is selected jointly with
+security, target interval, weight, payment, ranking and quote obligations, so it is not a scalar
+clock intervention. Polymarket relative rewards reduce to a proportional contest and fail common-
+scale and quote-owner-permutation invariance. MOEX sufficient-volume crossing only releases an
+obligation at an endogenous stopping time. The durable lesson is to separate compliance from
+action, a contract label from an isolated intervention, and relative score from absolute market
+state. No card, forecast, sandbox, outcome, data action, simulation, implementation, outreach,
+purchase or compute was authorized.
+
 The first proposed synthetic generator is retained only as the outcome-blind Bourse
 counterexample preflight in
 `papers/proposal/bourse_disposable_market_counterexample_preflight_2026-08-25.md`. Bourse
@@ -310,10 +322,10 @@ failed closed and the largest hostile-T0 lower bound was three percent. See
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
 locators, one parked discovery card, 39 evidence records, 12 failure families, and 20
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
-five decisive primary-work records. After fourteen bounded topic cycles, current validation is
-227 route nodes, 235 edges and 804 route locators; Discovery governance has one failed-closed
-card, 162 clean external evidence records, zero tainted sandbox results, 12 failure families,
-25 primary assignments, one transition, zero authorized sandboxes, five prospective search cycles
-with 60 raw questions, and two prospective forecasts. The first full-T0 forecast resolved false;
+five decisive primary-work records. After fifteen bounded topic cycles, current validation is
+231 route nodes, 239 edges and 828 route locators; Discovery governance has one failed-closed
+card, 181 clean external evidence records, zero tainted sandbox results, 12 failure families,
+25 primary assignments, one transition, zero authorized sandboxes, six prospective search cycles
+with 72 raw questions, and two prospective forecasts. The first full-T0 forecast resolved false;
 the Rule 605 component forecast remains unresolved. One full-T0 resolution is still insufficient
 to calibrate the 15% floor.

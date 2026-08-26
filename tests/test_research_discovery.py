@@ -109,6 +109,14 @@ def copy_fixture(tmp_path: Path) -> Path:
         result_dir
         / "ecomd_discovery_loop_topic_cycle_14_residual_state_result_2026-08-26.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_15_market_maker_obligation_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_15_market_maker_obligation_result_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -715,12 +723,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "162 evidence records" in result
+    assert "181 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
     assert "2 prospective forecasts (1 resolved; 1 T0-floor resolutions)" in result
-    assert "5 prospective search cycles (60 raw questions; 0 cards)" in result
+    assert "6 prospective search cycles (72 raw questions; 0 cards)" in result
 
 
 def test_authorized_disposable_exploration_sandbox_validates(tmp_path: Path) -> None:
