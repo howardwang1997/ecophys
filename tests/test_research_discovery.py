@@ -132,6 +132,13 @@ def copy_fixture(tmp_path: Path) -> Path:
         / "ecomd_reentry_capability_trigger_audit_2026-08-26.md",
         result_dir / "ecomd_reentry_capability_trigger_audit_2026-08-26.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_reentry_truth_asset_registry_audit_2026-08-26.md",
+        result_dir / "ecomd_reentry_truth_asset_registry_audit_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -742,12 +749,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "207 evidence records" in result
+    assert "212 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
     assert "3 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
-    assert "5 re-entry trigger audits (0 qualified)" in result
+    assert "6 re-entry trigger audits (0 qualified)" in result
     assert "7 prospective search cycles (84 raw questions; 0 cards)" in result
 
 

@@ -339,6 +339,14 @@ counterfactual. The append-only `research/discovery/reentry_trigger_ledger.yaml`
 qualified triggers, so Cycle 17 remains unopened. See
 `papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md`.
 
+A subsequent registry-first truth-asset audit screened the live AEA RCT metadata and bounded OSF
+registration queries without opening outcomes or mutable source projects. It found immutable
+pre-data randomized asset-market registrations, but no source that jointly freezes a complete
+order lifecycle, replayable pre-state, dated licensed raw release, untouched confirmation source,
+and independently governed same-estimand replication. This is a hard contract failure rather than
+a probability closure. The sixth trigger entry is `not_trigger`; Cycle 17 remains unopened. See
+`papers/proposal/ecomd_reentry_truth_asset_registry_audit_2026-08-26.md`.
+
 ## Validation state
 
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
@@ -346,9 +354,9 @@ locators, one parked discovery card, 39 evidence records, 12 failure families, a
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
 five decisive primary-work records. After sixteen bounded topic cycles, current validation is
 235 route nodes, 243 edges and 850 route locators; Discovery governance has one failed-closed
-card, 207 clean external evidence records, zero tainted sandbox results, 12 failure families,
+card, 212 clean external evidence records, zero tainted sandbox results, 12 failure families,
 25 primary assignments, one transition, zero authorized sandboxes, seven prospective search cycles
-with 84 raw questions, five re-entry trigger audits with zero qualified, and three prospective
+with 84 raw questions, six re-entry trigger audits with zero qualified, and three prospective
 forecasts. Both resolved full-T0 forecasts are false;
 the Rule 605 component forecast remains unresolved. Two all-negative full-T0 resolutions are still
 insufficient to calibrate the 15% floor.

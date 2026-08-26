@@ -236,7 +236,13 @@ deterministic replay; DiffLOB conditions on future regimes rather than legal mar
 latest latency/impact queue-reactive model supplies another simulator rather than external
 counterfactual truth. The
 [trigger audit](papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md) therefore
-records five watch entries and **zero qualified triggers**. Cycle 17 remains unopened.
+records five watch entries and **zero qualified triggers**. A second outcome-blind screen then
+searched the live AEA RCT Registry and bounded OSF registration queries for randomized,
+event-level asset-market truth. Prospective laboratory market episodes exist, but none freezes a
+complete order lifecycle, dated licensed raw release, untouched confirmation source, and
+independent same-estimand replication. The
+[registry audit](papers/proposal/ecomd_reentry_truth_asset_registry_audit_2026-08-26.md) adds one
+`not_trigger` entry, for six audits and zero qualified triggers. Cycle 17 remains unopened.
 
 ## Research Discovery Loop
 
