@@ -1,0 +1,38 @@
+schema_version: 1
+floor_review_target_id: t0_activation_eligibility
+target_definitions:
+  - id: t0_activation_eligibility
+    statement: >-
+      Whether one frozen formulation survives every named T0 gate and becomes eligible for an
+      outcome-blind active-status decision. A positive resolution does not itself activate a route.
+    point_scoring_rule: brier
+    interval_use: calibration_diagnostic_only
+    counts_toward_activation_floor_review: true
+    activation_floor: 0.15
+  - id: same_estimand_bridge_qualification
+    statement: >-
+      Whether a named prospective asset closes one frozen same-estimand observation-bridge gate.
+      This component forecast does not calibrate the full T0 activation floor.
+    point_scoring_rule: brier
+    interval_use: calibration_diagnostic_only
+    counts_toward_activation_floor_review: false
+    activation_floor: 0.15
+forecasts:
+  - id: cycle9_rule605_same_estimand_bridge_gate
+    recorded_at: "2026-08-25T16:10:25Z"
+    subject_route_id: expanded_rule605_execution_truth_bridge
+    target_id: same_estimand_bridge_qualification
+    resolve_by: "2027-01-15T00:00:00Z"
+    lower: 0.05
+    point: 0.12
+    upper: 0.25
+    resolution_rule: >-
+      Resolve true only if the first amended Rule 605 reports and public routing or receipt
+      documentation establish a lawful same-estimand observation bridge for at least twenty
+      independent reporting entities under one frozen schema. Otherwise resolve false. A true
+      outcome authorizes only a new child-card audit and does not reopen or activate this route.
+    basis_evidence_refs:
+      - cycle9_rule605_faq
+      - cycle9_rule605_final_rule
+      - cycle9_rule605_ecfr
+resolutions: []

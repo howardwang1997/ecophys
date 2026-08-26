@@ -84,6 +84,97 @@ and lack of a second exact controller keep it below activation. The
 [external-truth asset-first result](papers/proposal/ecomd_external_truth_asset_first_reselection_gminus1_result_2026-08-25.md)
 therefore creates neither a topic card nor a disposable sandbox.
 
+The first bounded execution of the operational runbook then froze eight mechanism-native
+worksheets instead of continuing open-ended ideation. Reduce-only and close-only were the
+strongest ideas, but complete state reduced them to account-capacity projection and open-
+interest monotonicity; MinQty/AON, market-maker protection, cancel-on-disconnect, protection
+collars, Rule 611, and Rule 201 failed parent-problem, hidden-state, same-estimand, assignment,
+or saturated-prior gates. Those hard failures closed the formulations; their conservative
+hostile-T0 lower bounds were 0--6%, so none was eligible for active status. The
+[topic-cycle-1 result](papers/proposal/ecomd_discovery_loop_topic_cycle_1_result_2026-08-25.md)
+creates zero cards and authorizes no sandbox or outcome access.
+
+The second bounded cycle began from theorem objects rather than venue features. Exact finite
+counterexamples closed universal liquidity submodularity and literal cross-venue tick moire;
+the remaining no-passing, stability-radius, integer-lattice, funding-control, liquidation and
+verified-matching formulations reduced to established mathematics or conformance work. With
+hostile-T0 lower bounds of 0--1%, the
+[theorem-first topic-cycle-2 result](papers/proposal/ecomd_discovery_loop_topic_cycle_2_theorem_first_result_2026-08-25.md)
+also creates zero cards and authorizes no execution.
+
+The third bounded cycle required a public replay capability before constructing another
+physics analogy. Pinned Manifest, Mangrove, OpenBook and Phoenix implementations exposed
+real shared-capital, settlement, expiry, regeneration and scheduling mechanisms, but none
+survived reduction and truth-contract gates. Shared-capital global orders were the strongest
+near miss at hostile T0 5--17% (10% point): fixed-policy dynamics are online packing/loss
+networks, unrestricted offers are arbitrary programs, the protocols do not share failure and
+cleanup semantics, and confirmed ledgers omit losing submissions. The
+[capability-first topic-cycle-3 result](papers/proposal/ecomd_discovery_loop_topic_cycle_3_capability_first_result_2026-08-25.md)
+therefore creates zero cards and authorizes no chain query, simulation, sandbox, or outcome
+access.
+
+The strongest cycle-3 residual was then narrowed to a formal trilemma. One bounded balance
+cannot simultaneously support amplified cross-market promises, guarantee every displayed
+quote, and let markets execute without shared coordination. The statement is correct, but
+its two-market proof is exactly bounded-counter non-confluence; escrow rights are the
+established remedy, and price priority only selects the winner after coordination. The
+[shared-capital trilemma audit](papers/proposal/ecomd_discovery_loop_topic_cycle_4_shared_capital_trilemma_result_2026-08-25.md)
+closes at hostile T0 1--6% and does not create a “liquidity CAP” topic card.
+
+The fifth bounded cycle began from a stronger truth capability: complete submitted, rejected,
+cancelled, replaced and executed intent logs. Such logs repair the loser/failed-message blind spot,
+but they do not reveal private values, unsubmitted demand or strategic responses to a changed rule.
+Complete-message latency races and Hyperliquid rejected-order flow already occupy the strongest
+empirical claims; six other objects failed message-refinement invariance, reflected-queue,
+client-policy or experimental-restriction gates. The
+[intent-truth capability audit](papers/proposal/ecomd_discovery_loop_topic_cycle_5_intent_truth_result_2026-08-26.md)
+therefore closes eight more routes, creates zero cards and authorizes no sandbox or outcome access.
+
+The sixth bounded cycle began from a precise recent theory rather than another venue feature.
+One core-flow persistence parameter is proposed to determine signed-flow persistence, rough
+volume, rough volatility and power-law impact. A same-market joint residual test would be a
+valuable falsifier, but the relation is already the direct 2026 theory claim, anonymous public
+trades do not identify parent-order impact or core/reaction provenance, and 24/7 cryptocurrency
+trading retains funding, settlement, quarter-hour and global-session regimes. Event-time memory
+and physical-time impact are also not interchangeable under stochastic clocks. The
+[scaling-closure audit](papers/proposal/ecomd_discovery_loop_topic_cycle_6_scaling_closure_result_2026-08-26.md)
+therefore closes four descendants on independent hard gates. Its largest hostile-T0 lower bound
+is 5%, so none was eligible for active status; the audit creates no topic card, sandbox or
+execution authorization.
+
+The seventh bounded cycle then searched complete-state, market-native conservation laws and
+symmetries. Exact transaction balances restrict reachable states but do not determine event rates
+or prices; perpetual open-interest creation/annihilation channels are bookkeeping rather than a
+sufficient margin-risk state; and STP depends on a configurable identity partition. Exact L2
+aggregation is the classical strong-lumpability problem, while cross-impact reciprocity and CFMM
+curvature already have direct no-arbitrage and geometric parents. The
+[conservation/symmetry audit](papers/proposal/ecomd_discovery_loop_topic_cycle_7_conservation_symmetry_result_2026-08-26.md)
+therefore closes six descendants on independent hard gates. Its largest hostile-T0 lower bound
+is 4%, so none was eligible for active status; the audit creates no topic card, sandbox or
+execution authorization.
+
+The eighth bounded cycle reversed the comparison: it asked whether disagreement between two
+independent market simulators could reveal missing physics. If the complete transition kernel,
+clock, actions, policy information and randomness coupling are identical, disagreement is a
+conformance failure. With frozen policies, event-versus-batch disagreement reduces to established
+operator-splitting error. With native adaptive agents, ABIDES, PAMS and Bourse expose different
+histories and reaction opportunities, so they implement different market mechanisms rather than
+one estimand. The
+[cross-engine discrepancy audit](papers/proposal/ecomd_discovery_loop_topic_cycle_8_cross_engine_discrepancy_result_2026-08-26.md)
+therefore closes three nonduplicate descendants on independent hard gates. Its largest
+hostile-T0 lower bound is 3%, so none was eligible for active status; the audit creates no topic
+card, sandbox or execution authorization.
+
+The ninth bounded cycle started from prospective or controlled truth assets: amended Rule 605
+execution reports, laboratory information treatments, Treasury central clearing, Uniswap-v4 fee
+families, Solana capacity, HyperCore ordering, HIP-2 replenishment, and OMIE temporal refinement.
+Five nonduplicate formulations failed independent novelty, identification, same-estimand, or
+prospective-contract gates; three were exact descendants of existing closures. The
+[asset-portfolio and probability-gate audit](papers/proposal/ecomd_discovery_loop_topic_cycle_9_asset_portfolio_and_probability_gate_result_2026-08-26.md)
+creates zero cards and one prospective component-gate forecast. Across Cycles 1--8, none of the
+47 tabulated hostile-T0 lower endpoints reached 15%, but all 48 formulations also failed an
+independent hard gate. Those post-audit judgments cannot calibrate the threshold.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
@@ -91,19 +182,26 @@ experimentation. The [protocol](research/discovery/protocol.yaml) and
 [method note](docs/research_discovery_loop.md) evaluate a complete discovery episode across
 question formation, execution, interpretation, revision, nulls, failures, and provenance.
 The [topic-exploration runbook](docs/research_topic_exploration_runbook.md) gives the
-operational worksheet, killer-twin, prior-art, ranking, and escalation sequence.
+operational two-speed funnel, archetype routing, killer-twin, prior-art, ranking, and
+escalation sequence. Prospective cycle counts and dispositions are append-only in the
+[search-cycle ledger](research/discovery/search_cycle_ledger.yaml).
 
 The forward stages are:
 
-1. **D-3:** define a market-native state, admissible intervention, observable, invariances,
-   falsifiable claim, and explicit nonclaims;
-2. **D-2:** freeze search queries and a novelty manifest with at least 15 primary works, then
-   map the topic against reusable failure families from the route graph;
+1. **D-3:** harvest at most 12 market-native model forks, quick-screen at most 6, and expand
+   only the strongest 3 into complete question contracts; imported physical effects must expose
+   a market-native control parameter and survive legal representation, unit, clock, initial-family,
+   and metric changes;
+2. **D-2:** route each survivor as theory/mechanism, measurement, empirical intervention, or
+   simulator method; only the strongest 2 receive a novelty manifest with at least 15 primary
+   works and full failure-family mapping;
 3. **optional DX:** after a separate asset-level authorization, use only an explicitly
    enumerated disposable split for a zero-cost, CPU-only probe whose hypotheses, falsifiers,
    test family, unit IDs, code/config hashes, receipts, and terminal result share one hash chain;
 4. **D-1:** try to kill it with exact-prior reductions, at least two minimal counterexamples,
-   two independent simulator contracts, a real-observation bridge, and a contamination audit;
+   the archetype-specific truth contract, the project-wide validation contract required by the
+   intended claim, and a contamination audit; freeze the F3 subject and its full-T0 forecast
+   before opening the full evidence neighborhood;
 5. **D0:** hash and freeze the estimand, baselines, budget, stop rules, confirmation split,
    and exact authorized actions before outcomes;
 6. **D1/D2:** preserve exploratory branches, then confirm only on a held-out simulator family,
@@ -141,8 +239,15 @@ stylized facts. It creates no sandbox and authorizes no simulator run.
 
 A topic cannot become `active` unless its conservative hostile-T0 lower bound is at least
 15%, every hard contract passes, and an outcome-blind decision explicitly authorizes the
-next action. High story quality, LLM consensus, retrospective rediscovery, or a benchmark
-score cannot compensate for a failed gate. The source audit and first rerun are recorded in
+next action. The 15% floor is a provisional, uncalibrated brake on costly D0/D1 activation,
+not a confidence bound or a truth criterion. Probability alone cannot set `failed_closed`.
+D-3/D-2 work has no probability floor; bounded D-1 or DX information acquisition instead
+requires positive robust value of information and no already-failed hard gate. Prospective
+forecasts and later resolutions are append-only in the
+[forecast ledger](research/discovery/forecast_ledger.yaml); the floor is reviewed only after
+at least twenty comparable T0 forecasts resolve. High story quality, LLM consensus,
+retrospective rediscovery, or a benchmark score cannot compensate for a failed gate. The
+source audit and first rerun are recorded in
 the [formal selection result](papers/proposal/ecomd_discovery_loop_reselection_result_2026-08-25.md),
 and the subsequent controlled/on-chain rerun is recorded in the
 [post-discovery result](papers/proposal/ecomd_post_discovery_reselection_gminus1_result_2026-08-25.md).
@@ -152,6 +257,32 @@ The subsequent atomic, cross-margin, implied-liquidity and experimental-asset au
 the [atomic/margin/experimental result](papers/proposal/ecomd_atomic_margin_experimental_reselection_gminus1_result_2026-08-25.md).
 The subsequent asset-first truth-contract audit is in the
 [external-truth result](papers/proposal/ecomd_external_truth_asset_first_reselection_gminus1_result_2026-08-25.md).
+The first bounded worksheet cycle is in the
+[topic-cycle-1 result](papers/proposal/ecomd_discovery_loop_topic_cycle_1_result_2026-08-25.md).
+The second bounded theorem-first cycle is in the
+[topic-cycle-2 result](papers/proposal/ecomd_discovery_loop_topic_cycle_2_theorem_first_result_2026-08-25.md).
+The third bounded capability-first cycle is in the
+[topic-cycle-3 result](papers/proposal/ecomd_discovery_loop_topic_cycle_3_capability_first_result_2026-08-25.md).
+The narrow fourth-cycle theorem audit is in the
+[shared-capital trilemma result](papers/proposal/ecomd_discovery_loop_topic_cycle_4_shared_capital_trilemma_result_2026-08-25.md).
+The fifth capability-first audit is in the
+[intent-truth result](papers/proposal/ecomd_discovery_loop_topic_cycle_5_intent_truth_result_2026-08-26.md).
+The sixth theory-led falsification audit is in the
+[scaling-closure result](papers/proposal/ecomd_discovery_loop_topic_cycle_6_scaling_closure_result_2026-08-26.md).
+The seventh conservation/symmetry audit is in the
+[conservation/symmetry result](papers/proposal/ecomd_discovery_loop_topic_cycle_7_conservation_symmetry_result_2026-08-26.md).
+The eighth discrepancy-first simulator audit is in the
+[cross-engine discrepancy result](papers/proposal/ecomd_discovery_loop_topic_cycle_8_cross_engine_discrepancy_result_2026-08-26.md).
+The ninth asset-first and probability-policy audit is in the
+[asset-portfolio result](papers/proposal/ecomd_discovery_loop_topic_cycle_9_asset_portfolio_and_probability_gate_result_2026-08-26.md).
+The first two-speed funnel execution is in the
+[model-discrimination Cycle 10 result](papers/proposal/ecomd_discovery_loop_topic_cycle_10_model_discrimination_funnel_result_2026-08-26.md):
+twelve raw questions became six quick screens, three collision screens, two full audits, one
+paper-only deferred question, and zero machine cards.
+The market--physical relaxation follow-up is in the
+[Cycle 11 result](papers/proposal/ecomd_discovery_loop_topic_cycle_11_market_physical_relaxation_result_2026-08-26.md):
+twelve raw questions became six quick screens and three collision screens; all three closed on
+exact decomposition, generic-parent, or economic-unit invariance gates before F3, with zero cards.
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py

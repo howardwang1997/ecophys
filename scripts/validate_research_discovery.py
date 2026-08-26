@@ -53,6 +53,48 @@ SANDBOX_REQUIRED_FORBIDDEN_ACTIONS = {
     "paper_claim_support",
     "topic_status_promotion",
 }
+SEARCH_CYCLE_LIMITS = {
+    "raw_question_programs": 12,
+    "quick_screens": 6,
+    "collision_screens": 3,
+    "full_hostile_audits": 2,
+    "machine_cards": 1,
+}
+SEARCH_SCREEN_REQUIREMENTS = {
+    "quick_anchor_primary_works_maximum": 3,
+    "quick_killer_toys_minimum": 1,
+    "collision_primary_works_minimum": 6,
+    "full_primary_works_minimum": 15,
+    "full_killer_toys_minimum": 2,
+}
+SEARCH_SOURCE_LANES = {
+    "unresolved_model_disagreement",
+    "new_truth_or_control_capability",
+    "market_native_action_or_constraint",
+    "cross_domain_theorem_with_market_specific_obstruction",
+}
+SEARCH_QUICK_REQUIREMENTS = {
+    "market_native_object",
+    "at_least_two_rival_explanations",
+    "one_discriminating_result",
+    "scientific_value_for_positive_and_null_answers",
+    "cross_domain_native_parameter_and_representation_invariance",
+}
+SEARCH_TOPIC_ARCHETYPES = {
+    "theory_mechanism",
+    "measurement_method",
+    "empirical_intervention",
+    "simulator_method",
+}
+SEARCH_FINAL_DISPOSITIONS = {
+    "portfolio_pruned",
+    "quick_closed",
+    "collision_closed",
+    "full_closed",
+    "deduplicated",
+    "advanced",
+    "deferred",
+}
 KG_STATUS_MAP = {
     "candidate": "candidate",
     "parked": "parked",
@@ -500,9 +542,142 @@ def load_route_registry(repo_root: Path) -> tuple[dict[str, str], set[str]]:
     return statuses, locator_ids
 
 
+def validate_topic_search_policy(
+    repo_root: Path,
+    protocol: Mapping[str, object],
+) -> tuple[Mapping[str, object], str]:
+    policy = require_mapping(
+        protocol.get("topic_search_funnel"),
+        "protocol.topic_search_funnel",
+    )
+    fields = {
+        "policy_id",
+        "purpose",
+        "cycle_limits",
+        "screen_requirements",
+        "source_lanes",
+        "quick_screen_required",
+        "topic_archetypes",
+        "escalation_rule",
+        "ranking_rule",
+        "full_audit_forecast_rule",
+        "scientific_value_rule",
+        "nature_activation_contract",
+        "search_cycle_ledger",
+    }
+    require_exact_fields(policy, fields, "protocol.topic_search_funnel")
+    if require_id(policy.get("policy_id"), "protocol.topic_search_funnel.policy_id") != (
+        "ecomd_topic_search_funnel_v1"
+    ):
+        raise DiscoveryValidationError("protocol topic-search policy id differs from validator")
+    for field in ("purpose", "scientific_value_rule", "nature_activation_contract"):
+        require_string(policy.get(field), f"protocol.topic_search_funnel.{field}")
+
+    limits = require_mapping(
+        policy.get("cycle_limits"),
+        "protocol.topic_search_funnel.cycle_limits",
+    )
+    require_exact_fields(limits, set(SEARCH_CYCLE_LIMITS), "protocol.topic_search_funnel.cycle_limits")
+    for field, expected in SEARCH_CYCLE_LIMITS.items():
+        actual = require_positive_integer(
+            limits.get(field),
+            f"protocol.topic_search_funnel.cycle_limits.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"protocol topic-search {field} must equal {expected}"
+            )
+
+    requirements = require_mapping(
+        policy.get("screen_requirements"),
+        "protocol.topic_search_funnel.screen_requirements",
+    )
+    require_exact_fields(
+        requirements,
+        set(SEARCH_SCREEN_REQUIREMENTS),
+        "protocol.topic_search_funnel.screen_requirements",
+    )
+    for field, expected in SEARCH_SCREEN_REQUIREMENTS.items():
+        actual = require_positive_integer(
+            requirements.get(field),
+            f"protocol.topic_search_funnel.screen_requirements.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"protocol topic-search requirement {field} must equal {expected}"
+            )
+
+    source_lanes = set(
+        require_string_list(
+            policy.get("source_lanes"),
+            "protocol.topic_search_funnel.source_lanes",
+            allow_empty=False,
+        )
+    )
+    if source_lanes != SEARCH_SOURCE_LANES:
+        raise DiscoveryValidationError("protocol topic-search source lanes differ from validator")
+    quick_required = set(
+        require_string_list(
+            policy.get("quick_screen_required"),
+            "protocol.topic_search_funnel.quick_screen_required",
+            allow_empty=False,
+        )
+    )
+    if quick_required != SEARCH_QUICK_REQUIREMENTS:
+        raise DiscoveryValidationError("protocol quick-screen requirements differ from validator")
+
+    archetypes = require_mapping(
+        policy.get("topic_archetypes"),
+        "protocol.topic_search_funnel.topic_archetypes",
+    )
+    if set(archetypes) != SEARCH_TOPIC_ARCHETYPES:
+        raise DiscoveryValidationError("protocol topic archetypes differ from validator")
+    for archetype, raw_contract in archetypes.items():
+        contract = require_mapping(
+            raw_contract,
+            f"protocol.topic_search_funnel.topic_archetypes.{archetype}",
+        )
+        require_exact_fields(
+            contract,
+            {"early_truth_contract", "escalation_evidence"},
+            f"protocol.topic_search_funnel.topic_archetypes.{archetype}",
+        )
+        for field in ("early_truth_contract", "escalation_evidence"):
+            require_string(
+                contract.get(field),
+                f"protocol.topic_search_funnel.topic_archetypes.{archetype}.{field}",
+            )
+    if policy.get("escalation_rule") != "cheapest_discriminating_evidence_first":
+        raise DiscoveryValidationError("protocol topic-search escalation rule differs from validator")
+    if policy.get("ranking_rule") != "pareto_then_weakest_link_no_compensatory_average":
+        raise DiscoveryValidationError("protocol topic-search ranking rule differs from validator")
+    if (
+        policy.get("full_audit_forecast_rule")
+        != "freeze_subject_and_full_t0_forecast_before_opening_full_manifest"
+    ):
+        raise DiscoveryValidationError("protocol full-audit forecast rule differs from validator")
+    ledger_ref = require_string(
+        policy.get("search_cycle_ledger"),
+        "protocol.topic_search_funnel.search_cycle_ledger",
+    )
+    if ledger_ref != "research/discovery/search_cycle_ledger.yaml":
+        raise DiscoveryValidationError("protocol search-cycle ledger path differs from validator")
+    safe_repo_path(repo_root, ledger_ref, "protocol.topic_search_funnel.search_cycle_ledger")
+    return policy, ledger_ref
+
+
 def load_protocol(
     repo_root: Path,
-) -> tuple[Mapping[str, object], float, int, set[str], Mapping[str, object]]:
+) -> tuple[
+    Mapping[str, object],
+    float,
+    int,
+    set[str],
+    Mapping[str, object],
+    str,
+    Mapping[str, object],
+    str,
+]:
     path = repo_root / "research" / "discovery" / "protocol.yaml"
     protocol = load_yaml(path, "protocol")
     require_schema_version_one(protocol.get("schema_version"), "protocol.schema_version")
@@ -515,6 +690,107 @@ def load_protocol(
     minimum_primary = gate.get("minimum_primary_works")
     if type(minimum_primary) is not int or minimum_primary < 1:
         raise DiscoveryValidationError("protocol minimum_primary_works must be positive integer")
+    decision_policy = require_mapping(
+        protocol.get("decision_policy"),
+        "protocol.decision_policy",
+    )
+    decision_policy_fields = {
+        "hostile_t0_target",
+        "floor_scope",
+        "epistemic_status",
+        "probability_alone_can_terminalize",
+        "terminalization_requires_independent_hard_gate",
+        "bounded_information_action_rule",
+        "robust_net_value_expression",
+        "minimum_resolved_forecasts_before_floor_review",
+        "forecast_ledger",
+        "historical_post_audit_probabilities_scored",
+    }
+    require_exact_fields(
+        decision_policy,
+        decision_policy_fields,
+        "protocol.decision_policy",
+    )
+    require_string(
+        decision_policy.get("hostile_t0_target"),
+        "protocol.decision_policy.hostile_t0_target",
+    )
+    floor_scope = require_mapping(
+        decision_policy.get("floor_scope"),
+        "protocol.decision_policy.floor_scope",
+    )
+    require_exact_fields(
+        floor_scope,
+        {
+            "statuses",
+            "preactive_stages_with_no_floor",
+            "bounded_information_stages",
+        },
+        "protocol.decision_policy.floor_scope",
+    )
+    if require_string_list(
+        floor_scope.get("statuses"),
+        "protocol.decision_policy.floor_scope.statuses",
+        allow_empty=False,
+    ) != ["active"]:
+        raise DiscoveryValidationError("protocol probability floor must apply only to active status")
+    if set(
+        require_string_list(
+            floor_scope.get("preactive_stages_with_no_floor"),
+            "protocol.decision_policy.floor_scope.preactive_stages_with_no_floor",
+            allow_empty=False,
+        )
+    ) != {"D_minus_3", "D_minus_2"}:
+        raise DiscoveryValidationError("protocol preactive no-floor stages must be D_minus_3 and D_minus_2")
+    if set(
+        require_string_list(
+            floor_scope.get("bounded_information_stages"),
+            "protocol.decision_policy.floor_scope.bounded_information_stages",
+            allow_empty=False,
+        )
+    ) != {"D_minus_1", "DX"}:
+        raise DiscoveryValidationError("protocol bounded-information stages must be D_minus_1 and DX")
+    if decision_policy.get("epistemic_status") != "provisional_uncalibrated_forecast_heuristic":
+        raise DiscoveryValidationError("protocol hostile T0 floor must remain explicitly uncalibrated")
+    if require_bool(
+        decision_policy.get("probability_alone_can_terminalize"),
+        "protocol.decision_policy.probability_alone_can_terminalize",
+    ) is not False:
+        raise DiscoveryValidationError("protocol probability alone cannot terminalize a route")
+    if require_bool(
+        decision_policy.get("terminalization_requires_independent_hard_gate"),
+        "protocol.decision_policy.terminalization_requires_independent_hard_gate",
+    ) is not True:
+        raise DiscoveryValidationError("protocol terminalization must require an independent hard gate")
+    if (
+        decision_policy.get("bounded_information_action_rule")
+        != "positive_robust_value_of_information_and_no_failed_hard_gate"
+    ):
+        raise DiscoveryValidationError("protocol bounded information work must use robust value of information")
+    if (
+        decision_policy.get("robust_net_value_expression")
+        != "salvage_value + p_lower * (success_value - salvage_value) - action_cost > 0"
+    ):
+        raise DiscoveryValidationError("protocol robust net-value expression differs from validator")
+    minimum_resolved = require_positive_integer(
+        decision_policy.get("minimum_resolved_forecasts_before_floor_review"),
+        "protocol.decision_policy.minimum_resolved_forecasts_before_floor_review",
+    )
+    if minimum_resolved != 20:
+        raise DiscoveryValidationError("protocol probability-floor review requires exactly 20 forecasts")
+    if require_bool(
+        decision_policy.get("historical_post_audit_probabilities_scored"),
+        "protocol.decision_policy.historical_post_audit_probabilities_scored",
+    ) is not False:
+        raise DiscoveryValidationError("historical post-audit probabilities cannot be scored as forecasts")
+    forecast_ledger = require_string(
+        decision_policy.get("forecast_ledger"),
+        "protocol.decision_policy.forecast_ledger",
+    )
+    if forecast_ledger != "research/discovery/forecast_ledger.yaml":
+        raise DiscoveryValidationError("protocol forecast ledger path differs from validator")
+    safe_repo_path(repo_root, forecast_ledger, "protocol.decision_policy.forecast_ledger")
+    search_policy, search_ledger = validate_topic_search_policy(repo_root, protocol)
     nature = require_mapping(
         protocol.get("nature_scale_evidence"),
         "protocol.nature_scale_evidence",
@@ -654,7 +930,16 @@ def load_protocol(
     for field in ("scientific_claims_allowed", "route_activation_allowed"):
         if require_bool(sandbox.get(field), f"protocol.sandbox.{field}") is not False:
             raise DiscoveryValidationError(f"protocol sandbox {field} must be false")
-    return protocol, floor, minimum_primary, forbidden, sandbox
+    return (
+        protocol,
+        floor,
+        minimum_primary,
+        forbidden,
+        sandbox,
+        forecast_ledger,
+        search_policy,
+        search_ledger,
+    )
 
 
 def load_evidence_registry(repo_root: Path) -> dict[str, EvidenceMeta]:
@@ -747,6 +1032,390 @@ def validate_evidence_refs(
                 f"{context} accepts only sandbox-tainted motivation refs: {sorted(clean)}"
             )
     return refs
+
+
+def validate_forecast_ledger(
+    repo_root: Path,
+    ledger_ref: str,
+    route_statuses: Mapping[str, str],
+    known_evidence: Mapping[str, EvidenceMeta],
+    activation_floor: float,
+) -> tuple[int, int, int]:
+    path = safe_repo_path(repo_root, ledger_ref, "forecast ledger")
+    root = load_yaml(path, "forecast ledger")
+    require_exact_fields(
+        root,
+        {
+            "schema_version",
+            "floor_review_target_id",
+            "target_definitions",
+            "forecasts",
+            "resolutions",
+        },
+        "forecast ledger",
+    )
+    require_schema_version_one(root.get("schema_version"), "forecast ledger.schema_version")
+    floor_target_id = require_id(
+        root.get("floor_review_target_id"),
+        "forecast ledger.floor_review_target_id",
+    )
+
+    target_fields = {
+        "id",
+        "statement",
+        "point_scoring_rule",
+        "interval_use",
+        "counts_toward_activation_floor_review",
+        "activation_floor",
+    }
+    target_ids: set[str] = set()
+    floor_targets: set[str] = set()
+    for index, raw_target in enumerate(
+        require_list(root.get("target_definitions"), "forecast ledger.target_definitions")
+    ):
+        context = f"forecast ledger.target_definitions[{index}]"
+        target = require_mapping(raw_target, context)
+        require_exact_fields(target, target_fields, context)
+        target_id = require_id(target.get("id"), f"{context}.id")
+        if target_id in target_ids:
+            raise DiscoveryValidationError(f"duplicate forecast target id: {target_id}")
+        target_ids.add(target_id)
+        require_string(target.get("statement"), f"{context}.statement")
+        if target.get("point_scoring_rule") != "brier":
+            raise DiscoveryValidationError(f"{context}.point_scoring_rule must be brier")
+        if target.get("interval_use") != "calibration_diagnostic_only":
+            raise DiscoveryValidationError(
+                f"{context}.interval_use must be calibration_diagnostic_only"
+            )
+        counts_for_floor = require_bool(
+            target.get("counts_toward_activation_floor_review"),
+            f"{context}.counts_toward_activation_floor_review",
+        )
+        target_floor = require_probability(
+            target.get("activation_floor"),
+            f"{context}.activation_floor",
+        )
+        if not math.isclose(target_floor, activation_floor, rel_tol=0.0, abs_tol=1e-12):
+            raise DiscoveryValidationError(f"{context}.activation_floor differs from protocol")
+        if counts_for_floor:
+            floor_targets.add(target_id)
+    if floor_target_id not in target_ids:
+        raise DiscoveryValidationError("forecast floor-review target is not defined")
+    if floor_targets != {floor_target_id}:
+        raise DiscoveryValidationError(
+            "exactly the declared T0 target must count toward activation-floor review"
+        )
+
+    forecast_fields = {
+        "id",
+        "recorded_at",
+        "subject_route_id",
+        "target_id",
+        "resolve_by",
+        "lower",
+        "point",
+        "upper",
+        "resolution_rule",
+        "basis_evidence_refs",
+    }
+    forecast_ids: set[str] = set()
+    forecast_times: dict[str, datetime] = {}
+    forecast_targets: dict[str, str] = {}
+    for index, raw_forecast in enumerate(
+        require_list(root.get("forecasts"), "forecast ledger.forecasts")
+    ):
+        context = f"forecast ledger.forecasts[{index}]"
+        forecast = require_mapping(raw_forecast, context)
+        require_exact_fields(forecast, forecast_fields, context)
+        forecast_id = require_id(forecast.get("id"), f"{context}.id")
+        if forecast_id in forecast_ids:
+            raise DiscoveryValidationError(f"duplicate forecast id: {forecast_id}")
+        forecast_ids.add(forecast_id)
+        recorded_at = require_utc_timestamp(forecast.get("recorded_at"), f"{context}.recorded_at")
+        resolve_by = require_utc_timestamp(forecast.get("resolve_by"), f"{context}.resolve_by")
+        if resolve_by <= recorded_at:
+            raise DiscoveryValidationError(f"{context}.resolve_by must follow recorded_at")
+        forecast_times[forecast_id] = recorded_at
+        subject_route_id = require_id(
+            forecast.get("subject_route_id"),
+            f"{context}.subject_route_id",
+        )
+        if subject_route_id not in route_statuses:
+            raise DiscoveryValidationError(
+                f"{context}.subject_route_id is unknown: {subject_route_id}"
+            )
+        target_id = require_id(forecast.get("target_id"), f"{context}.target_id")
+        if target_id not in target_ids:
+            raise DiscoveryValidationError(f"{context}.target_id is unknown: {target_id}")
+        forecast_targets[forecast_id] = target_id
+        lower = require_probability(forecast.get("lower"), f"{context}.lower")
+        point = require_probability(forecast.get("point"), f"{context}.point")
+        upper = require_probability(forecast.get("upper"), f"{context}.upper")
+        if not lower <= point <= upper:
+            raise DiscoveryValidationError(f"{context} forecast interval must satisfy lower <= point <= upper")
+        require_string(forecast.get("resolution_rule"), f"{context}.resolution_rule")
+        validate_evidence_refs(
+            forecast.get("basis_evidence_refs"),
+            f"{context}.basis_evidence_refs",
+            known_evidence,
+            allow_empty=False,
+        )
+
+    resolution_fields = {
+        "forecast_id",
+        "resolved_at",
+        "outcome",
+        "evidence_refs",
+        "rationale",
+    }
+    resolved_ids: set[str] = set()
+    floor_resolved = 0
+    for index, raw_resolution in enumerate(
+        require_list(root.get("resolutions"), "forecast ledger.resolutions")
+    ):
+        context = f"forecast ledger.resolutions[{index}]"
+        resolution = require_mapping(raw_resolution, context)
+        require_exact_fields(resolution, resolution_fields, context)
+        forecast_id = require_id(resolution.get("forecast_id"), f"{context}.forecast_id")
+        if forecast_id not in forecast_ids:
+            raise DiscoveryValidationError(f"{context} references unknown forecast {forecast_id}")
+        if forecast_id in resolved_ids:
+            raise DiscoveryValidationError(f"duplicate resolution for forecast {forecast_id}")
+        resolved_ids.add(forecast_id)
+        resolved_at = require_utc_timestamp(
+            resolution.get("resolved_at"),
+            f"{context}.resolved_at",
+        )
+        if resolved_at < forecast_times[forecast_id]:
+            raise DiscoveryValidationError(f"{context}.resolved_at precedes forecast")
+        require_bool(resolution.get("outcome"), f"{context}.outcome")
+        validate_evidence_refs(
+            resolution.get("evidence_refs"),
+            f"{context}.evidence_refs",
+            known_evidence,
+            allow_empty=False,
+        )
+        require_string(resolution.get("rationale"), f"{context}.rationale")
+        if forecast_targets[forecast_id] == floor_target_id:
+            floor_resolved += 1
+    return len(forecast_ids), len(resolved_ids), floor_resolved
+
+
+def validate_search_cycle_ledger(
+    repo_root: Path,
+    ledger_ref: str,
+) -> tuple[int, int, int]:
+    path = safe_repo_path(repo_root, ledger_ref, "search-cycle ledger")
+    root = load_yaml(path, "search-cycle ledger")
+    require_exact_fields(
+        root,
+        {
+            "schema_version",
+            "policy_id",
+            "scope_start_cycle",
+            "historical_baseline",
+            "cycles",
+        },
+        "search-cycle ledger",
+    )
+    require_schema_version_one(root.get("schema_version"), "search-cycle ledger.schema_version")
+    if root.get("policy_id") != "ecomd_topic_search_funnel_v1":
+        raise DiscoveryValidationError("search-cycle ledger policy id differs from protocol")
+    if require_positive_integer(
+        root.get("scope_start_cycle"),
+        "search-cycle ledger.scope_start_cycle",
+    ) != 10:
+        raise DiscoveryValidationError("search-cycle ledger must begin prospectively at cycle 10")
+
+    baseline = require_mapping(
+        root.get("historical_baseline"),
+        "search-cycle ledger.historical_baseline",
+    )
+    require_exact_fields(
+        baseline,
+        {
+            "cycles_completed",
+            "formulations_screened",
+            "machine_cards_created",
+            "prospective_full_t0_forecasts",
+            "status",
+            "note",
+        },
+        "search-cycle ledger.historical_baseline",
+    )
+    fixed_baseline = {
+        "cycles_completed": 9,
+        "formulations_screened": 56,
+        "machine_cards_created": 0,
+        "prospective_full_t0_forecasts": 0,
+    }
+    for field, expected in fixed_baseline.items():
+        actual = require_nonnegative_integer(
+            baseline.get(field),
+            f"search-cycle ledger.historical_baseline.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"search-cycle historical baseline {field} must equal {expected}"
+            )
+    if baseline.get("status") != "retrospective_unscored":
+        raise DiscoveryValidationError("search-cycle historical baseline must remain unscored")
+    require_string(baseline.get("note"), "search-cycle ledger.historical_baseline.note")
+
+    cycle_fields = {
+        "id",
+        "started_at",
+        "completed_at",
+        "result_ref",
+        "literature_cutoff",
+        "outcome_accessed",
+        "counts",
+        "final_dispositions",
+        "source_lane_counts",
+        "archetype_counts",
+        "efficiency",
+        "surviving_program_ids",
+        "record_quality",
+        "notes",
+    }
+    efficiency_fields = {
+        "primary_sources_opened",
+        "killer_toys_constructed",
+        "simulator_runs",
+        "outcome_assets_accessed",
+        "reusable_assets_recorded",
+    }
+    record_quality_fields = {
+        "all_raw_questions_recorded",
+        "stage_decisions_recorded",
+        "probability_only_terminalizations",
+    }
+    cycle_ids: set[str] = set()
+    prior_cycle_number = 9
+    raw_total = 0
+    card_total = 0
+    for index, raw_cycle in enumerate(
+        require_list(root.get("cycles"), "search-cycle ledger.cycles")
+    ):
+        context = f"search-cycle ledger.cycles[{index}]"
+        cycle = require_mapping(raw_cycle, context)
+        require_exact_fields(cycle, cycle_fields, context)
+        cycle_id = require_id(cycle.get("id"), f"{context}.id")
+        if cycle_id in cycle_ids:
+            raise DiscoveryValidationError(f"duplicate search-cycle id: {cycle_id}")
+        cycle_ids.add(cycle_id)
+        match = re.fullmatch(r"discovery_cycle_(\d+)_\d{8}", cycle_id)
+        if match is None:
+            raise DiscoveryValidationError(f"{context}.id must encode cycle number and date")
+        cycle_number = int(match.group(1))
+        if cycle_number != prior_cycle_number + 1:
+            raise DiscoveryValidationError("search-cycle numbers must be consecutive from cycle 10")
+        prior_cycle_number = cycle_number
+        started = require_utc_timestamp(cycle.get("started_at"), f"{context}.started_at")
+        completed = require_utc_timestamp(cycle.get("completed_at"), f"{context}.completed_at")
+        if completed < started:
+            raise DiscoveryValidationError(f"{context}.completed_at precedes started_at")
+        result_ref = require_string(cycle.get("result_ref"), f"{context}.result_ref")
+        safe_repo_path(repo_root, result_ref, f"{context}.result_ref")
+        require_date(cycle.get("literature_cutoff"), f"{context}.literature_cutoff")
+        if require_bool(cycle.get("outcome_accessed"), f"{context}.outcome_accessed"):
+            raise DiscoveryValidationError(f"{context} cannot access outcomes during topic search")
+
+        counts = require_mapping(cycle.get("counts"), f"{context}.counts")
+        require_exact_fields(counts, set(SEARCH_CYCLE_LIMITS), f"{context}.counts")
+        parsed_counts: dict[str, int] = {}
+        for field, maximum in SEARCH_CYCLE_LIMITS.items():
+            value = require_nonnegative_integer(counts.get(field), f"{context}.counts.{field}")
+            if value > maximum:
+                raise DiscoveryValidationError(
+                    f"{context}.counts.{field} exceeds funnel limit {maximum}"
+                )
+            parsed_counts[field] = value
+        if not (
+            parsed_counts["raw_question_programs"]
+            >= parsed_counts["quick_screens"]
+            >= parsed_counts["collision_screens"]
+            >= parsed_counts["full_hostile_audits"]
+            >= parsed_counts["machine_cards"]
+        ):
+            raise DiscoveryValidationError(f"{context}.counts violate funnel monotonicity")
+
+        dispositions = require_mapping(
+            cycle.get("final_dispositions"),
+            f"{context}.final_dispositions",
+        )
+        require_exact_fields(dispositions, SEARCH_FINAL_DISPOSITIONS, f"{context}.final_dispositions")
+        parsed_dispositions = {
+            field: require_nonnegative_integer(
+                dispositions.get(field),
+                f"{context}.final_dispositions.{field}",
+            )
+            for field in SEARCH_FINAL_DISPOSITIONS
+        }
+        if sum(parsed_dispositions.values()) != parsed_counts["raw_question_programs"]:
+            raise DiscoveryValidationError(f"{context} final dispositions do not sum to raw questions")
+        if parsed_dispositions["portfolio_pruned"] != (
+            parsed_counts["raw_question_programs"] - parsed_counts["quick_screens"]
+        ):
+            raise DiscoveryValidationError(f"{context} portfolio-pruned count is inconsistent")
+        if parsed_dispositions["quick_closed"] + parsed_dispositions["deduplicated"] != (
+            parsed_counts["quick_screens"] - parsed_counts["collision_screens"]
+        ):
+            raise DiscoveryValidationError(f"{context} quick-screen dispositions are inconsistent")
+        if parsed_dispositions["collision_closed"] + parsed_dispositions["deferred"] != (
+            parsed_counts["collision_screens"] - parsed_counts["full_hostile_audits"]
+        ):
+            raise DiscoveryValidationError(f"{context} collision-screen dispositions are inconsistent")
+        if parsed_dispositions["full_closed"] + parsed_dispositions["advanced"] != (
+            parsed_counts["full_hostile_audits"]
+        ):
+            raise DiscoveryValidationError(f"{context} full-audit dispositions are inconsistent")
+        if parsed_dispositions["advanced"] != parsed_counts["machine_cards"]:
+            raise DiscoveryValidationError(f"{context} advanced count must equal machine cards")
+
+        for field, expected_keys in (
+            ("source_lane_counts", SEARCH_SOURCE_LANES),
+            ("archetype_counts", SEARCH_TOPIC_ARCHETYPES),
+        ):
+            distribution = require_mapping(cycle.get(field), f"{context}.{field}")
+            require_exact_fields(distribution, expected_keys, f"{context}.{field}")
+            total = sum(
+                require_nonnegative_integer(value, f"{context}.{field}.{key}")
+                for key, value in distribution.items()
+            )
+            if total != parsed_counts["raw_question_programs"]:
+                raise DiscoveryValidationError(f"{context}.{field} does not sum to raw questions")
+
+        efficiency = require_mapping(cycle.get("efficiency"), f"{context}.efficiency")
+        require_exact_fields(efficiency, efficiency_fields, f"{context}.efficiency")
+        for field in efficiency_fields:
+            require_nonnegative_integer(efficiency.get(field), f"{context}.efficiency.{field}")
+        if efficiency.get("simulator_runs") != 0 or efficiency.get("outcome_assets_accessed") != 0:
+            raise DiscoveryValidationError(f"{context} paper-only search used outcomes or simulation")
+
+        survivors = require_string_list(
+            cycle.get("surviving_program_ids"),
+            f"{context}.surviving_program_ids",
+        )
+        if len(survivors) != parsed_dispositions["advanced"] + parsed_dispositions["deferred"]:
+            raise DiscoveryValidationError(f"{context} survivor ids do not match dispositions")
+        for survivor in survivors:
+            require_id(survivor, f"{context}.surviving_program_ids")
+
+        quality = require_mapping(cycle.get("record_quality"), f"{context}.record_quality")
+        require_exact_fields(quality, record_quality_fields, f"{context}.record_quality")
+        for field in ("all_raw_questions_recorded", "stage_decisions_recorded"):
+            if require_bool(quality.get(field), f"{context}.record_quality.{field}") is not True:
+                raise DiscoveryValidationError(f"{context}.record_quality.{field} must be true")
+        if require_nonnegative_integer(
+            quality.get("probability_only_terminalizations"),
+            f"{context}.record_quality.probability_only_terminalizations",
+        ) != 0:
+            raise DiscoveryValidationError(f"{context} terminalized a question by probability alone")
+        require_string(cycle.get("notes"), f"{context}.notes")
+        raw_total += parsed_counts["raw_question_programs"]
+        card_total += parsed_counts["machine_cards"]
+    return len(cycle_ids), raw_total, card_total
 
 
 def load_failure_families(repo_root: Path, route_ids: set[str]) -> set[str]:
@@ -1797,6 +2466,34 @@ def validate_protected_sandbox_history(repo_root: Path, base_ref: str) -> str:
                 "sandbox taint registry does not preserve the protected entry prefix"
             )
 
+    forecast_ref = "research/discovery/forecast_ledger.yaml"
+    forecast_history_status = "introduced after protected base"
+    if forecast_ref in base_discovery_files:
+        base_forecast = yaml_mapping_from_bytes(
+            git_file_bytes(repo_root, base_ref, forecast_ref),
+            f"protected forecast ledger {base_ref}",
+        )
+        current_forecast = load_yaml(repo_root / forecast_ref, "current forecast ledger")
+        for field in ("schema_version", "floor_review_target_id"):
+            if current_forecast.get(field) != base_forecast.get(field):
+                raise DiscoveryValidationError(
+                    f"forecast ledger rewrote protected field {field}"
+                )
+        for field in ("target_definitions", "forecasts", "resolutions"):
+            base_entries = require_list(
+                base_forecast.get(field),
+                f"protected forecast ledger {base_ref}.{field}",
+            )
+            current_entries = require_list(
+                current_forecast.get(field),
+                f"current forecast ledger.{field}",
+            )
+            if current_entries[: len(base_entries)] != base_entries:
+                raise DiscoveryValidationError(
+                    f"forecast ledger does not preserve the protected {field} prefix"
+                )
+        forecast_history_status = "prefixes preserved"
+
     new_sandbox_ids = current_sandbox_ids - base_sandbox_ids
     tainted_sandbox_ids = {
         require_id(entry.get("sandbox_id"), "sandbox taint registry sandbox_id")
@@ -1836,7 +2533,8 @@ def validate_protected_sandbox_history(repo_root: Path, base_ref: str) -> str:
 
     return (
         f"Protected sandbox history OK against {base_ref}: "
-        f"{len(base_sandbox_ids)} inherited, {len(new_sandbox_ids)} authorization-only new"
+        f"{len(base_sandbox_ids)} inherited, {len(new_sandbox_ids)} authorization-only new; "
+        f"forecast ledger {forecast_history_status}"
     )
 
 
@@ -2666,7 +3364,20 @@ def validate_discovery(
     base_ref: str | None = None,
 ) -> str:
     current_time = datetime.now(UTC) if as_of is None else as_of
-    _, activation_floor, minimum_primary, forbidden, sandbox_policy = load_protocol(repo_root)
+    (
+        _,
+        activation_floor,
+        minimum_primary,
+        forbidden,
+        sandbox_policy,
+        forecast_ledger_ref,
+        _,
+        search_cycle_ledger_ref,
+    ) = load_protocol(repo_root)
+    search_cycle_count, search_question_count, search_card_count = validate_search_cycle_ledger(
+        repo_root,
+        search_cycle_ledger_ref,
+    )
     route_statuses, route_locator_ids = load_route_registry(repo_root)
     external_evidence = load_evidence_registry(repo_root)
     route_evidence = {
@@ -2677,9 +3388,16 @@ def validate_discovery(
     if collisions:
         raise DiscoveryValidationError(
             f"evidence registry ids collide with route locators: {sorted(collisions)}"
-        )
+    )
     clean_evidence = {**external_evidence, **route_evidence}
     family_ids = load_failure_families(repo_root, set(route_statuses))
+    forecast_count, resolution_count, floor_resolution_count = validate_forecast_ledger(
+        repo_root,
+        forecast_ledger_ref,
+        route_statuses,
+        clean_evidence,
+        activation_floor,
+    )
 
     discovery_root = repo_root / "research" / "discovery"
     card_schema = load_json_schema(
@@ -2798,7 +3516,10 @@ def validate_discovery(
         f"{len(tainted_evidence)} sandbox-tainted results, "
         f"{len(family_ids)} failure families, {primary_total} primary-work assignments, "
         f"{transition_count} status transitions, {len(sandbox_ids)} exploration sandboxes "
-        f"({sandbox_summary})"
+        f"({sandbox_summary}), {forecast_count} prospective forecasts "
+        f"({resolution_count} resolved; {floor_resolution_count} T0-floor resolutions), "
+        f"{search_cycle_count} prospective search cycles "
+        f"({search_question_count} raw questions; {search_card_count} cards)"
     )
     if base_ref is not None:
         history_summary = validate_protected_sandbox_history(repo_root, base_ref)

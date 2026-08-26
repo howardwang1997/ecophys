@@ -26,120 +26,176 @@ latency, liquidation, collateral, executable order grammar, and liquidity replen
 “Phase transition,” “molecular dynamics,” “AI discovery,” and “digital twin” are not starting
 objects; they may become interpretations only after a native mechanism and limit are proved.
 
-## One bounded search cycle
+## Why the search is staged
 
-Each cycle produces at most twelve worksheets and at most three machine topic cards. A large
-idea count is not progress.
+The process combines four ideas that solve different problems:
 
-### 1. Choose three independent source lanes
+- [strong inference](https://doi.org/10.1126/science.146.3642.347) starts from rival
+  explanations and a result that excludes at least one of them;
+- [optimal model-discrimination design](https://doi.org/10.1093/biomet/62.2.289) chooses
+  observations for their ability to separate models rather than for generic sample volume;
+- [AutoDiscovery](https://proceedings.neurips.cc/paper_files/paper/2025/hash/23b127521af7ca7a42f5cdb7507be4f2-Abstract-Conference.html)
+  uses progressive widening to allocate a fixed exploration budget, but its surprise reward
+  is only an attention score and cannot confirm a claim; and
+- [value of information](https://doi.org/10.1177/0272989X211026292) asks whether a proposed
+  observation is likely to change a decision enough to justify its cost.
 
-Generate two to four questions from each lane:
+The [Heilmeier questions](https://www.darpa.mil/about/heilmeier-catechism) add the plain-language
+tests: what is being attempted, what is new, who cares, what it costs, and what exams decide
+success. None of these tools makes novelty automatic. Together they motivate a staged portfolio
+in which cheap exclusions happen before full reviewer-style qualification.
 
-1. **Mechanism-native lane:** start from an exchange or protocol action that changes the
-   executable state transition, such as priority loss on amendment or a liquidation action
-   grammar. Ask what invariant, obstruction, or response follows from that exact rule.
-2. **Cross-engine discrepancy lane:** specify one intervention and observable in two
-   independently maintained simulators. Treat disagreement as a question about missing
-   state or mechanism, not as evidence that either engine is true.
-3. **Prospective truth-asset lane:** start from a future randomized, staggered, or exactly
-   scheduled real rule with observable assignment, pre-state, response, reuse rights, and a
-   sealed future period. Derive the simulator question from that contract.
+## Scientific value before venue value
 
-Do not combine lanes until each has a precise native object. This prevents a convenient
-simulator effect from being retrofitted to an unrelated real event.
+A question has scientific value when it can close a named uncertainty and remains useful under
+both answers. Record value in three non-substitutable parts:
 
-### 2. Write the claim before searching for support
+1. **Epistemic closure:** which rival explanation, theorem class, or measurement ambiguity can
+   be removed by the result?
+2. **Reusable residue:** what proof, counterexample, data contract, calibrated measurement,
+   simulator fixture, or negative result remains if the headline is null?
+3. **Decision or transfer value:** which future model choice, experiment, market-design claim,
+   or cross-system prediction changes?
 
-For every worksheet, freeze:
+Publication probability is reported separately. A fashionable narrative, surprising plot, or
+large benchmark score does not satisfy this definition.
 
-- the native state and smallest admissible intervention;
-- the primary observable, horizon, direction, and minimum scientifically meaningful effect;
-- units, clocks, aggregation choices, and representation changes under which the claim
-  should be invariant;
-- two explicit nonclaims;
-- two competing explanations with different predictions; and
-- the result that would close the route.
+## One bounded two-speed search cycle
 
-Use the [screening worksheet](../research/discovery/templates/screening_topic_worksheet.md).
-Reject a question that cannot be expressed without naming the desired algorithm or result.
+The machine limits are 12 raw question programs, 6 quick screens, 3 collision/contract screens,
+2 full hostile audits, and 1 machine card. Every raw question and final disposition is recorded in
+[`search_cycle_ledger.yaml`](../research/discovery/search_cycle_ledger.yaml). Unselected ideas are
+not silently discarded.
 
-### 3. Build killer twins before the novelty narrative
+### F0 — harvest unresolved forks, not topic titles
 
-Construct at least two minimal pairs. One should hold the proposed summary fixed while
-changing the outcome; the other should change the proposed cause while holding the outcome
-law fixed. Add a unit-refinement, clock, label, or order-splitting test when relevant.
+Draw questions from four source lanes:
 
-Typical failures are:
+1. **Unresolved model disagreement:** two primary models explain the same observation but predict
+   different responses under a controllable condition.
+2. **New truth or control capability:** a new field schema, exact simulator state, randomized rule,
+   formal implementation, or sealed future asset can adjudicate a question that was previously
+   untestable.
+3. **Market-native action or constraint:** an executable priority, clearing, inventory, collateral,
+   timing, or settlement rule creates a possible obstruction or response.
+4. **Cross-domain theorem with a market-specific obstruction:** a parent theorem nearly applies,
+   but priority, integer allocation, endogenous adaptation, or another exact market semantic may
+   make a stronger statement false or require a new boundary.
 
-- same observed L2 state, opposite response because queue age or identity is hidden;
-- same local influence, opposite global failure because high-order dependence differs;
-- same aggregate liquidity, opposite executable action set;
-- same event-index law, different physical-time law; and
-- apparent criticality created by finite size, regime mixing, or a chosen observable.
+Cross-engine disagreement is a validation instrument, not a source lane by itself. It becomes
+scientific only after a named mechanism fork exists.
 
-If a three-state or two-queue toy kills the claim, record it in the route graph and stop.
-Do not run a simulator to rediscover the counterexample.
+For each raw program record only:
 
-### 4. Search four prior-art neighborhoods
+- the native object;
+- explanations `H1` and `H0`;
+- one observation or theorem outcome that separates them;
+- positive-answer and null-answer value; and
+- the source lane and topic archetype.
 
-Freeze the cutoff, verbatim queries, and inclusion rules before ranking the topic. Search
-primary sources in four neighborhoods:
+Do not yet write a full five-part contract, search fifteen papers, or pin every simulator.
 
-1. the exact market object and intervention;
-2. the parent mathematical problem without market terminology;
-3. the closest empirical or experimental identification design; and
-4. hardness, impossibility, counterexample, and negative-result literature.
+### F1 — quick screen at most six programs
 
-For every work record `problem`, `method`, `estimand`, `evidence`, `overlap`, and the exact
-residual. “No paper with the same title” is not novelty. A standard method transplanted to a
-market is not an irreducible contribution unless the hard market semantics force a new
-theorem, algorithmic boundary, or measurement result.
+Use at most three anchor primary works and at least one exact killer toy. Ask:
 
-### 5. Rank by the weakest link
+- Is this already a route-graph duplicate or an immediate parent-problem corollary?
+- Can `H1` and `H0` actually predict different observables under a legal intervention?
+- Does a positive or null answer remove a meaningful uncertainty?
+- Is there a plausible truth source, without yet requiring the complete final contract?
+- For a cross-domain effect, is its control parameter market-native, and does the residual survive
+  changes of legal state representation, unit, clock, initial-condition family, and distance
+  metric? An analyst-defined temperature, condensate, or relaxation ordering is not sufficient.
 
-Apply hard gates before scoring. A direct-prior reduction, non-identification twin, missing
-same-estimand engine, absent real bridge, contamination, or unlawful data closes the current
-formulation.
+Select by Pareto dominance on discriminative power, identifiability, residual novelty, positive/null
+value, transfer, feasibility, and cost of the next decisive update. Do not use an arithmetic score
+to average away a fatal weakness. Close or deduplicate cheap failures; advance at most three.
 
-For survivors, score 1--5 on:
+### F2 — route at most three programs by archetype
 
-- residual novelty;
-- falsifiability;
-- identifiability;
-- same-estimand two-engine feasibility;
-- prospective real-bridge quality;
-- value of either positive or null result; and
-- information gain per unit cost.
+Assign one archetype before expanding the evidence contract:
 
-Use the minimum score, not an arithmetic average. Retain only topics with every component at
-least 3 and novelty and falsifiability at least 4. Then estimate a hostile T0 interval from
-explicit failure events. Only its conservative lower bound matters for the 15% activation
-gate.
+| Archetype | Early truth contract | Evidence required only when the claim expands |
+|---|---|---|
+| Theory/mechanism | Analytic statement, proof route, and minimal counterexample | A theorem false in the parent class, matching boundary/lower bound, and executable falsifiers for computational claims |
+| Measurement method | Analytic or synthetic truth, calibration/coverage, and failure regimes | A validated observation bridge and external system for claims beyond truth-defined benchmarks |
+| Empirical intervention | Assignment, pre-state, outcome, interference, timing, and reuse-rights schema | Independent replication; simulators only if fidelity or transfer is claimed |
+| Simulator method | Same-estimand analytic truth or gold simulator plus equal-budget baseline | Two independent lineages, hard negatives, cost--accuracy frontier, and a real bridge for sim-to-real claims |
 
-### 6. Escalate evidence in the cheapest falsifying order
+Now search at least six primary works across the exact market object, parent mathematics,
+identification design, and impossibility/counterexample neighborhoods. Build the full five-part
+contract and a second killer twin only for the strongest programs. Advance at most two to F3; a
+third unresolved program may be explicitly deferred rather than mislabelled failed.
 
-The default order is:
+### F3 — full hostile audit of at most two programs
 
-1. algebraic reduction or exact toy;
-2. source and schema contract;
-3. deterministic conformance fixture;
-4. synthetic identifiability test;
-5. negative and sham control;
-6. strongest equal-budget simple baseline;
-7. second independent simulator;
+Before opening the full evidence neighborhood, create the exact F3 subject node and append its
+full-T0 forecast to `forecast_ledger.yaml`. If evidence has already been opened, any probability is
+diagnostic only and is ineligible for calibration; never backfill it. Only here require the current
+fifteen-primary-work manifest, at least two killer tests, exact
+simulator/data contracts appropriate to the archetype, contamination plan, explicit failure events,
+and hostile-T0 forecast. “No paper with the same title” is not novelty. A standard method applied to
+a market needs a theorem, algorithmic boundary, or measurement result caused by hard market
+semantics.
+
+The search order remains:
+
+1. route-graph duplicate and exact parent reduction;
+2. algebraic counterexample or killer twin;
+3. primary-work collision;
+4. source, schema, licence, and state contract;
+5. deterministic conformance fixture;
+6. synthetic identifiability and sham controls;
+7. equal-budget baseline and second independent system;
 8. frozen prospective external test.
 
-Stop at the first decisive failure. A disposable DX sandbox is justified only when a named
-uncertainty cannot be resolved by steps 1--3 and a tiny outcome probe has positive decision
-value. Its result is permanently exploratory-tainted and may only motivate a new D-3 card.
+Stop at the first decisive hard failure and record it. A disposable DX sandbox is justified only
+when steps 1--4 cannot resolve a named uncertainty and a tiny probe has positive decision value.
+Its evidence remains permanently exploratory-tainted.
 
-### 7. Freeze before any confirmatory outcome
+### Probability and action policy
+
+`hostile T0` is the elicited probability that a frozen formulation survives all named T0 gates and
+becomes eligible for an outcome-blind active decision. Its lower endpoint is not a confidence bound,
+truth probability, venue probability, or novelty score.
+
+The 15% lower-endpoint rule is retained only as a provisional portfolio brake on costly `active`
+status. It has no prospective full-T0 calibration yet. It must not prune F0, close a question, or
+block D-3/D-2 paper and theorem work. For a bounded D-1 or DX action with no failed hard gate, write
+the robust information-value case
+
+\[
+S + p_L(B-S) - C > 0,
+\]
+
+where `B`, `S`, and `C` use one predeclared value unit. Equivalently, when `B>S`, the action-specific
+break-even probability is `(C-S)/(B-S)`. A universal 15% cutoff is rational only in the special case
+where that ratio is 15%; the threshold otherwise changes with cost and salvage. Record genuinely
+prospective gate forecasts before resolution in
+[`forecast_ledger.yaml`](../research/discovery/forecast_ledger.yaml). Review the floor only after at
+least twenty comparable full-T0 forecasts resolve.
+
+### Freeze before any confirmatory outcome
 
 An advancing topic gets a machine card, novelty manifest, decision entry, exact estimand,
-baselines, multiplicity family, stop rule, budget, code/config hashes, and confirmation split.
-It becomes `active` only after every protocol gate passes. D1 branches remain exploratory;
-D2 must use a held-out simulator lineage, mechanism, market, vendor, or future period that
-did not select the claim.
+baselines, multiplicity family, stop rule, budget, code/config hashes, and confirmation split. It
+becomes `active` only after every protocol gate passes. D1 branches remain exploratory; D2 uses a
+held-out simulator lineage, mechanism, market, vendor, or future period that did not select the
+claim.
+
+## Search-efficiency metrics
+
+Review the process after each cycle using:
+
+- raw programs, quick screens, collision screens, full audits, and cards;
+- where each idea was killed or deferred;
+- primary sources opened and killer toys constructed;
+- full-audit-to-card ratio and cost to the next decisive update;
+- reusable proofs, counterexamples, schemas, fixtures, and watch assets; and
+- prospective forecast calibration once outcomes resolve.
+
+Do not optimize generated-idea count, source count, prose length, or fraction of ideas surviving.
+Zero survivors is a successful cycle when important branches were cheaply and correctly closed.
 
 ## Review questions
 
@@ -149,8 +205,9 @@ of these:
 - Can the claim be falsified by one predeclared result?
 - Is the proposed cause defined on the full native state rather than an observational
   quotient?
-- Do two independent engines implement the same intervention and observable?
-- Is the real bridge a measurement of the same estimand rather than a visual analogy?
+- Where the intended claim requires multiple engines, do they implement the same intervention
+  and observable rather than merely share a label?
+- Where a real bridge is claimed, does it measure the same estimand rather than a visual analogy?
 - Does the contribution remain after removing the market vocabulary?
 - Is a null result informative enough to publish or permanently close a family?
 - Is the confirmation asset genuinely unavailable to the selection process?
@@ -169,7 +226,7 @@ conda run -n ecophys python scripts/test_research_discovery_oci_conformance.py \
   --verify-recorded-report
 ```
 
-The first new search cycle should use the three lanes above in parallel conceptually, then
-retain at most one D-1 candidate. It should not begin by reopening criticality, generic
-surrogates, rare-event sampling, hydrodynamic limits, entropy production, or other families
-already closed in the route graph.
+Every new cycle uses the four F0 source lanes, records its portfolio pruning, and retains at most
+one machine card. It must not begin by reopening criticality, generic surrogates, rare-event
+sampling, hydrodynamic limits, entropy production, or another family already closed in the route
+graph unless a newly available capability removes the recorded blocking condition.

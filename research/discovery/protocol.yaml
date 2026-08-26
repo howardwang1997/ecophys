@@ -64,6 +64,87 @@ activation_gate:
   require_explicit_authorization: true
   require_contamination_control: true
   require_confirmation_split: true
+decision_policy:
+  hostile_t0_target: >-
+    Probability that one frozen formulation survives every named T0 gate and becomes
+    eligible for an outcome-blind active-status decision; this is not publication
+    probability, probability of a positive result, or a confidence bound on scientific truth.
+  floor_scope:
+    statuses:
+      - active
+    preactive_stages_with_no_floor:
+      - D_minus_3
+      - D_minus_2
+    bounded_information_stages:
+      - D_minus_1
+      - DX
+  epistemic_status: provisional_uncalibrated_forecast_heuristic
+  probability_alone_can_terminalize: false
+  terminalization_requires_independent_hard_gate: true
+  bounded_information_action_rule: positive_robust_value_of_information_and_no_failed_hard_gate
+  robust_net_value_expression: salvage_value + p_lower * (success_value - salvage_value) - action_cost > 0
+  minimum_resolved_forecasts_before_floor_review: 20
+  forecast_ledger: research/discovery/forecast_ledger.yaml
+  historical_post_audit_probabilities_scored: false
+topic_search_funnel:
+  policy_id: ecomd_topic_search_funnel_v1
+  purpose: >-
+    Maximize decisive scientific learning per unit effort by separating broad question
+    generation from expensive route qualification. A cycle may end with no survivor.
+  cycle_limits:
+    raw_question_programs: 12
+    quick_screens: 6
+    collision_screens: 3
+    full_hostile_audits: 2
+    machine_cards: 1
+  screen_requirements:
+    quick_anchor_primary_works_maximum: 3
+    quick_killer_toys_minimum: 1
+    collision_primary_works_minimum: 6
+    full_primary_works_minimum: 15
+    full_killer_toys_minimum: 2
+  source_lanes:
+    - unresolved_model_disagreement
+    - new_truth_or_control_capability
+    - market_native_action_or_constraint
+    - cross_domain_theorem_with_market_specific_obstruction
+  quick_screen_required:
+    - market_native_object
+    - at_least_two_rival_explanations
+    - one_discriminating_result
+    - scientific_value_for_positive_and_null_answers
+    - cross_domain_native_parameter_and_representation_invariance
+  topic_archetypes:
+    theory_mechanism:
+      early_truth_contract: analytic statement, proof route, and minimal counterexample
+      escalation_evidence: >-
+        A theorem false in the generic parent class, a matching boundary or lower bound,
+        and executable falsifiers when a computational claim is made.
+    measurement_method:
+      early_truth_contract: synthetic or analytic truth with calibration, coverage, and failure regimes
+      escalation_evidence: >-
+        A validated observation bridge and an external system only when the claim extends
+        beyond truth-defined benchmarks.
+    empirical_intervention:
+      early_truth_contract: assignment, pre-state, outcome, interference, timing, and reuse-rights schema
+      escalation_evidence: >-
+        A qualified identification design and independent replication; two simulators are
+        required only when the claim concerns simulator fidelity or transfer.
+    simulator_method:
+      early_truth_contract: same-estimand analytic truth or gold-standard simulator and equal-budget baseline
+      escalation_evidence: >-
+        Two independent system lineages, hard negative regimes, a cost--accuracy frontier,
+        and a real observation bridge for any sim-to-real claim.
+  escalation_rule: cheapest_discriminating_evidence_first
+  ranking_rule: pareto_then_weakest_link_no_compensatory_average
+  full_audit_forecast_rule: freeze_subject_and_full_t0_forecast_before_opening_full_manifest
+  scientific_value_rule: >-
+    A survivor must resolve a named model fork, retain value under a null result, and produce
+    either a reusable theorem, measurement, data contract, falsifier, or decision-relevant result.
+  nature_activation_contract: >-
+    Archetype-specific early screening does not weaken the project-wide Nature-scale activation
+    gate; any active simulated-market route must still satisfy the frozen card and evidence contract.
+  search_cycle_ledger: research/discovery/search_cycle_ledger.yaml
 nature_scale_evidence:
   irreducible_core_required: >-
     The central object, theorem, or algorithm must survive exact-primary-work and

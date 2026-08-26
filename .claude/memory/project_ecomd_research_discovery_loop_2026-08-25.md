@@ -1,6 +1,6 @@
 ---
 name: EcoMD research Discovery Loop
-description: Forward-only scientific topic-selection protocol installed after a primary-source audit of Discovery Loop, Science-Discovery, AI-scientist evaluation and falsification systems. The machine contract freezes the evidence pattern seen in adjacent NCS/NMI papers and now separates disposable question-search probes from confirmatory evidence. No Nature-grade topic is active and no exploration sandbox is currently authorized.
+description: Forward-only scientific topic-selection protocol installed after a primary-source audit of Discovery Loop, Science-Discovery, AI-scientist evaluation and falsification systems. The machine contract separates disposable question-search probes from confirmation and treats the 15% hostile-T0 floor as an active-only, uncalibrated brake rather than a terminal truth criterion. No Nature-grade topic is active and no exploration sandbox is currently authorized.
 node_type: memory
 type: project
 ---
@@ -16,7 +16,13 @@ type: project
 - Plan v4's paper route is closed. Its state, observation, compute, data, and reproducibility
   standards remain inherited quality constraints, not authority to execute a topic.
 - A topic becomes active only if every hard gate passes, including a conservative hostile-T0
-  lower bound of at least 15%. Scores and narratives cannot average away a failed gate.
+  lower bound of at least 15%. The floor is provisional and uncalibrated, applies only to
+  `active` status, and cannot by itself set `failed_closed`; a terminal decision requires an
+  independently evidenced scientific or contract failure.
+- D-3/D-2 work has no probability floor. A bounded D-1 or DX information action below 15%
+  requires no already-failed hard gate plus positive robust value of information. Comparable
+  prospective forecasts are append-only in `research/discovery/forecast_ledger.yaml`; the
+  floor is reviewed only after at least twenty full-T0 targets resolve.
 - Adjacent NCS/NMI evidence adds a noncompensatory target: an irreducible core, same-estimand
   truth, cross-system/OOD breadth, hard negatives, error control, equal-budget baselines,
   and the same real action--state--observation loop whenever sim-to-real is claimed.
@@ -66,6 +72,8 @@ vendored.
   `research/discovery/sandbox_taint_registry.yaml`
 - Failure-family registry: `research/discovery/failure_families.yaml`
 - Evidence registry: `research/discovery/evidence_registry.yaml`
+- Prospective probability and resolution ledger: `research/discovery/forecast_ledger.yaml`
+- Prospective topic-search counts and dispositions: `research/discovery/search_cycle_ledger.yaml`
 - Validator: `scripts/validate_research_discovery.py`
 - Pull-request history check: `.github/workflows/research-governance.yml`
 - Fail-closed launcher and incident handler: `scripts/run_research_discovery_sandbox.py` and
@@ -108,14 +116,42 @@ artifacts are immutable, event ledgers and the taint registry are prefix-only, a
     authorization remain mandatory. Synthetic confirmation must use a frozen future-public-randomness seed
 derivation; known reserved seed numbers are not a holdout. No sandbox is authorized.
 
-The operational search process now uses three source lanes: market-native mechanism/action
-semantics, same-estimand discrepancies between independent simulators, and prospective real
-truth assets. Each worksheet freezes `(state, intervention, response, competing mechanism,
-truth contract)`, writes two killer twins before a novelty narrative, searches exact-market,
-parent-mathematics, empirical-identification and impossibility neighborhoods, and ranks by
-the weakest link. Evidence escalates from algebraic toy to source/schema, deterministic
-fixture, identifiability, sham control, baseline, second engine and only then prospective
-external confirmation. At most one D-1 candidate survives a cycle.
+The operational search is now a two-speed funnel: at most twelve raw model forks, six quick
+screens, three collision/truth-contract screens, two full hostile audits and one machine card.
+Raw questions come from unresolved model disagreements, new truth/control capabilities,
+market-native actions/constraints, or cross-domain theorems with an exact market obstruction.
+They are routed as theory/mechanism, measurement, empirical intervention, or simulator method,
+so a weak raw idea does not immediately incur every two-engine and real-bridge burden. Survivors
+are selected by Pareto dominance and then their weakest link. Every raw program and disposition is
+append-only. Before a program enters the full fifteen-work audit, freeze its exact subject and
+full-T0 forecast; a later probability is diagnostic only.
+
+Cycle 9 audited the probability rule and eight asset-triggered formulations. The previous
+eight bounded cycles contained 48 formulations; zero of the 47 tabulated lower endpoints
+reached 15%, but all 48 also failed an independent hard gate. Because those intervals were
+elicited after audit rather than forecast prospectively, they do not calibrate the floor.
+Cycle 9 therefore retained 15% only as a conservative brake on expensive activation, added
+the forecast ledger and robust information-value rule, and prohibited probability-only
+terminalization. Its first entry forecasts a narrow future Rule 605 bridge component and
+does not count as a full-T0 calibration outcome.
+
+Cycle 10 was the first prospective two-speed execution. Twelve raw questions became six quick
+screens, three collision screens and two full audits. Metaorder-origin discrimination failed
+because anonymous public order flow cannot identify a parent-order intervention and simulator
+agreement only recovers programmed mechanisms. Quenched-liquidity recovery failed because static
+rate mixtures can produce algebraic relaxation without rare regions and localized contact-process
+coupling is imposed rather than market-native. `nonlinear_liquidity_echo` is deferred only as a
+paper theorem question about whether an observable native phase exists; it is not a candidate.
+No card, sandbox, outcome or execution was authorized.
+
+Cycle 11 sampled market--physical coupling and anomalous relaxation. Twelve raw programs became
+six quick screens and three six-work collision screens; no program reached F3. LLAMMA finite-rate
+loop loss decomposed into the protocol's adiabatic conversion loss and established LVR or
+arbitrage-timing terms. LOB Mpemba relaxation reduced to generic Markov slow-mode cancellation
+under an analyst-chosen initial family and metric. Carbon-inventory condensation failed economic-
+entity split invariance. The funnel now requires imported physical effects to have a market-native
+control parameter and survive representation, unit, clock, initial-family and metric changes. No
+card, forecast, sandbox, outcome or execution was authorized.
 
 The first proposed synthetic generator is retained only as the outcome-blind Bourse
 counterexample preflight in
@@ -182,12 +218,65 @@ TSE's announced 2027 STR tick controller was strongest at 10--17%, so it remains
 rather than a card or sandbox. See
 `papers/proposal/ecomd_external_truth_asset_first_reselection_gminus1_result_2026-08-25.md`.
 
+Seven bounded runbook cycles have now also completed. Cycle 1 closed eight mechanism-native
+worksheets under complete-state projection, exact-parent, same-estimand and field-contract
+gates. Cycle 2 reversed the search direction and began with theorem objects. Its eight
+formulations separated into false universals (including liquidity submodularity and literal
+tick-grid moire) and exact reductions to monotone coupling, program sensitivity, integer
+feasibility, sampled-data control, hybrid reachability or formal CDA conformance. Cycle 2's
+hostile-T0 lower bounds were zero or one percent and its largest upper bound was seven
+percent. Cycle 3 required a public replay capability before writing a physics narrative and
+inspected pinned Manifest, Mangrove, OpenBook and Phoenix implementations. Its strongest
+near miss, shared-capital global orders, exposed a real cross-market conservation coupling
+but reduced to online packing/loss networks under fixed policy and arbitrary program dynamics
+under unrestricted offer code; the protocols also lacked same-estimand failure/cleanup
+semantics and public submission denominators. Its other seven objects reduced to queueing,
+lazy deletion, grid strategies, sub-penny priority, scheduling, or deterministic program
+execution. Cycle 4 then narrowed the strongest shared-capital residual to a theorem:
+capital amplification, strong executable-quote integrity and coordination-free execution
+cannot coexist under one bounded balance. The proof is valid but is exactly bounded-counter
+non-confluence with escrow rights as the established remedy; price priority does not alter
+the safety core. No cycle created a card or sandbox. See
+`papers/proposal/ecomd_discovery_loop_topic_cycle_1_result_2026-08-25.md` and
+`papers/proposal/ecomd_discovery_loop_topic_cycle_2_theorem_first_result_2026-08-25.md`, and
+`papers/proposal/ecomd_discovery_loop_topic_cycle_3_capability_first_result_2026-08-25.md`, and
+`papers/proposal/ecomd_discovery_loop_topic_cycle_4_shared_capital_trilemma_result_2026-08-25.md`.
+Cycle 5 then required complete submitted/rejected/landed intent exposure before proposing a
+physics object. This capability is valuable, but complete-message latency races and Hyperliquid
+rejected-order flow already occupy the strongest claims. Eight objects failed direct-prior,
+message-refinement invariance, strategic-counterfactual or private-demand identification gates;
+the largest hostile-T0 lower bound was three percent. See
+`papers/proposal/ecomd_discovery_loop_topic_cycle_5_intent_truth_result_2026-08-26.md`.
+Cycle 6 began from a precise one-parameter theory linking signed-flow persistence, rough volume,
+rough volatility and power-law impact. A joint same-unit residual test is scientifically useful,
+but the 2026 anchor already owns the central relation, public tapes do not identify parent-order
+impact or core/reaction provenance, 24/7 crypto retains deterministic and global-session regimes,
+and stochastic clocks separate event-time memory from physical-time impact. Four descendants
+failed closed; the largest hostile-T0 lower bound was five percent. See
+`papers/proposal/ecomd_discovery_loop_topic_cycle_6_scaling_closure_result_2026-08-26.md`.
+Cycle 7 then required a complete-state, representation-invariant conservation law or symmetry
+that forced a nontrivial response. Transaction charges reduced to incidence-matrix nullspaces;
+open-interest channels were bookkeeping rather than sufficient margin state; STP depended on a
+configurable identity partition; L2 aggregation was classical strong lumpability; and cross-impact
+and CFMM response laws had direct no-arbitrage or geometric parents. Six descendants failed closed
+and the largest hostile-T0 lower bound was four percent. See
+`papers/proposal/ecomd_discovery_loop_topic_cycle_7_conservation_symmetry_result_2026-08-26.md`.
+Cycle 8 then asked whether disagreement between independent market simulators could expose a
+missing physical mechanism. Equal complete kernels imply conformance, while event-versus-batch
+propagation under a frozen generator is established operator splitting. Native adaptive ABIDES,
+PAMS, and Bourse policies instead receive different histories, so their disagreement compares
+different market mechanisms rather than one numerical estimand. Three nonduplicate descendants
+failed closed and the largest hostile-T0 lower bound was three percent. See
+`papers/proposal/ecomd_discovery_loop_topic_cycle_8_cross_engine_discrepancy_result_2026-08-26.md`.
+
 ## Validation state
 
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
 locators, one parked discovery card, 39 evidence records, 12 failure families, and 20
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
-five decisive primary-work records. Current validation is 148 route nodes, 154 edges and
-476 route locators; Discovery governance has one failed-closed card, 53 clean external
-evidence records, zero tainted sandbox results, 12 failure families, 25 primary assignments,
-one transition and zero authorized sandboxes.
+five decisive primary-work records. After eleven bounded topic cycles, current validation is
+215 route nodes, 223 edges and 739 route locators; Discovery governance has one failed-closed
+card, 105 clean external evidence records, zero tainted sandbox results, 12 failure families,
+25 primary assignments, one transition, zero authorized sandboxes, two prospective search cycles
+with 24 raw questions, and one unresolved prospective component-gate forecast. No full-T0 forecast
+has yet resolved, so the 15% floor remains uncalibrated.

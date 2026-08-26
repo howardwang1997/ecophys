@@ -69,6 +69,22 @@ def copy_fixture(tmp_path: Path) -> Path:
         REPO_ROOT / "papers" / "proposal" / "ecomd_discovery_loop_reselection_result_2026-08-25.md",
         result_dir / "ecomd_discovery_loop_reselection_result_2026-08-25.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_10_model_discrimination_funnel_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_10_model_discrimination_funnel_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_11_market_physical_relaxation_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_11_market_physical_relaxation_result_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -92,6 +108,14 @@ def novelty_path(repo: Path) -> Path:
 
 def history_path(repo: Path) -> Path:
     return repo / "research" / "discovery" / "decision_history.yaml"
+
+
+def forecast_path(repo: Path) -> Path:
+    return repo / "research" / "discovery" / "forecast_ledger.yaml"
+
+
+def search_cycle_path(repo: Path) -> Path:
+    return repo / "research" / "discovery" / "search_cycle_ledger.yaml"
 
 
 def update_decision_hash(repo: Path) -> None:
@@ -667,9 +691,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
+    assert "105 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
+    assert "1 prospective forecasts (0 resolved; 0 T0-floor resolutions)" in result
+    assert "2 prospective search cycles (24 raw questions; 0 cards)" in result
 
 
 def test_authorized_disposable_exploration_sandbox_validates(tmp_path: Path) -> None:
@@ -690,6 +717,38 @@ def test_protected_history_allows_append_after_separate_authorization(tmp_path: 
     result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
     assert "Protected sandbox history OK against HEAD: 1 inherited" in result
+
+
+def test_protected_history_rejects_rewritten_forecast(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(forecast_path(repo))
+    child_mappings(ledger, "forecasts")[0]["point"] = 0.13
+    write_mapping(forecast_path(repo), ledger)
+
+    assert "Discovery governance OK" in validate_discovery(repo, as_of=FIXED_AS_OF)
+    with pytest.raises(DiscoveryValidationError, match=r"forecast ledger.*prefix"):
+        validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+
+
+def test_protected_history_allows_appended_forecast_resolution(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(forecast_path(repo))
+    ledger["resolutions"] = [
+        {
+            "forecast_id": "cycle9_rule605_same_estimand_bridge_gate",
+            "resolved_at": "2027-01-15T00:00:00Z",
+            "outcome": False,
+            "evidence_refs": ["cycle9_rule605_faq"],
+            "rationale": "The frozen bridge rule did not pass.",
+        }
+    ]
+    write_mapping(forecast_path(repo), ledger)
+
+    result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+
+    assert "1 prospective forecasts (1 resolved; 0 T0-floor resolutions)" in result
 
 
 def test_protected_history_rejects_rewritten_authorization(tmp_path: Path) -> None:
@@ -913,9 +972,25 @@ def test_interrupted_branch_is_irreversibly_quarantined(
     add_authorized_sandbox(repo)
     initialize_git_base(repo)
     add_open_branch(repo)
+
+    def validate_at_fixture_time(
+        repo_root: Path,
+        *,
+        base_ref: str | None = None,
+    ) -> str:
+        return validate_discovery(repo_root, as_of=FIXED_AS_OF, base_ref=base_ref)
+
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.validate_discovery",
+        validate_at_fixture_time,
+    )
     monkeypatch.setattr(
         "scripts.quarantine_research_discovery_sandbox.cleanup_container",
         lambda _name: "absent",
+    )
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.utc_now",
+        lambda: datetime(2026, 8, 25, 4, 0, tzinfo=UTC),
     )
     plan = load_quarantine_plan(repo, SANDBOX_ID, "branch_one", "HEAD")
 
@@ -1104,6 +1179,67 @@ def test_protocol_sandbox_hard_cap_cannot_be_weakened(tmp_path: Path) -> None:
         validate_discovery(repo, as_of=FIXED_AS_OF)
 
 
+def test_probability_alone_cannot_terminalize_a_route(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    child_mapping(protocol, "decision_policy")["probability_alone_can_terminalize"] = True
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="probability alone cannot terminalize"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_probability_floor_scope_must_be_active_only(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    policy = child_mapping(protocol, "decision_policy")
+    child_mapping(policy, "floor_scope")["statuses"] = ["candidate", "active"]
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="apply only to active status"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_forecast_interval_must_contain_point(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(forecast_path(repo))
+    forecast = child_mappings(ledger, "forecasts")[0]
+    forecast.update({"lower": 0.20, "point": 0.12, "upper": 0.25})
+    write_mapping(forecast_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="lower <= point <= upper"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_forecast_subject_must_be_registered_route(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(forecast_path(repo))
+    child_mappings(ledger, "forecasts")[0]["subject_route_id"] = "unknown_route"
+    write_mapping(forecast_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="subject_route_id is unknown"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_forecast_can_resolve_only_once(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(forecast_path(repo))
+    resolution = {
+        "forecast_id": "cycle9_rule605_same_estimand_bridge_gate",
+        "resolved_at": "2027-01-15T00:00:00Z",
+        "outcome": False,
+        "evidence_refs": ["cycle9_rule605_faq"],
+        "rationale": "The frozen bridge rule did not pass.",
+    }
+    ledger["resolutions"] = [resolution, dict(resolution)]
+    write_mapping(forecast_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="duplicate resolution"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
 def test_declared_json_schema_is_actually_applied(tmp_path: Path) -> None:
     repo = copy_fixture(tmp_path)
     path = repo / "research" / "discovery" / "topic_card.schema.json"
@@ -1133,6 +1269,67 @@ def test_nature_scale_evidence_contract_is_required(tmp_path: Path) -> None:
     write_mapping(path, protocol)
 
     with pytest.raises(DiscoveryValidationError, match="nature_scale_evidence"):
+        validate_discovery(repo)
+
+
+def test_topic_search_funnel_contract_is_required(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    del protocol["topic_search_funnel"]
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="topic_search_funnel"):
+        validate_discovery(repo)
+
+
+def test_cross_domain_invariance_quick_screen_is_required(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    requirements = funnel["quick_screen_required"]
+    assert isinstance(requirements, list)
+    requirements.remove("cross_domain_native_parameter_and_representation_invariance")
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="quick-screen requirements"):
+        validate_discovery(repo)
+
+
+def test_search_cycle_funnel_limit_is_enforced(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(search_cycle_path(repo))
+    cycle = child_mappings(ledger, "cycles")[0]
+    counts = child_mapping(cycle, "counts")
+    counts["raw_question_programs"] = 13
+    source_counts = child_mapping(cycle, "source_lane_counts")
+    source_counts["unresolved_model_disagreement"] = cast(
+        int,
+        source_counts["unresolved_model_disagreement"],
+    ) + 1
+    archetype_counts = child_mapping(cycle, "archetype_counts")
+    archetype_counts["theory_mechanism"] = cast(
+        int,
+        archetype_counts["theory_mechanism"],
+    ) + 1
+    dispositions = child_mapping(cycle, "final_dispositions")
+    dispositions["portfolio_pruned"] = cast(int, dispositions["portfolio_pruned"]) + 1
+    write_mapping(search_cycle_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="exceeds funnel limit"):
+        validate_discovery(repo)
+
+
+def test_search_cycle_probability_cannot_terminalize(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(search_cycle_path(repo))
+    cycle = child_mappings(ledger, "cycles")[0]
+    quality = child_mapping(cycle, "record_quality")
+    quality["probability_only_terminalizations"] = 1
+    write_mapping(search_cycle_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="probability alone"):
         validate_discovery(repo)
 
 

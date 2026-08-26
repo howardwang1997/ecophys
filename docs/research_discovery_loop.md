@@ -128,12 +128,21 @@ Agent fluency, number of generated ideas, number of trials, and workshop accepta
 not scientific metrics. The loop ranks candidates by validity, residual novelty,
 falsification efficiency, value of information, calibration, transfer, and traceability.
 
+Question generation and route qualification now use the bounded two-speed funnel in the
+[topic-exploration runbook](research_topic_exploration_runbook.md). Each prospective cycle
+records all raw programs and stage dispositions in the
+[search-cycle ledger](../research/discovery/search_cycle_ledger.yaml). The funnel prevents a
+weak raw idea from consuming a full fifteen-paper, two-system, real-bridge audit while
+preserving the same standard for any route that reaches Nature-scale activation.
+
 ## Forward stages
 
 ### D-3 — frame the question
 
-Begin with a market-native object, not a borrowed physics name or a preferred method. A
-topic card must state:
+Begin with a market-native object, not a borrowed physics name or a preferred method. A raw
+question program first states two rival explanations, one discriminating result, and why both
+a positive and a null answer matter. Only a program selected through the quick screen expands
+into the full contract:
 
 - native state, admissible intervention, observable, and equivalences under which the
   object should be invariant;
@@ -154,9 +163,12 @@ Run literature-driven and data-driven exploration separately.
   what to inspect; they never confirm a claim.
 
 Each branch queries the route graph and maps local failure language to the canonical
-[failure families](../research/discovery/failure_families.yaml). A novelty manifest freezes
-the cutoff date, verbatim queries, inclusion/exclusion rules, at least 15 primary works,
-claim-overlap classifications, and unresolved direct collisions.
+[failure families](../research/discovery/failure_families.yaml). A quick screen uses at most
+three anchor primary works and one killer toy. At most three survivors receive a six-work
+collision screen and an archetype-specific truth contract. Only the at most two full hostile
+audits create a novelty manifest with the cutoff date, verbatim queries, inclusion/exclusion
+rules, at least 15 primary works, claim-overlap classifications, and unresolved direct
+collisions.
 
 ### Optional DX — disposable exploration sandbox
 
@@ -234,15 +246,19 @@ failure-family explanation as a rejection. It is neither a topic card nor an aut
 
 ### D-1 — try to kill the topic cheaply
 
-Before outcomes or implementation, perform:
+Before outcomes or implementation, perform the following only for a formulation selected
+for full hostile audit:
 
-1. an exact-primary-work and standard-parent reduction audit;
-2. at least two minimal killer tests covering necessity, sufficiency, identification,
+1. freeze the exact F3 subject and its full-T0 forecast before opening the full evidence
+   neighborhood; later probabilities are diagnostic only;
+2. an exact-primary-work and standard-parent reduction audit;
+3. at least two minimal killer tests covering necessity, sufficiency, identification,
    invariance, or a negative control;
-3. a same-estimand contract for two independently maintained simulators;
-4. a versioned real-observation bridge;
-5. a contamination and simulator-oracle audit;
-6. a conservative hostile probability and value-of-information estimate.
+4. the archetype-specific truth contract from the topic-exploration runbook;
+5. the project-wide same-estimand, independent-system, and real-observation contracts when
+   required by the intended full activation claim;
+6. a contamination and simulator-oracle audit;
+7. a conservative hostile probability and value-of-information estimate.
 
 The preferred order is analytic sanity check, synthetic identifiability, negative/null
 control, strongest simple baseline, mechanism ablation, competing mechanism,
@@ -267,6 +283,36 @@ select the claim. Every final claim links to code, configuration, data provenanc
 result, counterevidence, and a frozen evaluator. Failure and honest non-identification are
 retained as results.
 
+## Probability and value-of-information policy
+
+`hostile T0` forecasts whether one frozen formulation will survive every named T0 gate and
+become eligible for an outcome-blind `active` decision. It is not the probability of a
+positive result, publication probability, or a confidence bound on scientific truth. Its
+lower endpoint is a deliberately conservative elicitation and is currently uncalibrated.
+
+The 15% lower-endpoint floor therefore has one scope: costly `active` status. It cannot by
+itself set `failed_closed`. Terminal closure requires an independent scientific or contract
+failure such as an exact-prior reduction, counterexample, non-identification result,
+unlawful asset, or impossible same-estimand contract. D-3 and D-2 have no probability floor.
+
+A bounded D-1 or DX information action below 15% may proceed only under its own explicit
+authorization, when no hard gate has already failed and its conservative net information
+value is positive. For success value `B`, failure salvage `S`, action cost `C`, and lower
+probability `p_L`, the basic robust check is
+
+\[
+S + p_L(B-S) - C > 0.
+\]
+
+The values and units must be frozen for that action; the expression is a decision aid, not
+a way to tune probabilities until a preferred action passes. Prospective forecasts and
+their resolutions are append-only in
+[`forecast_ledger.yaml`](../research/discovery/forecast_ledger.yaml). Point probabilities
+use Brier scoring; intervals are calibration diagnostics only. Historical post-audit
+probabilities are not backfilled as forecasts. The 15% rule may be calibrated, replaced, or
+made action-specific only after at least twenty resolved forecasts of the stable full-T0
+target—not merely twenty component-gate forecasts.
+
 ## Activation rule
 
 `candidate` authorizes only bounded literature, source, schema, metadata, and theorem
@@ -289,6 +335,9 @@ A card can become active only when all of the following hold:
 - every inherited failure family is explicitly distinguished by a named test;
 - contamination controls and an exploration/confirmation split are frozen;
 - an outcome-blind decision lists the authorized actions.
+
+Failing the first bullet prevents activation but is not, by itself, a terminal scientific
+decision. Every terminal route must name and evidence at least one independent hard gate.
 
 The machine validator fails closed on these rules:
 
