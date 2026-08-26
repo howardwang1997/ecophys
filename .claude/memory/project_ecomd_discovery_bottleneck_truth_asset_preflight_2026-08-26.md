@@ -106,6 +106,32 @@ authorization for platform qualification, C4 precision floor. GPU nodes offered 
 were recorded in conversation only; the protocol forbids GPU before active status and both
 fixtures are CPU-trivial.
 
+## C4, C3 and the A-2 engineering start (2026-08-27 Session 19)
+
+**C4 precision floor: conditionally passed**
+(`ecomd_tie_priority_c4_precision_floor_2026-08-27.md`). Method, noise anchors
+(Aldrich–López Vargas verbatim statistics), σ default = 2 ticks and MDE = 2 ticks frozen;
+requirement = 16 sessions per arm (32 per site, 8–12 participants each). The gate closes
+terminally only when the user freezes the cost ceiling (stop condition 3); at σ = 3 the
+MDE-3 design still needs 16 sessions per arm.
+
+**C3 authorized; A-2 open**
+(`ecomd_truth_asset_c3_authorization_a2_scope_2026-08-27.md`). The user authorized A-2
+platform qualification ("然后再做 C3"). Frozen deliverables: D-2.1 schema, D-2.2 reference
+engine, D-2.3 replay validator, D-2.4 conformance suite, D-2.5 deferred oTree binding. A-1
+(ethics/outreach) and A0 (human sessions/outcomes) remain unauthorized; GPU remains
+unauthorized and unnecessary.
+
+**D-2.1 through D-2.4 first implementation landed** (`scripts/lab_asset/`, tests in
+`tests/test_lab_asset_conformance.py`): frozen arm-invariant event schema (StrEnum reason
+codes, three clocks, per-action SHA-256 full-book state hashes, self-contained tape with
+request records); deterministic reference CDA engine with FIFO and random-within-tie arms
+where the random draw is a semantic event recorded with its execution; replay validator
+comparing event type, payload and state hash exactly (payload tampering detectable);
+11-test conformance suite covering golden scenarios, tie-set uniformity (600 seeds),
+grammar arm-invariance, aggregate-path identity, bit-level determinism, exact replay and
+tamper detection. mypy --strict and ruff clean; all local CPU.
+
 Only paper-level schema, prior, ethics, cost and failure-mode design is retained. No participant
 experiment, external outreach, platform implementation, simulator run, outcome access, data
 purchase, EcoMD edit, sandbox, CPU experiment or GPU work is authorized. A later design still

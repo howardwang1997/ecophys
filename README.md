@@ -285,6 +285,21 @@ identity with identity-level redistribution in a ZI population, and order-one de
 (6 vs 33 and 28 vs 179) in threshold equilibria. Remaining gates before any platform work:
 explicit user authorization (C3) and the outcome-blind precision floor (C4).
 
+C4 is now conditionally passed
+([precision floor](papers/proposal/ecomd_tie_priority_c4_precision_floor_2026-08-27.md)):
+method and published noise anchors frozen, σ = 2 ticks, MDE = 2 ticks → **16 sessions per
+arm (32 per site)**; the gate terminally closes only when the user freezes the cost ceiling.
+C3 has been granted
+([authorization record](papers/proposal/ecomd_truth_asset_c3_authorization_a2_scope_2026-08-27.md))
+and stage A-2 is open. The first A-2 deliverables live in `scripts/lab_asset/`: the frozen
+arm-invariant event schema (reason-coded rejections, three clocks, per-action SHA-256
+full-book state hashes), a deterministic reference continuous-double-auction engine with both
+allocation arms — the randomized arm records its draw as a semantic event — an exact
+deterministic-replay validator, and an 11-test conformance suite
+(`conda run -n ecophys python scripts/lab_asset/run_conformance.py`), all mypy --strict and
+ruff clean on local CPU. The deferred sub-stage D-2b ports this contract onto a hardened
+oTree fork; A-1 (ethics, outreach) and A0 (human sessions, outcomes) remain unauthorized.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
