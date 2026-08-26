@@ -175,7 +175,7 @@ creates zero cards and one prospective component-gate forecast. Across Cycles 1-
 47 tabulated hostile-T0 lower endpoints reached 15%, but all 48 formulations also failed an
 independent hard gate. Those post-audit judgments cannot calibrate the threshold.
 
-Cycles 10--12 then installed and exercised the two-speed funnel. Cycle 12 is the first completed
+Cycles 10--13 then installed and exercised the two-speed funnel. Cycle 12 is the first completed
 full audit with a genuinely prospective full-T0 forecast: EBS conditional price increments
 motivated a proposed price--time commitment law in \(\chi=\sigma\sqrt{\tau}/\delta\) and
 \(\rho=\lambda\tau\). The clean case reduced exactly to Brownian first passage; matching both
@@ -185,6 +185,17 @@ replication contracts failed. The frozen 12% forecast therefore resolved false (
 one outcome cannot calibrate the 15% active-status brake. The
 [Cycle 12 result](papers/proposal/ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md)
 creates zero cards and authorizes no execution.
+
+Cycle 13 then kept the EBS setting but moved to its market-native bilateral-credit interaction.
+Aggregate topology and total credit failed a labelled-capacity twin; one- versus two-pool credit
+split into static feasible-set inclusion and online product crowding; and gross versus NOP
+exhaustion reduced to weighted path variation versus net exposure. Direct QCLOB, credit-network,
+resource-pooling, bilateral-credit ABM, OTC-network, and netting priors occupied the broad core,
+while public data do not expose the population credit matrix or controller history. The
+[Cycle 13 result](papers/proposal/ecomd_discovery_loop_topic_cycle_13_bilateral_credit_liquidity_result_2026-08-26.md)
+therefore creates zero cards and no F3 forecast. The cycle adds a quick gate that separates static
+pooling, online allocation, and endogenous response before a network statistic can be treated as
+market state.
 
 ## Research Discovery Loop
 
@@ -203,7 +214,9 @@ The forward stages are:
    only the strongest 3 into complete question contracts; imported physical effects must expose
    a market-native control parameter and survive legal representation, unit, clock, initial-family,
    and metric changes; claimed opposite-sign priors must share one estimand, and proposed
-   dimensionless laws must survive a parameter-completion twin;
+   dimensionless laws must survive a parameter-completion twin; network/shared-capacity claims
+   must retain labelled capacities and allocation policy and separate static, online, and
+   endogenous response layers;
 2. **D-2:** route each survivor as theory/mechanism, measurement, empirical intervention, or
    simulator method; only the strongest 2 receive a novelty manifest with at least 15 primary
    works and full failure-family mapping;
@@ -300,6 +313,11 @@ The price--time commitment follow-up is in the
 twelve raw questions became six quick screens, three collision screens and one prospectively
 forecast full audit; the sole F3 program failed exact-parent, parameter-completion, lifecycle and
 same-estimand gates, so its 12% full-T0 forecast resolved false and no card was created.
+The bilateral-credit follow-up is in the
+[Cycle 13 result](papers/proposal/ecomd_discovery_loop_topic_cycle_13_bilateral_credit_liquidity_result_2026-08-26.md):
+twelve raw questions became six quick screens and three collision screens; all three closed on
+labelled-state insufficiency, resource-pooling, path-geometry, direct-prior, or private-state gates
+before F3, with zero cards and no new forecast.
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py

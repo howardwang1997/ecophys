@@ -45,6 +45,10 @@ the cheapest observation, theorem, or intervention that could separate them.
 - Before escalating a dimensionless scaling law, match every proposed control group and vary one
   omitted legal event kernel or strategic state. If the prediction reverses, or repair requires
   encoding the full kernel, close the universal law and retain only a narrower measurement claim.
+- Before escalating a network-fragmentation or resource-pooling law, complete the state with the
+  labelled capacity matrix and the admissible allocation policy. Separate static feasible-set
+  inclusion, online priority/crowding, and endogenous strategic response; an aggregate topology or
+  total-capacity statistic is not a native state when those layers disagree.
 - Assign the question to one archetype before escalating: `theory_mechanism`,
   `measurement_method`, `empirical_intervention`, or `simulator_method`. Apply the archetype's
   early truth contract; the project-wide two-lineage and real-bridge standard is checked only for

@@ -81,6 +81,7 @@ SEARCH_QUICK_REQUIREMENTS = {
     "scientific_value_for_positive_and_null_answers",
     "cross_domain_native_parameter_and_representation_invariance",
     "dimensionless_parameter_completion_twin_when_claimed",
+    "capacity_state_and_allocation_policy_completion_when_claimed",
 }
 SEARCH_TOPIC_ARCHETYPES = {
     "theory_mechanism",

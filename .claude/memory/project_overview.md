@@ -1,6 +1,6 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. The forward Discovery Loop and route knowledge graph govern topic selection; Plan v4 remains a closed quality, compute, and data-governance record. No Nature-grade market-simulation route is active after twelve bounded Discovery Loop cycles and the prior reselection rounds. Cycle 12 resolved the first prospectively frozen full-T0 forecast false and added same-estimand and parameter-completion quick gates. DCRDEX remains parked, FCC remains a below-threshold candidate, and verification-liquidity is an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
+description: EcoPhys/EcoMD research overview. The forward Discovery Loop and route knowledge graph govern topic selection; Plan v4 remains a closed quality, compute, and data-governance record. No Nature-grade market-simulation route is active after thirteen bounded Discovery Loop cycles and the prior reselection rounds. Cycle 13 closed bilateral-credit network, pooling, and gross/NOP formulations and added labelled-capacity/allocation-policy completion to the quick screen. DCRDEX remains parked, FCC remains a below-threshold candidate, and verification-liquidity is an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
@@ -9,8 +9,8 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 
 > **Current route state (2026-08-26).** No Nature-grade simulated-market or financial-physics route is active.
 > The forward selection authority is `research/discovery/protocol.yaml`; the canonical terminal-state and veto
-> registry is `research_route_knowledge_graph.yaml`. The graph currently has 219 nodes and 227 typed edges:
-> 193 failed-closed, twenty-two passed-and-closed selections, one parked route, one FCC candidate, one active
+> registry is `research_route_knowledge_graph.yaml`. The graph currently has 223 nodes and 231 typed edges:
+> 196 failed-closed, twenty-three passed-and-closed selections, one parked route, one FCC candidate, one active
 > verification-liquidity field protocol, and one superseded route. The first Discovery-Loop rerun initially
 > parked `transportable_interventional_market_law_discovery`, but its D-1 continuation failed the generic-theorem,
 > ABIDES--PAMS same-estimand, and real-bridge gates. Hostile T0 is now 1--7% (3.5% point). The strongest next
@@ -95,6 +95,13 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > MBP lacks individual order lifecycle; and the native simulator plus independent field contracts failed. The
 > frozen 12% forecast resolved false with Brier 0.0144. One resolution cannot calibrate the 15% active-status
 > brake. Same-estimand sign disagreement and dimensionless parameter-completion twins are now quick gates.
+> A thirteenth cycle then moved to EBS bilateral credit as a market-native many-body constraint. Aggregate
+> topology and total credit failed a labelled-capacity alignment twin; one versus two pools reduced to static
+> feasible-set inclusion plus online class crowding; and gross versus NOP exhaustion reduced to weighted path
+> variation versus net exposure. Direct QCLOB and credit/resource-network parents occupied the broad core,
+> while population capacity and controller state were not public. No route reached F3, so no card or forecast
+> was created. Labelled-capacity and allocation-policy completion, with static/online/endogenous separation,
+> is now a quick gate.
 > These routes authorize no simulation, implementation, data download or purchase, EcoMD integration, outreach,
 > or GPU. DCRDEX remains separately parked; verification-liquidity retains its pre-existing sealed status with
 > prospective outcomes embargoed until 2026-10-17 UTC.

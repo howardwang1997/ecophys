@@ -170,6 +170,12 @@ audits create a novelty manifest with the cutoff date, verbatim queries, inclusi
 rules, at least 15 primary works, claim-overlap classifications, and unresolved direct
 collisions.
 
+Network and shared-capacity claims receive a state-completion screen before escalation. The
+labelled capacity matrix and admissible allocation policy must be explicit, and static feasible-set
+inclusion must be separated from online sequencing/crowding and endogenous response. Aggregate
+degree, connectivity, or total capacity is not accepted as a native state when these layers can
+produce different signs.
+
 ### Optional DX — disposable exploration sandbox
 
 The broad pre-activation ban has one narrow, separately authorized exception. A qualified

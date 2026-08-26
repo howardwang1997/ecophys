@@ -111,6 +111,10 @@ Use at most three anchor primary works and at least one exact killer toy. Ask:
 - For a proposed dimensionless law, can every proposed group be held fixed while one omitted legal
   event kernel or strategic state varies? A sign reversal kills the low-dimensional law; a repair
   that must encode the full kernel is a measurement reformulation, not a universal collapse.
+- For a network or shared-capacity claim, does the proposed state retain the labelled capacity
+  matrix and the allocation policy? Test static feasible-set inclusion separately from online
+  sequencing/crowding and endogenous response. If these layers have different signs, aggregate
+  topology, degree, or total capacity cannot support a universal response claim.
 
 Select by Pareto dominance on discriminative power, identifiability, residual novelty, positive/null
 value, transfer, feasibility, and cost of the next decisive update. Do not use an arithmetic score

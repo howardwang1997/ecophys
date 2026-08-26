@@ -93,6 +93,14 @@ def copy_fixture(tmp_path: Path) -> Path:
         result_dir
         / "ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_13_bilateral_credit_liquidity_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_13_bilateral_credit_liquidity_result_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -699,12 +707,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "131 evidence records" in result
+    assert "145 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
     assert "2 prospective forecasts (1 resolved; 1 T0-floor resolutions)" in result
-    assert "3 prospective search cycles (36 raw questions; 0 cards)" in result
+    assert "4 prospective search cycles (48 raw questions; 0 cards)" in result
 
 
 def test_authorized_disposable_exploration_sandbox_validates(tmp_path: Path) -> None:
@@ -1312,9 +1320,10 @@ def test_cross_domain_invariance_quick_screen_is_required(tmp_path: Path) -> Non
     [
         "same_estimand_for_claimed_model_disagreement",
         "dimensionless_parameter_completion_twin_when_claimed",
+        "capacity_state_and_allocation_policy_completion_when_claimed",
     ],
 )
-def test_cycle12_quick_screen_gates_are_required(
+def test_cycle12_and_cycle13_quick_screen_gates_are_required(
     tmp_path: Path,
     requirement: str,
 ) -> None:

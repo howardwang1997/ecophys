@@ -166,6 +166,17 @@ with Brier 0.0144; one resolution does not calibrate the 15% active-status brake
 same-estimand sign-disagreement and dimensionless parameter-completion quick gates. No card,
 sandbox, outcome, data action, simulation, implementation, outreach or compute was authorized.
 
+Cycle 13 moved from EBS price--time parameters to bilateral credit as the market-native interaction
+state. Twelve programs became six quick screens and three six-work collision screens; none reached
+F3. Aggregate credit, degree, and binary topology failed a labelled-capacity/quote-alignment twin.
+One- versus two-pool credit split into static feasible-set inclusion and online class crowding.
+Gross versus NOP exhaustion reduced to weighted path total variation versus net exposure. Direct
+QCLOB, credit-network, resource-pooling, bilateral-credit ABM, OTC-network, and netting priors
+occupied the broad core, while population credit state and controller history were not public. The
+protocol now completes labelled capacities and allocation policy and separates static, online, and
+endogenous response before escalating a network law. No card, forecast, sandbox, outcome, data
+action, simulation, implementation, outreach, purchase or compute was authorized.
+
 The first proposed synthetic generator is retained only as the outcome-blind Bourse
 counterexample preflight in
 `papers/proposal/bourse_disposable_market_counterexample_preflight_2026-08-25.md`. Bourse
