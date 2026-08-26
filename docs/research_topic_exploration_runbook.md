@@ -166,6 +166,23 @@ Stop at the first decisive hard failure and record it. A disposable DX sandbox i
 when steps 1--4 cannot resolve a named uncertainty and a tiny probe has positive decision value.
 Its evidence remains permanently exploratory-tainted.
 
+### Search-family saturation
+
+The route graph is also a budget-control device. After two bounded cycles in the same parent or
+failure family produce no machine card, do not allocate a third cycle merely by changing the venue,
+protocol, physics metaphor, or method label. Re-entry requires one recorded exogenous trigger:
+
+1. a new primary model disagreement over the same native state, action, response and conditioning
+   set;
+2. a new truth or control asset that removes a named assignment, state, licence or replication
+   blocker; or
+3. a theorem or counterexample that invalidates the earlier reduction.
+
+Record the trigger before candidate harvesting. A new paper that repeats the old claim, a larger
+dataset with the same missing fields, or another implementation of the same mechanism family is
+not a trigger. When no trigger exists, switch source lane or work on a reusable truth asset rather
+than generate synonymous topics.
+
 ### Probability and action policy
 
 `hostile T0` is the elicited probability that a frozen formulation survives all named T0 gates and

@@ -73,6 +73,10 @@ the cheapest observation, theorem, or intervention that could separate them.
 - Record every cycle, including pruned questions and zero-survivor cycles, in the formal result,
   `research/discovery/search_cycle_ledger.yaml`, the route graph when a formulation is terminal,
   the daily log, and long-term memory. Do not count retrospective probability labels as forecasts.
+- After two bounded cycles in the same parent or failure family produce no machine card, do not
+  spend a third cycle on a relabelled venue, mechanism, or method. Re-enter that family only when
+  the cycle record names a new primary model disagreement, a newly available truth/control asset,
+  or a theorem that removes a recorded blocker. Record that trigger before harvesting candidates.
 
 ## Work log discipline (non-negotiable)
 

@@ -117,6 +117,14 @@ def copy_fixture(tmp_path: Path) -> Path:
         result_dir
         / "ecomd_discovery_loop_topic_cycle_15_market_maker_obligation_result_2026-08-26.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_16_prospective_simulator_validity_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_16_prospective_simulator_validity_result_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -723,12 +731,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "181 evidence records" in result
+    assert "203 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
-    assert "2 prospective forecasts (1 resolved; 1 T0-floor resolutions)" in result
-    assert "6 prospective search cycles (72 raw questions; 0 cards)" in result
+    assert "3 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
+    assert "7 prospective search cycles (84 raw questions; 0 cards)" in result
 
 
 def test_authorized_disposable_exploration_sandbox_validates(tmp_path: Path) -> None:
@@ -782,7 +790,7 @@ def test_protected_history_allows_appended_forecast_resolution(tmp_path: Path) -
 
     result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
-    assert "2 prospective forecasts (2 resolved; 1 T0-floor resolutions)" in result
+    assert "3 prospective forecasts (3 resolved; 2 T0-floor resolutions)" in result
 
 
 def test_protected_history_rejects_rewritten_authorization(tmp_path: Path) -> None:

@@ -217,6 +217,17 @@ volume hit merely releases an obligation at an endogenous stopping time. The
 therefore creates zero cards and no F3 forecast. Its reusable rule is simple: a compliance or
 reward controller is not an assigned market action.
 
+Cycle 16 returned to the central simulator question: can a score computed before a field rule
+change predict which market simulator will forecast the change correctly? The narrow empirical
+gap survived the exact-paper search, but the frozen formulation did not. Simulator-native
+interventional consistency leaves real off-support adaptation unidentified; two rule changes are
+only two independent policy environments; learned and structural simulators lack a frozen common
+action language; and prospective TSE, CME, SEC and pause assets do not close one assignment, state,
+licence and same-estimand contract. The
+[Cycle 16 result](papers/proposal/ecomd_discovery_loop_topic_cycle_16_prospective_simulator_validity_result_2026-08-26.md)
+therefore creates zero cards. Its prospectively frozen 10% full-T0 forecast resolved false (Brier
+0.0100). Two all-negative resolutions are insufficient to recalibrate the 15% active-status brake.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
@@ -348,6 +359,11 @@ The market-maker obligation and liquidity-reward follow-up is in the
 twelve raw questions became six quick screens and three collision screens; compliance pooling,
 selected temporal contracts, normalized reward contests and endogenous obligation release all
 closed before F3, with zero cards and no new forecast.
+The prospective simulator-validity follow-up is in the
+[Cycle 16 result](papers/proposal/ecomd_discovery_loop_topic_cycle_16_prospective_simulator_validity_result_2026-08-26.md):
+twelve raw questions became six quick screens, three collision screens and one prospectively
+forecast full audit; off-support adaptation, intervention-level pseudoreplication, common-action
+semantics and field-asset contracts closed the F3 route, with zero cards.
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py

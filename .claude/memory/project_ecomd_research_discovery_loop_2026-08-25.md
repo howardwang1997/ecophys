@@ -201,6 +201,19 @@ action, a contract label from an isolated intervention, and relative score from 
 state. No card, forecast, sandbox, outcome, data action, simulation, implementation, outreach,
 purchase or compute was authorized.
 
+Cycle 16 returned to the core simulated-market validity question. Twelve programs became six quick
+screens, three collision screens and one prospectively frozen F3 audit. No exact paper was found
+that uses a predeclared simulator-interventional score to predict several unseen real market-rule
+responses, but the formulation failed off-support adaptation, independent-intervention replication,
+common action-language and prospective field-asset contracts. Task-conditioned adequacy reduced to
+established ABM surrogate, model-criticism, discrepancy and discrimination parents; stored-order
+release after a volatility interruption failed assignment and no-pause-counterfactual gates and had
+direct pause/auction priors. The frozen 10% forecast resolved false with Brier 0.0100. Two
+all-negative full-T0 resolutions remain insufficient to recalibrate the 15% active-status brake.
+The runbook now prevents a third zero-card cycle in the same parent/failure family unless a new
+primary model fork, truth/control asset, or theorem removes a recorded blocker. No card, sandbox,
+outcome, data action, simulation, implementation, outreach, purchase or compute was authorized.
+
 The first proposed synthetic generator is retained only as the outcome-blind Bourse
 counterexample preflight in
 `papers/proposal/bourse_disposable_market_counterexample_preflight_2026-08-25.md`. Bourse
@@ -322,10 +335,10 @@ failed closed and the largest hostile-T0 lower bound was three percent. See
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
 locators, one parked discovery card, 39 evidence records, 12 failure families, and 20
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
-five decisive primary-work records. After fifteen bounded topic cycles, current validation is
-231 route nodes, 239 edges and 828 route locators; Discovery governance has one failed-closed
-card, 181 clean external evidence records, zero tainted sandbox results, 12 failure families,
-25 primary assignments, one transition, zero authorized sandboxes, six prospective search cycles
-with 72 raw questions, and two prospective forecasts. The first full-T0 forecast resolved false;
-the Rule 605 component forecast remains unresolved. One full-T0 resolution is still insufficient
-to calibrate the 15% floor.
+five decisive primary-work records. After sixteen bounded topic cycles, current validation is
+235 route nodes, 243 edges and 850 route locators; Discovery governance has one failed-closed
+card, 203 clean external evidence records, zero tainted sandbox results, 12 failure families,
+25 primary assignments, one transition, zero authorized sandboxes, seven prospective search cycles
+with 84 raw questions, and three prospective forecasts. Both resolved full-T0 forecasts are false;
+the Rule 605 component forecast remains unresolved. Two all-negative full-T0 resolutions are still
+insufficient to calibrate the 15% floor.
