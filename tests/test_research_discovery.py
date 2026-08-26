@@ -85,6 +85,14 @@ def copy_fixture(tmp_path: Path) -> Path:
         result_dir
         / "ecomd_discovery_loop_topic_cycle_11_market_physical_relaxation_result_2026-08-26.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -691,12 +699,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "105 evidence records" in result
+    assert "131 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
-    assert "1 prospective forecasts (0 resolved; 0 T0-floor resolutions)" in result
-    assert "2 prospective search cycles (24 raw questions; 0 cards)" in result
+    assert "2 prospective forecasts (1 resolved; 1 T0-floor resolutions)" in result
+    assert "3 prospective search cycles (36 raw questions; 0 cards)" in result
 
 
 def test_authorized_disposable_exploration_sandbox_validates(tmp_path: Path) -> None:
@@ -735,7 +743,9 @@ def test_protected_history_allows_appended_forecast_resolution(tmp_path: Path) -
     repo = copy_fixture(tmp_path)
     initialize_git_base(repo)
     ledger = load_mapping(forecast_path(repo))
-    ledger["resolutions"] = [
+    resolutions = ledger["resolutions"]
+    assert isinstance(resolutions, list)
+    resolutions.append(
         {
             "forecast_id": "cycle9_rule605_same_estimand_bridge_gate",
             "resolved_at": "2027-01-15T00:00:00Z",
@@ -743,12 +753,12 @@ def test_protected_history_allows_appended_forecast_resolution(tmp_path: Path) -
             "evidence_refs": ["cycle9_rule605_faq"],
             "rationale": "The frozen bridge rule did not pass.",
         }
-    ]
+    )
     write_mapping(forecast_path(repo), ledger)
 
     result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
-    assert "1 prospective forecasts (1 resolved; 0 T0-floor resolutions)" in result
+    assert "2 prospective forecasts (2 resolved; 1 T0-floor resolutions)" in result
 
 
 def test_protected_history_rejects_rewritten_authorization(tmp_path: Path) -> None:
@@ -1291,6 +1301,30 @@ def test_cross_domain_invariance_quick_screen_is_required(tmp_path: Path) -> Non
     requirements = funnel["quick_screen_required"]
     assert isinstance(requirements, list)
     requirements.remove("cross_domain_native_parameter_and_representation_invariance")
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="quick-screen requirements"):
+        validate_discovery(repo)
+
+
+@pytest.mark.parametrize(
+    "requirement",
+    [
+        "same_estimand_for_claimed_model_disagreement",
+        "dimensionless_parameter_completion_twin_when_claimed",
+    ],
+)
+def test_cycle12_quick_screen_gates_are_required(
+    tmp_path: Path,
+    requirement: str,
+) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    requirements = funnel["quick_screen_required"]
+    assert isinstance(requirements, list)
+    requirements.remove(requirement)
     write_mapping(path, protocol)
 
     with pytest.raises(DiscoveryValidationError, match="quick-screen requirements"):

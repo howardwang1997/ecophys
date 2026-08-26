@@ -36,9 +36,15 @@ the cheapest observation, theorem, or intervention that could separate them.
 - A raw question must state a market-native object, at least two rival explanations, one
   discriminating result, and why both a positive and a null answer matter. An analogy or method
   name is not a question.
+- Opposite signs in two papers count as an unresolved fork only when they concern the same native
+  state, legal intervention, response, and conditioning set. Different treatments or observables
+  with opposite headlines are not a discovery opportunity.
 - For an imported physical effect, name a market-native control parameter. If the effect can be
   created or removed only by changing an analyst-chosen initial family, clock, unit, state
   projection, or distance metric, require a representation-invariant residual before escalation.
+- Before escalating a dimensionless scaling law, match every proposed control group and vary one
+  omitted legal event kernel or strategic state. If the prediction reverses, or repair requires
+  encoding the full kernel, close the universal law and retain only a narrower measurement claim.
 - Assign the question to one archetype before escalating: `theory_mechanism`,
   `measurement_method`, `empirical_intervention`, or `simulator_method`. Apply the archetype's
   early truth contract; the project-wide two-lineage and real-bridge standard is checked only for

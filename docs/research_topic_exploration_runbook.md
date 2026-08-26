@@ -72,7 +72,9 @@ not silently discarded.
 Draw questions from four source lanes:
 
 1. **Unresolved model disagreement:** two primary models explain the same observation but predict
-   different responses under a controllable condition.
+   different responses under a controllable condition. Count an opposite-sign pair only when the
+   state, legal intervention, response, and conditioning set are the same; different estimands are
+   adjacent evidence, not a model fork.
 2. **New truth or control capability:** a new field schema, exact simulator state, randomized rule,
    formal implementation, or sealed future asset can adjudicate a question that was previously
    untestable.
@@ -106,6 +108,9 @@ Use at most three anchor primary works and at least one exact killer toy. Ask:
 - For a cross-domain effect, is its control parameter market-native, and does the residual survive
   changes of legal state representation, unit, clock, initial-condition family, and distance
   metric? An analyst-defined temperature, condensate, or relaxation ordering is not sufficient.
+- For a proposed dimensionless law, can every proposed group be held fixed while one omitted legal
+  event kernel or strategic state varies? A sign reversal kills the low-dimensional law; a repair
+  that must encode the full kernel is a measurement reformulation, not a universal collapse.
 
 Select by Pareto dominance on discriminative power, identifiability, residual novelty, positive/null
 value, transfer, feasibility, and cost of the next decisive update. Do not use an arithmetic score

@@ -175,6 +175,17 @@ creates zero cards and one prospective component-gate forecast. Across Cycles 1-
 47 tabulated hostile-T0 lower endpoints reached 15%, but all 48 formulations also failed an
 independent hard gate. Those post-audit judgments cannot calibrate the threshold.
 
+Cycles 10--12 then installed and exercised the two-speed funnel. Cycle 12 is the first completed
+full audit with a genuinely prospective full-T0 forecast: EBS conditional price increments
+motivated a proposed price--time commitment law in \(\chi=\sigma\sqrt{\tau}/\delta\) and
+\(\rho=\lambda\tau\). The clean case reduced exactly to Brownian first passage; matching both
+controls still allowed sign reversals under marked informed flow and different jump kernels;
+public EBS MBP has no individual EBS order lifecycle; and the same-estimand simulator and field
+replication contracts failed. The frozen 12% forecast therefore resolved false (Brier 0.0144), but
+one outcome cannot calibrate the 15% active-status brake. The
+[Cycle 12 result](papers/proposal/ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md)
+creates zero cards and authorizes no execution.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
@@ -191,7 +202,8 @@ The forward stages are:
 1. **D-3:** harvest at most 12 market-native model forks, quick-screen at most 6, and expand
    only the strongest 3 into complete question contracts; imported physical effects must expose
    a market-native control parameter and survive legal representation, unit, clock, initial-family,
-   and metric changes;
+   and metric changes; claimed opposite-sign priors must share one estimand, and proposed
+   dimensionless laws must survive a parameter-completion twin;
 2. **D-2:** route each survivor as theory/mechanism, measurement, empirical intervention, or
    simulator method; only the strongest 2 receive a novelty manifest with at least 15 primary
    works and full failure-family mapping;
@@ -283,6 +295,11 @@ The market--physical relaxation follow-up is in the
 [Cycle 11 result](papers/proposal/ecomd_discovery_loop_topic_cycle_11_market_physical_relaxation_result_2026-08-26.md):
 twelve raw questions became six quick screens and three collision screens; all three closed on
 exact decomposition, generic-parent, or economic-unit invariance gates before F3, with zero cards.
+The price--time commitment follow-up is in the
+[Cycle 12 result](papers/proposal/ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md):
+twelve raw questions became six quick screens, three collision screens and one prospectively
+forecast full audit; the sole F3 program failed exact-parent, parameter-completion, lifecycle and
+same-estimand gates, so its 12% full-T0 forecast resolved false and no card was created.
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py

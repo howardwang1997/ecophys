@@ -76,9 +76,11 @@ SEARCH_SOURCE_LANES = {
 SEARCH_QUICK_REQUIREMENTS = {
     "market_native_object",
     "at_least_two_rival_explanations",
+    "same_estimand_for_claimed_model_disagreement",
     "one_discriminating_result",
     "scientific_value_for_positive_and_null_answers",
     "cross_domain_native_parameter_and_representation_invariance",
+    "dimensionless_parameter_completion_twin_when_claimed",
 }
 SEARCH_TOPIC_ARCHETYPES = {
     "theory_mechanism",

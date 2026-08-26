@@ -153,6 +153,19 @@ entity split invariance. The funnel now requires imported physical effects to ha
 control parameter and survive representation, unit, clock, initial-family and metric changes. No
 card, forecast, sandbox, outcome or execution was authorized.
 
+Cycle 12 began from same-estimand market-design disagreements and made EBS Conditional Price
+Increments the first prospectively forecast F3 audit. The frozen candidate proposed a regime law
+in `chi = sigma*sqrt(tau)/delta` and `rho = lambda*tau`; its full-T0 forecast was 5--25%, point
+12%, before the fifteen-work neighborhood opened. The clean Brownian case reduced to the
+reflection-principle first-passage probability. Holding both controls fixed while changing marked
+informed-flow composition or matched-variance jump tails changed or reversed the response.
+Official EBS MBP also does not use individual OrderID entries, CPI selection is state-gated and
+trader-chosen, and neither two native physical-time simulator lineages nor an independent real
+fine-price/slow-cancel mechanism closed the same-estimand contract. The forecast resolved false
+with Brier 0.0144; one resolution does not calibrate the 15% active-status brake. The cycle added
+same-estimand sign-disagreement and dimensionless parameter-completion quick gates. No card,
+sandbox, outcome, data action, simulation, implementation, outreach or compute was authorized.
+
 The first proposed synthetic generator is retained only as the outcome-blind Bourse
 counterexample preflight in
 `papers/proposal/bourse_disposable_market_counterexample_preflight_2026-08-25.md`. Bourse
@@ -274,9 +287,10 @@ failed closed and the largest hostile-T0 lower bound was three percent. See
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
 locators, one parked discovery card, 39 evidence records, 12 failure families, and 20
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
-five decisive primary-work records. After eleven bounded topic cycles, current validation is
-215 route nodes, 223 edges and 739 route locators; Discovery governance has one failed-closed
-card, 105 clean external evidence records, zero tainted sandbox results, 12 failure families,
-25 primary assignments, one transition, zero authorized sandboxes, two prospective search cycles
-with 24 raw questions, and one unresolved prospective component-gate forecast. No full-T0 forecast
-has yet resolved, so the 15% floor remains uncalibrated.
+five decisive primary-work records. After twelve bounded topic cycles, current validation is
+219 route nodes, 227 edges and 761 route locators; Discovery governance has one failed-closed
+card, 131 clean external evidence records, zero tainted sandbox results, 12 failure families,
+25 primary assignments, one transition, zero authorized sandboxes, three prospective search cycles
+with 36 raw questions, and two prospective forecasts. The first full-T0 forecast resolved false;
+the Rule 605 component forecast remains unresolved. One full-T0 resolution is still insufficient
+to calibrate the 15% floor.
