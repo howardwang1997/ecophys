@@ -242,7 +242,12 @@ event-level asset-market truth. Prospective laboratory market episodes exist, bu
 complete order lifecycle, dated licensed raw release, untouched confirmation source, and
 independent same-estimand replication. The
 [registry audit](papers/proposal/ecomd_reentry_truth_asset_registry_audit_2026-08-26.md) adds one
-`not_trigger` entry, for six audits and zero qualified triggers. Cycle 17 remains unopened.
+`not_trigger` entry. A third source-only check then audited Sfendourakis's 2026 unified
+signal-driven/queue-reactive framework. It supplies two serious models, but they do not share a
+complete state and legal intervention, make no opposite same-estimand response prediction, and
+retain an unobserved efficient price rather than assigned external truth. The
+[discovery-bottleneck and truth-asset preflight](papers/proposal/ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md)
+therefore records the seventh `not_trigger`; zero triggers qualify and Cycle 17 remains unopened.
 
 ## Research Discovery Loop
 
@@ -257,6 +262,17 @@ escalation sequence. Prospective cycle counts and dispositions are append-only i
 Proposed exceptions to search-family saturation are append-only in the
 [re-entry trigger ledger](research/discovery/reentry_trigger_ledger.yaml); only a qualified entry
 can authorize another candidate-harvest cycle in that family.
+
+The first seven prospective funnel cycles exposed a portfolio imbalance: 53 of 84 raw programs
+were theory/mechanism questions, while only four were measurement methods. In a future
+**unsaturated** 12-program cycle, F0 sampling therefore targets at least two measurement methods,
+at least two empirical interventions, and at most six theory/mechanism programs. These targets do
+not reserve advancement slots. If the family is saturated and no trigger qualifies, the loop may
+instead retain a paper-only capability-build preflight for the named blocker. Such a preflight is
+infrastructure, not a topic status; it must freeze the estimand family, assignment/interference,
+event lifecycle and replay state, rights/ethics/release, untouched confirmation, independent
+replication, cost, and stop rules. It cannot authorize candidate harvesting, outreach,
+implementation, outcomes, or execution.
 
 The forward stages are:
 

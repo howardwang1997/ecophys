@@ -126,6 +126,15 @@ are selected by Pareto dominance and then their weakest link. Every raw program 
 append-only. Before a program enters the full fifteen-work audit, freeze its exact subject and
 full-T0 forecast; a later probability is diagnostic only.
 
+Cycles 10--16 revealed that 53 of 84 programs were theory/mechanism questions and only four were
+measurement methods. A future unsaturated 12-program cycle therefore targets at least two
+measurement methods, at least two empirical interventions and at most six theory/mechanism
+programs at F0. This is a sampling discipline, not an advancement quota. In a saturated family
+without a qualified trigger, a paper-only capability-build preflight may specify the named blocker,
+estimand, assignment/interference, event/replay state, rights/ethics/release, untouched
+confirmation, independent replication, cost and stops. It is infrastructure rather than a topic
+status and authorizes neither candidate harvesting nor execution.
+
 Cycle 9 audited the probability rule and eight asset-triggered formulations. The previous
 eight bounded cycles contained 48 formulations; zero of the 47 tabulated lower endpoints
 reached 15%, but all 48 also failed an independent hard gate. Because those intervals were
@@ -347,6 +356,14 @@ and independently governed same-estimand replication. This is a hard contract fa
 a probability closure. The sixth trigger entry is `not_trigger`; Cycle 17 remains unopened. See
 `papers/proposal/ecomd_reentry_truth_asset_registry_audit_2026-08-26.md`.
 
+The seventh trigger audit tested Sfendourakis's 2026 unified signal-driven and queue-reactive
+framework. The two models are formally serious but use different state resolutions, define no
+shared legal intervention with opposite same-estimand responses, and retain an unobserved latent
+efficient price rather than assigned response truth. It is therefore `not_trigger`. The retained
+paper-only controlled-market truth-asset preflight is a response to the missing capability, not a
+route, sandbox or authorization. See
+`papers/proposal/ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md`.
+
 ## Validation state
 
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
@@ -354,9 +371,9 @@ locators, one parked discovery card, 39 evidence records, 12 failure families, a
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
 five decisive primary-work records. After sixteen bounded topic cycles, current validation is
 235 route nodes, 243 edges and 850 route locators; Discovery governance has one failed-closed
-card, 212 clean external evidence records, zero tainted sandbox results, 12 failure families,
+card, 218 clean external evidence records, zero tainted sandbox results, 12 failure families,
 25 primary assignments, one transition, zero authorized sandboxes, seven prospective search cycles
-with 84 raw questions, six re-entry trigger audits with zero qualified, and three prospective
+with 84 raw questions, seven re-entry trigger audits with zero qualified, and three prospective
 forecasts. Both resolved full-T0 forecasts are false;
 the Rule 605 component forecast remains unresolved. Two all-negative full-T0 resolutions are still
 insufficient to calibrate the 15% floor.

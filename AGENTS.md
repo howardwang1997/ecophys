@@ -79,6 +79,16 @@ the cheapest observation, theorem, or intervention that could separate them.
   or a theorem that removes a recorded blocker. Record and validate that trigger first in
   `research/discovery/reentry_trigger_ledger.yaml`; candidate harvesting is forbidden unless the
   entry explicitly has `candidate_harvest_authorized: true`.
+- Before any future unsaturated 12-program cycle, use the ledger to correct generator bias: sample
+  at least two `measurement_method` and two `empirical_intervention` programs and at most six
+  `theory_mechanism` programs. These are F0 sampling targets, never advancement quotas; document a
+  source-scarcity exception rather than inventing weak questions.
+- When a saturated family has no qualified trigger, a reusable truth-asset preflight is
+  infrastructure work, not a topic status or a disguised new cycle. Start from a named blocker and
+  freeze the supported estimand family, assignment/interference, complete event lifecycle and
+  replay state, rights/ethics/release, untouched confirmation partition, independent replication,
+  cost, and stop rules. The plan itself cannot authorize candidate harvesting, participant work,
+  outreach, implementation, or outcome access; re-entry still requires a qualified ledger entry.
 
 ## Work log discipline (non-negotiable)
 

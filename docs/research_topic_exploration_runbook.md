@@ -187,6 +187,32 @@ that repeats the old claim, a larger dataset with the same missing fields, or an
 of the same mechanism family is not a trigger. When no trigger exists, switch source lane or work on
 a reusable truth asset rather than generate synonymous topics.
 
+### Portfolio balance and the reusable truth-asset lane
+
+Cycles 10--16 exposed a generator imbalance: 53 of 84 raw programs were theory/mechanism, while
+only four were measurement methods. Future unsaturated 12-program cycles therefore use F0 sampling
+targets of at least two measurement methods, at least two empirical interventions, and at most six
+theory/mechanism programs. These targets diversify the search surface; they do not reserve an F1 or
+later slot. If the source landscape genuinely cannot supply a category, record the scarcity instead
+of fabricating a weak question.
+
+When the repeated blocker is missing truth or control rather than missing ideas, stop the topic
+cycle and open a paper-only capability preflight. A truth-asset plan must name:
+
+1. the recorded blocker and the bounded estimand family the asset would adjudicate;
+2. assignment, interference units, timing, and support;
+3. immutable event identifiers, full lifecycle, initial state, and deterministic replay checks;
+4. code/config/container hashes plus lawful human-data, software, and derived-data rights;
+5. a dated release and an untouched whole-source confirmation partition;
+6. an independently governed replication using the same action/state/clock/outcome grammar; and
+7. cost, ethics, power or precision, operational failure modes, and exact stop rules.
+
+This preflight has no topic status. A repository, protocol draft, or proposed experiment is not a
+new truth asset until the relevant rights, execution, assignment, release, and replication
+contracts actually exist. It cannot authorize candidate harvesting or any participant experiment,
+outreach, implementation, outcome access, sandbox, or compute. If the capability later becomes
+real, it must still pass the append-only re-entry trigger audit before another cycle is opened.
+
 ### Probability and action policy
 
 `hostile T0` is the elicited probability that a frozen formulation survives all named T0 gates and

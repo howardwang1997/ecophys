@@ -139,6 +139,13 @@ def copy_fixture(tmp_path: Path) -> Path:
         / "ecomd_reentry_truth_asset_registry_audit_2026-08-26.md",
         result_dir / "ecomd_reentry_truth_asset_registry_audit_2026-08-26.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
+        result_dir / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -749,12 +756,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "212 evidence records" in result
+    assert "218 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
     assert "3 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
-    assert "6 re-entry trigger audits (0 qualified)" in result
+    assert "7 re-entry trigger audits (0 qualified)" in result
     assert "7 prospective search cycles (84 raw questions; 0 cards)" in result
 
 
@@ -1365,6 +1372,34 @@ def test_topic_search_funnel_contract_is_required(tmp_path: Path) -> None:
     write_mapping(path, protocol)
 
     with pytest.raises(DiscoveryValidationError, match="topic_search_funnel"):
+        validate_discovery(repo)
+
+
+def test_portfolio_balance_targets_are_required(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    del funnel["portfolio_balance_targets"]
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="portfolio_balance_targets"):
+        validate_discovery(repo)
+
+
+def test_capability_build_plan_cannot_authorize_harvest(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    capability = child_mapping(funnel, "capability_build_policy")
+    capability["plan_can_authorize_candidate_harvest"] = True
+    write_mapping(path, protocol)
+
+    with pytest.raises(
+        DiscoveryValidationError,
+        match="capability-build flag plan_can_authorize_candidate_harvest",
+    ):
         validate_discovery(repo)
 
 

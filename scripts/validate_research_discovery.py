@@ -90,6 +90,21 @@ SEARCH_TOPIC_ARCHETYPES = {
     "empirical_intervention",
     "simulator_method",
 }
+SEARCH_PORTFOLIO_BALANCE_TARGETS = {
+    "measurement_method_minimum": 2,
+    "empirical_intervention_minimum": 2,
+    "theory_mechanism_maximum": 6,
+}
+CAPABILITY_BUILD_REQUIRED_CONTRACT_PARTS = {
+    "named_blocker",
+    "supported_estimand_family",
+    "assignment_and_interference",
+    "event_lifecycle_and_replay_prestate",
+    "rights_ethics_and_release",
+    "untouched_confirmation_partition",
+    "independent_replication",
+    "cost_and_stop_rules",
+}
 SEARCH_FINAL_DISPOSITIONS = {
     "portfolio_pruned",
     "quick_closed",
@@ -582,6 +597,8 @@ def validate_topic_search_policy(
         "source_lanes",
         "quick_screen_required",
         "topic_archetypes",
+        "portfolio_balance_targets",
+        "capability_build_policy",
         "escalation_rule",
         "ranking_rule",
         "full_audit_forecast_rule",
@@ -672,6 +689,99 @@ def validate_topic_search_policy(
                 contract.get(field),
                 f"protocol.topic_search_funnel.topic_archetypes.{archetype}.{field}",
             )
+
+    balance = require_mapping(
+        policy.get("portfolio_balance_targets"),
+        "protocol.topic_search_funnel.portfolio_balance_targets",
+    )
+    balance_fields = set(SEARCH_PORTFOLIO_BALANCE_TARGETS) | {
+        "applies_only_to_future_unsaturated_cycles",
+        "advancement_quota",
+    }
+    require_exact_fields(
+        balance,
+        balance_fields,
+        "protocol.topic_search_funnel.portfolio_balance_targets",
+    )
+    for field, expected in SEARCH_PORTFOLIO_BALANCE_TARGETS.items():
+        actual = require_positive_integer(
+            balance.get(field),
+            f"protocol.topic_search_funnel.portfolio_balance_targets.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"protocol topic-search portfolio target {field} must equal {expected}"
+            )
+    if (
+        require_bool(
+            balance.get("applies_only_to_future_unsaturated_cycles"),
+            "protocol.topic_search_funnel.portfolio_balance_targets."
+            "applies_only_to_future_unsaturated_cycles",
+        )
+        is not True
+    ):
+        raise DiscoveryValidationError(
+            "protocol portfolio-balance targets must apply only to future unsaturated cycles"
+        )
+    if (
+        require_bool(
+            balance.get("advancement_quota"),
+            "protocol.topic_search_funnel.portfolio_balance_targets.advancement_quota",
+        )
+        is not False
+    ):
+        raise DiscoveryValidationError(
+            "protocol portfolio-balance sampling targets cannot become advancement quotas"
+        )
+
+    capability = require_mapping(
+        policy.get("capability_build_policy"),
+        "protocol.topic_search_funnel.capability_build_policy",
+    )
+    capability_fields = {
+        "pivot_rule",
+        "status_semantics",
+        "plan_can_authorize_candidate_harvest",
+        "execution_requires_separate_authorization",
+        "reentry_requires_qualified_trigger",
+        "required_contract_parts",
+    }
+    require_exact_fields(
+        capability,
+        capability_fields,
+        "protocol.topic_search_funnel.capability_build_policy",
+    )
+    if capability.get("pivot_rule") != "saturated_family_without_qualified_trigger":
+        raise DiscoveryValidationError("protocol capability-build pivot rule differs from validator")
+    if capability.get("status_semantics") != "infrastructure_preflight_not_topic_status":
+        raise DiscoveryValidationError(
+            "protocol capability-build status semantics differ from validator"
+        )
+    capability_flags = {
+        "plan_can_authorize_candidate_harvest": False,
+        "execution_requires_separate_authorization": True,
+        "reentry_requires_qualified_trigger": True,
+    }
+    for field, expected in capability_flags.items():
+        actual = require_bool(
+            capability.get(field),
+            f"protocol.topic_search_funnel.capability_build_policy.{field}",
+        )
+        if actual is not expected:
+            raise DiscoveryValidationError(
+                f"protocol capability-build flag {field} must be {expected}"
+            )
+    contract_parts = set(
+        require_string_list(
+            capability.get("required_contract_parts"),
+            "protocol.topic_search_funnel.capability_build_policy.required_contract_parts",
+            allow_empty=False,
+        )
+    )
+    if contract_parts != CAPABILITY_BUILD_REQUIRED_CONTRACT_PARTS:
+        raise DiscoveryValidationError(
+            "protocol capability-build contract parts differ from validator"
+        )
     if policy.get("escalation_rule") != "cheapest_discriminating_evidence_first":
         raise DiscoveryValidationError("protocol topic-search escalation rule differs from validator")
     if policy.get("ranking_rule") != "pareto_then_weakest_link_no_compensatory_average":
