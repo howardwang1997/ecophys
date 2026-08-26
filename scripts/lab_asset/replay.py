@@ -103,6 +103,7 @@ def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
             regenerated.sequence != recorded.sequence
             or regenerated.event_type != recorded.event_type
             or regenerated.post_state_hash != recorded.post_state_hash
+            or regenerated.post_aggregate_state_hash != recorded.post_aggregate_state_hash
             or regenerated.payload != recorded.payload
         ):
             return ReplayReport(False, replayed, recorded.sequence)

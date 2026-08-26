@@ -255,6 +255,7 @@ def test_replay_detects_tampered_tape() -> None:
                     payload=payload,
                     pre_state_hash=r.pre_state_hash,
                     post_state_hash=r.post_state_hash,
+                    post_aggregate_state_hash=r.post_aggregate_state_hash,
                 )
             )
         else:

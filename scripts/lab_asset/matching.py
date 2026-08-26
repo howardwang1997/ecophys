@@ -22,6 +22,7 @@ from lab_asset.schema import (
     SessionPrestate,
     Side,
     TapeRecord,
+    aggregate_state_hash,
     state_hash,
 )
 
@@ -47,6 +48,9 @@ class ReferenceEngine:
     def _hash(self) -> str:
         return state_hash(self.bids, self.asks, self.sequence)
 
+    def _aggregate_hash(self) -> str:
+        return aggregate_state_hash(self.bids, self.asks, self.sequence)
+
     def _record_and_seal(self, event_type: EventType, payload: dict[str, object]) -> TapeRecord:
         pre = self._hash()
         self.sequence += 1
@@ -56,9 +60,11 @@ class ReferenceEngine:
             payload=payload,
             pre_state_hash=pre,
             post_state_hash="",
+            post_aggregate_state_hash="",
         )
         self.tape.append(record)
         object.__setattr__(record, "post_state_hash", self._hash())
+        object.__setattr__(record, "post_aggregate_state_hash", self._aggregate_hash())
         return record
 
     def _best(self, side: Side) -> int | None:

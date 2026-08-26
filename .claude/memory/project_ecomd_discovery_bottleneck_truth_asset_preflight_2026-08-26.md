@@ -132,6 +132,34 @@ comparing event type, payload and state hash exactly (payload tampering detectab
 grammar arm-invariance, aggregate-path identity, bit-level determinism, exact replay and
 tamper detection. mypy --strict and ruff clean; all local CPU.
 
+## C4 terminal closure, D-2b adapter and the robot pilot (2026-08-27 Session 21)
+
+**C4 terminally passed**
+(`ecomd_truth_asset_cost_ceiling_addendum_2026-08-27.md`): cost ceiling frozen at USD 20,000
+per site (all-inclusive participant payments), derived outcome-blind from the
+Aldrich–López Vargas USD 7 show-up anchor and payment norms; USD 52–78 per participant-
+session supports the 32-session requirement. Stop condition 3 is now mechanically checkable
+at A-1; the user may override in writing before any spend.
+
+**D-2b adapter landed** (`scripts/lab_asset/adapter.py` +
+`tests/test_lab_asset_adapter.py`): the client↔engine message protocol any hardened platform
+fork must speak; malformed messages raise typed AdapterErrors; client views expose both state
+hashes. The schema now seals **two hashes per record** — identity-layer and aggregate-layer
+(identity-free quantities per level). The aggregate hash is the machine-checkable form of the
+C2 invariance lemma: identical message streams under both arms reproduce it at every sequence
+while identity hashes genuinely diverge (tested).
+
+**Robot pilot pipeline landed** (`scripts/lab_asset/robot_pilot.py`): deterministic ZI robot
+sessions through the adapter and engine under both arms with paired seeds; every session
+replay-validated; manifest labeled `engineering_only`/`not_route_evidence`. End-to-end run
+(4 sessions × 5000 steps per arm) passes with all replays OK and near-identical arm
+statistics; the pilot's small cross-arm differences come from robot cancel draws over
+identity-ordered lists (a robot-policy detail, not a lemma violation — the pathwise machine
+check lives in the conformance tests' aggregate-hash equality).
+
+Remaining: D-2b platform fork choice (oTree binding), then A-1 remains unauthorized. No
+outcomes, no human sessions, no outreach, no GPU.
+
 Only paper-level schema, prior, ethics, cost and failure-mode design is retained. No participant
 experiment, external outreach, platform implementation, simulator run, outcome access, data
 purchase, EcoMD edit, sandbox, CPU experiment or GPU work is authorized. A later design still

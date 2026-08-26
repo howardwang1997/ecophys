@@ -133,13 +133,21 @@ class Execution:
 
 @dataclass(frozen=True)
 class TapeRecord:
-    """Universal envelope; payload is one of the typed events above."""
+    """Universal envelope; payload is one of the typed events above.
+
+    Two post-event hashes are sealed per record: the identity-layer hash (order ids,
+    actors, quantities per level) and the aggregate-layer hash (quantities per level
+    only). The aggregate hash is machine-checkable evidence of Lemma 1: under the same
+    request tape it must be identical across allocation arms while the identity hash may
+    differ.
+    """
 
     sequence: int
     event_type: EventType
     payload: dict[str, object] = field(default_factory=dict)
     pre_state_hash: str = ""
     post_state_hash: str = ""
+    post_aggregate_state_hash: str = ""
 
 
 @dataclass(frozen=True)
@@ -160,7 +168,7 @@ def state_hash(
     asks: dict[int, list[tuple[str, str, int]]],
     sequence: int,
 ) -> str:
-    """Full-book hash: price levels with order identity, quantity (order-id, actor, qty)."""
+    """Identity-layer hash: price levels with order identity (order-id, actor, qty)."""
 
     def levels(book: dict[int, list[tuple[str, str, int]]]) -> list[list[object]]:
         out: list[list[object]] = []
@@ -168,6 +176,28 @@ def state_hash(
             rows = [[oid, actor, qty] for oid, actor, qty in sorted(book[price])]
             out.append([price, rows])
         return out
+
+    payload = json.dumps(
+        {"sequence": sequence, "bids": levels(bids), "asks": levels(asks)},
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def aggregate_state_hash(
+    bids: dict[int, list[tuple[str, str, int]]],
+    asks: dict[int, list[tuple[str, str, int]]],
+    sequence: int,
+) -> str:
+    """Aggregate-layer hash: quantities per price level only (identity-free).
+
+    Machine-checkable form of the C2 invariance lemma: identical request tapes under
+    different allocation arms must produce identical aggregate hashes at every sequence.
+    """
+
+    def levels(book: dict[int, list[tuple[str, str, int]]]) -> list[list[int]]:
+        return [[price, sum(qty for _, _, qty in book[price])] for price in sorted(book)]
 
     payload = json.dumps(
         {"sequence": sequence, "bids": levels(bids), "asks": levels(asks)},

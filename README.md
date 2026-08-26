@@ -300,6 +300,20 @@ deterministic-replay validator, and an 11-test conformance suite
 ruff clean on local CPU. The deferred sub-stage D-2b ports this contract onto a hardened
 oTree fork; A-1 (ethics, outreach) and A0 (human sessions, outcomes) remain unauthorized.
 
+C4 has since closed terminally
+([cost-ceiling addendum](papers/proposal/ecomd_truth_asset_cost_ceiling_addendum_2026-08-27.md)):
+the participant-payment ceiling is frozen at USD 20,000 per site, derived outcome-blind from
+published anchors and comfortably above the 32-session requirement's cost envelope. D-2b's
+protocol layer is implemented in `scripts/lab_asset/adapter.py` (typed client-message
+translation and wire views), and every tape record now seals **two** hashes: an identity-layer
+hash and an identity-free **aggregate-layer hash** — the latter is the machine-checkable form
+of the C2 invariance lemma, pathwise identical across allocation arms on the same message
+stream while identity hashes genuinely diverge (asserted in
+`tests/test_lab_asset_adapter.py`). The engineering-only robot pilot
+(`scripts/lab_asset/robot_pilot.py`) runs paired-seed ZI sessions under both arms, validates
+exact replay of every session, and writes a manifest explicitly labeled
+`engineering_only`/`not_route_evidence`; its outputs are pipeline evidence only.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
