@@ -60,6 +60,12 @@ EXPECTED_LOCATOR_FIELDS = {"id", "kind", "availability"}
 TERMINAL_STATUSES = {"failed_closed", "passed_closed", "superseded"}
 OPEN_STATUSES = {"candidate", "active", "parked"}
 TERMINAL_EVIDENCE_KINDS = {"formal_result", "closure_decision", "formal_audit"}
+PROBABILITY_ONLY_FAILURE_CODES = {
+    "hostile_t0_lower_bound_below_activation_floor",
+    "t0_below_activation_floor",
+    "t0_lower_bound_below_activation_floor",
+    "no_card_reached_fifteen_percent_t0_prior",
+}
 ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 REF_PATTERN = re.compile(r"^refs/(?:heads|remotes|tags)/[A-Za-z0-9._/-]+$")
@@ -492,6 +498,10 @@ def validate_nodes(
         if status == "failed_closed" and not failure_codes:
             raise GraphValidationError(
                 f"{context}.failure_codes must not be empty for failed_closed"
+            )
+        if status == "failed_closed" and set(failure_codes) <= PROBABILITY_ONLY_FAILURE_CODES:
+            raise GraphValidationError(
+                f"{context}.failure_codes cannot terminalize from probability alone"
             )
         if status in OPEN_STATUSES and failure_codes:
             raise GraphValidationError(

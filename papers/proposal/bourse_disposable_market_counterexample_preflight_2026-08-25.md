@@ -107,11 +107,12 @@ Stop the campaign and create no child card if any of the following holds:
 This preflight intentionally creates no sandbox manifest or partition artifact. Execution
 remains forbidden until all of the following happen in order:
 
-1. the `research-governance` pull-request check is merged, made required on the protected
-   base branch, and force-push/deletion protections are enabled;
-2. an OCI launcher is independently reviewed and pinned by SHA-256, with no network, a
-   read-only root filesystem, no repository mount, no secrets, CPU-only device access, a
-   read-only exploration mount, and an artifact-only output mount;
+1. **complete:** the `research-governance` pull-request check is merged and required on the
+   protected research baseline, with force-push/deletion and administrator bypass disabled;
+2. the fail-closed OCI launcher passes an outcome-free conformance run against a pinned test
+   image and an independent runtime review; it must retain no network, a read-only root, no
+   repository-tree or secrets mount, CPU-only access, one frozen config-file input, and a
+   byte-bounded stdout tar output;
 3. the Bourse source/dependency snapshot and image digest are frozen, and isolation is
    tested without generating market outcomes;
 4. the confirmation beacon, pulse times, domain separator, seed-derivation function and
@@ -120,9 +121,9 @@ remains forbidden until all of the following happen in order:
    and single `authorized` genesis event; and
 6. that authorization-only change is merged before any branch can open.
 
-The workflow file alone is not branch protection, and a self-reported runtime receipt is an
-audit record rather than cryptographic proof of host isolation. Until the above controls are
-deployed, the expected scientific value does not justify execution.
+The protected baseline now satisfies item 1. A self-reported runtime receipt remains an audit
+record rather than cryptographic proof of host isolation. Until items 2--6 are complete, the
+expected scientific value does not justify execution.
 
 ## Calibrated value
 

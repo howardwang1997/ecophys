@@ -145,31 +145,33 @@
       "required": [
         "executor",
         "launcher",
+        "incident_handler",
         "image_digest",
         "network",
         "root_filesystem",
-        "repository_mount",
-        "exploration_mount",
+        "repository_tree_mount",
+        "input_channel",
         "confirmation_materialization",
-        "output_mount",
+        "output_channel",
         "secrets",
         "device_access"
       ],
       "properties": {
         "executor": {"const": "oci_container"},
         "launcher": {"$ref": "#/$defs/digestRef"},
+        "incident_handler": {"$ref": "#/$defs/digestRef"},
         "image_digest": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$"
         },
         "network": {"const": "none"},
         "root_filesystem": {"const": "read_only"},
-        "repository_mount": {"const": "none"},
-        "exploration_mount": {"const": "read_only_enumerated_units_only"},
+        "repository_tree_mount": {"const": "none"},
+        "input_channel": {"const": "read_only_config_with_enumerated_units_only"},
         "confirmation_materialization": {
           "const": "not_generated_not_staged_not_mounted"
         },
-        "output_mount": {"const": "sandbox_artifact_root_only"},
+        "output_channel": {"const": "bounded_stdout_tar"},
         "secrets": {"const": "none"},
         "device_access": {"const": "cpu_only"}
       }

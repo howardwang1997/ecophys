@@ -1,0 +1,115 @@
+schema_version: 1
+floor_review_target_id: t0_activation_eligibility
+target_definitions:
+  - id: t0_activation_eligibility
+    statement: >-
+      Whether one frozen formulation survives every named T0 gate and becomes eligible for an
+      outcome-blind active-status decision. A positive resolution does not itself activate a route.
+    point_scoring_rule: brier
+    interval_use: calibration_diagnostic_only
+    counts_toward_activation_floor_review: true
+    activation_floor: 0.15
+  - id: same_estimand_bridge_qualification
+    statement: >-
+      Whether a named prospective asset closes one frozen same-estimand observation-bridge gate.
+      This component forecast does not calibrate the full T0 activation floor.
+    point_scoring_rule: brier
+    interval_use: calibration_diagnostic_only
+    counts_toward_activation_floor_review: false
+    activation_floor: 0.15
+forecasts:
+  - id: cycle9_rule605_same_estimand_bridge_gate
+    recorded_at: "2026-08-25T16:10:25Z"
+    subject_route_id: expanded_rule605_execution_truth_bridge
+    target_id: same_estimand_bridge_qualification
+    resolve_by: "2027-01-15T00:00:00Z"
+    lower: 0.05
+    point: 0.12
+    upper: 0.25
+    resolution_rule: >-
+      Resolve true only if the first amended Rule 605 reports and public routing or receipt
+      documentation establish a lawful same-estimand observation bridge for at least twenty
+      independent reporting entities under one frozen schema. Otherwise resolve false. A true
+      outcome authorizes only a new child-card audit and does not reopen or activate this route.
+    basis_evidence_refs:
+      - cycle9_rule605_faq
+      - cycle9_rule605_final_rule
+      - cycle9_rule605_ecfr
+  - id: cycle12_price_time_commitment_full_t0
+    recorded_at: "2026-08-26T03:53:57Z"
+    subject_route_id: price_time_commitment_cpi_scaling
+    target_id: t0_activation_eligibility
+    resolve_by: "2026-08-28T00:00:00Z"
+    lower: 0.05
+    point: 0.12
+    upper: 0.25
+    resolution_rule: >-
+      Resolve true only if the frozen chi-rho formulation survives the fifteen-work exact-prior
+      and analytic-twin audit, supplies a nontrivial result beyond barrier crossing and ordinary
+      minimum-resting-time or queue theory, closes the same-estimand contract in two independent
+      simulator lineages, and qualifies EBS plus one independent real price-time mechanism with
+      lawful lifecycle data and contamination control. Resolve false when any named T0 gate fails.
+      A true resolution makes the route only eligible for a separate outcome-blind active decision.
+    basis_evidence_refs:
+      - cycle12_ebs_cpi_official
+      - cycle12_ebs_ultra_data_official
+      - cycle12_mrt_theory_primary
+  - id: cycle16_prospective_simulator_validity_full_t0
+    recorded_at: "2026-08-26T06:08:09Z"
+    subject_route_id: prospective_counterfactual_market_simulator_validity
+    target_id: t0_activation_eligibility
+    resolve_by: "2026-08-28T00:00:00Z"
+    lower: 0.04
+    point: 0.10
+    upper: 0.22
+    resolution_rule: >-
+      Resolve true only if the frozen formulation exceeds established model-discrepancy,
+      criticism, discrimination, causal-abstraction and interventional-surrogate parents; supplies
+      at least two independently governed, prospectively sealed and lawfully publishable field
+      rule changes; freezes same-action simulator implementations and equal-budget baselines; and
+      defines a proper path-law prediction test that does not overclaim causal identification.
+      Resolve false when any named T0 gate fails. A true resolution makes the route only eligible
+      for a separate outcome-blind active decision.
+    basis_evidence_refs:
+      - cycle16_lobbench_primary
+      - cycle16_interventional_surrogate_primary
+      - cycle16_financial_abm_validation_review
+resolutions:
+  - forecast_id: cycle12_price_time_commitment_full_t0
+    resolved_at: "2026-08-26T04:08:16Z"
+    outcome: false
+    evidence_refs:
+      - cycle12_ebs_cpi_official
+      - cycle12_ebs_mbp_schema
+      - cycle12_mrt_theory_primary
+      - cycle12_latency_market_making_primary
+      - cycle12_abides_official
+      - cycle12_pams_official
+    rationale: >-
+      The frozen chi-rho formulation failed independent named gates. Its clean Brownian case is an
+      ordinary first-passage reduction; matching both controls does not determine response under
+      marked informed flow or matched-variance jump kernels; CPI use is state-gated and selected;
+      public EBS MBP lacks individual order lifecycle and priority; and no two native physical-time
+      simulator lineages or independent real price-time mechanism close the same-estimand contract.
+      The false resolution follows the frozen rule and is unrelated to the 15% active-status brake.
+  - forecast_id: cycle16_prospective_simulator_validity_full_t0
+    resolved_at: "2026-08-26T06:22:05Z"
+    outcome: false
+    evidence_refs:
+      - cycle16_lobbench_primary
+      - cycle16_interventional_surrogate_primary
+      - cycle16_rnpe_primary
+      - cycle16_task_surrogate_primary
+      - cycle16_reality_gap_lob_primary
+      - cycle16_tse_tick_controller_official
+      - cycle16_cme_sr3_official
+      - cycle16_sec_tick_rule_official
+      - cycle16_trading_pause_primary
+    rationale: >-
+      The frozen claim failed independent hard gates. Synthetic interventional consistency does not
+      identify off-support participant adaptation in the real system; two field rule changes do not
+      provide enough independent intervention-level replication for a general validity relation;
+      learned and structural simulators lack a frozen common rule-action language; and the TSE,
+      CME, SEC and pause assets do not jointly supply independent assignment, complete state,
+      publication rights and same-estimand implementations. The false resolution follows the
+      predeclared rule and is unrelated to the 15-percent active-status brake.

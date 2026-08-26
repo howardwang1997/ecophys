@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import shutil
 import subprocess
+import tarfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
@@ -11,6 +13,10 @@ from typing import cast
 import pytest
 import yaml
 
+from scripts.quarantine_research_discovery_sandbox import (
+    execute_quarantine,
+    load_quarantine_plan,
+)
 from scripts.validate_research_discovery import (
     DiscoveryValidationError,
     validate_discovery,
@@ -63,6 +69,89 @@ def copy_fixture(tmp_path: Path) -> Path:
         REPO_ROOT / "papers" / "proposal" / "ecomd_discovery_loop_reselection_result_2026-08-25.md",
         result_dir / "ecomd_discovery_loop_reselection_result_2026-08-25.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_10_model_discrimination_funnel_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_10_model_discrimination_funnel_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_11_market_physical_relaxation_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_11_market_physical_relaxation_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_12_price_time_commitment_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_13_bilateral_credit_liquidity_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_13_bilateral_credit_liquidity_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_14_residual_state_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_14_residual_state_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_15_market_maker_obligation_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_15_market_maker_obligation_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_loop_topic_cycle_16_prospective_simulator_validity_result_2026-08-26.md",
+        result_dir
+        / "ecomd_discovery_loop_topic_cycle_16_prospective_simulator_validity_result_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_reentry_capability_trigger_audit_2026-08-26.md",
+        result_dir / "ecomd_reentry_capability_trigger_audit_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_reentry_truth_asset_registry_audit_2026-08-26.md",
+        result_dir / "ecomd_reentry_truth_asset_registry_audit_2026-08-26.md",
+    )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
+        result_dir / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
+    )
+    scripts_dir = repo / "scripts"
+    scripts_dir.mkdir(parents=True)
+    shutil.copy2(
+        REPO_ROOT / "scripts" / "quarantine_research_discovery_sandbox.py",
+        scripts_dir / "quarantine_research_discovery_sandbox.py",
+    )
     return repo
 
 
@@ -80,6 +169,18 @@ def novelty_path(repo: Path) -> Path:
 
 def history_path(repo: Path) -> Path:
     return repo / "research" / "discovery" / "decision_history.yaml"
+
+
+def forecast_path(repo: Path) -> Path:
+    return repo / "research" / "discovery" / "forecast_ledger.yaml"
+
+
+def search_cycle_path(repo: Path) -> Path:
+    return repo / "research" / "discovery" / "search_cycle_ledger.yaml"
+
+
+def reentry_trigger_path(repo: Path) -> Path:
+    return repo / "research" / "discovery" / "reentry_trigger_ledger.yaml"
 
 
 def update_decision_hash(repo: Path) -> None:
@@ -178,6 +279,7 @@ def add_authorized_sandbox(
     snapshot = inputs / "snapshot_manifest.json"
     partition = inputs / "partition.yaml"
     launcher = inputs / "sandbox_launcher.sh"
+    incident_handler = repo / "scripts" / "quarantine_research_discovery_sandbox.py"
     write_mapping(
         provenance,
         {"source": "https://example.org/disposable-market-asset", "license": "CC-BY-4.0"},
@@ -295,13 +397,17 @@ def add_authorized_sandbox(
                 ),
                 "sha256": hashlib.sha256(launcher.read_bytes()).hexdigest(),
             },
+            "incident_handler": {
+                "ref": "scripts/quarantine_research_discovery_sandbox.py",
+                "sha256": hashlib.sha256(incident_handler.read_bytes()).hexdigest(),
+            },
             "image_digest": f"sha256:{'1' * 64}",
             "network": "none",
             "root_filesystem": "read_only",
-            "repository_mount": "none",
-            "exploration_mount": "read_only_enumerated_units_only",
+            "repository_tree_mount": "none",
+            "input_channel": "read_only_config_with_enumerated_units_only",
             "confirmation_materialization": "not_generated_not_staged_not_mounted",
-            "output_mount": "sandbox_artifact_root_only",
+            "output_channel": "bounded_stdout_tar",
             "secrets": "none",
             "device_access": "cpu_only",
         },
@@ -431,10 +537,16 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
     branch_root.mkdir(parents=True)
     code_manifest = branch_root / "code_manifest.json"
     config = branch_root / "config.yaml"
+    request = branch_root / "request.yaml"
     receipt = branch_root / "receipt.json"
-    output = branch_root / "screening_summary.txt"
+    output = branch_root / "bundle.tar"
     write_json(code_manifest, {"git_sha": "0" * 40, "files": []})
-    write_mapping(config, {"seed": 17, "tests": ["signal_exists"]})
+    write_mapping(config, {"unit_ids": ["unit_a"], "tests": ["signal_exists"]})
+    payload = b"exploratory only\n"
+    with tarfile.open(output, mode="w") as archive:
+        member = tarfile.TarInfo("screening_summary.txt")
+        member.size = len(payload)
+        archive.addfile(member, io.BytesIO(payload))
     write_json(
         receipt,
         {
@@ -442,11 +554,14 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
             "sandbox_id": sandbox_id,
             "branch_id": "branch_one",
             "started_at": "2026-08-25T02:11:00Z",
-            "finished_at": "2026-08-25T02:19:00Z",
+            "finished_at": "2026-08-25T02:13:00Z",
             "cpu_seconds": 120,
-            "storage_bytes": 64,
+            "storage_bytes": output.stat().st_size,
             "monetary_cost_usd_micros": 0,
             "gpu_seconds": 0,
+            "run_status": "completed",
+            "container_exit_code": 0,
+            "wall_seconds": 120,
             "executor": "oci_container",
             "launcher_sha256": hashlib.sha256(
                 (
@@ -458,18 +573,52 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
                     / "sandbox_launcher.sh"
                 ).read_bytes()
             ).hexdigest(),
+            "incident_handler_sha256": hashlib.sha256(
+                (
+                    repo
+                    / "scripts"
+                    / "quarantine_research_discovery_sandbox.py"
+                ).read_bytes()
+            ).hexdigest(),
             "image_digest": f"sha256:{'1' * 64}",
             "network": "none",
             "root_filesystem": "read_only",
-            "repository_mount": "none",
-            "exploration_mount": "read_only_enumerated_units_only",
+            "repository_tree_mount": "none",
+            "input_channel": "read_only_config_with_enumerated_units_only",
             "confirmation_materialization": "not_generated_not_staged_not_mounted",
-            "output_mount": "sandbox_artifact_root_only",
+            "output_channel": "bounded_stdout_tar",
             "secrets": "none",
             "device_access": "cpu_only",
         },
     )
-    output.write_text("exploratory only\n", encoding="utf-8")
+    request_value: dict[str, object] = {
+        "schema_version": 1,
+        "sandbox_id": sandbox_id,
+        "branch_id": "branch_one",
+        "hypothesis_id": "hypothesis_one",
+        "hypothesis": "A measurable signal exists on the disposable split.",
+        "falsifier": "The frozen effect estimate is inside the null margin.",
+        "multiplicity_family_id": "fixture_family",
+        "test_ids": ["signal_exists"],
+        "unit_ids": ["unit_a"],
+        "cpu_seconds": 120,
+        "output_bytes": 20_000,
+        "code_manifest": {
+            "ref": (
+                f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
+                "branch_one/code_manifest.json"
+            ),
+            "sha256": hashlib.sha256(code_manifest.read_bytes()).hexdigest(),
+        },
+        "config": {
+            "ref": (
+                f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
+                "branch_one/config.yaml"
+            ),
+            "sha256": hashlib.sha256(config.read_bytes()).hexdigest(),
+        },
+    }
+    write_mapping(request, request_value)
     ledger_path = artifact_root / "events.jsonl"
     entries = load_event_log(ledger_path)
     entries.extend(
@@ -485,20 +634,17 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
                 "falsifier": "The frozen effect estimate is inside the null margin.",
                 "multiplicity_family_id": "fixture_family",
                 "test_ids": ["signal_exists"],
-                "seed_ids": [17],
-                "code_manifest": {
+                "unit_ids": ["unit_a"],
+                "cpu_seconds": 120,
+                "output_bytes": 20_000,
+                "code_manifest": request_value["code_manifest"],
+                "config": request_value["config"],
+                "request": {
                     "ref": (
                         f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
-                        "branch_one/code_manifest.json"
+                        "branch_one/request.yaml"
                     ),
-                    "sha256": hashlib.sha256(code_manifest.read_bytes()).hexdigest(),
-                },
-                "config": {
-                    "ref": (
-                        f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
-                        "branch_one/config.yaml"
-                    ),
-                    "sha256": hashlib.sha256(config.read_bytes()).hexdigest(),
+                    "sha256": hashlib.sha256(request.read_bytes()).hexdigest(),
                 },
             },
             {
@@ -518,7 +664,7 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
                     {
                         "ref": (
                             f"research/discovery/sandbox_artifacts/{sandbox_id}/branches/"
-                            "branch_one/screening_summary.txt"
+                            "branch_one/bundle.tar"
                         ),
                         "sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
                         "bytes": output.stat().st_size,
@@ -528,6 +674,17 @@ def add_finished_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
         ]
     )
     write_event_log(ledger_path, entries)
+
+
+def add_open_branch(repo: Path, sandbox_id: str = SANDBOX_ID) -> None:
+    add_finished_branch(repo, sandbox_id)
+    artifact_root = repo / "research" / "discovery" / "sandbox_artifacts" / sandbox_id
+    ledger_path = artifact_root / "events.jsonl"
+    entries = load_event_log(ledger_path)
+    write_event_log(ledger_path, entries[:2])
+    branch_root = artifact_root / "branches" / "branch_one"
+    (branch_root / "receipt.json").unlink()
+    (branch_root / "bundle.tar").unlink()
 
 
 def set_graph_status(repo: Path, status: str) -> None:
@@ -599,9 +756,13 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
+    assert "235 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
+    assert "3 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
+    assert "7 re-entry trigger audits (0 qualified)" in result
+    assert "7 prospective search cycles (84 raw questions; 0 cards)" in result
 
 
 def test_authorized_disposable_exploration_sandbox_validates(tmp_path: Path) -> None:
@@ -622,6 +783,64 @@ def test_protected_history_allows_append_after_separate_authorization(tmp_path: 
     result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
     assert "Protected sandbox history OK against HEAD: 1 inherited" in result
+
+
+def test_protected_history_rejects_rewritten_forecast(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(forecast_path(repo))
+    child_mappings(ledger, "forecasts")[0]["point"] = 0.13
+    write_mapping(forecast_path(repo), ledger)
+
+    assert "Discovery governance OK" in validate_discovery(repo, as_of=FIXED_AS_OF)
+    with pytest.raises(DiscoveryValidationError, match=r"forecast ledger.*prefix"):
+        validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+
+
+def test_protected_history_allows_appended_forecast_resolution(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(forecast_path(repo))
+    resolutions = ledger["resolutions"]
+    assert isinstance(resolutions, list)
+    resolutions.append(
+        {
+            "forecast_id": "cycle9_rule605_same_estimand_bridge_gate",
+            "resolved_at": "2027-01-15T00:00:00Z",
+            "outcome": False,
+            "evidence_refs": ["cycle9_rule605_faq"],
+            "rationale": "The frozen bridge rule did not pass.",
+        }
+    )
+    write_mapping(forecast_path(repo), ledger)
+
+    result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+
+    assert "3 prospective forecasts (3 resolved; 2 T0-floor resolutions)" in result
+
+
+def test_protected_history_rejects_rewritten_reentry_trigger(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    child_mappings(ledger, "entries")[0]["capability_claim"] = "Rewritten after audit."
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    assert "Discovery governance OK" in validate_discovery(repo, as_of=FIXED_AS_OF)
+    with pytest.raises(DiscoveryValidationError, match=r"re-entry trigger ledger.*prefix"):
+        validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+
+
+def test_protected_history_rejects_rewritten_search_cycle(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(search_cycle_path(repo))
+    child_mappings(ledger, "cycles")[0]["notes"] = "Rewritten after the cycle closed."
+    write_mapping(search_cycle_path(repo), ledger)
+
+    assert "Discovery governance OK" in validate_discovery(repo, as_of=FIXED_AS_OF)
+    with pytest.raises(DiscoveryValidationError, match=r"search-cycle ledger.*prefix"):
+        validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
 
 def test_protected_history_rejects_rewritten_authorization(tmp_path: Path) -> None:
@@ -837,6 +1056,136 @@ def test_hash_chained_branch_receipt_and_terminal_result_validate(tmp_path: Path
     assert "1 sandbox-tainted results" in result
 
 
+def test_interrupted_branch_is_irreversibly_quarantined(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    initialize_git_base(repo)
+    add_open_branch(repo)
+
+    def validate_at_fixture_time(
+        repo_root: Path,
+        *,
+        base_ref: str | None = None,
+    ) -> str:
+        return validate_discovery(repo_root, as_of=FIXED_AS_OF, base_ref=base_ref)
+
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.validate_discovery",
+        validate_at_fixture_time,
+    )
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.cleanup_container",
+        lambda _name: "absent",
+    )
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.utc_now",
+        lambda: datetime(2026, 8, 25, 4, 0, tzinfo=UTC),
+    )
+    plan = load_quarantine_plan(repo, SANDBOX_ID, "branch_one", "HEAD")
+
+    result = execute_quarantine(
+        plan,
+        "host_interruption",
+        "Fixture host interruption after branch_opened.",
+        "fixture_operator",
+    )
+
+    assert result["outcome_status"] == "quarantined"
+    usage = child_mapping(result, "usage")
+    assert usage["cpu_seconds"] == 120
+    assert usage["storage_bytes"] == 1_020_000
+    validation = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+    assert "1 exploration sandboxes (quarantined=1)" in validation
+
+
+def test_branch_request_cannot_select_confirmation_unit(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    branch_root = (
+        repo
+        / "research"
+        / "discovery"
+        / "sandbox_artifacts"
+        / SANDBOX_ID
+        / "branches"
+        / "branch_one"
+    )
+    config_path = branch_root / "config.yaml"
+    request_path = branch_root / "request.yaml"
+    write_mapping(config_path, {"unit_ids": ["unit_b"], "tests": ["signal_exists"]})
+    request = load_mapping(request_path)
+    request["unit_ids"] = ["unit_b"]
+    child_mapping(request, "config")["sha256"] = hashlib.sha256(
+        config_path.read_bytes()
+    ).hexdigest()
+    write_mapping(request_path, request)
+    ledger_path = branch_root.parents[1] / "events.jsonl"
+    entries = load_event_log(ledger_path)
+    entries[1]["unit_ids"] = ["unit_b"]
+    entries[1]["config"] = request["config"]
+    child_mapping(entries[1], "request")["sha256"] = hashlib.sha256(
+        request_path.read_bytes()
+    ).hexdigest()
+    write_event_log(ledger_path, entries)
+
+    with pytest.raises(DiscoveryValidationError, match="uses non-exploration units"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_branch_event_must_repeat_frozen_request(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    ledger_path = (
+        repo
+        / "research"
+        / "discovery"
+        / "sandbox_artifacts"
+        / SANDBOX_ID
+        / "events.jsonl"
+    )
+    entries = load_event_log(ledger_path)
+    entries[1]["hypothesis"] = "A post-request replacement hypothesis."
+    write_event_log(ledger_path, entries)
+
+    with pytest.raises(DiscoveryValidationError, match="differs from the frozen branch request"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_receipt_storage_must_equal_declared_artifacts(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    branch_root = (
+        repo
+        / "research"
+        / "discovery"
+        / "sandbox_artifacts"
+        / SANDBOX_ID
+        / "branches"
+        / "branch_one"
+    )
+    receipt_path = branch_root / "receipt.json"
+    receipt_obj = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert isinstance(receipt_obj, dict)
+    receipt = cast(dict[str, object], receipt_obj)
+    receipt["storage_bytes"] = 0
+    write_json(receipt_path, receipt)
+    ledger_path = branch_root.parents[1] / "events.jsonl"
+    entries = load_event_log(ledger_path)
+    child_mapping(entries[2], "receipt")["sha256"] = hashlib.sha256(
+        receipt_path.read_bytes()
+    ).hexdigest()
+    write_event_log(ledger_path, entries)
+
+    with pytest.raises(DiscoveryValidationError, match="storage_bytes differs from artifacts"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
 def test_branch_ledger_hash_tampering_is_rejected(tmp_path: Path) -> None:
     repo = copy_fixture(tmp_path)
     add_authorized_sandbox(repo)
@@ -922,6 +1271,67 @@ def test_protocol_sandbox_hard_cap_cannot_be_weakened(tmp_path: Path) -> None:
         validate_discovery(repo, as_of=FIXED_AS_OF)
 
 
+def test_probability_alone_cannot_terminalize_a_route(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    child_mapping(protocol, "decision_policy")["probability_alone_can_terminalize"] = True
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="probability alone cannot terminalize"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_probability_floor_scope_must_be_active_only(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    policy = child_mapping(protocol, "decision_policy")
+    child_mapping(policy, "floor_scope")["statuses"] = ["candidate", "active"]
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="apply only to active status"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_forecast_interval_must_contain_point(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(forecast_path(repo))
+    forecast = child_mappings(ledger, "forecasts")[0]
+    forecast.update({"lower": 0.20, "point": 0.12, "upper": 0.25})
+    write_mapping(forecast_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="lower <= point <= upper"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_forecast_subject_must_be_registered_route(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(forecast_path(repo))
+    child_mappings(ledger, "forecasts")[0]["subject_route_id"] = "unknown_route"
+    write_mapping(forecast_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="subject_route_id is unknown"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_forecast_can_resolve_only_once(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(forecast_path(repo))
+    resolution = {
+        "forecast_id": "cycle9_rule605_same_estimand_bridge_gate",
+        "resolved_at": "2027-01-15T00:00:00Z",
+        "outcome": False,
+        "evidence_refs": ["cycle9_rule605_faq"],
+        "rationale": "The frozen bridge rule did not pass.",
+    }
+    ledger["resolutions"] = [resolution, dict(resolution)]
+    write_mapping(forecast_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="duplicate resolution"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
 def test_declared_json_schema_is_actually_applied(tmp_path: Path) -> None:
     repo = copy_fixture(tmp_path)
     path = repo / "research" / "discovery" / "topic_card.schema.json"
@@ -951,6 +1361,156 @@ def test_nature_scale_evidence_contract_is_required(tmp_path: Path) -> None:
     write_mapping(path, protocol)
 
     with pytest.raises(DiscoveryValidationError, match="nature_scale_evidence"):
+        validate_discovery(repo)
+
+
+def test_topic_search_funnel_contract_is_required(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    del protocol["topic_search_funnel"]
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="topic_search_funnel"):
+        validate_discovery(repo)
+
+
+def test_portfolio_balance_targets_are_required(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    del funnel["portfolio_balance_targets"]
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="portfolio_balance_targets"):
+        validate_discovery(repo)
+
+
+def test_capability_build_plan_cannot_authorize_harvest(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    capability = child_mapping(funnel, "capability_build_policy")
+    capability["plan_can_authorize_candidate_harvest"] = True
+    write_mapping(path, protocol)
+
+    with pytest.raises(
+        DiscoveryValidationError,
+        match="capability-build flag plan_can_authorize_candidate_harvest",
+    ):
+        validate_discovery(repo)
+
+
+def test_cross_domain_invariance_quick_screen_is_required(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    requirements = funnel["quick_screen_required"]
+    assert isinstance(requirements, list)
+    requirements.remove("cross_domain_native_parameter_and_representation_invariance")
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="quick-screen requirements"):
+        validate_discovery(repo)
+
+
+@pytest.mark.parametrize(
+    "requirement",
+    [
+        "same_estimand_for_claimed_model_disagreement",
+        "dimensionless_parameter_completion_twin_when_claimed",
+        "capacity_state_and_allocation_policy_completion_when_claimed",
+        "paired_pulse_second_order_kernel_and_native_phase_test_when_claimed",
+    ],
+)
+def test_cycle12_to_cycle14_quick_screen_gates_are_required(
+    tmp_path: Path,
+    requirement: str,
+) -> None:
+    repo = copy_fixture(tmp_path)
+    path = repo / "research" / "discovery" / "protocol.yaml"
+    protocol = load_mapping(path)
+    funnel = child_mapping(protocol, "topic_search_funnel")
+    requirements = funnel["quick_screen_required"]
+    assert isinstance(requirements, list)
+    requirements.remove(requirement)
+    write_mapping(path, protocol)
+
+    with pytest.raises(DiscoveryValidationError, match="quick-screen requirements"):
+        validate_discovery(repo)
+
+
+def test_search_cycle_funnel_limit_is_enforced(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(search_cycle_path(repo))
+    cycle = child_mappings(ledger, "cycles")[0]
+    counts = child_mapping(cycle, "counts")
+    counts["raw_question_programs"] = 13
+    source_counts = child_mapping(cycle, "source_lane_counts")
+    source_counts["unresolved_model_disagreement"] = cast(
+        int,
+        source_counts["unresolved_model_disagreement"],
+    ) + 1
+    archetype_counts = child_mapping(cycle, "archetype_counts")
+    archetype_counts["theory_mechanism"] = cast(
+        int,
+        archetype_counts["theory_mechanism"],
+    ) + 1
+    dispositions = child_mapping(cycle, "final_dispositions")
+    dispositions["portfolio_pruned"] = cast(int, dispositions["portfolio_pruned"]) + 1
+    write_mapping(search_cycle_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="exceeds funnel limit"):
+        validate_discovery(repo)
+
+
+def test_search_cycle_probability_cannot_terminalize(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(search_cycle_path(repo))
+    cycle = child_mappings(ledger, "cycles")[0]
+    quality = child_mapping(cycle, "record_quality")
+    quality["probability_only_terminalizations"] = 1
+    write_mapping(search_cycle_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="probability alone"):
+        validate_discovery(repo)
+
+
+def test_nonqualified_reentry_trigger_cannot_authorize_harvest(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    entry = child_mappings(ledger, "entries")[0]
+    entry["candidate_harvest_authorized"] = True
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="only for a qualified trigger"):
+        validate_discovery(repo)
+
+
+def test_reentry_trigger_requires_registered_route(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    child_mappings(ledger, "entries")[0]["related_route_ids"] = ["unknown_route"]
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="unknown related routes"):
+        validate_discovery(repo)
+
+
+def test_qualified_reentry_trigger_must_remove_recorded_blocker(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    entry = child_mappings(ledger, "entries")[0]
+    entry["decision"] = "qualified_trigger"
+    entry["removed_blockers"] = ["invented_blocker"]
+    entry["candidate_harvest_authorized"] = True
+    entry["exact_reentry_scope"] = "one_bounded_cycle"
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="unrecorded blockers"):
         validate_discovery(repo)
 
 

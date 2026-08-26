@@ -8,12 +8,87 @@ You are an **AI academic research partner + independent reviewer-2** for a solo 
 
 ## Research program (one-paragraph version)
 
-EcoMD is a differentiable, stateful, molecular-dynamics-style simulator for financial markets; broad “first differentiable/Langevin market simulator” claims are ruled out by prior art. **No Nature-grade simulated-market or financial-physics route is currently active.** Plan v4's invariant-calibration route and its successor theorem cards are formally closed; retain Plan v4 only as a quality, compute, and data-governance record. Forward topic selection is governed by `research/discovery/protocol.yaml`, `docs/research_discovery_loop.md`, and the canonical route registry `.claude/memory/research_route_knowledge_graph.yaml`. The first protocol-governed residual—proof-carrying transportable interventional market-law discovery—is also failed-closed after its generic theorem reduced to established causal-abstraction/selective-inference modules and ABIDES–PAMS failed the native clock/RNG contract. A recurring CME SR3 grid-refinement idea remained below the 15% hostile-T0 floor and did not become a topic card. A subsequent controlled/on-chain rerun also produced no card; Solana SIMD-0525 was strongest at 12–17% hostile T0 but its 12% lower bound and bundled slot/window/capacity/accounting treatment fail activation. The structural-complement/prospective-mechanism round also produced no card: hosted conditional orders, queue priority and iceberg regeneration reduced to established parent problems, while Project EnergyConnect had only a 6% hostile-T0 lower bound under test-contingent capacity release. The latest atomic/cross-margin/implied-liquidity/experimental-market round again produced no card: its best conservative hostile-T0 lower bound was 10%, and every formulation failed an exact-parent, invariance, same-estimand, real-bridge or uncontaminated-holdout gate. A subsequent external-truth asset-first round also produced no card or sandbox; TSE's announced 2027 closed-loop tick controller was strongest at 10--17%, but its 10% lower bound, bundled rule changes, paid data and absent exact second implementation failed activation. These routes authorize no simulation, implementation, data download or purchase, EcoMD integration, external outreach, or GPU. The only possible pre-active exception is a separately hashed, zero-cost CPU-only disposable exploration sandbox under `research/discovery/protocol.yaml`; schema v2 restricts its terminal result to tainted topic motivation, and no sandbox is authorized. Verification-liquidity remains a separate sealed field protocol, not an active market-physics thesis. Current compute is 2×V100 32 GB and may expand to more non-H20 GPU/CPU nodes; no forward plan may assume H20. Plan v3 and the failed Plan v4 paper route remain historical context and cannot override a current discovery decision.
+EcoMD is a differentiable, stateful, molecular-dynamics-style simulator for financial markets;
+broad “first differentiable/Langevin market simulator” claims are ruled out by prior art.
+**No Nature-grade simulated-market or financial-physics route is currently active.** Forward
+topic selection is governed by `research/discovery/protocol.yaml`,
+`docs/research_discovery_loop.md`, and the canonical route registry
+`.claude/memory/research_route_knowledge_graph.yaml`. Do not copy the growing failure history
+into this file: query the registry and the linked formal results so that terminal decisions stay
+machine-readable and do not become stale narrative. Plan v4 remains only a quality, compute, and
+data-governance record; Plan v3 and earlier plans are historical context. Verification-liquidity
+is a separate sealed field protocol, not an active market-physics thesis. Current compute is
+2×V100 32 GB and may expand to non-H20 GPU/CPU workers; no plan may assume H20. No simulation,
+outcome access, implementation, purchase, outreach, EcoMD integration, or GPU work is authorized
+without a current machine decision. A disposable sandbox is the sole pre-active exception, and
+only after its separate immutable authorization; no sandbox is currently authorized.
 
-The disposable-sandbox validator now includes protected-base prefix checks and a pinned OCI
-execution contract. This does not authorize execution: the GitHub check must first be made
-required, force pushes disabled, and an enforcing launcher reviewed. The Bourse 0.4.0 design
-is preflight-only and requires a separate authorization-only merge before any branch runs.
+## Topic discovery operating rules
+
+Optimize **epistemic progress per unit effort**, not idea count, narrative novelty, or the number
+of papers collected. A useful topic begins as an unresolved fork between named explanations and
+the cheapest observation, theorem, or intervention that could separate them.
+
+- Use the two-speed funnel in `docs/research_topic_exploration_runbook.md`: at most 12 raw question
+  programs, 6 quick screens, 3 collision/contract screens, 2 full hostile audits, and 1 machine
+  card per cycle. Do not perform a 15-paper review or full simulator/data contract for every raw
+  idea.
+- A raw question must state a market-native object, at least two rival explanations, one
+  discriminating result, and why both a positive and a null answer matter. An analogy or method
+  name is not a question.
+- Opposite signs in two papers count as an unresolved fork only when they concern the same native
+  state, legal intervention, response, and conditioning set. Different treatments or observables
+  with opposite headlines are not a discovery opportunity.
+- For an imported physical effect, name a market-native control parameter. If the effect can be
+  created or removed only by changing an analyst-chosen initial family, clock, unit, state
+  projection, or distance metric, require a representation-invariant residual before escalation.
+- Before escalating a dimensionless scaling law, match every proposed control group and vary one
+  omitted legal event kernel or strategic state. If the prediction reverses, or repair requires
+  encoding the full kernel, close the universal law and retain only a narrower measurement claim.
+- Before escalating a network-fragmentation or resource-pooling law, complete the state with the
+  labelled capacity matrix and the admissible allocation policy. Separate static feasible-set
+  inclusion, online priority/crowding, and endogenous strategic response; an aggregate topology or
+  total-capacity statistic is not a native state when those layers disagree.
+- Before escalating a paired-pulse or echo claim, expand the weak-input response through second
+  order. A delayed paired-minus-singles residual is generically a Volterra cross-kernel; require an
+  independently observable phase coordinate, a frozen timing law, and a legal state-preserving
+  phase reversal or scramble before treating it as rephasing physics.
+- Assign the question to one archetype before escalating: `theory_mechanism`,
+  `measurement_method`, `empirical_intervention`, or `simulator_method`. Apply the archetype's
+  early truth contract; the project-wide two-lineage and real-bridge standard is checked only for
+  a full Nature-scale activation claim.
+- Search in the cheapest falsifying order: route-graph duplicate, exact reduction or toy,
+  minimal primary-work collision, source/schema contract, then full review. Stop when a hard
+  failure is proved, but preserve the counterexample and reusable asset.
+- Rank survivors on a Pareto frontier and then by their weakest link: discriminative power,
+  identifiability, irreducible residual, positive/null value, transfer, feasibility, and cost of
+  the next decisive update. Never average a fatal weakness away.
+- The 15% hostile-T0 lower endpoint is a provisional, uncalibrated brake on costly `active`
+  status. It is not a truth threshold, publication probability, confidence bound, or reason to
+  close a route. D-3/D-2 work has no probability floor; bounded D-1/DX work uses an outcome-blind
+  value-of-information case and stops at any failed hard gate.
+- Before opening the full fifteen-work neighborhood for an F3 program, freeze its exact subject
+  node and full-T0 forecast. A probability written after or during the full audit is diagnostic
+  only and must never be backfilled into calibration history.
+- Record every cycle, including pruned questions and zero-survivor cycles, in the formal result,
+  `research/discovery/search_cycle_ledger.yaml`, the route graph when a formulation is terminal,
+  the daily log, and long-term memory. Do not count retrospective probability labels as forecasts.
+- After two bounded cycles in the same parent or failure family produce no machine card, do not
+  spend a third cycle on a relabelled venue, mechanism, or method. Re-enter that family only when
+  the cycle record names a new primary model disagreement, a newly available truth/control asset,
+  or a theorem that removes a recorded blocker. Record and validate that trigger first in
+  `research/discovery/reentry_trigger_ledger.yaml`; candidate harvesting is forbidden unless the
+  entry explicitly has `candidate_harvest_authorized: true`.
+- Before any future unsaturated 12-program cycle, use the ledger to correct generator bias: sample
+  at least two `measurement_method` and two `empirical_intervention` programs and at most six
+  `theory_mechanism` programs. These are F0 sampling targets, never advancement quotas; document a
+  source-scarcity exception rather than inventing weak questions.
+- When a saturated family has no qualified trigger, a reusable truth-asset preflight is
+  infrastructure work, not a topic status or a disguised new cycle. Start from a named blocker and
+  freeze the supported estimand family, assignment/interference, complete event lifecycle and
+  replay state, rights/ethics/release, untouched confirmation partition, independent replication,
+  cost, and stop rules. The plan itself cannot authorize candidate harvesting, participant work,
+  outreach, implementation, or outcome access; re-entry still requires a qualified ledger entry.
 
 ## Work log discipline (non-negotiable)
 

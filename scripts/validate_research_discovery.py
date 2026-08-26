@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import subprocess
 import sys
@@ -23,7 +24,7 @@ OCI_IMAGE_DIGEST_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
 CARD_STATUSES = {"screening", "candidate", "parked", "active", "failed_closed"}
 DECIDED_STATUSES = CARD_STATUSES - {"screening"}
 STAGES = {"D_minus_3", "D_minus_2", "D_minus_1", "D0", "D1", "D2"}
-SANDBOX_EFFECTIVE_STATES = {"authorized", "expired", "exhausted", "closed"}
+SANDBOX_EFFECTIVE_STATES = {"authorized", "expired", "exhausted", "closed", "quarantined"}
 SANDBOX_ACTIONS = {
     "free_dataset_acquisition",
     "disposable_outcome_inspection",
@@ -36,6 +37,12 @@ SANDBOX_HARD_MAX_MONETARY_COST_USD_MICROS = 0
 SANDBOX_HARD_MAX_GPU_SECONDS = 0
 SANDBOX_HARD_MAX_BRANCHES = 16
 SANDBOX_HARD_MAX_TTL_SECONDS = 604_800
+SANDBOX_STDERR_LIMIT_BYTES = 1_000_000
+SANDBOX_AMBIGUOUS_INTERRUPTION_POLICY = (
+    "Remove and prove absence of the named container, assume outcome exposure, charge the "
+    "full branch CPU and output reservation, and terminalize the sandbox as quarantined; "
+    "retry is forbidden."
+)
 SANDBOX_REQUIRED_FORBIDDEN_ACTIONS = {
     "confirmation_holdout_access",
     "dataset_purchase",
@@ -46,6 +53,78 @@ SANDBOX_REQUIRED_FORBIDDEN_ACTIONS = {
     "paper_claim_support",
     "topic_status_promotion",
 }
+SEARCH_CYCLE_LIMITS = {
+    "raw_question_programs": 12,
+    "quick_screens": 6,
+    "collision_screens": 3,
+    "full_hostile_audits": 2,
+    "machine_cards": 1,
+}
+SEARCH_SCREEN_REQUIREMENTS = {
+    "quick_anchor_primary_works_maximum": 3,
+    "quick_killer_toys_minimum": 1,
+    "collision_primary_works_minimum": 6,
+    "full_primary_works_minimum": 15,
+    "full_killer_toys_minimum": 2,
+}
+SEARCH_SOURCE_LANES = {
+    "unresolved_model_disagreement",
+    "new_truth_or_control_capability",
+    "market_native_action_or_constraint",
+    "cross_domain_theorem_with_market_specific_obstruction",
+}
+SEARCH_QUICK_REQUIREMENTS = {
+    "market_native_object",
+    "at_least_two_rival_explanations",
+    "same_estimand_for_claimed_model_disagreement",
+    "one_discriminating_result",
+    "scientific_value_for_positive_and_null_answers",
+    "cross_domain_native_parameter_and_representation_invariance",
+    "dimensionless_parameter_completion_twin_when_claimed",
+    "capacity_state_and_allocation_policy_completion_when_claimed",
+    "paired_pulse_second_order_kernel_and_native_phase_test_when_claimed",
+}
+SEARCH_TOPIC_ARCHETYPES = {
+    "theory_mechanism",
+    "measurement_method",
+    "empirical_intervention",
+    "simulator_method",
+}
+SEARCH_PORTFOLIO_BALANCE_TARGETS = {
+    "measurement_method_minimum": 2,
+    "empirical_intervention_minimum": 2,
+    "theory_mechanism_maximum": 6,
+}
+CAPABILITY_BUILD_REQUIRED_CONTRACT_PARTS = {
+    "named_blocker",
+    "supported_estimand_family",
+    "assignment_and_interference",
+    "event_lifecycle_and_replay_prestate",
+    "rights_ethics_and_release",
+    "untouched_confirmation_partition",
+    "independent_replication",
+    "cost_and_stop_rules",
+}
+SEARCH_FINAL_DISPOSITIONS = {
+    "portfolio_pruned",
+    "quick_closed",
+    "collision_closed",
+    "full_closed",
+    "deduplicated",
+    "advanced",
+    "deferred",
+}
+REENTRY_TRIGGER_SOURCE_KINDS = {
+    "primary_model_disagreement",
+    "truth_or_control_asset",
+    "theorem_or_counterexample",
+}
+REENTRY_TRIGGER_DECISIONS = {
+    "qualified_trigger",
+    "partial_capability",
+    "not_trigger",
+}
+REENTRY_TRIGGER_CLAIM_VERDICTS = {"satisfied", "partial", "failed"}
 KG_STATUS_MAP = {
     "candidate": "candidate",
     "parked": "parked",
@@ -130,15 +209,31 @@ SANDBOX_FIELDS = {
 SANDBOX_EXECUTION_FIELDS = {
     "executor",
     "launcher",
+    "incident_handler",
     "image_digest",
     "network",
     "root_filesystem",
-    "repository_mount",
-    "exploration_mount",
+    "repository_tree_mount",
+    "input_channel",
     "confirmation_materialization",
-    "output_mount",
+    "output_channel",
     "secrets",
     "device_access",
+}
+SANDBOX_BRANCH_REQUEST_FIELDS = {
+    "schema_version",
+    "sandbox_id",
+    "branch_id",
+    "hypothesis_id",
+    "hypothesis",
+    "falsifier",
+    "multiplicity_family_id",
+    "test_ids",
+    "unit_ids",
+    "cpu_seconds",
+    "output_bytes",
+    "code_manifest",
+    "config",
 }
 SANDBOX_CONFIRMATION_FIELDS = {
     "mode",
@@ -197,13 +292,14 @@ class SandboxRecord:
 class SandboxExecutionContract:
     executor: str
     launcher_sha256: str
+    incident_handler_sha256: str
     image_digest: str
     network: str
     root_filesystem: str
-    repository_mount: str
-    exploration_mount: str
+    repository_tree_mount: str
+    input_channel: str
     confirmation_materialization: str
-    output_mount: str
+    output_channel: str
     secrets: str
     device_access: str
 
@@ -323,6 +419,18 @@ def load_yaml(path: Path, context: str) -> Mapping[str, object]:
     return require_mapping(loaded, context)
 
 
+def load_canonical_json_mapping(path: Path, context: str) -> Mapping[str, object]:
+    try:
+        raw = path.read_bytes()
+        loaded = cast(object, json.loads(raw.decode("utf-8")))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise DiscoveryValidationError(f"cannot load {context} at {path}: {exc}") from exc
+    mapping = require_mapping(loaded, context)
+    if canonical_json_bytes(mapping) != raw:
+        raise DiscoveryValidationError(f"{context} must be canonical compact JSON")
+    return mapping
+
+
 def load_json_schema(path: Path, context: str) -> Mapping[str, object]:
     try:
         loaded = cast(object, json.loads(path.read_text(encoding="utf-8")))
@@ -429,16 +537,25 @@ def sha256_mapping_without(value: Mapping[str, object], omitted: str) -> str:
     return hashlib.sha256(canonical_json_bytes(payload)).hexdigest()
 
 
-def load_route_registry(repo_root: Path) -> tuple[dict[str, str], set[str]]:
+def load_route_registry(
+    repo_root: Path,
+) -> tuple[dict[str, str], set[str], dict[str, set[str]]]:
     path = repo_root / ".claude" / "memory" / "research_route_knowledge_graph.yaml"
     root = load_yaml(path, "route graph")
     statuses: dict[str, str] = {}
     locator_ids: set[str] = set()
+    failure_codes: dict[str, set[str]] = {}
     for index, raw_node in enumerate(require_list(root.get("nodes"), "route graph.nodes")):
         node = require_mapping(raw_node, f"route graph.nodes[{index}]")
         node_id = require_id(node.get("id"), f"route graph.nodes[{index}].id")
         status = require_string(node.get("status"), f"route graph.nodes[{index}].status")
         statuses[node_id] = status
+        failure_codes[node_id] = set(
+            require_string_list(
+                node.get("failure_codes"),
+                f"route graph.nodes[{index}].failure_codes",
+            )
+        )
         for field in ("evidence", "artifacts"):
             for locator_index, raw_locator in enumerate(
                 require_list(node.get(field), f"route graph.nodes[{index}].{field}")
@@ -461,12 +578,253 @@ def load_route_registry(repo_root: Path) -> tuple[dict[str, str], set[str]]:
                         f"route graph.nodes[{index}].{field}[{locator_index}].id",
                     )
                 )
-    return statuses, locator_ids
+    return statuses, locator_ids, failure_codes
+
+
+def validate_topic_search_policy(
+    repo_root: Path,
+    protocol: Mapping[str, object],
+) -> tuple[Mapping[str, object], str, str]:
+    policy = require_mapping(
+        protocol.get("topic_search_funnel"),
+        "protocol.topic_search_funnel",
+    )
+    fields = {
+        "policy_id",
+        "purpose",
+        "cycle_limits",
+        "screen_requirements",
+        "source_lanes",
+        "quick_screen_required",
+        "topic_archetypes",
+        "portfolio_balance_targets",
+        "capability_build_policy",
+        "escalation_rule",
+        "ranking_rule",
+        "full_audit_forecast_rule",
+        "scientific_value_rule",
+        "nature_activation_contract",
+        "search_cycle_ledger",
+        "reentry_trigger_ledger",
+    }
+    require_exact_fields(policy, fields, "protocol.topic_search_funnel")
+    if require_id(policy.get("policy_id"), "protocol.topic_search_funnel.policy_id") != (
+        "ecomd_topic_search_funnel_v1"
+    ):
+        raise DiscoveryValidationError("protocol topic-search policy id differs from validator")
+    for field in ("purpose", "scientific_value_rule", "nature_activation_contract"):
+        require_string(policy.get(field), f"protocol.topic_search_funnel.{field}")
+
+    limits = require_mapping(
+        policy.get("cycle_limits"),
+        "protocol.topic_search_funnel.cycle_limits",
+    )
+    require_exact_fields(limits, set(SEARCH_CYCLE_LIMITS), "protocol.topic_search_funnel.cycle_limits")
+    for field, expected in SEARCH_CYCLE_LIMITS.items():
+        actual = require_positive_integer(
+            limits.get(field),
+            f"protocol.topic_search_funnel.cycle_limits.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"protocol topic-search {field} must equal {expected}"
+            )
+
+    requirements = require_mapping(
+        policy.get("screen_requirements"),
+        "protocol.topic_search_funnel.screen_requirements",
+    )
+    require_exact_fields(
+        requirements,
+        set(SEARCH_SCREEN_REQUIREMENTS),
+        "protocol.topic_search_funnel.screen_requirements",
+    )
+    for field, expected in SEARCH_SCREEN_REQUIREMENTS.items():
+        actual = require_positive_integer(
+            requirements.get(field),
+            f"protocol.topic_search_funnel.screen_requirements.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"protocol topic-search requirement {field} must equal {expected}"
+            )
+
+    source_lanes = set(
+        require_string_list(
+            policy.get("source_lanes"),
+            "protocol.topic_search_funnel.source_lanes",
+            allow_empty=False,
+        )
+    )
+    if source_lanes != SEARCH_SOURCE_LANES:
+        raise DiscoveryValidationError("protocol topic-search source lanes differ from validator")
+    quick_required = set(
+        require_string_list(
+            policy.get("quick_screen_required"),
+            "protocol.topic_search_funnel.quick_screen_required",
+            allow_empty=False,
+        )
+    )
+    if quick_required != SEARCH_QUICK_REQUIREMENTS:
+        raise DiscoveryValidationError("protocol quick-screen requirements differ from validator")
+
+    archetypes = require_mapping(
+        policy.get("topic_archetypes"),
+        "protocol.topic_search_funnel.topic_archetypes",
+    )
+    if set(archetypes) != SEARCH_TOPIC_ARCHETYPES:
+        raise DiscoveryValidationError("protocol topic archetypes differ from validator")
+    for archetype, raw_contract in archetypes.items():
+        contract = require_mapping(
+            raw_contract,
+            f"protocol.topic_search_funnel.topic_archetypes.{archetype}",
+        )
+        require_exact_fields(
+            contract,
+            {"early_truth_contract", "escalation_evidence"},
+            f"protocol.topic_search_funnel.topic_archetypes.{archetype}",
+        )
+        for field in ("early_truth_contract", "escalation_evidence"):
+            require_string(
+                contract.get(field),
+                f"protocol.topic_search_funnel.topic_archetypes.{archetype}.{field}",
+            )
+
+    balance = require_mapping(
+        policy.get("portfolio_balance_targets"),
+        "protocol.topic_search_funnel.portfolio_balance_targets",
+    )
+    balance_fields = set(SEARCH_PORTFOLIO_BALANCE_TARGETS) | {
+        "applies_only_to_future_unsaturated_cycles",
+        "advancement_quota",
+    }
+    require_exact_fields(
+        balance,
+        balance_fields,
+        "protocol.topic_search_funnel.portfolio_balance_targets",
+    )
+    for field, expected in SEARCH_PORTFOLIO_BALANCE_TARGETS.items():
+        actual = require_positive_integer(
+            balance.get(field),
+            f"protocol.topic_search_funnel.portfolio_balance_targets.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"protocol topic-search portfolio target {field} must equal {expected}"
+            )
+    if (
+        require_bool(
+            balance.get("applies_only_to_future_unsaturated_cycles"),
+            "protocol.topic_search_funnel.portfolio_balance_targets."
+            "applies_only_to_future_unsaturated_cycles",
+        )
+        is not True
+    ):
+        raise DiscoveryValidationError(
+            "protocol portfolio-balance targets must apply only to future unsaturated cycles"
+        )
+    if (
+        require_bool(
+            balance.get("advancement_quota"),
+            "protocol.topic_search_funnel.portfolio_balance_targets.advancement_quota",
+        )
+        is not False
+    ):
+        raise DiscoveryValidationError(
+            "protocol portfolio-balance sampling targets cannot become advancement quotas"
+        )
+
+    capability = require_mapping(
+        policy.get("capability_build_policy"),
+        "protocol.topic_search_funnel.capability_build_policy",
+    )
+    capability_fields = {
+        "pivot_rule",
+        "status_semantics",
+        "plan_can_authorize_candidate_harvest",
+        "execution_requires_separate_authorization",
+        "reentry_requires_qualified_trigger",
+        "required_contract_parts",
+    }
+    require_exact_fields(
+        capability,
+        capability_fields,
+        "protocol.topic_search_funnel.capability_build_policy",
+    )
+    if capability.get("pivot_rule") != "saturated_family_without_qualified_trigger":
+        raise DiscoveryValidationError("protocol capability-build pivot rule differs from validator")
+    if capability.get("status_semantics") != "infrastructure_preflight_not_topic_status":
+        raise DiscoveryValidationError(
+            "protocol capability-build status semantics differ from validator"
+        )
+    capability_flags = {
+        "plan_can_authorize_candidate_harvest": False,
+        "execution_requires_separate_authorization": True,
+        "reentry_requires_qualified_trigger": True,
+    }
+    for field, expected in capability_flags.items():
+        actual = require_bool(
+            capability.get(field),
+            f"protocol.topic_search_funnel.capability_build_policy.{field}",
+        )
+        if actual is not expected:
+            raise DiscoveryValidationError(
+                f"protocol capability-build flag {field} must be {expected}"
+            )
+    contract_parts = set(
+        require_string_list(
+            capability.get("required_contract_parts"),
+            "protocol.topic_search_funnel.capability_build_policy.required_contract_parts",
+            allow_empty=False,
+        )
+    )
+    if contract_parts != CAPABILITY_BUILD_REQUIRED_CONTRACT_PARTS:
+        raise DiscoveryValidationError(
+            "protocol capability-build contract parts differ from validator"
+        )
+    if policy.get("escalation_rule") != "cheapest_discriminating_evidence_first":
+        raise DiscoveryValidationError("protocol topic-search escalation rule differs from validator")
+    if policy.get("ranking_rule") != "pareto_then_weakest_link_no_compensatory_average":
+        raise DiscoveryValidationError("protocol topic-search ranking rule differs from validator")
+    if (
+        policy.get("full_audit_forecast_rule")
+        != "freeze_subject_and_full_t0_forecast_before_opening_full_manifest"
+    ):
+        raise DiscoveryValidationError("protocol full-audit forecast rule differs from validator")
+    ledger_ref = require_string(
+        policy.get("search_cycle_ledger"),
+        "protocol.topic_search_funnel.search_cycle_ledger",
+    )
+    if ledger_ref != "research/discovery/search_cycle_ledger.yaml":
+        raise DiscoveryValidationError("protocol search-cycle ledger path differs from validator")
+    safe_repo_path(repo_root, ledger_ref, "protocol.topic_search_funnel.search_cycle_ledger")
+    trigger_ledger_ref = require_string(
+        policy.get("reentry_trigger_ledger"),
+        "protocol.topic_search_funnel.reentry_trigger_ledger",
+    )
+    if trigger_ledger_ref != "research/discovery/reentry_trigger_ledger.yaml":
+        raise DiscoveryValidationError("protocol re-entry trigger ledger path differs from validator")
+    safe_repo_path(
+        repo_root,
+        trigger_ledger_ref,
+        "protocol.topic_search_funnel.reentry_trigger_ledger",
+    )
+    return policy, ledger_ref, trigger_ledger_ref
 
 
 def load_protocol(
     repo_root: Path,
-) -> tuple[Mapping[str, object], float, int, set[str], Mapping[str, object]]:
+) -> tuple[
+    Mapping[str, object],
+    float,
+    int,
+    set[str],
+    Mapping[str, object],
+    str,
+    Mapping[str, object],
+    str,
+    str,
+]:
     path = repo_root / "research" / "discovery" / "protocol.yaml"
     protocol = load_yaml(path, "protocol")
     require_schema_version_one(protocol.get("schema_version"), "protocol.schema_version")
@@ -479,6 +837,110 @@ def load_protocol(
     minimum_primary = gate.get("minimum_primary_works")
     if type(minimum_primary) is not int or minimum_primary < 1:
         raise DiscoveryValidationError("protocol minimum_primary_works must be positive integer")
+    decision_policy = require_mapping(
+        protocol.get("decision_policy"),
+        "protocol.decision_policy",
+    )
+    decision_policy_fields = {
+        "hostile_t0_target",
+        "floor_scope",
+        "epistemic_status",
+        "probability_alone_can_terminalize",
+        "terminalization_requires_independent_hard_gate",
+        "bounded_information_action_rule",
+        "robust_net_value_expression",
+        "minimum_resolved_forecasts_before_floor_review",
+        "forecast_ledger",
+        "historical_post_audit_probabilities_scored",
+    }
+    require_exact_fields(
+        decision_policy,
+        decision_policy_fields,
+        "protocol.decision_policy",
+    )
+    require_string(
+        decision_policy.get("hostile_t0_target"),
+        "protocol.decision_policy.hostile_t0_target",
+    )
+    floor_scope = require_mapping(
+        decision_policy.get("floor_scope"),
+        "protocol.decision_policy.floor_scope",
+    )
+    require_exact_fields(
+        floor_scope,
+        {
+            "statuses",
+            "preactive_stages_with_no_floor",
+            "bounded_information_stages",
+        },
+        "protocol.decision_policy.floor_scope",
+    )
+    if require_string_list(
+        floor_scope.get("statuses"),
+        "protocol.decision_policy.floor_scope.statuses",
+        allow_empty=False,
+    ) != ["active"]:
+        raise DiscoveryValidationError("protocol probability floor must apply only to active status")
+    if set(
+        require_string_list(
+            floor_scope.get("preactive_stages_with_no_floor"),
+            "protocol.decision_policy.floor_scope.preactive_stages_with_no_floor",
+            allow_empty=False,
+        )
+    ) != {"D_minus_3", "D_minus_2"}:
+        raise DiscoveryValidationError("protocol preactive no-floor stages must be D_minus_3 and D_minus_2")
+    if set(
+        require_string_list(
+            floor_scope.get("bounded_information_stages"),
+            "protocol.decision_policy.floor_scope.bounded_information_stages",
+            allow_empty=False,
+        )
+    ) != {"D_minus_1", "DX"}:
+        raise DiscoveryValidationError("protocol bounded-information stages must be D_minus_1 and DX")
+    if decision_policy.get("epistemic_status") != "provisional_uncalibrated_forecast_heuristic":
+        raise DiscoveryValidationError("protocol hostile T0 floor must remain explicitly uncalibrated")
+    if require_bool(
+        decision_policy.get("probability_alone_can_terminalize"),
+        "protocol.decision_policy.probability_alone_can_terminalize",
+    ) is not False:
+        raise DiscoveryValidationError("protocol probability alone cannot terminalize a route")
+    if require_bool(
+        decision_policy.get("terminalization_requires_independent_hard_gate"),
+        "protocol.decision_policy.terminalization_requires_independent_hard_gate",
+    ) is not True:
+        raise DiscoveryValidationError("protocol terminalization must require an independent hard gate")
+    if (
+        decision_policy.get("bounded_information_action_rule")
+        != "positive_robust_value_of_information_and_no_failed_hard_gate"
+    ):
+        raise DiscoveryValidationError("protocol bounded information work must use robust value of information")
+    if (
+        decision_policy.get("robust_net_value_expression")
+        != "salvage_value + p_lower * (success_value - salvage_value) - action_cost > 0"
+    ):
+        raise DiscoveryValidationError("protocol robust net-value expression differs from validator")
+    minimum_resolved = require_positive_integer(
+        decision_policy.get("minimum_resolved_forecasts_before_floor_review"),
+        "protocol.decision_policy.minimum_resolved_forecasts_before_floor_review",
+    )
+    if minimum_resolved != 20:
+        raise DiscoveryValidationError("protocol probability-floor review requires exactly 20 forecasts")
+    if require_bool(
+        decision_policy.get("historical_post_audit_probabilities_scored"),
+        "protocol.decision_policy.historical_post_audit_probabilities_scored",
+    ) is not False:
+        raise DiscoveryValidationError("historical post-audit probabilities cannot be scored as forecasts")
+    forecast_ledger = require_string(
+        decision_policy.get("forecast_ledger"),
+        "protocol.decision_policy.forecast_ledger",
+    )
+    if forecast_ledger != "research/discovery/forecast_ledger.yaml":
+        raise DiscoveryValidationError("protocol forecast ledger path differs from validator")
+    safe_repo_path(repo_root, forecast_ledger, "protocol.decision_policy.forecast_ledger")
+    search_policy, search_ledger, trigger_ledger = validate_topic_search_policy(
+        repo_root,
+        protocol,
+    )
     nature = require_mapping(
         protocol.get("nature_scale_evidence"),
         "protocol.nature_scale_evidence",
@@ -545,6 +1007,8 @@ def load_protocol(
         "require_nonoverlapping_confirmation_holdout",
         "require_protected_base_prefix_ci",
         "require_oci_runtime_isolation",
+        "require_source_bound_oci_conformance_report",
+        "ambiguous_runtime_interruption",
         "require_confirmation_unmaterialized",
         "scientific_claims_allowed",
         "route_activation_allowed",
@@ -600,14 +1064,33 @@ def load_protocol(
         "require_nonoverlapping_confirmation_holdout",
         "require_protected_base_prefix_ci",
         "require_oci_runtime_isolation",
+        "require_source_bound_oci_conformance_report",
         "require_confirmation_unmaterialized",
     ):
         if require_bool(sandbox.get(field), f"protocol.sandbox.{field}") is not True:
             raise DiscoveryValidationError(f"protocol sandbox {field} must be true")
+    interruption_policy = require_string(
+        sandbox.get("ambiguous_runtime_interruption"),
+        "protocol.sandbox.ambiguous_runtime_interruption",
+    )
+    if interruption_policy != SANDBOX_AMBIGUOUS_INTERRUPTION_POLICY:
+        raise DiscoveryValidationError(
+            "protocol sandbox ambiguous interruption policy differs from validator"
+        )
     for field in ("scientific_claims_allowed", "route_activation_allowed"):
         if require_bool(sandbox.get(field), f"protocol.sandbox.{field}") is not False:
             raise DiscoveryValidationError(f"protocol sandbox {field} must be false")
-    return protocol, floor, minimum_primary, forbidden, sandbox
+    return (
+        protocol,
+        floor,
+        minimum_primary,
+        forbidden,
+        sandbox,
+        forecast_ledger,
+        search_policy,
+        search_ledger,
+        trigger_ledger,
+    )
 
 
 def load_evidence_registry(repo_root: Path) -> dict[str, EvidenceMeta]:
@@ -700,6 +1183,595 @@ def validate_evidence_refs(
                 f"{context} accepts only sandbox-tainted motivation refs: {sorted(clean)}"
             )
     return refs
+
+
+def validate_forecast_ledger(
+    repo_root: Path,
+    ledger_ref: str,
+    route_statuses: Mapping[str, str],
+    known_evidence: Mapping[str, EvidenceMeta],
+    activation_floor: float,
+) -> tuple[int, int, int]:
+    path = safe_repo_path(repo_root, ledger_ref, "forecast ledger")
+    root = load_yaml(path, "forecast ledger")
+    require_exact_fields(
+        root,
+        {
+            "schema_version",
+            "floor_review_target_id",
+            "target_definitions",
+            "forecasts",
+            "resolutions",
+        },
+        "forecast ledger",
+    )
+    require_schema_version_one(root.get("schema_version"), "forecast ledger.schema_version")
+    floor_target_id = require_id(
+        root.get("floor_review_target_id"),
+        "forecast ledger.floor_review_target_id",
+    )
+
+    target_fields = {
+        "id",
+        "statement",
+        "point_scoring_rule",
+        "interval_use",
+        "counts_toward_activation_floor_review",
+        "activation_floor",
+    }
+    target_ids: set[str] = set()
+    floor_targets: set[str] = set()
+    for index, raw_target in enumerate(
+        require_list(root.get("target_definitions"), "forecast ledger.target_definitions")
+    ):
+        context = f"forecast ledger.target_definitions[{index}]"
+        target = require_mapping(raw_target, context)
+        require_exact_fields(target, target_fields, context)
+        target_id = require_id(target.get("id"), f"{context}.id")
+        if target_id in target_ids:
+            raise DiscoveryValidationError(f"duplicate forecast target id: {target_id}")
+        target_ids.add(target_id)
+        require_string(target.get("statement"), f"{context}.statement")
+        if target.get("point_scoring_rule") != "brier":
+            raise DiscoveryValidationError(f"{context}.point_scoring_rule must be brier")
+        if target.get("interval_use") != "calibration_diagnostic_only":
+            raise DiscoveryValidationError(
+                f"{context}.interval_use must be calibration_diagnostic_only"
+            )
+        counts_for_floor = require_bool(
+            target.get("counts_toward_activation_floor_review"),
+            f"{context}.counts_toward_activation_floor_review",
+        )
+        target_floor = require_probability(
+            target.get("activation_floor"),
+            f"{context}.activation_floor",
+        )
+        if not math.isclose(target_floor, activation_floor, rel_tol=0.0, abs_tol=1e-12):
+            raise DiscoveryValidationError(f"{context}.activation_floor differs from protocol")
+        if counts_for_floor:
+            floor_targets.add(target_id)
+    if floor_target_id not in target_ids:
+        raise DiscoveryValidationError("forecast floor-review target is not defined")
+    if floor_targets != {floor_target_id}:
+        raise DiscoveryValidationError(
+            "exactly the declared T0 target must count toward activation-floor review"
+        )
+
+    forecast_fields = {
+        "id",
+        "recorded_at",
+        "subject_route_id",
+        "target_id",
+        "resolve_by",
+        "lower",
+        "point",
+        "upper",
+        "resolution_rule",
+        "basis_evidence_refs",
+    }
+    forecast_ids: set[str] = set()
+    forecast_times: dict[str, datetime] = {}
+    forecast_targets: dict[str, str] = {}
+    for index, raw_forecast in enumerate(
+        require_list(root.get("forecasts"), "forecast ledger.forecasts")
+    ):
+        context = f"forecast ledger.forecasts[{index}]"
+        forecast = require_mapping(raw_forecast, context)
+        require_exact_fields(forecast, forecast_fields, context)
+        forecast_id = require_id(forecast.get("id"), f"{context}.id")
+        if forecast_id in forecast_ids:
+            raise DiscoveryValidationError(f"duplicate forecast id: {forecast_id}")
+        forecast_ids.add(forecast_id)
+        recorded_at = require_utc_timestamp(forecast.get("recorded_at"), f"{context}.recorded_at")
+        resolve_by = require_utc_timestamp(forecast.get("resolve_by"), f"{context}.resolve_by")
+        if resolve_by <= recorded_at:
+            raise DiscoveryValidationError(f"{context}.resolve_by must follow recorded_at")
+        forecast_times[forecast_id] = recorded_at
+        subject_route_id = require_id(
+            forecast.get("subject_route_id"),
+            f"{context}.subject_route_id",
+        )
+        if subject_route_id not in route_statuses:
+            raise DiscoveryValidationError(
+                f"{context}.subject_route_id is unknown: {subject_route_id}"
+            )
+        target_id = require_id(forecast.get("target_id"), f"{context}.target_id")
+        if target_id not in target_ids:
+            raise DiscoveryValidationError(f"{context}.target_id is unknown: {target_id}")
+        forecast_targets[forecast_id] = target_id
+        lower = require_probability(forecast.get("lower"), f"{context}.lower")
+        point = require_probability(forecast.get("point"), f"{context}.point")
+        upper = require_probability(forecast.get("upper"), f"{context}.upper")
+        if not lower <= point <= upper:
+            raise DiscoveryValidationError(f"{context} forecast interval must satisfy lower <= point <= upper")
+        require_string(forecast.get("resolution_rule"), f"{context}.resolution_rule")
+        validate_evidence_refs(
+            forecast.get("basis_evidence_refs"),
+            f"{context}.basis_evidence_refs",
+            known_evidence,
+            allow_empty=False,
+        )
+
+    resolution_fields = {
+        "forecast_id",
+        "resolved_at",
+        "outcome",
+        "evidence_refs",
+        "rationale",
+    }
+    resolved_ids: set[str] = set()
+    floor_resolved = 0
+    for index, raw_resolution in enumerate(
+        require_list(root.get("resolutions"), "forecast ledger.resolutions")
+    ):
+        context = f"forecast ledger.resolutions[{index}]"
+        resolution = require_mapping(raw_resolution, context)
+        require_exact_fields(resolution, resolution_fields, context)
+        forecast_id = require_id(resolution.get("forecast_id"), f"{context}.forecast_id")
+        if forecast_id not in forecast_ids:
+            raise DiscoveryValidationError(f"{context} references unknown forecast {forecast_id}")
+        if forecast_id in resolved_ids:
+            raise DiscoveryValidationError(f"duplicate resolution for forecast {forecast_id}")
+        resolved_ids.add(forecast_id)
+        resolved_at = require_utc_timestamp(
+            resolution.get("resolved_at"),
+            f"{context}.resolved_at",
+        )
+        if resolved_at < forecast_times[forecast_id]:
+            raise DiscoveryValidationError(f"{context}.resolved_at precedes forecast")
+        require_bool(resolution.get("outcome"), f"{context}.outcome")
+        validate_evidence_refs(
+            resolution.get("evidence_refs"),
+            f"{context}.evidence_refs",
+            known_evidence,
+            allow_empty=False,
+        )
+        require_string(resolution.get("rationale"), f"{context}.rationale")
+        if forecast_targets[forecast_id] == floor_target_id:
+            floor_resolved += 1
+    return len(forecast_ids), len(resolved_ids), floor_resolved
+
+
+def validate_search_cycle_ledger(
+    repo_root: Path,
+    ledger_ref: str,
+) -> tuple[int, int, int]:
+    path = safe_repo_path(repo_root, ledger_ref, "search-cycle ledger")
+    root = load_yaml(path, "search-cycle ledger")
+    require_exact_fields(
+        root,
+        {
+            "schema_version",
+            "policy_id",
+            "scope_start_cycle",
+            "historical_baseline",
+            "cycles",
+        },
+        "search-cycle ledger",
+    )
+    require_schema_version_one(root.get("schema_version"), "search-cycle ledger.schema_version")
+    if root.get("policy_id") != "ecomd_topic_search_funnel_v1":
+        raise DiscoveryValidationError("search-cycle ledger policy id differs from protocol")
+    if require_positive_integer(
+        root.get("scope_start_cycle"),
+        "search-cycle ledger.scope_start_cycle",
+    ) != 10:
+        raise DiscoveryValidationError("search-cycle ledger must begin prospectively at cycle 10")
+
+    baseline = require_mapping(
+        root.get("historical_baseline"),
+        "search-cycle ledger.historical_baseline",
+    )
+    require_exact_fields(
+        baseline,
+        {
+            "cycles_completed",
+            "formulations_screened",
+            "machine_cards_created",
+            "prospective_full_t0_forecasts",
+            "status",
+            "note",
+        },
+        "search-cycle ledger.historical_baseline",
+    )
+    fixed_baseline = {
+        "cycles_completed": 9,
+        "formulations_screened": 56,
+        "machine_cards_created": 0,
+        "prospective_full_t0_forecasts": 0,
+    }
+    for field, expected in fixed_baseline.items():
+        actual = require_nonnegative_integer(
+            baseline.get(field),
+            f"search-cycle ledger.historical_baseline.{field}",
+        )
+        if actual != expected:
+            raise DiscoveryValidationError(
+                f"search-cycle historical baseline {field} must equal {expected}"
+            )
+    if baseline.get("status") != "retrospective_unscored":
+        raise DiscoveryValidationError("search-cycle historical baseline must remain unscored")
+    require_string(baseline.get("note"), "search-cycle ledger.historical_baseline.note")
+
+    cycle_fields = {
+        "id",
+        "started_at",
+        "completed_at",
+        "result_ref",
+        "literature_cutoff",
+        "outcome_accessed",
+        "counts",
+        "final_dispositions",
+        "source_lane_counts",
+        "archetype_counts",
+        "efficiency",
+        "surviving_program_ids",
+        "record_quality",
+        "notes",
+    }
+    efficiency_fields = {
+        "primary_sources_opened",
+        "killer_toys_constructed",
+        "simulator_runs",
+        "outcome_assets_accessed",
+        "reusable_assets_recorded",
+    }
+    record_quality_fields = {
+        "all_raw_questions_recorded",
+        "stage_decisions_recorded",
+        "probability_only_terminalizations",
+    }
+    cycle_ids: set[str] = set()
+    prior_cycle_number = 9
+    raw_total = 0
+    card_total = 0
+    for index, raw_cycle in enumerate(
+        require_list(root.get("cycles"), "search-cycle ledger.cycles")
+    ):
+        context = f"search-cycle ledger.cycles[{index}]"
+        cycle = require_mapping(raw_cycle, context)
+        require_exact_fields(cycle, cycle_fields, context)
+        cycle_id = require_id(cycle.get("id"), f"{context}.id")
+        if cycle_id in cycle_ids:
+            raise DiscoveryValidationError(f"duplicate search-cycle id: {cycle_id}")
+        cycle_ids.add(cycle_id)
+        match = re.fullmatch(r"discovery_cycle_(\d+)_\d{8}", cycle_id)
+        if match is None:
+            raise DiscoveryValidationError(f"{context}.id must encode cycle number and date")
+        cycle_number = int(match.group(1))
+        if cycle_number != prior_cycle_number + 1:
+            raise DiscoveryValidationError("search-cycle numbers must be consecutive from cycle 10")
+        prior_cycle_number = cycle_number
+        started = require_utc_timestamp(cycle.get("started_at"), f"{context}.started_at")
+        completed = require_utc_timestamp(cycle.get("completed_at"), f"{context}.completed_at")
+        if completed < started:
+            raise DiscoveryValidationError(f"{context}.completed_at precedes started_at")
+        result_ref = require_string(cycle.get("result_ref"), f"{context}.result_ref")
+        safe_repo_path(repo_root, result_ref, f"{context}.result_ref")
+        require_date(cycle.get("literature_cutoff"), f"{context}.literature_cutoff")
+        if require_bool(cycle.get("outcome_accessed"), f"{context}.outcome_accessed"):
+            raise DiscoveryValidationError(f"{context} cannot access outcomes during topic search")
+
+        counts = require_mapping(cycle.get("counts"), f"{context}.counts")
+        require_exact_fields(counts, set(SEARCH_CYCLE_LIMITS), f"{context}.counts")
+        parsed_counts: dict[str, int] = {}
+        for field, maximum in SEARCH_CYCLE_LIMITS.items():
+            value = require_nonnegative_integer(counts.get(field), f"{context}.counts.{field}")
+            if value > maximum:
+                raise DiscoveryValidationError(
+                    f"{context}.counts.{field} exceeds funnel limit {maximum}"
+                )
+            parsed_counts[field] = value
+        if not (
+            parsed_counts["raw_question_programs"]
+            >= parsed_counts["quick_screens"]
+            >= parsed_counts["collision_screens"]
+            >= parsed_counts["full_hostile_audits"]
+            >= parsed_counts["machine_cards"]
+        ):
+            raise DiscoveryValidationError(f"{context}.counts violate funnel monotonicity")
+
+        dispositions = require_mapping(
+            cycle.get("final_dispositions"),
+            f"{context}.final_dispositions",
+        )
+        require_exact_fields(dispositions, SEARCH_FINAL_DISPOSITIONS, f"{context}.final_dispositions")
+        parsed_dispositions = {
+            field: require_nonnegative_integer(
+                dispositions.get(field),
+                f"{context}.final_dispositions.{field}",
+            )
+            for field in SEARCH_FINAL_DISPOSITIONS
+        }
+        if sum(parsed_dispositions.values()) != parsed_counts["raw_question_programs"]:
+            raise DiscoveryValidationError(f"{context} final dispositions do not sum to raw questions")
+        if parsed_dispositions["portfolio_pruned"] != (
+            parsed_counts["raw_question_programs"] - parsed_counts["quick_screens"]
+        ):
+            raise DiscoveryValidationError(f"{context} portfolio-pruned count is inconsistent")
+        if parsed_dispositions["quick_closed"] + parsed_dispositions["deduplicated"] != (
+            parsed_counts["quick_screens"] - parsed_counts["collision_screens"]
+        ):
+            raise DiscoveryValidationError(f"{context} quick-screen dispositions are inconsistent")
+        if parsed_dispositions["collision_closed"] + parsed_dispositions["deferred"] != (
+            parsed_counts["collision_screens"] - parsed_counts["full_hostile_audits"]
+        ):
+            raise DiscoveryValidationError(f"{context} collision-screen dispositions are inconsistent")
+        if parsed_dispositions["full_closed"] + parsed_dispositions["advanced"] != (
+            parsed_counts["full_hostile_audits"]
+        ):
+            raise DiscoveryValidationError(f"{context} full-audit dispositions are inconsistent")
+        if parsed_dispositions["advanced"] != parsed_counts["machine_cards"]:
+            raise DiscoveryValidationError(f"{context} advanced count must equal machine cards")
+
+        for field, expected_keys in (
+            ("source_lane_counts", SEARCH_SOURCE_LANES),
+            ("archetype_counts", SEARCH_TOPIC_ARCHETYPES),
+        ):
+            distribution = require_mapping(cycle.get(field), f"{context}.{field}")
+            require_exact_fields(distribution, expected_keys, f"{context}.{field}")
+            total = sum(
+                require_nonnegative_integer(value, f"{context}.{field}.{key}")
+                for key, value in distribution.items()
+            )
+            if total != parsed_counts["raw_question_programs"]:
+                raise DiscoveryValidationError(f"{context}.{field} does not sum to raw questions")
+
+        efficiency = require_mapping(cycle.get("efficiency"), f"{context}.efficiency")
+        require_exact_fields(efficiency, efficiency_fields, f"{context}.efficiency")
+        for field in efficiency_fields:
+            require_nonnegative_integer(efficiency.get(field), f"{context}.efficiency.{field}")
+        if efficiency.get("simulator_runs") != 0 or efficiency.get("outcome_assets_accessed") != 0:
+            raise DiscoveryValidationError(f"{context} paper-only search used outcomes or simulation")
+
+        survivors = require_string_list(
+            cycle.get("surviving_program_ids"),
+            f"{context}.surviving_program_ids",
+        )
+        if len(survivors) != parsed_dispositions["advanced"] + parsed_dispositions["deferred"]:
+            raise DiscoveryValidationError(f"{context} survivor ids do not match dispositions")
+        for survivor in survivors:
+            require_id(survivor, f"{context}.surviving_program_ids")
+
+        quality = require_mapping(cycle.get("record_quality"), f"{context}.record_quality")
+        require_exact_fields(quality, record_quality_fields, f"{context}.record_quality")
+        for field in ("all_raw_questions_recorded", "stage_decisions_recorded"):
+            if require_bool(quality.get(field), f"{context}.record_quality.{field}") is not True:
+                raise DiscoveryValidationError(f"{context}.record_quality.{field} must be true")
+        if require_nonnegative_integer(
+            quality.get("probability_only_terminalizations"),
+            f"{context}.record_quality.probability_only_terminalizations",
+        ) != 0:
+            raise DiscoveryValidationError(f"{context} terminalized a question by probability alone")
+        require_string(cycle.get("notes"), f"{context}.notes")
+        raw_total += parsed_counts["raw_question_programs"]
+        card_total += parsed_counts["machine_cards"]
+    return len(cycle_ids), raw_total, card_total
+
+
+def validate_reentry_trigger_ledger(
+    repo_root: Path,
+    ledger_ref: str,
+    route_ids: set[str],
+    route_failure_codes: Mapping[str, set[str]],
+    family_ids: set[str],
+    known_evidence: Mapping[str, EvidenceMeta],
+) -> tuple[int, int]:
+    path = safe_repo_path(repo_root, ledger_ref, "re-entry trigger ledger")
+    root = load_yaml(path, "re-entry trigger ledger")
+    require_exact_fields(
+        root,
+        {"schema_version", "policy_id", "entries"},
+        "re-entry trigger ledger",
+    )
+    require_schema_version_one(
+        root.get("schema_version"),
+        "re-entry trigger ledger.schema_version",
+    )
+    if root.get("policy_id") != "ecomd_search_family_reentry_v1":
+        raise DiscoveryValidationError("re-entry trigger ledger policy id differs from protocol")
+
+    entry_fields = {
+        "id",
+        "recorded_at",
+        "source_kind",
+        "evidence_refs",
+        "related_route_ids",
+        "related_failure_family_ids",
+        "capability_claim",
+        "audited_claims",
+        "decision",
+        "removed_blockers",
+        "remaining_blockers",
+        "candidate_harvest_authorized",
+        "exact_reentry_scope",
+        "next_review_condition",
+        "result_ref",
+        "outcome_accessed",
+        "supersedes_entry_ids",
+    }
+    claim_fields = {"id", "claim", "verdict", "evidence_refs"}
+    entry_ids: set[str] = set()
+    qualified_count = 0
+    previous_recorded_at: datetime | None = None
+    for index, raw_entry in enumerate(
+        require_list(root.get("entries"), "re-entry trigger ledger.entries")
+    ):
+        context = f"re-entry trigger ledger.entries[{index}]"
+        entry = require_mapping(raw_entry, context)
+        require_exact_fields(entry, entry_fields, context)
+        entry_id = require_id(entry.get("id"), f"{context}.id")
+        if entry_id in entry_ids:
+            raise DiscoveryValidationError(f"duplicate re-entry trigger id: {entry_id}")
+        recorded_at = require_utc_timestamp(entry.get("recorded_at"), f"{context}.recorded_at")
+        if previous_recorded_at is not None and recorded_at < previous_recorded_at:
+            raise DiscoveryValidationError("re-entry trigger entries must be chronological")
+        previous_recorded_at = recorded_at
+
+        source_kind = require_string(entry.get("source_kind"), f"{context}.source_kind")
+        if source_kind not in REENTRY_TRIGGER_SOURCE_KINDS:
+            raise DiscoveryValidationError(f"{context}.source_kind is unknown")
+        validate_evidence_refs(
+            entry.get("evidence_refs"),
+            f"{context}.evidence_refs",
+            known_evidence,
+            allow_empty=False,
+        )
+        related_routes = set(
+            require_string_list(
+                entry.get("related_route_ids"),
+                f"{context}.related_route_ids",
+                allow_empty=False,
+            )
+        )
+        unknown_routes = related_routes - route_ids
+        if unknown_routes:
+            raise DiscoveryValidationError(
+                f"{context} has unknown related routes: {sorted(unknown_routes)}"
+            )
+        related_families = set(
+            require_string_list(
+                entry.get("related_failure_family_ids"),
+                f"{context}.related_failure_family_ids",
+                allow_empty=False,
+            )
+        )
+        unknown_families = related_families - family_ids
+        if unknown_families:
+            raise DiscoveryValidationError(
+                f"{context} has unknown failure families: {sorted(unknown_families)}"
+            )
+        require_string(entry.get("capability_claim"), f"{context}.capability_claim")
+
+        claim_verdicts: list[str] = []
+        claim_ids: set[str] = set()
+        for claim_index, raw_claim in enumerate(
+            require_list(entry.get("audited_claims"), f"{context}.audited_claims")
+        ):
+            claim_context = f"{context}.audited_claims[{claim_index}]"
+            claim = require_mapping(raw_claim, claim_context)
+            require_exact_fields(claim, claim_fields, claim_context)
+            claim_id = require_id(claim.get("id"), f"{claim_context}.id")
+            if claim_id in claim_ids:
+                raise DiscoveryValidationError(f"{context} has duplicate audited claim {claim_id}")
+            claim_ids.add(claim_id)
+            require_string(claim.get("claim"), f"{claim_context}.claim")
+            verdict = require_string(claim.get("verdict"), f"{claim_context}.verdict")
+            if verdict not in REENTRY_TRIGGER_CLAIM_VERDICTS:
+                raise DiscoveryValidationError(f"{claim_context}.verdict is unknown")
+            claim_verdicts.append(verdict)
+            validate_evidence_refs(
+                claim.get("evidence_refs"),
+                f"{claim_context}.evidence_refs",
+                known_evidence,
+                allow_empty=False,
+            )
+        if not claim_ids:
+            raise DiscoveryValidationError(f"{context}.audited_claims cannot be empty")
+
+        decision = require_string(entry.get("decision"), f"{context}.decision")
+        if decision not in REENTRY_TRIGGER_DECISIONS:
+            raise DiscoveryValidationError(f"{context}.decision is unknown")
+        removed = set(
+            require_string_list(
+                entry.get("removed_blockers"),
+                f"{context}.removed_blockers",
+            )
+        )
+        remaining = set(
+            require_string_list(
+                entry.get("remaining_blockers"),
+                f"{context}.remaining_blockers",
+                allow_empty=False,
+            )
+        )
+        for blocker in removed | remaining:
+            require_id(blocker, f"{context}.blocker")
+        overlap = removed & remaining
+        if overlap:
+            raise DiscoveryValidationError(
+                f"{context} lists blockers as both removed and remaining: {sorted(overlap)}"
+            )
+        recorded_route_blockers = set().union(
+            *(route_failure_codes[route_id] for route_id in related_routes)
+        )
+        unknown_removed = removed - recorded_route_blockers
+        if unknown_removed:
+            raise DiscoveryValidationError(
+                f"{context} claims to remove unrecorded blockers: {sorted(unknown_removed)}"
+            )
+        authorized = require_bool(
+            entry.get("candidate_harvest_authorized"),
+            f"{context}.candidate_harvest_authorized",
+        )
+        if authorized != (decision == "qualified_trigger"):
+            raise DiscoveryValidationError(
+                f"{context} may authorize candidate harvesting only for a qualified trigger"
+            )
+        reentry_scope = require_string(
+            entry.get("exact_reentry_scope"),
+            f"{context}.exact_reentry_scope",
+        )
+        if authorized:
+            qualified_count += 1
+            if not removed or "satisfied" not in claim_verdicts:
+                raise DiscoveryValidationError(
+                    f"{context} qualified trigger must remove a blocker with a satisfied audited claim"
+                )
+            if reentry_scope == "none":
+                raise DiscoveryValidationError(f"{context} qualified trigger needs a bounded scope")
+        elif reentry_scope != "none":
+            raise DiscoveryValidationError(
+                f"{context} non-trigger must set exact_reentry_scope to none"
+            )
+        if decision == "not_trigger" and removed:
+            raise DiscoveryValidationError(f"{context} non-trigger cannot remove a blocker")
+        if decision == "partial_capability" and not ({"partial", "satisfied"} & set(claim_verdicts)):
+            raise DiscoveryValidationError(
+                f"{context} partial capability needs a partial or satisfied audited claim"
+            )
+
+        require_string(
+            entry.get("next_review_condition"),
+            f"{context}.next_review_condition",
+        )
+        result_ref = require_string(entry.get("result_ref"), f"{context}.result_ref")
+        safe_repo_path(repo_root, result_ref, f"{context}.result_ref")
+        if require_bool(entry.get("outcome_accessed"), f"{context}.outcome_accessed"):
+            raise DiscoveryValidationError(f"{context} cannot inspect outcomes during trigger audit")
+        supersedes = require_string_list(
+            entry.get("supersedes_entry_ids"),
+            f"{context}.supersedes_entry_ids",
+        )
+        if len(supersedes) != len(set(supersedes)):
+            raise DiscoveryValidationError(f"{context} has duplicate superseded entries")
+        unknown_superseded = set(supersedes) - entry_ids
+        if unknown_superseded:
+            raise DiscoveryValidationError(
+                f"{context} supersedes unknown or later entries: {sorted(unknown_superseded)}"
+            )
+        entry_ids.add(entry_id)
+    return len(entry_ids), qualified_count
 
 
 def load_failure_families(repo_root: Path, route_ids: set[str]) -> set[str]:
@@ -1333,6 +2405,107 @@ def validate_partition_v2(
     return namespace, frozenset(exploration), frozenset(confirmation)
 
 
+def validate_branch_request_v1(
+    value: object,
+    repo_root: Path,
+    schema: Mapping[str, object],
+    sandbox_id: str,
+    branch_id: str,
+    exploration_units: frozenset[str],
+    artifact_root: Path,
+    reservation: Mapping[str, int],
+    context: str,
+) -> Mapping[str, object]:
+    _, request_path, _ = require_digest_ref(repo_root, value, f"{context}.request")
+    branch_root = artifact_root / "branches" / branch_id
+    expected_request = branch_root / "request.yaml"
+    if request_path != expected_request:
+        raise DiscoveryValidationError(f"{context}.request must use the canonical branch path")
+    request = load_yaml(request_path, f"branch request for {sandbox_id}/{branch_id}")
+    validate_json_instance(
+        schema,
+        request,
+        f"branch request for {sandbox_id}/{branch_id}",
+    )
+    require_exact_fields(
+        request,
+        SANDBOX_BRANCH_REQUEST_FIELDS,
+        f"branch request for {sandbox_id}/{branch_id}",
+    )
+    require_schema_version_one(
+        request.get("schema_version"),
+        f"branch request for {sandbox_id}/{branch_id}.schema_version",
+    )
+    if request.get("sandbox_id") != sandbox_id or request.get("branch_id") != branch_id:
+        raise DiscoveryValidationError(f"branch request identity mismatch for {sandbox_id}/{branch_id}")
+    require_id(
+        request.get("hypothesis_id"),
+        f"branch request for {sandbox_id}/{branch_id}.hypothesis_id",
+    )
+    for field in ("hypothesis", "falsifier"):
+        require_string(
+            request.get(field),
+            f"branch request for {sandbox_id}/{branch_id}.{field}",
+        )
+    require_id(
+        request.get("multiplicity_family_id"),
+        f"branch request for {sandbox_id}/{branch_id}.multiplicity_family_id",
+    )
+    require_string_list(
+        request.get("test_ids"),
+        f"branch request for {sandbox_id}/{branch_id}.test_ids",
+        allow_empty=False,
+    )
+    unit_ids = require_string_list(
+        request.get("unit_ids"),
+        f"branch request for {sandbox_id}/{branch_id}.unit_ids",
+        allow_empty=False,
+    )
+    outside_exploration = set(unit_ids) - exploration_units
+    if outside_exploration:
+        raise DiscoveryValidationError(
+            f"branch request for {sandbox_id}/{branch_id} uses non-exploration units: "
+            f"{sorted(outside_exploration)[:3]}"
+        )
+    cpu_seconds = require_positive_integer(
+        request.get("cpu_seconds"),
+        f"branch request for {sandbox_id}/{branch_id}.cpu_seconds",
+    )
+    output_bytes = require_positive_integer(
+        request.get("output_bytes"),
+        f"branch request for {sandbox_id}/{branch_id}.output_bytes",
+    )
+    if cpu_seconds > reservation["cpu_seconds"]:
+        raise DiscoveryValidationError("branch request CPU budget exceeds sandbox reservation")
+    if output_bytes > reservation["storage_bytes"]:
+        raise DiscoveryValidationError("branch request output budget exceeds sandbox reservation")
+    for field, expected_name in (
+        ("code_manifest", "code_manifest.json"),
+        ("config", "config.yaml"),
+    ):
+        _, referenced_path, _ = require_digest_ref(
+            repo_root,
+            request.get(field),
+            f"branch request for {sandbox_id}/{branch_id}.{field}",
+        )
+        if referenced_path != branch_root / expected_name:
+            raise DiscoveryValidationError(
+                f"branch request for {sandbox_id}/{branch_id}.{field} is not canonical"
+            )
+        if field == "config":
+            config = load_yaml(referenced_path, f"branch config for {sandbox_id}/{branch_id}")
+            config_units = require_string_list(
+                config.get("unit_ids"),
+                f"branch config for {sandbox_id}/{branch_id}.unit_ids",
+                allow_empty=False,
+            )
+            if config_units != unit_ids:
+                raise DiscoveryValidationError(
+                    f"branch config/request unit mismatch for {sandbox_id}/{branch_id}"
+                )
+    return request
+
+
 def load_canonical_event_log(path: Path, context: str) -> list[Mapping[str, object]]:
     raw = path.read_bytes()
     if not raw or not raw.endswith(b"\n") or b"\r" in raw:
@@ -1401,7 +2574,7 @@ def validate_receipt_v2(
     branch_id: str,
     context: str,
     execution_contract: SandboxExecutionContract,
-) -> tuple[dict[str, int], datetime, datetime]:
+) -> tuple[dict[str, int], datetime, datetime, str]:
     try:
         raw = path.read_bytes()
         receipt_obj = cast(object, json.loads(raw.decode("utf-8")))
@@ -1422,15 +2595,19 @@ def validate_receipt_v2(
         "storage_bytes",
         "monetary_cost_usd_micros",
         "gpu_seconds",
+        "run_status",
+        "container_exit_code",
+        "wall_seconds",
         "executor",
         "launcher_sha256",
+        "incident_handler_sha256",
         "image_digest",
         "network",
         "root_filesystem",
-        "repository_mount",
-        "exploration_mount",
+        "repository_tree_mount",
+        "input_channel",
         "confirmation_materialization",
-        "output_mount",
+        "output_channel",
         "secrets",
         "device_access",
     }
@@ -1441,19 +2618,31 @@ def validate_receipt_v2(
     expected_execution = {
         "executor": execution_contract.executor,
         "launcher_sha256": execution_contract.launcher_sha256,
+        "incident_handler_sha256": execution_contract.incident_handler_sha256,
         "image_digest": execution_contract.image_digest,
         "network": execution_contract.network,
         "root_filesystem": execution_contract.root_filesystem,
-        "repository_mount": execution_contract.repository_mount,
-        "exploration_mount": execution_contract.exploration_mount,
+        "repository_tree_mount": execution_contract.repository_tree_mount,
+        "input_channel": execution_contract.input_channel,
         "confirmation_materialization": execution_contract.confirmation_materialization,
-        "output_mount": execution_contract.output_mount,
+        "output_channel": execution_contract.output_channel,
         "secrets": execution_contract.secrets,
         "device_access": execution_contract.device_access,
     }
     for field, expected_value in expected_execution.items():
         if receipt.get(field) != expected_value:
             raise DiscoveryValidationError(f"{context}.{field} differs from execution contract")
+    run_status = require_string(receipt.get("run_status"), f"{context}.run_status")
+    if run_status not in {"completed", "container_failed", "timeout", "output_limit"}:
+        raise DiscoveryValidationError(f"{context}.run_status is invalid")
+    exit_code = receipt.get("container_exit_code")
+    if exit_code is not None and type(exit_code) is not int:
+        raise DiscoveryValidationError(f"{context}.container_exit_code must be integer or null")
+    if run_status == "completed" and exit_code != 0:
+        raise DiscoveryValidationError(f"{context} completed without a zero exit code")
+    wall_seconds = require_nonnegative_integer(
+        receipt.get("wall_seconds"), f"{context}.wall_seconds"
+    )
     started = require_utc_timestamp(receipt.get("started_at"), f"{context}.started_at")
     finished = require_utc_timestamp(receipt.get("finished_at"), f"{context}.finished_at")
     if finished < started:
@@ -1475,7 +2664,12 @@ def validate_receipt_v2(
     }
     if usage["monetary_cost_usd_micros"] != 0 or usage["gpu_seconds"] != 0:
         raise DiscoveryValidationError(f"{context} reports forbidden monetary or GPU use")
-    return usage, started, finished
+    if usage["cpu_seconds"] != wall_seconds:
+        raise DiscoveryValidationError(f"{context}.cpu_seconds must equal charged one-CPU wall time")
+    timestamp_elapsed = max(0, math.ceil((finished - started).total_seconds()))
+    if abs(timestamp_elapsed - wall_seconds) > 1:
+        raise DiscoveryValidationError(f"{context}.wall_seconds disagrees with receipt timestamps")
+    return usage, started, finished, run_status
 
 
 def tree_file_bytes(path: Path, context: str) -> int:
@@ -1628,6 +2822,88 @@ def validate_protected_sandbox_history(repo_root: Path, base_ref: str) -> str:
                 "sandbox taint registry does not preserve the protected entry prefix"
             )
 
+    forecast_ref = "research/discovery/forecast_ledger.yaml"
+    forecast_history_status = "introduced after protected base"
+    if forecast_ref in base_discovery_files:
+        base_forecast = yaml_mapping_from_bytes(
+            git_file_bytes(repo_root, base_ref, forecast_ref),
+            f"protected forecast ledger {base_ref}",
+        )
+        current_forecast = load_yaml(repo_root / forecast_ref, "current forecast ledger")
+        for field in ("schema_version", "floor_review_target_id"):
+            if current_forecast.get(field) != base_forecast.get(field):
+                raise DiscoveryValidationError(
+                    f"forecast ledger rewrote protected field {field}"
+                )
+        for field in ("target_definitions", "forecasts", "resolutions"):
+            base_entries = require_list(
+                base_forecast.get(field),
+                f"protected forecast ledger {base_ref}.{field}",
+            )
+            current_entries = require_list(
+                current_forecast.get(field),
+                f"current forecast ledger.{field}",
+            )
+            if current_entries[: len(base_entries)] != base_entries:
+                raise DiscoveryValidationError(
+                    f"forecast ledger does not preserve the protected {field} prefix"
+                )
+        forecast_history_status = "prefixes preserved"
+
+    search_ref = "research/discovery/search_cycle_ledger.yaml"
+    search_history_status = "introduced after protected base"
+    if search_ref in base_discovery_files:
+        base_search = yaml_mapping_from_bytes(
+            git_file_bytes(repo_root, base_ref, search_ref),
+            f"protected search-cycle ledger {base_ref}",
+        )
+        current_search = load_yaml(repo_root / search_ref, "current search-cycle ledger")
+        for field in ("schema_version", "policy_id", "scope_start_cycle", "historical_baseline"):
+            if current_search.get(field) != base_search.get(field):
+                raise DiscoveryValidationError(
+                    f"search-cycle ledger rewrote protected field {field}"
+                )
+        base_cycles = require_list(
+            base_search.get("cycles"),
+            f"protected search-cycle ledger {base_ref}.cycles",
+        )
+        current_cycles = require_list(
+            current_search.get("cycles"),
+            "current search-cycle ledger.cycles",
+        )
+        if current_cycles[: len(base_cycles)] != base_cycles:
+            raise DiscoveryValidationError(
+                "search-cycle ledger does not preserve the protected cycles prefix"
+            )
+        search_history_status = "prefix preserved"
+
+    trigger_ref = "research/discovery/reentry_trigger_ledger.yaml"
+    trigger_history_status = "introduced after protected base"
+    if trigger_ref in base_discovery_files:
+        base_trigger = yaml_mapping_from_bytes(
+            git_file_bytes(repo_root, base_ref, trigger_ref),
+            f"protected re-entry trigger ledger {base_ref}",
+        )
+        current_trigger = load_yaml(repo_root / trigger_ref, "current re-entry trigger ledger")
+        for field in ("schema_version", "policy_id"):
+            if current_trigger.get(field) != base_trigger.get(field):
+                raise DiscoveryValidationError(
+                    f"re-entry trigger ledger rewrote protected field {field}"
+                )
+        base_trigger_entries = require_list(
+            base_trigger.get("entries"),
+            f"protected re-entry trigger ledger {base_ref}.entries",
+        )
+        current_trigger_entries = require_list(
+            current_trigger.get("entries"),
+            "current re-entry trigger ledger.entries",
+        )
+        if current_trigger_entries[: len(base_trigger_entries)] != base_trigger_entries:
+            raise DiscoveryValidationError(
+                "re-entry trigger ledger does not preserve the protected entries prefix"
+            )
+        trigger_history_status = "prefix preserved"
+
     new_sandbox_ids = current_sandbox_ids - base_sandbox_ids
     tainted_sandbox_ids = {
         require_id(entry.get("sandbox_id"), "sandbox taint registry sandbox_id")
@@ -1667,7 +2943,10 @@ def validate_protected_sandbox_history(repo_root: Path, base_ref: str) -> str:
 
     return (
         f"Protected sandbox history OK against {base_ref}: "
-        f"{len(base_sandbox_ids)} inherited, {len(new_sandbox_ids)} authorization-only new"
+        f"{len(base_sandbox_ids)} inherited, {len(new_sandbox_ids)} authorization-only new; "
+        f"forecast ledger {forecast_history_status}; "
+        f"search-cycle ledger {search_history_status}; "
+        f"re-entry trigger ledger {trigger_history_status}"
     )
 
 
@@ -1678,6 +2957,8 @@ def validate_sandbox_v2(
     partition_schema: Mapping[str, object],
     decision_schema: Mapping[str, object],
     result_schema: Mapping[str, object],
+    branch_request_schema: Mapping[str, object],
+    runtime_incident_schema: Mapping[str, object],
     route_ids: set[str],
     clean_evidence_ids: set[str],
     policy: Mapping[str, object],
@@ -1904,6 +3185,11 @@ def validate_sandbox_v2(
         execution_raw.get("launcher"),
         f"{sandbox_id}.execution_contract.launcher",
     )
+    _, _, incident_handler_sha256 = require_digest_ref(
+        repo_root,
+        execution_raw.get("incident_handler"),
+        f"{sandbox_id}.execution_contract.incident_handler",
+    )
     image_digest = require_oci_image_digest(
         execution_raw.get("image_digest"),
         f"{sandbox_id}.execution_contract.image_digest",
@@ -1911,10 +3197,10 @@ def validate_sandbox_v2(
     required_execution_values = {
         "network": "none",
         "root_filesystem": "read_only",
-        "repository_mount": "none",
-        "exploration_mount": "read_only_enumerated_units_only",
+        "repository_tree_mount": "none",
+        "input_channel": "read_only_config_with_enumerated_units_only",
         "confirmation_materialization": "not_generated_not_staged_not_mounted",
-        "output_mount": "sandbox_artifact_root_only",
+        "output_channel": "bounded_stdout_tar",
         "secrets": "none",
         "device_access": "cpu_only",
     }
@@ -1931,13 +3217,14 @@ def validate_sandbox_v2(
     execution_contract = SandboxExecutionContract(
         executor=executor,
         launcher_sha256=launcher_sha256,
+        incident_handler_sha256=incident_handler_sha256,
         image_digest=image_digest,
         network=execution_values["network"],
         root_filesystem=execution_values["root_filesystem"],
-        repository_mount=execution_values["repository_mount"],
-        exploration_mount=execution_values["exploration_mount"],
+        repository_tree_mount=execution_values["repository_tree_mount"],
+        input_channel=execution_values["input_channel"],
         confirmation_materialization=execution_values["confirmation_materialization"],
-        output_mount=execution_values["output_mount"],
+        output_channel=execution_values["output_channel"],
         secrets=execution_values["secrets"],
         device_access=execution_values["device_access"],
     )
@@ -2007,7 +3294,9 @@ def validate_sandbox_v2(
         raise DiscoveryValidationError(f"sandbox decision for {sandbox_id} genesis hash mismatch")
 
     opened: dict[str, datetime] = {}
+    branch_budgets: dict[str, tuple[int, int]] = {}
     finished: set[str] = set()
+    quarantined: set[str] = set()
     usage = {
         "cpu_seconds": 0,
         "storage_bytes": 0,
@@ -2038,48 +3327,42 @@ def validate_sandbox_v2(
             "entry_sha256",
         }
         if event_type == "branch_opened":
-            fields = common | {
-                "branch_id",
-                "hypothesis_id",
-                "hypothesis",
-                "falsifier",
-                "multiplicity_family_id",
-                "test_ids",
-                "seed_ids",
-                "code_manifest",
-                "config",
-            }
+            request_entry_fields = SANDBOX_BRANCH_REQUEST_FIELDS - {"schema_version", "sandbox_id"}
+            fields = common | request_entry_fields | {"request"}
             require_exact_fields(entry, fields, entry_context)
             if occurred_at >= expires_at:
                 raise DiscoveryValidationError(f"{entry_context} opened at or after expiry")
             branch_id = require_id(entry.get("branch_id"), f"{entry_context}.branch_id")
             if branch_id in opened:
                 raise DiscoveryValidationError(f"duplicate branch id in {sandbox_id}: {branch_id}")
-            opened[branch_id] = occurred_at
-            require_id(entry.get("hypothesis_id"), f"{entry_context}.hypothesis_id")
-            for field in ("hypothesis", "falsifier"):
-                require_string(entry.get(field), f"{entry_context}.{field}")
-            require_id(
-                entry.get("multiplicity_family_id"),
-                f"{entry_context}.multiplicity_family_id",
+            request = validate_branch_request_v1(
+                entry.get("request"),
+                repo_root,
+                branch_request_schema,
+                sandbox_id,
+                branch_id,
+                exploration_units,
+                artifact_root,
+                reservation,
+                entry_context,
             )
-            require_string_list(entry.get("test_ids"), f"{entry_context}.test_ids", allow_empty=False)
-            seed_values = require_list(entry.get("seed_ids"), f"{entry_context}.seed_ids")
-            seeds = [
-                require_nonnegative_integer(seed, f"{entry_context}.seed_ids[{seed_index}]")
-                for seed_index, seed in enumerate(seed_values)
-            ]
-            if not seeds or len(seeds) != len(set(seeds)):
-                raise DiscoveryValidationError(f"{entry_context}.seed_ids must be nonempty and unique")
-            require_digest_ref(repo_root, entry.get("code_manifest"), f"{entry_context}.code_manifest")
-            require_digest_ref(repo_root, entry.get("config"), f"{entry_context}.config")
+            for field in request_entry_fields:
+                if entry.get(field) != request.get(field):
+                    raise DiscoveryValidationError(
+                        f"{entry_context}.{field} differs from the frozen branch request"
+                    )
+            branch_budgets[branch_id] = (
+                require_positive_integer(request.get("cpu_seconds"), f"{entry_context}.cpu_seconds"),
+                require_positive_integer(request.get("output_bytes"), f"{entry_context}.output_bytes"),
+            )
+            opened[branch_id] = occurred_at
         elif event_type == "branch_finished":
             fields = common | {"branch_id", "receipt", "artifacts"}
             require_exact_fields(entry, fields, entry_context)
             if occurred_at >= expires_at:
                 raise DiscoveryValidationError(f"{entry_context} finished at or after expiry")
             branch_id = require_id(entry.get("branch_id"), f"{entry_context}.branch_id")
-            if branch_id not in opened or branch_id in finished:
+            if branch_id not in opened or branch_id in finished or branch_id in quarantined:
                 raise DiscoveryValidationError(f"{entry_context} references an unopened or finished branch")
             receipt_ref, receipt_path, _, _ = require_artifact_digest(
                 repo_root,
@@ -2090,40 +3373,183 @@ def validate_sandbox_v2(
             )
             if not receipt_ref.endswith("/receipt.json"):
                 raise DiscoveryValidationError(f"{entry_context}.receipt must end in receipt.json")
-            receipt_usage, receipt_started, receipt_finished = validate_receipt_v2(
+            branch_root = artifact_root / "branches" / branch_id
+            if receipt_path != branch_root / "receipt.json":
+                raise DiscoveryValidationError(
+                    f"{entry_context}.receipt must use the canonical branch path"
+                )
+            receipt_usage, receipt_started, receipt_finished, run_status = validate_receipt_v2(
                 receipt_path,
                 sandbox_id,
                 branch_id,
                 f"receipt for {sandbox_id}/{branch_id}",
                 execution_contract,
             )
+            branch_cpu_limit, branch_output_limit = branch_budgets[branch_id]
+            if receipt_usage["cpu_seconds"] > branch_cpu_limit:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its branch CPU budget"
+                )
+            if receipt_usage["storage_bytes"] > branch_output_limit + SANDBOX_STDERR_LIMIT_BYTES:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its branch output budget"
+                )
             if receipt_started < opened[branch_id] or receipt_finished > occurred_at:
                 raise DiscoveryValidationError(
                     f"receipt for {sandbox_id}/{branch_id} lies outside its branch event window"
                 )
             for field, value in receipt_usage.items():
                 usage[field] += value
+            artifact_storage = 0
+            artifact_names: set[str] = set()
+            artifact_sizes: dict[str, int] = {}
             for artifact_index, artifact in enumerate(
                 require_list(entry.get("artifacts"), f"{entry_context}.artifacts")
             ):
-                require_artifact_digest(
+                _, artifact_path, _, artifact_bytes = require_artifact_digest(
                     repo_root,
                     artifact,
                     f"{entry_context}.artifacts[{artifact_index}]",
                     artifact_root,
                     require_bytes=True,
                 )
+                if artifact_path.parent != branch_root:
+                    raise DiscoveryValidationError(
+                        f"{entry_context}.artifacts[{artifact_index}] is outside its branch root"
+                    )
+                if artifact_path.name in artifact_names:
+                    raise DiscoveryValidationError(f"{entry_context}.artifacts contains duplicates")
+                artifact_names.add(artifact_path.name)
+                size = cast(int, artifact_bytes)
+                artifact_sizes[artifact_path.name] = size
+                artifact_storage += size
+            allowed_names = (
+                {"bundle.tar", "stderr.log"}
+                if run_status == "completed"
+                else {"bundle.tar.partial", "stderr.log"}
+            )
+            if not artifact_names <= allowed_names:
+                raise DiscoveryValidationError(
+                    f"{entry_context}.artifacts do not match run_status {run_status}"
+                )
+            if run_status == "completed" and "bundle.tar" not in artifact_names:
+                raise DiscoveryValidationError(f"{entry_context} completed without bundle.tar")
+            bundle_name = "bundle.tar" if run_status == "completed" else "bundle.tar.partial"
+            if artifact_sizes.get(bundle_name, 0) > branch_output_limit:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its stdout bundle budget"
+                )
+            if artifact_sizes.get("stderr.log", 0) > SANDBOX_STDERR_LIMIT_BYTES:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id} exceeds its stderr budget"
+                )
+            if receipt_usage["storage_bytes"] != artifact_storage:
+                raise DiscoveryValidationError(
+                    f"receipt for {sandbox_id}/{branch_id}.storage_bytes differs from artifacts"
+                )
             finished.add(branch_id)
+        elif event_type == "branch_quarantined":
+            fields = common | {"branch_id", "incident", "charged_usage"}
+            require_exact_fields(entry, fields, entry_context)
+            branch_id = require_id(entry.get("branch_id"), f"{entry_context}.branch_id")
+            if branch_id not in opened or branch_id in finished or branch_id in quarantined:
+                raise DiscoveryValidationError(
+                    f"{entry_context} references an unopened or already resolved branch"
+                )
+            branch_root = artifact_root / "branches" / branch_id
+            _, incident_path, _, _ = require_artifact_digest(
+                repo_root,
+                entry.get("incident"),
+                f"{entry_context}.incident",
+                artifact_root,
+                require_bytes=False,
+            )
+            if incident_path != branch_root / "runtime_incident.json":
+                raise DiscoveryValidationError(
+                    f"{entry_context}.incident must use the canonical branch path"
+                )
+            incident = load_canonical_json_mapping(
+                incident_path,
+                f"runtime incident for {sandbox_id}/{branch_id}",
+            )
+            validate_json_instance(
+                runtime_incident_schema,
+                incident,
+                f"runtime incident for {sandbox_id}/{branch_id}",
+            )
+            if incident.get("sandbox_id") != sandbox_id or incident.get("branch_id") != branch_id:
+                raise DiscoveryValidationError(
+                    f"runtime incident identity mismatch for {sandbox_id}/{branch_id}"
+                )
+            if require_utc_timestamp(
+                incident.get("recorded_at"),
+                f"runtime incident for {sandbox_id}/{branch_id}.recorded_at",
+            ) != occurred_at:
+                raise DiscoveryValidationError(
+                    f"runtime incident time mismatch for {sandbox_id}/{branch_id}"
+                )
+            require_string(
+                incident.get("reason"),
+                f"runtime incident for {sandbox_id}/{branch_id}.reason",
+            )
+            require_string(
+                incident.get("operator"),
+                f"runtime incident for {sandbox_id}/{branch_id}.operator",
+            )
+            charged = require_mapping(entry.get("charged_usage"), f"{entry_context}.charged_usage")
+            incident_charged = require_mapping(
+                incident.get("charged_usage"),
+                f"runtime incident for {sandbox_id}/{branch_id}.charged_usage",
+            )
+            charged_fields = {
+                "cpu_seconds",
+                "storage_bytes",
+                "monetary_cost_usd_micros",
+                "gpu_seconds",
+            }
+            require_exact_fields(charged, charged_fields, f"{entry_context}.charged_usage")
+            require_exact_fields(
+                incident_charged,
+                charged_fields,
+                f"runtime incident for {sandbox_id}/{branch_id}.charged_usage",
+            )
+            if dict(charged) != dict(incident_charged):
+                raise DiscoveryValidationError(
+                    f"{entry_context}.charged_usage differs from the incident report"
+                )
+            branch_cpu_limit, branch_output_limit = branch_budgets[branch_id]
+            expected_charge = {
+                "cpu_seconds": branch_cpu_limit,
+                "storage_bytes": branch_output_limit + SANDBOX_STDERR_LIMIT_BYTES,
+                "monetary_cost_usd_micros": 0,
+                "gpu_seconds": 0,
+            }
+            if dict(charged) != expected_charge:
+                raise DiscoveryValidationError(
+                    f"{entry_context}.charged_usage must reserve the full ambiguous branch budget"
+                )
+            for field, value in expected_charge.items():
+                usage[field] += value
+            quarantined.add(branch_id)
         elif event_type == "state_transition":
             fields = common | {"from_state", "to_state", "reason", "result"}
             require_exact_fields(entry, fields, entry_context)
             if entry.get("from_state") != "authorized":
                 raise DiscoveryValidationError(f"{entry_context}.from_state must be authorized")
             to_state = require_string(entry.get("to_state"), f"{entry_context}.to_state")
-            if to_state not in {"closed", "exhausted"}:
+            if to_state not in {"closed", "exhausted", "quarantined"}:
                 raise DiscoveryValidationError(f"{entry_context}.to_state is invalid")
-            if set(opened) != finished:
+            resolved_branches = finished | quarantined
+            if set(opened) != resolved_branches:
                 raise DiscoveryValidationError(f"{entry_context} has unfinished branches")
+            if quarantined and to_state != "quarantined":
+                raise DiscoveryValidationError(
+                    f"{entry_context} must quarantine a sandbox with an ambiguous branch"
+                )
+            if to_state == "quarantined" and not quarantined:
+                raise DiscoveryValidationError(
+                    f"{entry_context} cannot quarantine without a branch incident"
+                )
             require_string(entry.get("reason"), f"{entry_context}.reason")
             result_ref, result_path, result_sha, _ = require_artifact_digest(
                 repo_root,
@@ -2143,6 +3569,14 @@ def validate_sandbox_v2(
                 raise DiscoveryValidationError(f"sandbox result manifest hash mismatch for {sandbox_id}")
             if result.get("partition_sha256") != partition_sha:
                 raise DiscoveryValidationError(f"sandbox result partition hash mismatch for {sandbox_id}")
+            if to_state == "quarantined" and result.get("outcome_status") != "quarantined":
+                raise DiscoveryValidationError(
+                    f"quarantined sandbox result status mismatch for {sandbox_id}"
+                )
+            if to_state != "quarantined" and result.get("outcome_status") == "quarantined":
+                raise DiscoveryValidationError(
+                    f"non-quarantined sandbox has a quarantined result for {sandbox_id}"
+                )
             if require_utc_timestamp(
                 result.get("created_at"), f"sandbox result for {sandbox_id}.created_at"
             ) != occurred_at:
@@ -2154,7 +3588,7 @@ def validate_sandbox_v2(
             result_branches = require_string_list(
                 result.get("branch_ids"), f"sandbox result for {sandbox_id}.branch_ids"
             )
-            if set(result_branches) != finished:
+            if set(result_branches) != resolved_branches:
                 raise DiscoveryValidationError(f"sandbox result branch ids mismatch for {sandbox_id}")
             result_usage = require_mapping(
                 result.get("usage"), f"sandbox result for {sandbox_id}.usage"
@@ -2168,7 +3602,7 @@ def validate_sandbox_v2(
                     )
             if require_nonnegative_integer(
                 result_usage.get("branches"), f"sandbox result for {sandbox_id}.usage.branches"
-            ) != len(finished):
+            ) != len(resolved_branches):
                 raise DiscoveryValidationError(f"sandbox result branch count mismatch for {sandbox_id}")
             for artifact_index, artifact in enumerate(
                 require_list(result.get("artifacts"), f"sandbox result for {sandbox_id}.artifacts")
@@ -2308,7 +3742,7 @@ def materialize_tainted_evidence(
         record = by_sandbox.get(sandbox_id)
         if record is None:
             raise DiscoveryValidationError(f"{context} references unknown sandbox {sandbox_id}")
-        if record.effective_state not in {"closed", "exhausted"}:
+        if record.effective_state not in {"closed", "exhausted", "quarantined"}:
             raise DiscoveryValidationError(f"{context} references a nonterminal sandbox")
         artifact_ref = require_string(entry.get("artifact_ref"), f"{context}.artifact_ref")
         artifact_sha = require_sha256(entry.get("artifact_sha256"), f"{context}.artifact_sha256")
@@ -2325,7 +3759,7 @@ def materialize_tainted_evidence(
     terminal_sandboxes = {
         record.sandbox_id
         for record in records
-        if record.effective_state in {"closed", "exhausted"}
+        if record.effective_state in {"closed", "exhausted", "quarantined"}
     }
     missing = terminal_sandboxes - registered_sandboxes
     if missing:
@@ -2342,8 +3776,22 @@ def validate_discovery(
     base_ref: str | None = None,
 ) -> str:
     current_time = datetime.now(UTC) if as_of is None else as_of
-    _, activation_floor, minimum_primary, forbidden, sandbox_policy = load_protocol(repo_root)
-    route_statuses, route_locator_ids = load_route_registry(repo_root)
+    (
+        _,
+        activation_floor,
+        minimum_primary,
+        forbidden,
+        sandbox_policy,
+        forecast_ledger_ref,
+        _,
+        search_cycle_ledger_ref,
+        reentry_trigger_ledger_ref,
+    ) = load_protocol(repo_root)
+    search_cycle_count, search_question_count, search_card_count = validate_search_cycle_ledger(
+        repo_root,
+        search_cycle_ledger_ref,
+    )
+    route_statuses, route_locator_ids, route_failure_codes = load_route_registry(repo_root)
     external_evidence = load_evidence_registry(repo_root)
     route_evidence = {
         locator_id: EvidenceMeta(epistemic_class="clean_route_locator")
@@ -2353,9 +3801,24 @@ def validate_discovery(
     if collisions:
         raise DiscoveryValidationError(
             f"evidence registry ids collide with route locators: {sorted(collisions)}"
-        )
+    )
     clean_evidence = {**external_evidence, **route_evidence}
     family_ids = load_failure_families(repo_root, set(route_statuses))
+    trigger_count, qualified_trigger_count = validate_reentry_trigger_ledger(
+        repo_root,
+        reentry_trigger_ledger_ref,
+        set(route_statuses),
+        route_failure_codes,
+        family_ids,
+        clean_evidence,
+    )
+    forecast_count, resolution_count, floor_resolution_count = validate_forecast_ledger(
+        repo_root,
+        forecast_ledger_ref,
+        route_statuses,
+        clean_evidence,
+        activation_floor,
+    )
 
     discovery_root = repo_root / "research" / "discovery"
     card_schema = load_json_schema(
@@ -2378,6 +3841,14 @@ def validate_discovery(
         discovery_root / "exploration_sandbox_result.schema.json",
         "exploration sandbox result JSON schema",
     )
+    branch_request_schema = load_json_schema(
+        discovery_root / "exploration_branch_request.schema.json",
+        "exploration branch request JSON schema",
+    )
+    runtime_incident_schema = load_json_schema(
+        discovery_root / "exploration_runtime_incident.schema.json",
+        "exploration runtime incident JSON schema",
+    )
 
     sandbox_paths = sorted((discovery_root / "sandboxes").glob("*.yaml"))
     sandbox_records: list[SandboxRecord] = []
@@ -2391,6 +3862,8 @@ def validate_discovery(
             partition_schema,
             sandbox_decision_schema,
             sandbox_result_schema,
+            branch_request_schema,
+            runtime_incident_schema,
             set(route_statuses),
             set(clean_evidence),
             sandbox_policy,
@@ -2464,7 +3937,11 @@ def validate_discovery(
         f"{len(tainted_evidence)} sandbox-tainted results, "
         f"{len(family_ids)} failure families, {primary_total} primary-work assignments, "
         f"{transition_count} status transitions, {len(sandbox_ids)} exploration sandboxes "
-        f"({sandbox_summary})"
+        f"({sandbox_summary}), {forecast_count} prospective forecasts "
+        f"({resolution_count} resolved; {floor_resolution_count} T0-floor resolutions), "
+        f"{trigger_count} re-entry trigger audits ({qualified_trigger_count} qualified), "
+        f"{search_cycle_count} prospective search cycles "
+        f"({search_question_count} raw questions; {search_card_count} cards)"
     )
     if base_ref is not None:
         history_summary = validate_protected_sandbox_history(repo_root, base_ref)
