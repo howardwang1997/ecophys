@@ -248,6 +248,42 @@ complete state and legal intervention, make no opposite same-estimand response p
 retain an unobserved efficient price rather than assigned external truth. The
 [discovery-bottleneck and truth-asset preflight](papers/proposal/ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md)
 therefore records the seventh `not_trigger`; zero triggers qualify and Cycle 17 remains unopened.
+The retained paper-only preflight then froze its full A-3 capability-build contract in the
+[truth-asset capability-build plan](papers/proposal/ecomd_truth_asset_capability_build_plan_2026-08-26.md):
+named blockers, a session-level path-response estimand family, stratified between-session
+assignment, an arm-invariant replay-complete event schema, rights/ethics/release, a sealed
+whole-source confirmation site, two-site frozen-artifact replication, an outcome-blind precision
+floor with five exact stop conditions, and a deferred outcome-blind treatment-selection audit.
+The plan authorizes nothing; the next legal steps are the treatment-selection audit or A-2
+platform qualification, each requiring explicit user authorization.
+
+The deferred outcome-blind treatment-selection audit has since run
+([treatment-selection audit](papers/proposal/ecomd_truth_asset_treatment_selection_audit_2026-08-26.md)):
+**within-tie-set randomized priority (FIFO vs randomized tie-break)** is the selected treatment
+family and minimum resting time the reserve, while depth visibility, cancel costs and unitization
+failed their collision or fork gates. The scientific fork is the program's core question in
+legal-action form: statistical queue-reactive populations satisfy an exchangeable-tie-set
+invariance (aggregate book law unchanged by the allocation rule), whereas strategic queue-value
+makers predict an order-one depth and spread response. Four pre-A-2 conditions are frozen
+(priority-experiment collision manifest, formal fork derivation with CPU-trivial fixtures,
+explicit user authorization, precision floor); nothing is executed and no topic status exists.
+
+C1 and C2 have now passed. The [collision manifest](papers/proposal/ecomd_tie_priority_c1_collision_manifest_2026-08-26.md)
+(15 primary works: Hersch's RSS fairness proposal, Haeringer–Melton's RSD, Mavroudis et al.'s
+fair matching, Lim's large-scale controlled simulation of randomized priority, the LIFFE
+time-pro-rata field study, queue-valuation and dynamic-LOB theory, plus project-pinned priors)
+found **no same-estimand human-subject randomized within-tie priority experiment**; the proposal
+and in-silico lanes are occupied, so the lab asset is positioned as the first controlled
+human-market test joined to a simulator-prediction truth contract. The
+[fork derivation](papers/proposal/ecomd_tie_priority_c2_fork_derivation_2026-08-26.md)
+(`scripts/tie_priority_fork_fixtures.py`) proves Lemma 1 — pathwise aggregate invariance under
+identity- and age-agnostic exchangeable intensities, with five named failure channels that make
+human populations decisive — and Lemma 2 — a random-allocation marginal joiner weakly beats the
+FIFO back-of-queue fill probability, so **randomized priority provably sustains deeper touch
+depth in the threshold family**. Deterministic fixtures reproduce both sides: exact aggregate
+identity with identity-level redistribution in a ZI population, and order-one depth gaps
+(6 vs 33 and 28 vs 179) in threshold equilibria. Remaining gates before any platform work:
+explicit user authorization (C3) and the outcome-blind precision floor (C4).
 
 ## Research Discovery Loop
 
