@@ -1,0 +1,203 @@
+schema_version: 1
+policy_id: ecomd_search_family_reentry_v1
+entries:
+  - id: quantreplay_v12_checkpoint_capability
+    recorded_at: "2026-08-26T07:02:06Z"
+    source_kind: truth_or_control_asset
+    evidence_refs:
+      - trigger_quantreplay_v12_repository
+      - discovery_cycle8_formal_result
+      - discovery_cycle16_formal_result
+    related_route_ids:
+      - cross_simulator_disagreement_intervention_certificate
+      - adaptive_scheduler_information_filtration_response
+      - prospective_counterfactual_market_simulator_validity
+    related_failure_family_ids:
+      - two_system_contract_missing
+      - cross_system_estimand_mismatch
+    capability_claim: QuantReplay v12 supplies a branchable full-state market simulator that removes the complete-checkpoint and independent-engine blockers.
+    audited_claims:
+      - id: open_versioned_exchange_engine
+        claim: The pinned Apache-2.0 release supplies seeded order generation, matching, replay, L2 publication, and persisted order-book state.
+        verdict: satisfied
+        evidence_refs: [trigger_quantreplay_v12_repository]
+      - id: checkpoint_contains_complete_future_state
+        claim: One snapshot restores all state that determines future paths, including RNG, event queue, phase schedule, clients, and adaptive policies.
+        verdict: failed
+        evidence_refs: [trigger_quantreplay_v12_repository]
+      - id: checkpoint_covers_hard_phases
+        claim: Recovery is exact during auctions and Trade-at-Last phases.
+        verdict: failed
+        evidence_refs: [trigger_quantreplay_v12_repository]
+    decision: partial_capability
+    removed_blockers: []
+    remaining_blockers:
+      - complete_market_checkpoint_absent
+      - adaptive_policy_state_absent
+      - common_action_semantics_unproved
+      - field_counterfactual_absent
+    candidate_harvest_authorized: false
+    exact_reentry_scope: none
+    next_review_condition: Re-audit only after a tagged release persists generator RNG, future scheduling, phase state, external strategies, and all in-progress order classes with an exact fork-equivalence test.
+    result_ref: papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md
+    outcome_accessed: false
+    supersedes_entry_ids: []
+  - id: orderbook_v026_checkpoint_capability
+    recorded_at: "2026-08-26T07:02:06Z"
+    source_kind: truth_or_control_asset
+    evidence_refs:
+      - trigger_orderbook_v026_repository
+      - discovery_cycle8_formal_result
+    related_route_ids:
+      - cross_simulator_disagreement_intervention_certificate
+      - adaptive_scheduler_information_filtration_response
+    related_failure_family_ids:
+      - two_system_contract_missing
+      - cross_system_estimand_mismatch
+    capability_claim: The v0.26.0 engine checkpoint supplies an independently maintained full market state for cross-engine response experiments.
+    audited_claims:
+      - id: matching_engine_recovery_complete
+        claim: The checkpoint and WAL restore detailed matching-engine state and reproduce the uninterrupted command-tape result.
+        verdict: satisfied
+        evidence_refs: [trigger_orderbook_v026_repository]
+      - id: market_population_checkpoint_complete
+        claim: The checkpoint includes simulator agents, their RNG, the scheduler, latency state, and the venue calendar.
+        verdict: failed
+        evidence_refs: [trigger_orderbook_v026_repository]
+      - id: independent_scientific_lineage
+        claim: The repository is an independently validated scientific market simulator rather than a matching-engine implementation and research harness.
+        verdict: failed
+        evidence_refs: [trigger_orderbook_v026_repository]
+    decision: partial_capability
+    removed_blockers: []
+    remaining_blockers:
+      - complete_market_checkpoint_absent
+      - independent_scientific_lineage_absent
+      - common_policy_filtration_absent
+      - field_counterfactual_absent
+    candidate_harvest_authorized: false
+    exact_reentry_scope: none
+    next_review_condition: Re-audit only after a tagged release includes the complete population, RNG, scheduler, latency, calendar, and action-observation state and an independent scientific validation lineage uses it.
+    result_ref: papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md
+    outcome_accessed: false
+    supersedes_entry_ids: []
+  - id: lobsim_replay_capability
+    recorded_at: "2026-08-26T07:02:06Z"
+    source_kind: truth_or_control_asset
+    evidence_refs:
+      - trigger_lobsim_repository
+      - discovery_cycle8_formal_result
+    related_route_ids:
+      - cross_simulator_disagreement_intervention_certificate
+      - interventional_lob_fidelity_benchmark
+    related_failure_family_ids:
+      - two_system_contract_missing
+      - causal_field_contract_missing
+    capability_claim: Deterministic L3 replay plus strategy injection removes the missing truth and cross-engine state blockers for active LOB response.
+    audited_claims:
+      - id: deterministic_l3_event_replay
+        claim: The pinned engine deterministically replays a per-order event language and records strategy fills and diagnostics.
+        verdict: satisfied
+        evidence_refs: [trigger_lobsim_repository]
+      - id: adaptive_population_truth
+        claim: The replay engine restores a stochastic adaptive market population and supplies the same-state no-action field counterfactual.
+        verdict: failed
+        evidence_refs: [trigger_lobsim_repository]
+    decision: not_trigger
+    removed_blockers: []
+    remaining_blockers:
+      - adaptive_population_state_absent
+      - external_interventional_truth_absent
+      - same_estimand_second_lineage_absent
+    candidate_harvest_authorized: false
+    exact_reentry_scope: none
+    next_review_condition: Re-audit only if a versioned population layer and independent field intervention contract are added without changing the event estimand.
+    result_ref: papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md
+    outcome_accessed: false
+    supersedes_entry_ids: []
+  - id: difflob_regime_conditioning_model_fork
+    recorded_at: "2026-08-26T07:02:06Z"
+    source_kind: primary_model_disagreement
+    evidence_refs:
+      - trigger_difflob_primary
+      - cycle16_interventional_surrogate_primary
+      - interventional_lob_formal_result
+    related_route_ids:
+      - interventional_lob_fidelity_benchmark
+      - prospective_counterfactual_market_simulator_validity
+    related_failure_family_ids:
+      - standard_parent_reduction
+      - causal_field_contract_missing
+      - observation_quotient_nonidentification
+    capability_claim: Regime-conditioned LOB diffusion creates a new same-estimand disagreement over market counterfactual response that reopens interventional simulator fidelity.
+    audited_claims:
+      - id: future_regime_control_is_legal_action
+        claim: Future trend, volatility, liquidity, or OFI labels correspond to an exchange or trader do-intervention with a fixed pre-state.
+        verdict: failed
+        evidence_refs: [trigger_difflob_primary]
+      - id: internal_controllability_identifies_field_response
+        claim: Reproducing and varying the conditioned regime identifies the response to a real forced market action.
+        verdict: failed
+        evidence_refs:
+          - trigger_difflob_primary
+          - cycle16_interventional_surrogate_primary
+      - id: same_estimand_model_disagreement
+        claim: DiffLOB and the closed interventionally consistent simulator route predict opposite responses for the same state, action, response, and conditioning set.
+        verdict: failed
+        evidence_refs:
+          - trigger_difflob_primary
+          - interventional_lob_formal_result
+    decision: not_trigger
+    removed_blockers: []
+    remaining_blockers:
+      - conditioning_is_not_intervention
+      - legal_action_mapping_absent
+      - field_counterfactual_absent
+      - generic_causal_parent_occupied
+    candidate_harvest_authorized: false
+    exact_reentry_scope: none
+    next_review_condition: Re-audit only if a descendant conditions on a frozen legal action, proves realizability within the market action grammar, and validates against an independently assigned same-state target.
+    result_ref: papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md
+    outcome_accessed: false
+    supersedes_entry_ids: []
+  - id: latency_impact_qr_model_fork
+    recorded_at: "2026-08-26T07:02:06Z"
+    source_kind: primary_model_disagreement
+    evidence_refs:
+      - cycle16_reality_gap_lob_primary
+      - discovery_cycle16_formal_result
+    related_route_ids:
+      - prospective_counterfactual_market_simulator_validity
+      - interventional_lob_fidelity_benchmark
+    related_failure_family_ids:
+      - direct_prior_collision
+      - causal_field_contract_missing
+      - observation_quotient_nonidentification
+    capability_claim: A latency-race and impact-memory queue-reactive simulator creates a new adjudicable disagreement over unseen real market-rule response.
+    audited_claims:
+      - id: interactive_latency_impact_model
+        claim: The primary work supplies an interactive queue-reactive simulator with calibrated latency races and impact-memory feedback.
+        verdict: satisfied
+        evidence_refs: [cycle16_reality_gap_lob_primary]
+      - id: external_counterfactual_truth
+        claim: The work supplies an independently assigned field intervention with complete state and a no-intervention potential outcome.
+        verdict: failed
+        evidence_refs: [cycle16_reality_gap_lob_primary]
+      - id: prior_reduction_invalidated
+        claim: Its model result invalidates Cycle 16's off-support transport or independent-intervention replication reduction.
+        verdict: failed
+        evidence_refs:
+          - cycle16_reality_gap_lob_primary
+          - discovery_cycle16_formal_result
+    decision: not_trigger
+    removed_blockers: []
+    remaining_blockers:
+      - external_interventional_truth_absent
+      - off_support_adaptation_unidentified
+      - independent_policy_environment_replication_absent
+    candidate_harvest_authorized: false
+    exact_reentry_scope: none
+    next_review_condition: Re-audit only if the same model class makes a frozen prediction for several independently governed future actions with complete lawful state and outcome contracts.
+    result_ref: papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md
+    outcome_accessed: false
+    supersedes_entry_ids: []

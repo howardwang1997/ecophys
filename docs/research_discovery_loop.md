@@ -134,6 +134,9 @@ records all raw programs and stage dispositions in the
 [search-cycle ledger](../research/discovery/search_cycle_ledger.yaml). The funnel prevents a
 weak raw idea from consuming a full fifteen-paper, two-system, real-bridge audit while
 preserving the same standard for any route that reaches Nature-scale activation.
+After a failure family saturates, proposed reasons to reopen it are separately audited in the
+[re-entry trigger ledger](../research/discovery/reentry_trigger_ledger.yaml). A partial engine,
+larger tape, or new model label cannot silently restart candidate harvesting.
 
 ## Forward stages
 

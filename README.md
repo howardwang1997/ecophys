@@ -228,6 +228,16 @@ licence and same-estimand contract. The
 therefore creates zero cards. Its prospectively frozen 10% full-T0 forecast resolved false (Brier
 0.0100). Two all-negative resolutions are insufficient to recalibrate the 15% active-status brake.
 
+The subsequent capability-trigger audit checked recent open engines and simulator papers before
+allowing another cycle. QuantReplay v12 persists detailed resting-book state, and `orderbook`
+v0.26.0 has a strong matching-engine checkpoint, but neither captures the complete adaptive market
+population, all RNG namespaces, scheduler/calendar, and external strategy state. `lobsim` is
+deterministic replay; DiffLOB conditions on future regimes rather than legal market actions; and the
+latest latency/impact queue-reactive model supplies another simulator rather than external
+counterfactual truth. The
+[trigger audit](papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md) therefore
+records five watch entries and **zero qualified triggers**. Cycle 17 remains unopened.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
@@ -238,6 +248,9 @@ The [topic-exploration runbook](docs/research_topic_exploration_runbook.md) give
 operational two-speed funnel, archetype routing, killer-twin, prior-art, ranking, and
 escalation sequence. Prospective cycle counts and dispositions are append-only in the
 [search-cycle ledger](research/discovery/search_cycle_ledger.yaml).
+Proposed exceptions to search-family saturation are append-only in the
+[re-entry trigger ledger](research/discovery/reentry_trigger_ledger.yaml); only a qualified entry
+can authorize another candidate-harvest cycle in that family.
 
 The forward stages are:
 

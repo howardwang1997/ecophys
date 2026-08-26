@@ -76,7 +76,9 @@ the cheapest observation, theorem, or intervention that could separate them.
 - After two bounded cycles in the same parent or failure family produce no machine card, do not
   spend a third cycle on a relabelled venue, mechanism, or method. Re-enter that family only when
   the cycle record names a new primary model disagreement, a newly available truth/control asset,
-  or a theorem that removes a recorded blocker. Record that trigger before harvesting candidates.
+  or a theorem that removes a recorded blocker. Record and validate that trigger first in
+  `research/discovery/reentry_trigger_ledger.yaml`; candidate harvesting is forbidden unless the
+  entry explicitly has `candidate_harvest_authorized: true`.
 
 ## Work log discipline (non-negotiable)
 

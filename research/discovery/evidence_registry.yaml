@@ -1625,3 +1625,35 @@ sources:
     license: official_site_terms
     role: Defines trigger-order handling and subsequent auction semantics for a market-native pause action.
     limitation: Activation is endogenous, thresholds are not fully public, and the no-pause potential outcome is absent.
+  - id: trigger_quantreplay_v12_repository
+    kind: official_repository
+    title: QuantReplay v12 open-source multi-asset market simulator
+    uri: https://github.com/Quod-Financial/quantreplay/tree/a58c7c6d5436601d447129a7a81e662ba102cd9c
+    version: v12_a58c7c6d5436601d447129a7a81e662ba102cd9c
+    license: Apache-2.0
+    role: Supplies a company-maintained FIX exchange simulator with seeded order generation, continuous and auction matching, L2 publication, replay, and order-book state persistence.
+    limitation: The persisted state excludes generator RNG, future scheduling, external strategy state, current phase, resting auction market orders, and Trade-at-Last orders, so it is not a complete branchable market checkpoint.
+  - id: trigger_orderbook_v026_repository
+    kind: official_repository
+    title: orderbook v0.26.0 deterministic matching engine and recovery harness
+    uri: https://github.com/intrepidkarthi/orderbook/tree/51d480cdb68b9989febb0b075d291cf891f425b3
+    version: v0.26.0_51d480cdb68b9989febb0b075d291cf891f425b3
+    license: MIT
+    role: Supplies a well-tested matching-engine checkpoint with order book, conditional orders, counters, duplicate guards, and command-log recovery.
+    limitation: The checkpoint belongs to the matching engine; simulator agents use external RNG and the engine deliberately holds no calendar, population scheduler, or adaptive-policy state.
+  - id: trigger_lobsim_repository
+    kind: official_repository
+    title: lobsim deterministic L3 replay and strategy-injection engine
+    uri: https://github.com/kpetridis24/lobsim/tree/0cb48ed89a9cd5568e974d988214cfbebf51ca51
+    version: 0cb48ed89a9cd5568e974d988214cfbebf51ca51
+    license: Apache-2.0
+    role: Supplies a deterministic per-order event language, historical L3 replay, strategy injection, fills, and diagnostic event records.
+    limitation: It is a replay and paper-execution state machine rather than a checkpoint-complete adaptive market population or an external field counterfactual.
+  - id: trigger_difflob_primary
+    kind: primary_work
+    title: "DiffLOB: Diffusion Models for Counterfactual Generation in Limit Order Books"
+    uri: https://arxiv.org/abs/2602.03776
+    version: arxiv_2602_03776
+    license: arxiv_terms
+    role: Provides a current regime-conditioned LOB generator and explicitly labels future trend, volatility, liquidity, and order-flow-imbalance conditions as counterfactual controls.
+    limitation: A future path-regime label is an outcome-conditioned event, not a legal market action or identified do-intervention; internal controllability does not remove the missing real interventional target.

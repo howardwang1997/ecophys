@@ -178,10 +178,14 @@ protocol, physics metaphor, or method label. Re-entry requires one recorded exog
    blocker; or
 3. a theorem or counterexample that invalidates the earlier reduction.
 
-Record the trigger before candidate harvesting. A new paper that repeats the old claim, a larger
-dataset with the same missing fields, or another implementation of the same mechanism family is
-not a trigger. When no trigger exists, switch source lane or work on a reusable truth asset rather
-than generate synonymous topics.
+Record every proposed trigger first in
+[`reentry_trigger_ledger.yaml`](../research/discovery/reentry_trigger_ledger.yaml). The entry must
+name the prior route and failure family, test the exact capability claim against pinned evidence,
+and keep `candidate_harvest_authorized: false` unless a named blocker is actually removed. Entries
+are append-only: a later release supersedes an earlier audit rather than rewriting it. A new paper
+that repeats the old claim, a larger dataset with the same missing fields, or another implementation
+of the same mechanism family is not a trigger. When no trigger exists, switch source lane or work on
+a reusable truth asset rather than generate synonymous topics.
 
 ### Probability and action policy
 

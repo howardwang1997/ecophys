@@ -99,6 +99,17 @@ SEARCH_FINAL_DISPOSITIONS = {
     "advanced",
     "deferred",
 }
+REENTRY_TRIGGER_SOURCE_KINDS = {
+    "primary_model_disagreement",
+    "truth_or_control_asset",
+    "theorem_or_counterexample",
+}
+REENTRY_TRIGGER_DECISIONS = {
+    "qualified_trigger",
+    "partial_capability",
+    "not_trigger",
+}
+REENTRY_TRIGGER_CLAIM_VERDICTS = {"satisfied", "partial", "failed"}
 KG_STATUS_MAP = {
     "candidate": "candidate",
     "parked": "parked",
@@ -511,16 +522,25 @@ def sha256_mapping_without(value: Mapping[str, object], omitted: str) -> str:
     return hashlib.sha256(canonical_json_bytes(payload)).hexdigest()
 
 
-def load_route_registry(repo_root: Path) -> tuple[dict[str, str], set[str]]:
+def load_route_registry(
+    repo_root: Path,
+) -> tuple[dict[str, str], set[str], dict[str, set[str]]]:
     path = repo_root / ".claude" / "memory" / "research_route_knowledge_graph.yaml"
     root = load_yaml(path, "route graph")
     statuses: dict[str, str] = {}
     locator_ids: set[str] = set()
+    failure_codes: dict[str, set[str]] = {}
     for index, raw_node in enumerate(require_list(root.get("nodes"), "route graph.nodes")):
         node = require_mapping(raw_node, f"route graph.nodes[{index}]")
         node_id = require_id(node.get("id"), f"route graph.nodes[{index}].id")
         status = require_string(node.get("status"), f"route graph.nodes[{index}].status")
         statuses[node_id] = status
+        failure_codes[node_id] = set(
+            require_string_list(
+                node.get("failure_codes"),
+                f"route graph.nodes[{index}].failure_codes",
+            )
+        )
         for field in ("evidence", "artifacts"):
             for locator_index, raw_locator in enumerate(
                 require_list(node.get(field), f"route graph.nodes[{index}].{field}")
@@ -543,13 +563,13 @@ def load_route_registry(repo_root: Path) -> tuple[dict[str, str], set[str]]:
                         f"route graph.nodes[{index}].{field}[{locator_index}].id",
                     )
                 )
-    return statuses, locator_ids
+    return statuses, locator_ids, failure_codes
 
 
 def validate_topic_search_policy(
     repo_root: Path,
     protocol: Mapping[str, object],
-) -> tuple[Mapping[str, object], str]:
+) -> tuple[Mapping[str, object], str, str]:
     policy = require_mapping(
         protocol.get("topic_search_funnel"),
         "protocol.topic_search_funnel",
@@ -568,6 +588,7 @@ def validate_topic_search_policy(
         "scientific_value_rule",
         "nature_activation_contract",
         "search_cycle_ledger",
+        "reentry_trigger_ledger",
     }
     require_exact_fields(policy, fields, "protocol.topic_search_funnel")
     if require_id(policy.get("policy_id"), "protocol.topic_search_funnel.policy_id") != (
@@ -667,7 +688,18 @@ def validate_topic_search_policy(
     if ledger_ref != "research/discovery/search_cycle_ledger.yaml":
         raise DiscoveryValidationError("protocol search-cycle ledger path differs from validator")
     safe_repo_path(repo_root, ledger_ref, "protocol.topic_search_funnel.search_cycle_ledger")
-    return policy, ledger_ref
+    trigger_ledger_ref = require_string(
+        policy.get("reentry_trigger_ledger"),
+        "protocol.topic_search_funnel.reentry_trigger_ledger",
+    )
+    if trigger_ledger_ref != "research/discovery/reentry_trigger_ledger.yaml":
+        raise DiscoveryValidationError("protocol re-entry trigger ledger path differs from validator")
+    safe_repo_path(
+        repo_root,
+        trigger_ledger_ref,
+        "protocol.topic_search_funnel.reentry_trigger_ledger",
+    )
+    return policy, ledger_ref, trigger_ledger_ref
 
 
 def load_protocol(
@@ -680,6 +712,7 @@ def load_protocol(
     Mapping[str, object],
     str,
     Mapping[str, object],
+    str,
     str,
 ]:
     path = repo_root / "research" / "discovery" / "protocol.yaml"
@@ -794,7 +827,10 @@ def load_protocol(
     if forecast_ledger != "research/discovery/forecast_ledger.yaml":
         raise DiscoveryValidationError("protocol forecast ledger path differs from validator")
     safe_repo_path(repo_root, forecast_ledger, "protocol.decision_policy.forecast_ledger")
-    search_policy, search_ledger = validate_topic_search_policy(repo_root, protocol)
+    search_policy, search_ledger, trigger_ledger = validate_topic_search_policy(
+        repo_root,
+        protocol,
+    )
     nature = require_mapping(
         protocol.get("nature_scale_evidence"),
         "protocol.nature_scale_evidence",
@@ -943,6 +979,7 @@ def load_protocol(
         forecast_ledger,
         search_policy,
         search_ledger,
+        trigger_ledger,
     )
 
 
@@ -1420,6 +1457,211 @@ def validate_search_cycle_ledger(
         raw_total += parsed_counts["raw_question_programs"]
         card_total += parsed_counts["machine_cards"]
     return len(cycle_ids), raw_total, card_total
+
+
+def validate_reentry_trigger_ledger(
+    repo_root: Path,
+    ledger_ref: str,
+    route_ids: set[str],
+    route_failure_codes: Mapping[str, set[str]],
+    family_ids: set[str],
+    known_evidence: Mapping[str, EvidenceMeta],
+) -> tuple[int, int]:
+    path = safe_repo_path(repo_root, ledger_ref, "re-entry trigger ledger")
+    root = load_yaml(path, "re-entry trigger ledger")
+    require_exact_fields(
+        root,
+        {"schema_version", "policy_id", "entries"},
+        "re-entry trigger ledger",
+    )
+    require_schema_version_one(
+        root.get("schema_version"),
+        "re-entry trigger ledger.schema_version",
+    )
+    if root.get("policy_id") != "ecomd_search_family_reentry_v1":
+        raise DiscoveryValidationError("re-entry trigger ledger policy id differs from protocol")
+
+    entry_fields = {
+        "id",
+        "recorded_at",
+        "source_kind",
+        "evidence_refs",
+        "related_route_ids",
+        "related_failure_family_ids",
+        "capability_claim",
+        "audited_claims",
+        "decision",
+        "removed_blockers",
+        "remaining_blockers",
+        "candidate_harvest_authorized",
+        "exact_reentry_scope",
+        "next_review_condition",
+        "result_ref",
+        "outcome_accessed",
+        "supersedes_entry_ids",
+    }
+    claim_fields = {"id", "claim", "verdict", "evidence_refs"}
+    entry_ids: set[str] = set()
+    qualified_count = 0
+    previous_recorded_at: datetime | None = None
+    for index, raw_entry in enumerate(
+        require_list(root.get("entries"), "re-entry trigger ledger.entries")
+    ):
+        context = f"re-entry trigger ledger.entries[{index}]"
+        entry = require_mapping(raw_entry, context)
+        require_exact_fields(entry, entry_fields, context)
+        entry_id = require_id(entry.get("id"), f"{context}.id")
+        if entry_id in entry_ids:
+            raise DiscoveryValidationError(f"duplicate re-entry trigger id: {entry_id}")
+        recorded_at = require_utc_timestamp(entry.get("recorded_at"), f"{context}.recorded_at")
+        if previous_recorded_at is not None and recorded_at < previous_recorded_at:
+            raise DiscoveryValidationError("re-entry trigger entries must be chronological")
+        previous_recorded_at = recorded_at
+
+        source_kind = require_string(entry.get("source_kind"), f"{context}.source_kind")
+        if source_kind not in REENTRY_TRIGGER_SOURCE_KINDS:
+            raise DiscoveryValidationError(f"{context}.source_kind is unknown")
+        validate_evidence_refs(
+            entry.get("evidence_refs"),
+            f"{context}.evidence_refs",
+            known_evidence,
+            allow_empty=False,
+        )
+        related_routes = set(
+            require_string_list(
+                entry.get("related_route_ids"),
+                f"{context}.related_route_ids",
+                allow_empty=False,
+            )
+        )
+        unknown_routes = related_routes - route_ids
+        if unknown_routes:
+            raise DiscoveryValidationError(
+                f"{context} has unknown related routes: {sorted(unknown_routes)}"
+            )
+        related_families = set(
+            require_string_list(
+                entry.get("related_failure_family_ids"),
+                f"{context}.related_failure_family_ids",
+                allow_empty=False,
+            )
+        )
+        unknown_families = related_families - family_ids
+        if unknown_families:
+            raise DiscoveryValidationError(
+                f"{context} has unknown failure families: {sorted(unknown_families)}"
+            )
+        require_string(entry.get("capability_claim"), f"{context}.capability_claim")
+
+        claim_verdicts: list[str] = []
+        claim_ids: set[str] = set()
+        for claim_index, raw_claim in enumerate(
+            require_list(entry.get("audited_claims"), f"{context}.audited_claims")
+        ):
+            claim_context = f"{context}.audited_claims[{claim_index}]"
+            claim = require_mapping(raw_claim, claim_context)
+            require_exact_fields(claim, claim_fields, claim_context)
+            claim_id = require_id(claim.get("id"), f"{claim_context}.id")
+            if claim_id in claim_ids:
+                raise DiscoveryValidationError(f"{context} has duplicate audited claim {claim_id}")
+            claim_ids.add(claim_id)
+            require_string(claim.get("claim"), f"{claim_context}.claim")
+            verdict = require_string(claim.get("verdict"), f"{claim_context}.verdict")
+            if verdict not in REENTRY_TRIGGER_CLAIM_VERDICTS:
+                raise DiscoveryValidationError(f"{claim_context}.verdict is unknown")
+            claim_verdicts.append(verdict)
+            validate_evidence_refs(
+                claim.get("evidence_refs"),
+                f"{claim_context}.evidence_refs",
+                known_evidence,
+                allow_empty=False,
+            )
+        if not claim_ids:
+            raise DiscoveryValidationError(f"{context}.audited_claims cannot be empty")
+
+        decision = require_string(entry.get("decision"), f"{context}.decision")
+        if decision not in REENTRY_TRIGGER_DECISIONS:
+            raise DiscoveryValidationError(f"{context}.decision is unknown")
+        removed = set(
+            require_string_list(
+                entry.get("removed_blockers"),
+                f"{context}.removed_blockers",
+            )
+        )
+        remaining = set(
+            require_string_list(
+                entry.get("remaining_blockers"),
+                f"{context}.remaining_blockers",
+                allow_empty=False,
+            )
+        )
+        for blocker in removed | remaining:
+            require_id(blocker, f"{context}.blocker")
+        overlap = removed & remaining
+        if overlap:
+            raise DiscoveryValidationError(
+                f"{context} lists blockers as both removed and remaining: {sorted(overlap)}"
+            )
+        recorded_route_blockers = set().union(
+            *(route_failure_codes[route_id] for route_id in related_routes)
+        )
+        unknown_removed = removed - recorded_route_blockers
+        if unknown_removed:
+            raise DiscoveryValidationError(
+                f"{context} claims to remove unrecorded blockers: {sorted(unknown_removed)}"
+            )
+        authorized = require_bool(
+            entry.get("candidate_harvest_authorized"),
+            f"{context}.candidate_harvest_authorized",
+        )
+        if authorized != (decision == "qualified_trigger"):
+            raise DiscoveryValidationError(
+                f"{context} may authorize candidate harvesting only for a qualified trigger"
+            )
+        reentry_scope = require_string(
+            entry.get("exact_reentry_scope"),
+            f"{context}.exact_reentry_scope",
+        )
+        if authorized:
+            qualified_count += 1
+            if not removed or "satisfied" not in claim_verdicts:
+                raise DiscoveryValidationError(
+                    f"{context} qualified trigger must remove a blocker with a satisfied audited claim"
+                )
+            if reentry_scope == "none":
+                raise DiscoveryValidationError(f"{context} qualified trigger needs a bounded scope")
+        elif reentry_scope != "none":
+            raise DiscoveryValidationError(
+                f"{context} non-trigger must set exact_reentry_scope to none"
+            )
+        if decision == "not_trigger" and removed:
+            raise DiscoveryValidationError(f"{context} non-trigger cannot remove a blocker")
+        if decision == "partial_capability" and not ({"partial", "satisfied"} & set(claim_verdicts)):
+            raise DiscoveryValidationError(
+                f"{context} partial capability needs a partial or satisfied audited claim"
+            )
+
+        require_string(
+            entry.get("next_review_condition"),
+            f"{context}.next_review_condition",
+        )
+        result_ref = require_string(entry.get("result_ref"), f"{context}.result_ref")
+        safe_repo_path(repo_root, result_ref, f"{context}.result_ref")
+        if require_bool(entry.get("outcome_accessed"), f"{context}.outcome_accessed"):
+            raise DiscoveryValidationError(f"{context} cannot inspect outcomes during trigger audit")
+        supersedes = require_string_list(
+            entry.get("supersedes_entry_ids"),
+            f"{context}.supersedes_entry_ids",
+        )
+        if len(supersedes) != len(set(supersedes)):
+            raise DiscoveryValidationError(f"{context} has duplicate superseded entries")
+        unknown_superseded = set(supersedes) - entry_ids
+        if unknown_superseded:
+            raise DiscoveryValidationError(
+                f"{context} supersedes unknown or later entries: {sorted(unknown_superseded)}"
+            )
+        entry_ids.add(entry_id)
+    return len(entry_ids), qualified_count
 
 
 def load_failure_families(repo_root: Path, route_ids: set[str]) -> set[str]:
@@ -2498,6 +2740,60 @@ def validate_protected_sandbox_history(repo_root: Path, base_ref: str) -> str:
                 )
         forecast_history_status = "prefixes preserved"
 
+    search_ref = "research/discovery/search_cycle_ledger.yaml"
+    search_history_status = "introduced after protected base"
+    if search_ref in base_discovery_files:
+        base_search = yaml_mapping_from_bytes(
+            git_file_bytes(repo_root, base_ref, search_ref),
+            f"protected search-cycle ledger {base_ref}",
+        )
+        current_search = load_yaml(repo_root / search_ref, "current search-cycle ledger")
+        for field in ("schema_version", "policy_id", "scope_start_cycle", "historical_baseline"):
+            if current_search.get(field) != base_search.get(field):
+                raise DiscoveryValidationError(
+                    f"search-cycle ledger rewrote protected field {field}"
+                )
+        base_cycles = require_list(
+            base_search.get("cycles"),
+            f"protected search-cycle ledger {base_ref}.cycles",
+        )
+        current_cycles = require_list(
+            current_search.get("cycles"),
+            "current search-cycle ledger.cycles",
+        )
+        if current_cycles[: len(base_cycles)] != base_cycles:
+            raise DiscoveryValidationError(
+                "search-cycle ledger does not preserve the protected cycles prefix"
+            )
+        search_history_status = "prefix preserved"
+
+    trigger_ref = "research/discovery/reentry_trigger_ledger.yaml"
+    trigger_history_status = "introduced after protected base"
+    if trigger_ref in base_discovery_files:
+        base_trigger = yaml_mapping_from_bytes(
+            git_file_bytes(repo_root, base_ref, trigger_ref),
+            f"protected re-entry trigger ledger {base_ref}",
+        )
+        current_trigger = load_yaml(repo_root / trigger_ref, "current re-entry trigger ledger")
+        for field in ("schema_version", "policy_id"):
+            if current_trigger.get(field) != base_trigger.get(field):
+                raise DiscoveryValidationError(
+                    f"re-entry trigger ledger rewrote protected field {field}"
+                )
+        base_trigger_entries = require_list(
+            base_trigger.get("entries"),
+            f"protected re-entry trigger ledger {base_ref}.entries",
+        )
+        current_trigger_entries = require_list(
+            current_trigger.get("entries"),
+            "current re-entry trigger ledger.entries",
+        )
+        if current_trigger_entries[: len(base_trigger_entries)] != base_trigger_entries:
+            raise DiscoveryValidationError(
+                "re-entry trigger ledger does not preserve the protected entries prefix"
+            )
+        trigger_history_status = "prefix preserved"
+
     new_sandbox_ids = current_sandbox_ids - base_sandbox_ids
     tainted_sandbox_ids = {
         require_id(entry.get("sandbox_id"), "sandbox taint registry sandbox_id")
@@ -2538,7 +2834,9 @@ def validate_protected_sandbox_history(repo_root: Path, base_ref: str) -> str:
     return (
         f"Protected sandbox history OK against {base_ref}: "
         f"{len(base_sandbox_ids)} inherited, {len(new_sandbox_ids)} authorization-only new; "
-        f"forecast ledger {forecast_history_status}"
+        f"forecast ledger {forecast_history_status}; "
+        f"search-cycle ledger {search_history_status}; "
+        f"re-entry trigger ledger {trigger_history_status}"
     )
 
 
@@ -3377,12 +3675,13 @@ def validate_discovery(
         forecast_ledger_ref,
         _,
         search_cycle_ledger_ref,
+        reentry_trigger_ledger_ref,
     ) = load_protocol(repo_root)
     search_cycle_count, search_question_count, search_card_count = validate_search_cycle_ledger(
         repo_root,
         search_cycle_ledger_ref,
     )
-    route_statuses, route_locator_ids = load_route_registry(repo_root)
+    route_statuses, route_locator_ids, route_failure_codes = load_route_registry(repo_root)
     external_evidence = load_evidence_registry(repo_root)
     route_evidence = {
         locator_id: EvidenceMeta(epistemic_class="clean_route_locator")
@@ -3395,6 +3694,14 @@ def validate_discovery(
     )
     clean_evidence = {**external_evidence, **route_evidence}
     family_ids = load_failure_families(repo_root, set(route_statuses))
+    trigger_count, qualified_trigger_count = validate_reentry_trigger_ledger(
+        repo_root,
+        reentry_trigger_ledger_ref,
+        set(route_statuses),
+        route_failure_codes,
+        family_ids,
+        clean_evidence,
+    )
     forecast_count, resolution_count, floor_resolution_count = validate_forecast_ledger(
         repo_root,
         forecast_ledger_ref,
@@ -3522,6 +3829,7 @@ def validate_discovery(
         f"{transition_count} status transitions, {len(sandbox_ids)} exploration sandboxes "
         f"({sandbox_summary}), {forecast_count} prospective forecasts "
         f"({resolution_count} resolved; {floor_resolution_count} T0-floor resolutions), "
+        f"{trigger_count} re-entry trigger audits ({qualified_trigger_count} qualified), "
         f"{search_cycle_count} prospective search cycles "
         f"({search_question_count} raw questions; {search_card_count} cards)"
     )

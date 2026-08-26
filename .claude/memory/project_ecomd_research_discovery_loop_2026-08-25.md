@@ -330,6 +330,15 @@ different market mechanisms rather than one numerical estimand. Three nonduplica
 failed closed and the largest hostile-T0 lower bound was three percent. See
 `papers/proposal/ecomd_discovery_loop_topic_cycle_8_cross_engine_discrepancy_result_2026-08-26.md`.
 
+After Cycle 16, a separate source-only capability audit tested five possible exceptions to the
+new search-family saturation rule. QuantReplay v12 and `orderbook` v0.26.0 improve exchange-engine
+recovery but do not checkpoint complete adaptive populations, RNG namespaces, scheduling/calendar,
+and external strategy state. `lobsim` remains replay; DiffLOB conditions on future regimes rather
+than legal actions; and the current latency/impact queue-reactive model adds no field
+counterfactual. The append-only `research/discovery/reentry_trigger_ledger.yaml` records zero
+qualified triggers, so Cycle 17 remains unopened. See
+`papers/proposal/ecomd_reentry_capability_trigger_audit_2026-08-26.md`.
+
 ## Validation state
 
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
@@ -337,8 +346,9 @@ locators, one parked discovery card, 39 evidence records, 12 failure families, a
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
 five decisive primary-work records. After sixteen bounded topic cycles, current validation is
 235 route nodes, 243 edges and 850 route locators; Discovery governance has one failed-closed
-card, 203 clean external evidence records, zero tainted sandbox results, 12 failure families,
+card, 207 clean external evidence records, zero tainted sandbox results, 12 failure families,
 25 primary assignments, one transition, zero authorized sandboxes, seven prospective search cycles
-with 84 raw questions, and three prospective forecasts. Both resolved full-T0 forecasts are false;
+with 84 raw questions, five re-entry trigger audits with zero qualified, and three prospective
+forecasts. Both resolved full-T0 forecasts are false;
 the Rule 605 component forecast remains unresolved. Two all-negative full-T0 resolutions are still
 insufficient to calibrate the 15% floor.

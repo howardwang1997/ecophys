@@ -125,6 +125,13 @@ def copy_fixture(tmp_path: Path) -> Path:
         result_dir
         / "ecomd_discovery_loop_topic_cycle_16_prospective_simulator_validity_result_2026-08-26.md",
     )
+    shutil.copy2(
+        REPO_ROOT
+        / "papers"
+        / "proposal"
+        / "ecomd_reentry_capability_trigger_audit_2026-08-26.md",
+        result_dir / "ecomd_reentry_capability_trigger_audit_2026-08-26.md",
+    )
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -156,6 +163,10 @@ def forecast_path(repo: Path) -> Path:
 
 def search_cycle_path(repo: Path) -> Path:
     return repo / "research" / "discovery" / "search_cycle_ledger.yaml"
+
+
+def reentry_trigger_path(repo: Path) -> Path:
+    return repo / "research" / "discovery" / "reentry_trigger_ledger.yaml"
 
 
 def update_decision_hash(repo: Path) -> None:
@@ -731,11 +742,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "203 evidence records" in result
+    assert "207 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
     assert "3 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
+    assert "5 re-entry trigger audits (0 qualified)" in result
     assert "7 prospective search cycles (84 raw questions; 0 cards)" in result
 
 
@@ -791,6 +803,30 @@ def test_protected_history_allows_appended_forecast_resolution(tmp_path: Path) -
     result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
     assert "3 prospective forecasts (3 resolved; 2 T0-floor resolutions)" in result
+
+
+def test_protected_history_rejects_rewritten_reentry_trigger(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    child_mappings(ledger, "entries")[0]["capability_claim"] = "Rewritten after audit."
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    assert "Discovery governance OK" in validate_discovery(repo, as_of=FIXED_AS_OF)
+    with pytest.raises(DiscoveryValidationError, match=r"re-entry trigger ledger.*prefix"):
+        validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+
+
+def test_protected_history_rejects_rewritten_search_cycle(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    ledger = load_mapping(search_cycle_path(repo))
+    child_mappings(ledger, "cycles")[0]["notes"] = "Rewritten after the cycle closed."
+    write_mapping(search_cycle_path(repo), ledger)
+
+    assert "Discovery governance OK" in validate_discovery(repo, as_of=FIXED_AS_OF)
+    with pytest.raises(DiscoveryValidationError, match=r"search-cycle ledger.*prefix"):
+        validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
 
 def test_protected_history_rejects_rewritten_authorization(tmp_path: Path) -> None:
@@ -1398,6 +1434,41 @@ def test_search_cycle_probability_cannot_terminalize(tmp_path: Path) -> None:
     write_mapping(search_cycle_path(repo), ledger)
 
     with pytest.raises(DiscoveryValidationError, match="probability alone"):
+        validate_discovery(repo)
+
+
+def test_nonqualified_reentry_trigger_cannot_authorize_harvest(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    entry = child_mappings(ledger, "entries")[0]
+    entry["candidate_harvest_authorized"] = True
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="only for a qualified trigger"):
+        validate_discovery(repo)
+
+
+def test_reentry_trigger_requires_registered_route(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    child_mappings(ledger, "entries")[0]["related_route_ids"] = ["unknown_route"]
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="unknown related routes"):
+        validate_discovery(repo)
+
+
+def test_qualified_reentry_trigger_must_remove_recorded_blocker(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(reentry_trigger_path(repo))
+    entry = child_mappings(ledger, "entries")[0]
+    entry["decision"] = "qualified_trigger"
+    entry["removed_blockers"] = ["invented_blocker"]
+    entry["candidate_harvest_authorized"] = True
+    entry["exact_reentry_scope"] = "one_bounded_cycle"
+    write_mapping(reentry_trigger_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="unrecorded blockers"):
         validate_discovery(repo)
 
 
