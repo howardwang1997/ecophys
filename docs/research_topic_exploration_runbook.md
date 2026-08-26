@@ -115,6 +115,10 @@ Use at most three anchor primary works and at least one exact killer toy. Ask:
   matrix and the allocation policy? Test static feasible-set inclusion separately from online
   sequencing/crowding and endogenous response. If these layers have different signs, aggregate
   topology, degree, or total capacity cannot support a universal response claim.
+- For a paired-pulse or echo claim, first subtract the two single-pulse responses and expand the
+  result through second order. A delayed bilinear residual is a generic Volterra cross-kernel;
+  require an independently observed phase coordinate, a frozen timing law, and a legal operation
+  that changes phase while preserving all non-phase market state before escalating rephasing.
 
 Select by Pareto dominance on discriminative power, identifiability, residual novelty, positive/null
 value, transfer, feasibility, and cost of the next decisive update. Do not use an arithmetic score

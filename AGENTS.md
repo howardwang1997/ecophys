@@ -49,6 +49,10 @@ the cheapest observation, theorem, or intervention that could separate them.
   labelled capacity matrix and the admissible allocation policy. Separate static feasible-set
   inclusion, online priority/crowding, and endogenous strategic response; an aggregate topology or
   total-capacity statistic is not a native state when those layers disagree.
+- Before escalating a paired-pulse or echo claim, expand the weak-input response through second
+  order. A delayed paired-minus-singles residual is generically a Volterra cross-kernel; require an
+  independently observable phase coordinate, a frozen timing law, and a legal state-preserving
+  phase reversal or scramble before treating it as rephasing physics.
 - Assign the question to one archetype before escalating: `theory_mechanism`,
   `measurement_method`, `empirical_intervention`, or `simulator_method`. Apply the archetype's
   early truth contract; the project-wide two-lineage and real-bridge standard is checked only for

@@ -177,6 +177,18 @@ protocol now completes labelled capacities and allocation policy and separates s
 endogenous response before escalating a network law. No card, forecast, sandbox, outcome, data
 action, simulation, implementation, outreach, purchase or compute was authorized.
 
+Cycle 14 resolved the Cycle 10 paper-level echo question and then sampled protocol-native stored
+state and ranked loss transfer. Twelve programs became six quick screens and two collision
+screens; none reached F3. The paired-minus-singles liquidity residual is generically a second-order
+Volterra cross-kernel, and native order age moves with one characteristic velocity rather than a
+heterogeneous phase field. Ranked ADL is directly occupied by current impossibility, online-
+learning and risk-minimization work. GMX pending impact is a documented closeability corner that
+reduces to deterministic feasibility when the complete protocol state is supplied; dynamics still
+need future flow, oracle, keeper and policy kernels. Vega parked pegs and Eurex synthetic-path
+allocation deduplicated against existing closures. The funnel now tests any echo claim for a native
+phase coordinate and a legal state-preserving phase operation. No card, forecast, sandbox, outcome,
+data action, simulation, implementation, outreach, purchase or compute was authorized.
+
 The first proposed synthetic generator is retained only as the outcome-blind Bourse
 counterexample preflight in
 `papers/proposal/bourse_disposable_market_counterexample_preflight_2026-08-25.md`. Bourse
@@ -298,10 +310,10 @@ failed closed and the largest hostile-T0 lower bound was three percent. See
 At installation, both validators passed with 119 route nodes, 125 typed edges, 364 route
 locators, one parked discovery card, 39 evidence records, 12 failure families, and 20
 primary-work assignments. The terminal audit changes that card to failed-closed and adds
-five decisive primary-work records. After twelve bounded topic cycles, current validation is
-219 route nodes, 227 edges and 761 route locators; Discovery governance has one failed-closed
-card, 131 clean external evidence records, zero tainted sandbox results, 12 failure families,
-25 primary assignments, one transition, zero authorized sandboxes, three prospective search cycles
-with 36 raw questions, and two prospective forecasts. The first full-T0 forecast resolved false;
+five decisive primary-work records. After fourteen bounded topic cycles, current validation is
+227 route nodes, 235 edges and 804 route locators; Discovery governance has one failed-closed
+card, 162 clean external evidence records, zero tainted sandbox results, 12 failure families,
+25 primary assignments, one transition, zero authorized sandboxes, five prospective search cycles
+with 60 raw questions, and two prospective forecasts. The first full-T0 forecast resolved false;
 the Rule 605 component forecast remains unresolved. One full-T0 resolution is still insufficient
 to calibrate the 15% floor.

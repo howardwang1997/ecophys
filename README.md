@@ -197,6 +197,16 @@ therefore creates zero cards and no F3 forecast. The cycle adds a quick gate tha
 pooling, online allocation, and endogenous response before a network statistic can be treated as
 market state.
 
+Cycle 14 resolved the strongest paper-only question deferred by Cycle 10 and sampled current
+protocol-native residual state. The paired-pulse liquidity residual reduced to a generic
+second-order Volterra cross-kernel, while common-velocity order age supplied no native phase
+coordinate or state-preserving rephasing operation. Ranked ADL was directly occupied by current
+impossibility, online-control, and risk-minimization work. GMX pending impact was a documented
+complete-state closeability predicate rather than a new collective law, and Vega/Eurex descendants
+deduplicated against existing hosted-order and implied-liquidity closures. The
+[Cycle 14 result](papers/proposal/ecomd_discovery_loop_topic_cycle_14_residual_state_result_2026-08-26.md)
+creates zero cards and no F3 forecast.
+
 ## Research Discovery Loop
 
 Topic selection is a versioned scientific process rather than idea generation followed by
@@ -318,6 +328,11 @@ The bilateral-credit follow-up is in the
 twelve raw questions became six quick screens and three collision screens; all three closed on
 labelled-state insufficiency, resource-pooling, path-geometry, direct-prior, or private-state gates
 before F3, with zero cards and no new forecast.
+The residual-state and loss-transfer follow-up is in the
+[Cycle 14 result](papers/proposal/ecomd_discovery_loop_topic_cycle_14_residual_state_result_2026-08-26.md):
+twelve raw questions became six quick screens and two collision screens; the deferred echo,
+ranked ADL, stored pending impact, parked pegs, and synthetic allocation all closed or
+deduplicated before F3, with zero cards and no new forecast.
 
 ```bash
 conda run -n ecophys python scripts/validate_research_discovery.py
