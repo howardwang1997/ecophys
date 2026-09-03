@@ -37,6 +37,11 @@ from run_constraint_iclr_pdebench_fno import (
     validate_data_lock,
 )
 
+REGISTERED_FORMAL_SEEDS = {
+    "pdebench_advection_beta0.4_fno_factorial_v1": list(range(3000, 3030)),
+    "pdebench_advection_beta0.4_unet_factorial_v1": list(range(7000, 7030)),
+}
+
 
 def _validate_hashed_artifact(
     root: Path, raw_path: str, expected_sha256: str, label: str
@@ -216,12 +221,18 @@ def _existing_ids(path: Path) -> set[str]:
 
 def formal_cube_seeds(config: Mapping[str, Any]) -> list[int]:
     seeds = [int(value) for value in config["seeds"]]
+    benchmark_id = str(config.get("benchmark_id", ""))
+    registered = REGISTERED_FORMAL_SEEDS.get(benchmark_id)
+    if registered is None:
+        raise RuntimeError("formal cube benchmark is not in the immutable seed registry")
     raw_universe = config.get("formal_seed_universe")
     expected = (
         [int(value) for value in raw_universe]
         if raw_universe is not None
-        else list(range(3000, 3030))
+        else registered
     )
+    if expected != registered:
+        raise RuntimeError("formal seed universe differs from the immutable registry")
     if len(expected) != 30 or len(set(expected)) != 30:
         raise RuntimeError("formal cube requires exactly 30 unique registered seeds")
     if seeds != expected:

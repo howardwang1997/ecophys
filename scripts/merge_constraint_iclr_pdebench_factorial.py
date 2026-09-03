@@ -16,6 +16,10 @@ MECHANISM_ORDER = {
     "hard_abs": 3,
     "hard": 4,
 }
+REGISTERED_SEED_UNIVERSES = {
+    "pdebench_burgers_nu0.01_fno_factorial_v1": tuple(range(4000, 4030)),
+    "pdebench_advection_beta0.4_unet_factorial_v1": tuple(range(7000, 7030)),
+}
 
 
 def load_shards(paths: list[Path]) -> dict[tuple[int, str], tuple[str, dict[str, Any]]]:
@@ -97,8 +101,11 @@ def registered_merge_settings(config: dict[str, Any]) -> tuple[tuple[int, ...], 
     if set(shard_seeds) != set(universe):
         raise RuntimeError("registered worker shards do not partition the seed universe")
     benchmark_id = str(config.get("benchmark_id", ""))
-    if not benchmark_id:
-        raise RuntimeError("registered merge requires a benchmark_id")
+    registered_universe = REGISTERED_SEED_UNIVERSES.get(benchmark_id)
+    if registered_universe is None:
+        raise RuntimeError("registered merge benchmark is not in the immutable registry")
+    if universe != registered_universe:
+        raise RuntimeError("formal seed universe differs from the immutable registry")
     return seeds, benchmark_id
 
 

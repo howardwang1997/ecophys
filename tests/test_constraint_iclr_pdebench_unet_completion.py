@@ -23,13 +23,24 @@ def test_registered_merge_requires_exact_disjoint_seed_partition() -> None:
         "seeds": [7, 8, 9, 10],
         "formal_seed_universe": [7, 8, 9, 10],
         "formal_seed_shards": {"a": [7, 8], "b": [9, 10]},
-        "benchmark_id": "registered-benchmark",
+        "benchmark_id": "pdebench_advection_beta0.4_unet_factorial_v1",
+    }
+    with pytest.raises(RuntimeError, match="immutable registry"):
+        registered_merge_settings(config)
+    config["seeds"] = list(range(7000, 7030))
+    config["formal_seed_universe"] = list(range(7000, 7030))
+    config["formal_seed_shards"] = {
+        "a": list(range(7000, 7015)),
+        "b": list(range(7015, 7030)),
     }
     assert registered_merge_settings(config) == (
-        (7, 8, 9, 10),
-        "registered-benchmark",
+        tuple(range(7000, 7030)),
+        "pdebench_advection_beta0.4_unet_factorial_v1",
     )
-    config["formal_seed_shards"] = {"a": [7, 8], "b": [8, 9, 10]}
+    config["formal_seed_shards"] = {
+        "a": list(range(7000, 7015)),
+        "b": [7014, *range(7015, 7030)],
+    }
     with pytest.raises(RuntimeError, match="overlap"):
         registered_merge_settings(config)
 
@@ -37,11 +48,16 @@ def test_registered_merge_requires_exact_disjoint_seed_partition() -> None:
 def test_formal_cube_uses_explicit_registered_seed_universe() -> None:
     registered = list(range(7000, 7030))
     assert formal_cube_seeds(
-        {"seeds": registered, "formal_seed_universe": registered}
+        {
+            "benchmark_id": "pdebench_advection_beta0.4_unet_factorial_v1",
+            "seeds": registered,
+            "formal_seed_universe": registered,
+        }
     ) == registered
     with pytest.raises(RuntimeError, match="differ"):
         formal_cube_seeds(
             {
+                "benchmark_id": "pdebench_advection_beta0.4_unet_factorial_v1",
                 "seeds": list(range(3000, 3030)),
                 "formal_seed_universe": registered,
             }

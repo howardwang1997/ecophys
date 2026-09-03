@@ -278,6 +278,24 @@ bytes; its watcher is alive but waits silently for exact byte coverage and canno
 missing transfer. The V100-A shard has not been retrieved to the Mac workspace, and R2 backup was
 not verified in this audit.
 
+The 2026-09-03 outcome-blind completion repair supersedes that last operational paragraph without
+changing the frozen experiment. V100-A's 75-record shard and 60 checkpoints were validated and
+preserved on the Mac, V100-B, and R2. A parallel range transfer atomically reconstructed V100-B's
+exact 8,232,966,952-byte file only after SHA-256 `d973ff2b...e3b6` passed; the original watcher then
+independently verified it and started only registered seeds 7015--7029. Metrics remain sealed until
+75+75 completion and the registered core/cube analyzers exit. Use branch
+`paper-d-iclr-2027-completion` and recovery commit `02e79498d`; the completion snapshot itself is
+bound by `experiments/constraint_attribution_iclr/deployment/unet_completion_snapshot_20260903.sha256s`.
+
+The previously missing shallow-water core JSONL, cube JSONL, and checkpoint lock are now recovered
+locally with exact canonical hashes `5e486167...cef5bc`, `69dfa936...723fa`, and
+`772c52f9...1037b5`. Reanalysis must use the distributed configs
+`pdebench_swe_rdb_factorial_distributed_20260902.yaml` and
+`pdebench_swe_rdb_enforcement_cube_distributed_20260902.yaml`; the analyzers' defaults name the
+single-worker parents and correctly fail source-manifest validation on the formal distributed
+records. `scripts/build_paper_d_supplement.py` now encodes these exact runtime identities and fails
+closed on coverage, primary-cell, hash-binding, integrity, or deterministic-rebuild drift.
+
 The U-Net scientific freeze requires a 150-record core, one-shot core analysis, 120-checkpoint
 lock, and 90-record inference-toggle cube. The deployed snapshot implements only core production
 and generic core analysis. It contains no U-Net-specific shard merger, cube configuration, cube
