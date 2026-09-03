@@ -1,0 +1,90 @@
+stage: external_confirmation
+benchmark_id: pdebench_advection_beta0.4_fno_v2
+
+dataset:
+  path: data/pdebench/1D_Advection_Sols_beta0.4.hdf5
+  doi: 10.18419/DARUS-2986
+  version: 8
+  file_id: 255674
+  url: https://darus.uni-stuttgart.de/api/access/datafile/255674
+  filename: 1D_Advection_Sols_beta0.4.hdf5
+  expected_bytes: 8232966952
+  expected_md5: d595bbfd2c659df995a93cd40d6ea568
+  expected_sha256: d973ff2bb3c2a5edf42957ff029b78672451532ebd6bf475848ff23cfd3ee3b6
+  expected_shape: [10000, 201, 1024]
+  expected_dtype: float32
+  expected_x_start: 0.00048828125
+  expected_x_period: 1.0
+  expected_t_start: 0.0
+  expected_t_stop: 2.0
+  expected_t_coordinate_length: 202
+  expected_t_trailing_stop: 2.01
+  coordinate_atol: 0.000001
+  max_abs_mean_drift: 0.00001
+  restriction_method: block_average
+  invariant_spatial_strides: [1, 2, 4]
+  restriction_identity_atol: 0.000001
+  scan_chunk_trajectories: 16
+  lock_path: experiments/constraint_attribution_iclr/pdebench/data_lock_v2_beta0.4.json
+  lock_sha256: null
+
+split:
+  confirmation_start: 0
+  confirmation_count: 256
+  train_pool_start: 1000
+  train_pool_stop: 9000
+  train_trajectories_per_seed: 2048
+  preflight_start: 9000
+  preflight_count: 256
+
+model:
+  history: 10
+  modes: 12
+  width: 20
+  padding: 2
+  projection_width: 128
+
+training:
+  epochs: 200
+  batch_size: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler_step: 100
+  scheduler_gamma: 0.5
+  temporal_stride: 5
+  spatial_stride: 4
+  restriction_method: block_average
+  checkpoint_every_epochs: 25
+
+evaluation:
+  spatial_strides: [4, 2, 1]
+  restriction_method: block_average
+  case_names: [id_r256, ood_r512, ood_r1024]
+  horizons: [1, 4, 16, 31]
+  batch_size: 50
+  primary_case: ood_r512
+  primary_horizon: 16
+
+mechanisms: [free, free_res, hard, soft30]
+soft_weight: 30.0
+seeds: [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029]
+preflight_seed: 1999
+device: cuda
+output: experiments/constraint_attribution_iclr/pdebench/confirmation_v2.jsonl
+checkpoint_dir: experiments/constraint_attribution_iclr/pdebench/checkpoints_v2
+
+protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_v2_freeze_2026-09-01.md
+protocol_sha256: 01d300410364b07e779c2c2462cdd60f720a24a86622675f4df0f7c604724307
+schema_amendment_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_schema_amendment_2026-09-01.md
+schema_amendment_sha256: 6df12a1884a3c48a667a5320f2c5965d3e280f4209ac95b4a0b6de1979496a87
+decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_v2_20260901.yaml
+schema_decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_schema_amendment_20260901.yaml
+v1_failure_path: experiments/constraint_attribution_iclr/pdebench/data_admission_failure_v1_20260901.yaml
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false
+

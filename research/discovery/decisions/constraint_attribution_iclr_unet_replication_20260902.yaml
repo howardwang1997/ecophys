@@ -1,0 +1,45 @@
+schema_version: constraint-iclr-second-architecture-machine-decision-v1
+decision_id: constraint_attribution_iclr_unet_replication_20260902
+decision_kind: prospective_two_v100_architecture_replication
+decided_at: "2026-09-02T06:25:20Z"
+authorized_by: PI
+target_venue: ICLR_2027
+scientific_protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_unet_replication_freeze_2026-09-02.md
+  sha256: cf29774b08862e8f4894fafaa8f2ae71a4da8d1e0f4d7ff6d262d62c863a0fc8
+active_config:
+  path: configs/constraint_iclr/pdebench_advection_unet_factorial_20260902.yaml
+  sha256: ce54a66e13848eba2cd6463fc414ccbd51a5744f2abc7829e6d03a6e4a5d5924
+parent_data_lock:
+  path: experiments/constraint_attribution_iclr/pdebench/data_lock_v2_beta0.4.json
+  sha256: 78705fc8f0c342bc5f937756fce93ab60c660acbb24d15a5ea90a620f7890687
+formal_seed_universe: [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+                       7010, 7011, 7012, 7013, 7014, 7015, 7016, 7017, 7018, 7019,
+                       7020, 7021, 7022, 7023, 7024, 7025, 7026, 7027, 7028, 7029]
+workers:
+  v100a:
+    host: 100.80.236.112
+    gpu: Tesla V100-SXM2-32GB
+    seeds: [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+            7010, 7011, 7012, 7013, 7014]
+  v100b:
+    host: 100.123.220.57
+    gpu: Tesla V100-SXM2-32GB
+    seeds: [7015, 7016, 7017, 7018, 7019, 7020, 7021, 7022, 7023, 7024,
+            7025, 7026, 7027, 7028, 7029]
+runtime_policy:
+  excluded_preflight_seed: 6999
+  require_preflight_before_formal: true
+  skip_only_completed_run_ids: true
+  resume_only_own_checkpoints: true
+  no_wall_clock_limit: true
+  no_partial_metric_access: true
+  no_early_analysis: true
+  no_result_driven_stopping: true
+  no_grid_seed_architecture_or_threshold_change: true
+activation_order:
+  - Verify the exact snapshot and source manifest on both hosts.
+  - Run excluded seed 6999 on V100-A and inspect execution/integrity only.
+  - Start both registered formal workers after the preflight passes.
+  - Merge only after both workers exit with exactly 75 records each.
+status: authorized_waiting_for_snapshot_and_preflight

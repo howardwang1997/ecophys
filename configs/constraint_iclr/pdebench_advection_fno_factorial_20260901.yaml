@@ -1,0 +1,38 @@
+defaults:
+  - pdebench_advection_fno_v2_confirmation
+  - _self_
+
+stage: factorial_confirmation
+benchmark_id: pdebench_advection_beta0.4_fno_factorial_v1
+data_lock_protocol_sha256: 01d300410364b07e779c2c2462cdd60f720a24a86622675f4df0f7c604724307
+expected_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+expected_git_dirty: true
+
+dataset:
+  lock_benchmark_id: pdebench_advection_beta0.4_fno_v2
+
+mechanisms: [free, free_res, hard_abs, hard]
+seeds: [3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009,
+        3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3018, 3019,
+        3020, 3021, 3022, 3023, 3024, 3025, 3026, 3027, 3028, 3029]
+preflight_seed: 2999
+
+output: experiments/constraint_attribution_iclr/pdebench/factorial_confirmation_20260901.jsonl
+checkpoint_dir: experiments/constraint_attribution_iclr/pdebench/factorial_checkpoints_20260901
+
+protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_factorial_freeze_2026-09-01.md
+protocol_sha256: 4a5901e4a8e51bb8c9149cfda9c5c1909808f538af7e74da7ef64eb7ebdbeb41
+decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_factorial_20260901.yaml
+
+parent_result:
+  records_sha256: 09e69b4e50bd39c152bef0e22e07d86a8b513f31ed119d887ed3077fb72d2fc3
+  analysis_sha256: e1619126f46eb081ace19000d44771559029c49f22f0057812183fc7e2efb41a
+
+factorial_analysis:
+  bootstrap_draws: 50000
+  sign_flip_draws: 100000
+  confidence_nonzero: 0.95
+  confidence_equivalence: 0.90
+  sesoi_fraction_of_free_res: 0.10
+  invariant_drift_atol: 0.0001
+  shapley_efficiency_atol: 0.000000000001

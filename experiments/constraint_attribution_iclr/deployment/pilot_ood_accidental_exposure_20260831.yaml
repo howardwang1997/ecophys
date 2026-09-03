@@ -1,0 +1,29 @@
+schema_version: constraint-iclr-audit-incident-v1
+incident_id: pilot_ood_accidental_exposure_20260831
+recorded_at: "2026-08-31T23:48:23+12:00"
+stage: pre_external_benchmark_freeze
+scope:
+  exposed: historical_pilot_ood_numeric_fields
+  not_exposed:
+    - held_out_confirmation_numeric_fields
+    - frozen_confirmation_analysis
+    - pdebench_model_outcomes
+cause: >-
+  A repository-wide ripgrep intended to recover the third worker address traversed historical
+  pilot JSONL files and rendered several OOD numeric fields before the output was stopped.
+chronology: >-
+  PDEBench 1D Advection beta=0.4 with an FNO backbone had already been selected on publicness,
+  periodic linear mass conservation, official baseline availability, and resolution transfer.
+  No cell, seed, metric, horizon, or stopping decision for the public benchmark had yet been made.
+impact:
+  pilot_ood_blindness_for_current_agent_session: breached
+  final_id_only_lock_changed: false
+  main_confirmation_outcomes_accessed: false
+  main_confirmation_validity_effect: none
+mitigation:
+  - Keep the already selected PDEBench benchmark; do not switch candidates after the exposure.
+  - Freeze all external-benchmark settings without consulting the exposed values.
+  - Never use historical pilot OOD values in the external benchmark design, analysis, or paper claim.
+  - Restrict future monitoring searches to filenames, counts, hashes, provenance booleans, and logs.
+  - Disclose this incident with the external-benchmark protocol and retained audit trail.
+

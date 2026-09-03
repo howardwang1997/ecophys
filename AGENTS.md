@@ -107,7 +107,7 @@ Also update long-term memory in `.claude/memory/` (in-repo; see `.claude/README.
 - **Mac**: code editing, tests, small smoke training (N ≤ 500). Conda env `ecophys` (Python 3.11, per global AGENTS.md). Always use `conda run -n ecophys python …` not bare `python`.
 - **Cloudflare R2**: transit + canonical bulk data store. Compute nodes stage immutable input shards from `r2://ecophys/` before a run and upload manifests/results afterward.
 - **GitHub**: canonical code store. `main` stays runnable; experiments on feature branches.
-- **GPU workers**: current production floor is two independent V100 32 GB nodes. Future capacity may add more compatible CUDA workers, but no active plan may assume H20 access. Keep heterogeneous GPU types in separate worker pools and benchmark each against canonical V100 jobs.
+- **GPU workers**: current production floor is two independent V100 32 GB nodes at `100.80.236.112` and `100.123.220.57`. **Authorized compute pool (2026-09-03, PI blanket grant: all public/open data + these three servers)** also includes the separate A800 40 GB worker at `100.113.230.38`. Future capacity may add more compatible CUDA workers, but no active plan may assume H20 access. Keep heterogeneous GPU types in separate worker pools and benchmark each against canonical V100 jobs.
 - Prefer independent config/seed/market job arrays. Use `ecomd/training/train_distributed.py` only when a scientific experiment truly requires multi-GPU training. Checkpoints save every 30 min; local manifests are canonical and W&B is optional with `resume="allow"`.
 
 See `docs/research_discovery_loop.md`, `.claude/memory/project_overview.md`, and

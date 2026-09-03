@@ -1,0 +1,96 @@
+schema_version: constraint-iclr-external-machine-decision-v3
+decision_id: constraint_attribution_iclr_pdebench_factorial_20260901
+decision_kind: prospectively_frozen_factorial_followup
+decided_at: "2026-09-01T05:36:32Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: >-
+  OK，按你的投稿修改优先级来写计划，然后做实验，改文章。还是要记住：如果实验结果不理想的话，
+  不能一味地只是回退、只是重构成稳健版本，因为这样不可能被接收，需要有真实的科学贡献。
+status: authorized
+target_venue: ICLR_2027
+scientific_objective: >-
+  Test whether output parameterization and exact linear-conservation enforcement interact in a
+  fresh-seed 2x2 design, and replace path-specific credit with path-averaged Shapley intervention
+  credit when the interaction is material.
+outcome_state_at_decision:
+  parent_pdebench_v2_analyzed: true
+  parent_records_sha256: 09e69b4e50bd39c152bef0e22e07d86a8b513f31ed119d887ed3077fb72d2fc3
+  parent_analysis_sha256: e1619126f46eb081ace19000d44771559029c49f22f0057812183fc7e2efb41a
+  factorial_preflight_outcome_exists: false
+  factorial_formal_record_count: 0
+  factorial_metric_accessed: false
+parent_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_pdebench_v2_20260901.yaml
+  sha256: 90f913462014bccc7348354a2f3d353930887598294a7c1485f78262e3e185be
+immutable_data:
+  benchmark: PDEBench 1D Advection beta=0.4
+  dataset_sha256: d973ff2bb3c2a5edf42957ff029b78672451532ebd6bf475848ff23cfd3ee3b6
+  data_lock_path: experiments/constraint_attribution_iclr/pdebench/data_lock_v2_beta0.4.json
+  data_lock_sha256: 78705fc8f0c342bc5f937756fce93ab60c660acbb24d15a5ea90a620f7890687
+  data_lock_protocol_sha256: 01d300410364b07e779c2c2462cdd60f720a24a86622675f4df0f7c604724307
+scientific_freeze:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_factorial_freeze_2026-09-01.md
+  sha256: 4a5901e4a8e51bb8c9149cfda9c5c1909808f538af7e74da7ef64eb7ebdbeb41
+  factors:
+    output_coordinates: [absolute, residual]
+    enforcement: [free, hard]
+  trained_mechanisms: [free, free_res, hard_abs, hard]
+  derived_controls: [projection]
+  seeds: [3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009,
+          3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3018, 3019,
+          3020, 3021, 3022, 3023, 3024, 3025, 3026, 3027, 3028, 3029]
+  excluded_preflight_seed: 2999
+  expected_formal_records: 150
+  primary_case: ood_r512
+  primary_horizon: 16
+implementation:
+  source_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+  source_git_dirty: true
+  config:
+    path: configs/constraint_iclr/pdebench_advection_fno_factorial_20260901.yaml
+    sha256: 71f1744ea3ae657c06e55cd852e9a87e7916a86b73952f5997d6a521fcaef525
+  snapshot:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_factorial_snapshot_20260901.tar.gz
+    sha256: 8a88df5528f8e0d823fdad7d09c6e763aa1883671be279eff83aac4520376df2
+    bytes: 36024
+    excludes_this_decision_to_avoid_recursive_hash: true
+  file_list:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_factorial_snapshot_20260901.files
+    sha256: 44918274a27c905798b2df9cd019580ad7fea36b063a7fa806680af5a72d8927
+  per_file_hashes:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_factorial_snapshot_20260901.sha256s
+    sha256: 034168e2657b7f14a9d97bbcd8893c7d8add00d10c4505293adbef98a4f4a457
+  verification:
+    focused_tests_passed: 52
+    four_trained_cell_cpu_smoke_passed: true
+    ruff_passed: true
+    diff_check_passed: true
+compute:
+  host: 100.80.236.112
+  gpu: Tesla V100-SXM2-32GB
+  deployment_root: /root/ecophys_constraint_iclr_pdebench_factorial_20260901
+  conda_environment: /data/ecophys_workshop/conda_env
+  dataset_source: /data/ecophys_pdebench_v2/1D_Advection_Sols_beta0.4.hdf5
+  isolation: do_not_colocate_with_another_gpu_worker
+  stopping_policy: no_time_cap_and_no_result_driven_stopping
+activation_gates:
+  snapshot_sha256_verified_remote: false
+  per_file_sha256_verified_remote: false
+  dataset_symlink_and_hash_verified: false
+  excluded_seed_2999_cuda_preflight_passed: false
+  formal_worker_started: false
+authorized_actions:
+  - Copy the exact snapshot and this separate decision to the declared V100a deployment root.
+  - Verify archive, per-file, decision, data-lock, and public-data hashes before execution.
+  - Run the excluded seed-2999 CUDA preflight and inspect it only for integrity and finiteness.
+  - On a full preflight pass, delete no artifact and launch exact seeds 3000--3029 append-only.
+  - Resume only an identical run ID/checkpoint after a hardware or transport interruption.
+  - Monitor process health, line counts, provenance, finiteness, runtime, and GPU state.
+forbidden_actions:
+  - Do not change a seed, factor cell, model, dataset, split, optimizer, horizon, metric, or threshold.
+  - Do not inspect partial formal metrics or stop, tune, retry, or add work from an observed result.
+  - Do not reuse parent seeds or checkpoints in factorial inference.
+  - Do not describe an unresolved interval as additivity or nonadditivity.
+  - Do not analyze formal records before exact 150-record coverage and all integrity gates pass.
+effective_until: factorial_analysis_completed_or_pi_revocation

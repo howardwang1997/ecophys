@@ -1,0 +1,75 @@
+schema_version: constraint-iclr-external-machine-decision-v2
+decision_id: constraint_attribution_iclr_pdebench_v2_20260901
+decision_kind: explicitly_authorized_reentry_after_data_gate
+decided_at: "2026-08-31T17:06:50Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "确认"
+status: authorized
+target_venue: ICLR_2027
+parent_decision:
+  decision_id: constraint_attribution_iclr_pdebench_external_20260831
+  sha256: 3b1c39e3b1ac4d37d91a21f39ec7a898ca16d50931e52d30b4cb6d7eb613ac3d
+v1_disposition:
+  status: terminally_stopped_at_data_admission
+  artifact: experiments/constraint_attribution_iclr/pdebench/data_admission_failure_v1_20260901.yaml
+  artifact_sha256: 3b9c0427ad1101b70a03a1c09753f24539205005c7613b2ee6d46f614c7f178f
+  data_lock_created: false
+  model_record_count: 0
+scope_note: >-
+  V2 changes only native-to-coarse spatial restriction from direct point decimation to exact
+  non-overlapping block averages. It keeps the frozen public file, split, seeds, architecture,
+  arms, training budget, metrics, thresholds, primary case, and analysis. It remains separate from
+  and cannot affect the active synthetic confirmation current-machine decision.
+artifacts:
+  protocol:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_v2_freeze_2026-09-01.md
+    sha256: 01d300410364b07e779c2c2462cdd60f720a24a86622675f4df0f7c604724307
+  config:
+    path: configs/constraint_iclr/pdebench_advection_fno_v2.yaml
+    sha256: 6bdea758e343cbe0b3676663e36cfc082f66b1719fb670800a276d88aee7231e
+  coordinate_schema_amendment:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_schema_amendment_2026-09-01.md
+    sha256: 6df12a1884a3c48a667a5320f2c5965d3e280f4209ac95b4a0b6de1979496a87
+data:
+  file_id: 255674
+  bytes: 8232966952
+  md5: d595bbfd2c659df995a93cd40d6ea568
+  sha256: d973ff2bb3c2a5edf42957ff029b78672451532ebd6bf475848ff23cfd3ee3b6
+  restriction_method: non_overlapping_block_average
+  factors: [1, 2, 4]
+  invariant_threshold: 0.00001
+  restriction_identity_atol: 0.000001
+confirmation:
+  seeds: [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029]
+  mechanisms: [free, free_res, hard, soft30, projection]
+  expected_records: 150
+  primary_case: ood_r512
+  primary_horizon: 16
+compute:
+  priority_order:
+    - howardwang@100.105.21.7
+    - first_idle_v100_after_main_worker_completion
+  isolation: no_interruption_or_colocation_with_active_synthetic_confirmation
+  budget_policy: monitor_runtime_gpu_hours_disk_and_energy_without_result_driven_stopping
+authorized_actions:
+  - Implement and test the exact block-average restriction and coarse coordinates.
+  - Run the frozen v2 data admission scan and create an immutable data lock only on a full pass.
+  - Create and verify an executable snapshot before any CUDA model run.
+  - Run excluded seed 1999 preflight, then exact formal seeds 2000--2029 on noninterfering compute.
+  - Resume a hardware-interrupted run only from its identical run ID and checkpoint.
+forbidden_actions:
+  - Do not modify v1 or reinterpret its failed admission as a pass.
+  - Do not change any setting other than the explicitly approved restriction operation.
+  - Do not inspect partial v2 model outcomes, tune, replace seeds, add files, or stop from a result.
+  - Do not pool v2 with the synthetic confirmation or use it to repair a failed synthetic system.
+activation_gates:
+  v2_implementation_tests_passed: false
+  v2_data_lock_created: false
+  executable_snapshot_created: false
+  excluded_seed_1999_cuda_preflight_passed: false
+  noninterfering_gpu_available: false
+outcome_state_at_decision:
+  v2_model_outcome_exists: false
+  v2_model_record_count: 0
+  main_confirmation_outcome_accessed: false

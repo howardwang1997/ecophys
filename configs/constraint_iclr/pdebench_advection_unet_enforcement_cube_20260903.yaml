@@ -1,0 +1,33 @@
+defaults:
+  - pdebench_advection_unet_factorial_20260902
+  - _self_
+
+cube:
+  stage: enforcement_cube_confirmation
+  schema_version: constraint-iclr-pdebench-enforcement-cube-v1
+  config_path: configs/constraint_iclr/pdebench_advection_unet_enforcement_cube_20260903.yaml
+  output: experiments/constraint_attribution_iclr/pdebench/unet_enforcement_cube_20260903.jsonl
+  checkpoint_lock: experiments/constraint_attribution_iclr/pdebench/unet_factorial_checkpoint_lock_20260903.json
+  core_analysis: experiments/constraint_attribution_iclr/pdebench/unet_factorial_analysis_20260903.json
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_unet_replication_freeze_2026-09-02.md
+  protocol_sha256: cf29774b08862e8f4894fafaa8f2ae71a4da8d1e0f4d7ff6d262d62c863a0fc8
+  runtime_amendment_path: papers/proposal/ecomd_constraint_attribution_iclr_unet_completion_runtime_amendment_2026-09-03.md
+  runtime_amendment_sha256: 21e916d6c2db593e8358cdd912e26cc775b78bb9417a4e2f235954e7bd974f91
+  decision_path: research/discovery/decisions/constraint_attribution_iclr_unet_completion_runtime_20260903.yaml
+  decision_sha256: 0ca5d94248675d46bcea87d7d511f2a615615d784921242198ccecc486f97522
+  trained_parent_mechanisms: [free, free_res, hard_abs, hard]
+  derived_mechanisms: [projection_res, hard_abs_unprojected, hard_res_unprojected]
+  expected_core_records: 150
+  expected_trained_checkpoints: 120
+  expected_derived_records: 90
+  checkpoint_schema_version: constraint-iclr-pdebench-v1
+  checkpoint_lock_schema_version: constraint-iclr-pdebench-checkpoint-lock-v1
+  checkpoint_completed_epochs: 200
+  algebra_atol: 0.000000000001
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

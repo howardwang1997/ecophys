@@ -1,0 +1,50 @@
+schema_version: constraint-iclr-external-decision-amendment-v1
+decision_id: constraint_attribution_iclr_pdebench_schema_amendment_20260901
+decision_kind: outcome_blind_schema_correction
+decided_at: "2026-08-31T15:34:35Z"
+status: authorized
+authorization_basis: >-
+  The PI authorized the recommended public linear-invariant PDE benchmark and instructed the agent
+  to continue. This amendment is limited to accepting the exact coordinate metadata of the already
+  frozen released file; it changes no scientific or training choice.
+parent_decision:
+  decision_id: constraint_attribution_iclr_pdebench_external_20260831
+  sha256: 3b1c39e3b1ac4d37d91a21f39ec7a898ca16d50931e52d30b4cb6d7eb613ac3d
+trigger:
+  released_file_bytes_passed: true
+  released_file_md5_passed: true
+  solution_tensor_value_accessed: false
+  invariant_scan_started: false
+  model_outcome_exists: false
+  failure: expected_x_origin_and_time_coordinate_length_mismatched_official_v8_metadata
+observed_metadata:
+  tensor_shape: [10000, 201, 1024]
+  tensor_dtype: float32
+  x_coordinate:
+    length: 1024
+    first: 0.00048828125
+    last: 0.99951171875
+    spacing: 0.0009765625
+    cell_centered_period: 1.0
+  t_coordinate:
+    length: 202
+    first: 0.0
+    tensor_aligned_last: 2.0
+    unused_trailing_last: 2.01
+amendment:
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_schema_amendment_2026-09-01.md
+  protocol_sha256: 6df12a1884a3c48a667a5320f2c5965d3e280f4209ac95b4a0b6de1979496a87
+  base_config_before_sha256: 2cd0afad0374232368e8ca686000af3461ce4584d410042bfce9d3232fad490c
+  base_config_after_sha256: ec8136a9e504a348ad472a8d5ab0be1aa6dc279be4a92e745d1b38fe4dbe9dbb
+unchanged:
+  - dataset_file_id_md5_and_bytes
+  - pde_and_beta
+  - invariant_and_threshold
+  - split_and_seeds
+  - architecture_arms_and_training_budget
+  - metrics_horizons_and_analysis_rules
+  - compute_isolation_and_outcome_blindness
+binding_rule: >-
+  The data lock, formal runner records, executable snapshot, and analyzer must bind both the original
+  protocol SHA-256 and this schema-amendment SHA-256. Any coordinate representation other than the
+  exact corrected contract fails closed.

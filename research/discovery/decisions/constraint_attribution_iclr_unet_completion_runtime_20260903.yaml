@@ -1,0 +1,61 @@
+schema_version: constraint-iclr-unet-completion-runtime-decision-v1
+decision_id: constraint_attribution_iclr_unet_completion_runtime_20260903
+decision_kind: outcome_blind_runtime_integrity_repair
+decided_at: "2026-09-03T17:53:39+12:00"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized repairing identified problems, continuing incomplete experiments, and
+  completing the article. This decision narrows that authorization to the already frozen
+  second-architecture replication without changing its scientific design.
+scientific_protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_unet_replication_freeze_2026-09-02.md
+  sha256: cf29774b08862e8f4894fafaa8f2ae71a4da8d1e0f4d7ff6d262d62c863a0fc8
+parent_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_unet_replication_20260902.yaml
+  sha256: eb0adb353f7a8546e48c1bea15bf717a35abac9394bf8928cfa04876d9d1d0c3
+core_config:
+  path: configs/constraint_iclr/pdebench_advection_unet_factorial_20260902.yaml
+  sha256: ce54a66e13848eba2cd6463fc414ccbd51a5744f2abc7829e6d03a6e4a5d5924
+runtime_amendment:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_unet_completion_runtime_amendment_2026-09-03.md
+  sha256: 21e916d6c2db593e8358cdd912e26cc775b78bb9417a4e2f235954e7bd974f91
+outcome_state_at_decision:
+  v100a_record_count: 75
+  v100a_expected_records: 75
+  v100a_worker_exited: true
+  v100a_records_sha256: c64e4d41497659c699ec370c55012bebac1e6948f576b059535aa60575817718
+  v100b_record_count: 0
+  v100b_expected_records: 75
+  v100b_dataset_bytes: 634521600
+  v100b_dataset_expected_bytes: 8232966952
+  core_analyzer_run: false
+  enforcement_cube_record_count: 0
+  partial_metric_accessed: false
+formal_seed_universe: [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+                       7010, 7011, 7012, 7013, 7014, 7015, 7016, 7017, 7018, 7019,
+                       7020, 7021, 7022, 7023, 7024, 7025, 7026, 7027, 7028, 7029]
+registered_worker_shards:
+  v100a: [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+          7010, 7011, 7012, 7013, 7014]
+  v100b: [7015, 7016, 7017, 7018, 7019, 7020, 7021, 7022, 7023, 7024,
+          7025, 7026, 7027, 7028, 7029]
+completion_contract:
+  core_records: 150
+  trained_checkpoints: 120
+  derived_records: 90
+  mandatory_cells: 12
+  primary_case: ood_r512
+  primary_horizon: 16
+  minimum_material_cells_for_replication: 6
+authorized_actions:
+  - Resume and hash-verify the immutable public dataset transfer to V100-B.
+  - Resume only V100-B's registered shard from its own checkpoints.
+  - Package, hash, transfer, and validate the two exact completed shards and checkpoints.
+  - Apply and test the config-aware merger and registered-seed cube runtime repair.
+  - Analyze only after exact 150-record and 90-record completion gates.
+forbidden_actions:
+  - Do not read or summarize partial core or cube metrics.
+  - Do not change or reassign seeds, models, checkpoints, data, cells, estimands, or thresholds.
+  - Do not use the third GPU for this frozen replication.
+  - Do not reinterpret a null or mixed result as successful replication.
+status: authorized_runtime_repair_before_outcome_access

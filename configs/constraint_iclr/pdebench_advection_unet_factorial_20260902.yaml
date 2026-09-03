@@ -1,0 +1,46 @@
+defaults:
+  - pdebench_advection_fno_factorial_20260901
+  - _self_
+
+benchmark_id: pdebench_advection_beta0.4_unet_factorial_v1
+model:
+  architecture: unet1d
+  history: 10
+  channels: 20
+
+seeds: [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+        7010, 7011, 7012, 7013, 7014, 7015, 7016, 7017, 7018, 7019,
+        7020, 7021, 7022, 7023, 7024, 7025, 7026, 7027, 7028, 7029]
+preflight_seed: 6999
+formal_seed_universe: [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+                       7010, 7011, 7012, 7013, 7014, 7015, 7016, 7017, 7018, 7019,
+                       7020, 7021, 7022, 7023, 7024, 7025, 7026, 7027, 7028, 7029]
+formal_seed_shards:
+  v100a: [7000, 7001, 7002, 7003, 7004, 7005, 7006, 7007, 7008, 7009,
+          7010, 7011, 7012, 7013, 7014]
+  v100b: [7015, 7016, 7017, 7018, 7019, 7020, 7021, 7022, 7023, 7024,
+          7025, 7026, 7027, 7028, 7029]
+worker_id: null
+
+output: experiments/constraint_attribution_iclr/pdebench/unet_factorial_merged_20260902.jsonl
+checkpoint_dir: experiments/constraint_attribution_iclr/pdebench/unet_factorial_checkpoints_20260902
+protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_unet_replication_freeze_2026-09-02.md
+protocol_sha256: cf29774b08862e8f4894fafaa8f2ae71a4da8d1e0f4d7ff6d262d62c863a0fc8
+decision_path: research/discovery/decisions/constraint_attribution_iclr_unet_replication_20260902.yaml
+source_artifact_paths:
+  - configs/constraint_iclr/pdebench_advection_unet_factorial_20260902.yaml
+  - papers/proposal/ecomd_constraint_attribution_iclr_unet_replication_freeze_2026-09-02.md
+  - research/discovery/decisions/constraint_attribution_iclr_unet_replication_20260902.yaml
+
+architecture_admission:
+  primary_case: ood_r512
+  primary_horizon: 16
+  minimum_material_cells_for_replication: 6
+  mandatory_cells: 12
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false
