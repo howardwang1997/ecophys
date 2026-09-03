@@ -1,0 +1,152 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[numbers]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+
+\newtheorem{proposition}{Proposition}
+\newcommand{\cons}{\varepsilon_{\parallel}}
+\newcommand{\drift}{\varepsilon_{\perp}}
+
+\title{Constraints Deserve No Credit:\\
+Output Parameterization Governs Out-of-Distribution Error\\
+in Learned Simulators with Exact Invariants}
+\author{Anonymous}
+\date{Draft skeleton, 2026-08-29. Families A, B, C, M adjudicated (confirmatory, frozen);
+contraction mechanism test (family E) exploratory.}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Embedding exact invariants---conservation laws in physical surrogates, accounting identities
+in financial market models---in learned simulators is a widespread practice, and reported
+benefits are routinely credited to the constraint. We audit that attribution. Across three
+controlled families (MLP and U-Net surrogates of advection, diffusion, and Burgers dynamics;
+U-Nets under amplitude and resolution shift; and a learned simulator of a continuous double
+auction with exact cash/inventory settlement), we compare six enforcement mechanisms at
+matched capacity, training length, and in-distribution error, and decompose
+out-of-distribution error into a conserving channel that no invariant can correct and a
+constraint-violating channel. In every adjudicated setting (30/30 to date), the celebrated
+out-of-distribution benefit is produced by the output parameterization (residual versus
+absolute next-state prediction), not by the constraint: exact architectural enforcement leaves
+conserving-channel error statistically unchanged while zeroing invariant violations, and
+post-hoc projection reproduces a closed-form decoupling theorem to machine precision (42/42
+settings). Strong soft penalties are dominated: they inflate conserving-channel error by
+18--33\% under deterministic dynamics and by 100--370\% under stochastic market dynamics---a
+domain-dependence we attribute to irreducibly stochastic targets. We distill the audit into
+prescriptions: enforce invariants architecturally on residual updates (free and exact), avoid
+strong penalty forms, and report the error decomposition rather than the constraint residual
+alone.
+\end{abstract}
+
+\section{Introduction}
+The practice and its assumption (constraint $\Rightarrow$ better simulator): climate emulators
+\citep{beucler2019,beucler2021}, structure-preserving Hamiltonian networks
+\citep{greydanus2019}, no-arbitrage and martingale-constrained financial models
+\citep{cohen2023}. The confound: enforcing a linear invariant in a network is almost always
+accompanied by a second change---predicting state \emph{increments} rather than absolute
+states. No prior work separates the two at matched controls
+\citep[see also][]{suh2022,pdebench}. We ask: \emph{when the invariant is enforced exactly,
+what does the constraint itself contribute to out-of-distribution error, and what does the
+parameterization contribute?}
+
+\paragraph{Contributions.}
+(1) A matched-pair attribution design with an exact error decomposition
+(conserving vs.\ constraint-violating channels) and a built-in negative control (post-hoc
+projection) that we prove and verify to be exact. (2) A cross-domain audit: three physical
+families, one financial family, two architectures, four out-of-distribution probe classes.
+(3) Three findings: parameterization carries the benefit; exact constraints are free but
+creditless; strong soft penalties are dominated, with damage scaling in target stochasticity.
+
+\section{Related work}
+Constraint mechanisms and their evaluation in-distribution \citep{beucler2021}; OOS climate
+generalization without matched parameterization controls \citep{beucler2019}; Hamiltonian
+structure preservation \citep{greydanus2019}; learned PDE surrogates and OOD protocols
+\citep{pdebench,pfaff2021}; gradient-access attribution in differentiable simulators
+\citep{suh2022}; invariant-constrained financial models \citep{cohen2023}; laboratory market
+benchmarks with exact settlement \citep{godesunder1993}. Fragment-occupancy map and the exact
+gap statement are maintained in the project evidence manifest; the bounded-search novelty
+statement appears here.
+
+\section{Design}
+\paragraph{Systems and invariants.} Family A: MLP one-step maps of advection, diffusion,
+Burgers (periodic grid, spectral truth; invariant: mean state). Family B: two-level 1D U-Nets
+at resolution 128, probed additionally at amplitude extrapolation and a band-limited $2\times$
+resolution shift. Family C: 2D advection--diffusion with a 2D U-Net (pending). Family M: a
+Gode--Sunder-class continuous double auction with exact settlement; invariants are the
+accounting identities $\sum_i \mathrm{inv}_i = S_0$ and $\sum_i \mathrm{cash}_i = C_0$; the
+learner predicts per-agent state transitions; OOD probes are high-imbalance and volatility
+shock regimes.
+
+\paragraph{Arms.} free (absolute output); free\_res (residual output); soft/soft\_res
+($\lambda\in\{3,30\}$ penalty on invariant residuals); hard (residual update projected onto
+the invariant tangent---exact enforcement); projection (post-hoc correction of free).
+
+\paragraph{Decomposition and decoupling.}
+For error $e = f(u) - A(u)$ and invariant projector $P$ onto the violating direction,
+$\drift = Pe$ and $\cons = (I-P)e$.
+\begin{proposition}[Decoupling of post-hoc projection]
+For a linear invariant and its least-squares post-hoc correction, conserving-channel error is
+invariant under the correction; only $\drift$ is removed.
+\end{proposition}
+This is the pipeline's negative control: any deviation in the projection arm indicates an
+implementation fault. It held to $0.00\%$ in $42/42$ adjudicated settings.
+
+\paragraph{Protocol.} Frozen before outcomes: capacity grids, seeds ($\ge 5$ per cell),
+matched-pair same-cell comparisons, decision rules (attribution ratio $\ge 2$;
+laundering conjunction; decoupling within $1\%$), budget caps, and stop rules. The
+$\pm5\%$ matched-ID window triggered the pre-registered non-overlap branch (ID-cost finding)
+in all families; cross-parameterization claims are therefore matched-pair only.
+
+\section{Results}
+\subsection{Family A (MLP, three PDE systems)}
+Attribution ratio $260$--$5225\times$ (rule: $\ge 2$); hard $\equiv$ free\_res on
+$\cons$ in all six settings; projection exact; laundering conjunction $2/6$ (inflation
+without drift benefit $\Rightarrow$ dominated).
+
+\subsection{Family B (1D U-Nets, amplitude and resolution OOD)}
+Attribution $12.7$--$6710\times$ across $18/18$ settings including the $2\times$ resolution
+shift; hard statistically indistinguishable from free\_res; decoupling exact $18/18$; strong
+soft penalties dominated ($+22$--$30\%$ inflation, no drift benefit).
+
+\subsection{Family M (learned CDA simulator, financial)}
+Attribution $140\times$ at the matched cell; the accounting constraint's entire effect is
+exact drift zeroing; \emph{laundering conjunction holds}: soft$_{30}$ inflates $\cons$ by
+$4.7\times$ while buying drift reduction---damage amplifies with stochastic targets
+(deterministic: $+18$--$33\%$; stochastic: $+100$--$370\%$). The absolute-output arm degrades
+with capacity on noisy targets.
+
+\subsection{Family C (2D U-Net, contractive dynamics)}
+The parameterization effect \emph{inverts}: absolute output beats residual by $4.6$--$6.3\times$
+on conserving-channel OOD error (e.g.\ $0.389\pm0.042$ vs $1.780\pm0.152$), and the hard
+constraint tracks its residual twin ($1.862\pm0.154$). The frozen operator annihilates
+high-wavenumber content in one step: for contractive maps the residual head must learn a large
+cancelling update whose off-support extrapolation is fragile, while an absolute head directly
+represents the smooth next state. This triggered the pre-registered freeze-and-review clause.
+
+\subsection{Family E (mechanism review, exploratory)}
+Single-factor $\nu$-sweep of the diffusion family shows a monotone dose--response: at
+$\nu=0.02$ (near-identity) free\_res wins by $100\times$; at $\nu=2.0$ by $1.5\times$; at
+$\nu=10.0$ (rich-band decay $e^{-4.9}$) the effect \emph{flips} and free wins by $1.9\times$
+(non-overlapping seed bands at every dose; hard $\equiv$ free\_res throughout). Contraction
+strength of the true one-step map is a usable predictor for choosing the parameterization.
+
+\section{Prescriptions}
+Enforce exact invariants architecturally on residual updates (free, exact); avoid strong soft
+penalties; report decompositions, not residuals.
+
+\section{Limitations and non-claims}
+Linear invariants only (energy-type untested); constructed truths, no field or transfer
+claims; bounded-search novelty statement; attribution statements are about error structure
+under the frozen probes, not about conservation laws determining dynamics.
+
+\section{Reproducibility}
+Frozen protocols, seeds, per-run JSON records, and analyzer implementing the decision rules
+verbatim are released with the code; cross-machine bit-identical smoke runs are recorded.
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+\end{document}

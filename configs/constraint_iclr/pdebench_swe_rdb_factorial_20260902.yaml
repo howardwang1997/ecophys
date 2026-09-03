@@ -1,0 +1,115 @@
+stage: swe_factorial_confirmation
+benchmark_id: pdebench_swe_rdb_fno2d_factorial_v1
+active_config_path: configs/constraint_iclr/pdebench_swe_rdb_factorial_20260902.yaml
+expected_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+expected_git_dirty: true
+
+dataset:
+  path: /data/ecophys_pdebench_swe/2D_rdb_NA_NA.h5
+  dataverse_dataset_doi: doi:10.18419/DARUS-2986
+  dataverse_dataset_version: "8.0"
+  dataverse_file_id: 133021
+  filename: 2D_rdb_NA_NA.h5
+  expected_bytes: 6626098972
+  expected_md5: 75d838c47aa410694bdc912ea7f22282
+  expected_sha256: 28f0c33723d70eebb420fc170e94b675c18e032fb697dcef080e114ca9645e3a
+  expected_groups: 1000
+  group_name_width: 4
+  data_key: data
+  expected_shape: [101, 128, 128, 1]
+  expected_dtype: float32
+  expected_x_start: -2.48046875
+  expected_x_stop: 2.48046875
+  expected_y_start: -2.48046875
+  expected_y_stop: 2.48046875
+  expected_spatial_spacing: 0.0390625
+  expected_t_start: 0.0
+  expected_t_stop: 1.0
+  expected_temporal_spacing: 0.01
+  coordinate_atol: 0.000001
+  require_strict_positive: true
+  max_abs_mean_drift: 0.00005
+  invariant_spatial_factors: [1, 2]
+  restriction_method: block_average
+  restriction_identity_atol: 0.000001
+  scan_chunk_trajectories: 4
+  lock_path: experiments/constraint_attribution_iclr/pdebench/data_lock_swe_rdb_20260902.json
+  lock_sha256: 1673f74f7f6ae5198894ef445cdbdd96e536ec669480397b1e21296318ed825b
+
+split:
+  confirmation_start: 0
+  confirmation_count: 128
+  train_pool_start: 200
+  train_pool_stop: 1000
+  train_trajectories_per_seed: 512
+
+model:
+  history: 10
+  channels: 1
+  channel_names: [water_depth]
+  invariant_channel: 0
+  modes_x: 8
+  modes_y: 8
+  width: 20
+  padding: 4
+  projection_width: 64
+  coordinate_lower: -2.5
+  coordinate_upper: 2.5
+
+training:
+  epochs: 100
+  batch_size: 8
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler_step: 50
+  scheduler_gamma: 0.5
+  temporal_stride: 2
+  spatial_factor: 2
+  restriction_method: block_average
+  checkpoint_every_epochs: 20
+
+evaluation:
+  spatial_factors: [2, 1]
+  restriction_method: block_average
+  case_names: [id_r64, ood_r128]
+  horizons: [1, 4, 16, 31]
+  batch_size: 8
+  primary_case: ood_r128
+  primary_horizon: 16
+  primary_metric: conserving_rmse
+
+mechanisms: [free, free_res, hard_abs, hard]
+seeds: [6000, 6001, 6002, 6003, 6004, 6005, 6006, 6007, 6008, 6009,
+        6010, 6011, 6012, 6013, 6014, 6015, 6016, 6017, 6018, 6019,
+        6020, 6021, 6022, 6023, 6024, 6025, 6026, 6027, 6028, 6029]
+preflight_seed: 5999
+device: cuda
+
+output: experiments/constraint_attribution_iclr/pdebench/swe_factorial_confirmation_20260902.jsonl
+checkpoint_dir: experiments/constraint_attribution_iclr/pdebench/swe_factorial_checkpoints_20260902
+protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_freeze_2026-09-02.md
+protocol_sha256: 4b46f45906e3b514181dca6c8265eb1d3d73f1e451565dc3f1bb2e20d411e706
+source_metadata_path: experiments/constraint_attribution_iclr/pdebench/swe_rdb_source_20260902.json
+source_metadata_sha256: b59ff59a7d54efeb0f385d21c3ce9a357e95f11e4aea003c8cfb2482770d2560
+data_decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_swe_data_admission_20260902.yaml
+data_decision_sha256: d325fce35b640c42f6dfe8545816f02d9809165bbeba1554e156cc7eab384c7d
+transport_decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_swe_transport_mirror_20260902.yaml
+transport_decision_sha256: 7edffcf6a4285662c4de3da71a648b2d2579fdc7d0dbd90f9bdb3def17234bea
+model_decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_swe_model_activation_20260902.yaml
+model_decision_sha256: 85b09dd6e26d6f144e2e743198e6a2d09d97e2c3e95c35b597dfe7ae66abf3ff
+
+factorial_analysis:
+  bootstrap_draws: 50000
+  sign_flip_draws: 100000
+  confidence_nonzero: 0.95
+  confidence_equivalence: 0.90
+  sesoi_fraction_of_free_res: 0.10
+  invariant_drift_atol: 0.0001
+  shapley_efficiency_atol: 0.000000000001
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

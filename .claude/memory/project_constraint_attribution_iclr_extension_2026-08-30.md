@@ -296,14 +296,35 @@ single-worker parents and correctly fail source-manifest validation on the forma
 records. `scripts/build_paper_d_supplement.py` now encodes these exact runtime identities and fails
 closed on coverage, primary-cell, hash-binding, integrity, or deterministic-rebuild drift.
 
-The U-Net scientific freeze requires a 150-record core, one-shot core analysis, 120-checkpoint
-lock, and 90-record inference-toggle cube. The deployed snapshot implements only core production
-and generic core analysis. It contains no U-Net-specific shard merger, cube configuration, cube
-runner, or cube analyzer; the existing Advection cube runner rejects every formal seed universe
-except 3000--3029. Freeze and verify this completion path while U-Net outcomes remain sealed.
+The registered U-Net transfer finished at `2026-09-03T08:41:34Z`: both workers produced exactly
+75 core records and 60 validated checkpoints, the merger produced 150 unique core records, and
+the frozen inference-toggle run produced exactly 90 cube records. Before any result was opened,
+the Mac copies were matched to the remote SHA-256 values for the merged core, core analysis,
+checkpoint lock, cube, and cube analysis. The formal result is
+`research/discovery/decisions/constraint_attribution_iclr_unet_replication_result_20260903.yaml`.
 
-Repository durability is currently below the project standard: HEAD and its remote tracking branch
-remain at `86dd76ee0` (2026-08-27), while 384 files are currently untracked (383 before this
-session's mandatory log was created), including 313 constraint-ICLR
-source/config/decision/result/paper files. The current experiments bind honest dirty-worktree and
-per-file hashes, but GitHub is not yet the canonical recovery source for this work.
+The U-Net replication does **not** pass its registered gate. At the primary OOD-512/horizon-16
+cell, the full path-dependence interaction is `J=-0.08415`, with 95% CI
+`[-0.26665, 0.13334]` against SESOI `0.14751`; only 3/12 mandatory cells are material versus the
+registered 6/12 requirement, and all three occur on ID-256. The ordinary four-cell bundle
+interaction is nonzero (`0.10234`, 95% CI `[0.00507, 0.19831]`), which demonstrates why that
+contrast alone cannot establish full training--inference path dependence. This result rules out
+the architecture-general version of the claim; the paper must present the FNO result as a
+conditional existence result and the U-Net result as a negative transfer boundary, without
+selecting the favorable ID cells post hoc.
+
+Paper D is now a complete ICLR-2027-format manuscript titled *When Are Exact Conservation Layers
+Plug-and-Play? Identifying Training--Inference Path Dependence in Neural PDE Surrogates*. Its main
+text fits the nine-page body limit, followed by the reproducibility statement, AI-use statement,
+references, and appendices. The reviewer artifact is deterministic, excludes public benchmark
+data and checkpoint tensors, and has explicit release-byte provenance for every anonymized file.
+The final PDF SHA-256 is `7d0e2d60...b23d9c`; the twice-reproduced reviewer archive SHA-256 is
+`9c615278...c9e183`. A clean extracted copy regenerated all analyses and result-derived displays
+byte-for-byte and passed all 138 shipped tests without relying on an editable project install. Its
+661 direct-or-nested payloads pass the final bulk-data, identity, private-network and secret scan.
+Both U-Net worker archives and the seven-file final evidence set are durably listed under
+`r2://ecophys/experiments/constraint_attribution_iclr/unet_replication_20260903/`.
+One external double-blind blocker remains: the development GitHub repository is public while
+formal records retain original commit identifiers. Do not upload the reviewer artifact until the
+repository is made private/inaccessible or an independently verified anonymous provenance route
+is adopted.

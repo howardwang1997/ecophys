@@ -1,0 +1,42 @@
+defaults:
+  - pdebench_advection_fno_enforcement_cube_20260901
+  - _self_
+
+active_config_path: configs/constraint_iclr/pdebench_advection_fno_gauge_feedback_20260902.yaml
+
+gauge_feedback:
+  stage: gauge_feedback_confirmation
+  schema_version: constraint-iclr-pdebench-gauge-feedback-v1
+  analysis_schema_version: constraint-iclr-pdebench-gauge-feedback-analysis-v1
+  output: experiments/constraint_attribution_iclr/pdebench/advection_gauge_feedback_20260902.jsonl
+  analysis_output: experiments/constraint_attribution_iclr/pdebench/advection_gauge_feedback_analysis_20260902.json
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_gauge_feedback_freeze_2026-09-02.md
+  protocol_sha256: 04f712a51dfd22771c80bc22267f80a08eb9223e06eef86ce3acc007c679a7c5
+  decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_gauge_feedback_20260902.yaml
+  decision_sha256: f973a419833aa12f7136ec7ba431a844d156e777003a563dd8d49003619549a0
+  parent_core_records_sha256: d0c8257af992a9308c1d2b7004fd13a695c9ac1b1a1828b73e3c02bceb16ee05
+  parent_core_analysis_sha256: 15ab5898699e64051a418f6f0a78491945d52e40aa7f72a8beac01fc2bc94cc1
+  parent_cube_records: experiments/constraint_attribution_iclr/pdebench/advection_enforcement_cube_20260901.jsonl
+  parent_cube_records_sha256: bee99e1b15d06da9e2056e85de9752887c9eb6bd0f25868a641f61a411f6f17d
+  parent_cube_analysis: experiments/constraint_attribution_iclr/pdebench/advection_enforcement_cube_analysis_20260901.json
+  parent_cube_analysis_sha256: d12dc6d088d274a686b53b6da0ccca95a2b3dbe93dfa827b878ce775d0e39443
+  checkpoint_lock_sha256: 60fc852e6ec181c66da9eba4e8dfcdf1afc56e39c3fa5800f4e805d693761ecb
+  parent_mechanisms: [hard_abs, hard]
+  compatible_forward_maps:
+    hard_abs: free
+    hard: free_res
+  expected_records: 60
+  expected_optimization_runs: 0
+  primary_case: ood_r512
+  practical_ratio_threshold: 0.10
+  bootstrap_draws: 50000
+  confidence_material: 0.95
+  confidence_negligible: 0.90
+  identity_atol: 0.000001
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

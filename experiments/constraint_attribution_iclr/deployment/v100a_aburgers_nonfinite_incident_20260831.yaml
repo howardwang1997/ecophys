@@ -1,0 +1,55 @@
+schema_version: constraint-iclr-runtime-incident-v1
+incident_id: v100a_aburgers_nonfinite_seed1000_20260831
+recorded_at: "2026-08-31T09:39:42Z"
+status: deterministic_failure_confirmed
+machine_decision_sha256: 9d6e1e67cc0055b719c1b904f266123e29b9b31f1f24008a58bafbc8ea49dace
+snapshot_sha256: b70c000cdd1c70d676ce1846f74e66d147bcd8a03a0fc0a84564e8e0cbbb1305
+selection_lock_sha256: 5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e
+host: 100.80.236.112
+worker: v100a
+failed_job:
+  family: A
+  system: burgers
+  resolution: 64
+  nu: 0.01
+  mechanism: free
+  capacity: 128
+  epochs: 400
+  learning_rate: 0.001
+  seed: 1000
+failure:
+  stage: append_jsonl
+  exception: "ValueError: Out of range float values are not JSON compliant"
+  interpretation: nonfinite_confirmation_output_rejected_before_record_write
+  hardware_failure: false
+  cuda_oom: false
+  disk_failure: false
+  output_record_written: false
+  outcome_metric_value_inspected: false
+initial_attempt:
+  log: logs/confirmation_v100a_authorized_20260831.log
+  log_sha256: e6dcd40df52126786b2f1219d343f69da48aa988ba0b56cec993e0c1cd0dbe8b
+identical_retry:
+  count: 1
+  configuration_changed: false
+  seed_changed: false
+  log: logs/confirmation_v100a_identical_retry1_20260831.log
+  log_sha256: 6c262e9c8c3c9cd80ff4f45cfa16e13b65bf31c811f9e0110a290f80eac71a74
+  result: same_nonfinite_write_gate_failure
+outputs:
+  A_advection:
+    records: 240
+    sha256: f7e7a813b305c9a2c1470b431c1f2dd06ca9bf507bda6a96338147a230591a50
+  A_diffusion:
+    records: 240
+    sha256: f3c9210ad042e258a8ee493cf3579f9c2c94800bb6eadae89a135d29e7a3a785
+  A_burgers:
+    records: 0
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+disposition:
+  third_retry_forbidden: true
+  hyperparameter_change_forbidden: true
+  seed_replacement_forbidden: true
+  A_burgers_confirmation_claim_status: failed_incomplete
+  remaining_v100a_systems_started: false
+  continuation_requires_pi_approved_failure_amendment: true

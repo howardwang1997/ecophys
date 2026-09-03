@@ -1,0 +1,79 @@
+schema_version: constraint-iclr-external-machine-decision-v1
+decision_id: constraint_attribution_iclr_pdebench_external_20260831
+decision_kind: auxiliary_scoped_compute_authorization
+decided_at: "2026-08-31T15:11:13Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+status: authorized
+target_venue: ICLR_2027
+authorization_text: >-
+  OK，按照你的建议来补实验，选择一个具有线性守恒量的公开 PDE benchmark。
+scope_note: >-
+  This decision authorizes the separately frozen PDEBench 1D Advection beta=0.4 FNO
+  external-validity block. It does not amend, replace, pause, colocate with, or permit outcome
+  access to the active two-V100 synthetic confirmation. The current-machine-decision pointer for
+  that confirmation remains unchanged.
+source_identity:
+  git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+  git_dirty: true
+artifacts:
+  protocol:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_external_freeze_2026-08-31.md
+    sha256: dcfd19dc733f2aa787f778be2cab4ca587dff5b56bc1cf468abc7e43c3bff717
+  base_config:
+    path: configs/constraint_iclr/pdebench_advection_fno.yaml
+    sha256: 2cd0afad0374232368e8ca686000af3461ce4584d410042bfce9d3232fad490c
+  audit_incident:
+    path: experiments/constraint_attribution_iclr/deployment/pilot_ood_accidental_exposure_20260831.yaml
+    sha256: 680cd10ea5fce5c60ee93fead4cf8f7825a97c1c127b308644b620a29c5008bd
+benchmark:
+  name: PDEBench_1D_Advection
+  beta: 0.4
+  doi: 10.18419/DARUS-2986
+  dataset_version: 8
+  data_file_id: 255674
+  released_md5: d595bbfd2c659df995a93cd40d6ea568
+  license: CC_BY_4.0
+  linear_invariant: discrete_spatial_mean
+confirmation:
+  seeds: [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029]
+  mechanisms: [free, free_res, hard, soft30, projection]
+  expected_records: 150
+  primary_case: ood_r512
+  primary_horizon: 16
+compute:
+  priority_order:
+    - howardwang@100.105.21.7
+    - first_idle_v100_after_main_worker_completion
+  isolation: >-
+    Never interrupt or colocate with the active frozen V100 confirmation. The RTX 2060S may be
+    used only after connectivity plus CUDA memory/timing preflight; otherwise the benchmark waits
+    for a V100 to become idle naturally.
+  budget_policy: >-
+    GPU hours, wall time, disk, and energy are monitored but are not result-driven stopping rules.
+authorized_actions:
+  - Implement and test only the frozen runner, data verifier, analyzer, Hydra configs, and launch tooling.
+  - Download the exact public CC-BY file, verify bytes and MD5, and run the frozen invariant scan.
+  - Create a data lock and executable SHA-256 snapshot before any model run.
+  - Run excluded seed-1999 preflight and then the exact seeds 2000--2029 after every activation gate passes.
+  - Resume hardware-interrupted work only from an identical canonical run ID and checkpoint.
+forbidden_actions:
+  - Do not change benchmark, beta, file version, split, seed, model, training budget, metric, horizon, or tolerance after data/model access.
+  - Do not inspect, summarize, select on, or stop from partial PDEBench model outcomes.
+  - Do not use the accidentally exposed historical pilot OOD values in any benchmark choice or analysis.
+  - Do not pool this external block with the main synthetic confirmation or use it to repair a failed system.
+  - Do not replace a seed or add a parameter-OOD file based on results.
+activation_gates:
+  focused_tests_passed: true
+  synthetic_hdf5_smoke_passed: true
+  official_dataset_downloaded: false
+  official_md5_verified: false
+  invariant_gate_passed: false
+  immutable_data_lock_created: false
+  executable_snapshot_created: false
+  excluded_cuda_preflight_passed: false
+  noninterfering_gpu_available: false
+outcome_state_at_decision:
+  official_solution_tensor_accessed: false
+  pdebench_model_outcome_exists: false
+  main_confirmation_outcome_accessed: false

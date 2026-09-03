@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 FIGURES = Path(__file__).resolve().parents[1] / "papers/paper_d_constraints/figures"
+MANUSCRIPT = FIGURES.parent / "main.tex"
 if str(FIGURES) not in sys.path:
     sys.path.insert(0, str(FIGURES))
 
@@ -58,9 +59,12 @@ def _analysis(primary_class: str, material_cells: int) -> dict[str, object]:
 
 
 def test_unet_macro_admission_requires_primary_and_six_cells() -> None:
-    macros = make_macros(_analysis("material_nonadditivity", 6))
+    macros = make_macros(
+        _analysis("material_nonadditivity", 6), cube_analysis_sha256="e" * 64
+    )
     assert r"\newcommand{\UNetAdmission}{passed}" in macros
     assert r"\newcommand{\UNetMaterialCells}{6}" in macros
+    assert r"\newcommand{\UNetCubeAnalysisSHA}{eeeeeeeeeeee}" in macros
     macros = make_macros(_analysis("material_nonadditivity", 5))
     assert r"\newcommand{\UNetAdmission}{did not pass}" in macros
 
@@ -70,3 +74,16 @@ def test_unet_macro_generator_rejects_wrong_benchmark() -> None:
     analysis["benchmark_id"] = "wrong"
     with pytest.raises(ValueError, match="benchmark"):
         make_macros(analysis)
+
+
+def test_unet_hash_macros_are_expandable_in_manuscript() -> None:
+    manuscript = MANUSCRIPT.read_text(encoding="utf-8")
+    assert r"\path{\UNet" not in manuscript
+    for macro in (
+        "UNetCoreSHA",
+        "UNetCoreAnalysisSHA",
+        "UNetLockSHA",
+        "UNetCubeSHA",
+        "UNetCubeAnalysisSHA",
+    ):
+        assert rf"\texttt{{\{macro}}}" in manuscript

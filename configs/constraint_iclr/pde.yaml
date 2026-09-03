@@ -1,0 +1,31 @@
+stage: smoke
+family: A
+system: diffusion
+resolution: 64
+sigma_flat: 0.1
+n_train: 128
+n_id: 64
+n_ood: 16
+capacity_grid: [32]
+epochs_grid: [2]
+lr_grid: [0.003]
+mechanisms: [free, free_res, hard, soft30]
+seeds: [100]
+batch_size: 64
+horizons: [1, 4]
+device: cpu
+output: experiments/constraint_attribution_iclr/smoke/pde.jsonl
+
+c: 1.0
+nu: 0.02
+dt: 0.1
+gamma: 0.5
+burgers_substeps: 8
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false
+

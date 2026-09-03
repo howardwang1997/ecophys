@@ -1,0 +1,30 @@
+defaults:
+  - pdebench_advection_fno_enforcement_cube_20260901
+  - _self_
+
+diagnostic_stage: gradient_coupling
+device: cuda
+
+gradient_output: experiments/constraint_attribution_iclr/pdebench/advection_gradient_coupling_20260901.jsonl
+gradient_protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_gradient_coupling_freeze_2026-09-01.md
+gradient_protocol_sha256: e99e6925cbb744ec4ac129e2a05b54fde27a862556963dc40b2954bfed8def78
+gradient_decision_path: research/discovery/decisions/constraint_attribution_iclr_gradient_coupling_20260901.yaml
+
+gradient_source_artifact_paths:
+  - configs/constraint_iclr/pdebench_advection_fno_gradient_coupling_v4_20260901.yaml
+  - configs/constraint_iclr/pdebench_advection_fno_enforcement_cube_20260901.yaml
+  - configs/constraint_iclr/pdebench_advection_fno_factorial_20260901.yaml
+  - scripts/run_constraint_iclr_pdebench_gradient_coupling.py
+  - scripts/analyze_constraint_iclr_pdebench_gradient_coupling_v4.py
+  - scripts/run_constraint_iclr_pdebench_enforcement_cube.py
+  - scripts/analyze_constraint_iclr_pdebench_enforcement_cube.py
+  - papers/proposal/ecomd_constraint_attribution_iclr_enforcement_cube_freeze_2026-09-01.md
+  - papers/proposal/ecomd_constraint_attribution_iclr_enforcement_cube_checkpoint_runtime_amendment_2026-09-01.md
+  - research/discovery/decisions/constraint_attribution_iclr_enforcement_cube_20260901.yaml
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

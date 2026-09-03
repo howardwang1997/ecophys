@@ -1,0 +1,75 @@
+schema_version: constraint-iclr-enforcement-cube-machine-decision-v1
+decision_id: constraint_attribution_iclr_enforcement_cube_gradient_v4_machine_20260901
+decision_kind: verified_construct_corrected_implementation_activation
+decided_at: "2026-09-01T11:33:08Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized submission-priority experiments and required a real scientific contribution,
+  including honest treatment of null or adverse outcomes.
+scientific_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_enforcement_cube_20260901.yaml
+  sha256: 72f4e6fbafeb58db525d009747a168fe229a006a40408462f784cb656a75c8f7
+protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_enforcement_cube_freeze_2026-09-01.md
+  sha256: fa892c5e67116495f61d2b5700d986a4c8c1a64d3bb3448246d5ecadcb56c539
+runtime_amendment:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_enforcement_cube_checkpoint_runtime_amendment_2026-09-01.md
+  sha256: ffae223c951df9460c47ef5e51a2edbed0162fd85d70593ef1d80617cee04e00
+implementation:
+  source_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+  source_git_dirty: true
+  cube_runner_sha256: 45b303a3c0da7aaad25fcdca47a71360eb6abec8c9d8120eb96632e39f036930
+  cube_analyzer_sha256: b7369dee42e73bfb4d37fc74063a14d895843eae87d6fb32f22bd2bc37a1acdf
+  mechanism_v4_analyzer_sha256: 9cf9d30b4f1bda3c33ae09ed33c8ff9f9fc38993cd3e12696e03033ddd141a2b
+  cube_config_sha256: aadabd3ab127bad2a5c0f21136b0784be87101779354066c9084979baf3be2cf
+  mechanism_v4_config_sha256: 7d2586c1928a1fd828a6305a3d1a55eb1fb7d4a7da8e427f2100e31f15070824
+  regression_test_sha256: 5dbb129c7324b8317c325e9de694c6fa560c2b89e5bc48666a312c02160b9639
+  snapshot:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_enforcement_cube_gradient_v4_snapshot_20260901.tar.gz
+    sha256: aeb386f10f094387967d3e3e617701de5c7892cf03ec4c13c0fa6524bf9cef39
+    bytes: 79288
+  file_list:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_enforcement_cube_gradient_v4_snapshot_20260901.files
+    sha256: 79a017cebbb5fc28588695bcdfc79937be5da37762a47e486a1ac7c296f4b5da
+    file_count: 40
+  per_file_hashes:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_enforcement_cube_gradient_v4_snapshot_20260901.sha256s
+    sha256: 90273e8905c307be0ef9ed5dbfee7f15c975af52dece1ef98f4e846f345464b9
+verification:
+  focused_tests_passed: 40
+  zero_training_end_to_end_smoke_passed: true
+  checkpoint_tamper_rejected: true
+  nonzero_optimization_rejected: true
+  missing_cube_cell_rejected: true
+  construct_corrected_target_regression_passed: true
+  clean_room_snapshot_hashes_passed: 40
+  clean_room_tests_passed: 40
+  ruff_passed: true
+outcome_state_at_decision:
+  advection_factorial_record_count: 107
+  advection_factorial_expected_records: 150
+  advection_factorial_workers_alive: true
+  advection_factorial_metric_accessed: false
+  advection_factorial_analyzer_run: false
+  enforcement_cube_records: 0
+  gradient_diagnostic_records: 0
+compute:
+  host: 100.80.236.112
+  deployment_root: /root/ecophys_constraint_iclr_pdebench_cube_v4_20260901
+  conda_environment: /data/ecophys_workshop/conda_env
+  activation_condition: >-
+    parent Advection worker exits successfully with exactly 150 valid records and the unchanged
+    frozen factorial analyzer passes
+authorized_sequence:
+  - Deploy and verify only the listed snapshot and this machine decision.
+  - After activation, create and verify the immutable 120-checkpoint lock.
+  - Run all 90 zero-training cube records without partial metric access.
+  - Analyze the complete cube once.
+  - Run the already frozen 60-record gradient diagnostic.
+  - Join the diagnostic with T1 as primary and I_bundle as labeled secondary using analyzer v4.
+forbidden_actions:
+  - Do not run the cube or diagnostic before activation.
+  - Do not use superseded gradient analyzers v1--v3 for the primary scientific claim.
+  - Do not modify checkpoints, seeds, metrics, thresholds, or stopping rules.
+  - Do not inspect partial formal metrics or reframe unsupported associations.
+status: authorized_waiting_for_advection_parent_completion

@@ -1,0 +1,110 @@
+stage: factorial_confirmation
+benchmark_id: pdebench_burgers_nu0.01_fno_factorial_v1
+expected_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+expected_git_dirty: true
+
+dataset:
+  path: data/pdebench/1D_Burgers_Sols_Nu0.01.hdf5
+  doi: 10.18419/DARUS-2986
+  version: 8
+  file_id: 281363
+  url: https://darus.uni-stuttgart.de/api/access/datafile/281363
+  filename: 1D_Burgers_Sols_Nu0.01.hdf5
+  expected_bytes: 8232968312
+  expected_md5: e6d9a4f62baf9a29121a816b919e2770
+  expected_sha256: null
+  expected_shape: [10000, 201, 1024]
+  expected_dtype: float32
+  expected_x_start: -0.9990234375
+  expected_x_period: 2.0
+  expected_t_start: 0.0
+  expected_t_stop: 2.0
+  expected_t_coordinate_length: 202
+  expected_t_trailing_stop: 2.01
+  coordinate_atol: 0.000001
+  max_abs_mean_drift: 0.00001
+  restriction_method: block_average
+  invariant_spatial_strides: [1, 2, 4]
+  restriction_identity_atol: 0.000001
+  scan_chunk_trajectories: 16
+  lock_path: experiments/constraint_attribution_iclr/pdebench/data_lock_burgers_nu0p01.json
+  lock_sha256: null
+
+split:
+  confirmation_start: 0
+  confirmation_count: 256
+  train_pool_start: 1000
+  train_pool_stop: 9000
+  train_trajectories_per_seed: 2048
+  preflight_start: 9000
+  preflight_count: 256
+
+model:
+  history: 10
+  modes: 12
+  width: 20
+  padding: 2
+  projection_width: 128
+
+training:
+  epochs: 200
+  batch_size: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler_step: 100
+  scheduler_gamma: 0.5
+  temporal_stride: 5
+  spatial_stride: 4
+  restriction_method: block_average
+  checkpoint_every_epochs: 25
+
+evaluation:
+  spatial_strides: [4, 2, 1]
+  restriction_method: block_average
+  case_names: [id_r256, ood_r512, ood_r1024]
+  horizons: [1, 4, 16, 31]
+  batch_size: 50
+  primary_case: ood_r512
+  primary_horizon: 16
+
+mechanisms: [free, free_res, hard_abs, hard]
+soft_weight: 30.0
+seeds: [4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009,
+        4010, 4011, 4012, 4013, 4014, 4015, 4016, 4017, 4018, 4019,
+        4020, 4021, 4022, 4023, 4024, 4025, 4026, 4027, 4028, 4029]
+preflight_seed: 3999
+device: cuda
+output: experiments/constraint_attribution_iclr/pdebench/burgers_factorial_confirmation_20260901.jsonl
+checkpoint_dir: experiments/constraint_attribution_iclr/pdebench/burgers_factorial_checkpoints_20260901
+
+protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_factorial_freeze_2026-09-01.md
+protocol_sha256: 123954a28ed1354a79dde9349967c32d143c9e0c78ad146f26de3a8ba00d250e
+schema_amendment_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_schema_freeze_2026-09-01.md
+schema_amendment_sha256: ab3fc7553108915bc896f3fdfba068d8f5f85e5e5b5e2d7afafd1e86de90af49
+decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_burgers_factorial_20260901.yaml
+schema_decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_burgers_schema_20260901.yaml
+incident_path: experiments/constraint_attribution_iclr/deployment/pilot_ood_accidental_exposure_20260831.yaml
+source_metadata_path: experiments/constraint_attribution_iclr/pdebench/burgers_nu0p01_source_20260901.json
+
+source_artifact_paths:
+  - configs/constraint_iclr/pdebench_burgers_nu0p01_factorial.yaml
+  - configs/constraint_iclr/pdebench_burgers_nu0p01_factorial_confirmation.yaml
+  - scripts/analyze_constraint_iclr_pdebench_factorial.py
+  - scripts/launch_constraint_iclr_pdebench_burgers_factorial.py
+  - experiments/constraint_attribution_iclr/pdebench/burgers_nu0p01_source_20260901.json
+
+factorial_analysis:
+  bootstrap_draws: 50000
+  sign_flip_draws: 100000
+  confidence_nonzero: 0.95
+  confidence_equivalence: 0.90
+  sesoi_fraction_of_free_res: 0.10
+  invariant_drift_atol: 0.0001
+  shapley_efficiency_atol: 0.000000000001
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

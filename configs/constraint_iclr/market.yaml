@@ -1,0 +1,25 @@
+stage: smoke
+n_agents: 8
+n_train: 128
+n_id: 64
+n_ood: 64
+warmup_steps: 8
+episode_steps: 16
+fee_rate: 0.001
+tick_size: 0.1
+capacity_grid: [32]
+epochs_grid: [2]
+lr_grid: [0.003]
+mechanisms: [free, free_res, hard, soft30]
+seeds: [100]
+batch_size: 64
+device: cpu
+output: experiments/constraint_attribution_iclr/smoke/market.jsonl
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false
+

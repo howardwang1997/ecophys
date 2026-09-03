@@ -1,0 +1,40 @@
+schema_version: constraint-iclr-public-swe-transport-decision-v1
+decision_id: constraint_attribution_iclr_pdebench_swe_transport_mirror_20260902
+decision_kind: outcome_blind_runtime_only_transport_revision
+decided_at: "2026-09-01T13:10:21Z"
+scientific_protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_freeze_2026-09-02.md
+  sha256: 4b46f45906e3b514181dca6c8265eb1d3d73f1e451565dc3f1bb2e20d411e706
+reason:
+  official_darus_probe_bytes: 4059136
+  official_darus_elapsed_seconds: 198
+  observed_average_bytes_per_second: 20500
+  projected_full_transport_hours: 89.8
+  metric_accessed: false
+  note: >-
+    Only transport progress was observed. No HDF5 key, coordinate, field value, preflight
+    output, checkpoint, or formal metric was accessed.
+replacement_transport:
+  repository: OneScience-Group/pdenneval
+  repository_type: huggingface_dataset_public_mirror
+  commit: d8cc85c71ef4b9548de1c0be290abe64adc8e575
+  path: data/pdebench_data/2D_rdb_NA_NA.h5
+  resolve_url: >-
+    https://huggingface.co/datasets/OneScience-Group/pdenneval/resolve/d8cc85c71ef4b9548de1c0be290abe64adc8e575/data/pdebench_data/2D_rdb_NA_NA.h5?download=true
+  api_reported_bytes: 6626098972
+  git_lfs_sha256: 28f0c33723d70eebb420fc170e94b675c18e032fb697dcef080e114ca9645e3a
+identity_gate:
+  exact_bytes: 6626098972
+  required_sha256: 28f0c33723d70eebb420fc170e94b675c18e032fb697dcef080e114ca9645e3a
+  required_official_pdebench_md5: 75d838c47aa410694bdc912ea7f22282
+  atomic_promotion_only_after_all_pass: true
+preservation:
+  official_darus_partial_action: move_intact_to_excluded_transport
+  excluded_from_every_data_lock_and_model_run: true
+scope:
+  changes: [transport_endpoint]
+  unchanged:
+    - exact released PDEBench file identity
+    - byte, MD5, schema, invariant, positivity, and restriction gates
+    - model, split, grid, horizons, seeds, metrics, and inference
+status: authorized_runtime_only_transport_replacement

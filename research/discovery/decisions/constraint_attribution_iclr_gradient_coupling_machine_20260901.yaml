@@ -1,0 +1,58 @@
+schema_version: constraint-iclr-mechanism-machine-decision-v1
+decision_id: constraint_attribution_iclr_gradient_coupling_machine_20260901
+decision_kind: verified_implementation_activation
+decided_at: "2026-09-01T08:31:49Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized the submission-priority scientific experiments and explicitly required a real
+  scientific contribution rather than result-contingent robustness reframing.
+parent_scientific_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_gradient_coupling_20260901.yaml
+  sha256: ba758bf50a4deb383a6ab6d1dbc093dcd00b432bfd862c5c5438f2911e88a634
+protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_gradient_coupling_freeze_2026-09-01.md
+  sha256: e99e6925cbb744ec4ac129e2a05b54fde27a862556963dc40b2954bfed8def78
+implementation:
+  source_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+  source_git_dirty: true
+  runner_sha256: 00b1c53b3aa5f4dda515c92ba533257820d1da8268a9b935c7545b3d2b916f22
+  analyzer_sha256: 226ddfcf119f3f4468b8dc78f452d4990f45cdcc626cc4eef73627272ca21fa4
+  config_sha256: bf776842c6a41c3dc5e969117bd860afad96e5780411feb854f795ca7eb75b07
+  snapshot:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_gradient_coupling_snapshot_20260901.tar.gz
+    sha256: 3d989bd9ac41b0d58a4e11f2d792e51d8e5881bae1131584b452cff46adaed9b
+    bytes: 52525
+  file_list:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_gradient_coupling_snapshot_20260901.files
+    sha256: 93e54d82e5d1660bcb394d913335513dcf704be3ee8a66638d3d37fa36f44d82
+  per_file_hashes:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_gradient_coupling_snapshot_20260901.sha256s
+    sha256: 68c69b2ca60c5bbe938bbf039458b06a9614cb297fc7a5504b19ffdc386bbadd
+  verification:
+    focused_tests_passed: 63
+    diagnostic_cpu_end_to_end_smoke_passed: true
+    clean_room_snapshot_hashes_passed: 20
+    ruff_passed: true
+outcome_state_at_decision:
+  advection_factorial_record_count: 45
+  advection_factorial_expected_records: 150
+  advection_factorial_metric_accessed: false
+  advection_factorial_analyzer_run: false
+  burgers_data_gate_complete: false
+compute:
+  host: 100.80.236.112
+  deployment_root: /root/ecophys_constraint_iclr_pdebench_gradient_20260901
+  conda_environment: /data/ecophys_workshop/conda_env
+  activation_condition: advection_factorial_worker_has_exited_with_exactly_150_records
+  output: experiments/constraint_attribution_iclr/pdebench/advection_gradient_coupling_20260901.jsonl
+authorized_actions:
+  - After the activation condition, deploy and verify the exact snapshot and this decision.
+  - Verify the unchanged Advection dataset and data-lock hashes.
+  - Run excluded seed 2999 as a CUDA integrity preflight in a separate output file.
+  - On a full finite preflight pass, run exact seeds 3000--3029 to the 60-record formal contract.
+  - Inspect diagnostic-only values after exact coverage; join to final outcomes only after the factorial analyzer completes.
+forbidden_actions:
+  - Do not overlap this process with the active Advection training worker on the same GPU.
+  - Do not modify or inspect partial factorial metrics.
+  - Do not change the diagnostic statistic after outputs or replace a failed association.
+status: authorized_waiting_for_advection_factorial_completion

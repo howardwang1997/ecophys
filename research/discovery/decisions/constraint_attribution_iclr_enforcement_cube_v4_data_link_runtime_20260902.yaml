@@ -1,0 +1,30 @@
+schema_version: constraint-iclr-runtime-incident-v1
+decision_id: constraint_attribution_iclr_enforcement_cube_v4_data_link_runtime_20260902
+decision_kind: zero_record_deployment_path_repair
+recorded_at: "2026-09-01T14:52:37Z"
+host: 100.80.236.112
+deployment_root: /root/ecophys_constraint_iclr_pdebench_cube_v4_20260901
+incident:
+  observed_records: 0
+  checkpoint_lock_created: false
+  failure_stage: pre_hdf5_path_stat
+  error: >-
+    The cube deployment did not contain the relative data/pdebench symlink expected by the
+    unchanged frozen config. The locked dataset itself remained present and unchanged at
+    /data/ecophys_pdebench_v2/1D_Advection_Sols_beta0.4.hdf5.
+preserved_log: >-
+  /root/ecophys_constraint_iclr_pdebench_cube_v4_20260901/excluded_runtime_20260902/
+  advection_cube_missing_data_link_0records.log
+repair:
+  kind: runtime_only_symlink
+  path: data/pdebench/1D_Advection_Sols_beta0.4.hdf5
+  target: /data/ecophys_pdebench_v2/1D_Advection_Sols_beta0.4.hdf5
+  target_bytes: 8232966952
+unchanged:
+  - dataset bytes and immutable data lock
+  - code, Hydra config, protocols, checkpoints, seeds, metrics, thresholds, and stopping rules
+  - core JSONL and one-shot analysis hashes
+restart:
+  pid: 1538016
+  prerequisite: runner repeats its frozen byte and SHA-256 data-lock validation
+status: repaired_before_any_cube_record

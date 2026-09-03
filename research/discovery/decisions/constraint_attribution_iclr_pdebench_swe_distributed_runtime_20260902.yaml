@@ -1,0 +1,53 @@
+schema_version: constraint-iclr-public-swe-runtime-registration-v1
+decision_id: constraint_attribution_iclr_pdebench_swe_distributed_runtime_20260902
+decision_kind: outcome_blind_fixed_two_worker_registration
+decided_at: "2026-09-01T14:19:29Z"
+authorized_by: PI
+model_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_pdebench_swe_model_activation_20260902.yaml
+  sha256: 85b09dd6e26d6f144e2e743198e6a2d09d97e2c3e95c35b597dfe7ae66abf3ff
+dataset_lock:
+  path: experiments/constraint_attribution_iclr/pdebench/data_lock_swe_rdb_20260902.json
+  sha256: 1673f74f7f6ae5198894ef445cdbdd96e536ec669480397b1e21296318ed825b
+implementation_snapshot:
+  path: experiments/constraint_attribution_iclr/deployment/pdebench_swe_implementation_v2_snapshot_20260902.tar.gz
+  sha256: 78c036fa9e4cffe8ee0e751607e818d387007eff284ec17b6f00dcf72504c880
+activated_base_config:
+  path: configs/constraint_iclr/pdebench_swe_rdb_factorial_20260902.yaml
+  sha256: 52791f79e167bc2096072e51c0ad2d1f846d313c54851a1081df38469bf41068
+formal_seed_universe: [6000, 6001, 6002, 6003, 6004, 6005, 6006, 6007, 6008, 6009,
+                       6010, 6011, 6012, 6013, 6014, 6015, 6016, 6017, 6018, 6019,
+                       6020, 6021, 6022, 6023, 6024, 6025, 6026, 6027, 6028, 6029]
+workers:
+  v100a:
+    host: 100.80.236.112
+    gpu: Tesla V100-SXM2-32GB
+    root: /root/ecophys_constraint_iclr_pdebench_swe_20260902
+    dataset: /data/ecophys_pdebench_swe/2D_rdb_NA_NA.h5
+    seeds: [6000, 6001, 6002, 6003, 6004, 6005, 6006, 6007, 6008, 6009,
+            6010, 6011, 6012, 6013, 6014]
+    start_condition: >-
+      Advection core, enforcement cube, and gradient diagnostic have exited and the SWE dataset
+      has passed exact bytes, SHA-256, MD5, and data-lock verification on this host.
+  v100b:
+    host: 100.123.220.57
+    gpu: Tesla V100-SXM2-32GB
+    root: /root/ecophys_constraint_iclr_pdebench_swe_20260902
+    dataset: /data/ecophys_pdebench_swe/2D_rdb_NA_NA.h5
+    seeds: [6015, 6016, 6017, 6018, 6019, 6020, 6021, 6022, 6023, 6024,
+            6025, 6026, 6027, 6028, 6029]
+    start_condition: excluded_seed_5999_preflight_passes_execution_integrity
+merge_contract:
+  expected_records_per_worker: 75
+  expected_total_records: 150
+  merge_key: run_id
+  require_unique_run_ids: true
+  require_worker_exit: true
+  formal_metrics_hidden_until_merged_integrity_passes: true
+runtime_policy:
+  time_limit: none
+  resume_from_frozen_checkpoints: true
+  skip_only_completed_run_ids: true
+  no_early_analysis: true
+  no_result_driven_stopping: true
+status: registered_waiting_for_excluded_preflight

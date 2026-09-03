@@ -1,0 +1,31 @@
+defaults:
+  - pdebench_cns_eta0p01_factorial_20260901
+  - _self_
+
+cube:
+  stage: cns_enforcement_cube_confirmation
+  schema_version: constraint-iclr-pdebench-cns-enforcement-cube-v1
+  output: experiments/constraint_attribution_iclr/pdebench/cns_enforcement_cube_20260902.jsonl
+  checkpoint_lock: experiments/constraint_attribution_iclr/pdebench/cns_factorial_checkpoint_lock_20260902.json
+  core_analysis: experiments/constraint_attribution_iclr/pdebench/cns_factorial_analysis_20260902.json
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_cns_cube_freeze_2026-09-02.md
+  protocol_sha256: 3333d87d99c743ab42ba719bec5d3a9bc0e7f89d170f316ee7a109695dd62fd4
+  decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_cns_enforcement_cube_20260902.yaml
+  decision_sha256: b5c50126b76550b1b9269958ce82fbc936c88e4d35b7a1473c3794782cd536c3
+  trained_parent_mechanisms: [free, free_res, hard_abs, hard]
+  derived_mechanisms: [projection_res, hard_abs_unprojected, hard_res_unprojected]
+  expected_core_records: 150
+  expected_trained_checkpoints: 120
+  expected_derived_records: 90
+  checkpoint_schema_version: constraint-iclr-pdebench-cns-v1
+  checkpoint_lock_schema_version: constraint-iclr-pdebench-cns-checkpoint-lock-v1
+  checkpoint_completed_epochs: 200
+  primary_metric: density_conserving_rmse
+  algebra_atol: 0.000000000001
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

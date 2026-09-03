@@ -1,0 +1,74 @@
+schema_version: constraint-iclr-machine-decision-amendment-v1
+decision_id: constraint_attribution_iclr_failure_continuation_20260831
+decision_kind: deterministic_failure_continuation
+decided_at: "2026-08-31T10:36:06Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+status: authorized
+stage: held_out_confirmation
+target_venue: ICLR_2027
+discovery_status_effect: none
+outcome_accessed_at_decision: false
+authorization_text: >-
+  After the deterministic A-burgers failure and its scope were explained, the PI approved the
+  minimal revision: keep A-burgers permanently failed/incomplete without another retry,
+  hyperparameter change, or seed replacement, and allow V100a to continue only the unchanged
+  locked H-near, H-strong, and M2 jobs.
+parent_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_confirmation_20260831.yaml
+  sha256: 9d6e1e67cc0055b719c1b904f266123e29b9b31f1f24008a58bafbc8ea49dace
+immutable_inputs:
+  snapshot_sha256: b70c000cdd1c70d676ce1846f74e66d147bcd8a03a0fc0a84564e8e0cbbb1305
+  selection_lock:
+    path: experiments/constraint_attribution_iclr/pilot/pilot_lock_final_idonly_20260831.json
+    sha256: 5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e
+  seeds: [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,
+          1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019,
+          1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029]
+incident:
+  path: experiments/constraint_attribution_iclr/deployment/v100a_aburgers_nonfinite_incident_20260831.yaml
+  sha256: 44f3241022e241b9af2d4fac4f554bc98d34f672c5370dbb9835272347a33d13
+  deterministic_identical_attempts: 2
+  outcome_metric_value_inspected: false
+  disposition: failed_incomplete
+amendment_artifacts:
+  protocol:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_failure_continuation_amendment_2026-08-31.md
+    sha256: 5d2a1193c61a73ae68be83331c228582c8e7fdd83feaa419f6cf1bbcb7eeb84d
+  v100a_manifest:
+    path: configs/constraint_iclr/confirmation_manifest_v100a_continuation_20260831.yaml
+    sha256: 8318ac87df7d2953ac522e453d2268540587d97ea1a1689e7d1d317d781c96d7
+  focused_test:
+    path: tests/test_constraint_iclr.py
+    sha256: 78887eb7224ce911573be80535ec8da194643e5493bb37b408e1d7c64ccad979
+v100a_continuation:
+  host: 100.80.236.112
+  worker: v100a
+  systems: [H:contraction_near, H:contraction_strong, M2:fifo_cda]
+  unique_mechanism_cell_jobs: 18
+  expected_records_including_projection: 720
+  append_only: true
+  run_id_skip_enabled: true
+v100b_scope:
+  host: 100.123.220.57
+  worker: v100b
+  amendment_effect: none
+  governing_decision: parent
+authorized_actions:
+  - Deploy and verify only the amendment artifacts on V100a.
+  - Launch the v100a continuation manifest against the unchanged final lock and seeds 1000--1029.
+  - Preserve all existing A outputs, logs, and the incident record byte-for-byte.
+  - Resume V100b under the parent decision only if its identical append-only worker is operationally interrupted.
+  - Monitor only process health, coverage, runtime, GPU state, provenance, lock binding, and numeric finiteness.
+forbidden_actions:
+  - Do not run A-burgers again or repair its failed configuration.
+  - Do not replace, add, remove, or selectively rerun any confirmation seed based on an outcome.
+  - Do not modify the snapshot, lock, original manifests, runners, grids, cells, mechanisms, metrics, or tolerances.
+  - Do not inspect pilot OOD or confirmation outcomes before the amended completeness gate passes.
+  - Do not count A-burgers as a success, a null effect, or a completed system.
+analysis_gate:
+  required_complete_systems: 9
+  declared_failed_systems: [A:burgers]
+  failed_system_inference: unavailable_and_excluded
+  analyzer_run_limit: exactly_once_after_integrity_gates
+effective_until: frozen_confirmation_analysis_completed_or_pi_revocation

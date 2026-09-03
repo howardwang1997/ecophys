@@ -1,0 +1,57 @@
+schema_version: constraint-iclr-confirmation-incident-v1
+incident_id: v100b_bburgers_nonfinite_20260901
+observed_at_utc: "2026-08-31T19:55:12Z"
+observed_at_remote: "2026-09-01T03:55:12+08:00"
+host: 100.123.220.57
+worker: v100b
+deployment_root: /root/ecophys_constraint_iclr_confirmation_20260831
+stage: held_out_confirmation
+system: B:burgers
+status: failed_before_first_record
+locked_job:
+  mechanism: free
+  capacity: 16
+  epochs: 400
+  learning_rate: 0.001
+  seed: 1000
+  resolution: 128
+  nu: 0.01
+  selection_lock_sha256: 5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e
+attempts:
+  identical_attempt_count: 1
+  record_count_after_attempt: 0
+  failure_stage: strict_json_append_gate
+  exception_type: ValueError
+  exception_message: Out of range float values are not JSON compliant
+  interpretation: >-
+    At least one numeric field in the completed in-memory record was non-finite. The failing field
+    and all metric values were deliberately not inspected because the formal completeness gate had
+    not passed.
+outcome_access:
+  metric_value_printed_by_runner: false
+  metric_value_inspected: false
+  partial_record_recovered: false
+evidence:
+  zero_byte_output:
+    path: experiments/constraint_attribution_iclr/confirmation/B_burgers.jsonl
+    bytes: 0
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  authorized_launcher_log:
+    path: logs/confirmation_v100b_authorized_20260831.log
+    bytes: 30296
+    sha256: 78f5a51283d6ea28fedd479718371d466a1a5b93dddbbf60e0acddc1d9325921
+  earlier_launcher_log:
+    path: logs/confirmation_v100b_20260831.log
+    bytes: 579
+    sha256: ed1054901cdae86901557bdff87cc6c65dd43567fe3c3381d278cf43ad22e2b0
+  runner_log:
+    path: run_constraint_iclr_pde.log
+    bytes: 0
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+disposition:
+  preserve_all_evidence: true
+  retry_allowed: false
+  repair_allowed: false
+  seed_replacement_allowed: false
+  inference_status: unavailable_and_excluded
+

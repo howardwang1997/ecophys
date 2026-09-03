@@ -1,0 +1,41 @@
+schema_version: constraint-iclr-public-swe-cube-decision-v1
+decision_id: constraint_attribution_iclr_pdebench_swe_enforcement_cube_20260902
+decision_kind: outcome_blind_zero_training_mechanism_expansion
+decided_at: "2026-09-01T13:32:00Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized contribution-driven experiments and required that weak results not be hidden
+  by rhetorical fallback. The full training-by-inference cube directly identifies the mechanism.
+protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_cube_freeze_2026-09-02.md
+  sha256: 1f7a4f698fa2e9a533ef920832974c2e331fd4b318fa370b517a52502ce6dde3
+parent_protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_freeze_2026-09-02.md
+  sha256: 4b46f45906e3b514181dca6c8265eb1d3d73f1e451565dc3f1bb2e20d411e706
+activation_requires:
+  - exact 150-record core coverage and worker exit
+  - passing frozen core analyzer bound to the core JSONL SHA-256
+  - immutable lock for all 120 trained checkpoints
+derived_cells:
+  R01: free_res checkpoint with inference mass projection
+  A10: hard_abs checkpoint with compatible unprojected absolute forward map
+  R10: hard checkpoint with compatible unprojected residual forward map
+formal_seeds: 6000--6029
+expected_derived_records: 90
+optimization_runs_per_derived_record: 0
+prespecified_tradeoff:
+  case: ood_r128
+  horizon: 31
+  intervention: inference_projection_averaged_over_coordinates_with_free_training
+  conservation_metric: max_abs_invariant_drift
+  primary_positivity_metric: mean_negative_depth_deficit
+  secondary_positivity_metric: negative_depth_fraction
+  paired_bootstrap_confidence: 0.95
+  scientific_gate: >-
+    A resolved trade-off requires a strictly positive conservation-effect interval and a strictly
+    negative primary-positivity-effect interval under the unprojected-minus-projected convention.
+forbidden_actions:
+  - No cube activation from partial or failed core results.
+  - No retraining, checkpoint editing, clamping, seed replacement, or hyperparameter change.
+  - No partial cube metric access or result-driven stopping.
+status: authorized_conditional_on_core_integrity

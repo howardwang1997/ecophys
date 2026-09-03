@@ -1,0 +1,48 @@
+schema_version: constraint-iclr-pilot-manifest-v1
+workers:
+  v100b:
+    - name: b_advection
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: B
+        system: advection
+        resolution: 128
+        capacity_grid: [8, 16]
+        epochs_grid: [100, 200]
+        lr_grid: [0.0003, 0.001]
+        output: experiments/constraint_attribution_iclr/pilot/b_advection.jsonl
+    - name: b_diffusion
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: B
+        system: diffusion
+        resolution: 128
+        capacity_grid: [8, 16]
+        epochs_grid: [100, 200]
+        lr_grid: [0.0003, 0.001]
+        output: experiments/constraint_attribution_iclr/pilot/b_diffusion.jsonl
+    - name: b_burgers
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: B
+        system: burgers
+        resolution: 128
+        nu: 0.01
+        capacity_grid: [8, 16]
+        epochs_grid: [100, 200]
+        lr_grid: [0.0003, 0.001]
+        output: experiments/constraint_attribution_iclr/pilot/b_burgers.jsonl
+    - name: c_ad2d
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: C
+        system: ad2d
+        resolution: 32
+        capacity_grid: [8, 16]
+        epochs_grid: [100, 200]
+        lr_grid: [0.0003, 0.001]
+        output: experiments/constraint_attribution_iclr/pilot/c_ad2d.jsonl

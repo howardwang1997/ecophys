@@ -1,0 +1,48 @@
+schema_version: constraint-iclr-gauge-identity-runtime-repair-v1
+decision_id: constraint_attribution_iclr_gauge_identity_runtime_repair_20260902
+decision_kind: outcome_blind_dual_numerical_integrity_gate
+decided_at: "2026-09-02T04:37:09Z"
+authorization_basis: >-
+  The PI explicitly authorized the registered outcome-blind post-analysis repair and
+  the frozen 60-record gauge diagnostic. This follow-up records a new structural
+  failure before any partial gauge metric was accessed and requires fresh authorization
+  before excluding the partial file or rerunning.
+amendment:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_gauge_identity_runtime_amendment_2026-09-02.md
+  sha256: 18b3c5bcf5858bd9605d989c2ea0fffbed0970d01d7469f17a6919fcf76cfc8a
+failure_state:
+  records: 10
+  metrics_accessed: false
+  path: experiments/constraint_attribution_iclr/pdebench/advection_gauge_feedback_20260902.jsonl
+  sha256: f55983ec19d258e5db3d04478cc629ba531ff5c677d831075cea9209dc6fa7ab
+  error: step-one gauge identity exceeded tolerance
+dual_gate:
+  absolute_floor: 1.0e-6
+  float_dtype: float32
+  roundoff_ulps: 2048
+  maximum_grid_cells: 1024
+  relative_to_projected_baseline_max: 0.001
+  both_required: true
+fresh_run:
+  output: experiments/constraint_attribution_iclr/pdebench/advection_gauge_feedback_provenance_rerun_20260902.jsonl
+  analysis: experiments/constraint_attribution_iclr/pdebench/advection_gauge_feedback_provenance_rerun_analysis_20260902.json
+  expected_records: 60
+  optimization_runs: 0
+  reuse_partial_records: false
+scientific_identity:
+  changed: false
+  unchanged_fields:
+    - parent datasets, records, analyses, locks, and checkpoints
+    - seeds 3000--3029 and both output coordinates
+    - ID-256, OOD-512, and OOD-1024 cases
+    - same-checkpoint two-step gauge intervention
+    - feedback ratio estimand and 0.10 practical threshold
+    - bootstrap, association, and classification rules
+forbidden_actions:
+  - Do not inspect or merge the excluded 10-record file.
+  - Do not change either numerical gate after activation.
+  - Do not reuse a partial run ID or mix source manifests.
+  - Do not alter a parent checkpoint or any scientific estimand.
+  - Do not claim direct gauge feedback if either gate or the materiality rule fails.
+status: registered_waiting_for_pi_authorization
+

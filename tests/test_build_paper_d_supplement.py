@@ -1,16 +1,27 @@
 from __future__ import annotations
 
 import json
+import sys
+import tarfile
 from pathlib import Path
 
 import pytest
 
-from scripts.build_paper_d_supplement import (
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.build_paper_d_supplement import (  # noqa: E402
+    BASE_RELEASE_FILES,
     CubeBlock,
+    artifact_payload,
     build_manifest,
+    collect_provenance_sources,
     create_archive,
+    sha256_bytes,
     sha256_file,
     validate_cube_block,
+    validate_no_bulk_payloads,
 )
 
 
@@ -20,6 +31,10 @@ def _write_jsonl(path: Path, count: int) -> None:
         "".join(json.dumps({"run_id": index}) + "\n" for index in range(count)),
         encoding="utf-8",
     )
+
+
+def test_release_contract_includes_its_builder_test() -> None:
+    assert Path("tests/test_build_paper_d_supplement.py") in BASE_RELEASE_FILES
 
 
 def test_cube_block_requires_exact_coverage_and_hash_bindings(tmp_path: Path) -> None:
@@ -89,3 +104,142 @@ def test_release_archive_is_deterministic_and_normalized(tmp_path: Path) -> None
     create_archive(tmp_path, paths, manifest_payload, second)
     assert sha256_file(first) == sha256_file(second)
     assert first.with_suffix(first.suffix + ".sha256").is_file()
+
+
+def test_provenance_sources_are_hash_checked(tmp_path: Path) -> None:
+    source = tmp_path / "source.py"
+    source.write_text("value = 1\n", encoding="utf-8")
+    records = tmp_path / "records.jsonl"
+    records.write_text(
+        json.dumps(
+            {
+                "provenance": {
+                    "source_sha256": {"source.py": sha256_file(source)}
+                }
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    assert collect_provenance_sources(tmp_path, [Path("records.jsonl")]) == {
+        Path("source.py")
+    }
+    source.write_text("value = 2\n", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="absent from current files and snapshots"):
+        collect_provenance_sources(tmp_path, [Path("records.jsonl")])
+
+    historical = tmp_path / "historical.py"
+    historical.write_text("value = 1\n", encoding="utf-8")
+    snapshot = tmp_path / "snapshot.tar.gz"
+    with tarfile.open(snapshot, "w:gz") as archive:
+        archive.add(historical, arcname="source.py")
+    assert collect_provenance_sources(
+        tmp_path, [Path("records.jsonl")], [Path("snapshot.tar.gz")]
+    ) == set()
+
+
+def test_double_blind_redaction_preserves_provenance_binding(tmp_path: Path) -> None:
+    operator = "test" + "operator"
+    source_bytes = (
+        f"worker: {operator}@100.64.0.9\n"
+        f"root: /home/{operator}/registered-run\n"
+    ).encode()
+    source_digest = sha256_bytes(source_bytes)
+    source = tmp_path / "decision.yaml"
+    source.write_bytes(source_bytes)
+    snapshot = tmp_path / "snapshot.tar.gz"
+    with tarfile.open(snapshot, "w:gz") as archive:
+        archive.add(source, arcname="decision.yaml")
+    records = tmp_path / "records.jsonl"
+    records.write_text(
+        json.dumps(
+            {
+                "provenance": {
+                    "source_sha256": {"decision.yaml": source_digest}
+                }
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    released_snapshot, redactions = artifact_payload(
+        tmp_path, Path("snapshot.tar.gz")
+    )
+    assert redactions
+    assert operator.encode() not in released_snapshot
+    manifest = build_manifest(tmp_path, [Path("snapshot.tar.gz")])
+    assert manifest["schema_version"].endswith("-v2")
+    assert manifest["files"][0]["redacted_for_double_blind"] is True
+    assert operator not in json.dumps(manifest)
+    redactions = manifest["double_blind_redactions"]
+    snapshot.write_bytes(released_snapshot)
+    assert artifact_payload(tmp_path, Path("snapshot.tar.gz")) == (
+        released_snapshot,
+        [],
+    )
+    source.unlink()
+    assert collect_provenance_sources(
+        tmp_path,
+        [Path("records.jsonl")],
+        [Path("snapshot.tar.gz")],
+        redactions,
+    ) == set()
+
+
+def test_private_network_addresses_are_anonymized(tmp_path: Path) -> None:
+    address = "100." + "80.236.112"
+    receipt = tmp_path / "receipt.yaml"
+    receipt.write_text(
+        f"worker: root@{address}\nendpoint: {address}\n", encoding="utf-8"
+    )
+    payload, redactions = artifact_payload(tmp_path, Path("receipt.yaml"))
+    assert address.encode() not in payload
+    assert payload.count(b"redacted-host") == 2
+    assert redactions[0]["categories"] == ["private_network_address"]
+
+
+def test_release_rejects_direct_and_nested_checkpoint_bytes(tmp_path: Path) -> None:
+    checkpoint = tmp_path / "weights.pt"
+    checkpoint.write_bytes(b"weights")
+    with pytest.raises(RuntimeError, match="forbidden model/data payload"):
+        validate_no_bulk_payloads(tmp_path, [Path("weights.pt")])
+
+    snapshot = tmp_path / "snapshot.tar.gz"
+    with tarfile.open(snapshot, "w:gz") as archive:
+        archive.add(checkpoint, arcname="checkpoints/weights.pt")
+    with pytest.raises(RuntimeError, match="nested artifact"):
+        validate_no_bulk_payloads(tmp_path, [Path("snapshot.tar.gz")])
+
+
+def test_license_holder_is_anonymized(tmp_path: Path) -> None:
+    holder = "test" + "holder"
+    license_path = tmp_path / "LICENSE"
+    license_path.write_text(
+        f"MIT License\n\nCopyright (c) 2026 {holder}\n", encoding="utf-8"
+    )
+    payload, redactions = artifact_payload(tmp_path, Path("LICENSE"))
+    assert holder.encode() not in payload
+    assert b"Copyright (c) 2026 Anonymous Authors" in payload
+    assert redactions[0]["categories"] == ["copyright_holder"]
+
+
+def test_package_author_is_anonymized(tmp_path: Path) -> None:
+    author = "Test" + " Researcher"
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text(
+        f'[project]\nname = "example"\nauthors = [{{ name = "{author}" }}]\n',
+        encoding="utf-8",
+    )
+    payload, redactions = artifact_payload(tmp_path, Path("pyproject.toml"))
+    assert author.encode() not in payload
+    assert b'authors = [{ name = "Anonymous Authors" }]' in payload
+    assert redactions[0]["categories"] == ["package_author"]
+
+
+def test_manifest_refuses_to_redact_frozen_numerical_records(tmp_path: Path) -> None:
+    records = tmp_path / "records.jsonl"
+    private_path = "/home/" + "private-user/run"
+    records.write_text(json.dumps({"path": private_path}) + "\n", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="frozen numerical record"):
+        build_manifest(tmp_path, [Path("records.jsonl")])

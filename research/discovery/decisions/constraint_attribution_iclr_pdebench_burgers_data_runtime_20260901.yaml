@@ -1,0 +1,34 @@
+schema_version: constraint-iclr-runtime-amendment-v1
+decision_id: constraint_attribution_iclr_pdebench_burgers_data_runtime_20260901
+decision_kind: dependency_only_before_data_download
+decided_at: "2026-09-01T06:51:00Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized executing the submission-priority experiments; this amendment is limited to
+  restoring a missing dependency required by the already-authorized frozen data gate.
+parent_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_pdebench_burgers_data_admission_20260901.yaml
+  sha256: 5d086b7eadb9123ddc65dc5cc082ca9fb93115aad7c2571ab8d86191536aa2fc
+incident:
+  host: 100.123.220.57
+  pid: 213539
+  failure: "ModuleNotFoundError: No module named 'h5py'"
+  dataset_bytes_created: 0
+  data_outcomes_observed: false
+  model_outcomes_observed: false
+environment_parity:
+  successful_reference_host: 100.80.236.112
+  python: 3.11.15
+  numpy: 2.4.6
+  torch: 2.3.1+cu121
+  omegaconf: 2.3.1
+  reference_h5py: 3.16.0
+  target_missing_package: h5py
+authorized_change:
+  conda_prefix: /data/ecophys_workshop/conda_env
+  package: h5py==3.16.0
+  retry_count: 1
+forbidden_changes:
+  - No scientific config, data source, schema, threshold, split, seed, or analysis change.
+  - Do not delete or overwrite the first failure log.
+  - Do not run any Burgers model under this decision.

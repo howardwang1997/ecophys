@@ -1,0 +1,36 @@
+decision_id: constraint_attribution_iclr_pdebench_cns_data_gate_failure_20260902
+status: terminal_data_gate_failure
+recorded_date_nzst: 2026-09-02
+
+benchmark:
+  repository: pdebench/1D-Compressible-Navier-Stokes
+  commit: aebb84fc14f674881696a9c72c814bd8b7083fd1
+  filename: 1D_CFD_Rand_Eta0.01_Zeta0.01_periodic_Train.hdf5
+  bytes: 12410888600
+  sha256: 86a2b8cf81f40191dbc40a7c2a9b268784979f2c1c269b59daa23c83885ebe8f
+
+transport_gate:
+  expected_bytes_matched: true
+  expected_sha256_matched: true
+
+frozen_schema_gate:
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_cns_freeze_2026-09-01.md
+  protocol_sha256: c29771c48e398b793554ee10f9907fff3c68a760a4da639e8a0f98b2bd2b4833
+  expected_t_coordinate_shape: [101]
+  observed_t_coordinate_shape: [102]
+  failure: "coordinate shape mismatch: expected (101,), got (102,)"
+  failure_stage: coordinate_metadata_before_field_value_scan
+  data_lock_created: false
+  model_preflight_started: false
+  model_records_created: 0
+
+terminal_scope:
+  - this exact HDF5 file and frozen CNS protocol
+  - no schema amendment from 101 to 102
+  - no retry with another viscosity from the same CNS selection
+  - no CNS metric or claim may enter the paper from this attempt
+
+next_action: >-
+  Select a distinct, independently documented public PDE family with a linear conservation law;
+  freeze its exact public file schema before content access and require a new transport and data
+  admission gate. The enforcement-cube scientific estimand remains unchanged.

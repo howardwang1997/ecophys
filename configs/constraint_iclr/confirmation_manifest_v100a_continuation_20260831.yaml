@@ -1,0 +1,17 @@
+schema_version: constraint-iclr-confirmation-manifest-v1
+amendment: v100a_aburgers_failure_continuation_20260831
+workers:
+  v100a: [H:contraction_near, H:contraction_strong, M2:fifo_cda]
+systems:
+  H:contraction_near:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: H, system: contraction_near, resolution: 64, gamma: 0.5}
+  H:contraction_strong:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: H, system: contraction_strong, resolution: 64, gamma: 50.0}
+  M2:fifo_cda:
+    runner: market
+    config: market_confirmation
+    overrides: {}

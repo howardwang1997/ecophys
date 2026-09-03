@@ -1,0 +1,36 @@
+schema_version: constraint-iclr-public-swe-data-decision-v1
+decision_id: constraint_attribution_iclr_pdebench_swe_data_admission_20260902
+decision_kind: outcome_blind_public_dataset_admission
+decided_at: "2026-09-01T13:01:03Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized experiments that maximize ICLR acceptance probability, including an
+  independent public PDE benchmark with a linear conservation law, and required genuine
+  scientific contribution rather than result-conditioned retreat or rhetorical reframing.
+protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_freeze_2026-09-02.md
+  sha256: 4b46f45906e3b514181dca6c8265eb1d3d73f1e451565dc3f1bb2e20d411e706
+source_metadata:
+  path: experiments/constraint_attribution_iclr/pdebench/swe_rdb_source_20260902.json
+  sha256: b59ff59a7d54efeb0f385d21c3ce9a357e95f11e4aea003c8cfb2482770d2560
+selected_block:
+  dataset: PDEBench 2D shallow-water radial dam break
+  field: water_depth
+  invariant: spatial_mean_water_depth
+  nonlinear_admissibility: nonnegative_water_depth
+  boundary: extrapolation_homogeneous_neumann
+  formal_seeds: 6000--6029
+admission_order:
+  - exact source metadata, byte count, and official MD5
+  - compute transport SHA-256 and atomically promote the completed file
+  - HDF5 group, key, shape, dtype, and coordinate checks
+  - full finiteness, strict-positivity, mass-conservation, and block-average identity scan
+  - excluded implementation and CUDA preflight
+  - formal model activation
+forbidden_actions:
+  - No HDF5 value may be read before exact bytes and official MD5 pass.
+  - No model may run before a passing immutable data lock exists.
+  - No schema amendment, alternate shallow-water file, regenerated data, clipping, or threshold change is allowed after a gate failure.
+  - No preflight metric may tune the frozen design.
+  - No partial formal metric may be inspected or used for stopping.
+status: authorized_for_transport_and_data_admission_only

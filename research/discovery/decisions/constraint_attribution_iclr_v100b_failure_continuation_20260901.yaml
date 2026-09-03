@@ -1,0 +1,79 @@
+schema_version: constraint-iclr-machine-decision-amendment-v1
+decision_id: constraint_attribution_iclr_v100b_failure_continuation_20260901
+decision_kind: numeric_failure_disposition_and_locked_continuation
+decided_at: "2026-09-01T05:10:10Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: >-
+  OK，按你的投稿修改优先级来写计划，然后做实验，改文章。还是要记住：如果实验结果不理想的话，
+  不能一味地只是回退、只是重构成稳健版本，因为这样不可能被接收，需要有真实的科学贡献。
+status: authorized
+stage: held_out_confirmation
+target_venue: ICLR_2027
+outcome_accessed_at_decision:
+  synthetic_confirmation_metrics: false
+  pdebench_v2_completed_block: true
+parent_decisions:
+  current_machine:
+    path: research/discovery/decisions/constraint_attribution_iclr_confirmation_20260831.yaml
+    sha256: 9d6e1e67cc0055b719c1b904f266123e29b9b31f1f24008a58bafbc8ea49dace
+  v100a_failure_continuation:
+    path: research/discovery/decisions/constraint_attribution_iclr_failure_continuation_20260831.yaml
+    sha256: 52619d431b5671205a1a4976c6174b49e7b63c5debd7cdd955d5481f4c80b324
+immutable_inputs:
+  snapshot_sha256: b70c000cdd1c70d676ce1846f74e66d147bcd8a03a0fc0a84564e8e0cbbb1305
+  selection_lock:
+    path: experiments/constraint_attribution_iclr/pilot/pilot_lock_final_idonly_20260831.json
+    sha256: 5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e
+  seeds: [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,
+          1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019,
+          1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029]
+b_burgers_incident:
+  path: experiments/constraint_attribution_iclr/deployment/v100b_bburgers_nonfinite_incident_20260901.yaml
+  sha256: 89a3fe99f57b56e58c9de248496f76a03c548a85bbcc75f2e3455d0460f7e40b
+  identical_attempts: 1
+  output_bytes: 0
+  metric_value_inspected: false
+  disposition: failed_incomplete
+amendment_artifacts:
+  protocol:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_v100b_failure_continuation_amendment_2026-09-01.md
+    sha256: b6852b1997697fe94e1a9716e67dc5c9f4190263fb9e1c13c21ae99686cca0d7
+  v100b_manifest:
+    path: configs/constraint_iclr/confirmation_manifest_v100b_c_continuation_20260901.yaml
+    sha256: 052d4719542d6b5a0fe1ae8f3498e5c2baa486a2bee39a0d0ef479d626a0d823
+v100b_continuation:
+  host: 100.123.220.57
+  worker: v100b
+  systems: [C:ad2d]
+  unique_mechanism_cell_jobs: 6
+  expected_records_including_projection: 240
+  append_only: true
+  run_id_skip_enabled: true
+amended_analysis_gate:
+  required_complete_systems: 8
+  complete_systems_expected:
+    - A:advection
+    - A:diffusion
+    - B:advection
+    - B:diffusion
+    - C:ad2d
+    - H:contraction_near
+    - H:contraction_strong
+    - M2:fifo_cda
+  declared_failed_systems: [A:burgers, B:burgers]
+  failed_system_inference: unavailable_and_excluded
+  analyzer_run_limit: exactly_once_after_integrity_gates
+authorized_actions:
+  - Deploy and verify only the incident, protocol, decision, and C-only manifest on V100b.
+  - Launch the C-only manifest against the unchanged final lock and seeds 1000--1029.
+  - Preserve all existing outputs and logs byte-for-byte and append only new C records.
+  - Update the offline analyzer to require eight complete systems and the two declared failures.
+  - Monitor process health, coverage, runtime, GPU state, provenance, lock binding, and finiteness.
+forbidden_actions:
+  - Do not run B-burgers again or repair its failed configuration.
+  - Do not replace, add, remove, or selectively rerun a confirmation seed from an outcome.
+  - Do not modify the frozen snapshot, lock, scientific grids, mechanisms, metrics, or tolerances.
+  - Do not inspect synthetic confirmation metrics before the amended completeness gate passes.
+  - Do not count either Burgers failure as a success, null effect, or completed system.
+effective_until: frozen_confirmation_analysis_completed_or_pi_revocation

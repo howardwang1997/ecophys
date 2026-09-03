@@ -1,0 +1,59 @@
+{
+  "dataset": "PDEBench 2D shallow-water radial dam break",
+  "filename": "2D_rdb_NA_NA.h5",
+  "license": "CC-BY-4.0",
+  "dataverse_dataset_doi": "doi:10.18419/DARUS-2986",
+  "dataverse_dataset_version": "8.0",
+  "dataverse_file_id": 133021,
+  "dataverse_access_url": "https://darus.uni-stuttgart.de/api/access/datafile/133021",
+  "directory_label": "2D/shallow-water",
+  "bytes": 6626098972,
+  "official_checksum": {
+    "type": "MD5",
+    "value": "75d838c47aa410694bdc912ea7f22282"
+  },
+  "sha256_after_verified_transport": null,
+  "official_generator_git_commit": "4ff3e3a4aa1561721b5571fa3a048a0a463e0568",
+  "official_generator_sources": {
+    "pdebench/data_gen/configs/radial_dam_break.yaml": "943d181e753d566228a21c47341f4850a4d885220a8c9a5398e96b31b618beee",
+    "pdebench/data_gen/gen_radial_dam_break.py": "70cc5f58a2ef84361ff70ee92640c58036c1d7172c425adde109670c363ce586",
+    "pdebench/data_gen/src/sim_radial_dam_break.py": "feb25b946de5d89791c269fadf2e06d8c54838020f002c03bb670f626bad2d7d",
+    "pdebench/data_download/pdebench_data_urls.csv": "469f43609413c475740a54f1246a09be16bdffcc8b9c064f307fcf02f12a8d6a"
+  },
+  "documented_generation_contract": {
+    "equation_family": "two-dimensional shallow-water equations",
+    "scenario": "radial dam break",
+    "solver": "PyClaw finite-volume method with shallow_roe_with_efix_2D",
+    "boundary": "extrapolation (homogeneous Neumann) on both axes",
+    "gravity": 1.0,
+    "dam_radius_distribution": "Uniform(0.3, 0.7), seeded by group index",
+    "inner_height": 2.0,
+    "outer_height": 1.0,
+    "x_lower": -2.5,
+    "x_upper": 2.5,
+    "y_lower": -2.5,
+    "y_upper": 2.5,
+    "nx": 128,
+    "ny": 128,
+    "x_cell_center_start": -2.48046875,
+    "x_cell_center_stop": 2.48046875,
+    "y_cell_center_start": -2.48046875,
+    "y_cell_center_stop": 2.48046875,
+    "cell_spacing": 0.0390625,
+    "time_start": 0.0,
+    "time_stop": 1.0,
+    "saved_time_step": 0.01,
+    "saved_time_steps": 101,
+    "benchmark_trajectory_count": 1000,
+    "group_names": "0000 through 0999",
+    "field_path": "{group}/data",
+    "field_shape": [101, 128, 128, 1],
+    "field_dtype": "float32",
+    "coordinate_paths": ["{group}/grid/x", "{group}/grid/y", "{group}/grid/t"],
+    "linear_invariant": "spatial mean of water depth"
+  },
+  "source_notes": [
+    "The released benchmark data sheet specifies 1000 trajectories; the pinned generator currently contains a 10000-sample loop, so admission follows the released file, official byte/checksum row, and benchmark data sheet rather than that loop bound.",
+    "The downloaded file is not value-inspected until exact byte count and the official MD5 both pass."
+  ]
+}

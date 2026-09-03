@@ -1,0 +1,132 @@
+schema_version: constraint-iclr-machine-decision-v1
+decision_id: constraint_attribution_iclr_confirmation_20260831
+decision_kind: scoped_compute_authorization
+decided_at: "2026-08-31T02:40:59Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+status: authorized
+stage: held_out_confirmation
+target_venue: ICLR_2027
+discovery_status_effect: none
+outcome_accessed_at_decision: false
+authorization_text: >-
+  The PI authorizes registration of an ICLR-specific current machine decision using only snapshot
+  b70c000c...b1305, lock 5100ae5c...c604e, the two V100 workers, and seeds 1000--1029; changing
+  the grid, replacing seeds, early analysis, and outcome-driven stopping are forbidden. After
+  registration and validation, restart the frozen production workers immediately.
+artifacts:
+  snapshot:
+    path: experiments/constraint_attribution_iclr/deployment/constraint_iclr_confirmation_snapshot_20260831.tar.gz
+    sha256: b70c000cdd1c70d676ce1846f74e66d147bcd8a03a0fc0a84564e8e0cbbb1305
+    bytes: 41426
+  selection_lock:
+    path: experiments/constraint_attribution_iclr/pilot/pilot_lock_final_idonly_20260831.json
+    sha256: 5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e
+  protocol:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_extension_freeze_2026-08-30.md
+  deployment_gate:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_confirmation_deployment_2026-08-31.md
+source_identity:
+  git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+  git_dirty: true
+compute:
+  deployment_root: /root/ecophys_constraint_iclr_confirmation_20260831
+  conda_prefix: /data/ecophys_workshop/conda_env
+  workers:
+    - host: 100.80.236.112
+      ssh_identity: root
+      worker: v100a
+      accelerator: Tesla V100-SXM2-32GB
+      unique_jobs: 36
+      expected_records_including_projection: 1440
+    - host: 100.123.220.57
+      ssh_identity: root
+      worker: v100b
+      accelerator: Tesla V100-SXM2-32GB
+      unique_jobs: 22
+      expected_records_including_projection: 870
+  budget_policy: >-
+    GPU-hours, wall-clock time, disk use, failures, and energy proxies are monitoring quantities;
+    the superseded 25-hour value is not a stopping limit.
+confirmation:
+  seeds:
+    - 1000
+    - 1001
+    - 1002
+    - 1003
+    - 1004
+    - 1005
+    - 1006
+    - 1007
+    - 1008
+    - 1009
+    - 1010
+    - 1011
+    - 1012
+    - 1013
+    - 1014
+    - 1015
+    - 1016
+    - 1017
+    - 1018
+    - 1019
+    - 1020
+    - 1021
+    - 1022
+    - 1023
+    - 1024
+    - 1025
+    - 1026
+    - 1027
+    - 1028
+    - 1029
+  unique_mechanism_cell_jobs: 58
+  systems:
+    - A:advection
+    - A:diffusion
+    - A:burgers
+    - B:advection
+    - B:diffusion
+    - B:burgers
+    - C:ad2d
+    - H:contraction_near
+    - H:contraction_strong
+    - M2:fifo_cda
+authorized_actions:
+  - Verify this decision, the snapshot, the selection lock, and per-file hashes on both workers.
+  - Launch the frozen v100a and v100b manifests with seeds 1000--1029 and the exact selection lock.
+  - Monitor process health, coverage, runtime, GPU memory, disk, provenance, and finite-number status.
+  - Retry a failed run only with its identical seed, mechanism, selected cell, code, and configuration.
+  - Retrieve immutable outputs and verify local/remote SHA-256 after both workers finish.
+  - After completeness and provenance gates pass, run the frozen confirmation analyzer exactly once.
+forbidden_actions:
+  - Do not change the snapshot, selection lock, systems, mechanisms, cells, grids, hyperparameters, metrics, tolerances, or OOD cases.
+  - Do not replace, add, remove, or selectively rerun a confirmation seed based on an outcome.
+  - Do not inspect pilot OOD or confirmation outcomes before both production workers finish and integrity gates pass.
+  - Do not stop early, extend the search, or adapt compute allocation because of an outcome.
+  - Do not mix seed-999 preflight artifacts or pre-decision logs with production records.
+  - Do not use the decision to promote a Nature-scale route or make a scientific claim before frozen adjudication.
+retry_policy:
+  identical_configuration_only: true
+  seed_replacement_forbidden: true
+  outcome_driven_retry_forbidden: true
+  append_only: true
+  run_id_skip_enabled: true
+predecision_attempt:
+  host: 100.123.220.57
+  worker: v100b
+  process_group: 189288
+  disposition: terminated_before_any_record
+  production_output_created: false
+  outcome_accessed: false
+  retained_log: logs/confirmation_v100b_20260831.log
+  retained_log_bytes: 579
+  inferential_effect: none_identical_retry_allowed_by_frozen_protocol
+activation_gates:
+  archive_sha256_verified_on_both_hosts: true
+  per_file_sha256_verified_on_both_hosts: true
+  focused_tests_passed_on_both_hosts: 25
+  seed_999_cuda_preflight_passed_on_both_hosts: true
+  final_lock_bound_in_runner_and_analyzer: true
+  production_records_present_at_decision: false
+effective_until: frozen_confirmation_analysis_completed_or_pi_revocation

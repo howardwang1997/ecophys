@@ -1,0 +1,70 @@
+schema_version: constraint-iclr-pilot-manifest-v1
+workers:
+  v100a_expand:
+    - name: a_advection_full_grid
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: A
+        system: advection
+        resolution: 64
+        capacity_grid: [32, 64, 128, 256]
+        epochs_grid: [100, 200, 400, 800]
+        lr_grid: [0.001, 0.003, 0.01]
+        output: experiments/constraint_attribution_iclr/pilot/a_advection.jsonl
+    - name: a_diffusion_full_grid
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: A
+        system: diffusion
+        resolution: 64
+        capacity_grid: [32, 64, 128, 256]
+        epochs_grid: [100, 200, 400, 800]
+        lr_grid: [0.001, 0.003, 0.01]
+        output: experiments/constraint_attribution_iclr/pilot/a_diffusion.jsonl
+    - name: a_burgers_full_grid
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: A
+        system: burgers
+        resolution: 64
+        nu: 0.01
+        capacity_grid: [32, 64, 128, 256]
+        epochs_grid: [100, 200, 400, 800]
+        lr_grid: [0.001, 0.003, 0.01]
+        output: experiments/constraint_attribution_iclr/pilot/a_burgers.jsonl
+    - name: h_near_full_grid
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: H
+        system: contraction_near
+        resolution: 64
+        gamma: 0.5
+        capacity_grid: [32, 64, 128, 256]
+        epochs_grid: [100, 200, 400, 800]
+        lr_grid: [0.001, 0.003, 0.01]
+        output: experiments/constraint_attribution_iclr/pilot/h_near.jsonl
+    - name: h_strong_full_grid
+      runner: pde
+      config: pde_pilot
+      overrides:
+        family: H
+        system: contraction_strong
+        resolution: 64
+        gamma: 50.0
+        capacity_grid: [32, 64, 128, 256]
+        epochs_grid: [100, 200, 400, 800]
+        lr_grid: [0.001, 0.003, 0.01]
+        output: experiments/constraint_attribution_iclr/pilot/h_strong.jsonl
+    - name: m2_fifo_full_grid
+      runner: market
+      config: market_pilot
+      overrides:
+        capacity_grid: [32, 64, 128, 256]
+        epochs_grid: [100, 200, 400]
+        lr_grid: [0.001, 0.003, 0.01]
+        output: experiments/constraint_attribution_iclr/pilot/m2_fifo.jsonl
+

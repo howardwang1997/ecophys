@@ -1,0 +1,25 @@
+stage: pilot
+n_agents: 16
+n_train: 4096
+n_id: 1024
+n_ood: 1024
+warmup_steps: 32
+episode_steps: 64
+fee_rate: 0.001
+tick_size: 0.1
+capacity_grid: [32, 64, 128]
+epochs_grid: [100, 200, 400]
+lr_grid: [0.001, 0.003]
+mechanisms: [free, free_res, hard, soft30]
+seeds: [100, 101, 102]
+batch_size: 512
+device: cuda
+output: experiments/constraint_attribution_iclr/pilot/market.jsonl
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false
+

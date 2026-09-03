@@ -1,0 +1,75 @@
+schema_version: constraint-iclr-mechanism-diagnostic-decision-v1
+decision_id: constraint_attribution_iclr_gradient_coupling_20260901
+decision_kind: prospectively_frozen_mechanism_diagnostic
+decided_at: "2026-09-01T07:59:42Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: >-
+  OK，按你的投稿修改优先级来写计划，然后做实验，改文章。还是要记住：如果实验结果不理想的话，
+  不能一味地只是回退、只是重构成稳健版本，因为这样不可能被接收，需要有真实的科学贡献。
+target_venue: ICLR_2027
+scientific_objective: >-
+  Test whether coordinate-dependent gradient coupling between the conserving and invariant-
+  violating losses provides a local optimization mechanism for the fully crossed enforcement
+  interaction, rather than adding a result-contingent robustness experiment.
+freeze:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_gradient_coupling_freeze_2026-09-01.md
+  sha256: e99e6925cbb744ec4ac129e2a05b54fde27a862556963dc40b2954bfed8def78
+outcome_state_at_decision:
+  advection_parent_already_analyzed: true
+  advection_factorial_worker_active: true
+  advection_factorial_record_count: 37
+  advection_factorial_expected_records: 150
+  advection_factorial_metric_accessed: false
+  advection_factorial_analyzer_run: false
+  burgers_data_gate_complete: false
+  burgers_model_record_count: 0
+  burgers_model_outcome_accessed: false
+benchmarks:
+  advection:
+    benchmark: PDEBench 1D Advection beta=0.4
+    data_lock_sha256: 78705fc8f0c342bc5f937756fce93ab60c660acbb24d15a5ea90a620f7890687
+    factorial_protocol_sha256: 4a5901e4a8e51bb8c9149cfda9c5c1909808f538af7e74da7ef64eb7ebdbeb41
+    seeds: [3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009,
+            3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3018, 3019,
+            3020, 3021, 3022, 3023, 3024, 3025, 3026, 3027, 3028, 3029]
+  burgers:
+    benchmark: PDEBench 1D Burgers nu=0.01
+    activation: only_if_the_independently_frozen_data_admission_gate_passes
+    data_lock_sha256: pending_exact_admission
+    factorial_protocol_sha256: 123954a28ed1354a79dde9349967c32d143c9e0c78ad146f26de3a8ba00d250e
+    seeds: [4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009,
+            4010, 4011, 4012, 4013, 4014, 4015, 4016, 4017, 4018, 4019,
+            4020, 4021, 4022, 4023, 4024, 4025, 4026, 4027, 4028, 4029]
+frozen_diagnostic:
+  coordinates: [absolute, residual]
+  batch: exact_epoch_zero_first_minibatch
+  expected_records_per_admitted_benchmark: 60
+  optimizer_step: exact_first_Adam_step_from_formal_initialization
+  primary_local_estimand: D_I_equals_D_A_minus_D_R
+  primary_long_run_association: Spearman_correlation_D_I_with_primary_factorial_I_seed
+  bootstrap_draws: 50000
+  confidence: 0.95
+implementation:
+  source_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+  source_git_dirty: true
+  script_path: scripts/run_constraint_iclr_pdebench_gradient_coupling.py
+  script_sha256: pending_implementation
+  analyzer_path: scripts/analyze_constraint_iclr_pdebench_gradient_coupling.py
+  analyzer_sha256: pending_implementation
+  test_status: pending_implementation
+compute:
+  advection_host: 100.80.236.112
+  burgers_host: 100.123.220.57
+  isolation: do_not_colocate_with_a_training_worker_on_the_same_GPU
+authorized_actions:
+  - Implement and test the exact frozen diagnostic without modifying any frozen model runner or analyzer.
+  - Create a separately hashed executable snapshot and machine receipt after implementation.
+  - Run each diagnostic only against its exact admitted dataset and formal seed/config identities.
+  - Analyze the local diagnostic immediately, but join it to final metrics only after independent 150-record coverage.
+forbidden_actions:
+  - Do not inspect partial factorial metrics or change any formal experiment.
+  - Do not replace the frozen association with a favorable alternative statistic.
+  - Do not describe a null or unresolved association as mechanism support or robustness.
+  - Do not run the Burgers diagnostic if the frozen data-admission gate fails.
+status: authorized_pending_implementation

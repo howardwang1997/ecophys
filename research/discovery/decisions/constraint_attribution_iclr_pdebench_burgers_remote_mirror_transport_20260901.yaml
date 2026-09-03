@@ -1,0 +1,44 @@
+schema_version: constraint-iclr-runtime-amendment-v1
+decision_id: constraint_attribution_iclr_pdebench_burgers_remote_mirror_transport_20260901
+decision_kind: verified_content_remote_transport_race
+decided_at: "2026-09-01T09:48:25Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized the submission-priority experiments without a time cap. This amendment avoids
+  making a slow workstation upload the critical path while preserving the exact frozen bytes and
+  every scientific gate.
+parent_verified_mirror_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_pdebench_burgers_verified_mirror_20260901.yaml
+  sha256: 1102144f02a54b6e2cd6f0f540156271c31a8f523877e8e48067df09f46919ec
+protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_remote_mirror_transport_amendment_2026-09-01.md
+  sha256: a0c30c7f19041b85c2c526d5312075b2df2c484229646ce7536b9bf15bad628b
+candidate:
+  repository: pdebench/Burgers
+  repository_type: dataset
+  revision: f4d2fc1541c43bd8c1cc8d4639760f59efa6439b
+  filename: 1D_Burgers_Sols_Nu0.01.hdf5
+  resolve_url: https://huggingface.co/datasets/pdebench/Burgers/resolve/f4d2fc1541c43bd8c1cc8d4639760f59efa6439b/1D_Burgers_Sols_Nu0.01.hdf5?download=true
+identity_gate:
+  expected_bytes: 8232968312
+  expected_md5: e6d9a4f62baf9a29121a816b919e2770
+  expected_sha256: 646f59072348fff722ffe65b47eda755fe1fe106f1dd4a76887cdb89b885ce7b
+  local_gate_passed: true
+remote_runtime:
+  host: 100.123.220.57
+  direct_temporary_path: /data/ecophys_pdebench_burgers_nu0p01/1D_Burgers_Sols_Nu0.01.hdf5.hf_direct_candidate
+  scp_fallback_path: /data/ecophys_pdebench_burgers_nu0p01/1D_Burgers_Sols_Nu0.01.hdf5.hf_verified_transfer
+  exact_range_test_bytes: 16777216
+  range_test_http_status: 206
+  range_test_speed_bytes_per_second: 1307533
+authorized_actions:
+  - Start a resumable exact-commit curl download at the distinct direct temporary path.
+  - Keep the existing SCP copy active as an independent fallback until one route passes all gates.
+  - Verify size, MD5, and SHA-256 before terminating the losing route or renaming the winner.
+  - Preserve the losing partial intact under excluded/transport_partial.
+  - Run the unchanged full HDF5 admission gate only after verified atomic adoption.
+forbidden_actions:
+  - Do not open HDF5 values before content adoption and the unchanged admission script.
+  - Do not adopt a mismatched, short, or oversized candidate.
+  - Do not modify any scientific field or inspect any model metric under this decision.
+status: authorized_transport_race

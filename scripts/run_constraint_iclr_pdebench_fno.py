@@ -1,4 +1,4 @@
-"""Run the frozen PDEBench 1D-advection FNO external-validity experiment."""
+"""Run the frozen PDEBench 1D-advection attribution experiment."""
 
 from __future__ import annotations
 
@@ -541,7 +541,7 @@ def _save_checkpoint(path: Path, payload: Mapping[str, Any]) -> None:
 
 def train_model(
     *,
-    model: FNO1d,
+    model: nn.Module,
     mechanism: str,
     trajectories: torch.Tensor,
     grid: torch.Tensor,
@@ -704,7 +704,7 @@ def _finalize_metric_accumulator(
 
 def evaluate_rollout(
     *,
-    model: FNO1d,
+    model: nn.Module,
     trajectories: torch.Tensor,
     grid: torch.Tensor,
     history: int,
@@ -741,7 +741,7 @@ def evaluate_rollout(
 
 def projection_identity_max_error(
     *,
-    model: FNO1d,
+    model: nn.Module,
     trajectories: torch.Tensor,
     grid: torch.Tensor,
     history: int,
@@ -771,7 +771,7 @@ def projection_identity_max_error(
 
 def evaluate_cases(
     *,
-    model: FNO1d,
+    model: nn.Module,
     native_trajectories: torch.Tensor,
     native_grid: torch.Tensor,
     evaluation_cfg: Mapping[str, Any],

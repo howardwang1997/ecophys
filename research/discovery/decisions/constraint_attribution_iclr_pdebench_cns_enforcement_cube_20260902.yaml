@@ -1,0 +1,47 @@
+decision_id: constraint_attribution_iclr_pdebench_cns_enforcement_cube_20260902
+status: registered_before_dataset_value_access
+registered_date_nzst: 2026-09-02
+purpose: >-
+  Independently replicate the training-by-inference conservation cube on the public multi-field
+  PDEBench periodic 1D compressible Navier-Stokes benchmark, separating output coordinate,
+  training-time density enforcement, and inference-time density enforcement.
+
+immutable_parent:
+  benchmark_id: pdebench_cns_eta0.01_zeta0.01_periodic_fno_factorial_v1
+  factorial_protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_cns_freeze_2026-09-01.md
+  factorial_protocol_sha256: c29771c48e398b793554ee10f9907fff3c68a760a4da639e8a0f98b2bd2b4833
+  source_metadata_path: experiments/constraint_attribution_iclr/pdebench/cns_eta0p01_source_20260901.json
+  source_metadata_sha256: 5211ab43852b3eb08cd87691ada8f759cb0012df21adb19c85b9d00d68273340
+  data_admission_decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_cns_data_admission_20260901.yaml
+  data_admission_decision_sha256: fdaa12e54af6bf6cded3924126b87b6bafc3115abd28cf3fcaf0dc29c7391459
+  formal_seeds: [5000, 5001, 5002, 5003, 5004, 5005, 5006, 5007, 5008, 5009,
+                 5010, 5011, 5012, 5013, 5014, 5015, 5016, 5017, 5018, 5019,
+                 5020, 5021, 5022, 5023, 5024, 5025, 5026, 5027, 5028, 5029]
+  trained_parent_mechanisms: [free, free_res, hard_abs, hard]
+  expected_core_records: 150
+  expected_trained_checkpoints: 120
+
+cube:
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_cns_cube_freeze_2026-09-02.md
+  protocol_sha256: 3333d87d99c743ab42ba719bec5d3a9bc0e7f89d170f316ee7a109695dd62fd4
+  derived_mechanisms: [projection_res, hard_abs_unprojected, hard_res_unprojected]
+  expected_derived_records: 90
+  optimization_runs_per_derived_record: 0
+  primary_case: ood_r512
+  primary_horizon: 16
+  primary_metric: density_conserving_rmse
+
+activation_gates:
+  - exact public dataset byte count and SHA-256
+  - full HDF5 schema, finiteness, coordinate, viscosity, and density-invariant admission
+  - immutable data lock and subsequent model-machine decision
+  - exact 150-record core coverage and exited workers
+  - passing frozen core analyzer
+  - canonical 120-checkpoint lock
+
+forbidden:
+  - access to partial-download values
+  - access to partial formal metrics
+  - retraining or checkpoint repair for the derived cube
+  - seed, grid, horizon, metric, or estimator changes after registration
+  - result-driven stopping, exclusion, or interpretation-rule changes

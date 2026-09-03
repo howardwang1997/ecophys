@@ -1,0 +1,47 @@
+schema_version: constraint-iclr-public-swe-cube-distributed-runtime-v1
+decision_id: constraint_attribution_iclr_pdebench_swe_cube_distributed_runtime_20260902
+decision_kind: outcome_blind_runtime_only_provenance_bridge
+decided_at: "2026-09-01T16:07:06Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized contribution-driven experiments under frozen scientific protocols. This
+  bridge was registered while both formal shards were incomplete and before any formal SWE model
+  metric was accessed.
+reason: >-
+  Formal parent records bind the registered distributed factorial configuration and runtime
+  decision. The zero-training cube and its analyzer must therefore resolve those same provenance
+  sources when validating the merged parents, rather than the scientifically identical single-host
+  base configuration.
+overlay:
+  path: configs/constraint_iclr/pdebench_swe_rdb_enforcement_cube_distributed_20260902.yaml
+  sha256: 2b48a5fef9cb2e19504526211623f1728dafb097e06f3a088f7610184f9f4a98
+parents:
+  cube_config:
+    path: configs/constraint_iclr/pdebench_swe_rdb_enforcement_cube_20260902.yaml
+    sha256: 537ea9ca7c198be6f62d2026bbea8edb1b541c393a7d4bb244622f1787548bd5
+  distributed_factorial_config:
+    path: configs/constraint_iclr/pdebench_swe_rdb_factorial_distributed_20260902.yaml
+    sha256: e6569c70d80de99c053f1125951d04418fb43866bef9ca8dfd3b9e415cf2e624
+  distributed_runtime:
+    path: research/discovery/decisions/constraint_attribution_iclr_pdebench_swe_distributed_runtime_20260902.yaml
+    sha256: bdd170316b82f9c35943c62438a16b6037bcb54433bd47b0bb4709b624503ad6
+scientific_identity:
+  changed: false
+  unchanged_fields:
+    - dataset and data lock
+    - model and optimization
+    - seeds and shard assignment
+    - train/test split
+    - output-coordinate, training, and inference interventions
+    - cases, horizons, metrics, SESOI, confidence intervals, and decision rules
+activation_command_config_name: pdebench_swe_rdb_enforcement_cube_distributed_20260902
+verification:
+  hydra_composition_passed: true
+  formal_seed_universe: 6000--6029
+  expected_core_records: 150
+  expected_derived_records: 90
+forbidden_actions:
+  - No partial SWE metric access.
+  - No change to a scientific field in either parent configuration.
+  - No cube activation before exact shard completion, merge validation, and one-shot core analysis.
+status: registered_before_formal_completion

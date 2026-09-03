@@ -1,0 +1,49 @@
+schema_version: constraint-iclr-pdebench-admission-result-v1
+result_id: pdebench_advection_beta0.4_v1_admission_failure_20260901
+recorded_at: "2026-08-31T15:45:00Z"
+benchmark_id: pdebench_advection_beta0.4_fno
+stage: pre_model_data_admission
+source:
+  doi: 10.18419/DARUS-2986
+  dataset_version: 8
+  data_file_id: 255674
+  filename: 1D_Advection_Sols_beta0.4.hdf5
+  bytes: 8232966952
+  md5_expected_and_observed: d595bbfd2c659df995a93cd40d6ea568
+  sha256_observed: d973ff2bb3c2a5edf42957ff029b78672451532ebd6bf475848ff23cfd3ee3b6
+  license: CC_BY_4.0
+schema_gate:
+  base_protocol_sha256: dcfd19dc733f2aa787f778be2cab4ca587dff5b56bc1cf468abc7e43c3bff717
+  coordinate_amendment_sha256: 6df12a1884a3c48a667a5320f2c5965d3e280f4209ac95b4a0b6de1979496a87
+  tensor_shape: [10000, 201, 1024]
+  tensor_dtype: float32
+  coordinate_schema_passed_after_exact_metadata_correction: true
+  all_solution_values_finite: true
+invariant_gate:
+  statistic: maximum_absolute_float64_spatial_mean_drift_from_first_frame
+  frozen_threshold: 0.00001
+  max_by_point_subsampling_stride:
+    1: 0.0000004454050213098526
+    2: 0.00017500518879387528
+    4: 0.0012178056931588799
+  stride_1_passed: true
+  stride_2_passed: false
+  stride_4_passed: false
+  overall_passed: false
+disposition:
+  v1_protocol_status: stopped_at_data_admission
+  data_lock_created: false
+  model_run_started: false
+  model_record_count: 0
+  hyperparameter_or_threshold_change_permitted: false
+  downloaded_file_retained: true
+interpretation: >-
+  The released native grid conserves the linear spatial mean well within the frozen tolerance.
+  Direct decimation by taking every second or fourth point does not define a conservative coarse
+  state for these translated fields and therefore invalidates the planned resolution-transfer
+  task before model training.
+future_reentry_condition: >-
+  A new, separately frozen and explicitly authorized v2 may use conservative non-overlapping
+  block-average restriction at 512 and 256 points. It must retain the file, split, model seeds,
+  model/training settings, metrics, and threshold, generate a new data lock, and produce no v1
+  model record. Silently changing v1 or loosening its gate is forbidden.

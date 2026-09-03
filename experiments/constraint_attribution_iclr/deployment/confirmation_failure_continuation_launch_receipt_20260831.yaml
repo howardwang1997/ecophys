@@ -1,0 +1,72 @@
+schema_version: constraint-iclr-failure-continuation-receipt-v1
+receipt_at: "2026-08-31T10:59:19Z"
+status: running
+machine_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_failure_continuation_20260831.yaml
+  sha256: 52619d431b5671205a1a4976c6174b49e7b63c5debd7cdd955d5481f4c80b324
+parent_decision_sha256: 9d6e1e67cc0055b719c1b904f266123e29b9b31f1f24008a58bafbc8ea49dace
+snapshot_sha256: b70c000cdd1c70d676ce1846f74e66d147bcd8a03a0fc0a84564e8e0cbbb1305
+selection_lock_sha256: 5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e
+amendment_package:
+  path: experiments/constraint_attribution_iclr/deployment/confirmation_failure_continuation_20260831.tar.gz
+  bytes: 9696
+  sha256: f3e3ca94f84166e779b64bc54d30156a7e04d1eba2fb6eb7dbad14c7df3f49a3
+  remote_archive_sha256_verified: true
+  remote_per_file_hashes_verified: 7
+gates:
+  local_focused_tests: 26_passed
+  local_ruff: passed
+  local_dry_run_jobs: 18
+  local_dry_run_A_jobs: 0
+  remote_focused_tests: 26_passed
+  remote_existing_A_hashes_preserved: true
+  outcome_values_accessed: false
+v100a:
+  host: 100.80.236.112
+  worker: v100a
+  launched_at_remote: "2026-08-31T18:53:25+08:00"
+  flock_pid: 2918090
+  launcher_pid: 2918091
+  exclusive_lock: /tmp/ecophys_constraint_iclr_confirmation_v100a.lock
+  manifest: configs/constraint_iclr/confirmation_manifest_v100a_continuation_20260831.yaml
+  manifest_sha256: 8318ac87df7d2953ac522e453d2268540587d97ea1a1689e7d1d317d781c96d7
+  systems: [H:contraction_near, H:contraction_strong, M2:fifo_cda]
+  unique_mechanism_cell_jobs: 18
+  expected_records_including_projection: 720
+  production_log: logs/confirmation_v100a_failure_continuation_20260831.log
+  first_metadata_gate:
+    checked_records: 58
+    stage_scope_lock_source_v100_finiteness: passed
+    observed_seeds: [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,
+                     1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019,
+                     1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028]
+  checkpoint:
+    H_contraction_near_records: 100
+    active_job: H:contraction_near:free:c32_e400_lr0.001
+    gpu_utilization_percent: 11
+    gpu_memory_mib: 438
+  preserved_A_outputs:
+    A_advection_sha256: f7e7a813b305c9a2c1470b431c1f2dd06ca9bf507bda6a96338147a230591a50
+    A_diffusion_sha256: f3c9210ad042e258a8ee493cf3579f9c2c94800bb6eadae89a135d29e7a3a785
+    A_burgers_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    A_burgers_status: failed_incomplete_no_further_retry
+v100b:
+  host: 100.123.220.57
+  worker: v100b
+  launcher_pid: 190373
+  active_child_pid: 196381
+  active_job: B:advection:soft30:c32_e400_lr0.001
+  checkpoint_records: 217
+  status: original_parent_worker_running
+  restarted_or_modified: false
+  sampling_note: >-
+    One pgrep sample returned no output, but subsequent process-parent, start-time, GPU, log, and
+    increasing-record checks proved that the original PID 190373 remained alive. The apparent
+    stop was a monitoring false negative, not an operational interruption.
+error_scan:
+  v100a_continuation_log: no_matching_error_marker
+  v100b_authorized_log: no_matching_error_marker
+analysis_gate:
+  allowed_now: false
+  reason: workers_running
+  A_burgers_disposition: unavailable_and_excluded

@@ -1,0 +1,105 @@
+stage: cns_factorial_confirmation
+benchmark_id: pdebench_cns_eta0.01_zeta0.01_periodic_fno_factorial_v1
+active_config_path: configs/constraint_iclr/pdebench_cns_eta0p01_factorial_20260901.yaml
+expected_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+expected_git_dirty: true
+
+dataset:
+  path: /data/ecophys_pdebench_cns_eta0p01/1D_CFD_Rand_Eta0.01_Zeta0.01_periodic_Train.hdf5
+  repository: pdebench/1D-Compressible-Navier-Stokes
+  commit: aebb84fc14f674881696a9c72c814bd8b7083fd1
+  filename: 1D_CFD_Rand_Eta0.01_Zeta0.01_periodic_Train.hdf5
+  expected_bytes: 12410888600
+  expected_sha256: 86a2b8cf81f40191dbc40a7c2a9b268784979f2c1c269b59daa23c83885ebe8f
+  fields: [density, pressure, Vx]
+  expected_shape: [10000, 101, 1024]
+  expected_dtype: float32
+  expected_x_start: -0.9990234375
+  expected_x_period: 2.0
+  expected_t_start: 0.0
+  expected_t_stop: 1.0
+  coordinate_atol: 0.000001
+  expected_eta: 0.01
+  expected_zeta: 0.01
+  attribute_atol: 0.0000001
+  invariant_field: density
+  max_abs_mean_drift: 0.00002
+  invariant_spatial_strides: [1, 2, 4]
+  restriction_method: block_average
+  restriction_identity_atol: 0.000001
+  scan_chunk_trajectories: 8
+  lock_path: experiments/constraint_attribution_iclr/pdebench/data_lock_cns_eta0p01_20260901.json
+  lock_sha256: null
+
+split:
+  confirmation_start: 0
+  confirmation_count: 256
+  train_pool_start: 1000
+  train_pool_stop: 9000
+  train_trajectories_per_seed: 2048
+
+model:
+  history: 10
+  channels: 3
+  channel_names: [density, pressure, Vx]
+  invariant_channel: 0
+  modes: 12
+  width: 20
+  padding: 2
+  projection_width: 128
+
+training:
+  epochs: 200
+  batch_size: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler_step: 100
+  scheduler_gamma: 0.5
+  temporal_stride: 2
+  spatial_stride: 4
+  restriction_method: block_average
+  checkpoint_every_epochs: 25
+
+evaluation:
+  spatial_strides: [4, 2, 1]
+  restriction_method: block_average
+  case_names: [id_r256, ood_r512, ood_r1024]
+  horizons: [1, 4, 16, 31]
+  batch_size: 50
+  primary_case: ood_r512
+  primary_horizon: 16
+  primary_metric: density_conserving_rmse
+
+mechanisms: [free, free_res, hard_abs, hard]
+seeds: [5000, 5001, 5002, 5003, 5004, 5005, 5006, 5007, 5008, 5009,
+        5010, 5011, 5012, 5013, 5014, 5015, 5016, 5017, 5018, 5019,
+        5020, 5021, 5022, 5023, 5024, 5025, 5026, 5027, 5028, 5029]
+preflight_seed: 4999
+device: cuda
+
+output: experiments/constraint_attribution_iclr/pdebench/cns_factorial_confirmation_20260901.jsonl
+checkpoint_dir: experiments/constraint_attribution_iclr/pdebench/cns_factorial_checkpoints_20260901
+protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_cns_freeze_2026-09-01.md
+protocol_sha256: c29771c48e398b793554ee10f9907fff3c68a760a4da639e8a0f98b2bd2b4833
+source_metadata_path: experiments/constraint_attribution_iclr/pdebench/cns_eta0p01_source_20260901.json
+source_metadata_sha256: 5211ab43852b3eb08cd87691ada8f759cb0012df21adb19c85b9d00d68273340
+data_decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_cns_data_admission_20260901.yaml
+data_decision_sha256: fdaa12e54af6bf6cded3924126b87b6bafc3115abd28cf3fcaf0dc29c7391459
+model_decision_path: null
+model_decision_sha256: null
+
+factorial_analysis:
+  bootstrap_draws: 50000
+  sign_flip_draws: 100000
+  confidence_nonzero: 0.95
+  confidence_equivalence: 0.90
+  sesoi_fraction_of_free_res: 0.10
+  invariant_drift_atol: 0.0001
+  shapley_efficiency_atol: 0.000000000001
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

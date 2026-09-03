@@ -48,7 +48,9 @@ def _macro(name: str, value: str | int) -> str:
     return rf"\newcommand{{\{name}}}{{{value}}}"
 
 
-def make_macros(analysis: dict[str, Any]) -> str:
+def make_macros(
+    analysis: dict[str, Any], *, cube_analysis_sha256: str | None = None
+) -> str:
     if analysis.get("schema_version") != (
         "constraint-iclr-pdebench-enforcement-cube-analysis-v1"
     ):
@@ -108,6 +110,10 @@ def make_macros(analysis: dict[str, Any]) -> str:
         ("UNetLockSHA", str(analysis["checkpoint_lock_sha256"])[:12]),
         ("UNetCubeSHA", str(analysis["derived_input_sha256"])[:12]),
     ]
+    if cube_analysis_sha256 is not None:
+        if re.fullmatch(r"[0-9a-f]{64}", cube_analysis_sha256) is None:
+            raise ValueError("invalid U-Net cube-analysis SHA-256")
+        values.append(("UNetCubeAnalysisSHA", cube_analysis_sha256[:12]))
     for key, suffix in (
         ("I_bundle", "IBundle"),
         ("T0", "TZero"),
@@ -144,7 +150,9 @@ def main() -> None:
     parser.add_argument("cube_analysis", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
-    content = make_macros(_load(args.cube_analysis))
+    content = make_macros(
+        _load(args.cube_analysis), cube_analysis_sha256=_sha256(args.cube_analysis)
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(content, encoding="utf-8")
     print(f"macros={args.output}")

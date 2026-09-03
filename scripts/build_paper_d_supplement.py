@@ -7,6 +7,7 @@ import gzip
 import hashlib
 import io
 import json
+import re
 import subprocess
 import sys
 import tarfile
@@ -143,6 +144,90 @@ CUBE_BLOCKS = (
 PAPER_DIR = Path("papers/paper_d_constraints")
 MANIFEST_PATH = PAPER_DIR / "artifact_manifest.json"
 ARCHIVE_ROOT = "paper_d_constraint_attribution_artifact"
+ARTIFACT_SCHEMA_VERSION = "paper-d-constraint-attribution-artifact-v2"
+FORBIDDEN_BULK_SUFFIXES = {".ckpt", ".h5", ".hdf5", ".pt", ".pth", ".safetensors"}
+BASE_RELEASE_FILES = frozenset(
+    {
+        Path("LICENSE"),
+        Path("output/pdf/paper_d_constraints_iclr2027.pdf"),
+        PAPER_DIR / "ARTIFACT_README.md",
+        PAPER_DIR / "requirements-analysis.txt",
+        PAPER_DIR / "figures/pdebench_cube_mechanism.pdf",
+        Path("scripts/build_paper_d_supplement.py"),
+        Path("tests/test_build_paper_d_supplement.py"),
+    }
+)
+
+TEXT_SUFFIXES = {
+    ".bib",
+    ".files",
+    ".json",
+    ".jsonl",
+    ".log",
+    ".md",
+    ".py",
+    ".sha256",
+    ".sha256s",
+    ".sh",
+    ".sty",
+    ".tex",
+    ".txt",
+    ".toml",
+    ".yaml",
+    ".yml",
+}
+IDENTITY_REDACTIONS = (
+    (
+        "personal_macos_home",
+        re.compile(rb"/Users/(?!anonymous\b)[A-Za-z0-9._-]+"),
+        b"/Users/anonymous",
+    ),
+    (
+        "personal_linux_home",
+        re.compile(rb"/home/(?!anonymous\b)[A-Za-z0-9._-]+"),
+        b"/home/anonymous",
+    ),
+    (
+        "named_private_ssh_login",
+        re.compile(
+            rb"(?<![A-Za-z0-9._-])(?!root@|anonymous@)"
+            rb"[A-Za-z][A-Za-z0-9._-]*@(?:[0-9]{1,3}\.){3}[0-9]{1,3}"
+        ),
+        b"anonymous@redacted-host",
+    ),
+    (
+        "personal_email",
+        re.compile(
+            rb"(?<![A-Za-z0-9._%+-])(?!anonymous@example\.invalid)"
+            rb"[A-Za-z0-9._%+-]+@"
+            rb"[A-Za-z0-9.-]+\.[A-Za-z]{2,}(?![A-Za-z0-9.-])"
+        ),
+        b"anonymous@example.invalid",
+    ),
+    (
+        "private_network_address",
+        re.compile(
+            rb"(?<![0-9])(?:"
+            rb"10\.(?:[0-9]{1,3}\.){2}[0-9]{1,3}|"
+            rb"192\.168\.(?:[0-9]{1,3}\.)[0-9]{1,3}|"
+            rb"172\.(?:1[6-9]|2[0-9]|3[01])\.(?:[0-9]{1,3}\.)[0-9]{1,3}|"
+            rb"100\.(?:6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\."
+            rb"(?:[0-9]{1,3}\.)[0-9]{1,3}"
+            rb")(?![0-9])"
+        ),
+        b"redacted-host",
+    ),
+)
+LICENSE_HOLDER_REDACTION = (
+    "copyright_holder",
+    re.compile(rb"(?im)^(Copyright\s+\(c\)\s+\d{4}(?:-\d{4})?\s+).+$"),
+    rb"\1Anonymous Authors",
+)
+PYPROJECT_AUTHOR_REDACTION = (
+    "package_author",
+    re.compile(rb'(?im)^(authors\s*=\s*\[\s*\{\s*name\s*=\s*)"[^"]*"'),
+    rb'\1"Anonymous Authors"',
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -151,6 +236,151 @@ def sha256_file(path: Path) -> str:
         while chunk := handle.read(1024 * 1024):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def sha256_bytes(payload: bytes) -> str:
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _is_text_path(path: Path) -> bool:
+    return path.name == "LICENSE" or path.suffix.lower() in TEXT_SUFFIXES
+
+
+def _requires_byte_preservation(path: Path) -> bool:
+    return (
+        path.suffix.lower() == ".jsonl"
+        or (path.parts and path.parts[0] == "configs")
+        or (path.suffix.lower() == ".json" and "analysis" in path.stem)
+    )
+
+
+def redact_identity(payload: bytes, path: Path) -> tuple[bytes, tuple[str, ...]]:
+    if not _is_text_path(path):
+        return payload, ()
+    redacted = payload
+    categories: list[str] = []
+    rules = IDENTITY_REDACTIONS
+    if path.name == "LICENSE":
+        rules = (*rules, LICENSE_HOLDER_REDACTION)
+    if path.name == "pyproject.toml":
+        rules = (*rules, PYPROJECT_AUTHOR_REDACTION)
+    for category, pattern, replacement in rules:
+        previous = redacted
+        redacted, substitutions = pattern.subn(replacement, redacted)
+        if substitutions and redacted != previous:
+            categories.append(category)
+    return redacted, tuple(categories)
+
+
+def _normalized_bytes_info(arcname: str, size: int) -> tarfile.TarInfo:
+    info = tarfile.TarInfo(arcname)
+    info.size = size
+    info.mode = 0o644
+    info.uid = 0
+    info.gid = 0
+    info.uname = ""
+    info.gname = ""
+    info.mtime = 0
+    return info
+
+
+def redact_snapshot(
+    payload: bytes, archive_path: Path
+) -> tuple[bytes, list[dict[str, Any]]]:
+    members: list[tuple[str, bytes]] = []
+    redactions: list[dict[str, Any]] = []
+    with tarfile.open(fileobj=io.BytesIO(payload), mode="r:gz") as source:
+        for member in source.getmembers():
+            if not member.isfile():
+                continue
+            relative = Path(member.name)
+            if any(part.startswith("._") for part in relative.parts):
+                continue
+            if relative.is_absolute() or ".." in relative.parts:
+                raise RuntimeError(
+                    f"unsafe member in deployment snapshot {archive_path}: {member.name}"
+                )
+            extracted = source.extractfile(member)
+            if extracted is None:
+                raise RuntimeError(
+                    f"could not read snapshot member {member.name}: {archive_path}"
+                )
+            original = extracted.read()
+            released, categories = redact_identity(original, relative)
+            members.append((relative.as_posix(), released))
+            if categories:
+                redactions.append(
+                    {
+                        "archive_path": archive_path.as_posix(),
+                        "path": relative.as_posix(),
+                        "source_sha256": sha256_bytes(original),
+                        "released_sha256": sha256_bytes(released),
+                        "categories": list(categories),
+                    }
+                )
+    output = io.BytesIO()
+    with (
+        gzip.GzipFile(filename="", fileobj=output, mode="wb", mtime=0) as compressed,
+        tarfile.open(fileobj=compressed, mode="w") as archive,
+    ):
+        for name, released in sorted(members):
+            archive.addfile(
+                _normalized_bytes_info(name, len(released)), io.BytesIO(released)
+            )
+    return output.getvalue(), redactions
+
+
+def artifact_payload(
+    root: Path, relative: Path
+) -> tuple[bytes, list[dict[str, Any]]]:
+    path = root / relative
+    original = path.read_bytes()
+    if relative.name.endswith(".tar.gz"):
+        released, redactions = redact_snapshot(original, relative)
+        if released != original:
+            redactions.append(
+                {
+                    "archive_path": None,
+                    "path": relative.as_posix(),
+                    "source_sha256": sha256_bytes(original),
+                    "released_sha256": sha256_bytes(released),
+                    "categories": ["archive_metadata_normalization"],
+                }
+            )
+        return released, redactions
+    released, categories = redact_identity(original, relative)
+    redactions: list[dict[str, Any]] = []
+    if categories:
+        redactions.append(
+            {
+                "archive_path": None,
+                "path": relative.as_posix(),
+                "source_sha256": sha256_bytes(original),
+                "released_sha256": sha256_bytes(released),
+                "categories": list(categories),
+            }
+        )
+    return released, redactions
+
+
+def validate_no_bulk_payloads(root: Path, paths: Iterable[Path]) -> None:
+    for relative in paths:
+        if relative.suffix.lower() in FORBIDDEN_BULK_SUFFIXES:
+            raise RuntimeError(f"forbidden model/data payload in artifact: {relative}")
+        if not relative.name.endswith(".tar.gz"):
+            continue
+        payload, _ = artifact_payload(root, relative)
+        with tarfile.open(fileobj=io.BytesIO(payload), mode="r:gz") as archive:
+            forbidden = [
+                member.name
+                for member in archive.getmembers()
+                if member.isfile()
+                and Path(member.name).suffix.lower() in FORBIDDEN_BULK_SUFFIXES
+            ]
+        if forbidden:
+            raise RuntimeError(
+                f"forbidden model/data payload in nested artifact {relative}: {forbidden}"
+            )
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -447,22 +677,30 @@ def run_reanalysis(root: Path) -> None:
             / "experiments/constraint_attribution_iclr/confirmation/formal_amended_20260901"
         )
         synthetic_output = temporary / "synthetic.json"
-        _run(
-            root,
+        synthetic_arguments: list[str | Path] = [
             scripts / "analyze_constraint_iclr_confirmation_amended.py",
             "--records",
-            *sorted(synthetic_dir.glob("*.jsonl")),
+            *(
+                path.relative_to(root)
+                for path in sorted(synthetic_dir.glob("*.jsonl"))
+            ),
             "--lock",
-            root
-            / "experiments/constraint_attribution_iclr/pilot/"
-            "pilot_lock_final_idonly_20260831.json",
+            Path(
+                "experiments/constraint_attribution_iclr/pilot/"
+                "pilot_lock_final_idonly_20260831.json"
+            ),
             "--failure-decision",
-            root
-            / "research/discovery/decisions/"
-            "constraint_attribution_iclr_v100b_failure_continuation_20260901.yaml",
+            Path(
+                "research/discovery/decisions/"
+                "constraint_attribution_iclr_v100b_failure_continuation_20260901.yaml"
+            ),
             "--out",
             synthetic_output,
-        )
+        ]
+        artifact_manifest = root / MANIFEST_PATH
+        if artifact_manifest.is_file():
+            synthetic_arguments.extend(("--artifact-manifest", artifact_manifest))
+        _run(root, *synthetic_arguments)
         _require_identical(
             synthetic_output, synthetic_dir / "analysis_amended_20260901.json"
         )
@@ -476,67 +714,200 @@ def run_regeneration(root: Path) -> None:
         / "experiments/constraint_attribution_iclr/confirmation/formal_amended_20260901/"
         "analysis_amended_20260901.json"
     )
-    commands = (
+    specifications = (
         (
             "make_pdebench_factorial_macros.py",
-            pde / "factorial_analysis_20260901.json",
-            figures / "pdebench_factorial_macros.tex",
+            [pde / "factorial_analysis_20260901.json", figures / "pdebench_factorial_macros.tex"],
+            [1],
         ),
         (
             "make_pdebench_cube_macros.py",
-            pde / "advection_enforcement_cube_analysis_20260901.json",
-            pde / "advection_gradient_coupling_analysis_v4_20260901.json",
-            figures / "pdebench_cube_macros.tex",
+            [
+                pde / "advection_enforcement_cube_analysis_20260901.json",
+                pde / "advection_gradient_coupling_analysis_v4_20260901.json",
+                figures / "pdebench_cube_macros.tex",
+            ],
+            [2],
         ),
         (
             "make_pdebench_cube_table.py",
-            pde / "advection_enforcement_cube_analysis_20260901.json",
-            figures / "pdebench_cube_rows.tex",
+            [
+                pde / "advection_enforcement_cube_analysis_20260901.json",
+                figures / "pdebench_cube_rows.tex",
+            ],
+            [1],
         ),
         (
             "make_pdebench_cube_mechanism.py",
-            pde / "advection_enforcement_cube_analysis_20260901.json",
-            figures / "pdebench_cube_mechanism.pdf",
+            [
+                pde / "advection_enforcement_cube_analysis_20260901.json",
+                figures / "pdebench_cube_mechanism.pdf",
+            ],
+            [1],
         ),
         (
             "make_pdebench_swe_macros.py",
-            pde / "swe_factorial_analysis_20260902.json",
-            pde / "swe_enforcement_cube_analysis_20260902.json",
-            figures / "pdebench_swe_macros.tex",
+            [
+                pde / "swe_factorial_analysis_20260902.json",
+                pde / "swe_enforcement_cube_analysis_20260902.json",
+                figures / "pdebench_swe_macros.tex",
+            ],
+            [2],
         ),
         (
             "make_pdebench_gauge_feedback_macros.py",
-            pde / "advection_gauge_feedback_provenance_rerun_analysis_20260902.json",
-            figures / "pdebench_gauge_feedback_macros.tex",
+            [
+                pde / "advection_gauge_feedback_provenance_rerun_analysis_20260902.json",
+                figures / "pdebench_gauge_feedback_macros.tex",
+            ],
+            [1],
         ),
         (
             "make_pdebench_unet_macros.py",
-            pde / "unet_enforcement_cube_analysis_20260903.json",
-            figures / "pdebench_unet_macros.tex",
+            [
+                pde / "unet_enforcement_cube_analysis_20260903.json",
+                figures / "pdebench_unet_macros.tex",
+            ],
+            [1],
         ),
         (
             "make_pdebench_cube_table.py",
-            pde / "unet_enforcement_cube_analysis_20260903.json",
-            figures / "pdebench_unet_cube_rows.tex",
+            [
+                pde / "unet_enforcement_cube_analysis_20260903.json",
+                figures / "pdebench_unet_cube_rows.tex",
+            ],
+            [1],
         ),
         (
             "make_synthetic_amended_table.py",
-            synthetic,
-            figures / "synthetic_amended_rows.tex",
+            [
+                synthetic,
+                figures / "synthetic_amended_rows.tex",
+                "--macros",
+                figures / "synthetic_amended_macros.tex",
+            ],
+            [1, 3],
         ),
     )
-    for command in commands:
-        script, *arguments = command
-        _run(root, figures / script, *arguments)
+    with tempfile.TemporaryDirectory(prefix="paper-d-figures-") as raw_directory:
+        temporary = Path(raw_directory)
+        for specification_index, (script, raw_arguments, output_indices) in enumerate(
+            specifications
+        ):
+            arguments = list(raw_arguments)
+            comparisons: list[tuple[Path, Path]] = []
+            for output_index in output_indices:
+                canonical = Path(arguments[output_index])
+                generated = temporary / f"{specification_index}-{canonical.name}"
+                arguments[output_index] = generated
+                comparisons.append((generated, canonical))
+            _run(root, figures / script, *arguments)
+            for generated, canonical in comparisons:
+                _require_identical(generated, canonical)
+
+
+def snapshot_source_catalog(
+    root: Path,
+    archives: Iterable[Path],
+    redactions: Iterable[dict[str, Any]] = (),
+) -> dict[Path, set[str]]:
+    redaction_lookup: dict[tuple[Path, Path, str], str] = {}
+    for entry in redactions:
+        raw_archive = entry.get("archive_path")
+        if raw_archive is None:
+            continue
+        key = (
+            Path(str(raw_archive)),
+            Path(str(entry["path"])),
+            str(entry["released_sha256"]),
+        )
+        redaction_lookup[key] = str(entry["source_sha256"])
+    catalog: dict[Path, set[str]] = {}
+    for archive_relative in archives:
+        archive_path = root / archive_relative
+        with tarfile.open(archive_path, "r:gz") as archive:
+            for member in archive.getmembers():
+                if not member.isfile():
+                    continue
+                relative = Path(member.name)
+                if (
+                    relative.is_absolute()
+                    or ".." in relative.parts
+                    or any(part.startswith("._") for part in relative.parts)
+                ):
+                    continue
+                extracted = archive.extractfile(member)
+                if extracted is None:
+                    raise RuntimeError(
+                        f"could not read snapshot member {member.name}: {archive_path}"
+                    )
+                digest = hashlib.sha256(extracted.read()).hexdigest()
+                catalog.setdefault(relative, set()).add(digest)
+                original_digest = redaction_lookup.get(
+                    (archive_relative, relative, digest)
+                )
+                if original_digest is not None:
+                    catalog[relative].add(original_digest)
+    return catalog
+
+
+def collect_provenance_sources(
+    root: Path,
+    record_paths: Iterable[Path],
+    snapshot_archives: Iterable[Path] = (),
+    redactions: Iterable[dict[str, Any]] = (),
+) -> set[Path]:
+    expected: set[tuple[Path, str]] = set()
+    for records_relative in record_paths:
+        records_path = root / records_relative
+        with records_path.open("r", encoding="utf-8") as handle:
+            for line_number, line in enumerate(handle, start=1):
+                record = json.loads(line)
+                sources = record.get("provenance", {}).get("source_sha256", {})
+                if not isinstance(sources, dict):
+                    raise RuntimeError(
+                        f"invalid source manifest at {records_path}:{line_number}"
+                    )
+                for raw_path, raw_digest in sources.items():
+                    relative = Path(str(raw_path))
+                    digest = str(raw_digest)
+                    if relative.is_absolute() or ".." in relative.parts:
+                        raise RuntimeError(f"unsafe provenance source path: {raw_path}")
+                    if len(digest) != 64:
+                        raise RuntimeError(f"invalid provenance SHA-256 for {raw_path}")
+                    expected.add((relative, digest))
+    archives = tuple(snapshot_archives)
+    redaction_entries = tuple(redactions)
+    catalog = snapshot_source_catalog(root, archives, redaction_entries)
+    direct_redactions = {
+        (
+            Path(str(entry["path"])),
+            str(entry["released_sha256"]),
+        ): str(entry["source_sha256"])
+        for entry in redaction_entries
+        if entry.get("archive_path") is None
+    }
+    current_matches: set[Path] = set()
+    for relative, digest in expected:
+        path = root / relative
+        if path.is_file():
+            current_digest = sha256_file(path)
+            if current_digest == digest or direct_redactions.get(
+                (relative, current_digest)
+            ) == digest:
+                current_matches.add(relative)
+                continue
+        if digest in catalog.get(relative, set()):
+            continue
+        raise RuntimeError(
+            f"provenance source version is absent from current files and snapshots: "
+            f"{relative} sha256={digest}"
+        )
+    return current_matches
 
 
 def collect_release_files(root: Path) -> list[Path]:
-    explicit = {
-        Path("LICENSE"),
-        Path("pyproject.toml"),
-        Path("output/pdf/paper_d_constraints_iclr2027.pdf"),
-        Path("scripts/build_paper_d_supplement.py"),
-    }
+    explicit = set(BASE_RELEASE_FILES)
     for block in CUBE_BLOCKS:
         explicit.update(
             Path(value)
@@ -564,6 +935,8 @@ def collect_release_files(root: Path) -> list[Path]:
             "experiments/constraint_attribution_iclr/pdebench/data_lock_v2_beta0.4.json",
             "experiments/constraint_attribution_iclr/pdebench/data_lock_swe_rdb_20260902.json",
             "experiments/constraint_attribution_iclr/pdebench/data_admission_failure_v1_20260901.yaml",
+            "experiments/constraint_attribution_iclr/pdebench/burgers_nu0p01_source_20260901.json",
+            "experiments/constraint_attribution_iclr/pdebench/cns_eta0p01_source_20260901.json",
             "experiments/constraint_attribution_iclr/pilot/"
             "pilot_lock_final_idonly_20260831.json",
             "experiments/constraint_attribution_iclr/deployment/"
@@ -577,43 +950,68 @@ def collect_release_files(root: Path) -> list[Path]:
         "papers/paper_d_constraints/*.bib",
         "papers/paper_d_constraints/*.sty",
         "papers/paper_d_constraints/*.bst",
-        "papers/paper_d_constraints/*.md",
         "papers/paper_d_constraints/figures/*.py",
         "papers/paper_d_constraints/figures/*.tex",
-        "papers/paper_d_constraints/figures/*.pdf",
-        "papers/paper_d_constraints/figures/*.png",
         "papers/proposal/ecomd_constraint_attribution_iclr*.md",
-        "configs/constraint_iclr/pdebench_*.yaml",
+        "configs/constraint_iclr/*.yaml",
         "research/discovery/decisions/constraint_attribution_iclr*.yaml",
         "scripts/*constraint_iclr*.py",
         "scripts/*constraint_iclr*.sh",
         "tests/test_constraint_iclr*.py",
         "tests/test_paper_d*.py",
         "experiments/constraint_attribution_iclr/confirmation/formal_amended_20260901/*",
+        "experiments/constraint_attribution_iclr/deployment/*.tar.gz",
+        "experiments/constraint_attribution_iclr/deployment/*.sha256",
+        "experiments/constraint_attribution_iclr/deployment/*.sha256s",
+        "experiments/constraint_attribution_iclr/deployment/*.files",
+        "experiments/constraint_attribution_iclr/deployment/*.log",
+        "experiments/constraint_attribution_iclr/deployment/*receipt*.yaml",
     )
     for pattern in patterns:
         explicit.update(path.relative_to(root) for path in root.glob(pattern) if path.is_file())
+    record_paths = sorted(path for path in explicit if path.suffix == ".jsonl")
+    snapshot_archives = sorted(
+        path
+        for path in explicit
+        if path.parent == Path("experiments/constraint_attribution_iclr/deployment")
+        and path.name.endswith(".tar.gz")
+    )
+    explicit.update(collect_provenance_sources(root, record_paths, snapshot_archives))
     missing = sorted(path for path in explicit if not (root / path).is_file())
     if missing:
         raise RuntimeError(f"release payload is incomplete; missing={[str(path) for path in missing]}")
-    return sorted(explicit, key=lambda path: path.as_posix())
+    paths = sorted(explicit, key=lambda path: path.as_posix())
+    validate_no_bulk_payloads(root, paths)
+    return paths
 
 
 def build_manifest(root: Path, paths: Iterable[Path]) -> dict[str, Any]:
     entries = []
+    redactions: list[dict[str, Any]] = []
     for relative in paths:
         path = root / relative
-        entries.append(
-            {
-                "path": relative.as_posix(),
-                "bytes": path.stat().st_size,
-                "sha256": sha256_file(path),
-            }
-        )
+        payload, file_redactions = artifact_payload(root, relative)
+        entry: dict[str, Any] = {
+            "path": relative.as_posix(),
+            "bytes": len(payload),
+            "sha256": sha256_bytes(payload),
+        }
+        if file_redactions:
+            if _requires_byte_preservation(relative):
+                raise RuntimeError(
+                    "double-blind redaction would alter a frozen numerical record, "
+                    f"analysis, or scientific config: {relative}"
+                )
+            entry["source_sha256"] = sha256_file(path)
+            entry["redacted_for_double_blind"] = True
+            redactions.extend(file_redactions)
+        entries.append(entry)
     return {
-        "schema_version": "paper-d-constraint-attribution-artifact-v1",
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "checkpoint_bytes_included": False,
         "public_dataset_bytes_included": False,
+        "provenance_source_versions_verified": True,
+        "double_blind_redactions": redactions,
         "record_contract": {
             "core_records": 450,
             "derived_cube_records": 270,
@@ -635,18 +1033,6 @@ def write_manifest(path: Path, manifest: dict[str, Any]) -> bytes:
     return payload
 
 
-def _normalized_tar_info(path: Path, arcname: str) -> tarfile.TarInfo:
-    info = tarfile.TarInfo(arcname)
-    info.size = path.stat().st_size
-    info.mode = 0o644
-    info.uid = 0
-    info.gid = 0
-    info.uname = ""
-    info.gname = ""
-    info.mtime = 0
-    return info
-
-
 def create_archive(
     root: Path, paths: Iterable[Path], manifest_payload: bytes, output: Path
 ) -> None:
@@ -658,23 +1044,19 @@ def create_archive(
         tarfile.open(fileobj=compressed, mode="w") as archive,
     ):
         for relative in paths:
-            path = root / relative
-            info = _normalized_tar_info(path, f"{ARCHIVE_ROOT}/{relative.as_posix()}")
-            with path.open("rb") as handle:
-                archive.addfile(info, handle)
+            payload, _ = artifact_payload(root, relative)
+            info = _normalized_bytes_info(
+                f"{ARCHIVE_ROOT}/{relative.as_posix()}", len(payload)
+            )
+            archive.addfile(info, io.BytesIO(payload))
         manifest_names = (
             f"{ARCHIVE_ROOT}/ARTIFACT_MANIFEST.json",
             f"{ARCHIVE_ROOT}/{MANIFEST_PATH.as_posix()}",
         )
         for manifest_name in manifest_names:
-            manifest_info = tarfile.TarInfo(manifest_name)
-            manifest_info.size = len(manifest_payload)
-            manifest_info.mode = 0o644
-            manifest_info.uid = 0
-            manifest_info.gid = 0
-            manifest_info.uname = ""
-            manifest_info.gname = ""
-            manifest_info.mtime = 0
+            manifest_info = _normalized_bytes_info(
+                manifest_name, len(manifest_payload)
+            )
             archive.addfile(manifest_info, io.BytesIO(manifest_payload))
     temporary.replace(output)
     output.with_suffix(output.suffix + ".sha256").write_text(
@@ -684,11 +1066,16 @@ def create_archive(
 
 def verify_manifest(root: Path, manifest_path: Path) -> None:
     manifest = load_json(manifest_path)
-    if manifest.get("schema_version") != "paper-d-constraint-attribution-artifact-v1":
+    if manifest.get("schema_version") != ARTIFACT_SCHEMA_VERSION:
         raise RuntimeError("unexpected artifact-manifest schema")
     files = manifest.get("files")
     if not isinstance(files, list) or not files:
         raise RuntimeError("artifact manifest has no files")
+    redactions = manifest.get("double_blind_redactions", [])
+    if not isinstance(redactions, list) or any(
+        not isinstance(entry, dict) for entry in redactions
+    ):
+        raise RuntimeError("artifact redaction manifest is malformed")
     seen: set[str] = set()
     for entry in files:
         if not isinstance(entry, dict):
@@ -703,11 +1090,28 @@ def verify_manifest(root: Path, manifest_path: Path) -> None:
         path = root / relative
         if not path.is_file():
             raise RuntimeError(f"artifact file is missing: {path}")
-        if path.stat().st_size != int(entry.get("bytes", -1)):
+        payload, _ = artifact_payload(root, relative)
+        if len(payload) != int(entry.get("bytes", -1)):
             raise RuntimeError(f"artifact byte-count mismatch: {path}")
-        if sha256_file(path) != entry.get("sha256"):
+        if sha256_bytes(payload) != entry.get("sha256"):
             raise RuntimeError(f"artifact SHA-256 mismatch: {path}")
+        source_sha256 = entry.get("source_sha256")
+        if source_sha256 is not None and sha256_file(path) not in {
+            str(source_sha256),
+            str(entry.get("sha256")),
+        }:
+            raise RuntimeError(f"artifact redaction source mismatch: {path}")
     validate_semantics(root)
+    manifest_paths = [Path(str(entry["path"])) for entry in files]
+    validate_no_bulk_payloads(root, manifest_paths)
+    records = sorted(path for path in manifest_paths if path.suffix == ".jsonl")
+    snapshots = sorted(
+        path
+        for path in manifest_paths
+        if path.parent == Path("experiments/constraint_attribution_iclr/deployment")
+        and path.name.endswith(".tar.gz")
+    )
+    collect_provenance_sources(root, records, snapshots, redactions)
 
 
 def parse_args() -> argparse.Namespace:

@@ -1,0 +1,62 @@
+schema_version: constraint-iclr-public-swe-model-decision-v1
+decision_id: constraint_attribution_iclr_pdebench_swe_model_activation_20260902
+decision_kind: verified_outcome_blind_model_activation
+decided_at: "2026-09-01T14:19:29Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized contribution-driven experiments and required that adverse or null outcomes
+  remain scientific evidence rather than trigger a result-conditioned design retreat.
+dataset_lock:
+  path: experiments/constraint_attribution_iclr/pdebench/data_lock_swe_rdb_20260902.json
+  sha256: 1673f74f7f6ae5198894ef445cdbdd96e536ec669480397b1e21296318ed825b
+  dataset_sha256: 28f0c33723d70eebb420fc170e94b675c18e032fb697dcef080e114ca9645e3a
+  admitted: true
+factorial_protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_freeze_2026-09-02.md
+  sha256: 4b46f45906e3b514181dca6c8265eb1d3d73f1e451565dc3f1bb2e20d411e706
+cube_protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_cube_freeze_2026-09-02.md
+  sha256: 1f7a4f698fa2e9a533ef920832974c2e331fd4b318fa370b517a52502ce6dde3
+cube_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_pdebench_swe_enforcement_cube_20260902.yaml
+  sha256: ba1243b9c7ee84e27f5e6d974adb7d82e090522a9521d0037fb6a4269130f9d0
+implementation:
+  source_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+  source_git_dirty: true
+  snapshot:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_swe_implementation_v2_snapshot_20260902.tar.gz
+    sha256: 78c036fa9e4cffe8ee0e751607e818d387007eff284ec17b6f00dcf72504c880
+    bytes: 61170
+  runner_sha256: d1a1666a43fa7f42685d93a918d587983581a5ec24f3373d089ed46946a02d8c
+  analyzer_sha256: fa195d705ed14bbe4861c16a1e1fc774a393e6f2252e7c6218f96fa555680494
+  cube_runner_sha256: 115e47d7f27f280bb191e9ee62b18c55c45563ab8be9448e89a2c9c9d4901f98
+  cube_analyzer_sha256: f9cffd7cf89c58785f09041847a2b4ed54bc7076d2113225b117f1f1f21c7ce4
+  focused_test_sha256: 08658d8ff4fd3306bff7043ea3043af1721565750764c6e2a64ca526a3f507f4
+verification:
+  relevant_tests_passed: 72
+  ruff_passed: true
+  remote_snapshot_sha256_passed: true
+  remote_python_compile_passed: true
+  remote_cuda_hard_mass_identity_max_abs: 2.98023224e-08
+  remote_cuda_hard_mass_identity_atol: 2.0e-06
+frozen_design:
+  model: FNO2d
+  train_resolution: 64
+  evaluation_resolutions: [64, 128]
+  horizons: [1, 4, 16, 31]
+  trained_arms: [free, free_res, hard_abs, hard]
+  formal_seeds: 6000--6029
+  excluded_preflight_seed: 5999
+  primary_cell: ood_r128_horizon16_conserving_rmse
+  tradeoff_cell: ood_r128_horizon31_free_checkpoint_inference_projection
+activation_sequence:
+  - Bind the exact data-lock and this decision hashes into the active configuration.
+  - Register the two fixed V100 seed shards before running the excluded preflight.
+  - Inspect the excluded preflight only for execution integrity and runtime, never model quality.
+  - Start formal workers only if the preflight terminates without implementation or CUDA failure.
+  - Do not inspect a formal metric before both shards have exact coverage and both workers exit.
+forbidden_actions:
+  - No grid, model, seed, split, horizon, metric, threshold, or stopping-rule change.
+  - No clipping, positivity repair, schema amendment, partial-metric access, or result-driven stop.
+  - No preflight outcome may select a conclusion or alter the frozen design.
+status: authorized_for_excluded_preflight_then_formal_activation

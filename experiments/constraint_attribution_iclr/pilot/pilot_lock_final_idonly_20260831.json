@@ -1,0 +1,1650 @@
+{
+  "confirmation_seeds": [
+    1000,
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012,
+    1013,
+    1014,
+    1015,
+    1016,
+    1017,
+    1018,
+    1019,
+    1020,
+    1021,
+    1022,
+    1023,
+    1024,
+    1025,
+    1026,
+    1027,
+    1028,
+    1029
+  ],
+  "pilot_record_policy": {
+    "allowed_learning_rates": {
+      "B": [
+        0.0003,
+        0.001
+      ],
+      "C": [
+        0.0003,
+        0.001
+      ]
+    },
+    "excluded_records_by_family": {
+      "B": 180,
+      "C": 0
+    }
+  },
+  "schema_version": "constraint-iclr-lock-v1",
+  "selection_uses": "pilot ID RMSE and compute proxy only",
+  "systems": {
+    "A:advection": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.484986533898343,
+          "left": {
+            "cell": {
+              "capacity": 256,
+              "config_id": "c256_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 162004992000.0,
+            "id_rmse": 0.011225467547774315,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 256,
+              "config_id": "c256_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 162004992000.0,
+            "id_rmse": 0.0016589065392812092,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.00026047350112064633,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 4299161600.0,
+            "id_rmse": 0.34423274795214337,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.003",
+              "epochs": 400,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 4299161600.0,
+            "id_rmse": 0.34432242314020794,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 3.660716258533638e-08,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e200_lr0.01",
+              "epochs": 200,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 2149580800.0,
+            "id_rmse": 0.03392132371664047,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e200_lr0.01",
+              "epochs": 200,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 2149580800.0,
+            "id_rmse": 0.03392132495840391,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 256,
+          "config_id": "c256_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 256,
+          "config_id": "c256_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e200_lr0.01",
+          "epochs": 200,
+          "learning_rate": 0.01,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e200_lr0.01",
+          "epochs": 200,
+          "learning_rate": 0.01,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.003",
+          "epochs": 400,
+          "learning_rate": 0.003,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "A",
+      "system": "advection"
+    },
+    "A:burgers": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.006301411785475366,
+          "left": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 27105689600.0,
+            "id_rmse": 0.04278787970542908,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e400_lr0.01",
+              "epochs": 400,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 27105689600.0,
+            "id_rmse": 0.04251910249392191,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 5.729758732457375e-05,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.01",
+              "epochs": 400,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 4299161600.0,
+            "id_rmse": 0.34555108348528546,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.01",
+              "epochs": 400,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 4299161600.0,
+            "id_rmse": 0.34553128480911255,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.6136361142338063e-05,
+          "left": {
+            "cell": {
+              "capacity": 64,
+              "config_id": "c64_e100_lr0.003",
+              "epochs": 100,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 2555904000.0,
+            "id_rmse": 0.03547624871134758,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 64,
+              "config_id": "c64_e100_lr0.003",
+              "epochs": 100,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 2555904000.0,
+            "id_rmse": 0.03547567625840505,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 128,
+          "config_id": "c128_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.01",
+          "epochs": 400,
+          "learning_rate": 0.01,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 128,
+          "config_id": "c128_e400_lr0.01",
+          "epochs": 400,
+          "learning_rate": 0.01,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 64,
+          "config_id": "c64_e100_lr0.003",
+          "epochs": 100,
+          "learning_rate": 0.003,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 64,
+          "config_id": "c64_e100_lr0.003",
+          "epochs": 100,
+          "learning_rate": 0.003,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.01",
+          "epochs": 400,
+          "learning_rate": 0.01,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "A",
+      "system": "burgers"
+    },
+    "A:diffusion": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.8522448508052043,
+          "left": {
+            "cell": {
+              "capacity": 256,
+              "config_id": "c256_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 162004992000.0,
+            "id_rmse": 0.011150635778903961,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 256,
+              "config_id": "c256_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 162004992000.0,
+            "id_rmse": 0.00042768928688019514,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 8.496869496390015e-05,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 8598323200.0,
+            "id_rmse": 0.34184467792510986,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e800_lr0.003",
+              "epochs": 800,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 8598323200.0,
+            "id_rmse": 0.3418737252553304,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.0016854657422897014,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e200_lr0.001",
+              "epochs": 200,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 2149580800.0,
+            "id_rmse": 0.0030020589474588633,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e200_lr0.001",
+              "epochs": 200,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 2149580800.0,
+            "id_rmse": 0.002997003340472778,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 256,
+          "config_id": "c256_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 256,
+          "config_id": "c256_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e200_lr0.001",
+          "epochs": 200,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e200_lr0.001",
+          "epochs": 200,
+          "learning_rate": 0.001,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e800_lr0.003",
+          "epochs": 800,
+          "learning_rate": 0.003,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "A",
+      "system": "diffusion"
+    },
+    "B:advection": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.010834595985802943,
+          "id_relative_gap": 0.04882119423146502,
+          "left": {
+            "cell": {
+              "capacity": 16,
+              "config_id": "c16_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 34721792000.0,
+            "id_rmse": 0.01351207805176576,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e100_lr0.001",
+              "epochs": 100,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 34347622400.0,
+            "id_rmse": 0.014188259840011597,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.8345943184461596,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.007224465565135081,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.017571931704878807,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.006304706666691605,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.0041663506999611855,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.004192701385666926,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 16,
+          "config_id": "c16_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e100_lr0.001",
+          "epochs": 100,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "B",
+      "system": "advection"
+    },
+    "B:burgers": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.010834595985802943,
+          "id_relative_gap": 0.040223013575596094,
+          "left": {
+            "cell": {
+              "capacity": 16,
+              "config_id": "c16_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 34721792000.0,
+            "id_rmse": 0.011564464308321476,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e100_lr0.0003",
+              "epochs": 100,
+              "learning_rate": 0.0003
+            },
+            "compute_proxy": 34347622400.0,
+            "id_rmse": 0.011108477289477984,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.5722288707363294,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.0074625710646311445,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.013444340166946253,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.020582666584293977,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e100_lr0.001",
+              "epochs": 100,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 34347622400.0,
+            "id_rmse": 0.010211755832036337,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e100_lr0.001",
+              "epochs": 100,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 34347622400.0,
+            "id_rmse": 0.01000371171782414,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 16,
+          "config_id": "c16_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e100_lr0.0003",
+          "epochs": 100,
+          "learning_rate": 0.0003,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e100_lr0.001",
+          "epochs": 100,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e100_lr0.001",
+          "epochs": 100,
+          "learning_rate": 0.001,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "B",
+      "system": "burgers"
+    },
+    "B:diffusion": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.1532756547345342,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.005215858109295368,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.0014005734119564295,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.734948841959137,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.005215858109295368,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.011276306894918283,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.7152440482260944,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.0014005734119564295,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 137390489600.0,
+            "id_rmse": 0.0006627010297961533,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "B",
+      "system": "diffusion"
+    },
+    "C:ad2d": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.04868887291319203,
+          "left": {
+            "cell": {
+              "capacity": 8,
+              "config_id": "c8_e100_lr0.001",
+              "epochs": 100,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 10271334400.0,
+            "id_rmse": 0.04041095823049545,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 8,
+              "config_id": "c8_e100_lr0.001",
+              "epochs": 100,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 10271334400.0,
+            "id_rmse": 0.038490155090888344,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.016096990000354146,
+          "left": {
+            "cell": {
+              "capacity": 8,
+              "config_id": "c8_e200_lr0.0003",
+              "epochs": 200,
+              "learning_rate": 0.0003
+            },
+            "compute_proxy": 20542668800.0,
+            "id_rmse": 0.04288783545295397,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 8,
+              "config_id": "c8_e200_lr0.001",
+              "epochs": 200,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 20542668800.0,
+            "id_rmse": 0.04220298243065675,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.003079213539370012,
+          "left": {
+            "cell": {
+              "capacity": 8,
+              "config_id": "c8_e200_lr0.001",
+              "epochs": 200,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 20542668800.0,
+            "id_rmse": 0.026069102187951405,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 8,
+              "config_id": "c8_e200_lr0.001",
+              "epochs": 200,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 20542668800.0,
+            "id_rmse": 0.02614949829876423,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 8,
+          "config_id": "c8_e100_lr0.001",
+          "epochs": 100,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 8,
+          "config_id": "c8_e200_lr0.0003",
+          "epochs": 200,
+          "learning_rate": 0.0003,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 8,
+          "config_id": "c8_e100_lr0.001",
+          "epochs": 100,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 8,
+          "config_id": "c8_e200_lr0.001",
+          "epochs": 200,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 8,
+          "config_id": "c8_e200_lr0.001",
+          "epochs": 200,
+          "learning_rate": 0.001,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 8,
+          "config_id": "c8_e200_lr0.001",
+          "epochs": 200,
+          "learning_rate": 0.001,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "C",
+      "system": "ad2d"
+    },
+    "H:contraction_near": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.4693894510477112,
+          "left": {
+            "cell": {
+              "capacity": 256,
+              "config_id": "c256_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 162004992000.0,
+            "id_rmse": 0.010579870703319708,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 256,
+              "config_id": "c256_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 162004992000.0,
+            "id_rmse": 0.001618091909525295,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.00012090924845750558,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.001",
+              "epochs": 400,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 4299161600.0,
+            "id_rmse": 0.3278053005536397,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e400_lr0.01",
+              "epochs": 400,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 4299161600.0,
+            "id_rmse": 0.32784493764241535,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.4589331204431293e-05,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 8598323200.0,
+            "id_rmse": 0.03702453151345253,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e800_lr0.001",
+              "epochs": 800,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 8598323200.0,
+            "id_rmse": 0.03702507168054581,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 256,
+          "config_id": "c256_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.001",
+          "epochs": 400,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 256,
+          "config_id": "c256_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e800_lr0.001",
+          "epochs": 800,
+          "learning_rate": 0.001,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e400_lr0.01",
+          "epochs": 400,
+          "learning_rate": 0.01,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "H",
+      "system": "contraction_near"
+    },
+    "H:contraction_strong": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.00966183574879227,
+          "id_relative_gap": 0.01859679555486747,
+          "left": {
+            "cell": {
+              "capacity": 256,
+              "config_id": "c256_e100_lr0.01",
+              "epochs": 100,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 20250624000.0,
+            "id_rmse": 0.03340857025856773,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 64,
+              "config_id": "c64_e800_lr0.01",
+              "epochs": 800,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 20447232000.0,
+            "id_rmse": 0.03403569385409355,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.009800409128915786,
+          "left": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e100_lr0.01",
+              "epochs": 100,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 6776422400.0,
+            "id_rmse": 0.006930505391210318,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e100_lr0.01",
+              "epochs": 100,
+              "learning_rate": 0.01
+            },
+            "compute_proxy": 6776422400.0,
+            "id_rmse": 0.006862914810578029,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 4.075580157358741e-06,
+          "left": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e800_lr0.003",
+              "epochs": 800,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 8598323200.0,
+            "id_rmse": 0.33637027939160663,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 32,
+              "config_id": "c32_e800_lr0.003",
+              "epochs": 800,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 8598323200.0,
+            "id_rmse": 0.33637165029843646,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 128,
+          "config_id": "c128_e100_lr0.01",
+          "epochs": 100,
+          "learning_rate": 0.01,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 256,
+          "config_id": "c256_e100_lr0.01",
+          "epochs": 100,
+          "learning_rate": 0.01,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e800_lr0.003",
+          "epochs": 800,
+          "learning_rate": 0.003,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 64,
+          "config_id": "c64_e800_lr0.01",
+          "epochs": 800,
+          "learning_rate": 0.01,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 32,
+          "config_id": "c32_e800_lr0.003",
+          "epochs": 800,
+          "learning_rate": 0.003,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 128,
+          "config_id": "c128_e100_lr0.01",
+          "epochs": 100,
+          "learning_rate": 0.01,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "H",
+      "system": "contraction_strong"
+    },
+    "M2:fifo_cda": {
+      "comparisons": {
+        "free__free_res": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 0.01423515213392804,
+          "left": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e200_lr0.001",
+              "epochs": 200,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 25091276800.0,
+            "id_rmse": 0.045938720305760704,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e200_lr0.001",
+              "epochs": 200,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 25091276800.0,
+            "id_rmse": 0.04528939723968506,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free__soft30": {
+          "branch": "fixed_compute_nonoverlap",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.0421922821049219,
+          "left": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e400_lr0.003",
+              "epochs": 400,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 50182553600.0,
+            "id_rmse": 0.046641806761423744,
+            "mechanism": "free",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 128,
+              "config_id": "c128_e400_lr0.003",
+              "epochs": 400,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 50182553600.0,
+            "id_rmse": 0.14814387261867523,
+            "mechanism": "soft30",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        },
+        "free_res__hard": {
+          "branch": "matched_id_compute",
+          "compute_relative_gap": 0.0,
+          "id_relative_gap": 1.4555665706271971e-05,
+          "left": {
+            "cell": {
+              "capacity": 64,
+              "config_id": "c64_e100_lr0.003",
+              "epochs": 100,
+              "learning_rate": 0.003
+            },
+            "compute_proxy": 4602675200.0,
+            "id_rmse": 0.0454712783296903,
+            "mechanism": "free_res",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          },
+          "right": {
+            "cell": {
+              "capacity": 64,
+              "config_id": "c64_e100_lr0.001",
+              "epochs": 100,
+              "learning_rate": 0.001
+            },
+            "compute_proxy": 4602675200.0,
+            "id_rmse": 0.0454706164697806,
+            "mechanism": "hard",
+            "seeds": [
+              100,
+              101,
+              102
+            ]
+          }
+        }
+      },
+      "confirmation_jobs": [
+        {
+          "capacity": 128,
+          "config_id": "c128_e200_lr0.001",
+          "epochs": 200,
+          "learning_rate": 0.001,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 128,
+          "config_id": "c128_e400_lr0.003",
+          "epochs": 400,
+          "learning_rate": 0.003,
+          "mechanism": "free"
+        },
+        {
+          "capacity": 128,
+          "config_id": "c128_e200_lr0.001",
+          "epochs": 200,
+          "learning_rate": 0.001,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 64,
+          "config_id": "c64_e100_lr0.003",
+          "epochs": 100,
+          "learning_rate": 0.003,
+          "mechanism": "free_res"
+        },
+        {
+          "capacity": 64,
+          "config_id": "c64_e100_lr0.001",
+          "epochs": 100,
+          "learning_rate": 0.001,
+          "mechanism": "hard"
+        },
+        {
+          "capacity": 128,
+          "config_id": "c128_e400_lr0.003",
+          "epochs": 400,
+          "learning_rate": 0.003,
+          "mechanism": "soft30"
+        }
+      ],
+      "family": "M2",
+      "system": "fifo_cda"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+schema_version: constraint-iclr-confirmation-manifest-v1
+workers:
+  v100a: [A:advection, A:diffusion, A:burgers, H:contraction_near, H:contraction_strong, M2:fifo_cda]
+  v100b: [B:advection, B:diffusion, B:burgers, C:ad2d]
+systems:
+  A:advection:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: A, system: advection, resolution: 64}
+  A:diffusion:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: A, system: diffusion, resolution: 64}
+  A:burgers:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: A, system: burgers, resolution: 64, nu: 0.01}
+  B:advection:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: B, system: advection, resolution: 128}
+  B:diffusion:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: B, system: diffusion, resolution: 128}
+  B:burgers:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: B, system: burgers, resolution: 128, nu: 0.01}
+  C:ad2d:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: C, system: ad2d, resolution: 32}
+  H:contraction_near:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: H, system: contraction_near, resolution: 64, gamma: 0.5}
+  H:contraction_strong:
+    runner: pde
+    config: pde_confirmation
+    overrides: {family: H, system: contraction_strong, resolution: 64, gamma: 50.0}
+  M2:fifo_cda:
+    runner: market
+    config: market_confirmation
+    overrides: {}
+

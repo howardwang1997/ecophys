@@ -1,0 +1,49 @@
+schema_version: constraint-iclr-launch-receipt-v1
+receipt_at: "2026-08-31T02:51:41Z"
+status: running
+machine_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_confirmation_20260831.yaml
+  sha256: 9d6e1e67cc0055b719c1b904f266123e29b9b31f1f24008a58bafbc8ea49dace
+current_decision_pointer_sha256: fcb56fddbf6966ce92b918e6bd564b53acd3197f49994d2e00753f3651fbae37
+snapshot_sha256: b70c000cdd1c70d676ce1846f74e66d147bcd8a03a0fc0a84564e8e0cbbb1305
+selection_lock_sha256: 5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e
+source_git_head: 86dd76ee0127c5eb7945a5806bdad74548c62459
+source_git_dirty: true
+workers:
+  v100a:
+    host: 100.80.236.112
+    launcher_pid: 2568827
+    launched_at_remote: "2026-08-31T10:46:00+08:00"
+    production_log: logs/confirmation_v100a_authorized_20260831.log
+    first_record_gate: passed
+    first_gate_records: 10
+    first_gate_seeds: [1000, 1001, 1002, 1003, 1004]
+    first_gate_mechanisms: [free, projection]
+    checkpoint_records: 18
+    checkpoint_file: A_advection.jsonl
+    checkpoint_gpu_utilization_percent: 5
+    checkpoint_gpu_memory_mib: 438
+  v100b:
+    host: 100.123.220.57
+    launcher_pid: 190373
+    launched_at_remote: "2026-08-31T10:46:43+08:00"
+    production_log: logs/confirmation_v100b_authorized_20260831.log
+    excluded_predecision_log: logs/confirmation_v100b_20260831.log
+    first_record_gate: passed
+    first_gate_records: 2
+    first_gate_seeds: [1000]
+    first_gate_mechanisms: [free, projection]
+    checkpoint_records: 2
+    checkpoint_file: B_advection.jsonl
+    checkpoint_gpu_utilization_percent: 98
+    checkpoint_gpu_memory_mib: 4624
+gates:
+  archive_and_per_file_hashes: passed_on_both_hosts
+  focused_tests: 25_passed_on_both_hosts
+  seed_999_cuda_preflight: passed_on_both_hosts
+  production_metadata_lock_provenance_finiteness: passed_on_both_hosts
+  log_error_scan: none_on_both_hosts
+outcome_access:
+  metric_values_printed_or_inspected: false
+  early_analysis_performed: false
+  frozen_analysis_allowed_after_both_workers_complete: true

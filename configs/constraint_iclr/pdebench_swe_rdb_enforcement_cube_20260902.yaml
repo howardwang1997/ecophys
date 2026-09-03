@@ -1,0 +1,38 @@
+defaults:
+  - pdebench_swe_rdb_factorial_20260902
+  - _self_
+
+cube:
+  stage: swe_enforcement_cube_confirmation
+  schema_version: constraint-iclr-pdebench-swe-enforcement-cube-v1
+  derived_mechanisms: [projection_res, hard_abs_unprojected, hard_res_unprojected]
+  trained_parent_mechanisms: [free, free_res, hard_abs, hard]
+  expected_core_records: 150
+  expected_trained_checkpoints: 120
+  expected_derived_records: 90
+  checkpoint_schema_version: constraint-iclr-pdebench-swe-v1
+  checkpoint_completed_epochs: 100
+  primary_metric: conserving_rmse
+  algebra_atol: 0.000000000001
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_swe_cube_freeze_2026-09-02.md
+  protocol_sha256: 1f7a4f698fa2e9a533ef920832974c2e331fd4b318fa370b517a52502ce6dde3
+  decision_path: research/discovery/decisions/constraint_attribution_iclr_pdebench_swe_enforcement_cube_20260902.yaml
+  decision_sha256: ba1243b9c7ee84e27f5e6d974adb7d82e090522a9521d0037fb6a4269130f9d0
+  core_analysis: experiments/constraint_attribution_iclr/pdebench/swe_factorial_analysis_20260902.json
+  checkpoint_lock: experiments/constraint_attribution_iclr/pdebench/swe_checkpoint_lock_20260902.json
+  checkpoint_lock_schema_version: constraint-iclr-pdebench-swe-checkpoint-lock-v1
+  output: experiments/constraint_attribution_iclr/pdebench/swe_enforcement_cube_derived_20260902.jsonl
+  tradeoff:
+    case: ood_r128
+    horizon: 31
+    conservation_metric: max_abs_invariant_drift
+    positivity_metric: mean_negative_depth_deficit
+    secondary_positivity_metric: negative_depth_fraction
+    confidence: 0.95
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

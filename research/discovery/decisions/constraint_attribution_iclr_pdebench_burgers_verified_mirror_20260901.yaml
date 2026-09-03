@@ -1,0 +1,46 @@
+schema_version: constraint-iclr-runtime-amendment-v1
+decision_id: constraint_attribution_iclr_pdebench_burgers_verified_mirror_20260901
+decision_kind: content_addressed_mirror_transport_candidate
+decided_at: "2026-09-01T08:45:20Z"
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized submission-priority experiments without a time cap; this amendment preserves
+  the exact frozen bytes while avoiding a repeatedly interrupted storage endpoint.
+parent_transport_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_pdebench_burgers_transport_20260901.yaml
+  sha256: bc3d21094100a4bd09b36686195a3804132cbe418d86d422b62c59a23e502d46
+protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_verified_mirror_transport_2026-09-01.md
+  sha256: 97fe2cdf6e973581370ad1d68e7c189c3bd8cd3887cd3b07e4a555a8dffb3899
+candidate_source:
+  organization: pdebench
+  repository: Burgers
+  repository_type: dataset
+  revision: f4d2fc1
+  filename: 1D_Burgers_Sols_Nu0.01.hdf5
+  url: https://huggingface.co/datasets/pdebench/Burgers/blob/main/1D_Burgers_Sols_Nu0.01.hdf5
+  license: CC-BY-4.0
+identity_gate:
+  expected_bytes: 8232968312
+  expected_md5: e6d9a4f62baf9a29121a816b919e2770
+  expected_sha256: 646f59072348fff722ffe65b47eda755fe1fe106f1dd4a76887cdb89b885ce7b
+local_runtime:
+  conda_environment: base
+  huggingface_hub_cli_version: 1.6.0
+  hf_xet_installed: true
+  chunk_cache_bytes: 0
+  destination_root: /tmp/ecophys_pdebench_burgers_hf_20260901
+fallback:
+  host: 100.123.220.57
+  wget_pid: 216868
+  action_during_candidate_download: keep_running_unchanged
+authorized_actions:
+  - Download only the exact candidate file and verify all three content-identity gates locally.
+  - On a complete match, terminate only Wget PID 216868 and preserve its partial bytes.
+  - SCP the verified bytes to a distinct temporary remote path and repeat all three gates.
+  - Rename to the frozen final path only after remote verification, then run the unchanged full data gate.
+forbidden_actions:
+  - Do not adopt a candidate with any byte, MD5, or SHA-256 mismatch.
+  - Do not inspect HDF5 values before the unchanged admission script.
+  - Do not change any scientific setting or launch a Burgers model under this decision.
+status: authorized_candidate_download

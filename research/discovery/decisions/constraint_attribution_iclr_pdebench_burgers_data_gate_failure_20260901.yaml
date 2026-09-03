@@ -1,0 +1,55 @@
+schema_version: constraint-iclr-external-data-terminal-failure-v1
+decision_id: constraint_attribution_iclr_pdebench_burgers_data_gate_failure_20260901
+decision_kind: frozen_public_data_admission_terminal_failure
+decided_at: "2026-09-01T10:51:00Z"
+status: terminal_failed_no_model_authorized
+authorized_by: PI
+authorization_basis: >-
+  The PI authorized the submission-priority experiments while requiring genuine scientific
+  contribution and forbidding result-contingent fallback narratives.
+parent_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_pdebench_burgers_data_admission_20260901.yaml
+  sha256: 5d086b7eadb9123ddc65dc5cc082ca9fb93115aad7c2571ab8d86191536aa2fc
+frozen_contract:
+  protocol_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_factorial_freeze_2026-09-01.md
+  protocol_sha256: 123954a28ed1354a79dde9349967c32d143c9e0c78ad146f26de3a8ba00d250e
+  schema_path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_schema_freeze_2026-09-01.md
+  schema_sha256: ab3fc7553108915bc896f3fdfba068d8f5f85e5e5b5e2d7afafd1e86de90af49
+dataset_transport:
+  source: PDEBench official Hugging Face mirror at fixed commit f4d2fc1541c43bd8c1cc8d4639760f59efa6439b
+  remote_path: /data/ecophys_pdebench_burgers_nu0p01/1D_Burgers_Sols_Nu0.01.hdf5
+  bytes: 8232968312
+  md5: e6d9a4f62baf9a29121a816b919e2770
+  sha256: 646f59072348fff722ffe65b47eda755fe1fe106f1dd4a76887cdb89b885ce7b
+  bytes_md5_sha256_passed: true
+  losing_partial_artifacts_preserved:
+    - path: /root/ecophys_constraint_iclr_pdebench_burgers_data_20260901/excluded/transport_partial/1D_Burgers_Sols_Nu0.01.darus_wget_20260901.part
+      bytes: 3612988835
+    - path: /root/ecophys_constraint_iclr_pdebench_burgers_data_20260901/excluded/transport_partial/1D_Burgers_Sols_Nu0.01.local_scp_hf_verified_20260901_2976506880.part
+      bytes: 2976506880
+admission_failure:
+  host: 100.123.220.57
+  deployment_root: /root/ecophys_constraint_iclr_pdebench_burgers_data_20260901
+  failed_gate: frozen_x_coordinate_start
+  exception: "RuntimeError: coordinate start does not match the frozen contract"
+  tensor_shape_and_dtype_metadata_checked: true
+  x_coordinate_values_read: true
+  t_coordinate_values_read: false
+  solution_tensor_values_read: false
+  finiteness_or_invariant_scan_started: false
+  data_lock_created: false
+  model_preflight_started: false
+  model_formal_record_count: 0
+  model_metric_accessed: false
+evidence:
+  local_log_path: experiments/constraint_attribution_iclr/deployment/v100b_burgers_data_admission_terminal_failure_20260901.log
+  local_log_sha256: 501dd1d5ef989c581ea99b9b9ed7184731c822cd41d5f127600088f29c42fd38
+  local_log_bytes: 1213
+disposition:
+  - Preserve the verified official file and every partial transport artifact.
+  - Do not create the Burgers model decision, confirmation overlay, or model snapshot.
+  - Do not run seed 3999 or any formal seed 4000--4029 for this file and viscosity.
+  - Do not amend the coordinate contract, loosen a threshold, reinterpret the failure, or reuse
+    this block as a favorable or unfavorable model result.
+  - A subsequent public-PDE experiment must be a separately motivated and prospectively frozen
+    block, not a silent continuation of this failed Burgers block.

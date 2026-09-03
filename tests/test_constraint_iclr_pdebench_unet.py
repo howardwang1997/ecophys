@@ -29,3 +29,22 @@ def test_unet_hard_arms_conserve_previous_mass() -> None:
     for mechanism in ("hard_abs", "hard"):
         prediction = build_model(_cfg(), mechanism)(history, grid)
         torch.testing.assert_close(prediction.mean(dim=-1), history[..., -1].mean(dim=-1), atol=1e-6, rtol=0)
+
+
+def test_registered_fno_and_unet_parameter_counts() -> None:
+    fno = build_model(
+        {
+            "architecture": "fno1d",
+            "history": 10,
+            "modes": 12,
+            "width": 20,
+            "padding": 2,
+            "projection_width": 128,
+        },
+        "free",
+    )
+    unet = build_model(
+        {"architecture": "unet1d", "history": 10, "channels": 20}, "free"
+    )
+    assert sum(parameter.numel() for parameter in fno.parameters()) == 23_937
+    assert sum(parameter.numel() for parameter in unet.parameters()) == 66_941

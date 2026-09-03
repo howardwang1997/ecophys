@@ -1,0 +1,67 @@
+schema_version: constraint-iclr-postanalysis-runtime-repair-v1
+decision_id: constraint_attribution_iclr_postanalysis_runtime_repair_20260902
+decision_kind: outcome_blind_runtime_only_integrity_correction
+decided_at: "2026-09-02T03:05:45Z"
+authorization_basis: >-
+  The PI's standing instruction is to complete the frozen experiments and revise
+  the manuscript only for genuine, admission-gate-passing scientific contributions.
+amendment:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_postanalysis_runtime_amendment_2026-09-02.md
+  sha256: aca86a1fd69cc247eb70e017d00d03c3779d633efb32cda3f8c08c2f7980f84e
+outcome_state_at_decision:
+  swe_core_records: 150
+  swe_checkpoint_records: 120
+  swe_cube_records: 90
+  swe_cube_analysis_complete: false
+  gauge_feedback_records: 0
+  gauge_feedback_analysis_complete: false
+  swe_scientific_metric_accessed: false
+  gauge_feedback_metric_accessed: false
+  structural_failures:
+    - "SWE cube path identity failed for id_r64, h=31"
+    - "parent cube analysis is not integrity-bound"
+immutable_swe_artifacts:
+  v100a_records:
+    records: 75
+    sha256: f4b679b039547d44500a00a59ee109bfb898ec269a142b9748c9dbbf4bd4896c
+  v100b_records:
+    records: 75
+    sha256: b7b6e7e67bf9e2cfb1e50051a56e5b21d30e898fe5237ce9e093103331ee6e49
+  merged_records:
+    records: 150
+    sha256: 5e486167a2a8eb5099339422f9a0040b2f52b31d5ab3c10c4bb5db6ad6cef5bc
+  core_analysis:
+    sha256: d194df9d3f8d0c19964a61006809adfd7fbc95efde41d26231cb812405f32ffd
+  checkpoint_lock:
+    checkpoints: 120
+    sha256: 772c52f9dbaa79f193aea1a17715dc8486f6e84e330ec11d5004a3b80a1037b5
+  cube_records:
+    records: 90
+    sha256: 69dfa936fd838fa7ddc7c95e89a93e824c2ee6a6970daf0835517c95cd5723fa
+authorized_runtime_corrections:
+  swe_cube_analyzer:
+    absolute_tolerance_unchanged: 1.0e-12
+    relative_roundoff_bound: 64 * float64_epsilon * max(1, sum(abs(operands)))
+    rerun_scope: analyzer_only
+  gauge_feedback_runner:
+    cube_core_hash_field: core_input_sha256
+    cube_derived_hash_field: derived_input_sha256
+    exact_hash_equality_required: true
+    rerun_scope: original_zero_training_60_record_diagnostic_and_analyzer
+scientific_identity:
+  changed: false
+  unchanged_fields:
+    - datasets and locks
+    - parent records and checkpoints
+    - seeds, cases, grids, horizons, and interventions
+    - metrics and estimators
+    - bootstrap and hypothesis tests
+    - SESOI, ratio threshold, trade-off rule, and classifications
+forbidden_actions:
+  - Do not inspect a SWE scientific summary before the amended cube analyzer passes.
+  - Do not inspect a partial gauge-feedback record or metric.
+  - Do not rerun or rewrite any completed SWE record-producing stage.
+  - Do not alter any scientific design, estimator, threshold, or decision rule.
+  - Do not force an unresolved, negligible, or adverse outcome into the paper.
+status: registered_before_scientific_reveal
+

@@ -1,0 +1,82 @@
+schema_version: constraint-iclr-pdebench-swe-gauge-completion-receipt-v1
+created_at: "2026-09-02T05:39:00Z"
+purpose: >-
+  Bind the complete shallow-water enforcement cube, direct Advection gauge intervention, and
+  manuscript admission decisions without changing any scientific grid, seed, metric, or threshold.
+swe:
+  benchmark_id: pdebench_swe_rdb_fno2d_factorial_v1
+  core_records: 150
+  derived_cube_records: 90
+  checkpoints: 120
+  core_records_sha256: 5e486167a2a8eb5099339422f9a0040b2f52b31d5ab3c10c4bb5db6ad6cef5bc
+  cube_records_sha256: 69dfa936fd838fa7ddc7c95e89a93e824c2ee6a6970daf0835517c95cd5723fa
+  checkpoint_lock_sha256: 772c52f9dbaa79f193aea1a17715dc8486f6e84e330ec11d5004a3b80a1037b5
+  core_analysis:
+    path: experiments/constraint_attribution_iclr/pdebench/swe_factorial_analysis_20260902.json
+    sha256: d194df9d3f8d0c19964a61006809adfd7fbc95efde41d26231cb812405f32ffd
+  cube_analysis:
+    path: experiments/constraint_attribution_iclr/pdebench/swe_enforcement_cube_analysis_20260902.json
+    sha256: f8492362b3779eee13638c1d4222020e0fc2be1c2062f607caef02ca4417b308
+  integrity_gates_passed: true
+  manuscript_admission_gate_passed: true
+  primary_classification: material_nonadditivity
+  positivity_classification: resolved_conservation_positivity_synergy
+gauge_feedback:
+  benchmark_id: pdebench_advection_beta0.4_fno_factorial_v1
+  records: 60
+  input:
+    path: experiments/constraint_attribution_iclr/pdebench/advection_gauge_feedback_provenance_rerun_20260902.jsonl
+    sha256: 285ba66aeb8425056175d11ce97623e98c5a55337c34bc36833b467f02813298
+  analysis:
+    path: experiments/constraint_attribution_iclr/pdebench/advection_gauge_feedback_provenance_rerun_analysis_20260902.json
+    sha256: 87ed9676386e5a826da49f1d7c5aff776f8809290c7eff031c9e32c4d766e655
+  checkpoint_lock_sha256: 60fc852e6ec181c66da9eba4e8dfcdf1afc56e39c3fa5800f4e805d693761ecb
+  excluded_original_partial:
+    records: 10
+    sha256: f55983ec19d258e5db3d04478cc629ba531ff5c677d831075cea9209dc6fa7ab
+    retained_intact: true
+  runtime_amendment:
+    protocol_sha256: 18b3c5bcf5858bd9605d989c2ea0fffbed0970d01d7469f17a6919fcf76cfc8a
+    decision_sha256: 5e2cf3a2378f74a72426fb1926e65a52dc2a2040f8062ff06f9b21ea3d45dd73
+    deployment_package_sha256: 306a4b8faedf8b28af8cf0517644c68e81929c05574d6573d0ea97ebcd65c54d
+  integrity_gates_passed: true
+  primary_classification: material_gauge_feedback
+  secondary_final_harm_association: not_supported
+compute_release_check:
+  checked_at: "2026-09-02T05:39:00Z"
+  v100a:
+    host: 100.80.236.112
+    gpu: Tesla V100-SXM2-32GB
+    utilization_percent: 0
+    memory_used_mib: 8
+    compute_processes: 0
+  v100b:
+    host: 100.123.220.57
+    gpu: Tesla V100-SXM2-32GB
+    utilization_percent: 0
+    memory_used_mib: 5
+    compute_processes: 0
+  rtx2060s:
+    host: 100.105.21.7
+    reachable: false
+    failure: ssh_connect_timeout
+gpu_decision: >-
+  No further GPU experiment is required by the frozen submission argument. Any second-architecture
+  extension requires a new prospective hypothesis, machine decision, and verified host allocation.
+manuscript:
+  source:
+    path: papers/paper_d_constraints/main.tex
+    sha256: 84f3204ef7f2dfa471a9ba132aa7fcf94c2b4bc8feb560cd71f88e502f6f7350
+  pdf:
+    path: papers/paper_d_constraints/main.pdf
+    sha256: 42d585bcd0afc276d5b86317b2762cea19d01dab272dd816a4919ce512c711af
+    total_pages: 15
+    main_scientific_text_last_page: 9
+    noncounted_statements_page: 10
+    references_start_page: 10
+    all_fonts_embedded: true
+    undefined_references: 0
+    overfull_boxes: 0
+    rendered_visual_qa: passed
+  focused_regression_tests: 99_passed
+status: complete

@@ -1,0 +1,42 @@
+schema_version: constraint-iclr-pdebench-swe-completion-orchestration-receipt-v1
+created_at: "2026-09-01T17:15:00Z"
+purpose: >-
+  Runtime-only completion automation. It does not modify a scientific grid, seed, checkpoint,
+  metric, threshold, analyzer, or paper claim.
+snapshot:
+  path: experiments/constraint_attribution_iclr/deployment/pdebench_swe_completion_orchestration_20260902.tar.gz
+  sha256: 8f00aadaf1f6c2ba20064645461ed040b80c98a5a3e1a3e2d7660baca52e6b5b
+  bytes: 5196
+  members: 6
+  apple_double_members: 0
+file_list_sha256: 5e87e0c9b59785d2304c9888214681a560b0dd3b1dbd5c50515452ef6d080adb
+source_manifest_sha256: 4474a15e718c410c8e4b6a421d04cd4d3f943a031b8f297bceaa4041086c7035
+verification:
+  packager_pytest: 2_passed
+  ruff: passed
+  bash_syntax_a: passed
+  bash_syntax_b: passed
+  remote_a_packager_pytest: 2_passed
+  remote_b_packager_pytest: unavailable_pytest_not_installed
+safety_gates:
+  - A processing waits for the registered worker PID to exit and requires exactly 75 records.
+  - The packager requires the exact 15-seed by 5-mechanism coverage and 60 unique checkpoints.
+  - Every transferred checkpoint is verified against its record byte count and SHA-256 on A and B.
+  - B requires its native worker to be absent and its native shard to contain exactly 75 records.
+  - Merge and analyzers use only the frozen distributed and cube-overlay configurations.
+  - The cube analyzer runs only after the foreground cube worker exits with exactly 90 records.
+  - No script prints or branches on a model metric.
+deployment:
+  v100a:
+    host: 100.80.236.112
+    archive_sha256_verified: true
+    source_manifest_verified: true
+    watcher_pid: 2064081
+    watcher_log: experiments/constraint_attribution_iclr/pdebench/swe_a_completion_orchestrator_20260902.log
+  v100b:
+    host: 100.123.220.57
+    archive_sha256_verified: true
+    source_manifest_verified: true
+    watcher_pid: 232724
+    watcher_log: experiments/constraint_attribution_iclr/pdebench/swe_b_completion_orchestrator_20260902.log
+status: deployed_watchers_active

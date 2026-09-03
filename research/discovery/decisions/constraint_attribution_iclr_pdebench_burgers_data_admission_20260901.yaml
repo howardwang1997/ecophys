@@ -1,0 +1,65 @@
+schema_version: constraint-iclr-external-data-decision-v1
+decision_id: constraint_attribution_iclr_pdebench_burgers_data_admission_20260901
+decision_kind: prospectively_frozen_public_data_admission
+decided_at: "2026-09-01T06:08:43Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: >-
+  OK，按你的投稿修改优先级来写计划，然后做实验，改文章。还是要记住：如果实验结果不理想的话，
+  不能一味地只是回退、只是重构成稳健版本，因为这样不可能被接收，需要有真实的科学贡献。
+status: authorized_waiting_for_v100b_to_become_idle
+target_venue: ICLR_2027
+scientific_scope:
+  benchmark: PDEBench periodic 1D Burgers
+  viscosity: 0.01
+  choice_made_before_download: true
+  choice_independent_of_running_advection_factorial_outcomes: true
+  protocol:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_factorial_freeze_2026-09-01.md
+    sha256: 123954a28ed1354a79dde9349967c32d143c9e0c78ad146f26de3a8ba00d250e
+  schema:
+    path: papers/proposal/ecomd_constraint_attribution_iclr_pdebench_burgers_schema_freeze_2026-09-01.md
+    sha256: ab3fc7553108915bc896f3fdfba068d8f5f85e5e5b5e2d7afafd1e86de90af49
+official_source:
+  metadata_path: experiments/constraint_attribution_iclr/pdebench/burgers_nu0p01_source_20260901.json
+  metadata_sha256: d996b6ee4a2d2fbaab63851562703fa2f6552c753495d95069edf8da10f76459
+  doi: 10.18419/DARUS-2986
+  version: 8
+  file_id: 281363
+  filename: 1D_Burgers_Sols_Nu0.01.hdf5
+  expected_bytes: 8232968312
+  expected_md5: e6d9a4f62baf9a29121a816b919e2770
+  expected_sha256: to_be_computed_from_exact_download
+implementation:
+  config:
+    path: configs/constraint_iclr/pdebench_burgers_nu0p01_factorial.yaml
+    sha256: 46d7566b4b2882a7a2b2444d961eee35204eeba2e6ea75db8bd8160c08d47863
+  data_snapshot:
+    path: experiments/constraint_attribution_iclr/deployment/pdebench_burgers_data_snapshot_20260901.tar.gz
+    sha256: c0478153154d3e9acdc19b08afb775ba3acaabdf987e1a99b01fae2ec4e2a682
+    bytes: 25266
+  file_list_sha256: 3a596ead621aaa6475dbd5f310022b38efa2d206d84f580c3081a1b4eca1e684
+  per_file_hashes_sha256: 26ffec3113b14a2cbf267cb2ffc6982cad753c54e62c9ff6daf280c1bace09c5
+  local_verification:
+    focused_tests_passed: 56
+    ruff_passed: true
+compute:
+  host: 100.123.220.57
+  deployment_root: /root/ecophys_constraint_iclr_pdebench_burgers_data_20260901
+  data_root: /data/ecophys_pdebench_burgers_nu0p01
+  conda_environment: /data/ecophys_workshop/conda_env
+  activation_condition: existing_C_ad2d_worker_has_naturally_completed_and_GPU_is_idle
+  current_scope: download_hash_schema_and_invariant_scan_only
+authorized_actions:
+  - After C-ad2d completes, create the isolated deployment and data directories on V100b.
+  - Copy and verify only the declared data-admission snapshot and this decision.
+  - Download exact file ID 281363 with resumable curl and verify bytes and MD5.
+  - Run the full frozen coordinate, finiteness, mass-drift, and conservative-restriction scan.
+  - On a full pass, create and retrieve one immutable data lock and exact SHA-256.
+forbidden_actions:
+  - Do not run Burgers model preflight or formal seeds under this data-only decision.
+  - Do not overlap the scan with the active C-ad2d worker.
+  - Do not switch viscosity/file, loosen a threshold, subsample the admission scan, or repair data.
+  - Do not inspect or use the running advection factorial outcomes to change this block.
+  - Do not create a model decision unless the entire data-admission gate passes.
+terminal_failure_policy: preserve_artifacts_and_stop_this_public_burgers_block
