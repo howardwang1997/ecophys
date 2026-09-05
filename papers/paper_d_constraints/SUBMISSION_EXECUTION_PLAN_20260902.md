@@ -138,10 +138,12 @@ horizon, or sign convention.
   Records and analysis SHA-256 values are `285ba66a...13298` and `87ed9676...e655`.
 - Manuscript: rewritten around projection-gauge non-identifiability, the eight-cell causal
   intervention, the direct same-checkpoint gauge perturbation, and the independent shallow-water
-  replication. Complete tables/macros are generated from hashed analysis JSON. The official build
-  is 15 pages: scientific main text ends on page 9, while page 10 contains only the officially
-  non-counted reproducibility/AI-use statements followed by references. All pages passed rendered
-  visual inspection.
+  replication. Complete tables/macros are generated from hashed analysis JSON. At the time of this
+  plan (2026-09-02) the official build was 15 pages; the 2026-09-03 U-Net architecture-boundary
+  section and appendix brought the terminal build to 16 pages with the scientific main text still
+  ending on page 9, while page 10 contains only the officially non-counted reproducibility/AI-use
+  statements followed by references. All pages passed rendered visual inspection (re-verified
+  2026-09-05 against the byte-identical rebuild).
 
 ## Post-reveal GPU decision
 

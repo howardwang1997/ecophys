@@ -26,17 +26,26 @@ eligibility is determined from the profile.
 
 ## Step 1 — reciprocal-reviewer eligibility (new 2027 policy; affects desk rejection)
 
+> **Status update 2026-09-06: the PI confirmed a qualified reciprocal reviewer is available, so
+> Path A below applies.** Concretely: ensure the qualifying accepted publication is listed on the
+> OpenReview profile *before* the abstract deadline; after 2026-09-18 watch for the OpenReview
+> registration notification and register to review **≥3 papers**; complete all 3 reviews during
+> the October review period. Failing to register (or not completing the reviews by the rebuttal
+> stage) results in desk rejection of this paper. For a solo submission the registered reviewer
+> must be the PI.
+
 - Every submission must have **at least one author registered to review ≥3 papers**.
 - An author is *qualified* if they have at least one **accepted** primary publication at:
   ICLR / NeurIPS / ICML / UAI / AISTATS / JMLR / TMLR, ACL-family, COLM, CVPR-family, AAAI /
   IJCAI / JAIR, ICRA / IROS / RSS / CoRL, KDD, or COLT — accepted **by the abstract deadline**
   (workshop/findings-adjacent items like tiny papers, demos, and industry tracks do not count).
-- **If the PI has such a publication**: list it on the OpenReview profile. After the abstract
-  deadline OpenReview will notify all authors to register as reviewers; complete the registration
-  (≥3 papers). If no author registers, the paper is desk-rejected.
-- **If no author qualifies**: the submission is *exempt* from this requirement, but each author is
-  then capped at one such paper — which this single submission satisfies. No action needed beyond
-  the accurate profile.
+- **Path A (applies — qualified reviewer available)**: list the qualifying publication on the
+  OpenReview profile. After the abstract deadline OpenReview will notify all authors to register
+  as reviewers; complete the registration (≥3 papers). If no author registers, the paper is
+  desk-rejected.
+- **Path B (fallback only)**: if no author qualifies, the submission is *exempt* from this
+  requirement, but each author is then capped at one such paper — which this single submission
+  satisfies.
 - Other quota: max 20 papers per author (not binding here).
 
 ## Step 2 — by 2026-09-18 AoE: submit title + abstract
@@ -86,6 +95,12 @@ put it in a .zip file and submit it as supplementary materials".
 conda run -n ecophys-paper-d python scripts/build_paper_d_supplement.py --verify
 cd papers/paper_d_constraints && env SOURCE_DATE_EPOCH=0 conda run -n ecophys-paper-d tectonic main.tex
 ```
+
+On the PI's own Mac the reviewer-dedicated `ecophys-paper-d` environment does not exist; the
+verifier needs only the standard library, so run it as `conda run -n ecophys python
+scripts/build_paper_d_supplement.py --verify` (re-confirmed 2026-09-06: manifest
+`0cfa39d4…65c3296`). `ecophys-paper-d` is the environment ARTIFACT_README.md instructs external
+reviewers to create.
 
 Verifier passed with manifest `0cfa39d457dea1fa057cbf5f67eb64b475a7f160f3b4b31752191993565c3296`;
 the rebuild was byte-identical. If either command now fails, stop and re-audit before uploading.
