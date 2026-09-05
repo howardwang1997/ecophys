@@ -1,0 +1,73 @@
+schema_version: truth-asset-a3-machine-decision-v1
+decision_id: truth_asset_a3_treatment_selection_audit_20260905
+decision_kind: a3_treatment_selection_audit_authorization
+decided_at: "2026-09-05T10:20:00Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: >-
+  After the A-2 exit report (exit criteria satisfied) presented the two next A-3 rungs —
+  (a) the bounded outcome-blind treatment-selection audit (paper-only) or (b) A-1 site/ethics
+  preparation — the PI replied "授权" authorizing the queued cheapest decisive action, rung (a).
+status: authorized
+stage: A3_treatment_selection_audit
+governing_preflight:
+  plan: papers/proposal/ecomd_truth_asset_capability_build_plan_2026-08-26.md
+  plan_sha256: 553f773be7ce39f3a8b331a8d1f354e544c2e460b4334d03e4088f5a134c2431
+  treatment_selection_section: frozen disqualifiers and candidate families
+prior_authorization:
+  a2_decision: research/discovery/decisions/truth_asset_a2_platform_qualification_20260905.yaml
+  a2_verdict: exit criteria satisfied 2026-09-05
+discovery_status_effect: none
+candidate_harvest_authorized: false
+reentry_requires_qualified_trigger: true
+frozen_disqualifiers:
+  - direct prior collision: an existing human-subject same-estimand comparison (same native
+    state, assigned treatment, response, and conditioning set); named occupied families include
+    continuous vs frequent batch (Aldrich & Lopez Vargas 2019) and double auction vs call market
+    vs tatonnement (Guler et al. 2025)
+  - assignment impossibility in a CDA grammar, or a treatment that changes the event schema
+    between arms (the tape grammar must be arm-invariant)
+  - no discriminating simulator fork: at least two serious simulator/model families must predict
+    opposite signs or order-one different magnitudes for the primary contrast
+candidate_families:
+  - equal_price_queue_priority (fifo vs pro-rata vs randomized tie-break; prior manifests
+    ecomd_random_unit_priority_collision_manifest_v2_2026-08-27.md and
+    ecomd_tie_priority_c2_fork_derivation_2026-08-26.md)
+  - cancellation_replace_cost_schedule
+  - resting_depth_visibility
+  - minimum_resting_time
+  - order_size_unitization
+authorized_actions:
+  - Adjudicate each candidate family against the three frozen disqualifiers using (i) the
+    existing 2026-08-26/27 collision and fork artifacts for the queue-priority family and
+    (ii) fresh searched primary-work manifests for the other four families, with cited works.
+  - Assess assignment feasibility and tape-grammar arm-invariance for each family against the
+    frozen lab-asset-v3 schema (a unified schema with arm-dependent values is arm-invariant;
+    a new schema version requires a new A-2 engineering iteration and is a cost, not a
+    disqualifier).
+  - Rank surviving families outcome-blind (disqualifier survival, fork sharpness, design value,
+    engineering cost) and select one primary treatment plus at most one backup.
+  - Write the formal selection audit with the searched manifest, and record it append-only.
+forbidden_actions:
+  - No human participants, recruitment, outreach, site contact, or ethics filing (A-1).
+  - No market-data outcome access, data purchase, GPU use, simulator execution for inference,
+    EcoMD integration, candidate harvesting, topic-card creation, or route re-entry.
+  - Effect-direction expectations of any candidate may not motivate the selection; the audit is
+    outcome-blind by construction.
+stop_rules:
+  - If every family fails a disqualifier, the audit records zero candidates (A-3 plan Part 8
+    rule 5) and the asset build stops pending PI direction.
+  - A newly surfaced direct human-subject same-estimand collision for the queue-priority family
+    voids the 2026-08-27 manifest conclusion and reopens selection.
+effective_until: formal_selection_audit_written_or_zero_candidate_stop_or_pi_revocation
+a3_selection_record:
+  recorded_at: "2026-09-05T11:05:00Z"
+  formal_audit:
+    path: papers/proposal/lab_asset_a3_treatment_selection_audit_2026-09-05.md
+  primary_treatment: equal_price_queue_priority_fifo_vs_random_unit
+  backup_treatment: minimum_resting_time_conditional_on_frozen_fork_derivation
+  disqualified_families:
+    - resting_depth_visibility (direct human-subject prior: Hendershott et al. 2022 JFM; theory Boulatov et al. 2013 RFS)
+  stop_rule_triggered: false
+  outcome_blind: true
+  status: complete_primary_selected

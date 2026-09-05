@@ -5,36 +5,38 @@ terminal_objective:
   gates: research/discovery/protocol.yaml#activation_gate
   executable_plan_within_compute_envelope: true
   venue_consistent_evidence_contract: true
-mode: a2_complete_await_pi_rung_decision
+mode: a3_selection_complete_await_pi_a1_decision
 mode_basis:
   derived_from:
-    - research/discovery/current_machine_decision.yaml (truth_asset_a2_platform_qualification_20260905, completed_exit_criteria_satisfied)
+    - research/discovery/current_machine_decision.yaml (truth_asset_a3_treatment_selection_audit_20260905, completed_primary_selected)
   note: >-
-    Re-derived 2026-09-05 after A-2 exit. Both authorized scopes (Paper D chain, A-2 platform
-    qualification) are terminal-complete; no standing authorization exists. Next A-3 rungs each
-    need a new PI-authorized machine decision. The route graph's single active node
-    (verification_liquidity) stays sealed until 2026-10-17 UTC; discovery topic cycles remain
-    closed (99 trigger audits, zero qualified).
+    Re-derived 2026-09-05. A-2 qualification complete (exit criteria satisfied) and A-3
+    treatment selection complete (primary: FIFO vs random-unit queue priority; backup: minimum
+    resting time; resting-depth visibility disqualified). No standing authorization. The next
+    rung A-1 (site contact, ethics filing, preregistration) requires a new PI machine decision;
+    the verification_liquidity holdout stays sealed until 2026-10-17 UTC; discovery topic
+    cycles remain closed (99 trigger audits, zero qualified).
 last_derived_at: "2026-09-05"
 next_action_queue:
   - action: >-
-      PI decision: open the next A-3 rung — either (a) the bounded outcome-blind
-      treatment-selection audit (paper-only; candidate families frozen in the A-3 plan) or
-      (b) A-1 site-contact/ethics/pre-registration preparation.
+      PI decision: open A-1 preparation under a new machine decision — site selection (two
+      independently governed labs), ethics-filing package, preregistration draft with the
+      frozen primary treatment, and the Part 8 cost ceiling before any external contact.
     rationale: >-
-      A-2 exit criteria are satisfied; the A-3 ladder names exactly these two legal next rungs,
-      each requiring explicit authorization.
-    cost_estimate: PI choice; (a) is 1-2 paper-only sessions, (b) starts external contact.
+      The A-3 ladder's remaining rung before A0; the treatment and platform package are frozen
+      and conformance-qualified.
+    cost_estimate: PI choice; preparation is paper-only, external contact starts only on
+      explicit authorization.
   - action: >-
       PI: ICLR 2027 submission execution (OpenReview account/reciprocal-reviewer eligibility,
       abstract by 2026-09-18, artifact upload after anonymity confirmed).
     rationale: Repo is private and pushed; remaining steps need the PI account.
     cost_estimate: PI session.
   - action: >-
-      Engineering backlog (optional, no authorization needed beyond code hygiene): V100 disk
-      cleanup (98%/96% full); local main-branch divergence (79 stale commits) reconciliation.
-    rationale: Operational hygiene flagged in sessions 53-55.
-    cost_estimate: one ops session.
+      Optional fork derivation for the backup treatment (minimum resting time) to complete its
+      backup qualification (paper-only).
+    rationale: Recorded condition in the selection audit; low cost, not on the critical path.
+    cost_estimate: one paper session.
   - action: After 2026-10-17 UTC, re-derive the verification_liquidity sealed-holdout state.
     rationale: Separate sealed protocol; holdout opening is forbidden before that date.
     cost_estimate: one orientation check.
@@ -76,3 +78,10 @@ derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each
   session. Never copy route statuses, counts, or failure history into this file.
+  - date: "2026-09-05"
+    mode: A3_treatment_selection
+    ledger_ref: logs/2026-09-05.md Session 57
+    note: >-
+      PI authorized the treatment-selection audit; primary selected (FIFO vs random-unit queue
+      priority), backup minimum resting time, resting-depth visibility disqualified by direct
+      human prior. Decision terminal-complete.

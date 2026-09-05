@@ -1,6 +1,17 @@
-# Truth-asset A-2 platform qualification (2026-09-05) — COMPLETE
+# Truth-asset A-2 platform qualification (2026-09-05) — COMPLETE; treatment SELECTED (A-3)
 
-## Outcome
+## Treatment selection (2026-09-05, same day)
+
+Outcome-blind audit under `truth_asset_a3_treatment_selection_audit_20260905` completed:
+**primary treatment = equal-price queue priority, strict FIFO vs uniform random-unit sampling**
+(the exact A-2-frozen arms; zero marginal engineering). Backup: minimum resting time
+(zero schema change via `cancel_too_late`; conditional on a frozen fork derivation).
+Resting-depth visibility **disqualified** by direct human prior (Hendershott et al. 2022 JFM
+hidden-orders experiment; Boulatov et al. 2013 RFS theory). Formal audit:
+`papers/proposal/lab_asset_a3_treatment_selection_audit_2026-09-05.md`. Next rung A-1 (site
+contact, ethics, preregistration) requires a new PI machine decision.
+
+## Outcome (A-2)
 
 **A-2 exit criteria satisfied** in two engineering iterations, zero conformance/replay failures,
 stop rule never triggered. Formal result:
