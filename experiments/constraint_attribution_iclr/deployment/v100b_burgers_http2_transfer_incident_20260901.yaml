@@ -1,0 +1,28 @@
+schema_version: constraint-iclr-transfer-incident-v1
+incident_id: v100b_burgers_http2_transfer_incident_20260901
+recorded_at: "2026-09-01T08:18:59Z"
+host: 100.123.220.57
+deployment_root: /root/ecophys_constraint_iclr_pdebench_burgers_data_20260901
+dataset:
+  file_id: 281363
+  expected_bytes: 8232968312
+  expected_md5: e6d9a4f62baf9a29121a816b919e2770
+process:
+  wrapper_pid: 214990
+  curl_pid: 215007
+  command_transport: curl_7.81.0_HTTP2_with_continue_at
+observation:
+  log_error: "curl: (92) HTTP/2 stream 0 was not closed cleanly: CANCEL (err 8)"
+  earlier_observed_partial_bytes: 2856763392
+  later_observed_partial_bytes: 502501376
+  partial_size_regressed: true
+  wrapper_alive_after_regression: true
+  model_record_count: 0
+  data_values_inspected: false
+  data_admission_outcome_exists: false
+disposition:
+  classification: transport_runtime_failure_before_data_admission
+  preserve_log: logs/burgers_data_admission_retry1_20260901.log
+  partial_file_policy: retain_only_as_resumable_unadmitted_bytes_until_final_hash_gate
+  scientific_protocol_changed: false
+

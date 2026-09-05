@@ -1,0 +1,82 @@
+schema_version: constraint-iclr-unet-replication-result-v1
+decision_id: constraint_attribution_iclr_unet_replication_result_20260903
+decision_kind: prospective_architecture_transfer_gate_adjudication
+decided_at: "2026-09-03T08:54:46Z"
+authorized_by: PI
+target_venue: ICLR_2027
+protocol:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_unet_replication_freeze_2026-09-02.md
+  sha256: cf29774b08862e8f4894fafaa8f2ae71a4da8d1e0f4d7ff6d262d62c863a0fc8
+runtime_amendment:
+  path: papers/proposal/ecomd_constraint_attribution_iclr_unet_completion_runtime_amendment_2026-09-03.md
+  sha256: 21e916d6c2db593e8358cdd912e26cc775b78bb9417a4e2f235954e7bd974f91
+runtime_decision:
+  path: research/discovery/decisions/constraint_attribution_iclr_unet_completion_runtime_20260903.yaml
+  sha256: 0ca5d94248675d46bcea87d7d511f2a615615d784921242198ccecc486f97522
+completion:
+  pipeline_completed_at: "2026-09-03T08:41:34Z"
+  v100a_records: 75
+  v100b_records: 75
+  merged_core_records: 150
+  trained_checkpoints: 120
+  derived_cube_records: 90
+  mandatory_cells: 12
+  integrity_gates_passed: true
+  partial_metric_access_before_completion: false
+artifacts:
+  v100a_records:
+    path: experiments/constraint_attribution_iclr/pdebench/unet_backup_20260903/unet_factorial_v100a_20260902.jsonl
+    sha256: c64e4d41497659c699ec370c55012bebac1e6948f576b059535aa60575817718
+  v100b_records:
+    path: experiments/constraint_attribution_iclr/pdebench/unet_backup_20260903/v100b/unet_factorial_v100b_20260902.jsonl
+    sha256: bc54636e2a49b7a63b886e673aff4d6ade07b72ecd246ac6eed3ec0532894aa9
+  merged_core_records:
+    path: experiments/constraint_attribution_iclr/pdebench/unet_factorial_merged_20260902.jsonl
+    sha256: ae0dda1c95e5aa2ceca4fbb072f3adda104dda90ecc98b71a77481f31853ba2b
+  core_analysis:
+    path: experiments/constraint_attribution_iclr/pdebench/unet_factorial_analysis_20260903.json
+    sha256: 6e3252b5a1d35ce42f728bfab87d7206e53c336ac618644c7dfe6f0ddb278f37
+  checkpoint_lock:
+    path: experiments/constraint_attribution_iclr/pdebench/unet_factorial_checkpoint_lock_20260903.json
+    sha256: e7d43d3d3ce96b7d7a5ba0f8e690833b9d739e7fadc682867c69916b023421aa
+  cube_records:
+    path: experiments/constraint_attribution_iclr/pdebench/unet_enforcement_cube_20260903.jsonl
+    sha256: 01a23a0b77ffcf50a60ec84b2d79f663b2d3d904f8cd911df7eafbbf5486e515
+  cube_analysis:
+    path: experiments/constraint_attribution_iclr/pdebench/unet_enforcement_cube_analysis_20260903.json
+    sha256: 0e2ad4bdf6f9fcdb63e60887ebd7fa5ee5ddc23b4a105bc663aca88580a1d172
+registered_gate:
+  primary_case: ood_r512
+  primary_horizon: 16
+  require_primary_material_nonadditivity: true
+  minimum_material_cells: 6
+observed_result:
+  primary_three_way_interaction:
+    mean: -0.08414964015433811
+    ci95: [-0.26664864750613343, 0.13334454488360414]
+    sesoi: 0.14751386962346597
+    classification: unresolved
+    holm_adjusted_sign_flip_p: 1.0
+  ordinary_four_cell_interaction:
+    mean: 0.1023425117719181
+    ci95: [0.0050742074551428235, 0.19831401683590075]
+  cell_classification_counts:
+    material_nonadditivity: 3
+    statistical_nonadditivity_below_or_crossing_sesoi: 6
+    practical_additivity: 1
+    unresolved: 2
+adjudication:
+  primary_requirement_passed: false
+  coverage_requirement_passed: false
+  architecture_transfer_gate_passed: false
+  interpretation: >-
+    The FNO training-by-inference path-dependence result does not transfer under the registered
+    U-Net gate. This is a boundary on architecture generality, not evidence that every U-Net cell
+    is additive: three ID-256 cells are materially non-additive and all twelve cells must be
+    reported. The nonzero ordinary four-trained-cell interaction cannot substitute for the failed
+    complete-cube gate.
+publication_action:
+  - Report the failed registered gate in the abstract, main results, limitations, and appendix.
+  - Retain all twelve mandatory cells and the primary eight-cell table in the artifact and paper.
+  - Do not describe the U-Net result as replication, robustness, or successful transfer.
+status: complete_gate_not_passed

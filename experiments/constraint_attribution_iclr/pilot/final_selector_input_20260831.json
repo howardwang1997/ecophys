@@ -1,0 +1,41 @@
+{
+  "schema_version": "constraint-iclr-selector-input-v1",
+  "selection_uses": "pilot ID RMSE and compute proxy only; OOD metrics remain unopened",
+  "included_files": {
+    "raw_expanded_20260831/v100a/a_advection.jsonl": "9a290c681557ac254316df329eb2c0d9025065051ace1fb48b17d9315474d453",
+    "raw_expanded_20260831/v100a/a_burgers.jsonl": "d66dd747be7306e3c92bc98ae16a9349adb3b07339d47d4c36ba5c1ac62ce599",
+    "raw_expanded_20260831/v100a/a_diffusion.jsonl": "a771d70e4e95d7409de738ce25340517275be10645ff434fe48013d0ed4048d9",
+    "raw_expanded_20260831/v100a/h_strong.jsonl": "efb1924ea10162dc18344ef06d544498c7a978960aa7737e8f6207e455de6c3c",
+    "raw_expanded_20260831/v100a/m2_fifo.jsonl": "d6c80865c4d95de5a363934b3932327415920393d9b3f33d78a26c4d52440eef",
+    "provenance_rerun_20260831/v100a/h_near_provenance_rerun.jsonl": "934a74662a480a8197775b2399e89f9a0dce7d9531c06ba6d6b8c51b8974215d",
+    "raw_expanded_20260831/v100b/b_advection.jsonl": "b0f30adcf0f9ff362050bb731a16a0c9b858a891016957d3d17da622b10ddc28",
+    "raw_expanded_20260831/v100b/b_burgers.jsonl": "8bc441e45e6b1abd7d58068ad5a1163757dc13a0fed8c797e2e61e690c48c8ff",
+    "raw_expanded_20260831/v100b/b_diffusion.jsonl": "601ab1747d625daa80da929a8ed99e1fab94b95b68e7d8af36e0b26191b9510c",
+    "provenance_rerun_20260831/v100b/c_ad2d_provenance_rerun.jsonl": "d0bf4646a85e5c41cda8b170df5f21481b82e5705ecb88abc34b1e7ea6db0f11"
+  },
+  "excluded_files": {
+    "raw_expanded_20260831/v100a/h_near.jsonl": {
+      "sha256": "15d88b932072c8394d30e8f559b4160076a156aa42e9750d92c2dea951cd09a9",
+      "reason": "superseded by full clean rerun after 450 records failed git_head provenance gate"
+    },
+    "raw_expanded_20260831/v100b/c_ad2d.jsonl": {
+      "sha256": "5559fba642cb52df34e0e60dac5ea39b2b00cddaf61a8a088516c8feb2008e7d",
+      "reason": "superseded by corrected clean rerun after learning-rate and 60-record git_head provenance defects"
+    },
+    "pilot_lock_thin_20260830.json": {
+      "sha256": "9ad88f746bc0fd8bb03d81720747cd7beafd588201ff394af54600e654054cb2",
+      "reason": "discarded provisional lock"
+    }
+  },
+  "pilot_learning_rate_policy": {
+    "B": [0.0003, 0.001],
+    "C": [0.0003, 0.001]
+  },
+  "expected_included_raw_records": 4980,
+  "expected_selector_eligible_records": 4800,
+  "confirmation_seeds": [
+    1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,
+    1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019,
+    1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029
+  ]
+}
