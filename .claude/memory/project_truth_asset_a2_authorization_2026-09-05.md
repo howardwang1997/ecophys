@@ -1,6 +1,27 @@
-# Truth-asset A-2 platform qualification authorized (2026-09-05)
+# Truth-asset A-2 platform qualification (2026-09-05) — COMPLETE
 
-## What was authorized
+## Outcome
+
+**A-2 exit criteria satisfied** in two engineering iterations, zero conformance/replay failures,
+stop rule never triggered. Formal result:
+`papers/proposal/lab_asset_a2_result_2026-09-05.md` (SHA-256 `4407cef0...4c2`). The decision
+file carries an append-only `a2_exit_record`; `current_machine_decision.yaml` now reads
+`completed_exit_criteria_satisfied`. No further authorization is standing.
+
+## Frozen deliverables
+
+- Versioned schema artifact `lab-asset-v3` + serialized fixtures (both arms) + SHA-256 bundle
+  manifest at `experiments/lab_asset_a2/a2_exit_20260905/` (manifest SHA-256
+  `fea8a136...9581c`). Exporter: `scripts/lab_asset/export_schema.py` (self-checks that every
+  emitted payload key is declared in the spec). Independent from-disk verifier:
+  `scripts/lab_asset/verify_fixtures.py` (manifest hashes + deterministic replay + byte-exact
+  regeneration). Conformance suite: 27 tests incl. bundle round-trip and tamper detection.
+- Grammar: 14 event types incl. the replace family with parent lineage; identifiers O/E/R%08d;
+  three clocks; 34 reason-coded rejections; pre/post best quotes on accepted actions; identity
+  and anonymous state hashes binding the engine RNG state; roles resolved from the prestate
+  only; `session_id` tape-level.
+
+## What was authorized (historical)
 
 The PI authorized opening the **A-2 rung** of the frozen A-3 truth-asset capability-build plan
 (`papers/proposal/ecomd_truth_asset_capability_build_plan_2026-08-26.md`, SHA-256

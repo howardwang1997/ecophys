@@ -592,3 +592,16 @@ def test_replay_reproduces_and_detects_tampering_on_replace_tape() -> None:
                 break
         else:
             raise AssertionError("replace tape lacked an ORDER_REPLACED record")
+
+
+def test_a2_exit_bundle_round_trip_and_tamper_detection(tmp_path) -> None:
+    from lab_asset.export_schema import write_bundle
+    from lab_asset.verify_fixtures import verify_bundle
+
+    bundle = write_bundle(tmp_path / "bundle")
+    assert set(bundle["fixtures"]) == {"fixture_fifo", "fixture_random_unit_within_price"}
+    assert verify_bundle(tmp_path / "bundle")
+    tape_path = tmp_path / "bundle" / "fixture_fifo" / "tape.jsonl"
+    original = tape_path.read_bytes()
+    tape_path.write_bytes(original.replace(b'"quantity":2', b'"quantity":3', 1))
+    assert not verify_bundle(tmp_path / "bundle")

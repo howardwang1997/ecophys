@@ -5,36 +5,36 @@ terminal_objective:
   gates: research/discovery/protocol.yaml#activation_gate
   executable_plan_within_compute_envelope: true
   venue_consistent_evidence_contract: true
-mode: execute_authorized_decision
+mode: a2_complete_await_pi_rung_decision
 mode_basis:
   derived_from:
-    - research/discovery/current_machine_decision.yaml (truth_asset_a2_platform_qualification_20260905, status authorized)
+    - research/discovery/current_machine_decision.yaml (truth_asset_a2_platform_qualification_20260905, completed_exit_criteria_satisfied)
   note: >-
-    Re-derived 2026-09-05 after PI directives. Mode A: execute exactly the authorized A-2 scope
-    (extend scripts/lab_asset to the A-3 Part 4 tape contract; deterministic replay + conformance
-    fixtures; robot pilots; Mac CPU only; two-iteration stop rule). No humans, outreach, ethics,
-    treatment adjudication, candidate harvest, EcoMD, GPU, or market outcome access. Discovery
-    topic cycles remain closed (99 trigger audits, zero qualified); the route graph's single
-    active node (verification_liquidity) stays sealed until 2026-10-17 UTC.
+    Re-derived 2026-09-05 after A-2 exit. Both authorized scopes (Paper D chain, A-2 platform
+    qualification) are terminal-complete; no standing authorization exists. Next A-3 rungs each
+    need a new PI-authorized machine decision. The route graph's single active node
+    (verification_liquidity) stays sealed until 2026-10-17 UTC; discovery topic cycles remain
+    closed (99 trigger audits, zero qualified).
 last_derived_at: "2026-09-05"
 next_action_queue:
   - action: >-
-      A-2 iteration 1: audit scripts/lab_asset against A-3 Part 4 field-by-field; implement the
-      missing tape fields (three clocks, reason-coded rejections, pre/post quotes, per-action
-      full-book state hash, replay prestate); extend tests; run conformance fixtures and a robot
-      pilot on both arms; write the append-only iteration record.
-    rationale: Authorized machine decision; platform qualification is the bounded unit.
-    cost_estimate: 1-2 local CPU sessions; zero GPU.
+      PI decision: open the next A-3 rung — either (a) the bounded outcome-blind
+      treatment-selection audit (paper-only; candidate families frozen in the A-3 plan) or
+      (b) A-1 site-contact/ethics/pre-registration preparation.
+    rationale: >-
+      A-2 exit criteria are satisfied; the A-3 ladder names exactly these two legal next rungs,
+      each requiring explicit authorization.
+    cost_estimate: PI choice; (a) is 1-2 paper-only sessions, (b) starts external contact.
   - action: >-
       PI: ICLR 2027 submission execution (OpenReview account/reciprocal-reviewer eligibility,
       abstract by 2026-09-18, artifact upload after anonymity confirmed).
-    rationale: Repo is now private and the branch is pushed; remaining steps need the PI account.
+    rationale: Repo is private and pushed; remaining steps need the PI account.
     cost_estimate: PI session.
   - action: >-
-      After A-2 exit criteria or stop rule: write the formal A-2 result and re-evaluate the A-3
-      ladder (treatment-selection audit is the other legal next rung).
-    rationale: Plan Part 8 stop rules and exit criteria bind.
-    cost_estimate: one session.
+      Engineering backlog (optional, no authorization needed beyond code hygiene): V100 disk
+      cleanup (98%/96% full); local main-branch divergence (79 stale commits) reconciliation.
+    rationale: Operational hygiene flagged in sessions 53-55.
+    cost_estimate: one ops session.
   - action: After 2026-10-17 UTC, re-derive the verification_liquidity sealed-holdout state.
     rationale: Separate sealed protocol; holdout opening is forbidden before that date.
     cost_estimate: one orientation check.
@@ -59,6 +59,19 @@ session_history:
       Repo made private (double-blind fix); 202 files committed and pushed to
       paper-d-iclr-2027-completion; A-2 truth-asset platform qualification authorized and
       registered as the current machine decision.
+  - date: "2026-09-05"
+    mode: A2_iteration1_part4_gaps
+    ledger_ref: logs/2026-09-05.md Session 55
+    note: >-
+      Iteration 1 closed the four Part 4 gaps (roles, replace lineage, rejection ids, quotes);
+      31 tests and both pilot arms replay-validated.
+  - date: "2026-09-05"
+    mode: A2_exit_bundle_and_result
+    ledger_ref: logs/2026-09-05.md Session 56
+    note: >-
+      Iteration 2 froze the lab-asset-v3 schema artifact with serialized fixtures and an
+      independent verifier; formal A-2 result written; exit criteria satisfied, decision
+      terminal-complete.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each

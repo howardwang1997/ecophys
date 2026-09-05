@@ -1,0 +1,206 @@
+{
+  "allocation_rules": [
+    "fifo",
+    "random_unit_within_price"
+  ],
+  "cancel_rejection_reasons": [
+    "unknown_order",
+    "not_owner",
+    "already_filled",
+    "already_cancelled",
+    "cancel_too_late",
+    "invalid_clocks"
+  ],
+  "event_types": [
+    "session_start",
+    "latency_choice",
+    "latency_choice_rejected",
+    "order_request",
+    "order_accepted",
+    "order_rejected",
+    "cancel_request",
+    "order_cancelled",
+    "cancel_rejected",
+    "replace_request",
+    "order_replaced",
+    "replace_rejected",
+    "execution",
+    "session_end"
+  ],
+  "latency_rejection_reasons": [
+    "unknown_actor",
+    "duplicate_choice",
+    "invalid_investment",
+    "invalid_clocks"
+  ],
+  "notes": {
+    "hashes": "stable_hash = sha256 of canonical JSON (sort_keys, separators (',',':')); state_hash binds prestate hash, full book with FIFO order, cash, inventory, induced counters, order metadata/status/parent, used client ids, latency choices, counters, last match tick and engine RNG state; aggregate_state_hash binds anonymous level quantities and totals only",
+    "identifiers": "order O%08d, execution E%08d, rejection R%08d; client_order_id and event_id are client-supplied; order_parent carries replacement lineage",
+    "replay": "re-execute the request events (order/cancel/replace/latency/session end) from the prestate; the regenerated tape must equal the recorded tape record-by-record including every state hash",
+    "roles": "role resolves from the prestate actor_roles map and is never client-supplied",
+    "session_id": "tape-level attribute carried by SESSION_START and the prestate hash"
+  },
+  "order_rejection_reasons": [
+    "malformed_request",
+    "unknown_actor",
+    "duplicate_client_id",
+    "price_out_of_bands",
+    "negative_or_zero_quantity",
+    "invalid_clocks",
+    "self_trade_prevented",
+    "insufficient_cash",
+    "insufficient_inventory",
+    "induced_buy_capacity_exceeded",
+    "induced_sell_capacity_exceeded"
+  ],
+  "payload_fields": {
+    "cancel_rejected": [
+      "rejection_id",
+      "order_id",
+      "reason",
+      "clocks",
+      "pre_best_bid",
+      "pre_best_ask",
+      "post_best_bid",
+      "post_best_ask"
+    ],
+    "cancel_request": [
+      "event_id",
+      "actor",
+      "role",
+      "order_id",
+      "round_id",
+      "clocks"
+    ],
+    "execution": [
+      "execution",
+      "aggressor_role",
+      "maker_role",
+      "allocation_draw?",
+      "pre_best_bid",
+      "pre_best_ask",
+      "post_best_bid",
+      "post_best_ask"
+    ],
+    "latency_choice": [
+      "event_id",
+      "actor",
+      "round_id",
+      "investment",
+      "resulting_delay_ticks",
+      "clocks"
+    ],
+    "latency_choice_rejected": [
+      "rejection_id",
+      "event_id",
+      "actor",
+      "round_id",
+      "investment",
+      "reason",
+      "clocks"
+    ],
+    "order_accepted": [
+      "client_order_id",
+      "order_id",
+      "resting_quantity",
+      "clocks",
+      "pre_best_bid",
+      "pre_best_ask",
+      "post_best_bid",
+      "post_best_ask"
+    ],
+    "order_cancelled": [
+      "order_id",
+      "actor",
+      "cancelled_quantity",
+      "clocks",
+      "pre_best_bid",
+      "pre_best_ask",
+      "post_best_bid",
+      "post_best_ask"
+    ],
+    "order_rejected": [
+      "rejection_id",
+      "client_order_id",
+      "reason",
+      "clocks",
+      "pre_best_bid",
+      "pre_best_ask",
+      "post_best_bid",
+      "post_best_ask"
+    ],
+    "order_replaced": [
+      "replaces_order_id",
+      "replaced_quantity",
+      "order_id",
+      "parent_order_id",
+      "lineage_root",
+      "resting_quantity",
+      "clocks",
+      "pre_best_bid",
+      "pre_best_ask",
+      "post_best_bid",
+      "post_best_ask"
+    ],
+    "order_request": [
+      "event_id",
+      "actor",
+      "role",
+      "client_order_id",
+      "round_id",
+      "side",
+      "price",
+      "quantity",
+      "clocks"
+    ],
+    "replace_rejected": [
+      "rejection_id",
+      "replaces_order_id",
+      "reason",
+      "clocks",
+      "pre_best_bid",
+      "pre_best_ask",
+      "post_best_bid",
+      "post_best_ask"
+    ],
+    "replace_request": [
+      "event_id",
+      "actor",
+      "role",
+      "replaces_order_id",
+      "client_order_id",
+      "round_id",
+      "side",
+      "price",
+      "quantity",
+      "clocks"
+    ],
+    "session_end": [],
+    "session_start": [
+      "session_id",
+      "schema_version",
+      "allocation_rule",
+      "prestate_hash"
+    ]
+  },
+  "replace_rejection_reasons": [
+    "unknown_actor",
+    "unknown_order",
+    "not_owner",
+    "order_not_resting",
+    "invalid_clocks",
+    "duplicate_client_id",
+    "price_out_of_band",
+    "negative_or_zero_quantity",
+    "insufficient_cash",
+    "insufficient_inventory",
+    "induced_buy_capacity_exceeded",
+    "induced_sell_capacity_exceeded",
+    "self_trade_prevented"
+  ],
+  "schema_version": "lab-asset-v3",
+  "sides": [
+    "B",
+    "S"
+  ]
+}

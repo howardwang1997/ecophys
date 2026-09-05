@@ -327,3 +327,50 @@ def aggregate_state_hash(
 
 def record_to_json(record: TapeRecord) -> str:
     return json.dumps(asdict(record), sort_keys=True, separators=(",", ":"))
+
+
+def prestate_to_json(prestate: SessionPrestate) -> str:
+    return json.dumps(asdict(prestate), sort_keys=True, separators=(",", ":"))
+
+
+def prestate_from_json(raw: str) -> SessionPrestate:
+    data = json.loads(raw)
+    return SessionPrestate(
+        session_id=data["session_id"],
+        seed=data["seed"],
+        allocation_rule=AllocationRule(data["allocation_rule"]),
+        initial_cash=data["initial_cash"],
+        initial_inventory=data["initial_inventory"],
+        price_bands=(data["price_bands"][0], data["price_bands"][1]),
+        actors=tuple(data["actors"]),
+        induced_buy_values={
+            actor: tuple(values) for actor, values in data["induced_buy_values"].items()
+        },
+        induced_sell_costs={
+            actor: tuple(values) for actor, values in data["induced_sell_costs"].items()
+        },
+        information_schedule=tuple(
+            InformationRelease(
+                tick=item["tick"], label=item["label"], value=item["value"]
+            )
+            for item in data["information_schedule"]
+        ),
+        initial_book=tuple(
+            InitialOrder(
+                order_id=item["order_id"],
+                actor=item["actor"],
+                side=Side(item["side"]),
+                price=item["price"],
+                quantity=item["quantity"],
+            )
+            for item in data["initial_book"]
+        ),
+        actor_roles=data["actor_roles"],
+        scheduler_seed=data["scheduler_seed"],
+        scheduler_tick=data["scheduler_tick"],
+        scheduler_state=data["scheduler_state"],
+        assignment_key_commitment=data["assignment_key_commitment"],
+        latency_endowment=data["latency_endowment"],
+        latency_delay_by_investment=tuple(data["latency_delay_by_investment"]),
+        schema_version=data["schema_version"],
+    )

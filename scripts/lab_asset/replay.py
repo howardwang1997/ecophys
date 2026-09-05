@@ -20,6 +20,7 @@ from lab_asset.schema import (
     Side,
     TapeRecord,
     ThreeClocks,
+    record_to_json,
 )
 
 
@@ -60,13 +61,9 @@ def _clocks(payload: dict[str, object]) -> ThreeClocks:
     )
 
 
-def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
-    """Re-execute the request stream and compare the regenerated tape record-by-record.
+def regenerate(prestate: SessionPrestate, tape: list[TapeRecord]) -> list[TapeRecord]:
+    """Re-execute the request stream and return the regenerated tape."""
 
-    A faithful replay must match event types, payloads and post-state hashes exactly:
-    the engine is deterministic given (prestate, request stream), and the prestate pins
-    the allocation arm and seed.
-    """
     engine = ReferenceEngine(prestate)
     replayed = 0
     for record in tape:
@@ -129,17 +126,45 @@ def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
         else:
             continue
         replayed += 1
-    if len(engine.tape) != len(tape) or replayed == 0:
-        return ReplayReport(False, replayed, None)
-    for regenerated, recorded in zip(engine.tape, tape, strict=True):
+    if replayed == 0:
+        return []
+    return engine.tape
+
+
+def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
+    """Re-execute the request stream and compare the regenerated tape record-by-record.
+
+    A faithful replay must match event types, payloads and post-state hashes exactly:
+    the engine is deterministic given (prestate, request stream), and the prestate pins
+    the allocation arm and seed.
+    """
+    request_events = sum(
+        1
+        for record in tape
+        if record.event_type
+        in (
+            EventType.ORDER_REQUEST,
+            EventType.CANCEL_REQUEST,
+            EventType.REPLACE_REQUEST,
+            EventType.LATENCY_CHOICE,
+            EventType.LATENCY_CHOICE_REJECTED,
+            EventType.SESSION_END,
+        )
+    )
+    regenerated = regenerate(prestate, tape)
+    if len(regenerated) != len(tape) or request_events == 0:
+        return ReplayReport(False, request_events, None)
+    for regenerated_record, recorded in zip(regenerated, tape, strict=True):
         if (
-            regenerated.sequence != recorded.sequence
-            or regenerated.event_type != recorded.event_type
-            or regenerated.pre_state_hash != recorded.pre_state_hash
-            or regenerated.post_state_hash != recorded.post_state_hash
-            or regenerated.pre_aggregate_state_hash != recorded.pre_aggregate_state_hash
-            or regenerated.post_aggregate_state_hash != recorded.post_aggregate_state_hash
-            or regenerated.payload != recorded.payload
+            regenerated_record.sequence != recorded.sequence
+            or regenerated_record.event_type != recorded.event_type
+            or regenerated_record.pre_state_hash != recorded.pre_state_hash
+            or regenerated_record.post_state_hash != recorded.post_state_hash
+            or regenerated_record.pre_aggregate_state_hash
+            != recorded.pre_aggregate_state_hash
+            or regenerated_record.post_aggregate_state_hash
+            != recorded.post_aggregate_state_hash
+            or record_to_json(regenerated_record) != record_to_json(recorded)
         ):
-            return ReplayReport(False, replayed, recorded.sequence)
-    return ReplayReport(True, replayed, None)
+            return ReplayReport(False, request_events, recorded.sequence)
+    return ReplayReport(True, request_events, None)
