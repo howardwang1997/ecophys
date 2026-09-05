@@ -41,7 +41,8 @@ class SessionSamples:
     spreads: list[int]
     depths: list[int]
     cancels: int
-    executions: int
+    execution_records: int
+    executed_units: int
     tape_length: int
 
 
@@ -58,8 +59,8 @@ def run_session(
         session_id=f"PILOT-{rule.value}-{seed}",
         seed=seed,
         allocation_rule=rule,
-        initial_cash={a: 10_000.0 for a in ACTORS},
-        initial_inventory={a: 0 for a in ACTORS},
+        initial_cash={a: 10_000_000 for a in ACTORS},
+        initial_inventory={a: 100_000 for a in ACTORS},
         price_bands=(90, 110),
         actors=ACTORS,
     )
@@ -77,7 +78,10 @@ def run_session(
         bb, ba = _best(engine.bids, True), _best(engine.asks, False)
         if bb is not None and ba is not None:
             spreads.append(ba - bb)
-            depths.append(len(engine.bids[bb]) + len(engine.asks[ba]))
+            depths.append(
+                sum(quantity for _, _, quantity in engine.bids[bb])
+                + sum(quantity for _, _, quantity in engine.asks[ba])
+            )
 
     for t in range(steps):
         bb, ba = _best(engine.bids, True), _best(engine.asks, False)
@@ -144,7 +148,7 @@ def run_session(
             if resting_ids:
                 oid, owner = resting_ids[rng.randrange(len(resting_ids))]
                 cancel_request = to_request(
-                    {"type": "cancel", "actor": owner, "client_order_id": oid},
+                    {"type": "cancel", "actor": owner, "order_id": oid},
                     event_id=next_event,
                     client_ts=t,
                     receipt_ts=t,
@@ -153,9 +157,15 @@ def run_session(
                 assert isinstance(cancel_request, CancelRequest)
                 engine.cancel(cancel_request)
         sample()
+    executed_units = 0
     for record in engine.tape:
         if record.event_type == EventType.EXECUTION:
             executions += 1
+            execution = record.payload["execution"]
+            assert isinstance(execution, dict)
+            quantity = execution["quantity"]
+            assert isinstance(quantity, int)
+            executed_units += quantity
         elif record.event_type == EventType.ORDER_CANCELLED:
             cancels += 1
     engine.finish()
@@ -164,7 +174,8 @@ def run_session(
         spreads=spreads,
         depths=depths,
         cancels=cancels,
-        executions=executions,
+        execution_records=executions,
+        executed_units=executed_units,
         tape_length=len(engine.tape),
     )
     return engine, report.ok, samples
@@ -173,9 +184,10 @@ def run_session(
 def session_statistics(samples: SessionSamples, steps: int) -> dict[str, float]:
     return {
         "mean_spread_ticks": sum(samples.spreads) / max(len(samples.spreads), 1),
-        "mean_touch_depth_orders": sum(samples.depths) / max(len(samples.depths), 1),
+        "mean_touch_depth_units": sum(samples.depths) / max(len(samples.depths), 1),
         "cancel_intensity": samples.cancels / max(samples.tape_length, 1),
-        "executions": float(samples.executions),
+        "execution_records": float(samples.execution_records),
+        "executed_units": float(samples.executed_units),
         "tape_length": float(samples.tape_length),
         "steps": float(steps),
     }
@@ -189,7 +201,7 @@ def run_pilot(
 ) -> dict[str, object]:
     """Run paired-seed robot sessions under both arms; validate replays; write manifest."""
     arms: dict[str, object] = {}
-    for rule in (AllocationRule.FIFO, AllocationRule.RANDOM_WITHIN_TIE):
+    for rule in (AllocationRule.FIFO, AllocationRule.RANDOM_UNIT_WITHIN_PRICE):
         stats: list[dict[str, float]] = []
         replays_ok = True
         for i in range(sessions_per_arm):

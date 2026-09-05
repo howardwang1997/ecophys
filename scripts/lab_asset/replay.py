@@ -13,6 +13,7 @@ from lab_asset.matching import ReferenceEngine
 from lab_asset.schema import (
     CancelRequest,
     EventType,
+    LatencyChoice,
     OrderRequest,
     SessionPrestate,
     Side,
@@ -79,6 +80,7 @@ def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
                     price=_as_int(payload["price"]),
                     quantity=_as_int(payload["quantity"]),
                     clocks=_clocks(payload),
+                    round_id=_as_int(payload["round_id"]),
                 )
             )
         elif record.event_type == EventType.CANCEL_REQUEST:
@@ -87,7 +89,22 @@ def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
                 CancelRequest(
                     event_id=_as_int(payload["event_id"]),
                     actor=_as_str(payload["actor"]),
-                    client_order_id=_as_str(payload["client_order_id"]),
+                    order_id=_as_str(payload["order_id"]),
+                    clocks=_clocks(payload),
+                    round_id=_as_int(payload["round_id"]),
+                )
+            )
+        elif record.event_type in (
+            EventType.LATENCY_CHOICE,
+            EventType.LATENCY_CHOICE_REJECTED,
+        ):
+            payload = record.payload
+            engine.choose_latency(
+                LatencyChoice(
+                    event_id=_as_int(payload["event_id"]),
+                    actor=_as_str(payload["actor"]),
+                    round_id=_as_int(payload["round_id"]),
+                    investment=_as_int(payload["investment"]),
                     clocks=_clocks(payload),
                 )
             )
@@ -102,7 +119,9 @@ def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
         if (
             regenerated.sequence != recorded.sequence
             or regenerated.event_type != recorded.event_type
+            or regenerated.pre_state_hash != recorded.pre_state_hash
             or regenerated.post_state_hash != recorded.post_state_hash
+            or regenerated.pre_aggregate_state_hash != recorded.pre_aggregate_state_hash
             or regenerated.post_aggregate_state_hash != recorded.post_aggregate_state_hash
             or regenerated.payload != recorded.payload
         ):

@@ -11,12 +11,15 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-TEST_TARGET = "tests/test_lab_asset_conformance.py"
+TEST_TARGETS = (
+    "tests/test_lab_asset_conformance.py",
+    "tests/test_lab_asset_adapter.py",
+)
 
 
 def main() -> int:
     result = subprocess.run(
-        [sys.executable, "-m", "pytest", TEST_TARGET, "-q"],
+        [sys.executable, "-m", "pytest", *TEST_TARGETS, "-q"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
