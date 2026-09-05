@@ -1,5 +1,10 @@
 # Non-auction randomized-priority search — G−1 result
 
+> **Status amendment (2026-09-05).** The contemporaneous references below to FCC clock-1 as a
+> candidate are historical. Its subsequent D−1 audit failed on identification, standard-parent,
+> cross-mechanism and simulator-validation gates; see
+> `fcc_clock1_random_rank_cascade_dminus1_result_2026-09-05.md`.
+
 **Frozen:** 2026-08-24
 
 **Verdict:** one new candidate, one parked prospective probe, no active Nature route

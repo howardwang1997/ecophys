@@ -1,5 +1,10 @@
 # Outcome-blind treatment-selection audit for the controlled-market response asset
 
+> **Re-adjudicated (2026-08-27):** the treatment family survives only with the uniform
+> random-unit kernel and the thesis-v2 identification ladder. Strategic sign, Avellaneda--Stoikov
+> anchor and C4 conclusions below are historical; see
+> `ecomd_random_unit_priority_scientific_repair_2026-08-27.md`.
+
 Date: 2026-08-26 (Session 17)
 
 Decision: **select within-tie-set randomized priority as the treatment family; one reserve; three families failed; pre-A-2 conditions frozen. No topic status, card, or execution authorization is created.**

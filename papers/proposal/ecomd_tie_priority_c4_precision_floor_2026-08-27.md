@@ -1,5 +1,9 @@
 # C4 precision floor: outcome-blind session-count calculation for the two-arm priority contrast
 
+> **Withdrawn (2026-08-27):** the endpoint, variance transport and 16-sessions-per-arm conclusion
+> below are invalid for the repaired thesis. C4 is open; use
+> `ecomd_random_unit_priority_precision_contract_v2_2026-08-27.md`.
+
 Date: 2026-08-27 (Session 19)
 
 Precondition C4 of the frozen treatment selection

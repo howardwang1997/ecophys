@@ -1,5 +1,9 @@
 # Cost-ceiling addendum: terminal closure of precondition C4
 
+> **Terminal-pass conclusion withdrawn (2026-08-27):** USD 20,000/site remains a budget ceiling,
+> but the superseded sample-size calculation does not establish feasibility. C4 is open under
+> `ecomd_random_unit_priority_precision_contract_v2_2026-08-27.md`.
+
 Date: 2026-08-27 (Session 21)
 
 Companion to `ecomd_tie_priority_c4_precision_floor_2026-08-27.md`. The C4 gate was

@@ -53,9 +53,9 @@ def node_locators(node: dict[str, object], field: str) -> list[dict[str, object]
 def test_canonical_graph_validates_offline() -> None:
     result = validate_graph(GRAPH_PATH, REPO_ROOT)
 
-    assert "235 route nodes" in result
-    assert "243 typed edges" in result
-    assert "850 evidence/artifact locators" in result
+    assert "251 route nodes" in result
+    assert "270 typed edges" in result
+    assert "964 evidence/artifact locators" in result
     assert "git_ref=35" in result
 
 
@@ -72,8 +72,33 @@ def test_only_declared_routes_remain_open() -> None:
 
     assert open_routes == {
         "dcrdex_verifiable_sequencing_response": "parked",
-        "fcc_clock1_random_rank_cascade": "candidate",
         "verification_liquidity": "active",
+    }
+
+
+def test_stochastic_projection_route_is_closed_by_affine_null_and_direct_parents() -> None:
+    document = load_document()
+    route_id = "measure_correct_hard_projection_stochastic_simulators"
+    route = node_by_id(document, route_id)
+
+    assert route["status"] == "failed_closed"
+    assert {
+        "native_cash_inventory_constraints_are_affine",
+        "coarea_fixman_factor_constant",
+        "tangent_projector_curvature_zero",
+        "affine_nonreversible_degenerate_diffusion_direct_parent",
+        "hard_physics_projection_coarea_correction_direct_parent",
+    }.issubset(set(cast(list[str], route["failure_codes"])))
+    targets = {
+        edge["target"]
+        for edge in document_edges(document)
+        if edge["source"] == route_id and edge["type"] == "derived_from"
+    }
+    assert targets == {
+        "ncs_invariant_calibration_v4",
+        "generic_simulator_audit_v4a",
+        "constraint_boundary_rejection_local_time",
+        "cfmm_invariant_curvature_response",
     }
 
 

@@ -2,7 +2,7 @@ schema_version: 2
 
 graph:
   id: ecophys_research_routes
-  updated_at: "2026-08-26"
+  updated_at: "2026-09-05"
   scope:
     start_date: "2026-04-24"
     end_date: null
@@ -2252,13 +2252,21 @@ nodes:
   - id: fcc_clock1_random_rank_cascade
     node_type: research_route
     title: FCC clock-1 pseudorandom tie-order response cascade
-    status: candidate
+    status: failed_closed
     opened_at: "2026-08-24"
-    closed_at: null
-    phase: D_minus_1_support_randomization_and_replay_audit
-    terminal_gate: null
-    failure_codes: []
-    summary: Official clock-1 rules randomize processing order within tied price points and public schemas expose selection number, bid application, demand, price, activity and next-round eligibility; the candidate remains below activation because binding support, exchangeability, exact replay and a faithful simulator are unverified.
+    closed_at: "2026-09-05"
+    phase: D_minus_1_result
+    terminal_gate: irreducible_propagation_estimand_and_simulator_validation_contract
+    failure_codes:
+      - paired_counterfactual_path_dispersion_not_identified
+      - ordinary_sequential_randomization_and_interference_reduction
+      - exact_replay_is_algorithm_emulation_not_field_response
+      - public_randomization_probability_contract_absent
+      - common_cross_mechanism_action_bridge_absent
+      - faithful_independent_simulator_lineages_absent
+      - direct_executor_and_method_parent_collision
+      - historical_confirmation_outcome_contamination
+    summary: Structural support upper bounds pass in Auctions 108 and 113 and the Auction 108 observed-row accounting contract closes, but immediate outcomes reduce to deterministic execution, later behavioral effects reduce to standard sequential interference inference, and same-state paired path dispersion is nonidentified from one realized order. Cross-mechanism identity, a public assignment-probability contract and independent faithful simulators are absent; a 2026 patent publication describes the exact queue executor, and Auctions 102 and 105 are conservatively outcome-access tainted.
     evidence:
       - id: fcc_rank_auction113_procedures
         kind: official_protocol
@@ -2285,17 +2293,31 @@ nodes:
         kind: frozen_protocol
         availability: present
         path: papers/proposal/fcc_clock1_random_rank_cascade_dminus1_freeze_2026-08-24.md
+      - id: fcc_rank_dminus1_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/fcc_clock1_random_rank_cascade_dminus1_result_2026-09-05.md
+      - id: fcc_rank_outcome_access_incident
+        kind: formal_audit
+        availability: present
+        path: papers/proposal/fcc_clock1_historical_family_outcome_access_incident_2026-09-05.md
     reusable_assets:
       - official_bid_specific_random_rank
       - within_tie_set_randomization_block
       - applied_bid_first_stage
       - bidder_license_interference_graph
       - cross_auction_replication_family
+      - paired_path_nonidentification_binary_witness
+      - clock1_missing_bid_row_contract
+      - dependent_block_not_independent_unit_guardrail
     reopen_conditions:
-      - Promote beyond candidate only after binding support in at least two auctions, defensible exchangeability, deterministic first-stage replay, a 20-primary-work audit and a source-level FCC clock-1 simulator feasibility contract all pass.
+      - Reopen only with prospectively repeated independent randomizations and resets of the same complete state, or a branchable human or laboratory protocol that observes both paired paths.
+      - Alternatively require a new theorem that identifies or sharply bounds paired path divergence under defensible switching, queue, eligibility and adaptive-response assumptions.
+      - Any simulator route additionally requires two independently governed exact-mechanism lineages and a sealed field confirmation source for the same state, action and response; a new auction number alone is not a trigger.
     forbidden_actions:
-      - Do not inspect or estimate rank effects, propagation, private valuation, welfare or bidder intent during D-minus-1.
-      - Do not implement a simulator, fit a model, run EcoMD, call an agent model or use GPU before a separately frozen T0 passes.
+      - Do not inspect or estimate rank effects, propagation, private valuation, welfare or bidder intent under this closed route.
+      - Do not implement an FCC simulator, fit a response model, run EcoMD, call an agent model or use GPU under this closed formulation.
+      - Do not use Auctions 102 or 105 as untouched confirmation sources in this project.
 
   - id: ai_reasoning_latency_market_law
     node_type: research_subroute
@@ -2623,24 +2645,43 @@ nodes:
       - exact_discrete_clearing_not_everywhere_differentiable
       - conservation_does_not_identify_market_outcomes
       - differentiable_abm_and_stock_flow_prior
-    summary: Exact discrete allocation is discontinuous at bid ties, so it cannot be both rule-exact and everywhere differentiable; conservation alone does not constrain allocation or price and established work covers smoothing and stock-flow consistency.
+    summary: Exact discrete allocation is discontinuous at bid ties, so it cannot be both rule-exact and everywhere differentiable; the expected loss can still be differentiated by established interior-plus-boundary, conditional-Monte-Carlo or stochastic-AD estimators, but no market-specific variance--work separation exists and conservation alone does not constrain allocation or price.
     evidence:
       - id: conservative_integrator_auction_smoothing
         kind: direct_primary_work
         availability: external
         uri: https://proceedings.mlr.press/v202/kohring23a.html
+      - id: conservative_integrator_boundary_surface_gradient
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://papers.nips.cc/paper_files/paper/2018/hash/b096577e264d1ebd6b41041f392eec23-Abstract.html
+      - id: conservative_integrator_potto_parametric_discontinuity
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://doi.org/10.1145/3649843
+      - id: conservative_integrator_eventfbp_weak_derivative
+        kind: direct_application_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2602.12590
     artifacts:
       - id: conservative_integrator_formal_result
         kind: formal_result
         availability: present
         path: papers/proposal/ecomd_post_aprime_reselection_gminus1_result_2026-08-24.md
+      - id: conservative_integrator_boundary_flux_audit
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_hard_matching_boundary_flux_trigger_audit_2026-09-05.md
     reusable_assets:
       - two_bidder_tie_discontinuity
       - transaction_incidence_conservation_test
+      - one_threshold_boundary_flux_conditional_mc_identity
+      - hard_matching_boundary_parent_hierarchy
     reopen_conditions:
-      - Reopen only after replacing everywhere differentiability with a genuinely new nonsmooth guarantee that preserves the exact rule and exceeds generalized-gradient prior art.
+      - Reopen only with an exact reverse-mode estimator for a declared dynamic matching class that preserves the exact rule and proves a non-asymptotic variance--work advantage plus lower bound beyond boundary sampling, conditional Monte Carlo, stochastic AD and generalized-gradient prior art.
     forbidden_actions:
       - Do not claim a smoothed allocation is the exact price-time-priority market rule.
+      - Do not relabel a surface-integral, pivotal-threshold, weak-derivative or probabilistic-branch correction as a new market-gradient primitive.
 
   - id: event_aligned_market_mlmc
     node_type: research_subroute
@@ -10112,7 +10153,1409 @@ nodes:
       - Do not call simulator-native intervention consistency real market validity.
       - Do not treat models, securities, seeds or horizons inside one rule change as independent field interventions.
 
+  - id: coupling_invariant_differentiable_market_counterfactual
+    node_type: research_subroute
+    title: Coupling-invariant counterfactual gradients for differentiable market world models
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_reentry_theorem_audit
+    terminal_gate: market_observable_recoupling_invariant_bound_beyond_counterfactual_equivalence
+    failure_codes:
+      - interventional_equivalence_not_counterfactual_equivalence_direct_prior
+      - learned_scm_counterfactual_nonidentification_direct_prior
+      - pathwise_transport_velocity_nonuniqueness_direct_prior
+      - dynamic_optimal_transport_identification_direct_prior
+      - counterfactual_partial_identification_and_interval_arena_direct_prior
+      - sample_gradient_not_population_response
+      - market_intervention_marginals_absent
+      - common_hard_event_gradient_fixture_absent
+    summary: >-
+      A moving-wrap construction gives two stochastic simulator implementations with identical laws
+      under every continuous intervention but arbitrary, even opposite, fixed-noise sample
+      derivatives. It cleanly separates the derivative of an expected intervention response from an
+      individual cross-world counterfactual and from an invalid hard-boundary pathwise derivative.
+      The result is an interpretation gate, not an unoccupied method: SCM counterfactual equivalence
+      and non-identification, response-type and moment bounds, pathwise transport equations, dynamic
+      optimal transport and interval-honest world-model evaluation directly occupy the generic
+      contributions. Deterministic event graphs add exact log forks but delegate physical dynamics
+      to an external deterministic simulator and provide no common stochastic hard-event gradient or
+      assigned market truth.
+    evidence:
+      - id: coupling_audit_event_graph_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2605.15967
+      - id: coupling_audit_worldkernel_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2606.10934
+      - id: coupling_audit_counterfactual_equivalence_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/1611.06221
+      - id: coupling_audit_learned_scm_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2301.09031
+      - id: coupling_audit_pathwise_transport_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v80/jankowiak18a.html
+      - id: coupling_audit_dynamic_ot_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://proceedings.neurips.cc/paper_files/paper/2025/hash/d938b739ac250e22729cc26e6176f65e-Abstract-Conference.html
+    artifacts:
+      - id: coupling_audit_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_counterfactual_coupling_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - moving_wrap_interventional_equivalence_gradient_witness
+      - population_response_vs_individual_counterfactual_gate
+      - hard_boundary_derivative_interchange_gate
+      - semantic_equivalence_before_fixed_noise_interpretation_gate
+    reopen_conditions:
+      - Reopen only with a non-vacuous market-observable response or counterfactual bound invariant to admissible exogenous-noise recouplings and event-log refinements.
+      - The result must be false for established SCM equivalence, response-type or moment partial identification, pathwise transport and dynamic-optimal-transport parents and must use two same-action executable systems plus untouched assigned confirmation.
+    forbidden_actions:
+      - Do not interpret matched seeds or a simulator's fixed-noise sample derivative as an identified market counterfactual.
+      - Do not relabel an interval score, optimal-transport coupling or event-log adapter as a new EcoMD mechanism.
+      - Do not inspect outcomes, implement the formulation, run simulators, edit EcoMD, SSH or use GPU under this closed subroute.
+
+  - id: noise_frame_optimized_ecomd_gradients
+    node_type: research_subroute
+    title: Noise-frame-invariant or optimized gradients for EcoMD
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_reentry_theorem_and_collision_audit
+    terminal_gate: market_observable_frame_invariant_gradient_beyond_transport_and_coupling_parents
+    failure_codes:
+      - forward_law_depends_on_diffusion_tensor_not_factorization
+      - fixed_noise_derivative_depends_on_orthogonal_frame
+      - pathwise_transport_velocity_nonuniqueness_direct_prior
+      - common_random_path_optimality_direct_prior
+      - same_marginal_correlation_optimization_direct_prior
+      - diffusion_gauge_optimization_direct_prior
+      - market_observable_canonical_noise_frame_absent
+      - fixed_additive_ecomd_noise_weak_native_residual
+    summary: >-
+      A two-coordinate Brownian rotation gives an exact killer: the forward output remains standard
+      Gaussian and its population derivative is zero for every frame, while the fixed-noise
+      pathwise estimator at the reference point is c times phi-prime of W1 times W2 and therefore
+      has arbitrary c-squared variance and frame-dependent sample sign. The result is a useful
+      interpretation gate, not an unoccupied method. Pathwise transport equations already expose
+      nonunique velocity fields; generalized-Langevin common-random-path work proves a coupling
+      optimum; learned same-marginal SDE correlation and diffusion-gauge work explicitly optimize
+      equivalent stochastic implementations. No market observable identifies a physical frame,
+      and EcoMD uses fixed additive iid noise rather than a learned full diffusion root.
+    evidence:
+      - id: noise_frame_pathwise_transport_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v80/jankowiak18a.html
+      - id: noise_frame_gle_common_random_path_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/1609.02739
+      - id: noise_frame_diffusion_gauge_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2512.00987
+      - id: noise_frame_optimal_correlation_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2307.12703
+    artifacts:
+      - id: stochastic_semantics_noise_frame_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_stochastic_semantics_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - orthogonal_noise_frame_gradient_variance_witness
+      - diffusion_tensor_before_noise_factor_gate
+      - population_response_before_matched_noise_gradient_gate
+    reopen_conditions:
+      - Reopen only after a market-observable restriction identifies a unique admissible exogenous-noise frame or a non-vacuous gradient or abstention theorem is invariant to every legal frame.
+      - The result must be false for transport-field, common-random-path, same-marginal correlation and diffusion-gauge optimization parents.
+    forbidden_actions:
+      - Do not interpret one matched-noise pathwise gradient as a physical market response.
+      - Do not relabel a learned coupling or noise square-root parameterization as a new EcoMD mechanism.
+      - Do not implement, run simulators, inspect outcomes, edit EcoMD, SSH or use GPU under this closed subroute.
+
+  - id: nongaussian_bath_refinement_invariant_market_tails
+    node_type: research_subroute
+    title: Refinement-invariant market tails from a non-Gaussian EcoMD bath
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_exact_reduction_and_primary_collision_audit
+    terminal_gate: nontrivial_market_tail_limit_under_timestep_clip_and_clock_refinement
+    failure_codes:
+      - finite_variance_innovation_kurtosis_vanishes_with_timestep
+      - brownian_scaling_invalid_for_alpha_stable_increment
+      - fixed_clipping_destroys_stable_law
+      - clipped_innovation_variance_not_normalized
+      - nongaussian_langevin_higher_moment_distortion_direct_prior
+      - levy_euler_scaling_direct_prior
+      - desired_tail_index_inserted_as_hyperparameter
+      - market_native_continuous_time_mechanism_absent
+    summary: >-
+      In an Euler Ornstein-Uhlenbeck reduction, stationary excess kurtosis equals innovation excess
+      kurtosis times (1-r-squared)/(1+r-squared), hence a Student-t5 bath contributes only six
+      lambda h plus order h-squared and becomes Gaussian under refinement. EcoMD's alpha-stable
+      option instead uses a square-root h Brownian prefactor; without clipping its stationary scale
+      diverges as h to the power one-half minus one-over-alpha for alpha below two. Fixed clipping
+      restores finite variance but destroys stable closure, changes the unnormalized effective
+      diffusion scale and again gives a Gaussian refinement. Direct Langevin-integrator and Levy-
+      Euler work owns these numerical facts. The finding corrects claim scope for past discrete-
+      kernel experiments but supplies neither a new ML method nor a market-native mechanism.
+    evidence:
+      - id: nongaussian_bath_ecomd_integrator_source_kg
+        kind: audited_source_code
+        availability: present
+        path: ecomd/physics/integrator.py
+      - id: nongaussian_bath_langevin_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://link.springer.com/article/10.1007/s10955-023-03104-8
+      - id: nongaussian_bath_levy_euler_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/math/0410118
+    artifacts:
+      - id: stochastic_semantics_nongaussian_bath_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_stochastic_semantics_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - stationary_ar1_excess_kurtosis_identity
+      - alpha_stable_timestep_scaling_kill_test
+      - timestep_clip_clock_refinement_gate
+      - physical_bath_vs_discrete_innovation_claim_boundary
+    reopen_conditions:
+      - Reopen only for a market-native event law with a nonzero tail prediction that survives simultaneous time-step, clip and observation-clock refinement.
+      - The tail exponent or desired distribution must not be inserted through the innovation hyperparameter, and the result must escape the direct non-Gaussian thermostat and Levy-numerics parents.
+    forbidden_actions:
+      - Do not call fixed-step Student-t or clipped stable innovations a refinement-invariant physical bath.
+      - Do not use past trained-Levy checkpoints as continuous-time mechanism evidence without a separately authorized refinement contract.
+      - Do not implement, run simulators, inspect outcomes, edit EcoMD, SSH or use GPU under this closed subroute.
+
+  - id: stochastic_simulator_gradient_semantic_conformance
+    node_type: research_subroute
+    title: Semantic conformance certificates for differentiable stochastic simulators
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_artifact_contract_and_primary_collision_audit
+    terminal_gate: irreducible_semantic_certificate_beyond_analytic_unbiased_and_vjp_checks
+    failure_codes:
+      - matched_two_system_reproducibility_fixture_absent
+      - observation_clock_and_stopping_semantics_not_frozen
+      - complete_common_rng_replay_absent
+      - forward_equivalent_extension_invariance_absent
+      - stochastic_ad_expected_gradient_direct_prior
+      - probabilistic_program_soundness_direct_prior
+      - ctmc_estimator_comparison_direct_prior
+      - cross_solver_vjp_benchmark_direct_prior
+      - irreducible_certificate_or_power_theorem_absent
+      - fixed_step_ecomd_ctmc_semantic_mismatch
+      - market_native_bridge_absent
+    summary: >-
+      Three independent public code lineages now implement exact hard CTMC events with surrogate or
+      comparative gradients, and analytic CME or thermodynamic references exist. They do not form
+      one immutable conformance fixture: codeExactDL is unlicensed and linearly interpolates cadlag
+      counts in one task; stochastix does not export a complete random tape and its paper fixture has
+      loose dependencies; DifferentiableGillespie is untagged and declares MIT only in package
+      metadata. Their clocks, cutoffs, observables and replay state differ. More importantly,
+      StochasticAD and ADEV occupy sound or unbiased expected-value differentiation, Burger et al.
+      already compare CTMC estimators against analytic event-count and physical-time truth, and
+      Mosaic occupies common forward/VJP/finite-difference/cost benchmarking. The remaining work is
+      useful conformance engineering without a new certificate, theorem or market-preserving EcoMD
+      bridge.
+    evidence:
+      - id: stochastic_semantics_vilar_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://doi.org/10.1002/advs.76297
+      - id: stochastic_semantics_codeexact_repository_kg
+        kind: audited_official_repository
+        availability: external
+        uri: https://github.com/CTMCDL/codeExactDL/tree/f191cd435ade065ff4356d8721ac1cac0f992a83
+      - id: stochastic_semantics_stochastix_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2601.14183
+      - id: stochastic_semantics_stochastix_repository_kg
+        kind: audited_official_repository
+        availability: external
+        uri: https://github.com/fmottes/stochastix/tree/2d83fe64ac1bff9d80367338e3b4fc222357fb66
+      - id: stochastic_semantics_burger_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2604.02121
+      - id: stochastic_semantics_burger_repository_kg
+        kind: audited_official_repository
+        availability: external
+        uri: https://github.com/gerland-group/DifferentiableGillespie/tree/a3ee28b3081f42cef7f0d0f85c32d8d4c67ec556
+      - id: stochastic_semantics_stochastic_ad_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://proceedings.neurips.cc/paper_files/paper/2022/hash/43d8e5fc816c692f342493331d5e98fc-Abstract-Conference.html
+      - id: stochastic_semantics_adev_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://doi.org/10.1145/3571198
+      - id: stochastic_semantics_mosaic_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2606.27895
+    artifacts:
+      - id: stochastic_semantics_conformance_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_stochastic_semantics_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - cadlag_observation_clock_conformance_gate
+      - waiting_time_gradient_term_gate
+      - complete_event_random_tape_contract
+      - analytic_unbiased_finite_difference_reference_hierarchy
+      - codeexact_linear_interpolation_counterexample
+    reopen_conditions:
+      - Reopen only for a representation-invariant semantic certificate with a nontrivial power or sample-complexity theorem that analytic CME, unbiased stochastic AD, common-random finite differences and VJP benchmarking cannot replace.
+      - Require two licensed, immutable, independently maintained fixtures with the same cadlag observable, clock, stopping rule, perturbation and complete random tape, plus a market-native action and response preserved by EcoMD.
+    forbidden_actions:
+      - Do not call exact event sampling exact observation-time loss semantics.
+      - Do not treat another benchmark row or gradient check as an ICLR method contribution.
+      - Do not port CTMC machinery into fixed-step EcoMD and claim the original scientific object is preserved.
+      - Do not execute public packages, implement the fixture, run simulators, inspect outcomes, edit EcoMD, SSH or use GPU under this closed subroute.
+
+  - id: slow_memory_random_batch_invariant_correction
+    node_type: research_subroute
+    title: Slow-memory-uniform random-batch correction for EcoMD
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_reentry_reduction_and_primary_collision_audit
+    terminal_gate: irreducible_uniform_in_memory_invariant_or_rare_event_correction
+    failure_codes:
+      - finite_memory_restores_augmented_markov_state
+      - slow_limit_is_spectral_gap_degeneration
+      - random_batch_long_time_and_phase_transition_direct_prior
+      - force_variance_artificial_heating_correction_direct_prior
+      - random_batch_neural_interaction_direct_prior
+      - reshuffling_and_stochastic_gradient_thermostat_direct_prior
+      - uniform_slow_memory_correction_or_bound_absent
+      - two_full_interaction_truth_systems_absent
+      - market_native_residual_absent
+    summary: >-
+      Adding finite-dimensional Hawkes, GRU or other slow state to the particle state restores an
+      augmented Markov process. Slow relaxation can amplify batch noise by closing the augmented
+      spectral gap, but this is ordinary poor mixing rather than a new non-Markovian object.
+      Existing RBM work already covers long-time laws and phase shifts, while variance-reduced
+      random-batch Langevin dynamics estimates force variance to correct artificial heating and
+      random-batch attention occupies the generic learned-interaction scaling story. Random-
+      reshuffling SGLD and stochastic-gradient or covariance-controlled thermostats also occupy
+      temporal-policy and auxiliary-state corrections for structured batch noise. No estimator or
+      invariant-law or rare-event theorem uniform in the slow-memory limit was supplied.
+    evidence:
+      - id: slow_rbm_long_time_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2202.04952
+      - id: slow_rbm_variance_reduced_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2411.01762
+      - id: slow_rbm_random_attention_primary_kg
+        kind: adjacent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2511.06044
+      - id: slow_rbm_random_reshuffling_primary_kg
+        kind: adjacent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2501.16055
+      - id: slow_rbm_sg_thermostat_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://proceedings.neurips.cc/paper_files/paper/2014/hash/b610047c85e73cb7ec04fd36ec503f93-Abstract.html
+      - id: slow_rbm_covariance_thermostat_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://proceedings.neurips.cc/paper/2015/hash/6f4922f45568161a8cdf4ad2299f6d23-Abstract.html
+    artifacts:
+      - id: scale_tail_truth_slow_rbm_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_scale_tail_truth_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - finite_memory_augmented_markov_gate
+      - slow_spectral_gap_before_new_memory_physics_gate
+      - variance_reduced_rbm_parent_check
+    reopen_conditions:
+      - Reopen only for an explicit correction and non-vacuous invariant-law or rare-event theorem uniform in a declared slow-memory limit and false for augmented-state mixing, variance correction, momentum, reshuffling, adaptive-thermostat and control-variate parents.
+      - Require full-interaction analytic or gold-standard truth on two independent systems before an EcoMD application.
+    forbidden_actions:
+      - Do not call finite-dimensional recurrent state fundamentally non-Markovian after omitting that state from the analysis.
+      - Do not relabel artificial-heating correction, random reshuffling, adaptive thermostats or neural random batching as a new EcoMD method.
+      - Do not implement, execute EcoMD, inspect outcomes, SSH or use GPU under this closed subroute.
+
+  - id: fluctuation_aware_population_size_transfer
+    node_type: research_subroute
+    title: Fluctuation-aware small-to-large population transfer for EcoMD
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_reentry_native_control_and_primary_collision_audit
+    terminal_gate: market_native_refinement_invariant_population_response_beyond_mesoscopic_and_rg_parents
+    failure_codes:
+      - mesoscopic_sde_learning_direct_prior
+      - neural_renormalization_small_to_large_direct_prior
+      - mean_field_graphon_and_graph_dynamics_direct_prior
+      - latent_particle_count_not_market_native
+      - agent_split_refinement_changes_apparent_scaling
+      - irreducible_dynamic_transfer_theorem_absent
+      - external_population_response_truth_absent
+      - learned_hft_proxy_not_participant_truth
+      - overlapping_execution_roles_not_persistent_population_units
+      - deterministic_proxy_no_increment_after_public_inputs
+    summary: >-
+      Finite-population stochastic closure and small-to-large learned finite-size scaling already
+      have direct parents: Nabeel et al. learn mesoscopic drift and multiplicative diffusion for
+      stochastic pairwise flocks, and a 2026 neural renormalization flow recovers critical
+      fluctuations when extrapolating percolation from small to large lattices. EcoMD has a more
+      basic failure: its latent particle count is an analyst-selected resolution. Splitting one
+      latent agent into weighted replicas can change N and pair counts while preserving aggregate
+      market paths. A new Nasdaq-labelled HFT study does not repair this: its public object is a
+      deterministic stock-day prediction from public aggregates, and its liquidity-supply and
+      liquidity-demand shares overlap on HFT--HFT trades rather than defining persistent population
+      units. No economic-unit invariant response or new dynamic transfer theorem remains.
+    evidence:
+      - id: population_transfer_nabeel_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2304.10071
+      - id: population_transfer_neural_rg_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2608.26764
+      - id: population_transfer_hft_proxy_primary_kg
+        kind: truth_asset_trigger_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2608.00858
+    artifacts:
+      - id: scale_tail_truth_population_transfer_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_scale_tail_truth_reentry_audit_2026-09-04.md
+      - id: hft_proxy_truth_asset_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_hft_proxy_truth_asset_trigger_audit_2026-09-05.md
+    reusable_assets:
+      - latent_agent_split_refinement_witness
+      - market_native_population_unit_gate
+      - mesoscopic_and_neural_rg_parent_check
+      - deterministic_derived_proxy_no_increment_lemma
+      - persistent_participant_status_vs_execution_role_gate
+    reopen_conditions:
+      - Reopen only after an observable economic population unit yields an intervention response invariant to splitting, density, clock and observation-map refinement; a predicted stock-day activity share is insufficient unless its participant-resolved observation kernel is independently identified.
+      - Alternatively require a generic finite-size theorem false for mesoscopic SDE, mean-field, graphon and learned-renormalization parents and validation on two independent dynamic systems.
+    forbidden_actions:
+      - Do not interpret EcoMD latent particle count as the number of real traders without an observation map.
+      - Do not use predicted liquidity-supplying and liquidity-demanding HFT shares as persistent EcoMD type labels or as independent validation after matching their public input variables.
+      - Do not combine a mesoscopic SDE with a neural renormalization module and call module composition irreducible novelty.
+      - Do not implement, run finite-size sweeps, inspect outcomes, SSH or use GPU under this closed subroute.
+
+  - id: tail_index_cardinality_pooling_for_particle_simulators
+    node_type: research_subroute
+    title: Tail-index-aware cardinality pooling for particle-simulator size transfer
+    status: failed_closed
+    opened_at: "2026-09-05"
+    closed_at: "2026-09-05"
+    phase: D_minus_3_reentry_repository_theorem_and_primary_collision_audit
+    terminal_gate: dependent_tail_process_projective_transfer_beyond_stable_normalization_and_graph_pooling_parents
+    failure_codes:
+      - production_ecomd_not_mace_lite
+      - raw_excess_demand_tail_flat_across_n
+      - downstream_return_stage_confounding_unresolved
+      - marginal_tail_index_does_not_identify_aggregate_scaling
+      - scalar_alpha_normalization_is_generalized_stable_limit
+      - dependent_clusters_change_stable_limit
+      - learnable_pooling_and_degree_scaling_direct_priors
+      - memory_heavy_tail_particle_gnn_direct_prior
+      - latent_particle_count_not_market_native
+      - tail_process_operator_and_theorem_absent
+      - two_system_dynamic_truth_contract_absent
+    summary: >-
+      The motivating EcoMD result was produced by stochastic pair sampling, not MACE-lite, and its
+      raw excess-demand tail index was nearly flat from N=100 to 30000 while only the downstream
+      finite-sample return statistic changed. More fundamentally, identical regularly varying node
+      marginals require incompatible sum normalizations under independent versus common-shock
+      dependence, so a scalar marginal-tail-index pooling exponent cannot preserve both laws.
+      Stable-limit cluster theory, graph size-generalization, trainable Lp-like pooling, PNA degree
+      scalers and a memory GNN recovering intermittent particle tails occupy the easy components.
+      EcoMD latent N also fails weighted agent-split invariance. No projective tail-process operator,
+      irreducible dynamic transfer theorem or two-system truth contract exists.
+    evidence:
+      - id: tail_pooling_price_formation_source_kg
+        kind: implementation_source
+        availability: present
+        path: ecomd/models/price_formation.py
+      - id: tail_pooling_exp125_result_kg
+        kind: historical_empirical_result
+        availability: present
+        path: experiments/125_rootcause_controllability/return_self_averaging.json
+      - id: tail_pooling_graph_size_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v139/yehudai21a.html
+      - id: tail_pooling_gnp_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2106.06210
+      - id: tail_pooling_pna_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://papers.neurips.cc/paper_files/paper/2020/hash/99cad265a1768cc2dd013f0e740300ae-Abstract.html
+      - id: tail_pooling_dependent_stable_limit_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/1001.1345
+      - id: tail_pooling_mori_zwanzig_gnn_primary_kg
+        kind: adjacent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2606.14918
+    artifacts:
+      - id: tail_pooling_reentry_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_tail_cardinality_pooling_reentry_audit_2026-09-05.md
+    reusable_assets:
+      - independent_vs_common_shock_scaling_witness
+      - aggregation_observation_noise_stage_audit
+      - marginal_tail_index_insufficiency_gate
+      - tail_process_projective_reentry_contract
+    reopen_conditions:
+      - Reopen only for an operator that identifies a spatial-temporal tail process or cluster law, proves dependent aggregate path-law transfer beyond scalar stable normalization and existing learned pooling, and is projectively invariant under weighted unit splitting.
+      - Require frozen analytical or gold-standard rare-event truth on two independent dynamic systems before an EcoMD application.
+      - EcoMD additionally requires an observed economic population unit and observation map that make the intervention invariant to latent-agent refinement.
+    forbidden_actions:
+      - Do not attribute Experiment 125 return-tail scaling to MACE or mean pooling; the producing model and raw-flow result contradict that account.
+      - Do not relabel generalized stable normalization, GNP or PNA degree scaling as a new tail-preserving simulator method.
+      - Do not implement an EVT pooling layer, execute EcoMD, inspect new outcomes, SSH or use GPU under this closed subroute.
+
+  - id: tail_functional_differentiable_simulator_calibration
+    node_type: research_subroute
+    title: Differentiable extreme-tail functional calibration for EcoMD
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_reentry_estimator_and_primary_collision_audit
+    terminal_gate: calibrated_dependent_path_tail_gradient_through_support_changes
+    failure_codes:
+      - fixed_topk_hill_autodiff_is_elementary
+      - rank_threshold_and_support_boundary_unresolved
+      - dependent_path_threshold_bias_unresolved
+      - evt_heavy_tail_generator_direct_prior
+      - weighted_tail_score_direct_prior
+      - cvar_wasserstein_gradient_flow_direct_prior
+      - differentiable_inexact_simulator_calibration_direct_prior
+      - historical_hill_burnin_contamination
+      - new_bias_variance_cost_theorem_absent
+    summary: >-
+      The Hill statistic is an ordinary smooth composition while top-k membership is fixed; its
+      difficult points are rank and threshold crossings and parameter-dependent rare-event support.
+      Differentiating the observed top-k set does not repair event scarcity, serial dependence or
+      threshold bias. Pareto GAN, tail-weighted calibration, CVaR-penalized Wasserstein flows and
+      kernel-score calibration of inexact stochastic simulators occupy the obvious method space.
+      EcoMD's historical Hill evaluator is also burn-in contaminated. No calibrated tail-gradient
+      estimator with a new dependent-path bias, variance and cost theorem was supplied.
+    evidence:
+      - id: tail_calibration_kernel_score_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v258/su25a.html
+      - id: tail_calibration_pareto_gan_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v139/huster21a.html
+      - id: tail_calibration_weighted_score_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2506.13687
+      - id: tail_calibration_cvar_gpa_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2608.11544
+    artifacts:
+      - id: scale_tail_truth_tail_calibration_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_scale_tail_truth_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - fixed_topk_smoothness_before_tail_gradient_novelty_gate
+      - rare_event_support_before_pathwise_tail_gradient_gate
+      - tail_calibration_parent_hierarchy
+    reopen_conditions:
+      - Reopen only for a calibrated tail-gradient estimator through rare-event support, rank and threshold changes on dependent paths, with new bias, variance and cost theory against EVT, weighted-score, CVaR and kernel-score parents.
+      - Require a clean evaluator, frozen burn-in and untouched confirmation before any EcoMD tail claim.
+    forbidden_actions:
+      - Do not call autodiff through a locally fixed top-k operator a new estimator.
+      - Do not optimize the historical burn-in-contaminated Hill target or use soft sorting as a substitute for rare-event support.
+      - Do not implement, execute EcoMD, inspect outcomes, SSH or use GPU under this closed subroute.
+
+  - id: dark_pool_laboratory_simulator_validity_bridge
+    node_type: research_subroute
+    title: Laboratory dark-pool and multi-site truth bridge for EcoMD validity
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_1_public_schema_and_route_duplicate_audit
+    terminal_gate: assigned_common_action_replay_complete_untouched_independent_confirmation
+    failure_codes:
+      - halim_market_treatment_assignment_unverified
+      - source_treatments_already_published
+      - untouched_whole_source_confirmation_absent
+      - independent_same_dark_mechanism_replication_absent
+      - ecomd_dark_pool_action_semantics_absent
+      - huber_replication_is_prior_route_duplicate
+      - huber_behavioral_treatment_not_common_market_action
+      - huber_replication_market_semantics_differ
+      - replication_reuse_contract_incomplete
+    summary: >-
+      Halim et al. provide a useful CC-BY archive with raw order, transaction and lifecycle tables,
+      programs and instructions for sixteen lit-only or lit-plus-dark laboratory sessions, but the
+      public contract does not document session-to-cell random assignment, a sealed confirmation
+      source or an independent exact midpoint-pool replication. Huber et al. provide 166 powered,
+      preregistered and within-session randomized markets, but this source is the already closed KLS
+      replication route: its psychological treatments are not exchange actions, order semantics
+      differ, reuse rights were incomplete and outcomes are published. The sources cannot be pooled
+      into a common-action EcoMD validity benchmark.
+    evidence:
+      - id: dark_bridge_halim_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://doi.org/10.1093/ej/ueaf007
+      - id: dark_bridge_halim_archive_kg
+        kind: official_data_contract
+        availability: external
+        uri: https://zenodo.org/records/14671457
+      - id: dark_bridge_huber_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://www2.uibk.ac.at/downloads/c4041030/wpaper/2024-12.pdf
+    artifacts:
+      - id: scale_tail_truth_dark_bridge_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_scale_tail_truth_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - raw_laboratory_order_lifecycle_schema
+      - multi_site_not_common_action_gate
+      - route_duplicate_before_archive_download_gate
+      - published_replication_not_untouched_confirmation_gate
+    reopen_conditions:
+      - Reopen only with a documented assigned legal market rule, complete event and replay state, explicit reuse rights, a whole-source untouched confirmation partition and an independently governed exact-semantics replication.
+      - Require an EcoMD action map that implements the same rule and response rather than encoding a behavioral treatment as an arbitrary latent parameter.
+    forbidden_actions:
+      - Do not pool psychological, transparency and dark-pool treatments as replications of one action.
+      - Do not reopen the Huber KLS pair from its sample size or call published outcomes sealed confirmation.
+      - Do not open laboratory outcome rows, implement an adapter, execute EcoMD, SSH or use GPU under this closed subroute.
+
+  - id: stylized_fact_attainable_set_certificate
+    node_type: research_subroute
+    title: Global attainable-set certificate for differentiable simulator summaries
+    status: failed_closed
+    opened_at: "2026-09-04"
+    closed_at: "2026-09-04"
+    phase: D_minus_3_reentry_exact_reduction_and_primary_collision_audit
+    terminal_gate: global_nonconvex_finite_simulation_reachability_certificate_with_coverage
+    failure_codes:
+      - support_function_certifies_only_convex_hull_exclusion
+      - nonconvex_simulator_image_not_decided
+      - local_jacobian_not_global_reachability
+      - numerical_maximization_gives_lower_not_upper_support_bound
+      - robust_simulator_misspecification_direct_prior
+      - incompatible_summary_npe_direct_prior
+      - finite_simulation_coverage_absent
+      - matching_hardness_boundary_absent
+    summary: >-
+      A separating vector whose target projection exceeds the exact simulator support function
+      certifies exclusion from the closed convex hull of attainable summary means. It cannot decide
+      a target inside that convex hull but outside the nonconvex simulator image. Local Jacobians
+      give only tangent information, while numerical maximization lower-bounds rather than upper-
+      bounds the support function and therefore cannot certify impossibility. Robust NPE and a 2026
+      preconditioned robust NPE directly address simulator misspecification and incompatible
+      summaries. The convex witness is a useful pretraining diagnostic but not a global method.
+    evidence:
+      - id: attainable_set_rnpe_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.neurips.cc/paper_files/paper/2022/hash/db0eac6747e3631eb91095cd76065611-Abstract-Conference.html
+      - id: attainable_set_preconditioned_rnpe_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2602.18004
+      - id: attainable_set_kernel_score_primary_kg
+        kind: adjacent_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v258/su25a.html
+    artifacts:
+      - id: scale_tail_truth_attainable_set_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_scale_tail_truth_reentry_audit_2026-09-04.md
+    reusable_assets:
+      - convex_support_function_exclusion_certificate
+      - numerical_support_bound_direction_gate
+      - local_tangent_vs_global_attainability_gate
+    reopen_conditions:
+      - Reopen only for a computable global certificate with finite-simulation coverage over a declared nonconvex stochastic-simulator class and a matching hardness or incompleteness boundary.
+      - Validate the certificate on at least two independent systems before applying it to EcoMD.
+    forbidden_actions:
+      - Do not call a local Jacobian rank or failed optimizer run a global impossibility certificate.
+      - Do not use a numerically attained support value as an upper bound without separate verification.
+      - Do not implement a benchmark, execute EcoMD, inspect outcomes, SSH or use GPU under this closed subroute.
+
+  - id: zumbach_orientation_safe_path_evaluation
+    node_type: research_subroute
+    title: Orientation-safe Zumbach and time-reversal evaluation for differentiable simulators
+    status: failed_closed
+    opened_at: "2026-09-05"
+    closed_at: "2026-09-05"
+    phase: D_minus_3_reentry_exact_null_and_primary_collision_audit
+    terminal_gate: calibrated_dependent_path_time_reversal_test_beyond_existing_estimators
+    failure_codes:
+      - canonical_zumbach_population_null_false
+      - unequal_lag_geometry_creates_negative_bias
+      - iid_only_null_test_misses_volatility_memory_failure
+      - historical_zumbach_floor_non_evidentiary
+      - explicit_ecomd_memory_defeats_reversible_architecture_story
+      - standard_role_swapped_definition_direct_prior
+      - varma_arrow_identification_direct_prior
+      - direct_trajectory_kl_finite_sample_parent
+      - new_type1_coverage_or_power_theorem_absent
+      - two_system_validation_absent
+    summary: >-
+      The canonical evaluator and differentiable loss hold a coarse volatility window in the past
+      and compare it with fine volatility at unequal ordinary lag distances. For every stationary
+      reversible squared-return process with a non-increasing positive autocovariance, this
+      population functional is non-positive and is strictly negative under ordinary volatility
+      memory. The gap removes sample overlap but not orientation bias, so historical wrong-sign
+      floors and the Zumbach component of the Pareto frontier are non-evidentiary. The standard
+      role-swapped Zumbach covariance, VARMA arrow identification and finite-sample direct
+      trajectory-KL estimation occupy the obvious correction and general method. No new calibrated
+      dependent-path theorem or two-system method remains.
+    evidence:
+      - id: zumbach_orientation_canonical_source_kg
+        kind: implementation_source
+        availability: present
+        path: ecomd/eval/stylized_facts.py
+      - id: zumbach_orientation_differentiable_source_kg
+        kind: implementation_source
+        availability: present
+        path: ecomd/training/losses.py
+      - id: zumbach_orientation_original_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/0708.4022
+      - id: zumbach_orientation_rough_heston_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/1809.02098
+      - id: zumbach_orientation_varma_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v48/bauer16.html
+      - id: zumbach_orientation_direct_kl_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2412.19772
+      - id: zumbach_orientation_neep_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2003.04166
+      - id: zumbach_orientation_kernel_dynamics_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2004.11098
+    artifacts:
+      - id: zumbach_orientation_reentry_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_zumbach_orientation_reentry_audit_2026-09-05.md
+    reusable_assets:
+      - unequal_lag_time_reversal_counterexample
+      - reversible_decaying_covariance_null_gate
+      - iid_null_is_insufficient_for_memory_metric_guardrail
+      - zumbach_evidence_quarantine
+    reopen_conditions:
+      - Reopen only for an exactly time-reversal-antisymmetric estimator with finite-sample type-I error or confidence coverage for one dependent trajectory and explicit boundary and overlap treatment.
+      - Require a theorem or lower-bound separation beyond trajectory KL, classifier two-sample tests, VARMA arrow identification, signature or characteristic path kernels and learned entropy-production estimators.
+      - Validate at equal sample and compute budgets on two independent non-EcoMD systems before freezing an untouched market confirmation partition.
+    forbidden_actions:
+      - Do not interpret the historical canonical Zumbach sign or pass rate as evidence about EcoMD architecture or mechanism.
+      - Do not count a standard role swap or elementary path antisymmetrization as a new method.
+      - Do not rescore stored outcomes, modify the metric, retrain EcoMD, inspect new outcomes, SSH or use GPU without a separate current machine decision.
+
+  - id: price_clock_refinement_consistency_nonlinear_impact
+    node_type: research_subroute
+    title: Price-clock refinement consistency for nonlinear differentiable market impact
+    status: failed_closed
+    opened_at: "2026-09-05"
+    closed_at: "2026-09-05"
+    phase: D_minus_3_reentry_exact_reduction_and_primary_collision_audit
+    terminal_gate: irreducible_stateful_resolution_equivariant_impact_method
+    failure_codes:
+      - naive_refinement_conflates_solver_and_price_clocks
+      - fixed_per_step_price_noise_prevents_tightness
+      - signed_power_offset_is_discontinuous_at_zero
+      - concave_memoryless_impact_variance_diverges_under_substep_pricing
+      - exact_memoryless_aggregation_consistency_forces_linearity
+      - legitimate_fixed_bucket_refinement_already_expressible
+      - rescaled_iid_limit_gaussianizes_tail_mechanism
+      - realized_power_variation_direct_parent
+      - learned_simulator_semigroup_diagnostic_direct_parent
+      - continuous_path_model_direct_parents
+      - stateful_nonlinear_market_impact_direct_parents
+      - two_system_new_method_absent
+    summary: >-
+      In an exact zero-force Gaussian EcoMD subsystem, aggregate displacement over a latent step h
+      is proportional to square-root h. Treating every shrinking latent step as a price step while
+      holding price noise fixed makes fixed-horizon drift and variance diverge as one-over-h. With
+      price noise removed, the implemented signed-power offset is discontinuous at zero and again
+      produces one-over-h growth; removing the offset leaves h-to-the-delta-minus-one variance for
+      concave delta. Exact memoryless aggregation consistency forces linearity, while the
+      variance-preserving rescaling has an ordinary Gaussian iid limit. EcoMD already supports the
+      lawful alternative of fixing the price bucket and refining dt while increasing
+      inner_steps_per_price. Power-variation theory, continuous neural path models, numerical-
+      integration analysis, semigroup diagnostics and stateful nonlinear-impact theories occupy
+      the obvious method. The result is a unit and convergence guardrail, not an ICLR route.
+    evidence:
+      - id: price_clock_price_formation_source_kg
+        kind: implementation_source
+        availability: present
+        path: ecomd/models/price_formation.py
+      - id: price_clock_integrator_source_kg
+        kind: implementation_source
+        availability: present
+        path: ecomd/physics/integrator.py
+      - id: price_clock_orchestrator_source_kg
+        kind: implementation_source
+        availability: present
+        path: ecomd/models/ecomd.py
+      - id: price_clock_power_variation_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://doi.org/10.1016/j.spa.2007.05.005
+      - id: price_clock_semigroup_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2605.26324
+      - id: price_clock_neural_sde_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v139/kidger21b.html
+      - id: price_clock_neural_rde_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v139/morrill21b.html
+      - id: price_clock_process_diffusion_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2211.02590
+      - id: price_clock_neural_ode_integration_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v162/zhu22f.html
+      - id: price_clock_llob_primary_kg
+        kind: exact_market_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/1412.0141
+      - id: price_clock_sato_primary_kg
+        kind: direct_market_parent_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2502.17906
+    artifacts:
+      - id: price_clock_refinement_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_price_clock_refinement_reentry_audit_2026-09-05.md
+    reusable_assets:
+      - zero_force_price_refinement_non_tightness_witness
+      - signed_power_zero_continuity_gate
+      - fixed_clearing_bucket_joint_refinement_contract
+      - memoryless_aggregation_linearity_gate
+      - solver_clock_vs_price_clock_claim_boundary
+    reopen_conditions:
+      - Reopen only for a stateful resolution-equivariant impact operator with a non-vacuous theorem beyond CDE or RDE path modeling, standard weak and power-variation limits and semigroup-error diagnostics.
+      - Freeze solver step, clearing clock, aggregation rule and price units jointly, and require a market-native prediction not inserted through parameter rescaling.
+      - Require analytic or gold-standard truth on two independent non-EcoMD dynamic systems, untouched market confirmation and a new current machine decision.
+    forbidden_actions:
+      - Do not vary dt alone and describe the result as refinement of one physical market process.
+      - Do not apply concave impact at every refined solver substep and compare it with fixed-bucket impact as the same estimand.
+      - Do not present a continuous odd smoothing patch, clock-aware config or ordinary convergence test as an ICLR method.
+      - Do not modify EcoMD, execute a simulator, inspect outcomes, SSH or use GPU under this closed subroute.
+
+  - id: measure_correct_hard_projection_stochastic_simulators
+    node_type: research_subroute
+    title: Measure-correct hard projection for stochastic market simulators
+    status: failed_closed
+    opened_at: "2026-09-05"
+    closed_at: "2026-09-05"
+    phase: D_minus_3_reentry_exact_reduction_and_primary_collision_audit
+    terminal_gate: nontrivial_native_constraint_and_irreducible_measure_correct_stochastic_method
+    failure_codes:
+      - relevant_projection_is_auxiliary_not_ecomd_core
+      - native_cash_inventory_constraints_are_affine
+      - coarea_fixman_factor_constant
+      - tangent_projector_curvature_zero
+      - constrained_langevin_invariant_measure_parent
+      - affine_nonreversible_degenerate_diffusion_direct_parent
+      - hard_physics_projection_coarea_correction_direct_parent
+      - conditioning_reference_measure_not_intrinsic
+      - native_nonlinear_equality_escape_absent
+      - two_system_new_method_truth_absent
+    summary: >-
+      Hard projection can change the law of a stochastic process under nonlinear constraints: the
+      small-residual-noise conditional measure carries a co-area Gram-determinant factor and a
+      state-dependent tangent projector carries geometric drift. Those are established constrained-
+      Langevin objects, and a current ML paper directly proposes the co-area correction. The
+      repository's relevant market projection is instead an auxiliary surrogate operation enforcing
+      linear cash-plus-fee and inventory sums by blockwise mean removal. Its Jacobian and projector
+      are constant, so the normalized Fixman factor and curvature correction are trivial. The
+      remaining affine nonreversible degenerate-noise problem is itself a direct 2026 parent.
+    evidence:
+      - id: stochastic_projection_market_source_kg
+        kind: implementation_source
+        availability: present
+        path: scripts/run_constraint_iclr_market.py
+      - id: stochastic_projection_lrs_primary_kg
+        kind: exact_parent_primary_work
+        availability: external
+        uri: https://doi.org/10.1090/S0025-5718-2012-02594-4
+      - id: stochastic_projection_affine_primary_kg
+        kind: exact_direct_primary_work
+        availability: external
+        uri: https://doi.org/10.1137/25M175843X
+      - id: stochastic_projection_coarea_primary_kg
+        kind: exact_direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2606.04804
+    artifacts:
+      - id: stochastic_projection_measure_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_stochastic_hard_projection_measure_audit_2026-09-05.md
+    reusable_assets:
+      - affine_constraint_fixman_null_lemma
+      - native_constraint_jacobian_preflight
+      - conditioning_reference_measure_semantics_gate
+      - stochastic_projection_parent_hierarchy
+    reopen_conditions:
+      - Reopen only for a genuinely market-native nonlinear equality constraint with a nonconstant Jacobian Gram determinant and an independently justified reference measure.
+      - Require a theorem or algorithm false for existing constrained-Langevin, affine strong-confinement, manifold-diffusion and co-area correction parents, with a matching boundary.
+      - Validate against analytic or gold-standard truth on two independent non-EcoMD stochastic systems before a market application and obtain a new current machine decision.
+    forbidden_actions:
+      - Do not manufacture nonlinear geometry by substituting mark-to-market wealth for an exact conservation law.
+      - Do not relabel a constant affine projection, standard Fixman factor or constrained-SDE integrator as an ICLR method.
+      - Do not implement a stochastic projection layer, execute EcoMD, inspect outcomes, SSH or use GPU under this closed subroute.
+
+  - id: selective_participant_identity_attribution
+    node_type: research_subroute
+    title: Selective participant identity attribution for EcoMD population truth
+    status: failed_closed
+    opened_at: "2026-09-05"
+    closed_at: "2026-09-05"
+    phase: D_minus_3_truth_asset_source_contract_and_identification_audit
+    terminal_gate: stable_economic_actor_complete_action_lifecycle_and_identified_attribution_response
+    failure_codes:
+      - mendeley_exchange_period_and_source_chain_unnamed
+      - mendeley_identifier_hierarchy_unverified
+      - nasdaq_attribution_participant_selected
+      - anonymous_hidden_and_rejected_actor_state_absent
+      - supplemental_mpid_split_noninvariance
+      - broker_mpid_client_merge_noninvariance
+      - selective_attribution_mnar_nonidentification
+      - public_rollout_before_after_panel_absent
+      - same_operator_venues_not_independent
+      - deterministic_order_cluster_no_increment
+      - participant_ecology_and_signaling_direct_priors
+      - mnar_learning_direct_parents
+      - current_ecomd_actor_observation_map_absent
+    summary: >-
+      The Mendeley member/client/trader release fails before row access because its official record
+      names no exchange, market, instruments, dates, acquisition channel, ID hierarchy or
+      anonymization contract, and its archive contains only two CSV files without documentation.
+      Nasdaq ITCH is authoritative for accepted displayed-order lifecycles and offers public sample
+      logs, but MPID attribution is a participant-selected order attribute, one member may use
+      supplemental MPIDs, one broker can aggregate customers, and anonymous, hidden, aggressive,
+      rejected, inventory and off-venue actor state remain incomplete. Arbitrary allocations of
+      anonymous orders to hidden actors induce the same public law and opposite participant
+      responses, which is ordinary MNAR nonidentification. Observable order clusters add no identity
+      information after their construction features. Market-member networks, public identity
+      prediction, behavioral order clusters and identity signaling or collusion are already direct
+      contributions. No stable economic population unit, assigned response or irreducible ICLR
+      method remains.
+    evidence:
+      - id: selective_identity_mendeley_dataset_kg
+        kind: truth_asset_candidate
+        availability: external
+        uri: https://data.mendeley.com/datasets/fsn6fn7ht8/1
+      - id: selective_identity_itch_spec_kg
+        kind: official_schema
+        availability: external
+        uri: https://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/NQTVITCHSpecification.pdf
+      - id: selective_identity_nasdaq_rule_kg
+        kind: official_protocol
+        availability: external
+        uri: https://listingcenter.nasdaq.com/rulebook/Nasdaq/rules/Nasdaq%20Equity%204/block/EQUALS/
+      - id: selective_identity_nasdaq_samples_kg
+        kind: official_archive
+        availability: external
+        uri: https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/
+      - id: selective_identity_bx_psx_rollout_kg
+        kind: official_protocol
+        availability: external
+        uri: https://www.nasdaqtrader.com/TraderNews.aspx?id=dtn2014-34
+      - id: selective_identity_clusterlob_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://arxiv.org/abs/2504.20349
+      - id: selective_identity_networked_markets_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://doi.org/10.1073/pnas.2015573118
+      - id: selective_identity_signaling_primary_kg
+        kind: exact_direct_primary_work
+        availability: external
+        uri: https://doi.org/10.2139/ssrn.5080700
+      - id: selective_identity_mnar_primary_kg
+        kind: direct_method_primary_work
+        availability: external
+        uri: https://proceedings.mlr.press/v202/sportisse23a.html
+    artifacts:
+      - id: selective_identity_truth_asset_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_selective_participant_identity_truth_asset_trigger_audit_2026-09-05.md
+    reusable_assets:
+      - selective_attribution_complete_data_twin
+      - supplemental_mpid_split_and_broker_merge_gate
+      - deterministic_behavior_cluster_no_increment_lemma
+      - participant_id_source_contract_preflight
+      - displayed_lifecycle_vs_actor_truth_boundary
+    reopen_conditions:
+      - Reopen only after a named and licensed release supplies complete accepted, rejected, hidden and executed event lifecycles plus an audited order-to-service-ID-to-economic-actor hierarchy.
+      - Require an identified or randomized attribution mechanism with overlap, participant state and response labels, and an independently governed same-estimand confirmation system.
+      - Require a theorem or algorithm not reducible to standard MNAR identification, partial labels, entity resolution, deterministic clustering or market-transparency analysis.
+    forbidden_actions:
+      - Do not treat MEMBER_CODE, CLIENT_ID, TRADER_ID, MPID, wallet or a behavioral cluster as a one-to-one economic actor without its documented split and merge quotient.
+      - Do not impute anonymous MPIDs and call predictions participant truth when the selection mechanism and target labels are absent.
+      - Do not download the candidate CSV rows or multi-gigabyte ITCH outcomes, alter EcoMD types, execute a simulator, SSH or use GPU under this closed subroute.
+
+  - id: public_regulatory_audit_trail_truth_asset
+    node_type: research_subroute
+    title: Public regulatory audit-trail truth asset for actor-resolved EcoMD validation
+    status: failed_closed
+    opened_at: "2026-09-05"
+    closed_at: "2026-09-05"
+    phase: D_minus_3_truth_asset_access_schema_and_identification_audit
+    terminal_gate: lawful_public_linked_lifecycle_actor_keys_assignment_and_independent_confirmation
+    failure_codes:
+      - cat_nonregulatory_use_prohibited
+      - cat_row_access_regulator_only
+      - public_midas_aggregate_only
+      - public_cross_market_lifecycle_absent
+      - public_actor_account_and_route_state_absent
+      - aggregate_observation_quotient_nonidentification
+      - assigned_intervention_and_prestate_absent
+      - independent_confirmation_absent
+      - current_ecomd_observation_map_absent
+    summary: >-
+      CAT contains the linked origination, routing, modification, cancellation and execution
+      lifecycle plus regulatory account and customer linkage that an actor-resolved market
+      simulator would need. It is a capability, not a public research asset: the SEC states that
+      Rule 613 and the CAT NMS Plan prohibit use by non-regulators and for non-regulatory purposes.
+      Public MIDAS downloads expose lawful security-, exchange- and time-level summary metrics, but
+      the SEC explicitly distinguishes them from a comprehensive cross-market audit trail. Writing
+      the public summaries as S=T(C), each fibre of T contains trails with different actors, routes
+      and intervention responses. Learning one inverse representative cannot recover restricted CAT
+      truth, and this is the repository's existing observation-quotient boundary rather than a new
+      method. The official 2026 sources therefore confirm rather than remove the external-truth
+      blocker.
+    evidence:
+      - id: regulatory_truth_sec_midas_downloads_kg
+        kind: official_public_dataset
+        availability: external
+        uri: https://www.sec.gov/data-research/market-structure-data
+      - id: regulatory_truth_sec_cat_concept_release_kg
+        kind: official_protocol
+        availability: external
+        uri: https://www.sec.gov/files/rules/concept/2026/34-105251.pdf
+      - id: regulatory_truth_sec_rule_613_kg
+        kind: official_protocol
+        availability: external
+        uri: https://www.sec.gov/about/divisions-offices/division-trading-markets/rule-613-consolidated-audit-trail
+      - id: regulatory_truth_finra_aht_report_card_kg
+        kind: official_schema
+        availability: external
+        uri: https://www.finra.org/compliance-tools/report-center/account-holder-type-consistency-report-card
+    artifacts:
+      - id: regulatory_audit_trail_truth_asset_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_regulatory_audit_trail_truth_asset_trigger_audit_2026-09-05.md
+    reusable_assets:
+      - regulatory_capability_vs_research_asset_boundary
+      - cat_to_midas_observation_fibre
+      - public_access_and_use_rights_gate
+    reopen_conditions:
+      - Reopen only after an official dated change creates a lawful public release or approved research enclave with linked row-level lifecycle fields, stable de-identified actor or account keys and publishable research-use rights.
+      - Require a frozen assigned market-rule intervention and complete immediate pre-state, an explicit interference unit and untouched confirmation families.
+      - Require an independently governed same-estimand truth system or a theorem that identifies the response despite the remaining public projection.
+    forbidden_actions:
+      - Do not access CAT or an authenticated regulatory portal, seek access through outreach, or treat regulator possession as public scientific availability.
+      - Do not infer customer-level audit trails from MIDAS aggregates and call the result participant truth or counterfactual validation.
+      - Do not download MIDAS outcomes, alter EcoMD, execute a simulator, SSH or use GPU under this closed subroute.
+
+  - id: solana_bot_code_behavior_leader_assignment
+    node_type: research_subroute
+    title: Solana bot code--behavior linkage and randomized leader assignment
+    status: failed_closed
+    opened_at: "2026-09-05"
+    closed_at: "2026-09-05"
+    phase: D_minus_3_truth_asset_pairing_assignment_and_interference_audit
+    terminal_gate: paired_deployment_truth_isolated_client_assignment_complete_intake_and_new_method
+    failure_codes:
+      - repository_and_address_datasets_unpaired
+      - code_commit_to_deployment_epoch_map_absent
+      - bot_address_unit_split_merge_noninvariant
+      - deterministic_trace_cluster_no_pairing_increment
+      - leader_assignment_is_compound_operator_bundle
+      - within_validator_client_randomization_absent
+      - schedule_anticipation_and_interference_unclosed
+      - seed_and_eligibility_manipulation_audit_absent
+      - unlanded_private_and_replaced_intake_absent
+      - final_ledger_omits_original_bundle_membership
+      - jito_control_support_near_degenerate
+      - direct_bot_fingerprint_and_scheduler_timing_priors
+      - generic_unpaired_and_randomization_method_parents
+      - current_ecomd_strategy_observation_map_absent
+      - independent_confirmation_absent
+    summary: >-
+      The 2026 ASE study and open package add a large Solana bot code taxonomy and address-trace
+      panel, but the authors explicitly state that the repository and address datasets were
+      collected independently and cannot be linked at address level. Every coupling between the
+      released marginals is observationally equivalent and can reverse category-conditioned
+      response; a trace cluster is a deterministic function of the trace and adds no pairing truth.
+      Solana's stake-weighted randomized leader schedule is a real assignment kernel, but it assigns
+      validator identity rather than client implementation within operator. It can identify only a
+      compound assigned-validator-population effect unless infrastructure, peering, private order
+      flow and policy are held fixed. The announced schedule also induces anticipation and
+      neighboring-window interference. Finalized records omit unlanded and private intake and
+      original Jito bundle membership, while Jito-compatible adoption leaves little control support.
+      Direct 2025--2026 work already occupies bot fingerprints, Jito measurement and client-separated
+      leader-window timing. No paired EcoMD truth object or irreducible ICLR method remains.
+    evidence:
+      - id: solana_bot_blueprints_fingerprints_primary_kg
+        kind: exact_direct_primary_work
+        availability: external
+        uri: https://arxiv.org/html/2607.28424v2
+      - id: solana_bot_zenodo_replication_kg
+        kind: official_replication_package
+        availability: external
+        uri: https://zenodo.org/records/21359451
+      - id: solana_agave_leader_schedule_source_kg
+        kind: official_implementation
+        availability: external
+        uri: https://github.com/anza-xyz/agave/blob/cdbe7e760aef06d13c23c12f046e402de4b638f5/ledger/src/leader_schedule.rs
+      - id: solana_vote_account_schedule_simd0180_kg
+        kind: official_protocol
+        availability: external
+        uri: https://github.com/solana-foundation/solana-improvement-documents/blob/4828b2dd994c98032af401acfa20d37688878003/proposals/0180-vote-account-leader-schedule.md
+      - id: jito_validator_history_protocol_kg
+        kind: official_public_metadata_protocol
+        availability: external
+        uri: https://github.com/jito-foundation/jito-omnidocs/blob/0bd6a39d1edfd906ddcc33ac2cbdc09d7eaa9595/stakenet/validator-history/program-overview/index.md
+      - id: solana_validator_economics_timing_kg
+        kind: official_current_analysis
+        availability: external
+        uri: https://solana.com/news/lowering-slot-time-and-validators-economic
+      - id: jito_sandwich_imc2025_primary_kg
+        kind: direct_primary_work
+        availability: external
+        uri: https://doi.org/10.1145/3730567.3764493
+    artifacts:
+      - id: solana_bot_code_behavior_leader_randomization_formal_result
+        kind: formal_result
+        availability: present
+        path: papers/proposal/ecomd_solana_bot_code_behavior_leader_randomization_trigger_audit_2026-09-05.md
+    reusable_assets:
+      - unpaired_code_behavior_coupling_reversal_witness
+      - compound_validator_assignment_not_client_effect_lemma
+      - deterministic_trace_cluster_no_pairing_increment
+      - announced_schedule_interference_gate
+      - finalized_ledger_vs_complete_intake_boundary
+      - assigned_validator_population_bundle_estimand
+    reopen_conditions:
+      - Reopen only with a licensed signed repository-commit and configuration to address-set and active-epoch map with explicit split, merge and key-rotation semantics.
+      - Require randomized or defensibly exogenous within-validator client or scheduler crossover while operator infrastructure and intake remain fixed.
+      - Require complete landed, failed, dropped, replaced, expired, private and bundled intake, plus frozen schedule reconstruction, manipulation, overlap and interference audits.
+      - Require an independent same-estimand confirmation system and a theorem or method beyond generic unpaired coupling, randomization inference and interference analysis.
+    forbidden_actions:
+      - Do not infer deployed bot strategy by coupling the independent repository and address samples or by relabelling deterministic trace clusters.
+      - Do not report a randomized assigned-validator bundle contrast as the causal effect of client or scheduler implementation.
+      - Do not download transaction rows, query validator outcomes, scrape leader-window responses, alter EcoMD, execute a simulator, SSH or use GPU under this closed subroute.
+
 edges:
+  - id: solana_bot_leader_assignment_derived_from_selective_identity_20260905
+    source: solana_bot_code_behavior_leader_assignment
+    type: derived_from
+    target: selective_participant_identity_attribution
+    rationale: Independent repository and address marginals leave the same hidden actor and deployment coupling freedom as selective participant labels; deterministic behavior clusters cannot create missing pairing truth.
+    evidence_refs:
+      - solana_bot_code_behavior_leader_randomization_formal_result
+      - selective_identity_truth_asset_formal_result
+
+  - id: solana_bot_leader_assignment_derived_from_account_lock_20260905
+    source: solana_bot_code_behavior_leader_assignment
+    type: derived_from
+    target: global_account_lock_contention_liquidity
+    rationale: Finalized Solana histories still omit losing, private, replaced and never-landed submissions, so leader-window differences do not identify the scheduler selection mechanism or contention denominator.
+    evidence_refs:
+      - solana_bot_code_behavior_leader_randomization_formal_result
+      - account_lock_cycle3_formal_result
+
+  - id: regulatory_audit_trail_derived_from_prospective_validity_20260905
+    source: public_regulatory_audit_trail_truth_asset
+    type: derived_from
+    target: prospective_counterfactual_market_simulator_validity
+    rationale: CAT has the desired complete regulatory state but no lawful public research access, while public MIDAS preserves the prospective-validity route's many-to-one observation and missing-field-counterfactual blockers.
+    evidence_refs:
+      - regulatory_audit_trail_truth_asset_formal_result
+      - prospective_validity_cycle16_result
+
+  - id: selective_identity_derived_from_population_transfer_20260905
+    source: selective_participant_identity_attribution
+    type: derived_from
+    target: fluctuation_aware_population_size_transfer
+    rationale: Selectively disclosed service identifiers do not repair the market-native population-unit and external participant-response blockers of small-to-large EcoMD transfer.
+    evidence_refs:
+      - selective_identity_truth_asset_formal_result
+      - hft_proxy_truth_asset_formal_result
+
+  - id: selective_identity_derived_from_l2_lumpability_20260905
+    source: selective_participant_identity_attribution
+    type: derived_from
+    target: l2_order_identity_lumpability_taxonomy
+    rationale: Attributed displayed orders reveal part of the MBO fibre, but voluntary anonymous and hidden orders preserve the same aggregate-state nonidentification and do not create a new aggregation theorem.
+    evidence_refs:
+      - selective_identity_truth_asset_formal_result
+      - l2_lumpability_cycle7_result
+
+  - id: stochastic_projection_derived_from_ncs_20260905
+    source: measure_correct_hard_projection_stochastic_simulators
+    type: derived_from
+    target: ncs_invariant_calibration_v4
+    rationale: The child isolates hard-constraint effects on stochastic invariant measures, but established constrained-Langevin and affine-diffusion theory leaves no new long-horizon calibration estimator or theorem.
+    evidence_refs:
+      - stochastic_projection_measure_formal_result
+      - ncs_v4_formal_audit
+
+  - id: stochastic_projection_derived_from_simulator_audit_20260905
+    source: measure_correct_hard_projection_stochastic_simulators
+    type: derived_from
+    target: generic_simulator_audit_v4a
+    rationale: Checking the constraint Jacobian and stochastic convention is a useful simulator audit, while the general correction is occupied and the implemented affine case is null.
+    evidence_refs:
+      - stochastic_projection_measure_formal_result
+      - simulator_audit_formal_audit
+
+  - id: stochastic_projection_derived_from_boundary_local_time_20260905
+    source: measure_correct_hard_projection_stochastic_simulators
+    type: derived_from
+    target: constraint_boundary_rejection_local_time
+    rationale: Positivity and inventory bounds are inequality constraints whose stochastic limit returns to reflected-process and boundary-local-time theory rather than rescuing the equality-manifold claim.
+    evidence_refs:
+      - stochastic_projection_measure_formal_result
+      - rejection_local_time_cycle5_result
+
+  - id: stochastic_projection_derived_from_cfmm_curvature_20260905
+    source: measure_correct_hard_projection_stochastic_simulators
+    type: derived_from
+    target: cfmm_invariant_curvature_response
+    rationale: A CFMM invariant supplies nonlinear geometry, but its curvature and response are already direct theory and do not make a generic Fixman correction market-specific novelty.
+    evidence_refs:
+      - stochastic_projection_measure_formal_result
+      - cfmm_response_cycle7_result
+
+  - id: price_clock_derived_from_nongaussian_refinement_20260905
+    source: price_clock_refinement_consistency_nonlinear_impact
+    type: derived_from
+    target: nongaussian_bath_refinement_invariant_market_tails
+    rationale: The child extends the clock-refinement audit from the bath to the observation head, but standard scaling theory and a fixed price bucket leave no new continuum mechanism.
+    evidence_refs:
+      - price_clock_refinement_formal_result
+      - stochastic_semantics_nongaussian_bath_formal_result
+
+  - id: price_clock_derived_from_concave_stationary_tail_20260905
+    source: price_clock_refinement_consistency_nonlinear_impact
+    type: derived_from
+    target: concave_impact_stationary_cube_law_solve
+    rationale: Refinement semantics do not repair the prior warmup-dependent stationary tail failure, and a variance-preserving iid scaling Gaussianizes rather than supplies a cube-law mechanism.
+    evidence_refs:
+      - price_clock_refinement_formal_result
+      - concave_stationary_warmup_result
+
+  - id: price_clock_derived_from_operational_clock_20260905
+    source: price_clock_refinement_consistency_nonlinear_impact
+    type: derived_from
+    target: operational_clock_scaling_closure
+    rationale: The exact witness confirms that solver time and price-observation time are distinct declared estimands; it does not create a coordinate-free market clock theorem.
+    evidence_refs:
+      - price_clock_refinement_formal_result
+      - operational_clock_cycle6_result
+
+  - id: price_clock_derived_from_generic_simulator_audit_20260905
+    source: price_clock_refinement_consistency_nonlinear_impact
+    type: derived_from
+    target: generic_simulator_audit_v4a
+    rationale: Zero continuity and joint clock refinement are useful EcoMD QA checks, while direct numerical-integration and semigroup-consistency work occupy the general learned-simulator method.
+    evidence_refs:
+      - price_clock_refinement_formal_result
+      - simulator_audit_formal_audit
+
+  - id: zumbach_orientation_derived_from_generic_simulator_audit_20260905
+    source: zumbach_orientation_safe_path_evaluation
+    type: derived_from
+    target: generic_simulator_audit_v4a
+    rationale: The child found a real EcoMD metric defect, but correcting one statistic remains simulator QA while existing arrow-of-time methods occupy the general evaluation claim.
+    evidence_refs:
+      - zumbach_orientation_reentry_formal_result
+      - simulator_audit_formal_audit
+
+  - id: zumbach_orientation_derived_from_entropy_observability_20260905
+    source: zumbach_orientation_safe_path_evaluation
+    type: derived_from
+    target: entropy_tur_observability
+    rationale: The child restricts attention to observable time-reversal asymmetry rather than total entropy, yet direct path-KL and learned irreversibility estimators still occupy the method and do not restore thermodynamic identifiability.
+    evidence_refs:
+      - zumbach_orientation_reentry_formal_result
+      - entropy_tur_formal_result
+
+  - id: zumbach_orientation_derived_from_solve_tournament_20260905
+    source: zumbach_orientation_safe_path_evaluation
+    type: derived_from
+    target: beyond_langevin_solve_tournament
+    rationale: The exact null failure invalidates the tournament's Zumbach component rather than supplying a new mechanism that breaks its remaining valid tail-and-dynamics failures.
+    evidence_refs:
+      - zumbach_orientation_reentry_formal_result
+      - solve_tournament_formal_result
+
+  - id: slow_memory_rbm_derived_from_invariant_calibration_20260904
+    source: slow_memory_random_batch_invariant_correction
+    type: derived_from
+    target: ncs_invariant_calibration_v4
+    rationale: The child tested whether EcoMD recurrent state creates a new long-run random-batch estimator; augmented-state Markovization and direct long-time, heating-correction and neural-RBM parents leave the invariant-calibration closure intact.
+    evidence_refs:
+      - scale_tail_truth_slow_rbm_formal_result
+      - ncs_v4_formal_audit
+
+  - id: fluctuation_transfer_derived_from_finite_noise_20260904
+    source: fluctuation_aware_population_size_transfer
+    type: derived_from
+    target: finite_noise_liquidity_nucleus
+    rationale: The child tested a learned finite-size escape, but mesoscopic and neural-renormalization parents plus non-native latent particle count preserve the unit-refinement obstruction.
+    evidence_refs:
+      - scale_tail_truth_population_transfer_formal_result
+      - liquidity_nucleus_formal_result
+
+  - id: tail_pooling_derived_from_population_transfer_20260905
+    source: tail_index_cardinality_pooling_for_particle_simulators
+    type: derived_from
+    target: fluctuation_aware_population_size_transfer
+    rationale: The child tested a tail-aware aggregation escape, but marginal-tail scaling is nonidentified under dependence, learned pooling and particle-memory parents occupy the easy method, and latent population size remains non-native.
+    evidence_refs:
+      - tail_pooling_reentry_formal_result
+      - scale_tail_truth_population_transfer_formal_result
+
+  - id: tail_pooling_derived_from_clt_mechanism_20260905
+    source: tail_index_cardinality_pooling_for_particle_simulators
+    type: derived_from
+    target: clt_on_excess_demand_mechanism
+    rationale: Experiment 125 has flat raw excess-demand tails and a confounded downstream return change, while independent-versus-common-shock scaling proves that no marginal-tail-index normalizer restores a universal CLT mechanism.
+    evidence_refs:
+      - tail_pooling_reentry_formal_result
+      - clt_excess_demand_formal_result
+
+  - id: tail_functional_calibration_derived_from_tail_validation_20260904
+    source: tail_functional_differentiable_simulator_calibration
+    type: derived_from
+    target: empirical_tail_transfer_delta_validation
+    rationale: The child tested whether a tail-aligned differentiable loss repairs the failed stationary tail route; top-k support boundaries, direct tail-learning parents and the contaminated Hill lineage leave it closed.
+    evidence_refs:
+      - scale_tail_truth_tail_calibration_formal_result
+      - stationary_tail_formal_result
+
+  - id: dark_bridge_derived_from_public_lab_bridge_20260904
+    source: dark_pool_laboratory_simulator_validity_bridge
+    type: derived_from
+    target: public_randomized_fullstate_market_laboratory_bridge
+    rationale: The Halim archive improves event schemas and Huber improves randomized replication power, but assignment, common action semantics, rights, untouched confirmation and independent exact-mechanism replication still do not coexist.
+    evidence_refs:
+      - scale_tail_truth_dark_bridge_formal_result
+      - public_lab_formal_result
+      - kls_replication_asset_formal_result
+
+  - id: attainable_set_derived_from_objective_coverage_20260904
+    source: stylized_fact_attainable_set_certificate
+    type: derived_from
+    target: explicit_objective_coverage_path_a
+    rationale: The child tested whether the failed per-fact objective route can become a pretraining reachability method; the exact convex certificate is incomplete for a nonconvex simulator and direct misspecification methods occupy the diagnosis.
+    evidence_refs:
+      - scale_tail_truth_attainable_set_formal_result
+      - objective_coverage_formal_result
+
+  - id: noise_frame_gradients_derived_from_coupling_invariance_20260904
+    source: noise_frame_optimized_ecomd_gradients
+    type: derived_from
+    target: coupling_invariant_differentiable_market_counterfactual
+    rationale: The child tested whether restricting the coupling ambiguity to continuous diffusion square roots yields a canonical or new EcoMD gradient; an exact orthogonal-frame witness and direct transport, coupling and gauge parents leave the parent closure intact.
+    evidence_refs:
+      - stochastic_semantics_noise_frame_formal_result
+      - coupling_audit_formal_result
+
+  - id: nongaussian_bath_derived_from_langevin_market_claim_20260904
+    source: nongaussian_bath_refinement_invariant_market_tails
+    type: derived_from
+    target: first_differentiable_langevin_market_claim
+    rationale: The child tested whether EcoMD's distinctive heavy-tailed innovations define a physical continuous-time tail mechanism; exact refinement reductions and direct thermostat numerics show a step-dependent discrete kernel instead.
+    evidence_refs:
+      - stochastic_semantics_nongaussian_bath_formal_result
+      - differentiable_claim_formal_result
+
+  - id: stochastic_semantic_conformance_derived_from_transaction_integrator_20260904
+    source: stochastic_simulator_gradient_semantic_conformance
+    type: derived_from
+    target: conservative_differentiable_transaction_integrator
+    rationale: The child tested whether new exact-forward CTMC repositories support an irreducible market hard-event gradient certificate; mismatched clock and replay contracts plus direct stochastic-AD, CTMC-comparison and VJP-benchmark parents leave the integrator route closed.
+    evidence_refs:
+      - stochastic_semantics_conformance_formal_result
+      - conservative_integrator_formal_result
+
+  - id: coupling_invariant_counterfactual_derived_from_prospective_validity_20260904
+    source: coupling_invariant_differentiable_market_counterfactual
+    type: derived_from
+    target: prospective_counterfactual_market_simulator_validity
+    rationale: The re-entry audit tested whether coupling-aware world models and exact event-log forks remove the prospective-validity route's missing counterfactual semantics; direct equivalence and transport parents plus absent market interventions leave the parent closure intact.
+    evidence_refs:
+      - coupling_audit_formal_result
+      - prospective_validity_cycle16_result
+
   - id: discovery_cycle8_to_cycle9_asset_portfolio_probability_gate_20260826
     source: discovery_loop_topic_cycle_8_cross_engine_discrepancy_20260826
     type: next_selected_route

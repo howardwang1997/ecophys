@@ -1,5 +1,9 @@
 # C1 collision manifest: within-tie priority experiments (laboratory, field, simulator)
 
+> **Expanded (2026-08-27):** this 15-work screen is historical. Use
+> `ecomd_random_unit_priority_collision_manifest_v2_2026-08-27.md`; unconditional first-human
+> wording below is withdrawn.
+
 Date: 2026-08-26 (Session 18)
 
 Precondition C1 of the frozen treatment selection

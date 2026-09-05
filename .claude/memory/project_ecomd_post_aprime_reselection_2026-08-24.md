@@ -1,12 +1,19 @@
 ---
 name: ecomd-post-aprime-reselection-2026-08-24
-description: "Contract-first G−1 reselection: 17 AI/MD/protocol cards closed; FCC clock-1 pseudorandom tie-order cascade is the sole candidate, restricted to an outcome-free D−1 support, randomization, replay and novelty audit."
+description: "Historical contract-first G−1 reselection: its sole FCC candidate was subsequently failed-closed by the 2026-09-05 D−1 identification, novelty, mechanism-bridge, simulator, and contamination audit."
 metadata:
   node_type: memory
   type: project
 ---
 
 # EcoMD post-A′ reselection
+
+> **Closure amendment (2026-09-05).** The FCC candidate selected below subsequently failed D−1 and
+> is closed. Structural support and the Auction 108 row contract passed narrowly, but same-state
+> paired path dispersion is nonidentified, the remaining causal estimand is standard sequential
+> interference inference, exact replay is algorithm execution, cross-mechanism and simulator
+> contracts fail, and Auctions 102/105 are outcome-access tainted. See
+> `project_ecomd_fcc_random_rank_dminus1_result_2026-09-05.md`.
 
 On 2026-08-24 the project ran a fresh contract-first problem search after the A′ influence-tail theorem failed.
 The canonical decision is **one candidate, no active Nature route**.

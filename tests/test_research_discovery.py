@@ -146,6 +146,14 @@ def copy_fixture(tmp_path: Path) -> Path:
         / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
         result_dir / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
     )
+    trigger_ledger = load_mapping(discovery / "reentry_trigger_ledger.yaml")
+    for entry in child_mappings(trigger_ledger, "entries"):
+        result_ref = entry["result_ref"]
+        assert isinstance(result_ref, str)
+        source = REPO_ROOT / result_ref
+        destination = repo / result_ref
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
     scripts_dir = repo / "scripts"
     scripts_dir.mkdir(parents=True)
     shutil.copy2(
@@ -756,12 +764,12 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "235 evidence records" in result
+    assert "684 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
     assert "0 exploration sandboxes (none)" in result
     assert "3 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
-    assert "7 re-entry trigger audits (0 qualified)" in result
+    assert "99 re-entry trigger audits (0 qualified)" in result
     assert "7 prospective search cycles (84 raw questions; 0 cards)" in result
 
 

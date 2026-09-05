@@ -1,17 +1,18 @@
 ---
 name: EcoPhys project overview
-description: EcoPhys/EcoMD research overview. The forward Discovery Loop and route knowledge graph govern topic selection; Plan v4 remains a closed quality, compute, and data-governance record. No Nature-grade market-simulation route is active after thirteen bounded Discovery Loop cycles and the prior reselection rounds. Cycle 13 closed bilateral-credit network, pooling, and gross/NOP formulations and added labelled-capacity/allocation-policy completion to the quick screen. DCRDEX remains parked, FCC remains a below-threshold candidate, and verification-liquidity is an independent sealed active field protocol. Compute starts at 2×V100 32 GB and excludes H20.
+description: EcoPhys/EcoMD research overview. The forward Discovery Loop and route knowledge graph govern topic selection; Plan v4 remains a closed quality, compute, and data-governance record. No simulated-market or financial-physics paper route is active. FCC randomized rank failed its 2026-09-05 D-minus-1 identification and novelty audit; DCRDEX remains parked and verification-liquidity is a separate sealed active field protocol. The authorized hardware inventory includes one A800 and two V100 workers, but no current EcoMD route authorizes compute and no plan may assume H20.
 type: project
 originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 ---
 
 # EcoPhys — Project Overview
 
-> **Current route state (2026-08-26).** No Nature-grade simulated-market or financial-physics route is active.
+> **Current route state (2026-09-05).** No simulated-market or financial-physics paper route is active.
 > The forward selection authority is `research/discovery/protocol.yaml`; the canonical terminal-state and veto
-> registry is `research_route_knowledge_graph.yaml`. The graph currently has 223 nodes and 231 typed edges:
-> 196 failed-closed, twenty-three passed-and-closed selections, one parked route, one FCC candidate, one active
-> verification-liquidity field protocol, and one superseded route. The first Discovery-Loop rerun initially
+> registry is `research_route_knowledge_graph.yaml`. The graph currently has 248 nodes and 265 typed edges:
+> 219 failed-closed, twenty-six passed-and-closed selections, one parked DCRDEX route, one active
+> verification-liquidity field protocol, and one superseded route. FCC randomized rank is failed-closed after
+> its D−1 support, identification, 26-work novelty, cross-mechanism, simulator and contamination audit. The first Discovery-Loop rerun initially
 > parked `transportable_interventional_market_law_discovery`, but its D-1 continuation failed the generic-theorem,
 > ABIDES--PAMS same-estimand, and real-bridge gates. Hostile T0 is now 1--7% (3.5% point). The strongest next
 > residual, a recurring CME SR3 price-grid refinement, remained at 4--12% under an independent hostile audit and
@@ -23,6 +24,35 @@ originSessionId: c6748c05-53ac-462d-9535-154e95f91d9f
 > bound under test-contingent capacity release. A fourth round over atomic credit, cross-margin action grammar,
 > implied matching and public laboratory markets again produced no card: its best conservative lower bound was
 > 10%, and every route failed an exact-parent, invariance, same-estimand, real-bridge or sealed-holdout gate.
+
+> **Evaluator correction (2026-09-05).** The canonical EcoMD Zumbach statistic has an exact
+> unequal-lag orientation bias and is negative for a broad class of reversible volatility-memory
+> processes. Historical Zumbach floors, pass rates and the Zumbach-dependent portion of the
+> eleven-fact Pareto claim are quarantined; this is an important QA finding but the standard
+> role-swapped correction and general arrow-of-time estimators are direct prior art, so it does not
+> activate an ICLR route or compute. The subsequent price-clock refinement audit proves that
+> fixed-parameter per-integrator-step pricing is non-tight and that the concave-impact offset is
+> discontinuous at zero. EcoMD already exposes the lawful fixed-clearing-bucket refinement through
+> `inner_steps_per_price`; power-variation, continuous-path, semigroup and stateful-impact parents
+> leave this as QA rather than an ICLR method. A subsequent fixed-source audit confirms that the
+> Noble--Rosenbaum--Souilmi Queue-Reactive engine is a useful MIT reference implementation but not a
+> re-entry trigger: its March code predates the August audits, its executable metaorder is not
+> EcoMD's latent `state_kick`, its illustrated impact is target-calibrated, and an intervention-basis
+> rescue reduces to persistent excitation, inverse-crime avoidance or the existing off-support twin.
+> A further unpaired-population audit finds that ICLR 2026 iJKOnet already publishes the corrected
+> paired-versus-unpaired diagnosis and interaction-recovery failure. Off-diagonal debiasing is a
+> classical U-statistic, while a fixed-mean transient path admits an exact quadratic external-versus-
+> interaction gauge. Existing mean-field inversion, WSINDy, partial-inversion and inverse-JKO work
+> occupies the method neighborhood, and EcoMD lacks the required observable population contract.
+> The next grey-box audit finds an exact additive gauge in AISTATS 2026 VGB-DM: inferred physical
+> parameters can be changed while a flexible residual absorbs the difference. KL, residual norms,
+> stable codes and total-flow coupling do not supply semantic identification, and the paper's
+> unconditional gradient-variance ordering is reversed by a noisy two-point scalar example and
+> changes under loss normalization. GPL-FMR is a genuine 2026-08-23 post-closure release, but it
+> assumes a prescribed parametric ODE and already occupies the obvious GP-local to multi-shooting-
+> global refinement; it removes neither the grey-box gauge nor the market truth blocker.
+> Current registry totals are 472 evidence records and 56
+> trigger audits, with zero qualified triggers.
 > A fifth asset-first round also produced no card or sandbox: TSE's announced 2027 closed-loop tick controller
 > was strongest at a 10--17% hostile-T0 interval, but its lower bound, bundled rules, paid data and absent second
 > exact implementation failed activation; the other laboratory, on-chain and exchange assets were weaker. The

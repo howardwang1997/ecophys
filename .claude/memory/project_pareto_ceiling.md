@@ -4,8 +4,16 @@ description: "089-099 evidence (3000+ runs, 5 assets, 23 pair combinations) show
 metadata: 
   node_type: memory
   type: project
-  originSessionId: 32d573d8-fe44-4e40-9577-f55d59632fcb
+originSessionId: 32d573d8-fe44-4e40-9577-f55d59632fcb
 ---
+
+> **2026-09-05 Zumbach-metric quarantine.** The canonical `zumbach_asymmetry` implementation is not
+> zero under the time-reversal null: unequal lag geometry makes any reversible process with
+> decaying volatility autocovariance score negative. Therefore all exact 11-fact means, SOTA labels,
+> Zumbach pass rates and Pareto statements whose witness or cost uses that component are historical
+> only pending a separately authorized role-swapped, null-calibrated rescore. The remaining valid
+> metrics may still exhibit trade-offs, but they do not establish the eleven-fact claim as written.
+> See [[project_ecomd_zumbach_orientation_audit_2026-09-05]].
 
 > **2026-05-28 update:** exp 102/103 (Batch 1) did NOT break the ceiling (0 cells past the
 > Bonferroni gate), but exp 102 was an **invalid test** — 3 of 4 multi-fact surrogates were

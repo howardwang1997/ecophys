@@ -254,65 +254,70 @@ named blockers, a session-level path-response estimand family, stratified betwee
 assignment, an arm-invariant replay-complete event schema, rights/ethics/release, a sealed
 whole-source confirmation site, two-site frozen-artifact replication, an outcome-blind precision
 floor with five exact stop conditions, and a deferred outcome-blind treatment-selection audit.
-The plan authorizes nothing; the next legal steps are the treatment-selection audit or A-2
-platform qualification, each requiring explicit user authorization.
+That plan authorized nothing; its then-proposed treatment-selection/A-2 sequencing is historical
+and is superseded by the repair below. No platform qualification or participant-facing work is
+currently authorized.
 
-The deferred outcome-blind treatment-selection audit has since run
-([treatment-selection audit](papers/proposal/ecomd_truth_asset_treatment_selection_audit_2026-08-26.md)):
-**within-tie-set randomized priority (FIFO vs randomized tie-break)** is the selected treatment
-family and minimum resting time the reserve, while depth visibility, cancel costs and unitization
-failed their collision or fork gates. The scientific fork is the program's core question in
-legal-action form: statistical queue-reactive populations satisfy an exchangeable-tie-set
-invariance (aggregate book law unchanged by the allocation rule), whereas strategic queue-value
-makers predict an order-one depth and spread response. Four pre-A-2 conditions are frozen
-(priority-experiment collision manifest, formal fork derivation with CPU-trivial fixtures,
-explicit user authorization, precision floor); nothing is executed and no topic status exists.
+The 2026-08-26 treatment audit historically selected FIFO versus randomized within-price
+allocation, and C3 authorized bounded A-2 mechanism work. A subsequent independent reviewer-2
+audit found that its binary statistical-versus-strategic interpretation was not identified,
+uniform randomization by variable-size order was splitting-manipulable, Avellaneda--Stoikov was
+misused as a queue-position model, the depth sign was family-specific, and the spread-based
+16-sessions-per-arm precision claim was invalid. The historical C1/C2/C4 records remain as
+provenance but are no longer the current scientific contract.
 
-C1 and C2 have now passed. The [collision manifest](papers/proposal/ecomd_tie_priority_c1_collision_manifest_2026-08-26.md)
-(15 primary works: Hersch's RSS fairness proposal, Haeringer–Melton's RSD, Mavroudis et al.'s
-fair matching, Lim's large-scale controlled simulation of randomized priority, the LIFFE
-time-pro-rata field study, queue-valuation and dynamic-LOB theory, plus project-pinned priors)
-found **no same-estimand human-subject randomized within-tie priority experiment**; the proposal
-and in-silico lanes are occupied, so the lab asset is positioned as the first controlled
-human-market test joined to a simulator-prediction truth contract. The
-[fork derivation](papers/proposal/ecomd_tie_priority_c2_fork_derivation_2026-08-26.md)
-(`scripts/tie_priority_fork_fixtures.py`) proves Lemma 1 — pathwise aggregate invariance under
-identity- and age-agnostic exchangeable intensities, with five named failure channels that make
-human populations decisive — and Lemma 2 — a random-allocation marginal joiner weakly beats the
-FIFO back-of-queue fill probability, so **randomized priority provably sustains deeper touch
-depth in the threshold family**. Deterministic fixtures reproduce both sides: exact aggregate
-identity with identity-level redistribution in a ZI population, and order-one depth gaps
-(6 vs 33 and 28 vs 179) in threshold equilibria. Remaining gates before any platform work:
-explicit user authorization (C3) and the outcome-blind precision floor (C4).
+The [scientific repair](papers/proposal/ecomd_random_unit_priority_scientific_repair_2026-08-27.md)
+and [thesis v2](papers/proposal/ecomd_random_unit_priority_thesis_v2_2026-08-27.md) retain a
+narrower, identifiable question: **does replacing FIFO with uniform random allocation over
+resting units remove humans' willingness to pay for queue speed?** A clean priority-rent race
+supplies the sole primary endpoint (pre-feedback costly latency investment); a full induced-value
+CDA supplies secondary liquidity and simulator-transfer outcomes without a universal depth or
+spread sign. An observable four-level ladder now separates aggregate-lumpable, identity/resource,
+feedback-adaptive and rule-aware forward-looking policies.
 
-C4 is now conditionally passed
-([precision floor](papers/proposal/ecomd_tie_priority_c4_precision_floor_2026-08-27.md)):
-method and published noise anchors frozen, σ = 2 ticks, MDE = 2 ticks → **16 sessions per
-arm (32 per site)**; the gate terminally closes only when the user freezes the cost ceiling.
-C3 has been granted
-([authorization record](papers/proposal/ecomd_truth_asset_c3_authorization_a2_scope_2026-08-27.md))
-and stage A-2 is open. The first A-2 deliverables live in `scripts/lab_asset/`: the frozen
-arm-invariant event schema (reason-coded rejections, three clocks, per-action SHA-256
-full-book state hashes), a deterministic reference continuous-double-auction engine with both
-allocation arms — the randomized arm records its draw as a semantic event — an exact
-deterministic-replay validator, and an 11-test conformance suite
-(`conda run -n ecophys python scripts/lab_asset/run_conformance.py`), all mypy --strict and
-ruff clean on local CPU. The deferred sub-stage D-2b ports this contract onto a hardened
-oTree fork; A-1 (ethics, outreach) and A0 (human sessions, outcomes) remain unauthorized.
+The [collision manifest v2](papers/proposal/ecomd_random_unit_priority_collision_manifest_v2_2026-08-27.md)
+adds Lim's randomized-priority simulation/theory, Yang et al.'s 2026 secondary-priority artificial
+market, Khapko--Zoican's human speed-investment experiment, current queue-uncertainty theory and
+the major field rule changes. No exact human FIFO-versus-random-unit costly-speed experiment was
+found, but only a bounded-search novelty statement is allowed. The
+[precision contract v2](papers/proposal/ecomd_random_unit_priority_precision_contract_v2_2026-08-27.md)
+withdraws the old sample size: 16 independent sessions per arm has 80% power only around
+standardized `d=1.02`. C4 and the cost-feasibility conclusion are **reopened** until a relevant
+between-session variance anchor and economically interpretable latency-payoff scale exist.
 
-C4 has since closed terminally
-([cost-ceiling addendum](papers/proposal/ecomd_truth_asset_cost_ceiling_addendum_2026-08-27.md)):
-the participant-payment ceiling is frozen at USD 20,000 per site, derived outcome-blind from
-published anchors and comfortably above the 32-session requirement's cost envelope. D-2b's
-protocol layer is implemented in `scripts/lab_asset/adapter.py` (typed client-message
-translation and wire views), and every tape record now seals **two** hashes: an identity-layer
-hash and an identity-free **aggregate-layer hash** — the latter is the machine-checkable form
-of the C2 invariance lemma, pathwise identical across allocation arms on the same message
-stream while identity hashes genuinely diverge (asserted in
-`tests/test_lab_asset_adapter.py`). The engineering-only robot pilot
-(`scripts/lab_asset/robot_pilot.py`) runs paired-seed ZI sessions under both arms, validates
-exact replay of every session, and writes a manifest explicitly labeled
-`engineering_only`/`not_route_evidence`; its outputs are pipeline evidence only.
+The repaired A-2 reference kernel lives in `scripts/lab_asset/`. It implements strict FIFO
+partial-fill retention and anti-splitting `random_unit_within_price`, records semantic unit draws,
+settles and reserves cash/inventory, freezes induced-value/information/initial-book/scheduler state,
+records latency choices, preserves queue order in its full-state hash, and compares anonymous
+state only at common request boundaries. Deterministic replay and regression tests cover the FIFO
+witness, unit-splitting invariance, resource constraints and tape tampering. The robot pilot stays
+explicitly `engineering_only`/`not_route_evidence`. There is still no topic card, route status,
+ethics/outreach authority, participant session or outcome.
+
+A bounded outcome-blind exploration then screened upgrade paths toward the protocol's
+NMI/NCS-family goal without harvesting topics. A venue-first Cycle 17 is inadmissible (family
+saturation, zero qualified re-entry triggers); a discovery-governance NMI method paper and an NCS
+lab-engine methods paper failed hard gates; the surviving option is a parked, sequenced capability
+route: the A-3 laboratory truth asset whose sealed event tapes would later support a prospective
+two-lineage simulator-validation paper (EcoMD plus an LLM-agent lineage versus sealed randomized
+rule-change outcomes) as an NMI endpoint, with the priority-rent experiment remaining Paper 1 on
+its frozen economics ladder. The [gap-exploration result](papers/proposal/ecomd_nmi_ncs_gap_exploration_2026-08-27.md)
+creates no cycle, card or authorization; the pending next action for the live route remains the
+outcome-blind C4 preflight.
+
+A [merge analysis](papers/proposal/ecomd_paper_merge_analysis_2026-08-27.md) then established the
+governing constraint for combining the priority-rent paper with the later simulator-validation
+paper: the prediction freeze must predate outcome access. The recommended merge-compatible design
+freezes both simulator lineages and a multi-outcome prediction battery before the human experiment,
+leaving the one-paper-versus-two-papers choice open until results exist. The
+[C4 preflight](papers/proposal/ecomd_random_unit_priority_c4_preflight_2026-08-27.md) followed:
+with a welfare-interpreted `δ=0.10` (the full marginal FIFO speed rent) and a $368/session cost
+model, two-site feasibility at the USD 20,000/site ceiling holds if and only if the between-session
+standard deviation is at most 0.12; no published source identifies it, so a variance-only human
+internal pilot (which requires ethics authority not yet requested) is the lawful anchor, and the
+stop rule is frozen. A same-day [re-entry trigger scan](papers/proposal/ecomd_reentry_trigger_scan_2026-08-27.md)
+recorded the Zhang--Yu ensemble-imitation simulator as the eighth `not_trigger` entry; market-physics
+closures were not rescanned and Cycle 17 remains unopened.
 
 ## Research Discovery Loop
 

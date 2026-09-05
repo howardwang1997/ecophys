@@ -2,16 +2,33 @@
 
 ## Canonical status
 
-An ICLR 2027 extension is frozen and locally implementation-complete. Initial pilot, all triggered
-expansions, the C learning-rate correction, and both clean provenance replacements are complete.
-The final ID-only lock has 58 unique mechanism/cell jobs over ten systems and SHA-256
-`5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e`. Pilot OOD remains unopened,
-confirmation seeds 1000--1029 remain untouched, and no confirmation outcome exists. The verified
-41,426-byte confirmation snapshot is deployed to both V100s; archive/file hashes, 25 tests, and
-isolated seed-999 CUDA preflights pass. The PI registered a scoped ICLR current machine decision,
-and both authorized production workers are running with first-record metadata/provenance/finiteness
-gates passed. The authoritative protocol is
-`papers/proposal/ecomd_constraint_attribution_iclr_extension_freeze_2026-08-30.md`.
+**Terminal as of 2026-09-04; reconciled 2026-09-05.** The full machine-decision chain
+(root `constraint_attribution_iclr_confirmation_20260831` through head
+`constraint_attribution_iclr_unet_replication_result_20260903`) is complete:
+
+- Confirmation seeds 1000--1029 finished under the frozen final lock
+  `5100ae5ca6f757a5166fba3692fd912e19e7a0c7a4da65980488e92a402c604e`; the amended analyzer ran
+  exactly once on 2026-09-01
+  (`experiments/constraint_attribution_iclr/confirmation/formal_amended_20260901/analysis_amended_20260901.json`).
+  A-burgers and B-burgers remain permanently declared `failed_incomplete` with preserved zero-record
+  incident files; they are excluded from inference.
+- All triggered extensions (Advection factorial, gradient-coupling mechanism audit, shallow-water
+  block, gauge intervention, enforcement cube) completed with integrity gates passed.
+- The frozen U-Net replication completed 150/150 records, 120 checkpoints, and its 90-record cube,
+  but the registered architecture-transfer gate **failed**
+  (`complete_gate_not_passed`): the FNO training-by-inference path-dependence result does not
+  transfer to U-Net. The paper reports this as an architecture-generality boundary, not a
+  replication.
+- The deterministic reviewer artifact (archive SHA-256
+  `9c615278ea282ee6a23cee63909c1abf2bc339d9f8d9ed6f6df7bb1ae8c9e183`) passes clean-extraction
+  regeneration and the 138-test shipped suite; the manuscript PDF SHA-256 is
+  `7d0e2d60b38ea5980c7df772e5b437e9de891bb0e98518beb14f8b7221b23d9c`; local commit `3aae4926a`.
+- The sole external submission blocker is the double-blind conflict between the public GitHub
+  development repository and original commit identifiers embedded in formal provenance. No reviewer
+  artifact upload or branch push may occur before PI resolution. ICLR 2027 abstract deadline:
+  2026-09-18. V100 data volumes were 98%/96% full on 2026-09-04 despite idle GPUs; bulk cleanup
+  remains pending.
+- No further compute, implementation, or data action is authorized without a new machine decision.
 
 Historical A/B/C/M/E results are discovery evidence only for the extension:
 

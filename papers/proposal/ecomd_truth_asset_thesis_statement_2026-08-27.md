@@ -1,5 +1,9 @@
 # Thesis statement: the randomized within-tie priority experiment
 
+> **Superseded interpretation (2026-08-27):** retained as historical provenance. The current
+> scientific contract is `ecomd_random_unit_priority_thesis_v2_2026-08-27.md`; the binary fork,
+> random-by-order kernel, universal depth narrative and 16-session design below must not be used.
+
 Date: 2026-08-27 (Session 22) — recorded at the user's request
 
 ## The topic in one sentence

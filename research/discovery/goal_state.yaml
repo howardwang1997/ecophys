@@ -1,0 +1,66 @@
+schema_version: 1
+goal_id: ecomd_publishable_topic_goal_v1
+terminal_objective:
+  machine_card_status: active
+  gates: research/discovery/protocol.yaml#activation_gate
+  executable_plan_within_compute_envelope: true
+  venue_consistent_evidence_contract: true
+mode: saturated_await_external_state_or_pi_decision
+mode_basis:
+  derived_from:
+    - research/discovery/current_machine_decision.yaml (chain terminal; completed_no_active_authorization)
+    - research/discovery/reentry_trigger_ledger.yaml (99 audits, zero qualified)
+    - research/discovery/search_cycle_ledger.yaml (cycles 10-16 zero cards; 84 raw questions, 0 cards total)
+    - logs/2026-09-05.md sessions 1-53 (session 50 records neighborhood exhaustion)
+  note: >-
+    Re-derived 2026-09-05. Mode A scope is fully executed and terminal; no machine card exists
+    (B/C inapplicable); the market-simulator family is saturated with no qualified re-entry
+    trigger (D), and the frozen A-3 capability-build plan already contains all required contract
+    parts, so no new preflight document or further idea cycle is warranted. The route graph's
+    single active node (verification_liquidity) is the separate sealed field protocol with its
+    holdout frozen until 2026-10-17 UTC.
+last_derived_at: "2026-09-05"
+next_action_queue:
+  - action: >-
+      PI decision: resolve the Paper D double-blind conflict (public GitHub repo vs original
+      commit IDs in formal provenance) and run the ICLR 2027 venue upload checklist.
+    rationale: >-
+      Sole external submission blocker; manuscript and reviewer artifact are complete and
+      validated at local commit 3aae4926a; abstract deadline 2026-09-18.
+    cost_estimate: PI choice plus one execution session; zero compute.
+  - action: PI decision: commit and push the uncommitted discovery/session records (202 files).
+    rationale: GitHub is the canonical store and main must stay runnable; durability is RED.
+    cost_estimate: one commit session; zero compute.
+  - action: >-
+      PI decision: authorize or explicitly park stage A-2 execution of the frozen truth-asset
+      capability-build plan (prospective controlled-market platform/recorder work).
+    rationale: >-
+      The paper-only A-3 plan is frozen; execution_requires_separate_authorization is true and no
+      implementation, outreach, or data action may start without it.
+    cost_estimate: PI choice; execution is a separately bounded project.
+  - action: >-
+      Monitor-only: watch trigger-ledger next_review_condition entries for a new theorem beyond
+      the registered parent classes or a licensed assigned truth asset; audit before any cycle.
+    rationale: Saturated families forbid relabelled cycles; zero qualified triggers.
+    cost_estimate: zero compute; next audit only on a named external state change.
+  - action: After 2026-10-17 UTC, re-derive the verification_liquidity sealed-holdout state.
+    rationale: Separate sealed protocol; holdout opening is forbidden before that date.
+    cost_estimate: one orientation check.
+family_cycle_counters:
+  simulated_market_physics_and_validity:
+    saturation_status: saturated
+    note: >-
+      Cycles 10-16 plus the 2026-09-04/05 trigger-audit rounds produced zero machine cards;
+      re-entry requires a qualified ledger entry. Exact counts derive from
+      search_cycle_ledger.yaml and reentry_trigger_ledger.yaml and are not copied here.
+session_history:
+  - date: "2026-09-05"
+    mode: A_resolved_terminal_reconciliation
+    ledger_ref: logs/2026-09-05.md Session 53
+    note: >-
+      Machine-decision chain reconciled to terminal (complete_gate_not_passed); stale Paper D
+      memory corrected; goal_state initialized from canonical sources; both validators pass.
+derivation_rule: >-
+  Every field in this file except goal_id, terminal_objective, and derivation_rule must be
+  re-derived from the canonical sources listed in the research-goal skill at the start of each
+  session. Never copy route statuses, counts, or failure history into this file.

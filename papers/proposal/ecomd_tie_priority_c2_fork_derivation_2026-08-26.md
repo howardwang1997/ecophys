@@ -1,5 +1,9 @@
 # C2 fork derivation: exchangeable-tie invariance versus strategic queue-value response
 
+> **Reinterpreted (2026-08-27):** Lemma 1 is now only the M0 aggregate-lumpability case and Lemma
+> 2 only a restricted threshold-family comparative static. Neither identifies a binary strategic
+> class or a universal depth sign; see `ecomd_random_unit_priority_thesis_v2_2026-08-27.md`.
+
 Date: 2026-08-26 (Session 18)
 
 Precondition C2 of the frozen treatment selection

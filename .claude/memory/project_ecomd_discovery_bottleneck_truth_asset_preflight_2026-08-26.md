@@ -1,6 +1,6 @@
 ---
 name: EcoMD discovery bottleneck and truth-asset preflight
-description: Seven prospective funnel cycles generated 84 raw questions but no card; the durable bottleneck is assigned, replay-complete external response truth rather than idea supply. A paper-only controlled-market truth-asset preflight is retained, with no execution or re-entry authorization.
+description: Historical pre-repair truth-asset record; its binary fork, random-by-order treatment and C4 pass were superseded on 2026-08-27 by the random-unit priority repair. It retains no participant, execution or re-entry authorization.
 node_type: memory
 type: project
 ---
@@ -10,10 +10,12 @@ type: project
 The formal audit is
 `papers/proposal/ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md`.
 
-## Canonical thesis statement (2026-08-27 Session 22)
+## Historical thesis statement (2026-08-27 Session 22; superseded)
 
-`papers/proposal/ecomd_truth_asset_thesis_statement_2026-08-27.md` records it in full. The
-topic: **does randomizing within-tie matching priority change real-market liquidity, and
+The following paragraph records the old claim for provenance and must not be treated as current;
+the current contract is `project_ecomd_random_unit_priority_repair_2026-08-27.md`.
+`papers/proposal/ecomd_truth_asset_thesis_statement_2026-08-27.md` records the historical claim in
+full. The old topic was: **does randomizing within-tie matching priority change real-market liquidity, and
 which model family (statistical queue vs strategic market-maker) predicts the answer?**
 Participants are structurally necessary, not accessory: robots inject their own response
 (Cycles 8/16 circularity), no field randomization exists (C1), and all five H0 failure
@@ -170,6 +172,17 @@ check lives in the conformance tests' aggregate-hash equality).
 
 Remaining: D-2b platform fork choice (oTree binding), then A-1 remains unauthorized. No
 outcomes, no human sessions, no outreach, no GPU.
+
+## Scientific and mechanism repair (2026-08-27)
+
+The Session 18--21 interpretation above is historical and has been re-adjudicated after an
+independent reviewer-2 audit. Current details live in
+`project_ecomd_random_unit_priority_repair_2026-08-27.md` and the proposal's thesis/manifest/
+precision v2 files. In particular: the treatment is uniform over resting **units**, not orders;
+the primary is pre-feedback costly speed investment; the binary H0/H1 and universal depth sign are
+withdrawn; the engine's partial-FIFO and economic-state defects are repaired; and C4 is reopened.
+The USD 20,000/site number is only a ceiling, not evidence that a valid sample fits. No topic/card,
+A-1/A0 authority or participant work follows from the repair.
 
 Only paper-level schema, prior, ethics, cost and failure-mode design is retained. No participant
 experiment, external outreach, platform implementation, simulator run, outcome access, data

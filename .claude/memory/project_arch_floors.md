@@ -4,6 +4,14 @@ description: 089 attribution batch found single mechanisms CAN lift both floors,
 type: project
 ---
 
+> **Superseded for Zumbach claims on 2026-09-05.** The canonical evaluator and differentiable
+> loss compare one past coarse-volatility window with fine volatility at unequal lag distances.
+> A reversible process with decaying volatility autocovariance therefore has a strictly negative
+> population score. All Zumbach pass rates, "floor lifter" rankings and Zumbach-attributed
+> collateral costs below are quarantined until a role-swapped, null-calibrated rescore is separately
+> authorized. The autocorrelation result is unaffected. See
+> [[project_ecomd_zumbach_orientation_audit_2026-09-05]].
+
 **Updated 2026-05-20**: Reframed from "9/11 architectural ceiling" → "11-fact Pareto frontier".
 
 The 089 attribution batch (16 cells × 50 seeds) found that both putative floors
