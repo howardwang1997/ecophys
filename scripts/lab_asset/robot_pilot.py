@@ -28,6 +28,7 @@ from lab_asset.schema import (
     CancelRequest,
     EventType,
     OrderRequest,
+    ReplaceRequest,
     SessionPrestate,
     Side,
     ThreeClocks,
@@ -41,6 +42,7 @@ class SessionSamples:
     spreads: list[int]
     depths: list[int]
     cancels: int
+    replaces: int
     execution_records: int
     executed_units: int
     tape_length: int
@@ -68,6 +70,7 @@ def run_session(
     spreads: list[int] = []
     depths: list[int] = []
     cancels = 0
+    replaces = 0
     executions = 0
     def resting_count() -> int:
         return sum(
@@ -88,8 +91,11 @@ def run_session(
         spread = max((ba - bb) if (bb is not None and ba is not None) else 2, 1)
         arrival_rate = 1.0 * (1.0 + spread)
         market_rate = 0.6
+        replace_rate = 0.15 * (
+            sum(1 for book in (engine.bids, engine.asks) for orders in book.values())
+        )
         cancel_rate = 0.05 * resting_count()
-        total = arrival_rate + market_rate + cancel_rate
+        total = arrival_rate + market_rate + replace_rate + cancel_rate
         u = rng.random() * total
         next_event = t + 1
         if u < arrival_rate:
@@ -138,6 +144,35 @@ def run_session(
                         clocks=ThreeClocks(t, t, t),
                     )
                 )
+        elif u < arrival_rate + market_rate + replace_rate:
+            resting = [
+                (oid, actor, side_value, price, quantity)
+                for side_value, book in (("B", engine.bids), ("S", engine.asks))
+                for price_key, orders in book.items()
+                for oid, actor, quantity in orders
+                for price in (price_key,)
+            ]
+            if resting:
+                oid, owner, side_value, price, quantity = resting[
+                    rng.randrange(len(resting))
+                ]
+                replace_request = to_request(
+                    {
+                        "type": "replace",
+                        "actor": owner,
+                        "replaces_order_id": oid,
+                        "client_order_id": f"RC{next_event:09d}",
+                        "side": side_value,
+                        "price": max(90, min(110, price + (1 if rng.random() < 0.5 else -1))),
+                        "quantity": 1,
+                    },
+                    event_id=next_event,
+                    client_ts=t,
+                    receipt_ts=t,
+                    match_ts=t,
+                )
+                assert isinstance(replace_request, ReplaceRequest)
+                engine.replace(replace_request)
         else:
             resting_ids = [
                 (oid, actor)
@@ -168,12 +203,15 @@ def run_session(
             executed_units += quantity
         elif record.event_type == EventType.ORDER_CANCELLED:
             cancels += 1
+        elif record.event_type == EventType.ORDER_REPLACED:
+            replaces += 1
     engine.finish()
     report = replay(prestate, engine.tape)
     samples = SessionSamples(
         spreads=spreads,
         depths=depths,
         cancels=cancels,
+        replaces=replaces,
         execution_records=executions,
         executed_units=executed_units,
         tape_length=len(engine.tape),
@@ -186,6 +224,7 @@ def session_statistics(samples: SessionSamples, steps: int) -> dict[str, float]:
         "mean_spread_ticks": sum(samples.spreads) / max(len(samples.spreads), 1),
         "mean_touch_depth_units": sum(samples.depths) / max(len(samples.depths), 1),
         "cancel_intensity": samples.cancels / max(samples.tape_length, 1),
+        "replace_intensity": samples.replaces / max(samples.tape_length, 1),
         "execution_records": float(samples.execution_records),
         "executed_units": float(samples.executed_units),
         "tape_length": float(samples.tape_length),

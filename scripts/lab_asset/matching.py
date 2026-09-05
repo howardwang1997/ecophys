@@ -21,6 +21,8 @@ from lab_asset.schema import (
     LatencyChoiceRejectionReason,
     OrderRequest,
     RejectionReason,
+    ReplaceRejectionReason,
+    ReplaceRequest,
     SessionPrestate,
     Side,
     TapeRecord,
@@ -50,11 +52,13 @@ class ReferenceEngine:
         self.realized_induced_surplus = {actor: 0 for actor in prestate.actors}
         self.order_meta: dict[str, tuple[str, Side, int]] = {}
         self.order_status: dict[str, str] = {}
+        self.order_parent: dict[str, str] = {}
         self.used_client_ids: set[str] = set()
         self.latency_choices: dict[tuple[int, str], int] = {}
         self.tape: list[TapeRecord] = []
         self._order_counter = 0
         self._exec_counter = 0
+        self._rejection_counter = 0
         self.last_match_ts = prestate.scheduler_tick
         self._load_initial_book()
         self._record_and_seal(
@@ -73,6 +77,17 @@ class ReferenceEngine:
 
     def aggregate_state_digest(self) -> str:
         return self._aggregate_hash()
+
+    def role_of(self, actor: str) -> str:
+        return self.prestate.actor_roles.get(actor, "trader")
+
+    def lineage_root(self, order_id: str) -> str:
+        seen: set[str] = set()
+        current = order_id
+        while current in self.order_parent and current not in seen:
+            seen.add(current)
+            current = self.order_parent[current]
+        return current
 
     def available_information(self) -> tuple[InformationRelease, ...]:
         """Information releases visible at the current matching tick."""
@@ -98,9 +113,11 @@ class ReferenceEngine:
             order_status=self.order_status,
             used_client_ids=self.used_client_ids,
             latency_choices=self.latency_choices,
+            order_parent=self.order_parent,
             sequence=self.sequence,
             order_counter=self._order_counter,
             execution_counter=self._exec_counter,
+            rejection_counter=self._rejection_counter,
             last_match_ts=self.last_match_ts,
             rng_state=self.rng.getstate(),
         )
@@ -137,6 +154,27 @@ class ReferenceEngine:
         self.tape.append(record)
         return record
 
+    def _next_rejection_id(self) -> str:
+        self._rejection_counter += 1
+        return f"R{self._rejection_counter:08d}"
+
+    def _quotes(self) -> dict[str, int | None]:
+        return {
+            "best_bid": self._best(Side.BID),
+            "best_ask": self._best(Side.ASK),
+        }
+
+    @staticmethod
+    def _quote_fields(
+        pre: dict[str, int | None], post: dict[str, int | None]
+    ) -> dict[str, int | None]:
+        return {
+            "pre_best_bid": pre["best_bid"],
+            "pre_best_ask": pre["best_ask"],
+            "post_best_bid": post["best_bid"],
+            "post_best_ask": post["best_ask"],
+        }
+
     # ------------------------------------------------------------------ book helpers
     def _best(self, side: Side) -> int | None:
         book = self.bids if side == Side.BID else self.asks
@@ -151,6 +189,16 @@ class ReferenceEngine:
 
     def _opp_book(self, side: Side) -> dict[int, list[RestingOrder]]:
         return self.asks if side == Side.BID else self.bids
+
+    @staticmethod
+    def _opposite(side: Side) -> Side:
+        return Side.ASK if side == Side.BID else Side.BID
+
+    def _crossable_best(self, side: Side, price: int) -> int | None:
+        opp_best = self._best(self._opposite(side))
+        if opp_best is not None and self._crossed(side, price, opp_best):
+            return opp_best
+        return None
 
     def _next_order_identity(self) -> tuple[int, str]:
         counter = self._order_counter + 1
@@ -170,6 +218,7 @@ class ReferenceEngine:
             self._record_and_seal(
                 EventType.LATENCY_CHOICE_REJECTED,
                 {
+                    "rejection_id": self._next_rejection_id(),
                     "event_id": choice.event_id,
                     "actor": choice.actor,
                     "round_id": choice.round_id,
@@ -199,6 +248,7 @@ class ReferenceEngine:
     def submit(self, request: OrderRequest) -> None:
         reason = self._validate_order(request)
         before_request = self._snapshot()
+        pre_quotes = self._quotes()
         if self._valid_clocks(request.clocks):
             self.last_match_ts = request.clocks.match_ts
         self._record_and_seal(
@@ -206,6 +256,7 @@ class ReferenceEngine:
             {
                 "event_id": request.event_id,
                 "actor": request.actor,
+                "role": self.role_of(request.actor),
                 "client_order_id": request.client_order_id,
                 "round_id": request.round_id,
                 "side": request.side.value,
@@ -219,9 +270,11 @@ class ReferenceEngine:
             self._record_and_seal(
                 EventType.ORDER_REJECTED,
                 {
+                    "rejection_id": self._next_rejection_id(),
                     "client_order_id": request.client_order_id,
                     "reason": reason.value,
                     "clocks": vars(request.clocks),
+                    **self._quote_fields(pre_quotes, self._quotes()),
                 },
             )
             return
@@ -229,14 +282,12 @@ class ReferenceEngine:
         next_counter, order_id = self._next_order_identity()
         registered = False
         remaining = request.quantity
-        opp_side = Side.ASK if request.side == Side.BID else Side.BID
-        opp_best = self._best(opp_side)
-
-        while remaining > 0 and opp_best is not None and self._crossed(
-            request.side, request.price, opp_best
-        ):
+        while remaining > 0 and (opp_best := self._crossable_best(request.side, request.price)):
             before_execution = self._snapshot()
-            maker_index, maker, allocation_draw = self._select_maker(opp_side, opp_best)
+            execution_pre_quotes = self._quotes()
+            maker_index, maker, allocation_draw = self._select_maker(
+                self._opposite(request.side), opp_best
+            )
             maker_id, maker_actor, maker_qty = maker
             fill = (
                 min(remaining, maker_qty)
@@ -271,7 +322,7 @@ class ReferenceEngine:
                 registered = True
             self._exec_counter = next_exec_counter
             self._apply_maker_fill(
-                side=opp_side,
+                side=self._opposite(request.side),
                 price=opp_best,
                 index=maker_index,
                 maker=maker,
@@ -284,11 +335,15 @@ class ReferenceEngine:
                 price=opp_best,
                 quantity=fill,
             )
-            payload: dict[str, object] = {"execution": vars(execution)}
+            payload: dict[str, object] = {
+                "execution": vars(execution),
+                "aggressor_role": self.role_of(request.actor),
+                "maker_role": self.role_of(maker_actor),
+                **self._quote_fields(execution_pre_quotes, self._quotes()),
+            }
             if allocation_draw is not None:
                 payload["allocation_draw"] = allocation_draw
             self._record_and_seal(EventType.EXECUTION, payload, before_execution)
-            opp_best = self._best(opp_side)
 
         before_acceptance = self._snapshot()
         if not registered:
@@ -312,13 +367,167 @@ class ReferenceEngine:
                 "order_id": order_id,
                 "resting_quantity": remaining,
                 "clocks": vars(request.clocks),
+                **self._quote_fields(pre_quotes, self._quotes()),
             },
             before_acceptance,
         )
 
+    # ------------------------------------------------------------------ replacements
+    def replace(self, request: ReplaceRequest) -> None:
+        reason = self._replace_rejection_reason(request)
+        before_request = self._snapshot()
+        pre_quotes = self._quotes()
+        if self._valid_clocks(request.clocks):
+            self.last_match_ts = request.clocks.match_ts
+        self._record_and_seal(
+            EventType.REPLACE_REQUEST,
+            {
+                "event_id": request.event_id,
+                "actor": request.actor,
+                "role": self.role_of(request.actor),
+                "replaces_order_id": request.replaces_order_id,
+                "client_order_id": request.client_order_id,
+                "round_id": request.round_id,
+                "side": request.side.value,
+                "price": request.price,
+                "quantity": request.quantity,
+                "clocks": vars(request.clocks),
+            },
+            before_request,
+        )
+        if reason is not None:
+            self._record_and_seal(
+                EventType.REPLACE_REJECTED,
+                {
+                    "rejection_id": self._next_rejection_id(),
+                    "replaces_order_id": request.replaces_order_id,
+                    "reason": reason.value,
+                    "clocks": vars(request.clocks),
+                    **self._quote_fields(pre_quotes, self._quotes()),
+                },
+            )
+            return
+
+        old_id = request.replaces_order_id
+        _old_actor, old_side, old_price = self.order_meta[old_id]
+        parent_id = self.order_parent.get(old_id, old_id)
+        old_quantity = self._remove_resting(old_id, old_side, old_price)
+        self.order_status[old_id] = "replaced"
+
+        next_counter, order_id = self._next_order_identity()
+        order_request = OrderRequest(
+            event_id=request.event_id,
+            actor=request.actor,
+            client_order_id=request.client_order_id,
+            side=request.side,
+            price=request.price,
+            quantity=request.quantity,
+            clocks=request.clocks,
+            round_id=request.round_id,
+        )
+        self._register_order(
+            request=order_request,
+            order_id=order_id,
+            order_counter=next_counter,
+            status="active",
+        )
+        self.order_parent[order_id] = parent_id
+
+        remaining = request.quantity
+        while remaining > 0 and (opp_best := self._crossable_best(request.side, request.price)):
+            before_execution = self._snapshot()
+            execution_pre_quotes = self._quotes()
+            maker_index, maker, allocation_draw = self._select_maker(
+                self._opposite(request.side), opp_best
+            )
+            maker_id, maker_actor, maker_qty = maker
+            fill = (
+                min(remaining, maker_qty)
+                if self.prestate.allocation_rule == AllocationRule.FIFO
+                else 1
+            )
+            remaining -= fill
+            maker_remaining = maker_qty - fill
+            next_exec_counter = self._exec_counter + 1
+            execution = Execution(
+                event_id=self.sequence + 1,
+                execution_id=f"E{next_exec_counter:08d}",
+                aggressor_order_id=order_id,
+                maker_order_id=maker_id,
+                maker_actor=maker_actor,
+                aggressor_actor=request.actor,
+                side_of_aggressor=request.side,
+                price=opp_best,
+                quantity=fill,
+                maker_remaining=maker_remaining,
+                clocks=request.clocks,
+                round_id=request.round_id,
+            )
+            self._exec_counter = next_exec_counter
+            self._apply_maker_fill(
+                side=self._opposite(request.side),
+                price=opp_best,
+                index=maker_index,
+                maker=maker,
+                fill=fill,
+            )
+            self._settle(
+                aggressor_side=request.side,
+                aggressor_actor=request.actor,
+                maker_actor=maker_actor,
+                price=opp_best,
+                quantity=fill,
+            )
+            payload: dict[str, object] = {
+                "execution": vars(execution),
+                "aggressor_role": self.role_of(request.actor),
+                "maker_role": self.role_of(maker_actor),
+                **self._quote_fields(execution_pre_quotes, self._quotes()),
+            }
+            if allocation_draw is not None:
+                payload["allocation_draw"] = allocation_draw
+            self._record_and_seal(EventType.EXECUTION, payload, before_execution)
+
+        before_replaced = self._snapshot()
+        if remaining > 0:
+            self._book(request.side).setdefault(request.price, []).append(
+                (order_id, request.actor, remaining)
+            )
+            self.order_status[order_id] = "resting"
+        else:
+            self.order_status[order_id] = "filled"
+        self._record_and_seal(
+            EventType.ORDER_REPLACED,
+            {
+                "replaces_order_id": old_id,
+                "replaced_quantity": old_quantity,
+                "order_id": order_id,
+                "parent_order_id": parent_id,
+                "lineage_root": self.lineage_root(order_id),
+                "resting_quantity": remaining,
+                "clocks": vars(request.clocks),
+                **self._quote_fields(pre_quotes, self._quotes()),
+            },
+            before_replaced,
+        )
+
+    def _remove_resting(self, order_id: str, side: Side, price: int) -> int:
+        quantity, _ = self._pop_resting(order_id, side, price)
+        return quantity
+
+    def _pop_resting(self, order_id: str, side: Side, price: int) -> tuple[int, int]:
+        queue = self._book(side)[price]
+        index = next(i for i, row in enumerate(queue) if row[0] == order_id)
+        quantity = queue[index][2]
+        queue.pop(index)
+        if not queue:
+            del self._book(side)[price]
+        return quantity, index
+
     def cancel(self, request: CancelRequest) -> None:
         clock_valid = self._valid_clocks(request.clocks)
         before_request = self._snapshot()
+        pre_quotes = self._quotes()
         if clock_valid:
             self.last_match_ts = request.clocks.match_ts
         self._record_and_seal(
@@ -326,6 +535,7 @@ class ReferenceEngine:
             {
                 "event_id": request.event_id,
                 "actor": request.actor,
+                "role": self.role_of(request.actor),
                 "order_id": request.order_id,
                 "round_id": request.round_id,
                 "clocks": vars(request.clocks),
@@ -337,9 +547,11 @@ class ReferenceEngine:
             self._record_and_seal(
                 EventType.CANCEL_REJECTED,
                 {
+                    "rejection_id": self._next_rejection_id(),
                     "order_id": request.order_id,
                     "reason": reason.value,
                     "clocks": vars(request.clocks),
+                    **self._quote_fields(pre_quotes, self._quotes()),
                 },
             )
             return
@@ -361,6 +573,7 @@ class ReferenceEngine:
                 "actor": actor,
                 "cancelled_quantity": target[2],
                 "clocks": vars(request.clocks),
+                **self._quote_fields(pre_quotes, self._quotes()),
             },
             before_cancel,
         )
@@ -526,6 +739,68 @@ class ReferenceEngine:
             return CancelRejectionReason.CANCEL_TOO_LATE
         return None
 
+    def _replace_rejection_reason(
+        self, request: ReplaceRequest
+    ) -> ReplaceRejectionReason | None:
+        if request.actor not in self.prestate.actors:
+            return ReplaceRejectionReason.UNKNOWN_ACTOR
+        if not self._valid_clocks(request.clocks):
+            return ReplaceRejectionReason.INVALID_CLOCKS
+        meta = self.order_meta.get(request.replaces_order_id)
+        if meta is None:
+            return ReplaceRejectionReason.UNKNOWN_ORDER
+        old_actor, old_side, old_price = meta
+        if old_actor != request.actor:
+            return ReplaceRejectionReason.NOT_OWNER
+        if self.order_status[request.replaces_order_id] != "resting":
+            return ReplaceRejectionReason.ORDER_NOT_RESTING
+
+        order_request = OrderRequest(
+            event_id=request.event_id,
+            actor=request.actor,
+            client_order_id=request.client_order_id,
+            side=request.side,
+            price=request.price,
+            quantity=request.quantity,
+            clocks=request.clocks,
+            round_id=request.round_id,
+        )
+        reason_map = {
+            RejectionReason.UNKNOWN_ACTOR: ReplaceRejectionReason.UNKNOWN_ACTOR,
+            RejectionReason.DUPLICATE_CLIENT_ID: ReplaceRejectionReason.DUPLICATE_CLIENT_ID,
+            RejectionReason.PRICE_OUT_OF_BANDS: ReplaceRejectionReason.PRICE_OUT_OF_BANDS,
+            RejectionReason.NEGATIVE_OR_ZERO_QUANTITY: (
+                ReplaceRejectionReason.NEGATIVE_OR_ZERO_QUANTITY
+            ),
+            RejectionReason.INVALID_CLOCKS: ReplaceRejectionReason.INVALID_CLOCKS,
+            RejectionReason.INSUFFICIENT_CASH: ReplaceRejectionReason.INSUFFICIENT_CASH,
+            RejectionReason.INSUFFICIENT_INVENTORY: (
+                ReplaceRejectionReason.INSUFFICIENT_INVENTORY
+            ),
+            RejectionReason.INDUCED_BUY_CAPACITY_EXCEEDED: (
+                ReplaceRejectionReason.INDUCED_BUY_CAPACITY_EXCEEDED
+            ),
+            RejectionReason.INDUCED_SELL_CAPACITY_EXCEEDED: (
+                ReplaceRejectionReason.INDUCED_SELL_CAPACITY_EXCEEDED
+            ),
+            RejectionReason.SELF_TRADE_PREVENTED: (
+                ReplaceRejectionReason.SELF_TRADE_PREVENTED
+            ),
+        }
+
+        old_quantity, old_index = self._pop_resting(
+            request.replaces_order_id, old_side, old_price
+        )
+        try:
+            order_reason = self._validate_order(order_request)
+        finally:
+            self._book(old_side).setdefault(old_price, []).insert(
+                old_index, (request.replaces_order_id, request.actor, old_quantity)
+            )
+        if order_reason is not None:
+            return reason_map[order_reason]
+        return None
+
     def _validate_latency_choice(
         self, choice: LatencyChoice
     ) -> LatencyChoiceRejectionReason | None:
@@ -585,6 +860,10 @@ class ReferenceEngine:
         actors = set(prestate.actors)
         if set(prestate.initial_cash) != actors or set(prestate.initial_inventory) != actors:
             raise ValueError("cash and inventory maps must exactly match actors")
+        if not set(prestate.actor_roles).issubset(actors) or any(
+            not role for role in prestate.actor_roles.values()
+        ):
+            raise ValueError("actor_roles keys must be known actors with non-empty roles")
         if any(value < 0 for value in prestate.initial_cash.values()) or any(
             value < 0 for value in prestate.initial_inventory.values()
         ):

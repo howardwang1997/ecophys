@@ -15,6 +15,7 @@ from lab_asset.schema import (
     EventType,
     LatencyChoice,
     OrderRequest,
+    ReplaceRequest,
     SessionPrestate,
     Side,
     TapeRecord,
@@ -90,6 +91,21 @@ def replay(prestate: SessionPrestate, tape: list[TapeRecord]) -> ReplayReport:
                     event_id=_as_int(payload["event_id"]),
                     actor=_as_str(payload["actor"]),
                     order_id=_as_str(payload["order_id"]),
+                    clocks=_clocks(payload),
+                    round_id=_as_int(payload["round_id"]),
+                )
+            )
+        elif record.event_type == EventType.REPLACE_REQUEST:
+            payload = record.payload
+            engine.replace(
+                ReplaceRequest(
+                    event_id=_as_int(payload["event_id"]),
+                    actor=_as_str(payload["actor"]),
+                    replaces_order_id=_as_str(payload["replaces_order_id"]),
+                    client_order_id=_as_str(payload["client_order_id"]),
+                    side=Side(_as_str(payload["side"])),
+                    price=_as_int(payload["price"]),
+                    quantity=_as_int(payload["quantity"]),
                     clocks=_clocks(payload),
                     round_id=_as_int(payload["round_id"]),
                 )

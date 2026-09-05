@@ -56,6 +56,24 @@ class LatencyChoiceRejectionReason(StrEnum):
     INVALID_CLOCKS = "invalid_clocks"
 
 
+class ReplaceRejectionReason(StrEnum):
+    """Reason-coded replacement rejections; mirrors the cancel and order validation families."""
+
+    UNKNOWN_ACTOR = "unknown_actor"
+    UNKNOWN_ORDER = "unknown_order"
+    NOT_OWNER = "not_owner"
+    ORDER_NOT_RESTING = "order_not_resting"
+    INVALID_CLOCKS = "invalid_clocks"
+    DUPLICATE_CLIENT_ID = "duplicate_client_id"
+    PRICE_OUT_OF_BANDS = "price_out_of_band"
+    NEGATIVE_OR_ZERO_QUANTITY = "negative_or_zero_quantity"
+    INSUFFICIENT_CASH = "insufficient_cash"
+    INSUFFICIENT_INVENTORY = "insufficient_inventory"
+    INDUCED_BUY_CAPACITY_EXCEEDED = "induced_buy_capacity_exceeded"
+    INDUCED_SELL_CAPACITY_EXCEEDED = "induced_sell_capacity_exceeded"
+    SELF_TRADE_PREVENTED = "self_trade_prevented"
+
+
 class EventType(StrEnum):
     SESSION_START = "session_start"
     LATENCY_CHOICE = "latency_choice"
@@ -66,6 +84,9 @@ class EventType(StrEnum):
     CANCEL_REQUEST = "cancel_request"
     ORDER_CANCELLED = "order_cancelled"
     CANCEL_REJECTED = "cancel_rejected"
+    REPLACE_REQUEST = "replace_request"
+    ORDER_REPLACED = "order_replaced"
+    REPLACE_REJECTED = "replace_rejected"
     EXECUTION = "execution"
     SESSION_END = "session_end"
 
@@ -134,6 +155,21 @@ class CancelRequest:
 
 
 @dataclass(frozen=True)
+class ReplaceRequest:
+    """Atomic cancel-and-resubmit; the new order carries the parent lineage."""
+
+    event_id: int
+    actor: str
+    replaces_order_id: str
+    client_order_id: str
+    side: Side
+    price: int
+    quantity: int
+    clocks: ThreeClocks
+    round_id: int = 0
+
+
+@dataclass(frozen=True)
 class Execution:
     """One maker fill; random-unit executions have quantity one by construction."""
 
@@ -179,13 +215,14 @@ class SessionPrestate:
     induced_sell_costs: dict[str, tuple[int, ...]] = field(default_factory=dict)
     information_schedule: tuple[InformationRelease, ...] = ()
     initial_book: tuple[InitialOrder, ...] = ()
+    actor_roles: dict[str, str] = field(default_factory=dict)
     scheduler_seed: int = 0
     scheduler_tick: int = 0
     scheduler_state: str = "initial"
     assignment_key_commitment: str = "unassigned"
     latency_endowment: int = 0
     latency_delay_by_investment: tuple[int, ...] = ()
-    schema_version: str = "lab-asset-v2"
+    schema_version: str = "lab-asset-v3"
 
 
 def stable_hash(payload: object) -> str:
@@ -213,9 +250,11 @@ def state_hash(
     order_status: dict[str, str],
     used_client_ids: set[str],
     latency_choices: dict[tuple[int, str], int],
+    order_parent: dict[str, str],
     sequence: int,
     order_counter: int,
     execution_counter: int,
+    rejection_counter: int,
     last_match_ts: int,
     rng_state: object,
 ) -> str:
@@ -247,8 +286,10 @@ def state_hash(
             [round_id, actor, investment]
             for (round_id, actor), investment in sorted(latency_choices.items())
         ],
+        "order_parent": sorted(order_parent.items()),
         "order_counter": order_counter,
         "execution_counter": execution_counter,
+        "rejection_counter": rejection_counter,
         "last_match_ts": last_match_ts,
         "rng_state": rng_state,
     }

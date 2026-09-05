@@ -19,6 +19,7 @@ from lab_asset.schema import (
     InitialOrder,
     LatencyChoice,
     OrderRequest,
+    ReplaceRequest,
     SessionPrestate,
     Side,
     ThreeClocks,
@@ -422,3 +423,172 @@ def test_replay_detects_tampered_tape() -> None:
         else:
             tampered.append(record)
     assert not replay(prestate, tampered).ok
+
+
+def replaceq(
+    actor: str, replaces: str, oid: str, price: int, qty: int, t: int
+) -> ReplaceRequest:
+    return ReplaceRequest(t, actor, replaces, oid, Side.ASK, price, qty, clocks(t))
+
+
+def test_replace_resting_to_resting_records_lineage_and_quotes() -> None:
+    engine = ReferenceEngine(make_prestate(AllocationRule.FIFO))
+    engine.submit(sell("a", "a1", 101, 5, 1))
+    engine.replace(replaceq("a", "O00000001", "a2", 102, 3, 2))
+    assert engine.order_status["O00000001"] == "replaced"
+    assert engine.order_status["O00000002"] == "resting"
+    assert engine.asks == {102: [("O00000002", "a", 3)]}
+    payload = events(engine, EventType.ORDER_REPLACED)[0]
+    assert payload["replaces_order_id"] == "O00000001"
+    assert payload["order_id"] == "O00000002"
+    assert payload["parent_order_id"] == "O00000001"
+    assert payload["lineage_root"] == "O00000001"
+    assert payload["replaced_quantity"] == 5
+    assert payload["resting_quantity"] == 3
+    assert payload["pre_best_ask"] == 101 and payload["post_best_ask"] == 102
+    assert engine.order_parent["O00000002"] == "O00000001"
+    assert engine.lineage_root("O00000002") == "O00000001"
+    engine.replace(replaceq("a", "O00000002", "a3", 103, 2, 3))
+    chain = events(engine, EventType.ORDER_REPLACED)[1]
+    assert chain["parent_order_id"] == "O00000001"
+    assert chain["lineage_root"] == "O00000001"
+
+
+def test_replace_that_crosses_executes_against_opposite_book() -> None:
+    engine = ReferenceEngine(make_prestate(AllocationRule.FIFO))
+    engine.submit(sell("a", "a1", 101, 5, 1))
+    engine.submit(buy("b", "b1", 99, 2, 2))
+    engine.replace(ReplaceRequest(3, "b", "O00000002", "b2", Side.BID, 102, 3, clocks(3)))
+    assert maker_actors(engine) == ["a"]
+    execution = sub(events(engine, EventType.EXECUTION)[0], "execution")
+    assert execution["quantity"] == 3
+    assert engine.order_status["O00000003"] == "filled"
+    replaced = events(engine, EventType.ORDER_REPLACED)[0]
+    assert replaced["resting_quantity"] == 0
+    assert replaced["order_id"] == "O00000003"
+
+
+def test_replace_rejections_are_reason_coded_and_resource_freeing() -> None:
+    from dataclasses import replace as dc_replace
+
+    prestate = dc_replace(
+        make_prestate(AllocationRule.FIFO),
+        induced_buy_values={},
+        induced_sell_costs={},
+    )
+    engine = ReferenceEngine(prestate)
+    engine.submit(sell("a", "a1", 101, 5, 1))
+    engine.replace(replaceq("b", "O00000001", "b1", 102, 1, 2))
+    engine.replace(replaceq("a", "O00000999", "a2", 102, 1, 3))
+    engine.replace(ReplaceRequest(4, "a", "O00000001", "a3", Side.BID, 99, 1020, clocks(4)))
+    reasons = [payload["reason"] for payload in events(engine, EventType.REPLACE_REJECTED)]
+    assert reasons == ["not_owner", "unknown_order", "insufficient_cash"]
+    assert engine.order_status["O00000001"] == "resting"
+    assert engine.asks == {101: [("O00000001", "a", 5)]}
+    engine.replace(ReplaceRequest(5, "a", "O00000001", "a4", Side.BID, 99, 1001, clocks(5)))
+    assert len(events(engine, EventType.REPLACE_REJECTED)) == 3
+    assert len(events(engine, EventType.ORDER_REPLACED)) == 1
+
+
+def test_replace_frees_reserved_resources_for_larger_quantity() -> None:
+    from dataclasses import replace as dc_replace
+
+    from lab_asset.schema import RejectionReason
+
+    prestate = dc_replace(
+        make_prestate(AllocationRule.FIFO),
+        induced_buy_values={},
+        induced_sell_costs={},
+    )
+    engine = ReferenceEngine(prestate)
+    engine.submit(buy("a", "a1", 99, 1000, 1))
+    oversized = OrderRequest(2, "a", "a2", Side.BID, 99, 1001, clocks(2))
+    assert engine._validate_order(oversized) is RejectionReason.INSUFFICIENT_CASH
+    engine.replace(ReplaceRequest(3, "a", "O00000001", "a3", Side.BID, 99, 1001, clocks(3)))
+    assert len(events(engine, EventType.ORDER_REPLACED)) == 1
+    assert engine.bids == {99: [("O00000002", "a", 1001)]}
+
+
+def test_rejection_ids_are_sequential_across_families() -> None:
+    engine = ReferenceEngine(make_prestate(AllocationRule.FIFO))
+    engine.submit(sell("a", "a1", 101, 5, 1))
+    engine.submit(sell("a", "a1", 101, 5, 2))
+    engine.cancel(CancelRequest(3, "b", "O00000001", clocks(3)))
+    engine.replace(replaceq("b", "O00000001", "b1", 102, 1, 4))
+    ids = [
+        payload["rejection_id"]
+        for etype in (
+            EventType.ORDER_REJECTED,
+            EventType.CANCEL_REJECTED,
+            EventType.REPLACE_REJECTED,
+        )
+        for payload in events(engine, etype)
+    ]
+    assert ids == ["R00000001", "R00000002", "R00000003"]
+
+
+def test_pre_post_quotes_on_accepted_actions() -> None:
+    engine = ReferenceEngine(make_prestate(AllocationRule.FIFO))
+    engine.submit(sell("a", "a1", 101, 2, 1))
+    engine.submit(buy("b", "b1", 101, 2, 2))
+    execution = events(engine, EventType.EXECUTION)[0]
+    assert execution["pre_best_ask"] == 101 and execution["post_best_ask"] is None
+    assert execution["pre_best_bid"] is None and execution["post_best_bid"] is None
+    accepted = events(engine, EventType.ORDER_ACCEPTED)[-1]
+    assert accepted["pre_best_ask"] == 101 and accepted["post_best_ask"] is None
+    cancelled_view = events(engine, EventType.ORDER_CANCELLED)
+    assert cancelled_view == []
+
+
+def test_roles_recorded_and_prestate_validated() -> None:
+    from dataclasses import replace as dc_replace
+
+    prestate = dc_replace(
+        make_prestate(AllocationRule.FIFO), actor_roles={"a": "designated_maker"}
+    )
+    engine = ReferenceEngine(prestate)
+    engine.submit(sell("a", "a1", 101, 5, 1))
+    engine.submit(sell("c", "c1", 102, 5, 2))
+    request_roles = [
+        payload["role"] for payload in events(engine, EventType.ORDER_REQUEST)
+    ]
+    assert request_roles == ["designated_maker", "trader"]
+    bad = dc_replace(make_prestate(AllocationRule.FIFO), actor_roles={"zz": "ghost"})
+    try:
+        ReferenceEngine(bad)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown actor role must be rejected")
+
+
+def test_replay_reproduces_and_detects_tampering_on_replace_tape() -> None:
+    for rule in (AllocationRule.FIFO, AllocationRule.RANDOM_UNIT_WITHIN_PRICE):
+        prestate = make_prestate(rule, seed=11)
+        engine = ReferenceEngine(prestate)
+        engine.submit(sell("a", "a1", 101, 5, 1))
+        engine.submit(sell("b", "b1", 102, 4, 2))
+        engine.replace(replaceq("a", "O00000001", "a2", 100, 2, 3))
+        engine.replace(ReplaceRequest(4, "b", "O00000002", "b2", Side.ASK, 101, 6, clocks(4)))
+        engine.submit(buy("c", "c1", 102, 4, 5))
+        engine.cancel(CancelRequest(6, "c", "O00000003", clocks(6)))
+        engine.finish()
+        report = replay(prestate, engine.tape)
+        assert report.ok, str(report)
+
+        from dataclasses import replace as dc_replace
+
+        for record in engine.tape:
+            if record.event_type == EventType.ORDER_REPLACED:
+                tampered = dc_replace(
+                    record,
+                    payload={**record.payload, "resting_quantity": 999},
+                )
+                broken = [
+                    dc_replace(r) if r.sequence != record.sequence else tampered
+                    for r in engine.tape
+                ]
+                assert not replay(prestate, broken).ok
+                break
+        else:
+            raise AssertionError("replace tape lacked an ORDER_REPLACED record")

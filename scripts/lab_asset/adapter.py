@@ -17,6 +17,7 @@ from lab_asset.schema import (
     EventType,
     LatencyChoice,
     OrderRequest,
+    ReplaceRequest,
     Side,
     TapeRecord,
     ThreeClocks,
@@ -44,13 +45,15 @@ def to_request(
     client_ts: int,
     receipt_ts: int,
     match_ts: int,
-) -> OrderRequest | CancelRequest | LatencyChoice:
+) -> OrderRequest | CancelRequest | ReplaceRequest | LatencyChoice:
     """Translate a client message dict into a typed engine request.
 
-    New-order message: {"type": "new", "actor", "client_order_id", "round_id",
-                        "side": "B"|"S", "price", "quantity"}
-    Cancel message:    {"type": "cancel", "actor", "order_id", "round_id"}
-    Latency message:   {"type": "latency", "actor", "round_id", "investment"}
+    New-order message:    {"type": "new", "actor", "client_order_id", "round_id",
+                           "side": "B"|"S", "price", "quantity"}
+    Cancel message:       {"type": "cancel", "actor", "order_id", "round_id"}
+    Replace message:      {"type": "replace", "actor", "replaces_order_id",
+                           "client_order_id", "round_id", "side": "B"|"S", "price", "quantity"}
+    Latency message:      {"type": "latency", "actor", "round_id", "investment"}
     """
     if not isinstance(message, dict):
         raise AdapterError("message must be a dict")
@@ -96,6 +99,31 @@ def to_request(
             clocks=clocks,
             round_id=round_id,
         )
+    if kind == "replace":
+        replaces_order_id = message.get("replaces_order_id")
+        client_order_id = message.get("client_order_id")
+        side_raw = message.get("side")
+        price = message.get("price")
+        quantity = message.get("quantity")
+        if not isinstance(replaces_order_id, str) or not replaces_order_id:
+            raise AdapterError("replaces_order_id must be a non-empty string")
+        if not isinstance(client_order_id, str) or not client_order_id:
+            raise AdapterError("client_order_id must be a non-empty string")
+        if side_raw not in ("B", "S"):
+            raise AdapterError("side must be 'B' or 'S'")
+        if not isinstance(price, int) or not isinstance(quantity, int):
+            raise AdapterError("price and quantity must be integers")
+        return ReplaceRequest(
+            event_id=event_id,
+            actor=actor,
+            replaces_order_id=replaces_order_id,
+            client_order_id=client_order_id,
+            side=Side(side_raw),
+            price=price,
+            quantity=quantity,
+            clocks=clocks,
+            round_id=round_id,
+        )
     if kind == "latency":
         investment = message.get("investment")
         if not isinstance(investment, int):
@@ -107,7 +135,7 @@ def to_request(
             investment=investment,
             clocks=clocks,
         )
-    raise AdapterError("type must be 'new', 'cancel', or 'latency'")
+    raise AdapterError("type must be 'new', 'cancel', 'replace', or 'latency'")
 
 
 def client_view(record: TapeRecord) -> dict[str, object]:
