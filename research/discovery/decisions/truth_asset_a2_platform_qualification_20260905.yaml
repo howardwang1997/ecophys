@@ -1,0 +1,58 @@
+schema_version: truth-asset-a2-machine-decision-v1
+decision_id: truth_asset_a2_platform_qualification_20260905
+decision_kind: a2_platform_qualification_authorization
+decided_at: "2026-09-05T08:30:00Z"
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: >-
+  The PI directed, in order: repair the Paper D double-blind blocker, commit and push the
+  uncommitted records, then proceed with authorizing the A-2 truth-asset platform work
+  ("先把 Paper D 修复，然后 commit push，然后再继续探索授权 A2 真值资产平台").
+status: authorized
+stage: A2_platform_qualification
+governing_preflight:
+  plan: papers/proposal/ecomd_truth_asset_capability_build_plan_2026-08-26.md
+  plan_sha256: 553f773be7ce39f3a8b331a8d1f354e544c2e460b4334d03e4088f5a134c2431
+  plan_stage: A-3 paper-only contract; this decision opens its A-2 rung only
+discovery_status_effect: none
+candidate_harvest_authorized: false
+reentry_requires_qualified_trigger: true
+platform_seed:
+  root: scripts/lab_asset/
+  components:
+    - schema.py (versioned arm-invariant tape grammar; FIFO vs random-unit-within-price)
+    - matching.py (engine)
+    - replay.py (deterministic replay with state hashes)
+    - robot_pilot.py (synthetic traders)
+    - run_conformance.py (fixture runner)
+    - adapter.py, priority_race.py
+  provenance: built under the 2026-08-27 C4 preflight; retained as reusable assets
+authorized_actions:
+  - Extend the local lab platform seed toward the A-3 Part 4 contract: full order lifecycle with
+    client/server/matching timestamps, reason-coded rejections, pre/post best quotes, a full-book
+    state hash per accepted action, and a replay prestate (endowments, induced-value draws,
+    information schedule, initial book, rule configuration, RNG state, assignment key).
+  - Build and run deterministic-replay verification and schema-conformance fixtures; freeze the
+    exact schema as a versioned artifact at A-2 exit.
+  - Run synthetic robot pilots (no human participants) on the local Mac CPU to exercise both rule
+    arms under one arm-invariant grammar.
+  - Record each engineering iteration, fixture result, and stop-rule evaluation append-only in the
+    work log and a formal A-2 result document.
+forbidden_actions:
+  - No human participants, recruitment, outreach, site contact, or ethics filing (A-1 rung).
+  - No outcome access to any real-market dataset; no data purchase; no confirmation-site contact.
+  - No treatment-selection adjudication (separate bounded A-3 audit; this decision conformance-
+    qualifies the arm-invariant grammar only).
+  - No candidate harvesting, topic-card creation, or re-entry authorization; A-2 success does not
+    reopen any closed route by itself.
+  - No EcoMD integration, no simulator execution for scientific inference, no GPU use. Compute is
+    local Mac CPU only.
+stop_rules:
+  - A-3 Part 8 rule 1 binds: platform conformance or deterministic replay failure after two
+    engineering iterations terminates the asset build and is recorded in the decision history.
+  - Any schema change that makes the tape grammar arm-dependent voids the iteration.
+exit_criteria:
+  - All A-3 Part 4 fields present in emitted tapes; deterministic replay reproduces every state
+    hash on conformance fixtures and robot pilots; schema frozen as a versioned artifact; formal
+    A-2 result written.
+effective_until: a2_exit_or_stop_rule_terminal_or_pi_revocation
