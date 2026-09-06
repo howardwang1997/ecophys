@@ -1,0 +1,88 @@
+{
+  "item": "L1-2",
+  "title": "ABS/INC supervised coordinate heads for L1 + the two missing RNG-substream bindings (init, minibatch)",
+  "stage": "D_minus_1 pre-D0 (outcome-blind freeze pinned 2026-09-19)",
+  "date": "2026-09-07",
+  "spec_source": [
+    "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 2.2 (ABS/INC semantics: [D0 BUILD] L1-2 = the two coordinate heads, predict x_{t+1} vs predict x_{t+1} - x_t on conserving-channel / book-state targets, trained by supervised rollout error per contract C5; both mechanically supported by existing integrator outputs, integrator.py:445-470)",
+    "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 2.4 (RNG wiring: [D0 BUILD] bind the init substream name to spawn(seed,'init') explicitly; [GAP] minibatch-order stream as part of the supervised training loop L1-2)",
+    "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 4 (D0 build register item L1-2) and section 5.F (build-register outputs hashed into the D0 freeze inventory)",
+    "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md C3 (coordinate axis c in {absolute next state, increment}), C5 (primary endpoint: conserving-channel rollout error Y = sqrt(mean_ch mean_t ((x_hat_ch,t - x_ch,t)/s_ch)^2), channels = exactly two aggregate conserving channels {total executed volume units, total executed cash ticks}), C1 (RNG tree: named substreams data/init/minibatch/train_kernel/kernel:1..16), C2(d) (deterministic neural decode at eval; no sampling heads)",
+    "ecomd/models/fact_surrogate.py FEXEC_ROUND_FEATURES + FactSurrogateBatch + MechanismEstimator hook (lineage-invariant corpus grammar; E-1 emits it); ecomd/training/train_fact_surrogate.py derive_substream_seeds (the frozen single RNG-tree derivation reused, not duplicated)"
+  ],
+  "files_created": [
+    {
+      "path": "ecomd/models/l1_coordinate_heads.py",
+      "sha256": "f7daa977623e15f866294b76cbc1f5f7af5a2aae781446a2b52bb26be00c3432"
+    },
+    {
+      "path": "ecomd/training/l1_supervised.py",
+      "sha256": "9b035c5cfeaca46fb401c9e925b54963718a381cdd61f74de38ac64695a92562"
+    },
+    {
+      "path": "tests/test_l1_coordinate_heads.py",
+      "sha256": "bebe0f06af17236afe85da0c1840495e0d62fa0e6e1eda22cac527a34f332191"
+    }
+  ],
+  "files_changed": [],
+  "public_api": {
+    "ecomd.models.l1_coordinate_heads": [
+      "L1CoordinateHeadsConfig(d_hidden=64, n_channels=2, n_slots=8, init_gain=0.1) — frozen-at-D0 hyperparameters, field-mirrors FactSurrogateConfig",
+      "L1CoordinateOutput(abs_channels (B,T,C), inc_channels (B,T,C), flow (B,T,S) integer lattice, demand (B,T) integer lattice) — index t decoded from strictly pre-round information",
+      "L1CoordinateHeads(config=None, *, generator=None).forward(FactSurrogateBatch) -> L1CoordinateOutput — stateless per-round MLP encoder (SiLU, potentials.py idiom) over concat(features_t, x_t); reset_parameters(generator) xavier/zero-bias; pre_round_base(batch) -> (B,T,C) observed x_t; construction with a generator snapshots/restores the global torch RNG so the generator is the sole effective init randomness source"
+    ],
+    "ecomd.training.l1_supervised": [
+      "build_coordinate_targets(channels, channels_init=None) -> CoordinateTargets(base, abs_targets, inc_targets) — exact-inverse algebra: abs == base + inc identically",
+      "coordinate_state_prediction(output, base, coordinate) -> Tensor — ABSOLUTE reads abs_channels; INCREMENT lifts by the observed base (x_t + inc_hat), so both arms are compared in channel-STATE space (C3's D_te subtracts commensurate endpoints)",
+      "l1_supervised_terms(output, targets, coordinate, channel_scales, *, distance_mode='mse') -> dict — C5 scaled rollout-error terms: per-channel means, c5_endpoint = sqrt of the mse, _total (multi_fact_terms convention)",
+      "combine_supervised_and_fact_terms(supervised, fact, *, w_supervised) -> dict — the composition point with losses.multi_fact_terms (adds; never replaces)",
+      "init_substream_seed(seed_root) -> int — spawn(seed,'init') via the shared frozen derivation derive_substream_seeds",
+      "bind_v2_type_seed(EcoMDConfig, seed_root) -> EcoMDConfig — OPT-IN v2_type_seed binding; returns a new config, default-42 behavior untouched",
+      "MinibatchOrderStream.from_seed_root(seed_root) / .next_order(n) — the shared C1/G2 minibatch-order stream, permutations solely from the spawn(seed,'minibatch') generator",
+      "L1SupervisedTrainConfig + train_l1_coordinate_heads(model, batch, config, *, seed_root, returns=None) -> history — CPU supervised loop (Adam, grad clip, records); stochastic consumers: minibatch substream only"
+    ]
+  },
+  "test_command": "conda run -n ecophys python -m pytest tests/test_l1_coordinate_heads.py -q",
+  "tests_passed": "21 passed (21/21; single-file CPU spot check only, ~3 s)",
+  "test_coverage": [
+    "test_coordinate_targets_exact_inverse_algebra[True/False] - ABS/INC targets are exact inverses on consecutive states (abs - base == inc and base + inc == abs identically; base[:,0] == channels_init or zero base)",
+    "test_increment_prediction_is_the_base_lifted_decode - head-level algebra: ABSOLUTE prediction == abs_channels; INCREMENT prediction == base + inc_channels",
+    "test_c5_terms_match_hand_computation - hand-computed scaled squared mean, c5_endpoint = sqrt(total), per-channel means, for both coordinate arms",
+    "test_channel_scales_validation - wrong length / nonpositive s_ch raise ValueError",
+    "test_decode_determinism_by_double_execution - byte-identical decodes on double forward (all four output tensors)",
+    "test_construction_determinism_from_init_substream - same init-substream seed -> identical parameter bytes; different seed root -> different",
+    "test_init_binding_is_the_shared_named_substream - init_substream_seed == derive_substream_seeds(root)['init'] (single derivation, no second tree), != minibatch, != next seed root",
+    "test_init_binding_is_opt_in_and_leaves_the_default_untouched - bind_v2_type_seed returns a new config with the substream seed; the passed config keeps v2_type_seed == 42",
+    "test_model_init_consumes_zero_global_rng / test_forward_consumes_zero_global_rng - global torch RNG state bit-unchanged through construction and decode (mirrors tests/test_ecomd_v2_sps_rng_binding.py)",
+    "test_minibatch_order_stream_is_named_substream_and_global_free - same root reproduces the permutation sequence, different roots differ, permutations valid, global RNG untouched, n<1 raises",
+    "test_supervised_gradient_flow_single_step[ABSOLUTE/INCREMENT] - single synthetic-batch gradient step: finite loss and grads, nonzero grad mass, parameters move (byte-compare before/after SGD step)",
+    "test_composition_with_multi_fact_terms - merged total == w_sup*supervised + fact_total algebraically; gradient of the merged total reaches the head parameters through the supervised term",
+    "test_training_loop_single_step_reproducible_and_global_free - n_iters=1 loop: global RNG untouched, identical history + byte-identical post-step parameters from one seed root, parameters moved",
+    "test_training_loop_without_returns_runs_supervised_only / test_training_loop_rejects_non_cpu_and_bad_iters - fact-path optional; validation fails loud",
+    "test_forward_validates_shapes / test_output_lattice_and_shapes / test_config_validation - feature-grammar, channels, slot, channels_init shape errors; output lattice integrality (flow integral >= 0, demand integral >= 1); config validation"
+  ],
+  "mypy_result": "conda run -n ecophys python -m mypy ecomd/models/l1_coordinate_heads.py ecomd/training/l1_supervised.py tests/test_l1_coordinate_heads.py -> 'Success: no issues found in 3 source files' (project strict=true; the two ecomd files are inside the pyproject files=[ecomd] strict scope; the test file carries two targeted type: ignore[no-untyped-call] on Tensor.backward, a torch-stub limitation)",
+  "ruff_result": "All checks passed (ecomd/models/l1_coordinate_heads.py ecomd/training/l1_supervised.py tests/test_l1_coordinate_heads.py)",
+  "cpu_smoke_scope": "CPU-only second-scale single-file runs on the Mac per the PI no-heavy-compute rule (global CLAUDE.md 2026-09-06): one pytest file (21 tests, ~3 s), mypy and ruff on own files only, one import smoke. No GPU, no training runs, no persisted checkpoints, no batch/regression battery, no market data, no outcome access, no engine-cell or endpoint evaluation. The E-2 preflight re-run was NOT executed (out of scope, PI-visible remote step). Frozen bundle not touched (not needed by this item).",
+  "spec_deviations": [
+    "Training objective = mean SCALED SQUARED deviation (Y^2), with the C5 statistic Y = sqrt(...) exposed as 'c5_endpoint' (and recorded per iteration) rather than backpropagated through the sqrt. Reason: same minimizer as Y, avoids the sqrt-at-zero NaN gradient; conservative and recorded, not silent.",
+    "Both coordinate arms are compared in channel-STATE space (INCREMENT prediction lifted by the observed pre-round base: x_t + inc_hat) rather than comparing raw increments to increments. Reason: contract C3's D_te = Ybar_absolute,te - Ybar_increment,te subtracts endpoint means, which is only meaningful on one commensurate scale; this mirrors the existing L2 surface train_fact_surrogate._predicted_channels. The per-coordinate decodes remain the raw abs/inc heads.",
+    "distance_mode defaults to 'mse' (C5-faithful); 'l1'/'huber' remain reachable through the shared losses.smooth_dev dispatch, under which 'c5_endpoint' is the sqrt of the mean deviation (reporting only). Reason: reuse of the existing dispatch is the narrower surface; the default pins the contract form.",
+    "The L1 encoder is a stateless per-round MLP over concat(features_t, x_t) (SiLU/xavier potentials.py idiom), not a recurrence and not a full EcoMDv2Potential wiring. Reason: L1's potential surface is stateless per round, and the corpus adapter (L1-1, separate item) owns the mapping into the v2 simulator composition; the heads here are the prediction-target surface §2.2 requires, consuming the lineage-invariant FactSurrogateBatch grammar emitted by E-1.",
+    "Through-M mechanism execution (estimator hook invocation) is NOT wired into the heads or the loop, although flow/demand decodes are exposed in the estimator-consumable grammar. Reason: §2.3/L1-3a/b and E-3 own the mechanism composition point; wiring it here would expand scope.",
+    "The supervised training loop consumes the full-episode permutation per iteration (randperm over B, mirroring train_fact_surrogate), under which the minibatch order is numerically inert at full batch. Reason: exact parity with the L2 loop idiom and the C1 'shared order stream' requirement; subsampling batches is a corpus/trainer runtime decision not in this item's spec.",
+    "Parameter init of the heads uses xavier gain 0.1 / zero bias (FactSurrogateConfig.init_gain mirror), not the v2 potentials' gain 0.5. Reason: corpus-facing surface alignment with the L2 heads (same config field names and defaults) keeps the two lineages' head hyperparameters identical at D0."
+  ],
+  "interface_notes": [
+    "L1-1 (corpus adapter): build the adapter to emit FactSurrogateBatch (features = FEXEC_ROUND_FEATURES grammar from E-1's FexecCorpus.features/channels/channels_init from E-4 regenerate() state, slot_prices) — L1CoordinateHeads.forward consumes that batch type directly; pre_round_base() supplies the observed x_t the adapter spec names as the conserving-channel input.",
+    "E-3/L1-3a/b (through-M wrapper): consume output.flow (B,T,S) and output.demand (B,T) — same lattice_ste grammar as RecurrentFactSurrogate — per round via the MechanismEstimator hook; the wrapper, not this module, executes the engine.",
+    "E-5 (seed manifest): record that L1-2 consumes spawn(root,'init') (model construction + optional bind_v2_type_seed for persistent type labels) and spawn(root,'minibatch') (MinibatchOrderStream); derivation is the shared derive_substream_seeds — no new derivation to register, but the collision check of contracts flag 5 covers init vs minibatch vs rank-seed offsets (verified distinct at seed roots 11000/11001 in tests).",
+    "L1-5 (lock checkpoint): the loop exposes no persistence by design; model.state_dict() + the returned history records are the surfaces to embed in the lock-checkpoint variant.",
+    "Trainer integration: the new training path is opt-in — existing moment-matching training (moment_matching_loss / compute_loss) is untouched; combine_supervised_and_fact_terms is the single composition point, and train_l1_coordinate_heads(returns=...) threads a rollout return series through the unchanged multi_fact_terms path.",
+    "book-state targets: the heads' target surface is the two C5 aggregate conserving channels (n_channels pinned 2); book-state error is a preregistered SECONDARY descriptive endpoint (C5) and would consume the same loss with a different channel tensor — no per-actor series in the primary path."
+  ],
+  "receipt_binding": {
+    "git_branch": "paper-d-iclr-2027-completion",
+    "notes": "Hashes computed on 2026-09-07 over the exact bytes of the three created files (python hashlib.sha256 on read bytes). No existing file was modified; frozen paths (papers/paper_d_constraints, experiments/lab_asset_a2/a2_exit_20260905, papers/proposal, papers/paper_e_matching_fiber, .claude) untouched."
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "item": "L2-2",
+  "title": "through-M attachment for the L2 recurrent fact-surrogate (via E-3)",
+  "stage": "D_minus_1 pre-D0 build register (outcome-blind freeze pinned 2026-09-19)",
+  "date": "2026-09-07",
+  "spec_source": [
+    "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 3.3 (L2-2 scope) and section 4 (build register)",
+    "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md contracts C1/C2 (RNG tree, K=16 inference draws), C3 (cell vocabulary), section 5 (frozen estimator menu: ST pinned scale primary, PAM pinned noise audit)"
+  ],
+  "dependency": "E-3 (ecomd/mechanisms/through_m_wrapper.py, consumed read-only via its public hook factories straight_through_hook/perturb_and_map_hook, TrainKernelStream, engine_execute_level, NOMINAL_LEVEL_PRICE). Tested-against module sha256 4b0eeeafd0f44aec7c7dc26ca9571385d5a8a7cfb7a4d07dfae98c1e25ccb87d — NOTE: this differs from the sha256 recorded in E-3/receipt.json (2a1db8ea...), i.e. E-3 touched the module after writing its receipt; the consumed public surface and E-3's own 16-test gate (tests/test_through_m_wrapper.py, re-run 16/16 here) are unchanged against the current bytes. Freeze auditor should reconcile the E-3 receipt hash before D0.",
+  "git_sha": "82a03e703b9d7b75d077a7ad88f234ae927375f6",
+  "files_created": [
+    {
+      "path": "tests/test_l2_through_m_attachment.py",
+      "sha256": "b8335dcfe5b341d67ba5cfd2bf7d53f884ca24f8c84bc8f70acd47b8b735ee91"
+    },
+    {
+      "path": "experiments/reexploration/d0_build_receipts_20260907/L2-2/README.md",
+      "sha256": "5a88b10b42e2867181bb146224a388c0f4978b4d5ac0f713382ee548310eacc5"
+    }
+  ],
+  "files_changed": [
+    {
+      "path": "ecomd/training/train_fact_surrogate.py",
+      "sha256": "c0c21fd5e43e558387b66540ce316dcef89699a78c993162a7c1fa1f481e488d",
+      "change": "additive: MechanismBackend enum + config field, build_engine_bridge_mechanism (E-3 hook dispatch, seed_root-fed), build_mechanism(train_kernel_generator=None, seed_root=None) backend dispatch, train_fact_surrogate seed_root plumbing, build_inference_mechanism/inference_kernel_draw_mechanisms kernel:k seeding"
+    }
+  ],
+  "public_surface_added": [
+    "MechanismBackend (ENGINE_BRIDGE | MIRROR)",
+    "FactSurrogateTrainConfig.mechanism_backend (serialized in config_payload/config_sha256)",
+    "build_engine_bridge_mechanism(config, *, seed_root)",
+    "build_inference_mechanism(config, *, seed_root, draw_index)",
+    "inference_kernel_draw_mechanisms(config, *, seed_root)"
+  ],
+  "tests": {
+    "command": "conda run -n ecophys python -m pytest tests/test_l2_through_m_attachment.py -q",
+    "result": "18 passed (18/18)",
+    "existing_untouched": {
+      "command": "conda run -n ecophys python -m pytest tests/test_fact_surrogate.py -q",
+      "result": "20 passed (20/20)"
+    },
+    "coverage": [
+      "engine bridge FIFO == certified engine replay, exact integer match ([2,3,0] hand check)",
+      "random-unit law closed exactly: tape draws -> frozen exact_clearing == tape allocations; E-3 stream first train_kernel-child engine seed -> engine_execute_level == frozen exact_clearing on its own recorded draws == hook forward",
+      "mirror/bridge/engine three-way FIFO agreement",
+      "missing E-3 wrapper = hard RuntimeError (never silent fallback), both call shapes",
+      "ENGINE_BRIDGE requires seed_root / MIRROR requires train_kernel_generator (ValueError)",
+      "substream discipline on BOTH backends: same-root byte-identity, seed-root-family liveness (mirror forward, bridge RU forward + bridge FIFO PAM backward mask), global torch/python/numpy RNG untouched",
+      "both estimators x both kernels selectable with frozen backward contract (integer forward, finite grad, zero grad on never-cleared fiber coordinates)",
+      "ST pinned scale 1.0: grad == [10,20,0] on [2,3,4]/demand 5",
+      "K=16 draw loop: order 1..16, hand-built kernel:k equality, distinctness, ValueError at draw_index 0 and 17",
+      "G8: FIFO sixteen byte-identical engine-bridged evaluations",
+      "engine-bridged inference determinism + kernel:5 hand-built E-3 hook equality",
+      "byte-identity of two identically-seeded builds (model + mechanism + one train step), parametrized MIRROR and ENGINE_BRIDGE",
+      "model hook attachment through the real bridge: integer-exact cumulating mechanism_channels, nonneg volume, grad reaches flow_head"
+    ]
+  },
+  "mypy": "conda run -n ecophys python -m mypy ecomd/training/train_fact_surrogate.py tests/test_l2_through_m_attachment.py -> Success: no issues found in 2 source files",
+  "ruff": "clean on both files",
+  "cpu_smoke_scope": "single-file pytest spot checks only (both files second-scale), single-file mypy/ruff, all via conda run -n ecophys; no GPU, no training run, no batch/regression battery, no market data, no endpoint or outcome access, no trained-model persistence; frozen A-2 bundle read-only",
+  "spec_deviations": [
+    {
+      "deviation": "mechanism_backend default is MIRROR, not ENGINE_BRIDGE",
+      "reason": "task constraint 'existing tests/test_fact_surrogate.py still passes untouched' pins build_mechanism's pre-L2-2 call shape (torch-generator-only, no seed_root); an ENGINE_BRIDGE default would turn those 20 existing tests into errors. MIRROR default keeps every pre-existing caller byte-identical while production through-M arms (E-5 frozen configs) select ENGINE_BRIDGE explicitly and auditable in the hashed config payload. This is the conservative reading of 'keeping the mirror as the documented fallback for tests'."
+    },
+    {
+      "deviation": "inference-draw seeding for ENGINE_BRIDGE roots the E-3 TrainKernelStream at the derived integer of substream kernel:k (rather than training-style rooting at the run seed root)",
+      "reason": "E-3 exposes only stream-or-seed_root hook construction; rooting all 16 draws at the run root would make them identical, violating C2(b) 'derived spawn(seed, kernel, k), k=1..16'. Rooting each draw's stream at its kernel:k node keeps draws distinct, namespaced and replay-identical across cells; documented in build_inference_mechanism and pinned by the hand-built kernel:k equality test."
+    },
+    {
+      "deviation": "bridge-PAM forward is the engine's exact clearing (noise affects only the backward mask), unlike mirror-PAM whose forward is the perturbed clearing",
+      "reason": "E-3's frozen contract ('forward is ALWAYS the engine output; the perturbed clearing supplies only the backward mask'). L2-2 consumes the shared layer as-is; tests assert bridge-PAM == engine law, never bridge-PAM == mirror-PAM forward."
+    }
+  ],
+  "interface_notes": [
+    "executing the ENGINE_BRIDGE path requires scripts/ importable (lab_asset package) - tests insert it on sys.path; E-5 production wiring must do the same",
+    "the E-3 stream is stateful (one estimator-blind child per mechanism call): two mechanisms built from the same root replay identically only from equal call counts; fresh construction per arm/step-evaluation is the supported pattern",
+    "build_inference_mechanism deliberately constructs under enforcement=THROUGH_M so raw-trained cells evaluated under through-M inference (contract C3 cells (t,e)) get mechanisms too",
+    "engine bridge runs at E-3's NOMINAL_LEVEL_PRICE=1; cash channels at true prices are composed by RecurrentFactSurrogate from slot prices, unchanged"
+  ]
+}

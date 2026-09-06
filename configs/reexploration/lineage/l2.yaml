@@ -1,0 +1,38 @@
+# L2 = recurrent fact-surrogate lineage (simulator contracts section 3).
+# model/train values are the frozen module defaults (validator-asserted).
+lineage_id: l2
+label: recurrent_fact_surrogate
+
+model:  # == ecomd.models.fact_surrogate.FactSurrogateConfig defaults
+  d_hidden: 64
+  n_channels: 2
+  n_slots: 8
+  init_gain: 0.1
+
+train:  # == ecomd.training.train_fact_surrogate.FactSurrogateTrainConfig
+        # defaults, minus arm-level fields (coordinate, enforcement,
+        # estimator, kernel, mechanism_backend) and the sealed channel_scales
+  n_iters: 8
+  lr: 0.0003
+  grad_clip: 1.0
+  w_supervised: 1.0
+  w_gain_loss: 0.0
+  w_agg_gauss: 0.0
+  w_fano: 0.0
+  w_dfa_hurst: 0.0
+  agg_gauss_scale_large: 50
+  fano_quantile: 0.99
+  fano_n_windows: 50
+  dfa_min_scale: 16
+  dfa_max_scale_frac: 0.1
+
+corpus:  # lineage-invariant grammar: E-1 F_exec projector + E-4 conserving
+         # emitter, assembled into FactSurrogateBatch at training time
+  projector: ecomd.corpus.fexec_projector.project_fexec_corpus
+  emitter: lab_asset.conserving_emitter.emit_conserving_channels
+  grammar: FactSurrogateBatch
+
+checkpoint:  # format adopted verbatim from the trainer (contracts 3.5)
+  format_version: 2
+  flavor: lock
+  sidecar_schema_version: 1

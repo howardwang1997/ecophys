@@ -1,0 +1,78 @@
+{
+  "item": "E-5",
+  "title": "Frozen Hydra configs + seed/stream manifest",
+  "built_at": "2026-09-07",
+  "stage": "D_minus_1 pre-D0 code-only build (outcome-blind freeze pinned 2026-09-19)",
+  "git_head_at_build": "16b0ea981003987a474f4f44a9c721e89a80a902",
+  "spec_source": {
+    "build_register": "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 4 item E-5 (frozen per-(lineage, DGP, arm, condition) Hydra configs + seed/stream manifest 11000-11029 / 12000-12029 + derivation salts; D1_10) and section 6 flag 5 (rank-seed collision check)",
+    "prereg_authority": "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md: C1 (RNG tree: SeedSequence.spawn named substreams data/init/minibatch/train_kernel/kernel:1..16; namespaces; Stage-2 first-15; Annex B(d) first-10 reflexive), C2(b) (K=16 immutable), C3 (4 trained arms x 2 inference enforcements = 8 cells; kernels exactly fifo/random_unit_within_price), C4 (axes ID/pop_2x/tick_2x/kswap; horizons {1,4,16,31}, h=64 descriptive; kernel-swap stratum: training FIFO, only inference kernel swaps, raw-infer kswap evaluations are byte-identical duplicates of the ID stratum), C8 + Annex B(a) (bootstrap seed derivation), C14 restated (section 3.4 record-coverage arithmetic), C16 items (11)-(16)",
+    "binding_surfaces": "configs bound to the ACTUAL config surfaces the sibling builds expose (per instruction): scripts/lab_asset/dgp_request_generator.py DGPConfig/config_from_mapping/config_fingerprint/config_for_axis/D2_SERIES_REGISTRY/D2_NAMED_NOT_RUN/named_substream_seed/derive_seed (E-2 receipt); ecomd/training/train_fact_surrogate.py K_INFERENCE_DRAWS/SUBSTREAM_NAMES/derive_substream_seeds/FactSurrogateTrainConfig/MechanismBackend (L2/L2-2 receipts); ecomd/training/l1_supervised.py L1SupervisedTrainConfig + ecomd/models/l1_coordinate_heads.py L1CoordinateHeadsConfig (L1-2 receipt); ecomd/mechanisms/through_m.py PINNED_* estimator constants (E-3 receipt); ecomd/models/fact_surrogate.py FactSurrogateConfig"
+  },
+  "files_created": {
+    "configs/reexploration/config.yaml": "2145a11816c4883904c75b8fe230a7e9d01ada951a4523244e936f6e92cbc9ac",
+    "configs/reexploration/lineage/l1.yaml": "604d0082deea3a496b22951b86889c97c7bf3eae77b6cc21fe5de82a91f4ea32",
+    "configs/reexploration/lineage/l2.yaml": "bb59c1491947a720dd1f7d1e6a3ee196ed079b331736d851c366fbc93ddfc586",
+    "configs/reexploration/dgp/lab_asset.yaml": "06b9691af333be8a6891ee1213032a785e61c03c3c26e8f8a4beb159b202c801",
+    "configs/reexploration/dgp/garch_student_t5.yaml": "793bb7f2992a2a0adb13d338dbe1f99a4ccb05b9ea7c29e5350da9bf4577aff3",
+    "configs/reexploration/dgp/multiscale_logvol.yaml": "5d853b6fab4b5eb4c14a136afece188ff7c33c62d64166da978bfe9868c2c4b3",
+    "configs/reexploration/arm/absolute_raw.yaml": "57216cf2865ccdc9601405395ec4a5a75a159545c99d658bf84c18179b0f65c6",
+    "configs/reexploration/arm/absolute_through_m.yaml": "c779d20410319de881ec3d3642335e261b0278177986e1bde6fad0f0dcac7b23",
+    "configs/reexploration/arm/increment_raw.yaml": "480e693c7296bd059a3ab672031431d50c022655c9ea6d41df81ac4d8785c5f5",
+    "configs/reexploration/arm/increment_through_m.yaml": "becb949224e059b3833d78a2a452bd31cbb11d192c21461546ccacfa21ef947c",
+    "configs/reexploration/axis/id.yaml": "209bc2aa2611ce1ca625e91cf2a83748ffcf7a7064221b0011293641d8090db9",
+    "configs/reexploration/axis/pop_2x.yaml": "dd8034bd7bd8acc37fc40895e48153d7046b4b382eb8e6948563b2457b2312f9",
+    "configs/reexploration/axis/tick_2x.yaml": "715071cc331685be289fb9849cb44df59c6369cd81667ebd3b863b9de0c9220a",
+    "configs/reexploration/axis/kswap.yaml": "e952dbb3406f3ad3bfb6c5f7812b5259757c71e964c9960d917f29d0e8722933",
+    "configs/reexploration/block/b1.yaml": "3a71a334bfc3732d17db5ed38fa5eac9112d504131dc97d8dd3d1246c9072731",
+    "configs/reexploration/block/b2.yaml": "3c2a80f1daf82462544f7958fe35fc1ef31b31e816a6e61d88b50726ecce0925",
+    "configs/reexploration/block/b3.yaml": "c91f9c769a6ad22c7e9204af63a05427d99500adbd3bae046975c4e7161cd49b",
+    "configs/reexploration/block/b4_variant_a.yaml": "576ec9b2cfc11b1a660afe43bba64c351ae4f86815b832716c5db6af4c53447b",
+    "configs/reexploration/block/b4_variant_b.yaml": "d8fe93e12f1187978e27d5b2103b1a2879d6a193d0b2c33151396f9ded4d2b20",
+    "configs/reexploration/audit/a10.yaml": "52557981d5279615381491e3bdb60b9e2447697759212a4f28d7b1b89207b1f2",
+    "ecomd/reexploration/__init__.py": "f2ceb2571ad1b4ba9af95d8639ddd022664130aca3bd67f793719dbf2d4fedf4",
+    "ecomd/reexploration/campaign.py": "78a21470e465c9f64ce25d086f16c99e8498b6711337cdabe49faed4ebb808d7",
+    "scripts/reexploration/validate_e5_configs.py": "bf3fad3f6b9c16918e4c99fcbf98a0180d473e0637aa1f0fe4f23d424a00799d",
+    "tests/test_e5_configs.py": "cdfa5a49c3fba72d586aa34f6df6eda502d6c5beb99cc599914787d95fd8ec9d",
+    "experiments/reexploration/seed_stream_manifest_20260907/seeds_manifest.json": "361679c4a56e8e7fe7d393499ed22f5c9f61bef81706a1befa8ca7df27ea32f8",
+    "experiments/reexploration/d0_build_receipts_20260907/E-5/receipt.json": "self (this file)",
+    "experiments/reexploration/d0_build_receipts_20260907/E-5/README.md": "see README"
+  },
+  "files_changed": [],
+  "seed_manifest": {
+    "path": "experiments/reexploration/seed_stream_manifest_20260907/seeds_manifest.json",
+    "sha256": "361679c4a56e8e7fe7d393499ed22f5c9f61bef81706a1befa8ca7df27ea32f8",
+    "bytes": 41258,
+    "serialization": "canonical JSON (sort_keys, separators (\",\", \":\"), trailing newline); byte-identical rebuild asserted by validator and tests",
+    "content": "manifest_version 1; derivation rules (substream spawn order + episode spawn_key + E-2 derive_seed preflight rule + Annex B(a) bootstrap salt/rule and all 15 (block, family) bootstrap seeds); 2 training namespaces with Stage-2 first-15 and reflexive first-10 subsets; 5 instrument/preflight namespaces (enrichment 20260972, resampler 20260973, S3 robustness 20260974-76, K-preflight reserved 31000-31099 masters 31000-31031, PAM fixture 20260906); 60 seed roots each with all 20 named substream integers; 18 disjointness checks all ok; full campaign enumeration counts matched to targets; rank-seed posture (world_size=1 pin + rank-2 latent-overlap note)"
+  },
+  "c14_self_check": {
+    "method": "enumerated from the frozen grids (5 blocks x seeds x 8 cells x 4 axes x 4 horizons x 16 draws; truncation per condition at ID axis; audit 1 cell x 30 seeds x 4 axes x 4 horizons x 16; trainings 4 arms x seeds + 30 audit), never restated from the prereg tables",
+    "result": "REPRODUCED EXACTLY: 240+180+30 = 450 trainings; 122,880 + 92,160 = 215,040 mandatory; 76,800 truncation; 7,680 audit; 299,520 confirmatory total; 420 horizon-one probes (per block-unit at 4 axes); per-seed mandatory 2,048",
+    "discrepancy": "none - the STOP-and-record condition of the task did not trigger; validate_counts() raises CampaignArithmeticError on any future mismatch (covered by test_enumeration_flags_discrepancy)"
+  },
+  "tests": {
+    "command": "conda run -n ecophys python -m pytest tests/test_e5_configs.py -q",
+    "passed": "16/16 (6.9 s, CPU only)",
+    "coverage": "config tree validates (100 compositions); composition counts 20/80; hyperparameters byte-bind frozen L1/L2 module defaults; DGP yaml constructs via E-2 config_from_mapping with axis agreement; kswap preserves DGP truth (fingerprint == ID stratum) with raw_infer_duplicate_of pinned; negative_jump_iid excluded (no option, E-2 D2_NAMED_NOT_RUN match, d2_series raises); composed fingerprint determinism; full C14-restated arithmetic incl. per-block tables; training breakdown incl. A10 estimator override; discrepancy flag; seed disjointness; on-disk manifest byte-identical to rebuild; manifest determinism; per-root substreams == trainer derivation == E-2 named_substream_seed == raw SeedSequence.spawn; bootstrap hand-check + distinctness + outside reserved; subset pins (11000-11014/12000-12014, 11000-11009/12000-12009) and rank-seed posture"
+  },
+  "mypy": "conda run -n ecophys python -m mypy ecomd/reexploration/campaign.py ecomd/reexploration/__init__.py scripts/reexploration/validate_e5_configs.py tests/test_e5_configs.py -> Success: no issues found in 4 source files (strict profile via pyproject [tool.mypy] strict=true)",
+  "ruff": "conda run -n ecophys python -m ruff check ecomd/reexploration/ scripts/reexploration/ tests/test_e5_configs.py -> All checks passed",
+  "cpu_smoke_scope": "CODE-ONLY build; no GPU, no training, no cell/evaluation/endpoint runs, no market data, no trained-model persistence, no batch test batteries. Runs on this Mac were limited to: the single new test file (16 tests, 6.9 s), the one-shot validator script (~4 s), mypy/ruff static checks, and import smokes. The E-2 preflight re-run was NOT executed (separate PI-visible remote step, per instruction).",
+  "spec_deviations": [
+    "Train hyperparameters are recorded as the frozen sibling-module defaults (n_iters=8, lr=3e-4, ...; L1SupervisedTrainConfig / FactSurrogateTrainConfig), and the tree omits arm-level fields (coordinate/enforcement/estimator/kernel/mechanism_backend) plus channel_scales and None-defaulted fact targets. REASON: the task binds configs to the surfaces the sibling builds actually expose, and those dataclasses own the values; the D0 trainer runtime pins production iteration counts at run time. The validator asserts equality against the dataclass defaults so the tree cannot drift (config.yaml records this as train_binding: frozen_module_defaults).",
+    "Bootstrap family_id enumeration (signflip_mandatory, axis_contrast, truncation) is recorded here as the (block, family) derivation grid with all 15 derived seeds. REASON: Annex B(a) says bootstrap seeds are 'recorded in the analyzer manifest'; E-5 records the derivation rule and values for gate-G2 disjointness and marks the analyzer manifest as the authoritative consumer. The string concatenation salt||block_id||family_id (no separator) follows the pinned formula verbatim.",
+    "Rank-seed posture is pinned to world_size=1 (rank_seed == seed). REASON: train_distributed.py derives rank_seed = seed + rank*10000, so at world_size>=3 the L1 rank-2 seeds 31000-31029 would numerically equal the K-preflight masters inside the reserved 31000-31099 block (contracts section 6 flag 5 requires this check). Single-worker posture is the conservative resolution; the overlap fact and the auxiliary rank streams (61000-61029/62000-62029) are recorded in the manifest.",
+    "negative_jump_iid exclusion is enforced by ABSENCE of a selectable dgp option (root records it under named_not_run), not by a selectable-but-flagged option. REASON: conservative, prevents accidental selection; cross-checked against E-2 D2_NAMED_NOT_RUN and the d2_series ValueError by the validator/tests.",
+    "channel_scales (s_ch) is never materialized in the tree (only a provenance string). REASON: C5/Annex B(e) pin s_ch to the hash-sealed DGP-only sample branch committed at D0; putting values in YAML would create a second unfrozen source.",
+    "Hydra packaging: composed configs nest group contents under block (with lineage/dgp nested inside), arm, axis keys (Hydra 1.3 default group packaging; absolute /group paths in block defaults). REASON: keeps groups self-describing and makes illegal combos (L1 x multiscale_logvol) unrepresentable; the validator binds to this structure explicitly.",
+    "Audit A10 is a plain YAML document (configs/reexploration/audit/a10.yaml) rather than a selectable Hydra group. REASON: it is a single audit cell that reuses B1's fixture streams (same data/init/train_kernel substreams, only the estimator differs), not a grid dimension; a group option would wrongly suggest it composes with every arm."
+  ],
+  "interface_notes": [
+    "Compose a run config: hydra initialize_config_dir(config_dir='configs/reexploration', version_base='1.2') + compose(config_name='config', overrides=['block=<b1|b2|b3|b4_variant_a|b4_variant_b>', 'arm=<absolute_raw|absolute_through_m|increment_raw|increment_through_m>', 'axis=<id|pop_2x|tick_2x|kswap>']), or call ecomd.reexploration.campaign.load_composed_config(block_id, arm_id, axis_id).",
+    "Composed payload structure: payload['block'] carries block fields plus nested 'lineage' and 'dgp' groups; payload['arm'] and payload['axis'] carry their group fields; root keys (schema_version, campaign_id, mechanism_backend, estimators, eval, named_not_run, ...) carry eval-time parameters. Horizons {1,4,16,31}, K=16 draws and the 2 inference enforcements live under eval and are deployment-time, not training-time.",
+    "ecomd.reexploration.campaign public API: BLOCKS/ARMS/AXIS_SPECS/AUDIT_A10 (+ *_BY_ID dicts), enumerate_trainings() -> 450 TrainingRun, campaign_counts()/validate_counts() (raises CampaignArithmeticError), disjointness_checks()/assert_disjointness() (raises SeedCollisionError), bootstrap_seed(block_id, family_id), training_compositions()/deployment_compositions() (20/80), composed_fingerprint(payload), validate_config_tree() -> failure tuple, build_seed_manifest()/write_seed_manifest()/MANIFEST_PATH/manifest_sha256_on_disk().",
+    "Seeds: every stochastic consumer must draw from a named substream of its seed root (derive_substream_seeds / trainer substream_generator / E-2 named_substream_seed) - the 20 names and their spawn-order derivation are frozen in the manifest; no global-RNG consumers are introduced by this item.",
+    "The D0 freeze hash inventory should include the 25 files above (sha256 verbatim); the manifest file's own sha256 is 361679c4a56e8e7fe7d393499ed22f5c9f61bef81706a1befa8ca7df27ea32f8."
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "item": "E-4",
+  "title": "Conserving-channel emitter",
+  "built_at": "2026-09-07",
+  "stage": "D_minus_1 pre-D0 code-only build (outcome-blind freeze pinned 2026-09-19)",
+  "git_head_at_build": "82a03e703b9d7b75d077a7ad88f234ae927375f6",
+  "spec_source": {
+    "build_register": "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 4 item E-4 (conserving-channel emitter: volume/cash series extracted from regenerate() engine state), grounded in section 1 'Conservation and settlement' (cash/inventory are engine STATE, not tape payload fields; [D0 BUILD] item E-4)",
+    "endpoint_authority": "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md clause C5 (channels pinned at v2, panel R2-6: exactly two AGGREGATE engine-level conserving channels per clearing round {total executed volume units, total executed cash ticks}; no per-actor or per-side series in the primary endpoint) and papers/proposal/ecomd_reexploration_contract_v1_2026-09-06.md clause C5 + section 2b (integer-lattice conserving channels; through-M conservation violation exactly zero)",
+    "corpus_grammar_alignment": "ecomd/corpus/fexec_projector.py (build item E-1, PI decision D1_01) owns the clearing-round grammar: rounds are grouped by the ENGINE CLOCK (distinct execution clocks.match_ts, ascending; requests at one tick merge; execution-free ticks are not rounds; round_id is metadata only). E-4 adopts E-1's grid so the per-round channel matrices align row-for-row with the projector's channels_delta/channels_cumulative (FactSurrogateBatch.channels grammar, ecomd/models/fact_surrogate.py), verified by a cross-item test."
+  },
+  "files_created": {
+    "scripts/lab_asset/conserving_emitter.py": "01dc7c1eced00cacb1ac1e27895aae0dc2f47345e2c3c463c34822453db256d6",
+    "tests/test_conserving_emitter.py": "1d0abe10560e0e0c88cd851b401ab9e61e18600798782dd8491ee91aad41701d",
+    "experiments/reexploration/d0_build_receipts_20260907/E-4/receipt.json": "self (this file)",
+    "experiments/reexploration/d0_build_receipts_20260907/E-4/README.md": "see README"
+  },
+  "files_changed": [],
+  "public_api": [
+    "CHANNEL_ORDER = ('volume_units', 'cash_ticks')",
+    "CONSERVING_SCHEMA_VERSION = 'lab-asset-v3-conserving-v1'",
+    "RoundChannels (frozen dataclass; match_ts grid key, round_ids metadata, all-int channels + auxiliary attributions)",
+    "ConservingChannelSeries (rounds tuple, increment_matrix()/cumulative_matrix(), to_json())",
+    "emit_conserving_channels(prestate, tape) -> ConservingChannelSeries",
+    "emit_conserving_channels_json(prestate, tape) -> str (canonical, byte-stable)",
+    "conservation_violations(series) -> list[str] (empty = all integer identities hold)",
+    "settlement_violations(prestate, tape, series) -> list[str] (tape payloads vs engine state)",
+    "regenerate_with_engine(prestate, tape) -> (ReferenceEngine, list[TapeRecord])"
+  ],
+  "test_command": "conda run -n ecophys python -m pytest tests/test_conserving_emitter.py -q",
+  "test_result": "33 passed in 0.99s (17 test functions; parametrized expansions: 2 kernels x 5 synthetic/cross-item tests, 2 x frozen-bundle conservation/state/agreement, 10 enrichment fixtures)",
+  "mypy_command": "conda run -n ecophys python -m mypy scripts/lab_asset/conserving_emitter.py",
+  "mypy_result": "Success: no issues found in 1 source file (repo [tool.mypy] strict=true applies)",
+  "ruff_result": "ruff check clean on both files (repo [tool.ruff])",
+  "cpu_smoke_scope": "Single-file pytest run only (33 tests, 0.99s) + single-file mypy + ruff: engine re-executions of <= 27-record read-only fixtures and a 4-actor synthetic session. No GPU, no training, no batch/regression battery, no multi-minute compute, no market data, no endpoint/outcome access, no trained-model persistence (PI standing rule respected). Cross-process byte-determinism spot-checked once on the frozen fifo fixture (sha256 69809f7e0a3c83773dfef886b8ad4c69b6cf5d0c115eb34bb006d9a06ca0ae9f in two independent processes).",
+  "fixtures_consumed_read_only": [
+    "experiments/lab_asset_a2/a2_exit_20260905/ (frozen A-2 exit bundle, manifest lineage fea8b136b0c3e19a00bddcb131a1540ca40fda6c1576dbc949001dbf76a9581c): fixture_fifo, fixture_random_unit_within_price",
+    "experiments/lab_asset_a2/enrichment_20260906/ (lab-asset-v3.1 enrichment, PI decision D1_03): all 10 fixtures (fifo/random_unit x vstar1/vstar2/vstar4/vstar6/exhaustion), plus the 5 manifest arm pairs ENR-E1-{V1,V2,V4,V6,XH}"
+  ],
+  "conservation_identities_checked": [
+    "per round: sum of per-actor engine cash deltas == 0 (integer-exact zero-sum transfer)",
+    "per round: sum of per-actor engine inventory deltas == 0",
+    "per round: sum of per-actor units_bought deltas == executed volume units; same for units_sold (gross counters, no netting)",
+    "per round: buy-aggressor + sell-aggressor volume/cash partitions == aggregate channels",
+    "per round: aggressor_role and maker_role partitions == aggregate channels",
+    "cumulative channels == running sums of per-round increments (ABS/INC consistency)",
+    "total cash and total inventory unchanged from prestate at every round boundary",
+    "settlement cross-check: per-actor net cash/inventory deltas recomputed from execution payloads (buyer/seller resolved from side_of_aggressor exactly as engine _settle) == engine-state deltas; payload aggregates == emitted channels and execution counts",
+    "replay guard: regenerated tape == recorded tape under replay()'s exact comparison (sequence, event type, all four hashes, record_to_json byte equality) before any series is emitted",
+    "cross-item grid agreement (test-level, not API): increment_matrix/cumulative_matrix and match_ts grid == ecomd.corpus.fexec_projector.project_fexec_corpus channels_delta/channels_cumulative/match_ticks on synthetic both-kernel sessions and both frozen fixtures"
+  ],
+  "spec_deviations": [
+    {
+      "deviation": "Task prompt said the enrichment lives under experiments/reexploration/; the lab-asset-v3.1 enrichment is actually at experiments/lab_asset_a2/enrichment_20260906 (its manifest references the frozen parent bundle at relpath experiments/lab_asset_a2/a2_exit_20260905).",
+      "resolution": "Located by search; consumed strictly read-only; no file under either bundle was modified.",
+      "reason": "Factual location differs from the prompt's guess; authority (enrichment_manifest.json parent_bundle block) confirms this is the D1_03 enrichment."
+    },
+    {
+      "deviation": "Task prompt asked for conserving series 'per maker/aggressor roles as the C5 conserving-channel definition requires', while prereg v2 C5 (panel R2-6) pins the PRIMARY endpoint to exactly two AGGREGATE channels with 'no per-actor or per-side series in the primary endpoint'.",
+      "resolution": "Primary series = the two aggregate channels per round (volume_units, cash_ticks). Role/side attribution is emitted as clearly auxiliary partition series (buy/sell aggressor side; aggressor_role/maker_role volume and cash; per-actor net ledger deltas), each a partition identity verified by conservation_violations.",
+      "reason": "Prereg v2 is the frozen statistical authority; the auxiliary attribution satisfies the task's role-attribution requirement without contaminating the endpoint."
+    },
+    {
+      "deviation": "The build register does not define the clearing-round grid. The schema's round_id (client-controlled, uniformly 0 in the frozen fixtures; latency choices carry their own round namespace, e.g. round_id 1 beside order round_id 0) cannot define a deterministic grid, and E-1's F_exec projector (already built under the same register) pins the corpus grid to the engine clock: distinct execution clocks.match_ts ascending, requests at one tick merging, execution-free ticks excluded, round_id metadata only.",
+      "resolution": "E-4 adopts E-1's engine-clock grid verbatim (_execution_rounds groups execution records by execution.clocks.match_ts, ascending). The client round_id — including the latency namespace — is carried per round as sorted-distinct metadata only and never keys rounds. Execution-free rounds emit nothing (they carry no conserving-channel information), so no-execution sessions emit an empty series. Cross-item test verifies row-for-row agreement with project_fexec_corpus.",
+      "reason": "FactSurrogateBatch pairs features and channels per round t; if E-4 used any other grid the corpus contract would break wherever the two grids differ (e.g. uniform round_id 0 with several execution ticks, or several requests sharing one tick). Conservative narrower reading: reuse the sibling item's frozen grammar rather than inventing a second one."
+    },
+    {
+      "deviation": "replay.regenerate() returns only the regenerated tape, not the engine, so engine state (cash/inventory) cannot be read from its return value.",
+      "resolution": "regenerate_with_engine() mirrors replay.regenerate's dispatch verbatim, reusing replay.py's own private coercion helpers (_as_int/_as_str/_subdict/_clocks), keeps the engine handle, and enforces replay()'s exact record-by-record comparison before any emission. Ledger snapshots are taken at request-event boundaries; because _settle is the only mutator of the four ledgers, per-round deltas are exactly the boundary states around each round's last execution. No modification to scripts/lab_asset/{matching,schema,replay,adapter}.py.",
+      "reason": "Spec requires extraction via the existing replay/regenerate path with no engine modification; mirror+guard is the minimal reuse that cannot silently diverge (any divergence fails the byte-exact guard)."
+    },
+    {
+      "deviation": "The C5 channel scaling s_ch is not emitted.",
+      "resolution": "Out of scope by construction: C5 pins s_ch to the hash-sealed DGP-only sample branch computed from the D0-committed generator sample (never simulator output, never the paired corpus).",
+      "reason": "Emitter stays a pure (prestate, tape) instrument; s_ch belongs to the E-2/D0-freeze side."
+    }
+  ],
+  "interface_notes": [
+    "Channel order is pinned: CHANNEL_ORDER = ('volume_units', 'cash_ticks'); increment_matrix() rows are the per-round INC-coordinate targets and cumulative_matrix() rows the post-round ABS state, directly consumable as FactSurrogateBatch.channels / channels_init by E-1/L1-1/L2-1 (lineage-invariant corpus contract).",
+    "Round grid is E-1's engine-clock grammar (distinct execution match_ts ascending; round_id metadata only; execution-free ticks are not rounds). Cross-item agreement with project_fexec_corpus channels_delta/channels_cumulative/match_ticks is test-enforced (test_projector_channel_agreement_synthetic / _frozen).",
+    "conservation_violations(series) == [] and settlement_violations(prestate, tape, series) == [] are the integer-exact G6-adjacent gate instruments for the D0 freeze checklist; both return violation descriptions, never raise.",
+    "regenerate_with_engine(prestate, tape) is public so E-1 can read regenerated engine state without duplicating the replay dispatch.",
+    "Emitted JSON schema label: lab-asset-v3-conserving-v1; all values integer; canonical json.dumps(sort_keys=True, separators=(',', ':')).",
+    "Arm-pair CRN property verified instrumentally: for all 5 enrichment arm pairs, aggregate increment/cumulative matrices are identical across fifo/random_unit (identity allocations differ; aggregate conserving channels do not) - the C2(a) M0-lumpability premise on the conserving channels.",
+    "E-2 preflight re-run NOT executed (hard rule 10); no cells/evaluations/endpoints run (zero outcome access)."
+  ]
+}

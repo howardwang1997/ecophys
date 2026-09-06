@@ -1,0 +1,12 @@
+# Kernel-swap axis (C4 pinned stratum paragraph; the EP1 primary axis):
+# (i) DGP truth is generated under FIFO and UNCHANGED here (dgp_axis id);
+# (ii) ONLY the inference-M deployment kernel swaps fifo ->
+#     random_unit_within_price (the replay contract's native operation);
+# (iii) raw-inference cells have no inference-M layer: their kswap
+#      evaluations are byte-identical duplicates of their ID-stratum
+#      evaluations, recorded separately with allocation_rule pinned fifo and
+#      n_draws == 16 (G8/G10 check the duplicate byte-identity).
+axis_id: kswap
+dgp_axis: id
+inference_kernel_through_m: random_unit_within_price
+raw_infer_duplicate_of: id

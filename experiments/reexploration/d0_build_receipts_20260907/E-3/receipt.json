@@ -1,0 +1,137 @@
+{
+  "item": "E-3",
+  "title": "Through-M wrapper: torch composition bridge onto ReferenceEngine + Python-torch estimator hooks + fixture competence gate",
+  "stage": "D_minus_1 pre-D0 (outcome-blind freeze pinned 2026-09-19)",
+  "date": "2026-09-07",
+  "spec_source": [
+    "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 2.3 (items L1-3a/L1-3b: composition layer external to ecomd_v2.py/ecomd.py; forward = exact engine output; backward per frozen estimator menu; fixture competence gate CPU pre-D0) and section 4 (D0 build register, item E-3: through-M wrapper + Python-torch bridge onto ReferenceEngine.submit with the two frozen estimators + read-only fixture competence test)",
+    "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md section 5 (frozen estimator menu: ST pinned scale primary, PAM pinned-noise audit; C1 RNG tree; C2 note 3 train_kernel one-seed-spawned stream replayed across through-M arms; G6 gate wording; section 5.5 both-fail STOP)",
+    "ecomd/mechanisms/through_m.py (frozen estimator module, consumed not re-implemented: PINNED_STRAIGHT_THROUGH_SCALE, PINNED_PERTURB_AND_MAP_SIGMA, Kernel, Fill, _StraightThrough, _PerturbAndMap, _perturbed_clearing, _validated_quantities)",
+    "scripts/lab_asset/matching.py ReferenceEngine.submit (bridge target; unmodified)",
+    "ecomd/models/fact_surrogate.py MechanismEstimator = Callable[[Tensor, int], Tensor] (frozen hook shape the bridge must match so L2-2 attaches directly)",
+    "scripts/lab_asset/dgp_request_generator.py SUBSTREAM_NAMES + named_substream_seed (RNG-tree derivation cross-checked in tests)"
+  ],
+  "frozen_estimator_constants": {
+    "straight_through_scale": 1.0,
+    "perturb_and_map_sigma": 1.0,
+    "perturb_noise_law": "standard normal, drawn up front from a seeded CPU torch.Generator per call (through_m._perturbed_clearing)",
+    "st_mask_rule": "identity on engine-cleared coordinates (allocation > 0), zero elsewhere",
+    "pam_mask_rule": "identity on perturbed-MAP-selected coordinates, zero elsewhere",
+    "rng_tree": "train_kernel = index 3 of ('data','init','minibatch','train_kernel'); TrainKernelStream walks children spawn_key=(3, k), k = call index, each split into (engine draw seed, PAM noise seed); estimator-blind advancement",
+    "provenance": "constants are imported from the frozen ecomd/mechanisms/through_m.py (sha256 fb50bb4f1baec856001a1da31b9bdc6242669bfd49effdabb7fa374a665dc179 at build time) — the wrapper adds no new tunable"
+  },
+  "files_created": [
+    {
+      "path": "ecomd/mechanisms/through_m_wrapper.py",
+      "sha256": "4b0eeeafd0f44aec7c7dc26ca9571385d5a8a7cfb7a4d07dfae98c1e25ccb87d"
+    },
+    {
+      "path": "tests/test_through_m_wrapper.py",
+      "sha256": "465cd0bf605c498061563bfea186aab5ef712781004041a3da55499c0abbd7d0"
+    },
+    {
+      "path": "experiments/reexploration/d0_build_receipts_20260907/E-3/receipt.json",
+      "sha256": "self"
+    },
+    {
+      "path": "experiments/reexploration/d0_build_receipts_20260907/E-3/README.md",
+      "sha256": "see file"
+    }
+  ],
+  "files_changed": [],
+  "untouched_frozen_paths": [
+    "ecomd/models/ecomd_v2.py",
+    "ecomd.py",
+    "ecomd/mechanisms/through_m.py",
+    "scripts/lab_asset/** (engine consumed read-only via import)",
+    "experiments/lab_asset_a2/a2_exit_20260905/ (frozen bundle, read-only)",
+    "papers/proposal/*, papers/paper_d_constraints/, papers/paper_e_matching_fiber/, .claude/**"
+  ],
+  "public_api": {
+    "engine_bridge": "engine_execute_level(quantities, demand, *, level_price, kernel, engine_seed=0, rng_state=None) -> LevelOutcome (pure forward; quantities int-or-float dtype, integer-valued, CPU)",
+    "st_estimator": "straight_through_level(quantities, demand, *, level_price, kernel, engine_seed=0, rng_state=None) -> LevelOutcome (float dtype required; forward = engine output; backward = through_m._StraightThrough at PINNED_STRAIGHT_THROUGH_SCALE)",
+    "pam_estimator": "perturb_and_map_level(quantities, demand, *, level_price, kernel, pam_seed, engine_seed=0, rng_state=None) -> LevelOutcome (forward = engine output; backward = through_m._PerturbAndMap masked by through_m._perturbed_clearing at PINNED_PERTURB_AND_MAP_SIGMA)",
+    "hooks": "straight_through_hook(*, kernel, stream=None, seed_root=None) / perturb_and_map_hook(*, kernel, stream=None, seed_root=None) -> MechanismEstimator (exact frozen Callable[[Tensor, int], Tensor] shape; kernel-blind inputs; engine at NOMINAL_LEVEL_PRICE=1)",
+    "rng": "train_kernel_substream_seed(seed_root, *tail) (equals E-2 named_substream_seed(root,'train_kernel') at tail=()); TrainKernelStream(seed_root).next_call_seeds() -> (engine_seed, pam_seed), estimator-blind one-child-per-call advancement",
+    "outcome": "LevelOutcome(allocation, allocation_exact, filled_mask, fills, resting_after, channels_delta (2,) int64 (volume_units, cash_ticks), executed_units, cash_delta, inventory_delta, post_rng_state, post_aggregate_digest, engine_tape)",
+    "composition": "compose_round(state: BridgeState | None, outcome) -> BridgeState(channels int64 (2,), resting) — integer-exact threading of post-round anonymous state + conserving channels to the next input"
+  },
+  "test_command": "conda run -n ecophys python -m pytest tests/test_through_m_wrapper.py",
+  "tests_passed": "16 passed (16/16; single-file CPU spot check only, 0.97 s)",
+  "test_coverage": [
+    "test_frozen_bundle_integrity_read_only - per-file sha256 of the frozen A-2 bundle re-verified against bundle_manifest.json before any claim",
+    "test_engine_path_reproduces_recorded_tape_byte_exactly [fixture_fifo, fixture_random_unit_within_price] - G6 horizon-one semantics: lab-asset replay validator ok + explicit record-by-record equality of all four state hashes and record_to_json",
+    "test_bridge_reproduces_recorded_round_fills_exactly [both arms] - fill-by-fill bridge reproduction of every recorded execution (maker id, quantity, maker_remaining, eligible_units, selected_unit) walking crossed levels best-first with engine RNG-state threading for the random-unit kernel",
+    "test_pam_noise_zero_reduces_to_exact_kernel - exact-kernel equality of sigma=0 PAM on FIFO pools x demands; wrapper-level PAM mask == engine mask on the deterministic arm; single-maker collapse stratum for both kernels (draws pinned to the only maker); multi-maker random-unit sigma=0 equals the hand-computed kernel-fixed depleting-argmax MAP rule (NOT the draw law)",
+    "test_straight_through_backward_is_masked_identity_with_pinned_scale - hand-checked gradient on (3,5,2) demand 6: grad = PINNED_STRAIGHT_THROUGH_SCALE * weights * [1,1,0]; random-unit arm mask derived from the realized allocation; hook variant identical",
+    "test_pam_gradient_finiteness_and_substream_determinism - same call sequence through two same-root hooks gives byte-equal allocations AND byte-equal finite gradients; explicit pam_seed byte determinism; PAM forward still the engine-exact allocation",
+    "test_rng_tree_matches_e2_derivation - SUBSTREAM_NAME_ORDER == E-2 SUBSTREAM_NAMES; train_kernel_substream_seed == E-2 named_substream_seed(root,'train_kernel') over 7 roots; stream replay identity; tail-indexed children distinct",
+    "test_input_interface_is_kernel_blind - hook signature is exactly (quantities, demand) for both kernels; identical acceptance/validation/errors; single-maker pools allocate identically under both kernels (collapse stratum)",
+    "test_integer_exact_conservation_through_bridge [both kernels] - executed = min(demand, pool); channels_delta = (executed, price*executed) int64; resting_after = quantities - allocation; cash and inventory deltas sum to zero (engine zero-sum settlement); aggressor ledger deltas exact",
+    "test_multiround_compose_channels_accumulate_integer_exact - compose_round accumulates channels in int64 across rounds and threads engine-truth resting state",
+    "test_engine_bridge_byte_determinism - byte-identical tapes/allocations/digests/RNG state across identical calls; rng_state injection pins the draw stream",
+    "test_invalid_inputs_rejected - off-lattice quantities, non-positive/bool demand, level_price < 1, negative seeds, integer-dtype autograd entry, stream/seed_root double- or non-provision",
+    "test_hooks_attach_to_recurrent_fact_surrogate - L2-2 proof: RecurrentFactSurrogate.forward(mechanism=hook) for all 4 hook/kernel combinations produces finite integer-lattice mechanism_channels and backpropagates into the heads (generator-seeded throwaway instance; no global RNG)"
+  ],
+  "mypy_command": "MYPYPATH=scripts conda run -n ecophys python -m mypy ecomd/mechanisms/through_m_wrapper.py tests/test_through_m_wrapper.py",
+  "mypy_result": "Both E-3 files clean under the project strict config (module alone: 'Success: no issues found in 1 source file'). The remaining 6 diagnostics in the combined run are pre-existing in tests/test_through_m_estimators.py (the imported helper module of the earlier estimator build; 2 int(object) call-overload + 4 untyped backward calls) and are outside E-3 scope per the mypy-own-files-only rule.",
+  "ruff_result": "All checks passed (ecomd/mechanisms/through_m_wrapper.py tests/test_through_m_wrapper.py)",
+  "cpu_smoke_scope": "CPU-only, second-scale single-file runs on the Mac per the PI no-heavy-compute rule (global CLAUDE.md 2026-09-06): one pytest file (16 tests, 0.97 s), mypy and ruff on own files only. No GPU, no training, no batch regression battery, no market data, no outcome access (instruments only; tiny synthetic pools + the frozen fixtures). The frozen bundle experiments/lab_asset_a2/a2_exit_20260905/ was consumed strictly read-only (per-file sha256 re-verified in-test against bundle_manifest.json). The E-2 preflight re-run was NOT executed.",
+  "spec_deviations": [
+    {
+      "deviation": "Bridge granularity is one touched price level per call, not one whole round/book",
+      "resolution": "engine_execute_level builds a synthetic single-level lab-asset-v3 session (one resting ask per nonzero slot at level_price in slot order, buyer aggressor AGG, slack endowments) and submits exactly one marketable order through ReferenceEngine.submit; multi-level rounds compose by per-level calls threading rng_state",
+      "reason": "The hook signature is frozen in fact_surrogate.MechanismEstimator ('resting quantities of one touched level') and through_m's pool semantics are within-price; this is the narrower, more deterministic reading of 'intercept a predicted round-t flow tensor'"
+    },
+    {
+      "deviation": "Aggressor side fixed to BUY in the synthetic session",
+      "resolution": "WLOG pin; within-level fills, allocations and channels are side-symmetric",
+      "reason": "conservative determinism; no information in the within-level kernel depends on side"
+    },
+    {
+      "deviation": "Post-round anonymous state returned as the per-slot resting grid (resting_after int64) + conserving channels + engine state fingerprints, not a full book tensor",
+      "resolution": "LevelOutcome carries resting_after, channels_delta, post_rng_state, post_aggregate_digest, engine_tape; compose_round threads BridgeState(channels, resting)",
+      "reason": "the bridge session is single-level by construction, so a full book tensor would be fabricated state; next-round model inputs remain the corpus adapter's (E-1/L1-1) responsibility"
+    },
+    {
+      "deviation": "Estimator backwards consumed via same-package imports of through_m private members (_StraightThrough/_PerturbAndMap/_perturbed_clearing) instead of the public wrapper functions",
+      "resolution": "straight_through_through_m/perturb_and_map_through_m are NOT used for the forward because their forward is the pure clearing simulator, not the engine; the wrapper composes engine forward + through_m autograd Functions so the backward Jacobians have a single source of truth",
+      "reason": "E-3's forward must be ReferenceEngine.submit's output (spec); re-implementing the Jacobians would create drift risk the spec explicitly forbids"
+    },
+    {
+      "deviation": "PAM noise=0 equivalence is asserted on the deterministic (fifo) arm and the single-maker collapse stratum; on multi-maker random-unit pools sigma=0 PAM equals the kernel-fixed depleting-argmax MAP rule, not the draw-realized allocation",
+      "resolution": "gate test asserts exact equality where the reduction holds and hand-computed MAP self-consistency where it does not (documented in-test)",
+      "reason": "matches the estimator menu's own 'on deterministic arms' scoping (prereg v2 section 5.2); engine draws are not the MAP rule, so claiming full-kernel equality would be an overclaim"
+    },
+    {
+      "deviation": "Hooks execute the engine at a nominal level price of 1",
+      "resolution": "NOMINAL_LEVEL_PRICE=1; within-level allocations are price-invariant; the model composes cash at true prices via allocation x slot_prices (fact_surrogate) or callers use the level functions with the real level_price",
+      "reason": "the frozen hook signature carries no price; the conserving cash channel is composed at true prices by the model side, keeping the hook kernel- AND price-blind"
+    },
+    {
+      "deviation": "Tape-level byte-exactness gate uses the lab-asset replay validator on the frozen fixtures (G6's own wording), with the wrapper-mediated claim being fill-by-fill round reproduction",
+      "resolution": "both asserted: replay() ok + explicit four-hash/record_to_json equality per record, AND bridge fill-by-fill equality with RNG threading through the wrapper's own entry point",
+      "reason": "the post-D0 G6 probe (through-M on the DGP's realized request stream) composes these instruments; pre-D0 CPU scope cannot run the DGP stream"
+    },
+    {
+      "deviation": "lab_asset imports are function-level (lazy) inside the wrapper, with a guarded sys.path bootstrap at bridge-call time",
+      "resolution": "importing ecomd.mechanisms.through_m_wrapper never touches sys.path; the first engine_execute_level call inserts REPO_ROOT/scripts into sys.path if absent (the in-repo idiom of scripts/lab_asset/dgp_request_generator.py), so training-side hook callers need no path setup; mypy runs with MYPYPATH=scripts for full typing",
+      "reason": "keeps ecomd import-time clean in any context while the bridge still targets the exact engine from ecomd training loops (L2-2)"
+    },
+    {
+      "deviation": "Validation surface: demand >= 1, level_price >= 1, seeds >= 0, autograd entry points require floating dtype; zero-quantity slots rest no orders (E-1 never-clearable padding contract)",
+      "reason": "conservative fail-loud contracts mirroring through_m's own validation"
+    }
+  ],
+  "interface_notes": [
+    "L2-2 attaches directly: straight_through_hook/perturb_and_map_hook return exact MechanismEstimator callables (signature (quantities, demand)); proven by test_hooks_attach_to_recurrent_fact_surrogate producing integer-lattice mechanism_channels with gradients reaching the heads.",
+    "TrainKernelStream is the C2-note-3 'one seed-spawned stream replayed across all through-M arms within a seed': estimator-blind, one child per mechanism call, split into (engine draw seed, PAM noise seed); derivation cross-checked against E-2's named_substream_seed in tests.",
+    "For random_unit_within_price with tape reproduction, pass rng_state = the fixture/engine RNG state captured before the request and thread LevelOutcome.post_rng_state level-to-level; the engine RNG state is bound into every record's state hash, so byte-exact fill reproduction certifies the draw stream matched.",
+    "LevelOutcome.cash_delta/inventory_delta are the engine's integer-exact zero-sum settlement deltas over the synthetic session's actors (AGG + makers) — the audit surface for conservation; CHANNEL_ORDER matches E-4's ('volume_units','cash_ticks').",
+    "quantities may be int64 for engine_execute_level (pure forward) but must be floating for the autograd entry points (torch requirement, fail-loud enforced).",
+    "The pre-existing mypy diagnostics in tests/test_through_m_estimators.py (imported for load_arm/_dispatch/_crossed_level_snapshots/_kernel_for) belong to the earlier estimator item and were not touched."
+  ],
+  "read_only_inputs": [
+    "experiments/lab_asset_a2/a2_exit_20260905/ (frozen bundle, lineage fea8a136b0c3e19a00bddcb131a1540ca40fda6c157d6dbc949001dbf76a9581c) - both arms consumed read-only with in-test per-file sha256 verification against bundle_manifest.json"
+  ]
+}

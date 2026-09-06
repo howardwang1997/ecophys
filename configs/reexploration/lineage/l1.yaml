@@ -1,0 +1,39 @@
+# L1 = EcoMD v2 transformer/potential lineage (simulator contracts section 2).
+# The trained surface is the L1-2 coordinate-heads module; model/train values
+# are the frozen module defaults (validator-asserted, cannot drift).
+lineage_id: l1
+label: ecomd_v2_potential_coordinate_heads
+
+model:  # == ecomd.models.l1_coordinate_heads.L1CoordinateHeadsConfig defaults
+  d_hidden: 64
+  n_channels: 2
+  n_slots: 8
+  init_gain: 0.1
+
+train:  # == ecomd.training.l1_supervised.L1SupervisedTrainConfig defaults,
+        # minus arm-level fields (coordinate) and the sealed channel_scales
+  n_iters: 8
+  lr: 0.0003
+  grad_clip: 1.0
+  distance_mode: mse
+  w_supervised: 1.0
+  w_gain_loss: 0.0
+  w_agg_gauss: 0.0
+  w_fano: 0.0
+  w_dfa_hurst: 0.0
+  agg_gauss_scale_large: 50
+  fano_quantile: 0.99
+  fano_n_windows: 50
+  dfa_min_scale: 16
+  dfa_max_scale_frac: 0.1
+
+corpus:  # build item L1-1 (pure function of prestate, tape, seed)
+  adapter: ecomd.corpus.l1_corpus_adapter.build_l1_corpus
+  n_slots: 8
+  dtype: float32
+  grammar: FactSurrogateBatch  # lineage-invariant corpus contract (E-1 grammar)
+
+checkpoint:  # build item L1-5
+  format_version: 2
+  flavor: lock
+  sidecar_schema_version: 1

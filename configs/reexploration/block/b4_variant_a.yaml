@@ -1,0 +1,19 @@
+# B4-variantA = L2 x garch_student_t5 / D2 variant A (Stage 2; variant A runs
+# on both lineages — B2 is its L1 twin).
+defaults:
+  - /lineage: l2
+  - /dgp: garch_student_t5
+  - _self_
+
+block_id: B4-variantA
+stage: 2
+lineage_id: l2
+dgp_id: garch_student_t5
+seed_namespace: l2_training
+seed_start: 12000
+seed_stop_inclusive: 12029
+n_seeds: 15
+stage2_subset:
+  seed_start: 12000    # pinned first-15 subset (C1/C16 item (13))
+  seed_stop_inclusive: 12014
+truncation_conditions: [trunc_lag]

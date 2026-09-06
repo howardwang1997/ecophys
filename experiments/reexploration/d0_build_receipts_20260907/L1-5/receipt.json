@@ -1,0 +1,82 @@
+{
+  "item": "L1-5",
+  "title": "Lock-checkpoint variant + binding sidecar",
+  "built_at": "2026-09-07",
+  "stage": "D_minus_1 pre-D0 code-only build (outcome-blind freeze pinned 2026-09-19)",
+  "git_head_at_build": "82a03e703b9d7b75d077a7ad88f234ae927375f6",
+  "spec_source": {
+    "build_register": "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 4 item L1-5 (lock-checkpoint variant + binding sidecar), grounded in section 2.5 [D0 BUILD] L1-5: '(i) optimizer-stripped, CPU-offloaded final lock checkpoint variant (surgery cells read parameters only; ops section 3 item 4) emitted alongside the state-complete format; (ii) n_draws, allocation_rule, seed and corpus-manifest binding inside the checkpoint payload or sidecar so G4/G10 checks are self-contained. Nothing here changes the existing loader contract.'",
+    "surgery_cell_authority": "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md clause C11 (zero-training surgery cells from sha256-locked checkpoints; parameter parity byte-identical to parent; inference randomness identical to C2 seed-owned kernel streams inherited by surgery cells) and section 4.5; reflexive-firewall cells C12 / section 4.6 run inference-time on the same locked checkpoints",
+    "ops_retention_rule": "papers/proposal/ecomd_reexploration_d1_killer_tests_and_ops_2026-09-06.md ops section 3 item 4: final locked checkpoints for ALL runs CPU-offloaded, optimizer-stripped, sha256 into the run manifest, retained until paper acceptance; surgery cells read only these; analyzer enforces checkpoint_lock_sha256 (G4)",
+    "format_pattern": "ecomd/training/train_fact_surrogate.py save_fact_surrogate_checkpoint / load_fact_surrogate_checkpoint (format_version 2 payload vocabulary, atomic pid-suffixed temp + os.replace write, torch.load(map_location='cpu', weights_only=False), try_load_checkpoint-style validation posture); RNG-tree names and K from its SUBSTREAM_NAMES / K_INFERENCE_DRAWS (prereg C1, C16 item 11)",
+    "corpus_hash_vocabulary": "ecomd/corpus/fexec_projector.py (build item E-1): corpus_hash / prestate_hash / tape_hash sha256-hex strings adopted as the binding's hash fields"
+  },
+  "files_created": {
+    "ecomd/training/lock_checkpoint.py": "4fb191ebf6ab6fbb893ce91116bfe55b48a685aa66e8a627b6d1616e9e13cb76",
+    "tests/test_lock_checkpoint.py": "dd722332db1893a603ca470bcb6f9b7045a448d2424ad4295d994f955909e266",
+    "experiments/reexploration/d0_build_receipts_20260907/L1-5/receipt.json": "self (this file)",
+    "experiments/reexploration/d0_build_receipts_20260907/L1-5/README.md": "45aba2b133cbcbd8f8cfaa9c5fa980604e04eb1fdd0a7139ceabdbcb2d92a558"
+  },
+  "files_changed": [],
+  "public_api": [
+    "LOCK_CHECKPOINT_FORMAT_VERSION = 2 (same format family as the trainer checkpoint)",
+    "LOCK_FLAVOR = 'lock'; LOCK_SIDECAR_SCHEMA_VERSION = 1",
+    "LockCorpusBinding (frozen dataclass: seed_root, corpus_hash, prestate_hash, allocation_rule, n_draws=16, schema_version='lab-asset-v3', tape_hash?, manifest_hash?; validates engine kernel set without pro_rata, K=16, sha256 formats)",
+    "LockSidecar (checkpoint_sha256 + lock_chain_sha256 + binding; canonical-JSON to_json/from_json with strict key/format validation)",
+    "LockState (payload, restored substream generators, recurrent_hidden, torch/numpy/python global states, sidecar)",
+    "LockVerification (non-raising ok + failures tuple + sidecar)",
+    "save_lock_checkpoint(path, *, model, config, corpus, substream_generators, execution_metadata, iter_idx, history=(), recurrent_hidden=None) -> LockSidecar",
+    "load_lock_checkpoint(path, *, model=None, verify=True, deep_verify=True) -> LockState",
+    "verify_lock(path, *, deep=True) -> LockVerification (deep=False never calls torch.load)",
+    "lock_sidecar_path(checkpoint) -> '<checkpoint>.lock.json'",
+    "model_state_sha256(state) -> deterministic sha256 over (name, dtype, shape, raw bytes) per state-dict entry"
+  ],
+  "test_command": "conda run -n ecophys python -m pytest tests/test_lock_checkpoint.py -q",
+  "test_result": "34 passed (~1.6 s wall) = 24 test functions incl. parametrized expansions; trainer-vocabulary payload assertion, optimizer-stripped + CPU-offload, parameter round-trip byte identity, restored-substream-generator exact-stream continuation (interrupted prefix + resumed suffix == uninterrupted 48-draw run, plus generator-state equality), torch/numpy/python global-runtime continuation vs an uninterrupted seeded reference, plain-nn.Module lineage-genericity, deep + shallow verify (shallow proven torch.load-free by monkeypatch), checkpoint byte tamper, sidecar binding tamper x5 (chain mismatch), weights-vs-binding deep-only mismatch with repaired file hash, missing sidecar, in-payload lock_binding drift, loader rejection of trainer/optimizer-carrying/stale-version payloads, kernel-set validation x6 (pro_rata rejected), n_draws!=16 rejection, malformed-hash rejection, unknown/empty substream rejection, in-process byte determinism, stale crash leftovers inert, failed save leaves no artifacts, failed re-save leaves previous lock verifiable, sidecar-write failure loudly detected",
+  "mypy_command": "conda run -n ecophys python -m mypy ecomd/training/lock_checkpoint.py",
+  "mypy_result": "Success: no issues found in 1 source file (repo [tool.mypy] strict=true applies)",
+  "ruff_result": "ruff check clean on both files (repo [tool.ruff] line-length 110, E/F/I/N/UP/B/SIM/RUF)",
+  "cpu_smoke_scope": "Single-file pytest run only (34 tests, ~1.6 s) + single-file mypy + ruff + two one-off cross-process byte-determinism spot checks (one tiny lock save per fresh process, outputs deleted). No GPU, no training run, no batch/regression battery, no multi-minute compute, no market data, no endpoint/outcome access, no trained-model persistence (PI standing rule respected). Tests use tmp_path only; test seed roots 12345/12346/9/1 are outside both training namespaces (11000-11029 / 12000-12029).",
+  "determinism_evidence": "In-process: two saves of identical inputs produce byte-identical checkpoint + sidecar (tested). Cross-process: identical saves in two independent processes to different destination filenames produce identical checkpoint sha256 cff0fe2ede27538da81b1561376e2e1dac25aafec704b8764b1ce433c135d5c4 and sidecar sha256 0a704d23d63dcf65b593d945b24c80ee751de4affb640a18489d32881c9ca10f when the ambient global runtime is seeded (as any trainer run is); with an entropy-seeded ambient runtime the embedded torch/numpy/python global-state bytes differ by construction (same semantics as the trainer pattern), while the named-substream generator states (the surgery-cell contract) are always deterministic.",
+  "spec_deviations": [
+    {
+      "deviation": "'Payload keys verbatim' vs 'optimizer-stripped': the two pattern requirements conflict on one key.",
+      "resolution": "Lock payload = the trainer checkpoint key set MINUS optim_state_dict (stripped by ops section 3 item 4 / G5) PLUS two additive marks checkpoint_flavor='lock' and lock_binding; recurrent_hidden lives inside the single rank runtime only (not duplicated top-level as in train_fact_surrogate) so one shape serves both lineages; loader rejects trainer-flavored and optimizer-carrying payloads. The existing trainer loader contract is untouched (nothing in train_distributed.py / train_fact_surrogate.py was modified).",
+      "reason": "Optimizer-stripping is the defining clause of the lock variant (ops section 3 item 4); the flavor mark keeps lock vs state-complete distinguishable under the shared format_version 2."
+    },
+    {
+      "deviation": "torch.save to a PATH embeds the destination filename as the zip archive root (verified: same content saved to two filenames yields different bytes), which would make lock bytes depend on path/pid and violate same-inputs-byte-identical-outputs.",
+      "resolution": "Canonical serialization via io.BytesIO then atomic byte write; verified byte-identical across processes and loadable under any filename.",
+      "reason": "Byte-determinism is a hard build rule and underpins the G4 sha256 lock; the buffer form is the only canonical torch serialization."
+    },
+    {
+      "deviation": "numpy 2.4.4 np.random.get_state() returns a live-aliased keys array (a later seed()/set_state() mutates the stored tuple), so an uncopied capture is not a frozen snapshot.",
+      "resolution": "_numpy_rng_snapshot() copies the keys array at capture.",
+      "reason": "A lock must freeze its RNG runtime, not alias it."
+    },
+    {
+      "deviation": "Contracts section 2.5 says the lock variant is 'emitted alongside the state-complete format'; wiring save_lock_checkpoint into trainer loops was NOT done.",
+      "resolution": "Deferred to the D0 training-window step as the task default allows: the emission clause describes trainer behavior at authorized training time; pre-D0 wiring would be dead code untestable without a training run, and ecomd/training/train_distributed.py is explicitly out of modification scope. The build register item itself is 'lock-checkpoint variant + binding sidecar', both delivered.",
+      "reason": "Conservative scope: the spec does not demand trainer integration now (no [D0 BUILD] sub-item says so); nothing silently omitted."
+    },
+    {
+      "deviation": "Ambiguity in 'corpus/prestate hash' and 'corpus-manifest binding' field vocabulary.",
+      "resolution": "Adopted E-1 projector vocabulary verbatim (corpus_hash / prestate_hash mandatory 64-hex; tape_hash / manifest_hash optional None-able), format-validated; schema_version defaults to 'lab-asset-v3' (G3 anchor vocabulary).",
+      "reason": "Single frozen hash grammar across build items; narrower than inventing new fields."
+    },
+    {
+      "deviation": "Spec does not state whether n_draws is validated or merely recorded.",
+      "resolution": "Hard-validated n_draws == K_INFERENCE_DRAWS (16, C16 item 11; G8/G10 check n_draws == 16) at binding construction and in verification; save also requires at least one named-substream generator from SUBSTREAM_NAMES.",
+      "reason": "Conservative/narrower reading: a lock recording anything else is malformed by construction."
+    }
+  ],
+  "interface_notes": [
+    "Sidecar convention lock_sidecar_path = '<checkpoint>.lock.json'; sidecar content is path-free, so the (checkpoint, sidecar) pair stays verifiable after relocation together; the D0 lock manifest (G4, analyzer checkpoint_lock_sha256) is the external anchor against fully self-consistent forgeries, which no self-contained instrument can detect.",
+    "verify_lock(deep=False) is the verifiable-without-loading-weights surface (contracts section 2.5(ii) G4/G10 self-containedness): re-hashes checkpoint file bytes vs checkpoint_sha256 and recomputes the binding chain sha256(canonical JSON of binding: model hash + config hash + corpus binding + seed/kernel/n_draws/iter). deep=True additionally torch.loads and proves weights/config/runtime/binding inside the file match the sidecar (catches a weights rewrite with a repaired file hash).",
+    "load_lock_checkpoint defaults verify=True and raises ValueError listing all failures, so a surgery cell (C11) or reflexive cell (C12) cannot start from an unverified lock; it restores named-substream generators that continue their exact pre-lock streams and returns (does not auto-apply) the torch/numpy/python global states for callers that must restore the ambient runtime.",
+    "save_lock_checkpoint hashes the checkpoint file AFTER os.replace, so the sidecar always matches on-disk bytes; writes are atomic (pid-suffixed temp + os.replace + fsync) with crash-leftover tolerance (own temps cleaned on failure; foreign stale temps inert); a sidecar-write failure after a checkpoint replace is loudly detected by verification (checkpoint_sha256 mismatch), never silently accepted.",
+    "The module has no stochastic consumer (global-RNG states are captured, never consumed); it persists nothing itself - callers choose destinations. Tests persist only under tmp_path.",
+    "model_state_sha256 is dtype/shape/name-length-prefixed raw-bytes hashing with a uint8-view fallback for numpy-hostile dtypes (bfloat16), so it works for both lineages' state dicts.",
+    "E-2 preflight re-run NOT executed (hard rule 10); no cells/evaluations/endpoints run (zero outcome access)."
+  ]
+}

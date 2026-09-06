@@ -9,6 +9,14 @@ verbatim from ``train_distributed`` (``format_version`` 2 payload keys,
 ``torch.load(..., map_location="cpu", weights_only=False)``-loadable, carrying
 the recurrent hidden state at the save boundary per simulator contracts 3.5).
 
+L2-2 attaches through-M enforcement at the recurrent head's per-step flow
+output: ``build_mechanism`` constructs the SHARED E-3 engine bridge (the real
+``ReferenceEngine``-backed mechanism, lineage-agnostic per simulator contracts
+2.3/3.3) from the config's estimator/kernel selection, with the pre-L2-2
+estimator composition retained as the documented MIRROR fallback; inference
+side, ``build_inference_mechanism``/``inference_kernel_draw_mechanisms`` seed
+the same construction from the ``kernel:1..16`` substreams of contract C2(b).
+
 Validation scope: CPU smoke (forward + a single synthetic-batch gradient step)
 only. No persisted checkpoints for reuse, no real training run, no GPU.
 """
@@ -16,11 +24,13 @@ only. No persisted checkpoints for reuse, no real training run, no GPU.
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import os
 import random
 import subprocess
 from dataclasses import asdict, dataclass
+from dataclasses import replace as dc_replace
 from enum import Enum
 from pathlib import Path
 from typing import Any, cast
@@ -49,6 +59,9 @@ __all__ = [
     "Enforcement",
     "EstimatorKind",
     "FactSurrogateTrainConfig",
+    "MechanismBackend",
+    "build_engine_bridge_mechanism",
+    "build_inference_mechanism",
     "build_mechanism",
     "checkpoint_execution_metadata",
     "config_payload",
@@ -57,6 +70,7 @@ __all__ = [
     "engine_draw_supplier",
     "fact_targets_from_config",
     "fact_weights_from_config",
+    "inference_kernel_draw_mechanisms",
     "load_fact_surrogate_checkpoint",
     "save_fact_surrogate_checkpoint",
     "substream_generator",
@@ -136,6 +150,38 @@ class EstimatorKind(Enum):
     PERTURB_AND_MAP = "perturb_and_map"
 
 
+class MechanismBackend(Enum):
+    """Construction path for through-M mechanisms (build item L2-2).
+
+    ``ENGINE_BRIDGE`` is the production path: the shared E-3 wrapper — the
+    real ``ReferenceEngine``-backed Python↔torch bridge
+    (:mod:`ecomd.mechanisms.through_m_wrapper`), lineage-agnostic and attached
+    identically at L1's flow output and L2's recurrent head (simulator
+    contracts sections 2.3/3.3). It requires the seed root (the E-3
+    ``TrainKernelStream`` derives both the engine draw seed and the PAM noise
+    seed from the ``train_kernel`` node of the RNG tree). ``MIRROR`` is the
+    documented fallback that composes the frozen estimators of
+    :mod:`ecomd.mechanisms.through_m` directly (engine-draw-law mirror +
+    estimator lambdas, torch-generator fed); it is byte-identical to the
+    pre-L2-2 construction, is the default so no existing caller changes
+    behavior, and exists for tests and bridge-free environments. Production
+    through-M arms (E-5 frozen configs) select ``ENGINE_BRIDGE`` explicitly —
+    the backend never changes the hook shape, only which code computes it.
+    """
+
+    ENGINE_BRIDGE = "engine_bridge"
+    MIRROR = "mirror"
+
+
+ENGINE_BRIDGE_MODULE = "ecomd.mechanisms.through_m_wrapper"
+"""Canonical home of the shared E-3 wrapper (build item E-3, single build two
+lineages). Imported lazily so this module stays importable in any build
+order; the wrapper's hook factories (``straight_through_hook`` /
+``perturb_and_map_hook``) are REQUIRED at construction time of an
+ENGINE_BRIDGE mechanism — absence is a hard error, never a silent fallback
+to the mirror."""
+
+
 @dataclass(frozen=True)
 class FactSurrogateTrainConfig:
     """CPU training-loop configuration. The four ``w_*`` fact weights and
@@ -150,6 +196,7 @@ class FactSurrogateTrainConfig:
     enforcement: Enforcement = Enforcement.RAW
     estimator: EstimatorKind = EstimatorKind.STRAIGHT_THROUGH
     kernel: Kernel = Kernel.FIFO
+    mechanism_backend: MechanismBackend = MechanismBackend.MIRROR  # L2-2; production arms select ENGINE_BRIDGE
     channel_scales: tuple[float, ...] = (1.0, 1.0)  # s_ch, frozen DGP-native per C5
     w_supervised: float = 1.0
     w_gain_loss: float = 0.0
@@ -211,8 +258,10 @@ def engine_draw_supplier(generator: torch.Generator) -> MechanismEstimator:
     Per executed unit: ``draw ~ randrange(sum(remaining))`` over the depleting
     remaining quantities (matching.py:592-604), consumed from the caller's
     ``train_kernel`` substream generator. Returned as a partial-applied
-    straight-through estimator; the engine-bridge wrapper (build item E-3)
-    supersedes this with the identical call shape at D0.
+    straight-through estimator. Superseded for production by the shared E-3
+    engine bridge (identical call shape, real engine law); retained as the
+    documented MIRROR-backend fallback of L2-2 and as the cross-check
+    reference for bridge-vs-mirror law equivalence.
     """
 
     def mechanism(quantities: Tensor, demand: int) -> Tensor:
@@ -246,18 +295,54 @@ def engine_draw_supplier(generator: torch.Generator) -> MechanismEstimator:
 def build_mechanism(
     config: FactSurrogateTrainConfig,
     *,
-    train_kernel_generator: torch.Generator,
+    train_kernel_generator: torch.Generator | None = None,
+    seed_root: int | None = None,
 ) -> MechanismEstimator | None:
     """The through-M hook for one arm, or ``None`` for the raw arm.
 
+    The config's ``estimator``/``kernel`` selections construct the mechanism;
+    ``mechanism_backend`` selects the code path. ``ENGINE_BRIDGE`` (the
+    production path of L2-2) requires ``seed_root`` — the E-3
+    ``TrainKernelStream`` derives both the engine draw seed and the PAM noise
+    seed from the ``train_kernel`` node of the seed tree — and ignores the
+    torch generator. ``MIRROR`` (the documented fallback, byte-identical to
+    the pre-L2-2 path) requires ``train_kernel_generator``:
     straight_through + fifo needs no draws; straight_through + random_unit
     consumes the engine-law draw stream from the ``train_kernel`` substream;
-    perturb_and_map takes its seed from the same substream so the audit retrain
-    sees paired kernel randomness within the seed (estimator menu section 2).
+    perturb_and_map takes its seed from the same substream so the audit
+    retrain sees paired kernel randomness within the seed (estimator menu
+    section 2).
     """
 
     if config.enforcement is Enforcement.RAW:
         return None
+    if config.mechanism_backend is MechanismBackend.ENGINE_BRIDGE:
+        if seed_root is None:
+            raise ValueError(
+                "mechanism_backend=ENGINE_BRIDGE requires seed_root (the E-3 "
+                "TrainKernelStream seeds the engine draws and the PAM noise "
+                "from the train_kernel node of that seed root)"
+            )
+        return build_engine_bridge_mechanism(config, seed_root=seed_root)
+    if train_kernel_generator is None:
+        raise ValueError(
+            "mechanism_backend=MIRROR requires train_kernel_generator "
+            "(seed it from the train_kernel substream of the run's seed root)"
+        )
+    return _build_mirror_mechanism(config, train_kernel_generator)
+
+
+def _build_mirror_mechanism(
+    config: FactSurrogateTrainConfig,
+    train_kernel_generator: torch.Generator,
+) -> MechanismEstimator:
+    """Mirror backend: the frozen estimators composed directly (no engine).
+
+    This is the documented test fallback of L2-2 — the exact pre-L2-2
+    construction, kept verbatim so bridge and mirror can be cross-checked
+    against each other and against engine replay.
+    """
+
     if config.estimator is EstimatorKind.STRAIGHT_THROUGH:
         if config.kernel is Kernel.FIFO:
             return lambda quantities, demand: straight_through_through_m(
@@ -268,6 +353,106 @@ def build_mechanism(
     return lambda quantities, demand: perturb_and_map_through_m(
         quantities, demand, config.kernel, seed=seed
     )
+
+
+def build_engine_bridge_mechanism(
+    config: FactSurrogateTrainConfig,
+    *,
+    seed_root: int,
+) -> MechanismEstimator:
+    """The REAL through-M mechanism (build items E-3/L2-2): the shared
+    ``ReferenceEngine``-backed bridge of
+    :mod:`ecomd.mechanisms.through_m_wrapper`, constructed from the config's
+    ``estimator``/``kernel`` selection — ``straight_through_hook`` (primary)
+    or ``perturb_and_map_hook`` (audit) — with the E-3 ``TrainKernelStream``
+    rooted at ``seed_root``. At training time ``seed_root`` is the run's seed
+    root, so the stream walks the ``train_kernel`` node's children; for an
+    inference draw it is the derived seed of substream ``kernel:k`` (see
+    :func:`build_inference_mechanism`). The estimator-blind stream advance
+    makes the same call sequence replay identically across through-M arms
+    within the seed (contract C2 note 3).
+
+    Raises ``RuntimeError`` (never a silent mirror fallback) when the E-3
+    wrapper module is absent or does not expose the pinned hook factory.
+    """
+
+    if seed_root < 0:
+        raise ValueError("seed_root must be nonnegative")
+    try:
+        module = importlib.import_module(ENGINE_BRIDGE_MODULE)
+    except ImportError as error:
+        raise RuntimeError(
+            f"mechanism_backend=ENGINE_BRIDGE requires the shared E-3 wrapper "
+            f"module {ENGINE_BRIDGE_MODULE!r}, which is not importable: {error}. "
+            "Select MechanismBackend.MIRROR explicitly for the documented "
+            "fallback; do not construct production through-M arms without the "
+            "real engine bridge."
+        ) from error
+    hook_name = (
+        "straight_through_hook"
+        if config.estimator is EstimatorKind.STRAIGHT_THROUGH
+        else "perturb_and_map_hook"
+    )
+    factory = getattr(module, hook_name, None)
+    if not callable(factory):
+        raise RuntimeError(
+            f"{ENGINE_BRIDGE_MODULE!r} does not expose a callable "
+            f"{hook_name!r} (the E-3 hook-factory contract)"
+        )
+    return cast(
+        MechanismEstimator,
+        factory(kernel=config.kernel, seed_root=seed_root),
+    )
+
+
+def build_inference_mechanism(
+    config: FactSurrogateTrainConfig,
+    *,
+    seed_root: int,
+    draw_index: int,
+) -> MechanismEstimator:
+    """One inference-side through-M mechanism for kernel draw ``draw_index``.
+
+    Contract C2(b): K = 16 inference-kernel draws per seed per cell; the k-th
+    draw's randomness derives from substream ``kernel:k`` (NOT
+    ``train_kernel``) and replays identically across cells within the seed.
+    Both backends seed from that node's derived integer — MIRROR seeds a torch
+    generator from it, ENGINE_BRIDGE roots the E-3 ``TrainKernelStream`` at it
+    — so the two backends stay paired substream-for-substream. The
+    estimator/kernel selection — not the training-enforcement axis — picks
+    the mechanism, so raw-trained cells evaluated under through-M inference
+    (cells (t, e) of contract C3) construct it here too.
+    """
+
+    if not 1 <= draw_index <= K_INFERENCE_DRAWS:
+        raise ValueError(
+            f"draw_index must be in [1, {K_INFERENCE_DRAWS}], got {draw_index}"
+        )
+    inference_config = dc_replace(config, enforcement=Enforcement.THROUGH_M)
+    draw_seed = derive_substream_seeds(seed_root)[f"kernel:{draw_index}"]
+    draw_generator = torch.Generator(device="cpu")
+    draw_generator.manual_seed(draw_seed)
+    return cast(
+        MechanismEstimator,
+        build_mechanism(
+            inference_config,
+            train_kernel_generator=draw_generator,
+            seed_root=draw_seed,
+        ),
+    )
+
+
+def inference_kernel_draw_mechanisms(
+    config: FactSurrogateTrainConfig,
+    *,
+    seed_root: int,
+) -> list[MechanismEstimator]:
+    """All K = 16 inference-side mechanisms, consumed in draw order 1..16."""
+
+    return [
+        build_inference_mechanism(config, seed_root=seed_root, draw_index=draw)
+        for draw in range(1, K_INFERENCE_DRAWS + 1)
+    ]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -341,7 +526,11 @@ def train_fact_surrogate(
     minibatch_generator.manual_seed(seeds["minibatch"])
     train_kernel_generator = torch.Generator(device="cpu")
     train_kernel_generator.manual_seed(seeds["train_kernel"])
-    mechanism = build_mechanism(config, train_kernel_generator=train_kernel_generator)
+    mechanism = build_mechanism(
+        config,
+        train_kernel_generator=train_kernel_generator,
+        seed_root=seed_root,
+    )
     scales = torch.tensor(config.channel_scales, dtype=torch.float32)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
@@ -405,6 +594,7 @@ def config_payload(config: FactSurrogateTrainConfig) -> dict[str, Any]:
     payload["enforcement"] = config.enforcement.value
     payload["estimator"] = config.estimator.value
     payload["kernel"] = config.kernel.value
+    payload["mechanism_backend"] = config.mechanism_backend.value
     payload["channel_scales"] = list(config.channel_scales)
     return payload
 

@@ -1,0 +1,77 @@
+{
+  "item": "E-1",
+  "title": "F_exec corpus projector (tape -> per-round tensors)",
+  "stage": "D_minus_1 pre-D0 (outcome-blind freeze pinned 2026-09-19)",
+  "date": "2026-09-07",
+  "spec_source": [
+    "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 1 (PI decision D1_01: F_exec = pure selection among recorded schema payload fields) and section 4 (D0 build register, item E-1)",
+    "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md C5 (channels = exactly two aggregate engine-level conserving channels per clearing round: total executed volume units, total executed cash ticks), C3 (kernel set {fifo, random_unit_within_price}), G3 (schema_version == lab-asset-v3), section 7.4 (hash inventory)",
+    "ecomd/models/fact_surrogate.py FEXEC_ROUND_FEATURES (frozen 14-feature grammar; FactSurrogateConfig.n_slots = 8 padding precedent)"
+  ],
+  "files_created": [
+    {
+      "path": "ecomd/corpus/__init__.py",
+      "sha256": "6de06eb27c0129b5c85a06758abdefa9dc9fa865a5f3a8e4441295857ad6979c"
+    },
+    {
+      "path": "ecomd/corpus/fexec_projector.py",
+      "sha256": "6ca78f05f22042d2017b49079185c2a6af6b1dcc9d2d1f2e69f3e0c61461a1e4"
+    },
+    {
+      "path": "tests/test_fexec_projector.py",
+      "sha256": "3582a21af801a4d2885a40ff8dd609eaae9faba0739cc38716904a3bca795c3d"
+    }
+  ],
+  "files_changed": [],
+  "public_api": {
+    "entry_point": "ecomd.corpus.fexec_projector.project_fexec_corpus(prestate, tape, seed, *, n_slots=8, dtype=torch.float32) -> FexecCorpus",
+    "returns": "FexecCorpus(session_id, schema_version, allocation_rule, seed, n_slots, match_ticks, rounds, n_executions, features (R,14), channels_delta (R,2) int64, channels_cumulative (R,2) int64, slot_prices (R,n_slots) int64, slot_quantities (R,n_slots) int64, tape_hash, content_hash, corpus_hash)",
+    "constants": [
+      "FEXEC_REQUIRED_FIELDS = (execution, aggressor_role, maker_role, pre_best_bid, pre_best_ask, post_best_bid, post_best_ask)",
+      "FEXEC_OPTIONAL_FIELDS = (allocation_draw,)",
+      "DEFAULT_N_SLOTS = 8",
+      "PROJECTOR_VERSION = 1",
+      "REQUIRED_SCHEMA_VERSION = lab-asset-v3",
+      "ENGINE_KERNELS = {fifo, random_unit_within_price}"
+    ]
+  },
+  "test_command": "conda run -n ecophys python -m pytest tests/test_fexec_projector.py",
+  "tests_passed": "10 passed (10/10; single-file CPU spot check only)",
+  "test_coverage": [
+    "test_hand_computed_small_tape_projection - hand-computed features/channels/slots on a 2-round hand tape",
+    "test_engine_tape_round_grouping_by_match_ts - engine-generated tape; grouping by distinct execution match_ts; same-tick merge; engine-real None best_bid",
+    "test_padding_contract_and_overflow - n_slots pad determinism; >n_slots levels and n_slots<1 raise ValueError (never truncate)",
+    "test_byte_identity_and_regeneration_safety - double projection torch.equal + torch.save byte identity; regenerate() tape reproduces corpus_hash; other seed changes hash only",
+    "test_exclusion_of_request_side_events - order_request actor and order_accepted.resting_quantity perturbations leave content_hash/features/channels unchanged; selection key-set assertion",
+    "test_none_quote_fallback - post_best_bid None exercises the frozen fexec_round_features fallback; equality with direct call",
+    "test_malformed_tape_rejection - 10 tape cases + prestate mismatch + negative seed all raise ValueError",
+    "test_tensor_shapes_and_dtypes - shapes/dtypes incl. empty corpus zero-shaped tensors",
+    "test_frozen_bundle_fifo_projection - frozen fixture_fifo (read-only, per-file sha256 re-verified vs bundle_manifest): draw_volume_share == 0, per-round alignment with fexec_round_features, sorted match ticks",
+    "test_frozen_bundle_random_unit_and_regeneration - frozen fixture_random_unit_within_price: draw_volume_share == 1, regenerate identity, hand re-derivation of channels/slots from payloads"
+  ],
+  "mypy_result": "mypy --strict-equivalent clean: 'Success: no issues found in 3 source files' over ecomd/corpus/fexec_projector.py ecomd/corpus/__init__.py tests/test_fexec_projector.py (project config files=[ecomd] covers the module; test file checked explicitly)",
+  "ruff_result": "All checks passed (ecomd/corpus/ tests/test_fexec_projector.py)",
+  "cpu_smoke_scope": "CPU-only, second-scale single-file runs on the Mac per the PI no-heavy-compute rule (global CLAUDE.md 2026-09-06): one pytest file (0.42 s), mypy and ruff on own files only. No GPU, no training, no batch regression battery, no market data, no outcome access. The read-only frozen bundle experiments/lab_asset_a2/a2_exit_20260905/ was consumed strictly read-only: bytes read, never written; per-file sha256 re-verified against bundle_manifest.json inside the two fixture tests before any projection. The E-2 preflight re-run was NOT executed (out of E-1 scope).",
+  "spec_deviations": [
+    "Round grouping = distinct execution.clocks.match_ts ascending (engine clock / last_match_ts); the client-supplied execution.round_id is carried as metadata only. Reason: round_id is client-controlled and uniformly 0 in the frozen fixtures, so it cannot define the round grid; the engine clock is the native clearing-round boundary and is the narrower, more deterministic choice.",
+    "Rounds without executions are NOT part of the corpus (no empty-round rows in the grid); the documented no-event token stays reachable by calling fexec_round_features on an empty payload sequence directly. Reason: an execution-less round carries zero F_exec information, and inventing round indices the tape does not determine would be less deterministic.",
+    "A round touching more than n_slots distinct price levels raises ValueError instead of truncating. Reason: silent truncation would violate the conserving-channel and replay guarantees; fail-loud is the conservative contract.",
+    "Slot semantics: slots index the round's DISTINCT EXECUTION PRICES ascending (touched-and-cleared levels with their executed quantities), right-padded to n_slots with quantity-0 slots at price 0 (never-clearable; cash-inert since allocation x price = 0). The full resting book per level is NOT reconstructed - book state is not tape-derivable (request-side events excluded) and stays with E-4 regenerate(). Reason: pure-selection scope; deterministic from execution payloads alone.",
+    "channels_cumulative is emitted as the zero-base cumsum of channels_delta. Reason: the ABS-head target base for L1/L2 adapters; true cumulative engine STATE (cash/inventory levels from the prestate) is E-4 scope and would require prestate arithmetic outside the selection contract.",
+    "seed is identity binding only (hashed into corpus_hash); the projector has zero stochastic consumers. Reason: deterministic pure function per the contracts section 2.4 global-RNG lesson; rejecting negative seeds.",
+    "Module placed at ecomd/corpus/fexec_projector.py (new subpackage) rather than scripts/. Reason: it imports torch and ecomd.models.fact_surrogate, must be importable by ecomd training code, and must sit under the mypy files=[ecomd] scope; engine modules are referenced structurally via Protocols (FexecPrestate, FexecTapeRecord), not imported.",
+    "Three-hash identity design: tape_hash (full tape incl. request-side records: provenance), content_hash (selection-only: corpus content), corpus_hash (binds projector id/version, grammar, session/prestate commitment, seed, n_slots, dtype, tape_hash, content_hash). Reason: makes the pure-selection property testable - request-side perturbations change provenance hashes but never content.",
+    "Enrichment v3.1 fixtures (experiments/lab_asset_a2/enrichment_20260906/) are NOT projected here: REQUIRED_SCHEMA_VERSION == 'lab-asset-v3' is enforced exactly. Reason: G3 pins schema_version == lab-asset-v3; the enrichment bundle is a v3.1 extension consumed by S1a post-D0, out of E-1 scope.",
+    "Engine-live payloads (dataclass ThreeClocks, StrEnum values) are canonicalized (dataclasses.asdict recursion) inside _select_execution_payload and tape_hash. Reason: a regenerated in-memory tape and its JSON-loaded recorded form must hash identically, which the raw objects would not (json.dumps TypeError); canonicalization is the minimal deterministic normalizer."
+  ],
+  "interface_notes": [
+    "Lineage invariance is by construction: the features matrix is emitted by the frozen fexec_round_features / FEXEC_ROUND_FEATURES imported from ecomd.models.fact_surrogate - no reimplementation exists to drift.",
+    "FexecCorpus.fields map onto FactSurrogateBatch: features -> features, channels_cumulative -> channels (cast to float by the adapter), slot_prices -> slot_prices; channels_init must come from E-4 (prestate cash/inventory levels), not from this projector.",
+    "Structural Protocols accept both engine-live objects (TapeRecord with dataclass payload values) and JSON-round-tripped dicts; only the session_start record's exact field set is validated (exactly {session_id, schema_version, allocation_rule, prestate_hash}).",
+    "The projector re-verifies the session_start prestate_hash against a recomputed canonical hash of the passed prestate (dataclasses.asdict path), so a mismatched (prestate, tape) pair is rejected rather than silently projected.",
+    "Validation on every execution payload: all 7 required F_exec fields present, no keys outside the frozen selection (extra request-side keys are REJECTED, not dropped - an explicit exclusion check), quantity/price/round_id/match_ts integer-typed and match_ts nonnegative, allocation_draw exact field set when present."
+  ],
+  "read_only_inputs": [
+    "experiments/lab_asset_a2/a2_exit_20260905/ (frozen bundle, lineage fea8a136b0c3e19a00bddcb131a1540ca40fda6c157d6dbc949001dbf76a9581c) - fixture_fifo and fixture_random_unit_within_price consumed read-only in 2 tests with in-test per-file sha256 verification against bundle_manifest.json"
+  ]
+}

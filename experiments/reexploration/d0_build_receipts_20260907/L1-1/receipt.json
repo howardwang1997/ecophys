@@ -1,0 +1,91 @@
+{
+  "item": "L1-1",
+  "title": "L1 corpus adapter (F_exec projection -> L1 input surface)",
+  "built_at": "2026-09-07",
+  "stage": "D_minus_1 pre-D0 code-only build (outcome-blind freeze pinned 2026-09-19)",
+  "spec_source": [
+    "papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md section 2.1 item L1-1 (the binding item spec: per clearing round t, inputs = anonymous book-state summary + conserving channels from regenerate() (E-4) + flow tensor z_t slot exposed for L1-2 + the F_exec event records of round t as supervision/target context; pure function of (prestate, tape, seed) with its own hash; schema events map 1:1 via schema_spec.json payload fields; request-side events EXCLUDED) and section 4 (D0 build register, L1 items)",
+    "papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md C5 (two aggregate conserving channels per clearing round), C3 (engine kernels {fifo, random_unit_within_price}), C1 (RNG tree; no global-RNG consumers day one)",
+    "WaveA outputs consumed as the lineage-invariant corpus: experiments/reexploration/d0_build_receipts_20260907/E-1/receipt.json (ecomd/corpus/fexec_projector.py; frozen 14-feature grammar, slot padding contract, round grid = distinct execution match_ts ascending) and experiments/reexploration/d0_build_receipts_20260907/E-4/receipt.json (scripts/lab_asset/conserving_emitter.py; increment_matrix/cumulative_matrix in CHANNEL_ORDER, byte-stable to_json)"
+  ],
+  "files_created": {
+    "ecomd/corpus/l1_corpus_adapter.py": "af64e708d9902b736640fb9399ac398235ed18338215c06aa771b9b29d0c73da",
+    "tests/test_l1_corpus_adapter.py": "dd3ff9b106fc6eada5711c1c467309ceec289d45b45f9d8d45ab3baf83cc79b8",
+    "experiments/reexploration/d0_build_receipts_20260907/L1-1/receipt.json": "self (this file)",
+    "experiments/reexploration/d0_build_receipts_20260907/L1-1/README.md": "see README"
+  },
+  "files_changed": [],
+  "public_api": [
+    "ADAPTER_ID = 'ecomd.corpus.l1_corpus_adapter', ADAPTER_VERSION = 1",
+    "L1_D_STATE = 6 (FIXED d_state; enumerated by L1_AGENT_STATE_CHANNELS = (log1p_prev_slot_quantity, prev_slot_price_rel_spread, log1p_cum_volume, log1p_cum_cash, prev_post_spread, prev_mid_move))",
+    "L1_CONTEXT_SIZE = 3 with L1_CONTEXT_CHANNELS = (log_price, volatility, last_log_return) — the ecomd.py:1110-1116 step-context pattern",
+    "VOLATILITY_EWMA_ALPHA = 0.05 (price_formation default EWMA convention, seeded at the 0.0 no-information token)",
+    "ConservingSeriesView (structural Protocol over E-4's ConservingChannelSeries; engine modules referenced, not imported)",
+    "L1Corpus (frozen dataclass): agent_states (R,N,6) + context (R,3) [strictly pre-round INPUT]; flow_slot (R,N) zero-filled [EXPOSED z_t slot for L1-2]; features (R,14) + rounds payload tuples + slot_prices/slot_quantities (R,N) int64 [SUPERVISION]; channels_inc/channels_abs (R,2) int64 [E-4 exact pass-through]; corpus_hash/series_hash/content_hash/adapter_hash; n_agents property == n_slots",
+    "build_l1_corpus(prestate, tape, seed, *, series=None, n_slots=8, dtype=torch.float32) -> L1Corpus"
+  ],
+  "test_command": "conda run -n ecophys python -m pytest tests/test_l1_corpus_adapter.py -q",
+  "test_result": "15 passed in 0.60s (single-file CPU spot check only)",
+  "test_coverage": [
+    "test_hand_checked_small_tape - hand tape + hand series; every agent-state channel, context triple and supervision tensor hand-computed (log1p(3), log(100) etc.); t=0 all-zero token",
+    "test_shapes_dtypes_and_constants - (R,N,d_state)/(R,3)/(R,N) shapes, float32/int64 dtypes, constants coherence; genuine no-execution engine session gives zero-shaped empty corpus",
+    "test_e4_pass_through_exactness [fifo, random_unit] - channels_inc/channels_abs == emit_conserving_channels increment/cumulative matrices integer-exactly; conservation_violations and settlement_violations empty",
+    "test_determinism_byte_identity_and_regeneration [fifo, random_unit] - double-build hash + torch.equal + torch.save byte identity; regenerate() tape reproduces everything; other seed changes adapter_hash only (tensors identical); explicit series injection == internal derivation",
+    "test_request_side_exclusion - order_request actor / order_accepted resting_quantity perturbations (with the clean E-4 series injected) leave all tensors and content_hash unchanged while corpus_hash/adapter_hash change; internal derivation on a request-side-perturbed tape is rejected by the E-4 replay guard",
+    "test_pre_round_state_only_rule [fifo, random_unit] - request-boundary prefix truncation: round-2 existence cannot change inputs/context/supervision of rounds 0..1; a different round-0 realization changes inputs only from round 1 on (round 0 input stays the zero token)",
+    "test_supervision_alignment - features[t] == fexec_round_features(rounds[t].payloads); channels_inc[t] recomputed by hand from payloads; channels_abs == running sums; flow_slot all zeros; n_agents == FactSurrogateConfig().n_slots",
+    "test_consumable_by_l1_surfaces - agent_states[1] is (n_agents, d_state) float32; context row equals torch.stack([log_price, volatility, last_log_return]) (the ecomd.py:1110-1116 pattern); EcoMDSimulator(pairwise_kind='ecomd_v2', n_agents=N, d_state=6) consumes s and the context-derived PriceState for one finite step",
+    "test_frozen_bundle_end_to_end - fixture_fifo read-only (per-file sha256 re-verified vs bundle_manifest before any build): full internal-derivation path, determinism, draw_volume_share == 0, E-4 conservation identities hold",
+    "test_malformed_and_mismatch_rejection - negative seed, n_slots<1, wrong grid, wrong increments/cumulatives, wrong session/rule, truncated and non-integer series matrices all raise ValueError",
+    "test_missing_emitter_path_raises_with_instructive_error - scripts/ removed from sys.path + lab_asset purged from sys.modules: ValueError instructs passing series= (ecomd stays importable)",
+    "test_series_view_protocol_is_structural - the concrete E-4 object satisfies ConservingSeriesView without inheritance"
+  ],
+  "mypy_command": "conda run -n ecophys python -m mypy ecomd/corpus/l1_corpus_adapter.py tests/test_l1_corpus_adapter.py",
+  "mypy_result": "Success: no issues found in 2 source files; package-scope 'conda run -n ecophys python -m mypy' also Success: no issues found in 102 source files (repo [tool.mypy] strict=true)",
+  "ruff_result": "All checks passed (ecomd/corpus/l1_corpus_adapter.py tests/test_l1_corpus_adapter.py; repo [tool.ruff])",
+  "cpu_smoke_scope": "CPU-only, second-scale, single-file runs on the Mac per the PI no-heavy-compute rule (global CLAUDE.md 2026-09-06): one pytest file (15 tests, 0.60s), mypy/ruff on own files plus one package-scope mypy, one cross-process determinism spot check (adapter_hash/content_hash identical across two independent processes on a 3-round synthetic session). No GPU, no training, no batch/regression battery, no market data, no endpoint/outcome access, no trained-model persistence. The frozen bundle experiments/lab_asset_a2/a2_exit_20260905/ was consumed strictly read-only (bytes read, never written; per-file sha256 re-verified against bundle_manifest.json inside the fixture test before any build). The E-2 preflight re-run was NOT executed (hard rule 10).",
+  "spec_deviations": [
+    {
+      "deviation": "Module placed at ecomd/corpus/l1_corpus_adapter.py instead of the suggested ecomd/data/l1_corpus_adapter.py.",
+      "resolution": "Built in E-1's ecomd/corpus/ package as a sibling of fexec_projector.py.",
+      "reason": "ecomd/data/ holds market-data ingestion scripts (binance/lobster/yfinance); L1-1 is a pure (prestate, tape, seed) function over the E-1 corpus and belongs beside the grammar it must not drift from; both locations are inside the mypy files=[ecomd] scope, so the move changes nothing operationally."
+    },
+    {
+      "deviation": "The conserving channels are taken either from an explicitly passed E-4 series (structural Protocol ConservingSeriesView) or derived internally via a LAZY import of lab_asset.conserving_emitter inside the function body.",
+      "resolution": "build_l1_corpus(..., series=None): series=None derives via the E-4 emitter (the spec's regenerate() path); an explicit series is accepted, grid/content/session/rule-checked against E-1's projection at build time.",
+      "reason": "lab_asset is not an installed package (only importable with scripts/ on sys.path); a module-level import would break 'import ecomd' for training code. The lazy import keeps the pure-function-of-(prestate, tape, seed) semantics (E-4 is itself such a pure function) while the adapter -> engine import direction rule is respected; ecomd/models/ never imports lab_asset."
+    },
+    {
+      "deviation": "Anonymous book-state -> agent-state mapping fixed as: N = n_slots anonymous level-agents (one per E-1 queue slot, padding slots = never-clearable level-agents), d_state = 6 with named channels (2 per-slot: log1p(prev round executed quantity at the slot, slot price deviation from the last post-mid in spread units; 4 shared: log1p cumulative volume, log1p cumulative cash ticks, last post-spread, last mid move).",
+      "resolution": "Documented as the frozen contract (L1_AGENT_STATE_CHANNELS, module docstring table); input for round t uses only completed-round data tau = t-1.",
+      "reason": "The spec demands a FIXED documented d_state; the touched-price-level ladder is the only anonymous book surface the F_exec selection determines (the full resting book is engine state outside the selection, per E-1's documented decision), so one agent per queue slot is the narrowest deterministic reading."
+    },
+    {
+      "deviation": "Round-0 input is the all-zero no-event token (zeros for s and for the [log_price, volatility, last_log_return] context) rather than a projection of the session-initial resting book.",
+      "resolution": "t=0 emits zeros; log_price floors at log(max(mid, 1)) so the token stays finite; volatility EWMA is seeded at 0.0 (no sigma_price prior exists in the tape).",
+      "reason": "The initial book is prestate engine state outside the F_exec pure selection; projecting it would open a second tape-derivation surface beyond E-1's grammar. Conservative narrower reading; matches the documented no-event token convention of the frozen grammar."
+    },
+    {
+      "deviation": "Flow slot: the exposed z_t slot is emitted zero-filled (flow_slot (R, N) in the tensor dtype) rather than left abstract.",
+      "resolution": "The adapter never predicts; L1-2 writes its per-round resting-quantity prediction into the slot; slot_prices rides on the supervision side for the through-M cash arithmetic.",
+      "reason": "A deterministic zero fill keeps the adapter byte-deterministic and hashable while still exposing the slot shape contract; any consumer-visible 'uninitialized' state would violate the determinism rule."
+    },
+    {
+      "deviation": "Request-side exclusion is tested with the clean E-4 series injected alongside the perturbed tape (tensor surfaces and content_hash invariant, provenance hashes change), and separately the internal-derivation path on a request-side-perturbed tape is asserted to RAISE (E-4 replay guard).",
+      "resolution": "Two-test discipline mirrors E-1's exclusion test through the series-injection surface.",
+      "reason": "Unlike E-1, L1-1 composes with the engine re-execution, and any request-side payload perturbation breaks replay validity by construction; the adapter therefore guarantees exclusion (content) AND rejection (provenance-tampered internal derivation) rather than silently tolerating perturbed tapes."
+    }
+  ],
+  "interface_notes": [
+    "Lineage invariance by construction: features/slot tensors/payload tuples are E-1's FexecCorpus verbatim (same objects, not re-derived); conserving channels are E-4's matrices verbatim; the cross-check (grid, increment, cumulative, session, rule) is enforced at build time so two drifting artifacts fail loudly.",
+    "Consumability: agent_states[t] is EcoMDSimulator's s surface (n_agents, d_state) float32; context[t] is exactly the torch.stack([log_price, volatility, last_log_return]) triple of the ecomd.py:1110-1116 pattern and has been driven through one EcoMDSimulator(pairwise_kind='ecomd_v2') step in the test; L1-2/L1-3 attach at flow_slot + slot_prices (through-M cash = allocation x slot price).",
+    "channels_abs is the zero-based running sum (post-round ABS target base); the engine-STATE initial totals live in the E-4 series JSON bound via series_hash, not in the channel tensors (C5 channels are executed volume/cash, which start at 0 by construction).",
+    "Hash design: adapter_hash = sha256 over canonical JSON binding adapter id/version, channel names, alpha, seed, n_slots, dtype, E-1 corpus_hash (provenance), series_hash (E-4 canonical JSON) and content_hash (tensor content only).",
+    "No stochastic consumer exists anywhere in the adapter path (seed binds identity only); the C5 channel scaling s_ch remains out of scope (E-4 deviation 5: D0-freeze side).",
+    "Frozen bundle experiments/lab_asset_a2/a2_exit_20260905/ (lineage fea8b136b0c3e19a00bddcb131a1540ca40fda6c157d6dbc949001dbf76a9581c): fixture_fifo consumed read-only in 1 test with in-test per-file sha256 verification against bundle_manifest.json."
+  ],
+  "read_only_inputs": [
+    "experiments/lab_asset_a2/a2_exit_20260905/ (frozen A-2 exit bundle) - read-only, sha256 re-verified in-test",
+    "experiments/reexploration/d0_build_receipts_20260907/E-1/receipt.json and E-4/receipt.json - read for interface alignment only"
+  ]
+}

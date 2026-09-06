@@ -1,0 +1,68 @@
+# E-5 frozen Hydra config tree — ALPHA market cube (D0 build register item E-5).
+#
+# Compose a run config by selecting one option per group, e.g.
+#   block=b4_variant_b arm=absolute_through_m axis=kswap
+# Horizons {1, 4, 16, 31}, the K = 16 draw count and the two inference
+# enforcements are EVAL-TIME parameters (below); training configs ignore them.
+#
+# AUTHORITIES (never overridden here): prereg v2 C1-C4, C14 restated
+# (section 3.4), Annex B; simulator contracts section 4 item E-5 and section 6
+# flag 5; the sibling build surfaces (E-2 DGPConfig; L1-2 / fact-surrogate
+# trainer configs; through_m estimator constants). This tree RECORDS values;
+# scripts/reexploration/validate_e5_configs.py asserts equality against the
+# frozen module defaults, so the tree cannot drift from the code.
+
+defaults:
+  - block: b1
+  - arm: increment_raw
+  - axis: id
+  - _self_
+
+schema_version: ecomd-reexploration-e5-v1
+campaign_id: alpha_cube_d0_20260919
+
+spec_sources:
+  - papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md
+  - papers/proposal/ecomd_reexploration_simulator_contracts_2026-09-06.md
+
+# Production through-M mechanism path (build items E-3 / L2-2): the shared
+# ReferenceEngine-backed bridge. Raw arms never construct a mechanism.
+mechanism_backend: engine_bridge
+
+# C5 / Annex B(e): s_ch comes from the hash-sealed DGP-only sample branch and
+# is NEVER materialized in this tree (no channel_scales key anywhere).
+channel_scales_provenance: hash_sealed_dgp_only_sample
+
+# lineage.train blocks record the frozen module defaults of the sibling builds
+# (L1SupervisedTrainConfig / FactSurrogateTrainConfig). Production iteration
+# counts are pinned by the D0 trainer runtime, outside this tree.
+train_binding: frozen_module_defaults
+
+named_not_run:
+  # PI decision D1_05: named-but-not-run; NO selectable dgp option exists for
+  # it (exclusion is enforced by absence, cross-checked against E-2
+  # D2_NAMED_NOT_RUN by the validator).
+  dgp_families: [negative_jump_iid]
+  # pro_rata is not an engine kernel and never executes in any cell
+  # (C3 / PI ruling D1_14); S3 exact-arithmetic only.
+  kernels: []
+
+estimators:  # == ecomd.mechanisms.through_m pinned constants (validator-checked)
+  straight_through_scale: 1.0
+  perturb_and_map_sigma: 1.0
+  pam_fixture_default_seed: 20260906  # fixture/replay default only; production noise from the RNG tree
+
+eval:
+  axes: [id, pop_2x, tick_2x, kswap]
+  horizons: [1, 4, 16, 31]  # autoregressive clearing rounds (C4)
+  horizon_descriptive_only: 64
+  inference_enforcements: [raw, through_m]
+  cells_per_seed: 8  # 4 trained arms x 2 inference enforcements (C3/C14)
+  k_inference_draws: 16  # == K_INFERENCE_DRAWS (C2(b), immutable)
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false

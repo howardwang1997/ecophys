@@ -1,0 +1,20 @@
+# B2 = L1 x garch_student_t5 / D2 variant A (Stage 2, directional robustness
+# only — C16 item (13); no material-nonadditivity claim attaches to any
+# Stage-2 cell).
+defaults:
+  - /lineage: l1
+  - /dgp: garch_student_t5
+  - _self_
+
+block_id: B2
+stage: 2
+lineage_id: l1
+dgp_id: garch_student_t5
+seed_namespace: l1_training
+seed_start: 11000      # namespace is the same; the Stage-2 subset selects
+seed_stop_inclusive: 11029
+n_seeds: 15
+stage2_subset:
+  seed_start: 11000    # pinned first-15 subset (C1/C16 item (13))
+  seed_stop_inclusive: 11014
+truncation_conditions: [trunc_lag, trunc_cap]

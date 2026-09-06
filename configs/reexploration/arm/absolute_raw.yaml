@@ -1,0 +1,8 @@
+# Trained arm (absolute, raw): predict the next conserving-channel STATE,
+# train without the mechanism layer. One of the 4 trained arms per block (C3).
+arm_id: absolute_raw
+coordinate: absolute
+enforcement: raw
+estimator: null  # raw arms have no estimator; through-M arms only
+training_kernel: fifo  # C4(i): every through-M training embeds FIFO; raw-inference
+                       # kswap duplicates record allocation_rule = fifo (C4(iii)/G10)

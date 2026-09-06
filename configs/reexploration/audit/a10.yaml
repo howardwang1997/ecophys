@@ -1,0 +1,20 @@
+# A10 = KT-A4 two-estimator audit cell (prereg v2 section 5.4 / C14):
+# retrain the (increment, through-M-train, raw-infer) cell of the D1 lab-asset
+# block, L1 lineage, under PERTURB-AND-MAP instead of straight-through, on all
+# 30 paired seeds 11000-11029. The audit REUSES B1's D1/L1 fixture streams:
+# same data/init/train seeds and training-time kernel stream — the only
+# manipulated factor is the estimator. No new horizon-one probes, no new
+# fixtures (C14 section 3.4).
+audit_id: A10
+lineage_id: l1
+dgp_id: lab_asset
+coordinate: increment
+enforcement: through_m
+inference_enforcement: raw
+estimator: perturb_and_map
+seed_namespace: l1_training
+seed_start: 11000
+seed_stop_inclusive: 11029
+n_seeds: 30
+parent_block: B1
+shares_substreams_with_parent: [data, init, train_kernel]
