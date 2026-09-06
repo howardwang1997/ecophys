@@ -1,0 +1,1465 @@
+{
+  "arm_semantics": {
+    "fifo": "deterministic kernel; engine RNG never consumed; draw replays must be payload-identical",
+    "random_unit_within_price": "draws uniformly without replacement from remaining resting units; engine RNG seeded by prestate.seed = per-(seed,k,episode) derived draw stream"
+  },
+  "authorization": "prereg v2 section 3.2 C2(e) as rewritten at v2 (panel R1-8/R2-4); PI directive 2026-09-07 (D1_15 package); remote execution on v100ts per the PI compute-location rule 2026-09-06",
+  "caveats": [
+    "This preflight bounds ONLY the DGP-side draw-replay component of per-seed variance. Stage-1 endpoint channels additionally carry training noise, neural decode error and horizon-rollout divergence that no zero-GPU, no-trained-model preflight can see; the K freeze therefore conditions on the DGP-side component alone.",
+    "Between-seed variance here is calibration-generator design variance; the frozen D0 corpus generator may differ.",
+    "Contract CRN replays the same K draw streams across the cells within a seed, so paired-contrast draw variance is at most the single-arm draw variance measured here; the reported ratios are conservative (upper bounds) for the contract's paired contrasts.",
+    "The training-time kernel stream (one draw consumer per through-M arm) is outside this preflight's scope."
+  ],
+  "component": "c2e_e2_preflight_rerun_on_actual_d0_generator",
+  "config": {
+    "authorization": "pi_reexploration_d1_authorization_20260906 (item D1_06)",
+    "bootstrap": {
+      "draws": 2000,
+      "seed": 31099
+    },
+    "component": "d1_06_dgp_only_k_variance_preflight",
+    "episodes_per_seed": 6,
+    "generator": {
+      "aggressor_unit_budget": 60,
+      "build_attempts": 8,
+      "dgp_family": "lab_asset",
+      "feedback_class": "m1",
+      "initial_ask_levels": 3,
+      "initial_bid_levels": 2,
+      "initial_clock_max": 80,
+      "initial_orders_per_level": [
+        2,
+        3
+      ],
+      "initial_quantity_range": [
+        2,
+        5
+      ],
+      "latency_window_ticks": 40,
+      "level_lockout_ticks": 1,
+      "level_spacing_range": [
+        1,
+        2
+      ],
+      "maker_unit_budget": 120,
+      "min_pool_units": 4,
+      "n_aggressors": 6,
+      "n_makers": 10,
+      "n_rounds": 32,
+      "price_half_band": 80,
+      "reference_price": 1000,
+      "replenish_orders": 2,
+      "replenish_quantity_range": [
+        2,
+        4
+      ],
+      "request_tick_start": 100,
+      "resting_add_rate": 0.35,
+      "series_burn_in": 200,
+      "series_v_star_scale": 4.0,
+      "shadow_rule": "fifo",
+      "spread_gap_ticks": 1,
+      "tick_factor": 1,
+      "v_star_max_share": 0.5,
+      "v_star_single_unit_prob": 0.16666666666666666
+    },
+    "generator_source": "scripts/lab_asset/dgp_request_generator.py DGPConfig() defaults (ID axis, N=16 actors, n_rounds=32, M1 feedback, lab_asset family)",
+    "k_grid": [
+      4,
+      8,
+      16
+    ],
+    "n_seeds": 32,
+    "schema_version": "k-preflight-config-v1",
+    "seed_base": 31000,
+    "seed_namespace_note": "preflight master seeds 31000-31031; disjoint from training namespaces 11000-11029 / 12000-12029, Paper D namespaces, seed 999 and the D2 2000-2014 range",
+    "thresholds": [
+      0.1,
+      0.05
+    ]
+  },
+  "episode_descriptives": {
+    "episodes_total": 192,
+    "episodes_with_all_pools_straddling_window": 0,
+    "v_star_counts": {
+      "v_star=1": 410,
+      "v_star=10": 1,
+      "v_star=11": 1,
+      "v_star=12": 1,
+      "v_star=2": 1067,
+      "v_star=3": 470,
+      "v_star=4": 184,
+      "v_star=5": 105,
+      "v_star=6": 40,
+      "v_star=7": 17,
+      "v_star=8": 11,
+      "v_star=9": 4
+    },
+    "walks_total": 2311
+  },
+  "invariants": {
+    "cleared_volume_matches_plan": 0,
+    "fifo_payload_projection_identity": 0,
+    "note": "counts are failure counts; all must be 0",
+    "request_boundary_aggregate_hash_identity": 0,
+    "ru_accepted_stream_identity": 0,
+    "ru_null_stat_draw_variance_zero": 0,
+    "zero_rejections": 0
+  },
+  "k_table": {
+    "min_k_draw_stats": {
+      "threshold_0.05": {
+        "ci_upper": "none_in_set",
+        "point": "16"
+      },
+      "threshold_0.1": {
+        "ci_upper": "16",
+        "point": "8"
+      }
+    },
+    "per_stat_min_k": {
+      "fifo:alloc_hhi_mean": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:alloc_l2_mean": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:alloc_proprata_dev_mean": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:c_lat_exec": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:c_lat_rawflow": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:c_risk_rawflow": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:cleared_volume_units": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:clearing_notional": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "fifo:n_maker_orders_filled": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "random_unit_within_price:alloc_hhi_mean": {
+        "threshold_0.05": {
+          "ci_upper": "none_in_set",
+          "point": "16"
+        },
+        "threshold_0.1": {
+          "ci_upper": "16",
+          "point": "8"
+        }
+      },
+      "random_unit_within_price:alloc_l2_mean": {
+        "threshold_0.05": {
+          "ci_upper": "8",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "random_unit_within_price:alloc_proprata_dev_mean": {
+        "threshold_0.05": {
+          "ci_upper": "none_in_set",
+          "point": "16"
+        },
+        "threshold_0.1": {
+          "ci_upper": "16",
+          "point": "8"
+        }
+      },
+      "random_unit_within_price:c_lat_exec": {
+        "threshold_0.05": {
+          "ci_upper": "8",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "random_unit_within_price:c_lat_rawflow": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "random_unit_within_price:c_risk_rawflow": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "random_unit_within_price:cleared_volume_units": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "random_unit_within_price:clearing_notional": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      },
+      "random_unit_within_price:n_maker_orders_filled": {
+        "threshold_0.05": {
+          "ci_upper": "4",
+          "point": "4"
+        },
+        "threshold_0.1": {
+          "ci_upper": "4",
+          "point": "4"
+        }
+      }
+    },
+    "rule": "recommended K = smallest K in {4,8,16} such that EVERY random_unit-arm draw-dependent statistic has bootstrap 95% upper bound of ratio_vs_between(K) <= 0.10 (conservative); point-estimate variant reported alongside",
+    "thresholds": [
+      0.1,
+      0.05
+    ]
+  },
+  "policy_class_note": "E-2 production generator at its ID-axis defaults: M1 feedback (anonymous book state via the shadow engine), lab_asset family, N=16 actors, 32 rounds per episode. This IS the D0 corpus generator; the M1 own-state question is answered empirically by this run, per C2(e).",
+  "provenance": {
+    "dgp_request_generator_sha256": "2cef5a334cc7f0020459062e3f37d76aab55d4440c8a305e50a222bfd4d72152",
+    "dgp_stream_sha256": "b82e3250763e0628d4f712ac7ab51ecf5e56c4a4b41aa77f56874bc6481cc3aa",
+    "engine_matching_sha256": "28da4ee91948bd05f2c2bf6418d2e6aa91e496b7b4d8f9d35b2c98601587340b",
+    "engine_schema_sha256": "5aa6cf7515e4c21210dffdd4d51bf90f733ad5c6b88cdb971f71a9df10044ead",
+    "generator_binding": "run_preflight.dgp_stream rebound to lab_asset.dgp_request_generator; all statistics, invariants, decomposition, bootstrap and rule code executed from k_preflight_20260906/run_preflight.py unchanged",
+    "python_version": "3.11.15",
+    "run_preflight_sha256": "a6b58b52f66c0188a9ee2af0d9b1c9c0fc81cc18754a75069a28cfb91bb12f8a"
+  },
+  "recommendation": {
+    "k_default_per_decision_text": 8,
+    "k_recommended": 16,
+    "notes": [
+      "FIFO arm: all statistics have exactly zero draw variance (deterministic kernel); any K satisfies the criterion and the extra K-1 evaluations serve only the G8 byte-identity determinism gate."
+    ]
+  },
+  "runtime_seconds_remote": 642.449,
+  "schema_version": "k-preflight-v1+e2-rerun",
+  "seed_roots": [
+    31000,
+    31001,
+    31002,
+    31003,
+    31004,
+    31005,
+    31006,
+    31007,
+    31008,
+    31009,
+    31010,
+    31011,
+    31012,
+    31013,
+    31014,
+    31015,
+    31016,
+    31017,
+    31018,
+    31019,
+    31020,
+    31021,
+    31022,
+    31023,
+    31024,
+    31025,
+    31026,
+    31027,
+    31028,
+    31029,
+    31030,
+    31031
+  ],
+  "spot_check_first_episode_replay_values": {
+    "fifo": {
+      "alloc_hhi_mean": [
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726,
+        0.9127272727272726
+      ],
+      "alloc_l2_mean": [
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256,
+        2.2919184137207256
+      ],
+      "alloc_proprata_dev_mean": [
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583,
+        1.1932704075502583
+      ],
+      "c_lat_exec": [
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0,
+        15004.0
+      ],
+      "c_lat_rawflow": [
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0
+      ],
+      "c_risk_rawflow": [
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0
+      ],
+      "cleared_volume_units": [
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0
+      ],
+      "clearing_notional": [
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0
+      ],
+      "n_maker_orders_filled": [
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0,
+        23.0
+      ]
+    },
+    "random_unit_within_price": {
+      "alloc_hhi_mean": [
+        0.7668686868686869,
+        0.6614141414141415,
+        0.7905050505050505,
+        0.6995959595959597,
+        0.6995959595959597,
+        0.6995959595959597,
+        0.7068686868686869,
+        0.7977777777777778,
+        0.7545454545454546,
+        0.7214141414141415,
+        0.7545454545454546,
+        0.7214141414141414,
+        0.7618181818181818,
+        0.6541414141414141,
+        0.7977777777777778,
+        0.7450505050505051
+      ],
+      "alloc_l2_mean": [
+        2.0609133070645425,
+        1.8993565660901972,
+        2.0269120773579523,
+        1.9204054523348788,
+        1.9204054523348788,
+        1.9204054523348788,
+        1.952609878601734,
+        2.0591165036248076,
+        2.0508423161340623,
+        2.007659994553006,
+        2.0508423161340623,
+        2.010178022302716,
+        2.0771083602348432,
+        1.8671521398233422,
+        2.0556961492084436,
+        1.9736587648464157
+      ],
+      "alloc_proprata_dev_mean": [
+        0.6623216430453769,
+        0.5022086790774715,
+        0.7691428831856892,
+        0.6198895872091428,
+        0.5914579362338844,
+        0.4731172640876118,
+        0.7641686031315058,
+        0.7141397059179181,
+        0.747380700324002,
+        0.6297580533589717,
+        0.704181587698078,
+        0.7140914727582139,
+        0.8591053492668066,
+        0.4927217684115682,
+        0.7003828457952714,
+        0.5761417827152682
+      ],
+      "c_lat_exec": [
+        14007.0,
+        13004.0,
+        13010.0,
+        14007.0,
+        12007.0,
+        13004.0,
+        13004.0,
+        15004.0,
+        13004.0,
+        14001.0,
+        13004.0,
+        14007.0,
+        13004.0,
+        13004.0,
+        13010.0,
+        15004.0
+      ],
+      "c_lat_rawflow": [
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0,
+        18007.0
+      ],
+      "c_risk_rawflow": [
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0,
+        165060.0
+      ],
+      "cleared_volume_units": [
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0,
+        72.0
+      ],
+      "clearing_notional": [
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0,
+        72026.0
+      ],
+      "n_maker_orders_filled": [
+        26.0,
+        27.0,
+        25.0,
+        26.0,
+        26.0,
+        27.0,
+        27.0,
+        25.0,
+        25.0,
+        26.0,
+        26.0,
+        26.0,
+        25.0,
+        27.0,
+        24.0,
+        25.0
+      ]
+    }
+  },
+  "statistics_definitions": {
+    "alloc_hhi_mean": "mean over aggressive walks of sum_i (c_i/V*)^2 at the terminal rationed level (allocation concentration; draw-dependent)",
+    "alloc_l2_mean": "mean over walks of ||c||_2 at the terminal rationed level (allocation-vector scale; draw-dependent)",
+    "alloc_proprata_dev_mean": "mean over walks of ||c - V* q/R*||_2 vs the pro-rata expectation using DGP ground-truth pool snapshots (draw-dependent)",
+    "c_lat_exec": "executed notional attributable to makers with arrival clock <= W (realized-allocation latency consumer, Theorem 1(e)(ii) direction; draw-dependent)",
+    "c_lat_rawflow": "c_risk_rawflow restricted to orders with arrival clock <= W (C_lat^W raw-flow; stream-null)",
+    "c_risk_rawflow": "sum of price*quantity over initial book + submitted order requests (theory-appendix C_risk raw-flow notional; stream-null)",
+    "cleared_volume_units": "total executed units (aggregate tape; null under resource slack)",
+    "clearing_notional": "sum of price*quantity over executions (aggregate tape; null)",
+    "n_maker_orders_filled": "distinct maker orders with >= 1 fill (granularity fingerprint direction; draw-dependent)"
+  },
+  "status": "caveat-and-reporting-only; K=16 immutable regardless of outcome (PI ruling D1_11); between-ratio UB > 0.10 on any endpoint-shaped statistic is a named STOP-class PI decision item at D0",
+  "variance_decomposition": {
+    "fifo": {
+      "alloc_hhi_mean": {
+        "b_at_k_max": 0.0006052787254660208,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 0.0006052787254660208,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 0.0006052787254660208,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 0.0006052787254660208,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 0.0006052787254660208,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "alloc_l2_mean": {
+        "b_at_k_max": 0.01510516066105356,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 0.01510516066105356,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 0.01510516066105356,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 0.01510516066105356,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 0.01510516066105356,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "alloc_proprata_dev_mean": {
+        "b_at_k_max": 0.016121194672027956,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 0.016121194672027956,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 0.016121194672027956,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 0.016121194672027956,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 0.016121194672027956,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "c_lat_exec": {
+        "b_at_k_max": 1139201.150089606,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 1139201.150089606,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 1139201.150089606,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 1139201.150089606,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 1139201.150089606,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "c_lat_rawflow": {
+        "b_at_k_max": 1066886.1935483871,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 1066886.1935483871,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 1066886.1935483871,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 1066886.1935483871,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 1066886.1935483871,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "c_risk_rawflow": {
+        "b_at_k_max": 217353842.70270497,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 217353842.70270497,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 217353842.70270497,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 217353842.70270497,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 217353842.70270497,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "cleared_volume_units": {
+        "b_at_k_max": 49.767025089605724,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 49.767025089605724,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 49.767025089605724,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 49.767025089605724,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 49.767025089605724,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "clearing_notional": {
+        "b_at_k_max": 49788346.00960461,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 49788346.00960461,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 49788346.00960461,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 49788346.00960461,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 49788346.00960461,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "n_maker_orders_filled": {
+        "b_at_k_max": 4.599882392473118,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 4.599882392473118,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 4.599882392473118,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 4.599882392473118,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 4.599882392473118,
+        "w_hat_within_seed_draw_variance": 0.0
+      }
+    },
+    "random_unit_within_price": {
+      "alloc_hhi_mean": {
+        "b_at_k_max": 0.0007754966394488528,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.019778359984027764,
+            0.05443738935722766
+          ],
+          "4": [
+            0.07911343993611106,
+            0.21774955742891064
+          ],
+          "8": [
+            0.03955671996805553,
+            0.10887477871445532
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 0.0007754966394488528,
+            "draw_contribution": 2.211454139867955e-05,
+            "ratio_vs_between": 0.02935368580686235,
+            "ratio_vs_total": 0.02851661796290491
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 0.0008454425022311057,
+            "draw_contribution": 8.84581655947182e-05,
+            "ratio_vs_between": 0.1174147432274494,
+            "ratio_vs_total": 0.10507713804483933
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 0.0007962400511908373,
+            "draw_contribution": 4.42290827973591e-05,
+            "ratio_vs_between": 0.0587073716137247,
+            "ratio_vs_total": 0.0554519343000706
+          }
+        },
+        "v_between": 0.0007533820980501733,
+        "w_hat_within_seed_draw_variance": 0.0003538326623788728
+      },
+      "alloc_l2_mean": {
+        "b_at_k_max": 0.008745627140543796,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0033405493793807607,
+            0.015453152694077288
+          ],
+          "4": [
+            0.013362197517523043,
+            0.06181261077630915
+          ],
+          "8": [
+            0.006681098758761521,
+            0.030906305388154576
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 0.008745627140543796,
+            "draw_contribution": 5.164700666268308e-05,
+            "ratio_vs_between": 0.005940548042134431,
+            "ratio_vs_total": 0.005905466335656257
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 0.009101463780262824,
+            "draw_contribution": 0.00020658802665073233,
+            "ratio_vs_between": 0.023762192168537723,
+            "ratio_vs_total": 0.023210656097979687
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 0.008937917953915206,
+            "draw_contribution": 0.00010329401332536616,
+            "ratio_vs_between": 0.011881096084268862,
+            "ratio_vs_total": 0.011741593088600809
+          }
+        },
+        "v_between": 0.008693980133881113,
+        "w_hat_within_seed_draw_variance": 0.0008263521066029293
+      },
+      "alloc_proprata_dev_mean": {
+        "b_at_k_max": 0.004627945915397361,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.026966257100513195,
+            0.08150623605284184
+          ],
+          "4": [
+            0.10786502840205278,
+            0.32602494421136735
+          ],
+          "8": [
+            0.05393251420102639,
+            0.16301247210568368
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 0.004627945915397361,
+            "draw_contribution": 0.00018404265846271996,
+            "ratio_vs_between": 0.04141464109857124,
+            "ratio_vs_total": 0.039767677027167214
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 0.005357963928009812,
+            "draw_contribution": 0.0007361706338508798,
+            "ratio_vs_between": 0.16565856439428495,
+            "ratio_vs_total": 0.1421158557526377
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 0.005402251477703228,
+            "draw_contribution": 0.0003680853169254399,
+            "ratio_vs_between": 0.08282928219714247,
+            "ratio_vs_total": 0.07649338964040167
+          }
+        },
+        "v_between": 0.004443903256934641,
+        "w_hat_within_seed_draw_variance": 0.0029446825354035194
+      },
+      "c_lat_exec": {
+        "b_at_k_max": 879626.4497900521,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.007036708815854022,
+            0.01770354586654788
+          ],
+          "4": [
+            0.02814683526341609,
+            0.07081418346619152
+          ],
+          "8": [
+            0.014073417631708045,
+            0.03540709173309576
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 879626.4497900521,
+            "draw_contribution": 8790.34080200195,
+            "ratio_vs_between": 0.010094139082285774,
+            "ratio_vs_total": 0.009993265668739287
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 880144.9084463904,
+            "draw_contribution": 35161.3632080078,
+            "ratio_vs_between": 0.040376556329143096,
+            "ratio_vs_total": 0.038809559945879056
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 857925.5556741258,
+            "draw_contribution": 17580.6816040039,
+            "ratio_vs_between": 0.020188278164571548,
+            "ratio_vs_total": 0.01978877683332378
+          }
+        },
+        "v_between": 870836.1089880501,
+        "w_hat_within_seed_draw_variance": 140645.4528320312
+      },
+      "c_lat_rawflow": {
+        "b_at_k_max": 1066886.1935483871,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 1066886.1935483871,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 1066886.1935483871,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 1066886.1935483871,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 1066886.1935483871,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "c_risk_rawflow": {
+        "b_at_k_max": 217353842.70270497,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 217353842.70270497,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 217353842.70270497,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 217353842.70270497,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 217353842.70270497,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "cleared_volume_units": {
+        "b_at_k_max": 49.767025089605724,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 49.767025089605724,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 49.767025089605724,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 49.767025089605724,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 49.767025089605724,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "clearing_notional": {
+        "b_at_k_max": 49788346.00960461,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0,
+            0.0
+          ],
+          "4": [
+            0.0,
+            0.0
+          ],
+          "8": [
+            0.0,
+            0.0
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 49788346.00960461,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 49788346.00960461,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 49788346.00960461,
+            "draw_contribution": 0.0,
+            "ratio_vs_between": 0.0,
+            "ratio_vs_total": 0.0
+          }
+        },
+        "v_between": 49788346.00960461,
+        "w_hat_within_seed_draw_variance": 0.0
+      },
+      "n_maker_orders_filled": {
+        "b_at_k_max": 4.796566980286739,
+        "bootstrap_degenerate_resamples": 0,
+        "ci95_ratio_vs_between": {
+          "16": [
+            0.0010609399125692434,
+            0.0038546694246928467
+          ],
+          "4": [
+            0.0042437596502769735,
+            0.015418677698771387
+          ],
+          "8": [
+            0.0021218798251384867,
+            0.007709338849385693
+          ]
+        },
+        "k_max": 16,
+        "n_seeds": 32,
+        "per_k": {
+          "16": {
+            "between_var_of_k_draw_mean": 4.796566980286739,
+            "draw_contribution": 0.008171929253472222,
+            "ratio_vs_between": 0.0017066113314332402,
+            "ratio_vs_total": 0.0017037037712717823
+          },
+          "4": {
+            "between_var_of_k_draw_mean": 4.900969912074376,
+            "draw_contribution": 0.03268771701388889,
+            "ratio_vs_between": 0.006826445325732961,
+            "ratio_vs_total": 0.0067801609278592585
+          },
+          "8": {
+            "between_var_of_k_draw_mean": 4.819374002436156,
+            "draw_contribution": 0.016343858506944444,
+            "ratio_vs_between": 0.0034132226628664805,
+            "ratio_vs_total": 0.0034016122030049007
+          }
+        },
+        "v_between": 4.788395051033267,
+        "w_hat_within_seed_draw_variance": 0.13075086805555555
+      }
+    }
+  }
+}
