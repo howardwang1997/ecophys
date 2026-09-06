@@ -121,3 +121,14 @@ files `f61e410cd59c37b5624504a3cdf057c701b4b682067f948d2f8528ace018c2d4`
 5. The FIFO arm is exactly draw-invariant (verified), so K>1 on deterministic-kernel
    cells buys only the G8 byte-identity determinism gate; it cannot inform the K
    choice.
+
+## PI ruling (2026-09-06, addendum D1_11 to decision pi_reexploration_d1_authorization_20260906)
+
+Presented options: (a) K = 16 (~+15% Stage-1 eval V100-h, the frozen conservative rule's
+output `none_in_set`) vs (b) K = 8 (functional-statistic + CRN-paired reading; all
+endpoint-shaped statistics clear the 10% bar by an order of magnitude at K=8).
+
+**PI chose (a): "用需要算力多的那个" — K = 16 FROZEN.** Contract C2 amended (k = 1..16);
+gates G8/G10 updated to 16 draw-records; C16 ledger item (11). The K adjustment window is
+closed; K is immutable through D0 and after. Caveat 2 above still applies: if the D0 corpus
+generator adds feedback channels, re-run this preflight against it before the freeze.

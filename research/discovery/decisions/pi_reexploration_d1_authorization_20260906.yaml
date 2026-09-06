@@ -97,6 +97,60 @@ stop_rules:
     proven, the corresponding REFRAME rule in the risk register fires and the PI is informed
     before any freeze.
 effective_until: d0_freeze_or_pi_revocation
+addenda:
+  - addendum_id: D1_ADD_session1_followup_20260906
+    decided_at: "2026-09-06T00:00:00Z"
+    decided_by: PI
+    authorization_channel: interactive_chat
+    authorization_text: >-
+      PI (2026-09-06, Chinese): "用需要算力多的那个，批准，确认，确认" — answering the four
+      D0-freeze decision items surfaced by the D-1 execution session (session record
+      papers/proposal/ecomd_reexploration_d1_session1_record_2026-09-06.md section 6).
+    rulings:
+      - id: D1_11_K_freeze_16
+        item: K = 16 vs K = 8 (K-preflight conservative rule output none_in_set -> 16 vs the
+          functional-statistic reading that clears K = 8)
+        ruling: >-
+          "用需要算力多的那个" — K = 16 FROZEN. Accepts ~+15% Stage-1 evaluation V100-h. Contract
+          C2 amended (K = 16, k = 1..16) with C16 ledger item (11); gates G8/G10 updated to 16
+          draw-records. K adjustment window CLOSED; K immutable through D0 and after.
+        scope_note: >-
+          alloc_proprata_dev_mean stays draw-dominated at every authorized K (0.196 at K=16) and
+          carries an explicit draw-noise caveat in all reporting (contract C2(e)).
+      - id: D1_12_resampler_criterion_ii_ratified
+        item: fiber-resampler criterion-(ii) semantics (native-RNG-state-preservation vs literal
+          raw-hash reading)
+        ruling: >-
+          "批准" — native-RNG-state-preservation semantics RATIFIED: criterion (ii) counts a
+          resample as accepted only when the state_hash chain differs via an allocation-
+          trajectory difference (native RNG-state accounting makes state-chain equality coincide
+          with allocation-trajectory equality). The literal raw-hash reading (which would count
+          rng-state-only differences as variation, making fifo/single-order pools trivially
+          accepted and destroying the KT-A3 control) is REJECTED. The frozen prereg statement in
+          scripts/lab_asset/fiber_resampler.py (sha256 703ca36e...2c4b) stands as written; no
+          code change required.
+      - id: D1_13_l2_build_scope_confirmed
+        item: L2 build scope (~90% is a D0-window build: the recurrent fact-surrogate model
+          itself, training loop, checkpoint format, seeding surface)
+        ruling: >-
+          "确认" — L2 build scope CONFIRMED as a pre-D0 build item so the D0 freeze is not a
+          paper promise without an instrument. Build is CODE-ONLY under the existing CPU bounds:
+          model architecture + training-loop hookup + checkpoint format (torch.load CPU-
+          compatible) + seeding surface (RNG-tree namespaced), validated by CPU smoke (forward
+          pass and a single synthetic-batch gradient step, no checkpoints persisted for reuse).
+          Actual GPU training of L2 cells remains D0-gated exactly as in explicit_bounds.
+      - id: D1_14_c3_kernel_sentence_tightened
+        item: contract C3 kernel-sentence tightening (pro_rata is not an engine kernel)
+        ruling: >-
+          "确认" — C3 TIGHTENED: the engine kernel set is exactly {fifo, random_unit_within_price}
+          (scripts/lab_asset/schema.py:22-24); pro_rata exists only as S3 exact-arithmetic in
+          theorem/audit calculations and never executes in any cell. Contract text, gate G8, and
+          C16 ledger item (12) updated accordingly.
+    bounds_note: >-
+      All rulings inherit this decision's explicit_bounds and forbidden_actions unchanged. The
+      K=16 and C3 amendments are contract-text amendments executed BEFORE the D0 outcome-blind
+      freeze (the contract is a D-1 candidate until freeze); no GPU, no confirmatory execution,
+      no market data, no trained models result from this addendum.
 provenance:
   experiment_plan: papers/proposal/ecomd_reexploration_experiment_plan_2026-09-06.md
   evidence_map: papers/proposal/ecomd_reexploration_d2_evidence_map_2026-09-06.md
