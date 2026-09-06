@@ -29,7 +29,7 @@ Also update long-term memory in `.claude/memory/` (in-repo; see `.claude/README.
 
 ## Workflow (Mac + R2 + GitHub + scalable non-H20 compute)
 
-- **Mac**: code editing, tests, small smoke training (N ≤ 500). Conda env `ecophys` (Python 3.11, per global CLAUDE.md). Always use `conda run -n ecophys python …` not bare `python`.
+- **Mac**: code editing, git, second-scale spot checks only (single-test pytest, mypy/ruff, import smoke). **No heavy computation on this machine** (PI rule 2026-09-06, see global CLAUDE.md 计算位置规范): batch pytest runs, batch engine executions, smoke training, and any multi-minute/multi-thread CPU work go to the remote workers over `ssh` (e.g. `v100ts`); subagent prompts must carry this rule. Conda env `ecophys` (Python 3.11, per global CLAUDE.md). Always use `conda run -n ecophys python …` not bare `python`.
 - **Cloudflare R2**: transit + canonical bulk data store. Compute workers stage immutable inputs from `r2://ecophys/` and upload manifests/results afterward.
 - **GitHub**: canonical code store. `main` stays runnable; experiments on feature branches.
 - **GPU workers**: the current floor is two independent V100 32 GB nodes. Future capacity may add compatible GPU/CPU workers, but H20 is excluded. Keep heterogeneous GPU types in separate benchmarked pools.

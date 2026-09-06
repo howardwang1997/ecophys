@@ -135,14 +135,19 @@ class TypeEmbedding(nn.Module):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def _sample_edges(n: int, k: int, device: torch.device) -> Tensor:
+def _sample_edges(
+    n: int, k: int, device: torch.device,
+    generator: torch.Generator | None = None,
+) -> Tensor:
     """Return (2, N·k) long tensor of random (src, dst) pairs with src != dst.
 
     Uniform sampling per-row via torch.rand + topk (drops self via -inf). Same
     helper as :class:`ecomd.models.potentials.StochasticPairwisePotential`.
+    When ``generator`` is None the global torch RNG is used (legacy behavior,
+    same law — different source).
     """
     k_eff = min(k, n - 1)
-    rand = torch.rand(n, n, device=device)
+    rand = torch.rand(n, n, device=device, generator=generator)
     rand.fill_diagonal_(-1.0)
     _, idx = torch.topk(rand, k=k_eff + 1, dim=1, largest=True)
     idx = idx[:, :k_eff]
@@ -231,6 +236,13 @@ class TypedRelationalPotential(nn.Module):
 
     ``T_θ`` is a K × K learnable matrix applied as a scalar multiplier per edge.
     Initialisation: T ≈ 1/K·ones so no type pair dominates at init.
+
+    Edge sampling consumes ``self._step_generator`` when set (externally, by
+    :meth:`ecomd.models.ecomd.EcoMDSimulator.step` — the same pattern as
+    ``StochasticPairwisePotential`` since 2026-05-22) so seeded rollouts draw
+    their SPS edges from the rollout generator and consume zero global RNG;
+    when None, edges fall back to the global torch RNG (legacy behavior,
+    same law — different source).
     """
 
     def __init__(self, d_state: int, k_types: int, d_type_emb: int,
@@ -243,6 +255,11 @@ class TypedRelationalPotential(nn.Module):
         self.d_state = d_state
         self.k_random = k_random
         self.gauge_enforce = gauge_enforce
+        # Optional per-rollout torch.Generator for deterministic edge
+        # sampling. Set externally by EcoMDSimulator.step to the rollout's
+        # seeded generator. Kept off nn.Module registration since Generator
+        # isn't a parameter/buffer.
+        self._step_generator: torch.Generator | None = None
         # φ_θ input layout:
         #   gauge_enforce=True  → [Δs_ij, τ_i, τ_j]         (d + 2K') — Δs only
         #   gauge_enforce=False → [s_i, s_j, |Δs|, τ_i, τ_j] (3d + 2K') — v0.8-style
@@ -287,7 +304,10 @@ class TypedRelationalPotential(nn.Module):
         """
         del gauge_axis
         n = s.shape[0]
-        edges = _sample_edges(n, self.k_random, s.device).detach()
+        edges = _sample_edges(
+            n, self.k_random, s.device,
+            generator=getattr(self, "_step_generator", None),
+        ).detach()
         src, dst = edges[0], edges[1]                          # (E,)
 
         s_i = s[src]                                           # (E, d_state)

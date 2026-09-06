@@ -1239,12 +1239,16 @@ class EcoMDSimulator(nn.Module):
         # potential's edge sampler so torch.rand draws inside
         # _sample_edges are reproducible (fixes the unsedeed
         # ``torch.rand(n, n)`` source of in-process drift identified
-        # 2026-05-22). No-op for non-stochastic pairwise kinds. Backward-
+        # 2026-05-22). Same binding covers ecomd_v2's relational SPS
+        # sampler (L1-4, 2026-09-06) so seeded v2 rollouts consume zero
+        # global RNG. No-op for non-stochastic pairwise kinds. Backward-
         # compatible: when generator is None (test callers), the
         # potential falls back to global RNG.
         pairwise = getattr(self.potential, "pairwise", None)
         if isinstance(pairwise, StochasticPairwisePotential):
             pairwise._step_generator = generator
+        elif isinstance(pairwise, EcoMDv2Potential):
+            pairwise.rel._step_generator = generator
         for _inner_idx in range(inner_n):
             f_cons = conservative_forces(
                 self.potential, s_running, context,
