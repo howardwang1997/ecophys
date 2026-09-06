@@ -1,0 +1,30 @@
+{
+  "extension_label": "lab-asset-v3.1",
+  "fields": [
+    {
+      "constraint": "keys must be exactly the initial_book order_ids of the same prestate; values are integers",
+      "hash_treatment": "excluded from prestate_hash by design (the v3 state_hash binds asdict(SessionPrestate), which does not include extension keys); file integrity is covered by the enrichment_manifest.json sha256 entries",
+      "location": "prestate.json top level (sibling of the lab-asset-v3 keys)",
+      "name": "arrival_clocks",
+      "semantics": "tick at which the resting order was submitted to the venue (pre-session for initial_book orders); raw-flow metadata consumed by latency-window consumers C_lat^W and by the S1a / O-C / O-D fiber constructions; NOT read by the v3 engine, which loads initial orders at session start regardless of their arrival clock",
+      "type": "object mapping order_id -> integer arrival tick",
+      "v3_compatibility": "lab-asset-v3 prestate_from_json reads only v3 keys and ignores unknown top-level keys, so v3 parsers and the frozen replay validator consume v3.1 prestates unchanged; proven by re-parsing every enriched prestate with the frozen parser and byte-exactly regenerating its tape"
+    }
+  ],
+  "invariants": [
+    "tape grammar unchanged: every enriched tape payload key is declared in the frozen schema_spec.json payload_fields",
+    "deterministic replay: re-executing the recorded request events from the prestate reproduces the tape byte-for-byte",
+    "arm-consistent pairs: each episode exists under both kernels with the prestate identical except allocation_rule and an identical request stream",
+    "the frozen a2_exit_20260905 bundle is never mutated"
+  ],
+  "kind": "backward_compatible_additive_extension",
+  "latency_window_rule": {
+    "definition": "For the ambiguous set A at the rationed touched level (never-executed orders on the fifo arm; never-drawn orders on the random_unit arm) with m = |A| >= 2 and arrival clocks sorted ascending c_(1) <= ... <= c_(m): W(A) = c_(ceil(m/2)); m_in = |{i in A : clock_i <= W}|; m_out = m - m_in; clock_straddle iff m_in >= 1 and m_out >= 1.",
+    "name": "touched_level_median_straddle",
+    "rationale": "Guarantees by construction that the latency consumer C_lat^W = sum_i p_i 1{clock_i <= W} q_i has a strictly positive split floor (R^2/3) p^2 (m_in * m_out / m) on random_unit touched levels (theory appendix Theorem 1(e)(ii); ordering O-C) and nonzero orthant exposure on the fifo arm. At V* = R* the touched level has no ambiguous set: W is null and clock_straddle is false."
+  },
+  "parent_bundle_manifest_sha256": "fea8a136b0c3e19a00bddcb131a1540ca40fda6c1576dbc949001dbf76a9581c",
+  "parent_schema_label": "lab-asset-v3",
+  "parent_schema_spec_sha256": "c2341ce73f8c32d1b395fad81f0bd4c68a3ac0de0e235ea4d638acc48c24346a",
+  "schema_version_label_policy": "enriched prestates set schema_version to 'lab-asset-v3.1'; v3 consumers that do not gate on exact label equality are unaffected; consumers gating on equality must treat lab-asset-v3.1 as lab-asset-v3 plus this extension"
+}

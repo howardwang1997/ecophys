@@ -1,0 +1,66 @@
+{
+  "enrichment_id": "lab_asset_enrichment_20260906",
+  "schema_extension_label": "lab-asset-v3.1",
+  "parent_schema_label": "lab-asset-v3",
+  "parent_bundle_relpath": "experiments/lab_asset_a2/a2_exit_20260905",
+  "authorization": "PI decision D1_03 (research/discovery/decisions/pi_reexploration_d1_authorization_20260906.yaml); frozen parent bundle is strictly read-only",
+  "master_seed": 20260972,
+  "seed_derivation_note": "Single master seed shared by every episode and both arms (the fifo kernel consumes no RNG draws). Selected as the first seed >= 20260906 under which every interior random_unit episode leaves >= 2 never-drawn pool orders; realized draw outcomes are frozen facts recorded per fixture in enrichment_manifest.json.",
+  "actors": ["u1", "u2", "m1", "m2", "m3", "m4", "d1", "d2", "agg"],
+  "actor_roles": {
+    "m1": "designated_maker",
+    "m2": "designated_maker",
+    "m3": "designated_maker",
+    "m4": "designated_maker",
+    "d1": "designated_maker"
+  },
+  "initial_cash_per_actor": 50000,
+  "initial_inventory_per_actor": 100,
+  "price_bands": [90, 110],
+  "latency_endowment": 2,
+  "latency_delay_by_investment": [5, 3, 1],
+  "scheduler": {"seed": 1, "tick": 0, "state": "round-0-ready"},
+  "assignment_key_commitment": "enrichment-20260906-commitment",
+  "initial_book": [
+    {"order_id": "A1", "actor": "u1", "side": "S", "price": 98, "quantity": 2, "arrival_clock": 1},
+    {"order_id": "A2", "actor": "u2", "side": "S", "price": 99, "quantity": 3, "arrival_clock": 2},
+    {"order_id": "P1", "actor": "m1", "side": "S", "price": 100, "quantity": 5, "arrival_clock": 3},
+    {"order_id": "P2", "actor": "m2", "side": "S", "price": 100, "quantity": 4, "arrival_clock": 4},
+    {"order_id": "P3", "actor": "m3", "side": "S", "price": 100, "quantity": 3, "arrival_clock": 5},
+    {"order_id": "P4", "actor": "m4", "side": "S", "price": 100, "quantity": 2, "arrival_clock": 6},
+    {"order_id": "D1", "actor": "d1", "side": "S", "price": 102, "quantity": 6, "arrival_clock": 7},
+    {"order_id": "D2", "actor": "d2", "side": "S", "price": 104, "quantity": 7, "arrival_clock": 8}
+  ],
+  "pool": {
+    "price": 100,
+    "order_ids": ["P1", "P2", "P3", "P4"],
+    "quantities": [5, 4, 3, 2],
+    "r_star": 14,
+    "scaffold_note": "Mirrors the S3/EP3 frozen family: m*=4 pool with q_P=(5,4,3,2), two better levels summing to S_<=5, two deeper untouched orders; V*-ladder {1,2,4,6} via aggressor quantity Q in {6,7,9,11}; exhaustion rung at V*=R*=14 via Q=19."
+  },
+  "better_levels": {"order_ids": ["A1", "A2"], "s_better": 5},
+  "untouched_levels": {"order_ids": ["D1", "D2"]},
+  "episodes": [
+    {"name": "vstar1", "session_id": "ENR-E1-V1", "pair_key": "ENR-E1-V1", "aggressor_quantity": 6, "v_star": 1, "v_ladder": true, "exhaustion": false},
+    {"name": "vstar2", "session_id": "ENR-E1-V2", "pair_key": "ENR-E1-V2", "aggressor_quantity": 7, "v_star": 2, "v_ladder": true, "exhaustion": false},
+    {"name": "vstar4", "session_id": "ENR-E1-V4", "pair_key": "ENR-E1-V4", "aggressor_quantity": 9, "v_star": 4, "v_ladder": true, "exhaustion": false},
+    {"name": "vstar6", "session_id": "ENR-E1-V6", "pair_key": "ENR-E1-V6", "aggressor_quantity": 11, "v_star": 6, "v_ladder": true, "exhaustion": false},
+    {"name": "exhaustion", "session_id": "ENR-E1-XH", "pair_key": "ENR-E1-XH", "aggressor_quantity": 19, "v_star": 14, "v_ladder": false, "exhaustion": true}
+  ],
+  "arms": [
+    {"name": "fifo", "allocation_rule": "fifo", "fixture_prefix": "fifo"},
+    {"name": "random_unit", "allocation_rule": "random_unit_within_price", "fixture_prefix": "random_unit"}
+  ],
+  "request_stream": [
+    {"kind": "submit", "event_id": 1, "actor": "agg", "client_order_id": "agg-cross-1", "side": "B", "price": 100, "quantity": "EPISODE_QTY", "tick": 1},
+    {"kind": "cancel", "event_id": 2, "actor": "d2", "order_id": "D2", "tick": 2},
+    {"kind": "replace", "event_id": 3, "actor": "d1", "replaces_order_id": "D1", "client_order_id": "d1-reprice-1", "side": "S", "price": 103, "quantity": 4, "tick": 3},
+    {"kind": "finish", "tick": 4}
+  ],
+  "request_stream_note": "Identical across both arms of every pair; the clearing episode is the first request, the cancel/replace are post-episode book-maintenance events that exercise the cancel/replace grammar on never-executed untouched-level orders; ambiguous sets are computed at the completion of the aggressor request.",
+  "latency_window_rule": {
+    "name": "touched_level_median_straddle",
+    "definition": "For the ambiguous set A at the rationed touched level (never-executed orders on the fifo arm; never-drawn orders on the random_unit arm) with m = |A| >= 2 and arrival clocks sorted ascending c_(1) <= ... <= c_(m): W(A) = c_(ceil(m/2)); m_in = |{i in A : clock_i <= W}|; m_out = m - m_in; clock_straddle iff m_in >= 1 and m_out >= 1.",
+    "rationale": "Guarantees by construction that the latency consumer C_lat^W = sum_i p_i 1{clock_i <= W} q_i has a strictly positive split floor (R^2/3) p^2 (m_in * m_out / m) on random_unit touched levels (theory appendix Theorem 1(e)(ii); ordering O-C) and nonzero orthant exposure on the fifo arm. At V* = R* the touched level has no ambiguous set: W is null and clock_straddle is false."
+  }
+}
