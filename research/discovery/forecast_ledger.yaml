@@ -17,6 +17,16 @@ target_definitions:
     interval_use: calibration_diagnostic_only
     counts_toward_activation_floor_review: false
     activation_floor: 0.15
+  - id: d1_reexploration_component_survival
+    statement: >-
+      Whether one named component of the reopened reexploration D-1 program (L2 transfer, EP1
+      material non-additivity, stylized-fact bridge qualification) survives its frozen gate.
+      Component forecasts do not calibrate the full T0 activation floor; only the merged
+      GAMMA-led gate entry below is floor-counting.
+    point_scoring_rule: brier
+    interval_use: calibration_diagnostic_only
+    counts_toward_activation_floor_review: false
+    activation_floor: 0.15
 forecasts:
   - id: cycle9_rule605_same_estimand_bridge_gate
     recorded_at: "2026-08-25T16:10:25Z"
@@ -74,6 +84,119 @@ forecasts:
       - cycle16_lobbench_primary
       - cycle16_interventional_surrogate_primary
       - cycle16_financial_abm_validation_review
+  - id: d1_gamma_theorem_structure_survival
+    recorded_at: "2026-09-06T00:00:00Z"
+    subject_route_id: reexploration_merged_gamma_led_paper
+    target_id: t0_activation_eligibility
+    resolve_by: "2026-09-19T00:00:00Z"
+    lower: 0.55
+    point: 0.75
+    upper: 0.88
+    resolution_rule: >-
+      Resolve true only if, at the D0 theory freeze, no KT-G* killer test forces the GAMMA
+      theorem core (T1 interaction grid + market-native dimension formulas, T2 bounded Theorem 1
+      with tape-computable tight constants, T3 exposure asymmetry) below lead status. Re-scoping
+      with the obstruction lemmas intact (KT-G1 R2 proven, KT-G2 separation proven, deterministic
+      branch demoted to sufficiency corollary) counts as SURVIVAL. Resolve false if the R2
+      non-lumpability lemma or the KT-G2 separation lemma is refuted and the corresponding
+      REFRAME rule demotes the theorem spine. A true resolution makes the route only eligible
+      for a separate outcome-blind active decision.
+    basis_evidence_refs:
+      - d2_evidence_map_gamma_adjudication
+      - d1_theory_appendix_t1_package
+      - d1_experiment_plan_section8
+  - id: d1_alpha_attribution_estimand_survival
+    recorded_at: "2026-09-06T00:00:00Z"
+    subject_route_id: reexploration_merged_gamma_led_paper
+    target_id: t0_activation_eligibility
+    resolve_by: "2026-10-25T00:00:00Z"
+    lower: 0.18
+    point: 0.35
+    upper: 0.55
+    resolution_rule: >-
+      Resolve true only if at least one of the preregistered attribution patterns (attribution
+      floor O-A, swap asymmetry O-B, truncation monotonicity O-C, granularity fingerprint O-D)
+      confirms under the frozen KT-A1 decision rule with KT-A4 estimator stability (straight-
+      through primary and perturb-and-MAP audit agreeing within Holm bands). Resolve false if
+      the KT-A1 kill pattern fires (|I| <= delta/2 everywhere, no sign opposition, surgery
+      antisymmetric) or estimator instability flips sign patterns. A true resolution makes the
+      route only eligible for a separate outcome-blind active decision.
+    basis_evidence_refs:
+      - d2_evidence_map_alpha_adjudication
+      - d1_theory_appendix_t2t3_package
+      - d1_experiment_plan_section8
+  - id: d1_merged_gammas_led_paper_gate
+    recorded_at: "2026-09-06T00:00:00Z"
+    subject_route_id: reexploration_merged_gamma_led_paper
+    target_id: t0_activation_eligibility
+    resolve_by: "2026-10-31T00:00:00Z"
+    lower: 0.18
+    point: 0.34
+    upper: 0.55
+    resolution_rule: >-
+      Resolve true only if the merged GAMMA-led formulation survives every named T0 gate at the
+      outcome-blind D-1 exit: theorem structure survival (see d1_gamma_theorem_structure_
+      survival rule), attribution estimand survival (see d1_alpha_attribution_estimand_
+      survival rule), two independent simulator lineages with frozen native contracts passing
+      the 27 conformance tests + replay validator, stylized-fact bridge qualification
+      (protocol-only at freeze; actual data read separately authorized), contamination control
+      and confirmation split intact, no unresolved collision from the D-2 record. DEPENDENCY
+      FLAG: with the dual-hash fiber resampler authorized and built (PI decision D1_02,
+      2026-09-06) the floor-compliant lower bound is 0.18; WITHOUT the resampler KT-A3/KT-M1
+      are unrunnable and the merged lower bound drops to approximately 0.10, below the 0.15
+      activation floor. Resolve false when any named gate fails. A true resolution makes the
+      route only eligible for a separate outcome-blind active decision.
+    basis_evidence_refs:
+      - d2_evidence_map_merge_gate
+      - d1_experiment_plan_section8
+      - pi_reexploration_d1_authorization_20260906
+  - id: d1_component_l2_transfer_gate
+    recorded_at: "2026-09-06T00:00:00Z"
+    subject_route_id: reexploration_merged_gamma_led_paper
+    target_id: d1_reexploration_component_survival
+    resolve_by: "2026-10-25T00:00:00Z"
+    lower: 0.25
+    point: 0.45
+    upper: 0.65
+    resolution_rule: >-
+      Resolve true only if B3 (L2 recurrent fact-surrogate x lab-asset DGP) passes contract C9:
+      primary J material AND >= 8/16 mandatory cells material. Failure resolves false and is
+      reported as an architecture boundary (U-Net lesson); claims scoped L1.
+    basis_evidence_refs:
+      - d1_contract_v1_c9
+      - d1_experiment_plan_section2
+  - id: d1_component_ep1_material
+    recorded_at: "2026-09-06T00:00:00Z"
+    subject_route_id: reexploration_merged_gamma_led_paper
+    target_id: d1_reexploration_component_survival
+    resolve_by: "2026-10-25T00:00:00Z"
+    lower: 0.30
+    point: 0.50
+    upper: 0.70
+    resolution_rule: >-
+      Resolve true only if EP1 primary (B1, kernel-swap axis, horizon 16) classifies as material
+      non-additivity under the frozen ordered-classification rule vs SESOI delta_s = 0.1 x
+      mean R00(s), with the reference-degeneracy guard not triggered.
+    basis_evidence_refs:
+      - d1_contract_v1_ordered_classification
+      - d1_experiment_plan_section2
+  - id: d1_component_bridge_qualification
+    recorded_at: "2026-09-06T00:00:00Z"
+    subject_route_id: reexploration_merged_gamma_led_paper
+    target_id: d1_reexploration_component_survival
+    resolve_by: "2026-10-31T00:00:00Z"
+    lower: 0.55
+    point: 0.75
+    upper: 0.90
+    resolution_rule: >-
+      Resolve true only if the frozen stylized-fact bridge protocol qualifies on the public
+      tier: >= 95% event-type coverage of the engine request grammar, tick-lattice
+      compatibility, FIFO reconstructability bounds with hidden-order gaps documented, >= 8/11
+      stylized facts with CIs, provenance files, reserved 2019 vanilla windows, zero
+      confirmatory use. Qualification is protocol-level; any outcome use voids the entry.
+    basis_evidence_refs:
+      - d1_experiment_plan_section10_bridge_row
+      - ecomd_stylized_facts_module
 resolutions:
   - forecast_id: cycle12_price_time_commitment_full_t0
     resolved_at: "2026-08-26T04:08:16Z"
