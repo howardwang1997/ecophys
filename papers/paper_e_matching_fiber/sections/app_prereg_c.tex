@@ -1,0 +1,221 @@
+% ============================================================================
+% APPENDIX C — PREREGISTRATION CROSS-REFERENCE — BRIEF (writer contract)
+% Sources: prereg v2 §1.2 (version chain), §1.3 (freeze mechanics),
+%   §3.1 (amendment record), §7.4 (hash and namespace inventory), §9
+%   (forecast ledger), §10 (amendment provenance chain), Annexes A/B/C.
+% (full brief retained verbatim in the repo history of this stub; content
+%  below implements it)
+% ============================================================================
+\section{Preregistration cross-reference (hashes, version chain)}
+\label{app:prereg}
+
+\begingroup\sloppy
+
+This appendix is the paper's pointer into the frozen preregistration
+archive. The preregistration (v2) is the claims authority for every
+confirmatory decision in this paper: every status label
+(Sections~\ref{sec:t1}--\ref{sec:v4}), every design constant
+(Section~\ref{sec:cube}), every nonclaim (Section~\ref{sec:scope}) is a
+restatement of that document, and where any wording here diverges, the
+frozen text governs. Nothing in this appendix is a result; the two
+D0-dependent values are left as marked placeholders and must not exist
+before 2026-09-19.
+
+\subsection{Version chain}
+\label{app:prereg-chain}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{4.6cm}p{7.6cm}p{2.6cm}}
+\toprule
+Version & Content & Status \\
+\midrule
+Preregistration v1 (2026-09-06) & Complete freeze-grade draft; five mandatory
+wording changes; C14 recomputed under $\Kdraw = 16$ with loud flag &
+superseded by panel outcome \\
+Adversarial 3-reviewer panel (D1\_08, 2026-09-06) & Three
+\texttt{major\_revision} verdicts; 28 issues (28 fixed, 0 rejected, 0
+deferred); full verdicts and per-issue dispositions in the panel-response
+document & incorporated \\
+Preregistration v2 (2026-09-06) & All 28 panel issues incorporated; C14
+restated with full record enumeration; C16 ledger extended to items
+(13)--(16); freeze mechanics, seed pinning, and family definitions completed
+(Annex~B) & freeze candidate --- PI review, then D0 hash-freeze \\
+D0 outcome-blind freeze (2026-09-19) & v2 \texttt{sha256}-frozen together
+with the amended contract, theory appendix, and hash-locked archive;
+DGP configs, seed/stream manifest, estimator hashes, analyzer contracts,
+enriched-fixture manifest, and ops plan hash-locked in the same archive &
+[TO BE PINNED AT D0: freeze timestamp $+$ freeze \texttt{sha256} ONLY] \\
+\bottomrule
+\end{tabular}
+\caption{Preregistration version chain. The freeze timestamp and freeze
+\texttt{sha256} are the \emph{only} two TO-BE-PINNED items in the entire
+document set; they are inserted here verbatim when frozen:
+\texttt{[FREEZE\_SHA256: pinned at D0 2026-09-19]} and
+\texttt{[FREEZE\_TIMESTAMP: pinned at D0 2026-09-19]}.}
+\label{tab:versionchain}
+\end{table}
+
+\subsection{Freeze mechanics}
+\label{app:prereg-freeze}
+
+The D0 freeze hash is computed by the PI in the D0 freeze session (or by a
+PI-directed freeze agent in that same session, recorded as such), using
+\texttt{sha256} over the exact file bytes of the frozen file list. The hash
+chain covers, at minimum: preregistration v2; the statistical contract as
+amended (clauses C1--C16, gates G1--G12); the theory appendix; the
+experiment plan; the D-2 evidence map; the D-1 session companions including
+the lemma-writeups manifest; the enriched-fixture manifest; the K-preflight
+results; the fiber-resampler statement; the DGP generator and config; the
+seed/stream manifest; the estimator hashes; the analyzer contract; and the
+ops plan --- together with the hash-locked archive, these constitute the
+freeze record. Recording then proceeds in mandatory order, and a failure at
+any step stops the freeze (no partial freeze): (i) git commit of exactly the
+frozen file set on the integration branch (branch name recorded in the
+freeze log; commit
+\texttt{sha256} recorded); (ii) upload of the freeze record (per-file hashes
+$+$ commit hash $+$ freeze timestamp) to the immutable R2 object
+\texttt{r2://[bucket anonymized for review]/alpha\_cube\_d0\_20260919/freeze\_record.json};
+(iii) entry in the D0 session log with the R2 object etag.
+
+\paragraph{Known-typo policy.}
+Known-stale lines inside incorporated companions (including the elided
+bundle-anchor typo \texttt{fea8b136...9581c}) are \emph{not} edited
+pre-freeze; the preregistration records the canonical 64-hex anchor, and the
+freeze record binds those companions by their own per-file hashes.
+String-matching auditors are directed to the errata register of
+\S\ref{app:prereg-errata}.
+
+\subsection{Post-freeze edit policy}
+\label{app:prereg-edits}
+
+After the D0 freeze the \emph{only} permitted edits to the preregistration
+and the frozen contract are: (1) finite-instance corollaries of
+already-frozen statements; (2) constants polishing (no change of form,
+reference convention, or scope); (3) enumeration of realized results against
+the preregistered targets. Prohibited after freeze: any new confirmatory
+proposition; any endpoint, estimator, threshold, cell, seed, axis, horizon,
+family, schema, or record-count definition change; any analyzer rerun; any
+outcome-dependent analysis of any kind. Any breach is STOP-class with no
+repair (Section~\ref{sec:scope-stop}).
+
+\subsection{Hash and namespace inventory}
+\label{app:prereg-inventory}
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{p{4.0cm}p{11.4cm}}
+\toprule
+Item & Value \\
+\midrule
+Frozen A-2 bundle manifest (canonical, full 64-hex) & \bundlemanifest{}
+\newline (read-only, never mutated; Annex C-4 typo inventory) \\
+Fiber-resampler prereg statement & \texttt{sha256} \resamplerhash{}
+(hash-pinned in test) \\
+K-preflight results & \texttt{sha256} \kpreflighthash{} \\
+Enrichment master seed & 20260972 \\
+Resampler seed namespace & 20260973 \\
+S3 robustness-arm seeds & 20260974, 20260975, 20260976 \\
+K-preflight namespace & 31000--31099 (masters 31000--31031) \\
+Training seed namespaces & 11000--11029 ($\BOne$/$\BTwo$), 12000--12029
+($\BThree$/$\BFour$); Stage-2 subsets 11000--11014 / 12000--12014 \\
+Reflexive $+$ telemetry 10-seed subsets & 11000--11009, 12000--12009 \\
+Bootstrap seed derivation & \texttt{sha256} over frozen strings (block,
+family), $\bmod\ 2^{63}$ \\
+Estimator module defaults & $\lambda = 1.0$, $\sigma = 1.0$, PAM default
+seed 20260906 (fixture/replay only) \\
+D0 archive layout &
+\texttt{r2://[bucket anonymized for review]/alpha\_cube\_d0\_20260919/}
+(immutable staging;
+byte-exact re-derivation on both nodes) \\
+D0 freeze hash $+$ timestamp & [TO BE PINNED AT D0 --- the only two such
+items] \\
+\bottomrule
+\end{tabular}
+\caption{Hash and namespace inventory (prereg v2 \S7.4). Namespace
+disjointness is enforced by the gate-G2 sub-check.}
+\label{tab:hashes}
+\end{table}
+
+\subsection{Amendment ledger and provenance}
+\label{app:prereg-amendments}
+
+The generated, non-omissible C16 amendment ledger (contract v1, as amended
+at v2) carries items (1)--(16) as restated in the preregistration's
+clauses; those restatements govern. Items ratified at v2 (panel R1-5/R3-1):
+(13) the two-stage execution amendment (PI decision D1\_04; Stage-2 seed
+subsets and family status pinned); (14) the truncation-condition secondary
+Holm family with corrected itemized membership (2 tests per $\Lone$ block, 1
+per $\Ltwo$ block); (15) the C14 restatement of the record enumeration;
+(16) the C9 transfer-gate primary-reference disambiguation ($\BThree$'s own
+primary-analogue cell, never the $\BOne$ primary cell). The frozen
+contract's items (11)--(12) were taken by the $\Kdraw = 16$ and kernel-set
+amendments; with (15)--(16) the ledger is complete against every authorized
+amendment as of the v2 freeze candidate. The v2 pre-freeze restatements
+(C)--(F) of the contract --- C14 record enumeration, C9 transfer-gate
+reference, C2(e) dead-letter rewrite, C16 items (13)--(16) --- are lawful
+pre-freeze amendments with recorded provenance (PI authorization chain
+D1\_01--D1\_10 and addendum D1\_11--D1\_14); the D0 freeze binds the
+contract text into the hash chain. Pre-freeze restatements after the freeze
+do not exist by construction.
+
+\subsection{Errata register cross-reference (string-matching reconciliation)}
+\label{app:prereg-errata}
+
+Ten known-stale lines inside incorporated companions are recorded so that
+string-matching reconciliation succeeds; none is edited pre-freeze. C-1:
+estimator-menu audit-protocol ``$\Kdraw = 8$'' --- superseded by the C2
+amendment ($\Kdraw = 16$; PI D1\_11). C-2: ops-document seed convention
+``1000--1029 / 2000--2014'' --- superseded by D1\_10. C-3: ``Holm across the
+8 mandatory cells'' (two occurrences) --- superseded by the C9 16-cell
+mandatory family per block. C-4: bundle-anchor typo
+\texttt{fea8b136...9581c} (five lines, four companions; one document
+internally contradictory exactly as listed) --- canonical value is the full
+64-hex anchor of Table~\ref{tab:hashes}. C-5: contract ``reverse swap and
+pro\_rata swaps are
+exploratory'' --- superseded by D1\_14 $+$ panel R3-2 (reverse swap
+executable exploratory; $\kproprata$ S3 exact-arithmetic only, never
+executes). C-6: contract C14 printed ``122,880'' / ``240 training records''
+/ ``480 probes'' without two-stage splits --- superseded by the C16-(15)
+restatement (299{,}520 / 450 / 420). C-7: contract C2(e) original re-run
+clause --- superseded by the rewritten C2(e) (E-2 preflight pre-D0,
+caveat-only, $\Kdraw$ immutable). C-8: contract C9 original ``primary J''
+--- superseded by C16 item (16). C-9: plan \S4 ``truncation 3 tests/block''
+--- superseded by C16 item (14). C-10: prereg v1 ``sequence 6/7'' wording
+--- superseded by the v2 hash-role and boundary convention.
+
+\subsection{Forecast-ledger cross-reference (bookkeeping, not results)}
+\label{app:prereg-ledger}
+
+Three preregistered forecast entries are filed in the discovery forecast
+ledger before D0 (target \texttt{t0\_activation\_eligibility}, floor 0.15,
+Brier scoring), with resolution rules frozen verbatim in the
+preregistration's \S9: \texttt{d1\_gamma\_theorem\_structure\_survival}
+(bands $0.55/0.75/0.88$; true iff no killer test forces demotion of
+T1/T2/T3 below lead-theorem status);
+\texttt{d1\_alpha\_attribution\_estimand\_survival} (bands
+$0.18/0.35/0.55$; true iff at least one of P1/P2/P3 confirms under the
+frozen KT-A1 rule with KT-A4 estimator stability holding);
+\texttt{d1\_merged\_gammas\_led\_paper\_gate} (bands $0.18/0.34/0.55$; true
+iff GAMMA structure survives \emph{and} at least one
+template-inexpressible pattern class confirms). These are preregistration
+bookkeeping --- probability assessments fixed before outcomes exist --- and
+are reported here as such; no resolution has occurred and none is implied.
+
+\subsection{Double-blind note}
+\label{app:prereg-blind}
+
+Internal provenance identifiers appear in this appendix
+for freeze-integrity traceability. Under double-blind review the branch
+name and storage bucket are already anonymized in the rendered text; the
+amendment-chain ruling identifiers (the \texttt{D1\_xx} series) are retained
+because the ledger they index is itself the subject of this appendix, and
+the frozen archive is cited by hash only. At camera-ready the retained
+identifiers are replaced by the published artifact manifest; the hashes,
+seed namespaces, and version chain of
+Tables~\ref{tab:versionchain}--\ref{tab:hashes} are byte-stable under that
+substitution.
+\endgroup
+\endinput

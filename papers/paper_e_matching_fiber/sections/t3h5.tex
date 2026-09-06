@@ -1,0 +1,427 @@
+% ============================================================================
+% SECTION 6 — THEOREM PACKAGE III: DEPLOYMENT EXPOSURE AND MANIPULATION
+%   VALIDITY (T3 + H5) — BRIEF (writer contract)
+% Sources: prereg v2 §2.3 (T3, VERBATIM-BINDING) and §2.5 (H5/KT-A2),
+%   lemma writeups kt_g4_g5_chart_free_and_exposed_sets_2026-09-06.md
+%   (KT-G5) and kt_a2_tv_separation_and_kt_m2_template_table.md (KT-A2),
+%   theory appendix Part II §3 (Theorem 3 / P3.1–P3.5, Prop 3.5).
+% T3 part: preregistered deployment grammar G (nothing post hoc): D_read,
+%   D_raw, D_swap->ru, D_swap->fifo, D_trunc^W, D_h (h in {1,4,16,31}) and
+%   finite compositions. NOMENCLATURE IS FROZEN: the earlier single name
+%   D_id is BANNED (it conflated two identity maps); the two null controls
+%   are D_read (record readout; Exp = empty set for every consumer) and
+%   D_raw (raw-flow readout; Exp = {u : v^T u != 0} = U(tau) for every
+%   consumer with v_U not identically zero). Theorem T-1 (one-step
+%   exposed-set table, exact, with sign and magnitude; proven): swap->ru
+%   exposes U(tau)\{0} for allocation consumers with first-order magnitude
+%   O(delta/S), per-level weights 1/S computable from fixtures; swap->fifo
+%   on fifo cells EXACTLY blind — M_fifo(zbar + t u) = M_fifo(zbar) for all
+%   t >= 0 including on the integer lattice — Exp = empty set (point null);
+%   truncation Exp(D_trunc^W, C) = U(tau) cap W with floor localization
+%   (monitor nondecreasing in W, zero when no straddling); the
+%   deterministic eligible_units displacement under swap->ru is the
+%   strongest O-B/O-C prediction (probability-1 visible, integer-exact);
+%   the swap->fifo row on ru cells is INSTANCE-LEVEL (threshold depends on
+%   never-drawn quantities the ru tape does not record). Theorem T-2:
+%   T-2a functorial no-creation under composition (proven); T-2b
+%   composition-order asymmetry / destruction asymmetry (proven; needs a
+%   clock configuration, legal but not in current fixtures); T-2c postponed
+%   creation via horizon extension (proven_with_conditions: on the P7 event
+%   of positive probability under a nondegenerate flow, two-round book
+%   persistence engine-grounded); T-2d floor localization under
+%   compositions (proven). Always attach the grammar scope clause: G as
+%   preregistered, each map a function of the recorded tape plus the
+%   deployment perturbation only. Three-way distinction with separating
+%   observables (frozen): mechanism-induced fiber divergence (ours;
+%   constructed exact-tape pairs + raw-arm collapse) vs representational
+%   failure (positive within-cell tape validation loss correlated with
+%   downstream error; contrast Do LLMs Understand LOB 2026) vs design-
+%   induced operator set-identification (divergence moving under D
+%   redesign at fixed information; contrast Counterfactual Operator
+%   Relevance 2025); each failure mode has exactly one rescue lever and
+%   the three levers are the cube's axes. Prop 3.5 (mechanism
+%   attributability criterion) stated as the theorem-experiment bridge.
+% H5 part (kernel-swap manipulation validity; proven_with_conditions):
+%   three layers STATED TOGETHER so the concession shares the sentence:
+%   Layer 0 (Lemma A; proven): TV = 0 at aggregate granularity — the swap
+%   IS plumbing there; conceded in the same sentence as every positive
+%   claim. Layer 1 (Lemma B; proven): TV = 1 on the full F_exec grammar —
+%   the trivial draw-key layer; no lead claim rests on it and no referee
+%   may inflate it. Layer 2 (Lemma C; load-bearing;
+%   proven_with_conditions under (A3') for the MVHG constants, with (iii)
+%   kernel-law-general): stripping allocation_draw and aggregating to the
+%   per-maker fill-count vector c — (i) FIFO corpus law is a point mass at
+%   c^F; (ii) under (A3') the random-unit attribution law is MVHG(q, V*);
+%   (iii) exact identity TV = 1 - nu({c^F}) and under (A3') TV = 1 -
+%   prod_i C(q_i, c_i^F)/C(R*, V*), computable and preregistered PER
+%   FIXTURE. Per-fixture constants (S3 frozen family pool q = (5,4,3,2),
+%   R* = 14, exact integer arithmetic): V* = 1 -> 5/14 = 0.3571, TV =
+%   0.6429; V* = 2 -> 10/91 = 0.1099, TV = 0.8901; V* = 4 -> 5/1001 =
+%   0.0050, TV = 0.9950; V* = 6 -> 4/3003 = 0.00133, TV = 0.9987.
+%   Strict-positivity dichotomy (exact under A3'): collapse (Q(c^F) = 1)
+%   iff m = 1 (single-order pool) OR V* = R* (exhaustion); strictly
+%   positive on multi-order pools with 1 <= V* <= R* - 1 for every pool
+%   vector q. Partial-fill floor TV >= sum_{i : c_i^F = 0} q_i / R*.
+%   NO UNIFORM-IN-POOL CONSTANT EXISTS AND NONE IS CLAIMED: adversarial
+%   pools q = (R*-1, 1), V* = 1 give TV = 1/R* -> 0; constants are
+%   pool-parameterized and preregistered per fixture. The C/sqrt(V*) rate
+%   (Lemma D: mode atom <= 2/sigma for sigma* >= 2; proven, self-contained
+%   Stirling bounds — do NOT import a log-concavity citation) holds ONLY in
+%   the contested regime (bounded fractional orders, bounded V*/R*) — a
+%   regime corollary, never a uniform bound. Corpus-level contraction:
+%   single-round constant lower-bounds the full-corpus separation on any
+%   grammar coarser than the full tape including F_exec. Conditions and
+%   scope: (A3') engine draw-law realization — MVHG constants are
+%   conditional statements about the recorded kernel semantics until the
+%   post-freeze S3/conformance machine-check pins them; failure of (A3')
+%   is the STOP-class engine-law mismatch; the positive branch is about
+%   the frozen engine semantics and the enriched-fixture / S3-scaffold
+%   family — NEVER about the 21/22-event frozen bundle (single-maker
+%   touched level = collapse stratum); single-maker and exhaustion strata
+%   are preregistered negative controls excluded from separation claims;
+%   stage-2 items (identical-input replay with only allocation_rule
+%   swapped; single-maker negative-control run) remain run-gated.
+% FORBIDDEN: empirical results; the token D_id; quoting Layer-1 TV = 1 as
+%   a lead result; uniform-in-pool constants; dropping Layer 0 or the
+%   negative-control strata; upgrading T-2c or H5 labels.
+% ============================================================================
+\section{Theorem package III: deployment exposure and manipulation validity (T3 + H5)}
+\label{sec:t3h5}
+
+T2 bounds what a tape-trained simulator can know about a \emph{fixed} tape;
+T3 asks what each preregistered deployment perturbation can possibly expose,
+and H5 measures --- exactly, per fixture --- how much distributional
+separation a kernel swap induces at each corpus granularity. Both packages
+are stated under the grammar-scope clause: $\Gdep$ as preregistered, each
+deployment map a function of the recorded tape plus the deployment
+perturbation only; nothing is inferred post hoc from outcomes.
+
+\subsection{T3: deployment exposed sets}
+\label{sec:t3-grammar}
+
+\paragraph{The preregistered deployment grammar $\Gdep$.} The frozen grammar
+consists of: the two null controls $\Dread$ (record readout) and $\Draw$
+(raw-flow readout); the two kernel swaps $\Dswapru$ and $\Dswapfifo$, each
+implemented by the replay contract's native operation (replay the recorded
+request stream from the same prestate with only \fld{allocation\_rule}
+exchanged); the latency truncations $\Dtrunc[W]$; the horizon extensions
+$\Dh[h]$, $h \in \{1,4,16,31\}$; and finite compositions thereof.
+\emph{Nomenclature is frozen} (preregistration v2, \S2.3): the retired
+single-name notation for an identity deployment conflated two distinct
+identity maps and is banned; the null controls are $\Dread$ and $\Draw$
+throughout. A map $f$ is \emph{$u$-invariant} for a direction $u$ if
+$f(\bar{\rawflow} + t\,u) = f(\bar{\rawflow})$ for all $t \geq 0$; exposure
+below is failure of this invariance.
+
+\begin{definition}[exposed set]
+\label{def:exposed}
+For a deployment $D \in \Gdep$ and consumer $\Ccons$ with fiber restriction
+$\vU$, the \emph{exposed set} is
+$\Exp(D, \Ccons) = \{u \in \Utau : \Ccons \circ D \text{ is not } u\text{-invariant}\}$
+--- the directions of the matching fiber that the deployed flow reads.
+$\Exp(D, \Ccons) = \emptyset$ is a point null: the deployed consumer is
+exactly blind on the whole fiber.
+\end{definition}
+
+The two null controls calibrate the scale:
+$\Exp(\Dread, \Ccons) = \emptyset$ for every consumer (record readout is
+tape-measurable), and $\Exp(\Draw, \Ccons) = \{u \in \Utau : v^{\top}u \ne
+0\} = \Utau$ for every consumer with $\vU \not\equiv 0$ (raw-flow readout
+sees the whole fiber). Every informative deployment lands between these
+poles, and the following table says exactly where.
+
+\begin{preregthm}{Theorem T-1: one-step exposed-set table --- exact, with sign
+and magnitude}{T-1}
+\label{thm:t3-t1}
+In the one-step scaffold (rationed level $\ell$, pool total
+$S = \Rstar = \sum_i q_i$, never-drawn set $\mathrm{ND}(\ell)$), for every
+consumer with $\vU \not\equiv 0$:
+\begin{enumerate}
+\item $\Exp(\Dread, \Ccons) = \emptyset$; $\Exp(\Draw, \Ccons) = \Utau$.
+\item $\Exp(\Dswapru, \Ccons) \supseteq$ every nonzero magnitude direction at
+touched levels, with first-order magnitude $O(\delta/S)$: injecting
+$\delta e_i$ changes every next-draw probability at order $\delta/S$
+($\mathrm{d}p_j/\mathrm{d}q_i = -q_j/S^2$ for $j \ne i$,
+$\mathrm{d}p_i/\mathrm{d}q_i = 1/S - q_i/S^2$, $p_i = q_i/S$); per-level
+weights $1/S$ are computable from fixtures. \emph{Two channels, one
+deterministic}: (a) the deterministic channel
+$\fld{eligible\_units}(\ell) = S + \delta$ --- an integer displacement,
+visible with probability 1, integer-exact; this is the strongest O-B/O-C
+prediction in the paper (preregistered prediction IDs;
+Table~\ref{tab:opredictions}, \S\ref{sec:cube}); (b) the probability channel moves expected
+per-maker fill counts at $\Theta(\delta/S)$. Deeper (untouched) levels are
+one-step silent under both kernels (price priority); they are reached only
+through horizon extension (Theorem~\ref{thm:t3-t2}(c)). Under the
+$\kru$ + per-unit training cell the magnitude directions are already
+tape-pinned, so the swap's remaining exposure there is the split kernel
+itself --- next-draw probabilities $q_i/S$ read the split directions
+$\{u : \sum_{i \in \mathrm{ND}(\ell)} u_i = 0\}$; the swap detector and the
+truncation detector see the same residual directions.
+\item $\Exp(\Dswapfifo, \Ccons) = \emptyset$ on fifo cells: an exact point
+null --- $\Mfifo(\bar{\rawflow} + t u) = \Mfifo(\bar{\rawflow})$ for all
+$t \ge 0$, \emph{including on the integer lattice} (units appended behind
+the threshold never reach the queue head; hidden depth is demand-capped by
+$\min(\mathrm{remaining}, \mathrm{maker\_qty})$).
+\item On ru cells, $\Dswapfifo$ is \emph{instance-level} (disclosed
+condition): the fifo threshold order $j^{*}_{\mathrm{fifo}}$, the filled set
+$F_f$ and per-order slacks $h_a = R_a - \mathrm{fill}(a)$ depend on
+never-drawn quantities that the ru tape does not record. Splits with an
+endpoint $a \in F_f$ are exposed with magnitude
+$\Theta((\delta - h_a)^{+})$ --- a dead zone then an integer-lattice jump
+(endpoint $a$ loses, later orders gain); splits with both endpoints beyond
+the threshold are blind. The O-B point-null cell assignment belongs to the
+fifo-trained cell, and the ru-cell row is certified only per instance.
+\item $\Exp(\Dtrunc[W], \Ccons) = \Utau \cap \mathcal{W}$: truncation
+exposes exactly the clock directions inside the window, with floor
+localization --- the exposure monitor is nondecreasing in $W$ and exactly
+zero when no never-drawn order at a touched level straddles the window
+boundary (Theorem~\ref{thm:t2-floor}(e)(ii)).
+\end{enumerate}
+\end{preregthm}
+
+\claimstatus{proven (grammar-scope clause attached; the swap$\to$fifo row on
+ru cells is instance-level, disclosed above)}
+
+\begin{corollary}[swap asymmetry]
+\label{cor:t3-asym}
+At allocation-consumer level, $\Dswapru$ separates exposed directions at
+$\Theta(R/S)$ over the fiber ray while $\Dswapfifo$ on fifo cells is exactly
+blind: the two swaps are not interchangeable operations, and the asymmetric
+pair (exposed vs.\ point null) is itself a preregistered falsifiable
+signature.
+\end{corollary}
+
+\claimstatus{proven (within the T-1 package)}
+
+\begin{preregthm}{Theorem T-2: composition laws}{T-2}
+\label{thm:t3-t2}
+\begin{enumerate}
+\item[(a)] \textbf{Functorial no-creation.} Every finite composition of
+grammar maps exposes no direction that some constituent one-step map
+exposes: $\Exp(D' \circ D, \Ccons) \subseteq \Exp(D, \Ccons) \cup
+\Exp(D', \Ccons)$. One-step exposure is the only source of exposure; the
+grammar has exactly two one-step exposure channels --- the level-total
+denominator (\fld{eligible\_units}) and the window mask on clocks.
+\item[(b)] \textbf{Composition-order asymmetry (destruction asymmetry).}
+There exists a legal clock configuration (an out-of-window never-drawn maker
+at a touched level; an in-window aggressor; legal in the schema, not present
+in the current fixtures) and a direction $u$ such that
+$\Exp(\Dtrunc[W] \circ \Dswapru) \not\ni u$ while
+$\Exp(\Dswapru \circ \Dtrunc[W]) \ni u$ with probability 1: truncation
+before the swap deletes the order the swap would have read
+(deployed flows literally equal), whereas swap-then-truncate preserves the
+exposure because \fld{eligible\_units} $= S + \delta$ is a level total
+(never windowed) and the execution records carry aggressor clocks that
+survive the outer truncation. Strict inclusion, deterministic.
+\item[(c)] \textbf{Postponed creation (horizon).} Let $u = \delta e_i$ at a
+level $\ell'$ strictly deeper than the round-1 marginal level. Every
+one-step factor is $u$-blind; but on the event $E_{\ell'}$ that $\ell'$
+becomes the marginal level in round 2 --- positive probability under the
+nondegenerate-flow condition P7 (two-round book persistence is
+engine-grounded: levels persist, \fld{\_select\_maker} sums $\ell'$'s whole
+queue) --- the round-2 draw records read $S' + \delta \ne S'$ with
+probability 1 and the next-draw probabilities move at $\Theta(\delta/S')$.
+Exposure can be created by postponement; conversely, truncating before
+round 2 with $\mathrm{clock}_i > W$ destroys it.
+\item[(d)] \textbf{Floor localization.} For every $D \in \Gdep$,
+$\mathrm{Var}_{\muR}(\Ccons \circ D \mid \tape) = \tfrac{R^2}{12}\|\vU^{D}\|^2$
+(orthant part) plus $\tfrac{R^2}{3}\sum_{\ell}(v_i -
+\bar{v}_\ell)^{D}$-terms over the levels/orders still read by the deployed
+record, with $\Utau^{D} \subseteq \Utau$ the localization; by (a)--(c) the
+inclusions are stage-wise and the strict patterns of (b)--(c) hold for the
+localized floors as well.
+\end{enumerate}
+\end{preregthm}
+
+\claimstatus{T-2a, T-2b, T-2d: proven; T-2c: proven\_with\_conditions (live
+condition: the P7 nondegenerate-flow event of positive probability;
+two-round book persistence engine-grounded)}
+
+\paragraph{The three-way distinction (frozen) and its separating
+observables.} Mechanism-induced fiber divergence (this paper) is separated
+by constructed exact-tape pairs and raw-arm collapse: through-M error stays
+at the Theorem~1 floor on identical corpora while raw-arm consumers track
+(\S\ref{sec:t2}). Representational failure is separated by positive
+within-cell tape validation loss that correlates with downstream error ---
+the failure mode shape-echoed by LOB-dynamics LLM studies \citep{dolob2026};
+distinguish it from ours, where within-cell tape loss is zero \emph{by
+construction} (identical corpora) and the injury appears only under
+deployment. Design-induced operator set-identification is separated by
+divergence that moves under deployment redesign at fixed information ---
+the fit-silent operator-class degeneracy of counterfactual-operator PDE
+discovery \citep{counterfactualoperator2025}; distinguish it from ours,
+where the divergence is pinned by the recording contract at fixed grammar.
+Each failure mode has exactly one rescue lever: information-side repair
+(raw arms; Proposition~\ref{prop:t2-distill}) for ours, capacity/training
+for representational failure, deployment redesign at fixed information for
+operator set-identification --- and the three levers are precisely the
+cube's axes (\S\ref{sec:cube}).
+
+\begin{preregthm}{Proposition 3.5: mechanism-attributability criterion (the
+theorem--experiment bridge)}{3.5}
+\label{prop:t3-attr}
+Define the attribution functional of consumer $\Ccons$ under deployment $D$
+as $\mathrm{Attr}(\Ccons, D) := \mathrm{Var}_{\muR}(\Ccons \circ D \mid \tape) -
+\mathrm{Var}_{\muR}(\Ccons \circ D \mid \rawflow)$ (the second term is zero; the
+definition makes the comparison scale-explicit). Then $\Ccons \circ D$ is
+\emph{mechanism-attributable} iff $\mathrm{Attr}(\Ccons, D) > 0$, iff (by
+Theorem~\ref{thm:t3-t1}) $D$ exposes a direction $u$ with $v^{\top}u \ne 0$;
+$\mathrm{Attr}$ is exactly the Theorem~1 floor of $\Ccons \circ D$ localized by
+T-2(d). The preregistered empirical criterion reads: (i) through-M consumer
+divergence $\ge$ the tape-computable floor (one-sided; derived inequality);
+(ii) raw-arm divergence $\le$ preregistered noise ceiling (the divergence
+vanishes when $\recordedmap$ is removed); (iii) training$\times$inference
+interaction $\approx 0$ for tape-measurable control consumers (negative
+control). The estimand version of (i) is the inequality
+$\hat{\Delta} \ge \mathrm{floor}(\Ccons, D) - (\text{raw-arm estimation
+error})$, identified by the cube's training-enforcement axis at fixed DGP
+and seeds.
+\end{preregthm}
+
+\claimstatus{proven\_with\_conditions (inherits the Theorem 1 package
+A1--A5; the criterion itself is the preregistered decision rule, not a new
+theorem)}
+
+\subsection{H5: kernel-swap manipulation validity --- three-layer total
+variation separation}
+\label{sec:h5}
+
+Fix a DGP instance $\mathsf{d} = (\pi, \rho)$ (prestate, request
+subsequence) and the corpus law $\Lambda^{G}_{k}(\mathsf{d})$ of the
+projected tape under kernel $k$ and grammar $G$ when the seed is drawn from
+the frozen seed population. The granularities compared below are
+deterministic projections of the frozen corpus grammar: the
+\emph{key-equalized attribution projection}
+$\Fexec \twoheadrightarrow \Pi_{\mathrm{att}}$, which strips
+\fld{allocation\_draw} and aggregates each clearing round's per-unit
+records into the per-maker fill-count vector $c$, and the aggregate rung
+$\Fexec \twoheadrightarrow \gagg$ (per-price sums of the execution records;
+\S\ref{sec:corpora}). The two projections are not nested in either order
+--- the aggregate print carries untouched-level prices that the count
+vector omits, and the count vector carries maker-level fill attribution
+that the aggregate print omits --- and no claim below depends on an
+inclusion between them. Focus on the first
+contested clearing round (pool $\qP$, $\Rstar = \sum_i q_i$, $\Vstar$ drawn
+units). \textbf{Assumption (A3$'$)} (engine draw-law realization): under the
+frozen seed population, the engine's random-unit calls realize the idealized
+uniform-without-replacement draw law.
+
+The three layers are stated together so that the concession shares the
+sentence with every positive claim:
+
+\begin{lemma}[Layer 0 --- aggregate anonymity; the concession]
+\label{lem:h5-a}
+$\TV\!\big(\Lambda^{\gagg}_{\kfifo}(\mathsf{d}),\,
+\Lambda^{\gagg}_{\kru}(\mathsf{d})\big) = 0$: at aggregate granularity the swap
+\emph{is} plumbing. Every positive claim below therefore concerns strictly
+finer granularities, and no aggregate-granularity claim of separation is
+made anywhere in this paper.
+\end{lemma}
+
+\claimstatus{proven (P3 kernel anonymity at corpus level; M0-lumpable DGP
+class)}
+
+\begin{lemma}[Layer 1 --- full grammar; the trivial draw-key layer]
+\label{lem:h5-b}
+On the full $\Fexec$ grammar (draw keys retained),
+$\TV\!\big(\Lambda^{\Fexec}_{\kfifo}(\mathsf{d}),\,
+\Lambda^{\Fexec}_{\kru}(\mathsf{d})\big) = 1$ whenever the request stream triggers at
+least one execution record. This is the trivial draw-key layer --- no lead
+claim of this paper rests on it, and no referee may inflate it.
+\end{lemma}
+
+\claimstatus{proven (condition: the request stream triggers $\ge 1$
+execution record)}
+
+\begin{lemma}[Layer 2 --- key-equalized attribution; load-bearing]
+\label{lem:h5-c}
+Under $\Pi_{\mathrm{att}}$, stripping \fld{allocation\_draw} and aggregating
+to the fill-count vector $c$:
+\begin{enumerate}
+\item[(i)] the FIFO corpus law is the point mass $\delta_{c^{F}}$ at the
+FIFO prefix allocation $c^{F}$ (deterministic kernel; no RNG consumption);
+\item[(ii)] under (A3$'$) the random-unit attribution law is the
+multivariate hypergeometric vector $\MVHG(\qP, \Vstar)$ --- probability
+$\prod_i \binom{q_i}{c_i} / \binom{\Rstar}{\Vstar}$ on
+$\{c : \sum_i c_i = \Vstar,\ 0 \le c_i \le q_i\}$;
+\item[(iii)] \emph{kernel-law-general identity:}
+$\TV = 1 - \nu(\{c^{F}\})$ for the FIFO point mass $\delta_{c^F}$ against
+any random-unit attribution law $\nu$; under (A3$'$),
+\[
+\TV \;=\; 1 \;-\; \frac{\prod_i \binom{q_i}{c_i^{F}}}{\binom{\Rstar}{\Vstar}},
+\]
+computable and preregistered \emph{per fixture};
+\item[(iv)] second-atom bound: $\TV \ge \max_{c' \ne c^{F}} Q(c')$ (the
+largest atom away from $c^{F}$; the two largest atoms sum to at most 1);
+and, in the contested regime, $\TV \ge 1 - C/\sqrt{\Vstar}$ by
+Lemma~\ref{lem:h5-d} below --- a regime corollary only;
+\item[(v)] \emph{strict-positivity dichotomy} (exact under A3$'$): collapse
+($Q(c^{F}) = 1$) iff $m = 1$ (single-order pool) or $\Vstar = \Rstar$
+(exhaustion); on multi-order pools with $1 \le \Vstar \le \Rstar - 1$ the
+separation is strictly positive for every pool vector $\qP$. Moreover the
+\emph{partial-fill floor} $\TV \ge \sum_{i : c_i^{F} = 0} q_i / \Rstar$
+holds unconditionally under (A3$'$).
+\end{enumerate}
+\end{lemma}
+
+\claimstatus{proven\_with\_conditions (live conditions: (A3$'$) engine
+draw-law realization for the MVHG constants --- with (iii)
+kernel-law-general; per-fixture constants only, no uniform-in-pool
+constant)}
+
+\paragraph{Per-fixture constants (S3 frozen family; exact integer
+arithmetic).} At aggregate granularity the swap is still plumbing
+(Layer~0, $\TV = 0$); the constants below concern the key-equalized rung
+only. Pool $\qP = (5,4,3,2)$, $\Rstar = 14$:
+\begin{center}
+\begin{tabular}{c c c c}
+$\Vstar$ & $c^{F}$ & $Q(c^{F})$ & $\TV$ \\
+\hline
+$1$ & $(1,0,0,0)$ & $5/14 = 0.3571$ & $0.6429$ \\
+$2$ & $(2,0,0,0)$ & $10/91 = 0.1099$ & $0.8901$ \\
+$4$ & $(4,0,0,0)$ & $5/1001 = 0.0050$ & $0.9950$ \\
+$6$ & $(5,1,0,0)$ & $4/3003 = 0.00133$ & $0.9987$
+\end{tabular}
+\end{center}
+
+\paragraph{No uniform-in-pool constant exists, and none is claimed.}
+Adversarial pools $\qP = (\Rstar - 1,\, 1)$ with $\Vstar = 1$ give
+$\TV = 1/\Rstar \to 0$: the constants are pool-parameterized and
+preregistered per fixture. The $C/\sqrt{\Vstar}$ rate of
+Lemma~\ref{lem:h5-d} holds only in the contested regime (bounded fractional
+orders, bounded $\Vstar/\Rstar$ fraction) --- a regime corollary, never a
+uniform bound, and no cross-pool or universal-scaling claim is made.
+
+\begin{preregthm}{Lemma D: hypergeometric mode-atom bound}{D}
+\label{lem:h5-d}
+For $X \sim \mathrm{Hyperg}(N, K, n)$ with variance
+$\sigma^2 = n\theta(1-\theta)\frac{N-n}{N-1} \ge 4$ ($\theta = K/N$), the
+mode atom obeys $\max_x \Pr(X = x) \le 2/\sigma$. Consequently, in the
+contested regime (some fractional order $i$ with $\sigma_i \ge 2$),
+$\TV \ge 1 - 2/\sigma^{*} \ge 1 - C/\sqrt{\Vstar}$. The proof is
+self-contained (explicit Stirling bounds; no log-concavity citation
+imported).
+\end{preregthm}
+
+\claimstatus{proven (condition: $\sigma \ge 2$; regime corollary only)}
+
+\paragraph{Corpus-level contraction.} The single-round constant lower-bounds
+the full-corpus separation on any grammar coarser than the full raw tape,
+including $\Fexec$: coarsening is a Markov kernel applied to both laws, and
+total variation contracts under co-observation. Under the M0/M1-lumpable DGP
+freeze the raw corpus itself is kernel-invariant, so the lemmas read as
+through-M-vs-raw separation statements exactly (no raw-arm escape from
+Layer~2 exists on this engine).
+
+\paragraph{Conditions and scope.} (A3$'$) is a live condition: the MVHG
+constants are conditional statements about the recorded kernel semantics
+until the post-freeze S3/conformance machine-check pins them; failure of
+(A3$'$) is the STOP-class engine-law mismatch (the theorems do not survive
+silent engine-law drift). The positive branch is a statement about the
+frozen engine semantics and the enriched-fixture / S3-scaffold family ---
+never about the 21/22-event frozen bundle, whose only touched level is
+single-maker and which instantiates the collapse stratum. Single-maker and
+exhaustion strata are preregistered negative-control strata, excluded from
+separation claims. Stage-2 items (identical-input replay through the
+recorded request subsequence with only \fld{allocation\_rule} swapped; the
+single-maker negative-control run) remain run-gated; \RESULTSPENDING{}

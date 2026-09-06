@@ -1,0 +1,671 @@
+% ============================================================================
+% SECTION 8 — A PREREGISTERED ATTRIBUTION CUBE (DESIGN; OUTCOMES PENDING)
+%   — BRIEF (writer contract)
+% Sources: prereg v2 §3 (contract clauses restated), §4 (design), §5
+%   (estimator menu), §6 (KT-M2 template packet); experiment plan for
+%   context. EVERY number in this section is a frozen DESIGN constant —
+%   that is the only reason it may appear.
+% (full brief retained verbatim in the repo history of this stub; content
+%  below implements it)
+% ============================================================================
+\section{A preregistered attribution cube (design; outcomes pending)}
+\label{sec:cube}
+
+\begingroup\sloppy
+
+This section specifies, in full, the experimental section of the
+preregistration: an eight-cell attribution design (protocol label ALPHA) on the
+frozen lab-asset-v3 engine of Section~\ref{sec:setup}, executed by two
+independent simulator lineages. It is written as a \emph{protocol}, not a
+report. Nothing has run at the time of writing: the D0 outcome-blind freeze is
+pinned for 2026-09-19, and every location where an empirical statement would
+appear carries the placeholder \RESULTSPENDING{} until the one-shot analyzers
+execute. Every constant printed below is a frozen design constant of the
+preregistration (prereg~v2 \S3--\S4) or a theorem constant of
+Sections~\ref{sec:t1}--\ref{sec:t3h5}; that is the only reason a number may
+appear. The four-arm train$\times$infer enforcement factorial with
+locked-checkpoint surgery cells follows the external genre template of
+\citet{duruisseaux2024} and the training face of \citet{solverinloop2020}, and
+inherits its statistical machinery from the internal predecessor
+\citep{paperd}; the design deltas that the template cannot express
+(competing-mechanism swap at fixed truth reference, kernel$\times$enforcement
+on out-of-distribution axes, the dual-hash fiber-resampling control,
+dual-lineage transfer gate, and preregistered point-null cells) are recorded
+in the preregistration's template-expressibility packet and are not claimed as
+template novelty here.
+
+\subsection{Estimands: the eight cells and the attribution contrasts}
+\label{sec:cube-estimands}
+
+\paragraph{Arms and cells.}
+Each lineage is trained in four arms indexed by the coordinate $c \in
+\{\mathrm{abs},\mathrm{inc}\}$ (predict the absolute next state vs.\ the
+increment) and the training enforcement $t \in \{0,1\}$ ($0$ = raw, $1$ =
+through-$\Mk$), and every trained arm is evaluated at both inference
+enforcements $e \in \{0,1\}$, giving the eight cells $Y_{c,t,e}$ of the cube.
+Here $\Mk$ is the exact combinatorial clearing layer of
+Section~\ref{sec:setup}: integer uniform-price clearing with volume and cash
+conservation, unit integrality, and the tick lattice, under a priority kernel
+in exactly $\{\kfifo, \kru\}$; $\kproprata$ is \emph{not} an engine kernel and
+never executes in any cell (it exists only as exact arithmetic in the S3
+analysis of Section~\ref{sec:cube-endpoints}). The four off-diagonal
+evaluations (trained at one enforcement, deployed at the other) are realized
+as zero-training surgery cells on \texttt{sha256}-locked checkpoints
+(Section~\ref{sec:cube-surgery}).
+
+\paragraph{Contrasts.}
+Within each cell $(t,e)$ the coordinate contrast is
+$\Dte{t}{e} = \bar Y_{\mathrm{abs},t,e} - \bar Y_{\mathrm{inc},t,e}$
+(subscript order in $\Dte{t}{e}$ is (training, inference)). The
+preregistered estimands are
+\begin{align}
+\Jest \;&=\; \Dte{0}{0} - \Dte{1}{0} - \Dte{0}{1} + \Dte{1}{1},\\
+\Tzero \;&=\; \Dte{0}{0} - \Dte{1}{0}, \qquad
+\Tone \;=\; \Dte{0}{1} - \Dte{1}{1},\\
+\Ezero \;&=\; \Dte{0}{0} - \Dte{0}{1}, \qquad
+\Eone \;=\; \Dte{1}{0} - \Dte{1}{1},\\
+\phitrain \;&=\; (\Tzero + \Tone)/2, \qquad
+\phiinfer \;=\; (\Ezero + \Eone)/2,
+\end{align}
+with the pinned reading (prereg~v2, clause C3): $\Tzero$ and $\Tone$ are the
+training-enforcement contrasts at inference enforcement raw and through-$\Mk$
+respectively; $\Ezero$ and $\Eone$ are the inference-enforcement contrasts at
+training enforcement raw and through-$\Mk$ respectively. Positive $\Jest$
+means that the absolute-minus-increment contrast grows with joint through-$\Mk$
+enforcement. \textbf{No confirmatory test compares through-$\Mk$ against raw
+for superiority; the estimand is path-dependence attribution, never
+superiority.} This is a binding nonclaim of the preregistration
+(Section~\ref{sec:scope}) and delimits every downstream sentence.
+
+\subsection{Blocks, lineages, data-generating processes, staging}
+\label{sec:cube-blocks}
+
+\paragraph{Lineages.}
+$\Lone$ is the transformer/potential surrogate lineage of
+Section~\ref{sec:setup} (graph-potential architecture; internal codename
+anonymized for double-blind review);
+$\Ltwo$ is a recurrent fact-surrogate lineage built code-only before D0
+(architecture, training loop, CPU-torch-loadable checkpoint format, and
+RNG-tree-namespaced seeding surface, validated by CPU smoke; GPU training
+stays D0-gated). Both lineages ship frozen simulator contracts (input grammar;
+ABS/INC semantics; enforcement path and estimator; RNG wiring; checkpoint
+format) and consume only corpora certified by the engine's 27 conformance
+tests and replay validator (Appendix~\ref{app:engine}).
+
+\paragraph{Data-generating processes.}
+D1 is the lab-asset-v3 dual-arm engine (read-only; canonical bundle manifest
+hash in Appendix~\ref{app:engine}) driven by a frozen M0/M1-lumpable
+request generator: request
+streams depend only on anonymous book state, own inventory, cash, and induced
+values --- never on allocation identity --- so executed request streams are
+kernel-invariant and request-level common-random-number (CRN) pairing is
+exact. This is the single load-bearing pairing assumption of the design
+(clause C2(a)); its failure is a STOP-class event
+(Section~\ref{sec:scope}). D2 is a synthetic robustness DGP, Stage~2 only:
+variant~A \texttt{garch\_student\_t5} (both lineages) and variant~B
+\texttt{multiscale\_logvol} ($\Ltwo$-only), each through a frozen
+series-to-request wrapper into the \emph{same} engine, preserving
+conservation and replay semantics. \texttt{negative\_jump\_iid} is
+named-but-not-run.
+
+\paragraph{Blocks.}
+\begin{itemize}
+\item $\BOne$ $= \Lone \times$ lab-asset (primary block; carries the
+  confirmatory primary cell),
+\item $\BTwo$ $= \Lone \times$ synthetic (variant~A),
+\item $\BThree$ $= \Ltwo \times$ lab-asset,
+\item $\BFour$ $= \Ltwo \times$ synthetic, carrying \emph{two} DGP
+  variant sub-blocks (variant~A and variant~B).
+\end{itemize}
+
+\paragraph{Two-stage staging (mechanical triggers only).}
+Stage~1 is confirmatory: $\BOne$ $+$ $\BThree$, 30 seeds each
+(namespaces 11000--11029 and 12000--12029), planned at ${\sim}650$ V100-h
+against a 4-week hard ceiling. Stage~2 is conditional directional robustness:
+$\BTwo$ $+$ $\BFour$ at the preregistered first-15-seed subsets
+(11000--11014 / 12000--12014, ascending), planned at ${\sim}410$ V100-h,
+executed and reported as descriptive robustness with \emph{no}
+material-nonadditivity claim attaching to any Stage-2 cell (Holm $p$-values
+computed for completeness and labeled non-confirmatory). Stage-2 entry is
+gated by four \emph{mechanical} triggers only --- (t1) cumulative burn
+$< 1{,}150$ V100-h; (t2) Stage~1 complete by D0$+26$d; (t3) $\Lone$
+convergence-failure rate $\le 15\%$ (a quality gate, not a performance
+signal); (t4) $\Ltwo$ trainability count $\ge 28/30$ seeds reaching finite
+training loss under the day-5 thresholds on D1 --- and \textbf{never by an
+outcome}: the $\BThree$ transfer-gate result is not an input to any Stage-2
+entry, de-scope, or cancellation decision, and any outcome-triggered Stage-2
+launch downgrades the D2 block to exploratory or forbids it outright
+(preregistration-integrity STOP class, Section~\ref{sec:scope}). A day-5
+trainability quality gate (NaN $\le 5\%$ at long rollout; $\Rzeros$
+validation $\le 3\times$ the $\Lone$ seed median; $\ge 28/30$ seeds complete)
+is an early-warning device only.
+
+\subsection{Axes, horizons, and the kernel-swap stratum}
+\label{sec:cube-axes}
+
+Four confirmatory axes (clause C4): (i) ID; (ii) agent-population $\times 2$
+(prestates regenerated at $2N$ with induced capacities rescaled per the
+lab-asset-v3 schema); (iii) tick $\times 2$ coarser (tick $2\Delta$ under the
+frozen band-scaling rule); (iv) kernel-swap. Horizons are $\{1,4,16,31\}$
+autoregressive clearing rounds, with $h=64$ recorded descriptively only. The
+truncation conditions (\texttt{trunc\_lag}, \texttt{trunc\_cap}) run as
+deployment-map passes at the ID axis carrying the O-C/O-D orderings as the
+preregistered secondary Holm family with the itemized membership of clause
+C16 item~(14): per $\Lone$ block a two-test family
+$\{\Jest_{\mathrm{trunclag},h16} - \Jest_{\mathrm{ID},h16};
+\Jest_{\mathrm{trunccap},h16} - \Jest_{\mathrm{ID},h16}\}$, one-sided in the
+O-C direction, Holm within the pair; per $\Ltwo$ block a one-test family
+$\{\Jest_{\mathrm{trunclag},h16} - \Jest_{\mathrm{ID},h16}\}$ alone (the
+$\Ltwo$ \texttt{trunc\_cap} de-scope makes a uniform three-test family
+structurally impossible). \texttt{pop\_4x}, \texttt{tick\_half}, and the
+reverse kernel swap are exploratory periphery; pro-rata analysis is S3
+exact-arithmetic only and never executes in the engine.
+
+\paragraph{The kernel-swap stratum (pinned paragraph, clause C4).}
+The kernel-swap axis is a law-changing scientific manipulation, not
+re-plumbing; its validity is Theorem~H5 of Section~\ref{sec:t3h5}.
+\claimstatus{proven\_with\_conditions --- (A3$'$); per-fixture constants only
+(no uniform-in-pool constant)}. The stratum is pinned as follows.
+(i) Through-$\Mk$ \emph{training} embeds $\Mk$ with the $\kfifo$ kernel ---
+the truth kernel on the FIFO-generated $\Fexec$ corpus; every block's DGP
+truth is generated under FIFO. (ii) The kernel-swap axis changes only the
+inference-$\Mk$ deployment kernel, from $\kfifo$ to $\kru$; the truth reference
+is unchanged. (iii) Raw-inference cells have no inference-$\Mk$ clearing
+layer, hence no deployment kernel: their kswap-stratum evaluations are
+byte-identical duplicates of their ID-stratum evaluations, recorded
+separately for record-coverage symmetry with \fld{allocation\_rule} pinned to
+the training-time kernel field (\fld{fifo}) and $n\_draws = 16$; the analyzer
+checks this duplicate byte-identity and a mismatch is a gate failure (G8/G10).
+(iv) Consequently $\Rzeros(s)$ --- computed at the (increment, raw-train,
+raw-infer) cell of the same stratum --- is numerically identical across the ID
+and kswap strata by construction, so $\deltas$ at kswap is anchored to the
+ID-scale $\Rzeros$; the proportional-threshold rationale for
+out-of-distribution axes applies to the population and tick axes and not to
+the kernel-swap primary axis.
+
+\subsection{Randomization: the RNG tree, CRN, and \texorpdfstring{$\Kdraw = 16$}{K = 16}}
+\label{sec:cube-rng}
+
+The inference unit is the seed, defined as the root of a frozen RNG
+derivation tree with named substreams
+$\spawn{s}{data}$, $\spawn{s}{init}$, $\spawn{s}{minibatch}$,
+$\spawn{s}{train\_kernel}$, and $\spawn{s}{kernel}$ at indices
+$k = 1,\dots,\Kdraw$ (clause C1). Kernel draws, rollout rounds, and tapes are
+nested inside the seed, never inference units. Per seed and cell, the
+inference-kernel value is the mean over $\Kdraw = 16$ immutable draws,
+$\spawn{s}{kernel}(k)$, $k = 1,\dots,16$, replayed identically across cells
+within the seed (clause C2(b)); deterministic-kernel cells execute 16
+identical evaluations, whose byte-identity is gate G8. The value $\Kdraw = 16$
+is frozen by the K-variance preflight (Section~\ref{sec:cube-instruments}):
+the preregistered conservative rule (every draw-dependent statistic with a
+bootstrap 95\% upper bound of the between-ratio $\le 0.10$) returned
+\texttt{none\_in\_set} --- the statistic \texttt{alloc\_proprata\_dev\_mean}
+is draw-dominated at every authorized $\Kdraw$ (between-ratio $0.1958$, CI
+$[0.1182, 0.4703]$ at $\Kdraw = 16$) --- so $\Kdraw = 16$ was adopted with an
+explicit insufficiency flag. $\Kdraw$ is immutable after D0.
+
+\paragraph{Draw-noise guard (mechanical).}
+All allocation-level confirmatory quantities are computed and reported at
+seed-mean level: the per-seed value is the $\Kdraw$-draw mean, and intervals
+are seed-level 95\% paired bootstraps over seeds, so draw noise enters the
+interval through the draw means rather than sitting outside the comparison.
+For every O-test or KT contrast whose decision margin is an allocation-level
+margin: if the margin is smaller than $10\times$ the preflight-derived
+draw-noise scale for that statistic class, the test auto-labels
+\emph{unresolved (draw-noise-dominated)} and can never fire a confirmatory
+claim from inside the draw-noise floor. For the allocation class the
+preflight's \texttt{alloc\_proprata\_dev\_mean} gives within-seed variance
+$W = 0.0141$, i.e.\ a draw-std of the $\Kdraw=16$ mean of
+${\approx}\sqrt{W/16} \approx 0.030$ in its native units. The guard is a
+reporting-integrity control, not a power rescue.
+
+\subsection{Endpoints and decision rules}
+\label{sec:cube-endpoints}
+
+\paragraph{Primary endpoint (EP1; clause C5).}
+The primary endpoint is the conserving-channel rollout error against DGP
+truth,
+\[
+\Yend \;=\; \sqrt{\mathrm{mean}_{ch}\,\mathrm{mean}_{t}\,
+\bigl((\hat x_{ch,t} - x_{ch,t})/s_{ch}\bigr)^{2}},
+\]
+on exactly two \emph{aggregate} engine-level conserving channels per clearing
+round: total executed volume units and total executed cash ticks. No
+per-actor or per-side series enters the primary endpoint. The granularity
+consequence is stated so the choice is auditable: the DGP-truth side is
+draw-invariant given the request stream (M0/M1-lumpability), while the
+simulator side is draw-sensitive through internal clearing feedback, so
+$\Kdraw$-draw averaging is active on the primary endpoint exactly as clause
+C2(b) provides. The channel scales $s_{ch}$ are frozen DGP-native per-event
+innovation standard deviations computed from the hash-sealed DGP-only sample
+branch --- the DGP-truth side alone, from the D0-hash-committed generator
+sample, never from simulator output and never from the paired corpus.
+Through-$\Mk$ cells' conservation violation is exactly zero (integer-exact);
+raw cells are never clamped or repaired. Book-state and price-path errors are
+preregistered secondary, descriptive only, outside all Holm families.
+
+\paragraph{SESOI (clause C6).}
+Per stratum $s$: $\deltas = 0.1 \cdot \bar Y_{\Rzeros(s)}$, where
+$\Rzeros(s)$ is the (increment, raw-train, raw-infer) cell of the same
+stratum. Reference-degeneracy guard: if $\bar Y_{\Rzeros(s)} < 1.0$ scaled
+unit the stratum is labeled \emph{unresolved (reference-degenerate)} --- no
+positive label, reported, never dropped, never rescoped. Primary fallback
+strata in order: $\BOne$ kernel-swap $h31$; $\BOne$ tick $h16$; $\BOne$
+population $h16$.
+
+\paragraph{Ordered classification (clause C7, verbatim).}
+\emph{Material non-additivity} if the 95\% paired-bootstrap interval for the
+estimand lies wholly above $+\deltas$ or below $-\deltas$; \emph{smaller
+statistical non-additivity} if that interval excludes zero but the first rule
+fails; \emph{practical additivity} if the 90\% interval lies wholly inside
+$[-\deltas, +\deltas]$; \emph{unresolved} otherwise (with the
+reference-degenerate sub-label per C6). Both interaction and additivity are
+falsifiable; an interval spanning zero and a SESOI boundary receives no
+positive label.
+
+\paragraph{Bootstrap (clause C8).}
+50{,}000 draws, percentile intervals, seed-level resampling of the complete
+paired eight-cell vector; draws are averaged within seed and never resampled.
+The bootstrap RNG seed derivation is pinned: per (block, family), take
+$\mathrm{int}(\mathrm{sha256}(s)) \bmod 2^{63}$ where $s$ is the
+concatenation of frozen strings, \texttt{ecomd\_reexploration\_v2\_bootstrap}
+$\|$ \texttt{block\_id} $\|$ \texttt{family\_id} --- deterministic,
+independent of all training seeds, recorded in the analyzer manifest.
+
+\paragraph{Multiplicity and the transfer gate (clause C9).}
+The primary cell is $\BOne$ $\times$ kernel-swap $\times$ horizon 16: single,
+prespecified, not Holm-adjusted, not overridable by secondaries. Holm
+families: sign-flip tests on the 16 mandatory interaction cells (4 axes
+$\times$ 4 horizons) per block, Holm within each block (four families of 16);
+an axis-contrast secondary family per block (the three
+$\Jest_{\mathrm{axis}} - \Jest_{\mathrm{ID}}$ at horizon 16, Holm within the
+triple); the truncation secondary family per C16 item~(14) as itemized above.
+The architecture-transfer gate reads $\BThree$ only: $\BThree$ passes iff
+$\BThree$'s own primary-analogue cell (kernel-swap axis, horizon 16, block
+$\BThree$) classifies material \emph{and} $\ge 8/16$ mandatory $\BThree$ cells
+classify material. The $\ge 8/16$ denominator remains 16 under per-cell
+reference degeneracy: degenerate cells count as not-material, the gate is
+never renormalized, and a gate failure can never be attributed to or excused
+by degeneracy after results are seen. Gate failure is reported as an
+architecture boundary --- never hidden, never re-gated. The $h=1$ strata are
+pre-flagged as the degeneracy-risk strata. The multiplicity mapping is closed
+by statement: the Holm sign-flip families feed \emph{no} gate (the transfer
+gate consumes the unadjusted C7 ordered-classification labels by frozen
+design); the Holm-adjusted sign-flip results are consumed by exactly two
+named paper sentence types (per-block interaction presence under
+multiplicity control, and the axis-contrast family sentence), and nothing
+else. Reporting-all (clause C10): every cell, axis, horizon, block, class
+flip, and null is reported unconditionally; unrun cells surface as
+``not run''/``unresolved'', never dropped; class flips are preregistered
+descriptive findings carrying no $p$-values; the transfer gate is the only
+preregistered lineage-level decision.
+
+\paragraph{Secondary endpoints (EP2--EP5).}
+EP2 collects the T2/T3 mechanism results on locked checkpoints and S1a fiber
+pairs --- the O-orderings of Section~\ref{sec:cube-predictions} --- and
+realizes the three-way distinction of Section~\ref{sec:t3h5} between
+mechanism-induced fiber divergence, representational failure
+\citep{dolob2026}, and design-induced operator set-identification
+\citep{counterfactualoperator2025} through the three rescue levers
+(information, deployment redesign, capacity), which are exactly the cube's
+training-enforcement, inference-enforcement, and lineage axes. EP3 is the S3
+exact Fisher-information rank grid: 3 kernels $\times$ 3 rungs $\times$
+$\Vstar \in \{1,2,4,6\}$ in $\mathbb{R}^{9}$, frozen rank tolerance
+$\tau = 10^{-8}$, one-shot, CPU-exact, with preregistered ranks --- $(k,
+\gagg)$ rank 3 for all kernels and $\Vstar$ (the kernel-independence
+signature); $(\kfifo, \gpo)$ ranks $3,3,3,4$; $(\kproprata, \gpo)$ rank 6 for
+all $\Vstar \ge 1$; $(\kru, \gpo)$ ranks $6,7,7,7$; $(\kru,\gpu) =
+(\kru,\gpo)$ at every $\Vstar$ and $(k,\gpu) = (k,\gpo)$ for all $k$
+(saturation signature), with the annotated $(\kru,\gpu)$ at $\Vstar = 1$
+rank 7 (\fld{eligible\_units} supplies $\Rstar$). The $\Vstar{=}2$ rank jump
+is the without-replacement discriminator, and its falsification map is frozen
+(e.g.\ rank$(\kru,\gpo) = 6$ at $\Vstar = 6$ kills the identification
+proposition --- engine-law mismatch, STOP class). S3 robustness-arm seeds:
+20260974, 20260975, 20260976. EP4 is the S1a constructed-fiber-pair gate set
+(S1a-G1 byte-identical $\Fexec$ corpora; S1a-G2 differing \fld{state\_hash}
+chains; S1a-G3 $|\Delta C|$ matching Theorem~1's predicted linear/exact-split
+values), for which the fixture enrichment is a hard prerequisite.
+EP5 is T4 drift telemetry: exploratory register only
+(Section~\ref{sec:scope}).
+
+\subsection{Preregistered predictions (O-orderings)}
+\label{sec:cube-predictions}
+
+Table~\ref{tab:opredictions} states the preregistered predictions as
+\emph{predictions}: each row is a falsifiable statement derived from
+Theorems~1 and T-1 (Sections~\ref{sec:t2} and~\ref{sec:t3h5}), with its
+ordering ID, statistic, native units, decision procedure, and family status
+fixed before any outcome access. Nothing in the table is an observation;
+realized values populate post-D2 only.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{p{2.0cm}p{4.4cm}p{4.4cm}p{3.1cm}}
+\toprule
+ID & Statistic (seed-mean) & Prediction / margin & Procedure and family status \\
+\midrule
+O-A & consumer RMSE(through-M-trained, raw-infer) $-$
+$R\|\vU\|/\sqrt{12}$ (consumer notional units) & RMSE $\ge$ floor;
+floor tape-computable; float tolerance $10^{-9}$ relative on the
+integer-exact floor & per cell: seed-level 95\% bootstrap interval;
+confirmed iff lower bound $\ge$ floor $-$ tol. Outside all Holm families,
+justified: the comparison constant is a deterministic tape-computable
+integer-arithmetic object; exhaustive pass/fail of every cell; sentence
+limited to ``floor attained in $k$ of $n$ cells (full table)''. \\
+O-B (swap $\to$ $\kru$) & allocation-consumer divergence under $\Dswapru$
+(fill-count units) & $\Theta(\delta/S) > 0$, per-level weights $1/S$
+preregistered & confirmed iff interval lower bound $> 10\times$ draw-noise
+scale (guard of \S\ref{sec:cube-rng}). Outside Holm with justification
+(deterministic subcheck $+$ guard). \\
+O-B (swap $\to$ $\kfifo$) & allocation-consumer divergence under $\Dswapfifo$
+(fill-count units, integer-exact) & \textbf{exact-zero point null} (exposed
+set empty; any nonzero value falsifies) & integer-exact deterministic
+subcheck across all seeds and all $\Kdraw$ draws: confirmed iff every
+measured divergence is exactly 0; no statistical equivalence margin (a
+SESOI-margin equivalence test would be dimensionally undefined and is
+withdrawn). Outside Holm: no sampling distribution exists to calibrate. \\
+O-C & divergence increments vs.\ truncation window $W$; per arm family
+$(R^{2}/12)\,\Delta\|\vU\|^{2}$ (orthant) / $(R^{2}/3)\,p^{2}\Delta(m_{\mathrm{in}}
+m_{\mathrm{out}}/m)$ (split) & increments match the precomputed curves;
+monotone nondecreasing in $W$; zero when no straddling & deterministic curve
+comparison per fixture (integer-exact curve constants; seed-mean measured
+increments with intervals; subcheck $=$ zero at no-straddling windows).
+Outside Holm with justification; the $\Jest$-level truncation contrasts are
+separately inside the C16-(14) Holm pair. \\
+O-D & magnitude-consumer floor collapse; exact-zero cell (consumer units) &
+price-notional on $\kru$ splits: floor $\equiv 0$ (preregistered null);
+latency consumer retains the split floor & integer-exact zero subcheck for
+the null cell; interval comparison for the retained floor. Outside Holm with
+justification (falsifiable point null, not a hedge). \\
+O-E & training-enforcement interaction for tape-measurable consumers
+($\deltas$ units of $\Yend$) & zero interaction & ordered classification vs.\
+$\deltas$ per C7 (same machinery as mandatory cells). Descriptive control;
+no claim attaches. \\
+\bottomrule
+\end{tabular}
+\caption{Preregistered predictions (design table; no realized values).
+Units, margins, and procedures are frozen design constants of prereg v2
+\S4.4; ``confirmed'' is a label the one-shot analyzers may assign post-D2,
+never a statement of this paper at authoring time.}
+\label{tab:opredictions}
+\end{table}
+
+\paragraph{Deterministic subchecks.}
+The \fld{eligible\_units} displacement under $\Dswapru$, the O-B
+swap$\to$$\kfifo$ exact-zero null, and the O-C no-straddling zeros are
+integer-exact engine-semantics checks, declared outside statistics by
+justification: the predicted value is a deterministic function of the
+recorded tape, there is no sampling distribution on the prediction side, and
+pass/fail is exhaustive (every seed, every draw). They are reported as
+pass/fail tables with no $p$-values.
+
+\paragraph{KT-A3 and KT-M1 contrasts.}
+KT-A3 (kernel-invariance attack): swap arm $=$ seed-mean endpoint divergence
+under $\Dswapru$ (channel-scaled RMS units of $\Yend$, matched to $\deltas$
+of the stratum); resample arm $=$ seed-mean endpoint divergence under
+within-fiber allocation regeneration; the contrast fires KT-A3 iff
+$\mathrm{swap} > \deltas$ \emph{and} $\mathrm{resample} < \deltas/10$, both
+at seed-mean with 95\% seed-level bootstrap intervals and subject to the
+draw-noise guard on the $\deltas/10$ margin. KT-M1 (gauge-twin): the
+fiber-resampler regeneration divergence at seed-mean level against the same
+guard. Both are preregistered robustness gates outside all Holm families ---
+mechanical, exhaustive-reporting, no selective claiming. The preregistered
+estimand-survival rule (KT-A1) accompanies them: P1 $=$ opposing-sign
+training/inference enforcement credits; P2 $=$ pure interaction ($\Jest$
+material with both main-effect contrasts non-material); P3 $=$ surgery
+hysteresis on locked checkpoints; the kill pattern ($|\Jest| \le \deltas/2$
+everywhere, no sign opposition, surgery antisymmetric) repositions ALPHA as
+an ablation with the paper resting on the theorems and a boundary report
+(REFRAME class, Section~\ref{sec:scope}).
+
+\subsection{Surgery cells and the reflexive firewall}
+\label{sec:cube-surgery}
+
+\paragraph{Zero-training surgery cells (clause C11).}
+For each trained arm and seed, the surgery cell is that arm evaluated at the
+other inference enforcement on the same \texttt{sha256}-locked checkpoint,
+with zero optimizer steps, parameter parity byte-identical to the parent, and
+inference randomness identical to the trained cells (seed-owned kernel
+streams inherited by surgery cells). Lock order: last training record
+$\to$ hash lock $\to$ metric unlock. The four surgery cells per seed are the
+empirical exhibit for the V4 remark of Section~\ref{sec:v4}: cells
+indistinguishable to the training loss (within-fiber) yet distinguished by
+the deployment maps.
+
+\paragraph{Reflexive firewall (clause C12).}
+A reflexive deployment cell (simulator against a simple adapting execution
+policy, simulator-in-the-loop) runs exploratory-only (${\sim}6$ V100-h; 10
+seeds pinned as the first 10 of each namespace, 11000--11009 and
+12000--12009; cells $\{$R00, R11$\}$; D1; both lineages) under five verbatim
+firewalls: (1) namespace separation; (2) temporal separation --- scheduled
+only after all four confirmatory one-shot analyzers have run and their
+analysis-JSON hashes are published; (3) statistical separation --- descriptive
+only, with the mandatory label ``exploratory, excluded from confirmatory
+inference'' (the paired-seed descriptive discipline follows
+\citealt{trades2025} and \citealt{dexclosedloop2026}, cited for that
+discipline and nothing stronger); (4) no gate inputs; (5) no
+retro-hypotheses.
+
+\subsection{Estimator menu and the two-estimator audit}
+\label{sec:cube-estimators}
+
+The through-$\Mk$ training arms place the exact combinatorial clearing layer
+inside the training path; since $\Mk$ is piecewise-constant and integer, the
+true objective has zero gradient almost everywhere in the parameters --- the
+LP/integer zero-gradient obstruction \citep{surrogateldfl2025} --- so the
+surrogate family is preregistered and frozen at D0, never tuned on outcomes.
+Estimator bias is precisely the confound the audit controls
+\citep{diffsimpolicy2026}.
+
+\paragraph{Primary estimator: straight-through, pinned scale.}
+Forward $=$ the exact integer clearing $\Mk$ (bit-identical to the engine's
+maker selection; FIFO fills by queue position, random-unit consumes the
+recorded draw stream unit by unit). Backward $=$ $\lambda \cdot
+\mathrm{grad\_output}$ on cleared/executed coordinates and exactly zero
+(bitwise) on never-cleared coordinates; $\lambda =
+\texttt{PINNED\_STRAIGHT\_THROUGH\_SCALE} = 1.0$ is a module-level frozen
+constant with no learned and no caller-configurable scale. This is the
+structural generalization of the predecessor's projected-training gauge
+Jacobian $I - P$ (identity on the constraint complement, zero on the gauge
+direction) \citep{paperd}: identity on cleared coordinates, zero on
+never-cleared coordinates --- exactly the fiber directions $\Utau$ of
+Section~\ref{sec:t2}. The unit scale inherits the predecessor's
+unit-Jacobian convention, frozen before any training.
+
+\paragraph{Audit estimator: perturb-and-MAP, pinned noise.}
+Forward $=$ exact $\Mk$ applied to perturbed priority scores, where the
+scores are kernel-fixed frozen functions of the raw flow (FIFO:
+$-$queue position, stable descending argsort; random-unit: depleting
+remaining quantity, per-draw argmax with unit depletion --- the
+perturb-argmax surrogate of probability-proportional-to-remaining draws
+\citep{perturbargmax2024}). Noise $= \mathcal{N}(0,1)$ drawn up-front from a
+seeded CPU \texttt{torch.Generator}; $\sigma = 1.0$
+(\texttt{PINNED\_PERTURB\_AND\_MAP\_SIGMA}; one lattice unit of the
+priority-score scale), frozen, not caller-configurable. Backward $=$
+unit-scale selection-masked identity. Same seed $\Rightarrow$ bitwise-identical
+allocations. On deterministic arms the straight-through estimator is exactly
+the $\sigma \to 0$ limit of perturb-and-MAP (asserted at $\sigma \in
+\{10^{-3}, 10^{-6}, 10^{-9}, 0\}$), so a disagreement on the audit cell
+measures the stochastic surrogate's smoothing at pinned $\sigma$, not a
+hyperparameter gap. Gumbel noise on a simplex is not the engine's draw law and
+is not used \citep{gumbelsoftmax2016}. All constants are immutable after D0;
+production seeds come from the D0-frozen RNG tree, never the module replay
+default.
+
+\paragraph{KT-A4 two-estimator audit (frozen protocol).}
+Attack controlled: ``through-$\Mk$ results are surrogate artifacts'' (a
+joint-highest kill probability in the preregistered register). The audit
+retrains, under perturb-and-MAP, the increment-coordinate / through-M-train /
+raw-infer cell on the D1 lab-asset block, $\Lone$ lineage, all 30 paired
+seeds 11000--11029 sharing data/init/train seeds and the training-time kernel
+stream with the straight-through run --- the only manipulated factor is the
+estimator. Everything else is inherited verbatim: request-level CRN,
+$\Kdraw = 16$ replayed draws, endpoints, SESOI, 50{,}000-draw paired
+bootstrap, checkpoint hash-lock (the audit's 30 checkpoints are inside the G4
+total of 450), one-shot analyzers, and record coverage ($+30$ trainings,
+$+7{,}680$ evaluation records). The audit fires the downgrade iff
+(1)~sign-pattern instability --- any preregistered attribution contrast
+($\Jest$, $\phitrain$, $\phiinfer$, or the $\Dte{t}{e}$-contrasts involving
+the retrained cell) flips sign across the Holm-corrected significance bands
+between the two estimator versions (within-band sign differences are reported
+but do not fire); or (2)~ordered-classification instability --- any affected
+cell or contrast changes class across the SESOI band. Both criteria are
+mechanical; the comparison is outside all Holm families (a preregistered
+robustness gate, not an estimator-superiority test). Downgrade if fired:
+estimator-conditional reporting, both estimators' values shown side by side,
+no pooled or single-estimator claim for any estimand touching the retrained
+coordinate; raw-train cells are unaffected (no estimator). \textbf{If both
+estimators fail the fixture competence gate at any point before or during the
+campaign, the through-$\Mk$ arms lose their forward-exactness premise, the
+cube collapses to surgery-only, and the campaign STOPs pending PI decision.}
+No repair, no re-tuning of $\lambda$ or $\sigma$, no estimator substitution
+after D0.
+
+\subsection{One-shot analyzer gates G1--G12}
+\label{sec:cube-gates}
+
+Each analyzer runs once, on complete records, after the gates of
+Table~\ref{tab:gates} pass, in order; any failure aborts with no partial
+metrics; no rerun without a new frozen, hash-recorded amendment (clause C13).
+The one-shot discipline additionally covers the frozen draw count $\Kdraw$,
+the kernel-stream derivation, the fixture-generation procedure, the axis
+generators, and the estimators --- any change after D0 is a frozen,
+hash-recorded amendment or nothing.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{p{1.6cm}p{3.1cm}p{10.0cm}}
+\toprule
+Gate & Name & Check (one line each; amended contract text authoritative) \\
+\midrule
+G1 & Record coverage & exact counts per the ratified enumeration
+(\S\ref{sec:cube-coverage}), per cell/axis/horizon/draw; no extras, no
+missing. \\
+G2 & Run-ID uniqueness \& seed pairing & each seed's 8 cells share
+data/init/minibatch/train\_kernel stream hashes and config hashes; and every
+preregistered instrument namespace is disjoint from every training namespace
+and from every other (S3 seeds, enrichment master, resampler namespace,
+K-preflight, bootstrap, training namespaces). \\
+G3 & Source/config binding & DGP fixture manifest hashes (including the
+lab-asset-v3 anchor; full 64-hex in Appendix~\ref{app:engine}),
+\fld{schema\_version} $=$ \fld{lab-asset-v3}, git SHA, \fld{config.yaml}
+hash, seed ranges per C1. \\
+G4 & Checkpoint binding & 450 checkpoint \texttt{sha256} vs.\ lock manifest
+(240 Stage-1 $+$ 180 Stage-2 $+$ 30 audit); surgery records reference parent
+hash. \\
+G5 & Parameter parity $+$ zero-step & surgery parameters byte-identical to
+parent; optimizer-step count $=$ training-final. \\
+G6 & Horizon-one clearing identity & through-$\Mk$ on the DGP's realized
+request stream reproduces the DGP tape byte-exactly (replay validator,
+record-by-record, including every \fld{state\_hash}). \\
+G7 & Conservation exactness & through-$\Mk$ inference cells exactly zero
+volume/cash conservation violation at every step (integer-exact); no
+clamping anywhere. \\
+G8 & Deterministic-kernel draw identity & $\kfifo$ cells' $\Kdraw{=}16$
+draw-records byte-identical; raw-inference kswap-stratum duplicates
+byte-identical to their ID-stratum evaluations. \\
+G9 & Determinism replay & frozen 5\% seeded sample of records re-executed
+byte-identically; selection rule $=$ deterministic stride (lexicographic sort
+of record keys within each record class, every 20th record from index 0,
+exactly 5\%, no RNG). \\
+G10 & Field validity & finite metrics; pre/post best bid/ask present;
+\fld{allocation\_rule} matches the cell/axis spec per the pinned kernel-swap
+stratum definition (including \fld{allocation\_rule} $=$ \fld{fifo} on
+raw-inference duplicates); $n\_draws = 16$. \\
+G11 & Namespace hygiene & no exploratory/reflexive namespace records in any
+confirmatory input. \\
+G12 & Macro binding & analyzer emits macros exactly once from the analysis
+JSON; hashes published. \\
+\bottomrule
+\end{tabular}
+\caption{One-shot analyzer gates G1--G12 (prereg v2 \S3.3; G2 and G4 as
+amended at v2).}
+\label{tab:gates}
+\end{table}
+
+\subsection{Instruments (built, hashed, frozen)}
+\label{sec:cube-instruments}
+
+Three instruments exist pre-D0, each hashed and each carrying one honest
+statement of what it controls; engineering grounding and file:line anchors
+are in Appendix~\ref{app:engine}.
+
+\paragraph{Dual-hash fiber resampler.}
+Engine-driven regeneration of without-replacement interleavings holding the
+aggregate tape fixed; acceptance $=$ identical
+\fld{aggregate\_state\_hash} sequence \emph{and} differing
+\fld{state\_hash} chain, with native RNG-state accounting so that
+state-chain equality coincides with allocation-trajectory equality. The
+criterion-(ii) semantics are ratified as native-RNG-state-preservation (a
+preregistration amendment-chain ruling; internal ruling id anonymized for
+review); the literal raw-hash reading is rejected because it would
+count RNG-state-only differences as variation, making $\kfifo$ and
+single-order pools trivially accepted and destroying the KT-A3 control. The
+frozen module statement carries \texttt{sha256} \resamplerhash{}
+(hash-pinned in the test); seed namespace 20260973. \emph{What it controls:}
+it makes ``within-fiber regeneration at fixed aggregate tape'' a
+machine-checkable relation (the KT-A3 resample arm and the KT-M1 gauge-twin)
+rather than a claim; deterministic kernels and single-order pools admit no
+accepted resample, which is precisely the negative control.
+
+\paragraph{Fixture enrichment (lab-asset-v3.1).}
+Ten engine-generated fixtures: five arm-consistent kernel-swap pairs on the
+S3 scaffold $\qP = (5,4,3,2)$ with $\Vstar \in \{1,2,4,6\}$ plus an
+exhaustion episode, and clock-straddling never-drawn sets at every interior
+rung; master seed 20260972; byte-exact regeneration; the frozen
+\texttt{a2\_exit\_20260905} bundle is never mutated. Enriched fixtures pass
+13 of the 27 frozen conformance tests --- the scenario-applicable subset; the
+other 14 are own-scenario and remain green in the frozen suite.
+\emph{What it controls:} it supplies the multi-order rationed touched levels
+and clock-straddling never-drawn orders without which O-C, O-D, and the S1a
+random-unit gates are unmeasurable --- the frozen 21/22-event bundle's only
+touched level is single-maker, instantiating exactly the collapse stratum.
+
+\paragraph{K-variance preflight.}
+32 seeds $\times$ 6 episodes $\times$ 2 arms $\times$ 16 nested draw replays
+(192 episodes, 6{,}144 engine evaluations, CPU) on an M0-policy-class
+calibration generator in the reserved namespace 31000--31099 (masters
+31000--31031); variance identity $B(\Kdraw) = V_{\mathrm{between}} +
+W/\Kdraw$ with seeded bootstrap intervals; results \texttt{sha256}
+\kpreflighthash{}. The preregistered conservative rule returned
+\texttt{none\_in\_set} $\Rightarrow \Kdraw = 16$ with the
+\texttt{alloc\_proprata\_dev\_mean} insufficiency flag
+(\S\ref{sec:cube-rng}). \emph{What it controls:} the DGP-side draw-noise
+scale consumed by the draw-noise guard, and the justification for $\Kdraw$;
+its honest limits are carried --- it bounds only the DGP-side draw-replay
+component (training noise is invisible to it), its between-seed variance is
+calibration-generator design variance, and the E-2 corpus-generator preflight
+re-run (clause C2(e) as rewritten at v2) is pre-D0, caveat-and-reporting
+only: $\Kdraw = 16$ is immutable regardless of that preflight's outcome, and
+a material endpoint-shaped insufficiency it reveals is a named STOP-class PI
+decision item at D0, never a change to $\Kdraw$.
+
+\subsection{Record coverage (design targets)}
+\label{sec:cube-coverage}
+
+The gate-G1 targets are frozen design constants: per seed-block unit the
+mandatory-axes records are 8 cells $\times$ 4 axes $\times$ 4 horizons
+$\times$ 16 draws $= 2{,}048$. $\BOne$ and $\BThree$ contribute
+$30 \times 2{,}048 = 61{,}440$ each; $\BTwo$, $\BFour$-variantA and
+$\BFour$-variantB contribute $15 \times 2{,}048 = 30{,}720$ each
+(mandatory-axes total 215{,}040). Truncation deployment passes at the ID
+axis contribute 30{,}720 ($\BOne$), 15{,}360 ($\BThree$), 15{,}360 ($\BTwo$),
+and 7{,}680 per $\BFour$ variant (total 76{,}800; $\Lone$ blocks carry both
+conditions, $\Ltwo$ blocks \texttt{trunc\_lag} only). The audit cell
+contributes 1 cell $\times$ 30 seeds $\times$ 4 axes $\times$ 4 horizons
+$\times$ 16 $=$ 7{,}680 evaluation records and $+30$ trainings. Campaign
+totals: \textbf{299{,}520} confirmatory evaluation records, \textbf{450}
+trainings with \texttt{sha256}-locked checkpoints (240 Stage-1 $+$ 180
+Stage-2 $+$ 30 audit), and \textbf{420} horizon-one clearing-identity probes;
+the reflexive namespace is excluded by construction and uncounted.
+
+\subsection{Status of this section}
+
+Outcomes are pending. The D0 outcome-blind freeze is pinned for 2026-09-19;
+no confirmatory endpoint has been measured, no analyzer has run, no GPU has
+been allocated, and no market data has been accessed at authoring time. Every
+empirical statement in this section remains \RESULTSPENDING.
+\endgroup
+\endinput

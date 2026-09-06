@@ -1,0 +1,304 @@
+% ============================================================================
+% SECTION 1 — INTRODUCTION — BRIEF (writer contract)
+% Sources: prereg v2 §1.1 (scope), §2.7 (frozen status table), §8.1
+%   (nonclaims); D-2 map §1.6/§2.6 (hostile scenarios — answer them here);
+%   experiment plan §1 for framing context.
+% Must contain, in order: (1) the recording problem — simulators trained
+%   through an exact clearing mechanism M consume the tape M emits, and the
+%   scientific question is what that recorded sigma-algebra identifies;
+%   (2) contribution paragraphs mapping 1:1 to sections 4–8: T1
+%   aggregate-sufficiency obstruction (proven_with_conditions), T2 consumer
+%   floor + kernel-blind vacuity (proven_with_conditions; G2-2 proven given
+%   Theorem 1), T3 exposed sets + H5 manipulation validity (proven /
+%   proven_with_conditions per statement), V4 not-a-gauge remark (Lemma A
+%   proven with hypothesized conditions; Lemma B proven), preregistered cube
+%   (design only, outcomes pending); (3) the honest boundary sentence placed
+%   with the FIRST T1 mention: the obstruction boundary is "no active
+%   identity channel," NOT "M0 or below" (M0 fails off the slack stratum);
+%   (4) a short "what this paper does not claim" paragraph deferring to
+%   §9. Cite from refs.bib only (Cont 2001 / T\'oth 2011 / Maskawa 2025 only
+%   if stylized-facts motivation is actually invoked; GradABM for
+%   differentiable-ABM lineage; Paper D as internal parent, anonymized).
+% FORBIDDEN: any empirical outcome sentence; "first differentiable/Langevin
+%   market simulator"; "first train-x-infer crossing"; superiority framing;
+%   universal/cross-market claims; stripping any condition from any status.
+% Length target: 1.5–2 pages incl. a contributions itemize.
+% ----------------------------------------------------------------------------
+% WRITTEN 2026-09-07 by the intro/related-work writer agent. Status labels
+% copied verbatim from prereg v2 §2.7. Maskawa 2025 and MACE 2022 are
+% deliberately NOT cited here (no fluctuation-theorem or architecture
+% content in this section; setup.tex owns the L1-heritage cite if used).
+%
+% TITLE (writer's recommendation, 2026-09-07): KEEP the skeleton's proposal
+%   "The Aggregate Tape Is Not Sufficient: Matching-Fiber Non-Identifiability
+%   Theorems for Market Clearing, with a Preregistered Attribution Design" —
+%   it states the lead theorem, and the conditional boundary travels with the
+%   first mention in the abstract and here, so it does not overclaim. Fallback
+%   if the PI prefers question-form hedging (predecessor house style): "When
+%   Is the Aggregate Tape Sufficient? Matching-Fiber Non-Identifiability
+%   Theorems for Market Clearing, with a Preregistered Attribution Design".
+%   Do NOT adopt "Aggregate Tapes Cannot Identify Allocation" (stronger than
+%   the conditional theorem).
+% ============================================================================
+\section{Introduction}
+\label{sec:intro}
+
+\paragraph{The recording problem.}
+Learned market simulators are trained on, and deployed through, the records
+that clearing engines emit: a corpus of execution records is the supervision,
+and at deployment the simulator's proposed flow is cleared by an exact
+mechanism whose output is again a record stream
+\citep{nagy2023,mars2024}. The engine performs two logically distinct jobs.
+It fixes \emph{aggregate} outcomes --- total executed volume and total
+executed cash, exactly conserved on the integer lattice --- and it
+\emph{allocates}: when incoming demand exhausts the displayed depth, the
+rationed level holds a pool $\Pmarg$ of $\Rstar$ competing units of which
+only $\Vstar < \Rstar$ are filled, and the priority kernel decides
+\emph{which}. A tape is a recorded-field contract, not a transcript of the
+market. The grammar in force here ($\Fexec$: execution payloads, allocation
+draws, and pre/post best-bid/offer prices) records executions --- but not the
+submitted flow, not the correspondence between submitted orders and fills,
+and not the state of orders the kernel never touches. The mechanism's
+\emph{allocation identity} is exactly what such tapes do not carry:
+physically different submitted flows --- different never-executed quantities,
+different owners of resting orders, different arrival clocks --- can induce
+one and the same recorded tape. Practice scores market simulators against
+aggregate stylized facts \citep{cont2001}, and the rationed level is
+precisely where remaining liquidity governs the price response
+\citep{toth2011}; but the identification question is upstream of all such
+scoring. We ask it in the sharpest engine-native form: \emph{what does the
+recorded $\sigma$-algebra identify about the raw flow and about the engine's
+own forward law --- and when does the blindness bite, provably?}
+
+\paragraph{Engine, fibers, grammar.}
+Every result is stated for a frozen, read-only laboratory engine
+(lab-asset-v3; Section~\ref{sec:setup}) that clears uniform-price episodes
+with exact integer arithmetic under one of exactly two priority kernels,
+$\kfifo$ and $\kru$ ($\kproprata$ is not an engine kernel and never
+executes). For a kernel $k$ and recorded-field grammar $g$, the
+\emph{mechanism fiber} $\Fibkg$ is the class of raw flows that the
+kernel-$k$ tape at grammar $g$ does not distinguish; the realized version
+$\Fibtau$ carries an \emph{ambiguous set} $\Utau$ of raw-flow increments
+compatible with the observed tape. The fiber is a property of the recording
+contract, not of the market: under a full grammar ($\Ffull$) the fiber
+collapses to a point and every question below is vacuous. The corpus grammar
+is therefore a load-bearing scientific choice, and $\Fexec$ is frozen as
+that contract before any training occurs.
+
+\paragraph{Contribution I (Section~\ref{sec:t1}): the aggregate-sufficiency
+obstruction, T1.}
+Our first theorem package shows that the blindness bites at the level of the
+engine's own forward law exactly when an identity-dependent channel is
+active. For identity-responsive flows, the aggregate tape is \emph{not
+sufficient} for the engine's forward law: aggregate-indistinguishable book
+compositions induce one-step aggregate-transition laws separated by
+$\TV \ge 1 - \max_x p_x^{\MVHG}$, with explicit constants ($5/6$ on the
+balanced two-unit pool at $\Vstar = 2$), uniformly over the stated
+responsive-policy class. Status: \texttt{proven\_with\_conditions}. Two
+honesty markers travel with this statement from its first mention. First,
+the obstruction is a \emph{kernel $\times$ granularity $\times$
+policy-feedback triple interaction}, and the boundary of the sufficiency
+reduction is \emph{``no identity-dependent channel is active''}, not ``M0 or
+below'': identity-blind flows are lumpable on the resource-slack /
+no-self-crossing stratum (the reduction goes through exactly there, as we
+concede), but off that stratum even identity-blind flows fail with
+$\TV = 1$ --- when the owner of the best ask differs across fiber members,
+an aggregate-measurable order is rejected by self-trade prevention in one
+member and executes in the other, and per-actor cash and inventory reserves
+misbehave identically. (``Lumpability'' is vocabulary only; both statements
+are proved directly from the engine.) Conversely, the obstruction is exactly
+coextensive with active identity feedback: all-respond
+buy-back-own-fills policies are aggregate-silent at pooled windows, so the
+stronger ``all identity-responsive flows'' claim is false and is never made.
+At the training-signal level, any aggregate-tape-measurable predictor incurs
+$\sup \TV \ge \tfrac{1}{2}(1 - \max_x p_x) = 5/12$. Two concessions are
+carried inside the package: the static toric fiber of uniform interleavings
+belongs to the classical sufficiency literature --- our statement is the
+dynamic (transition-law) complement \citep{diaconissturmfels1998,
+fibers2014} --- and positive-dimensional preimages under nonlinear
+parameterization are owned by DPIOT for learned simulators, with the
+perturb-argmax family analog owned by Perturb-Argmax/Softmax
+\citep{dpiot2022,perturbargmax2024}: T1 claims no chart-dependent
+fiber-dimension novelty and is stated over the admissible flow-by-draw space,
+with the parameter chart demoted to a convenience.
+
+\paragraph{Contribution II (Section~\ref{sec:t2}): the bounded
+consumer-variance floor and kernel-blind vacuity, T2.}
+Non-identification alone would be cheap; we quantify it relative to named
+downstream consumers. Theorem~1 (\texttt{proven\_with\_conditions} under the
+stated assumptions A1--A5, with the reference measure declared): fix a tape
+$\tape$ with nonempty $\Utau$ and a linear consumer $\Ccons(z) = v^{\top} z$;
+the conditional variance of $\Ccons$ on the fiber is exactly
+$(R^{2}/12)\lVert v_{U}\rVert^{2}$ on the box fiber, with the split-case form
+$(R^{2}/3)\sum_{i \in \mathrm{neverdrawn}(\ell)}(v_i - \bar{v}_\ell)^{2}$
+per touched level, and every $\tape$-measurable estimator
+$\hat{\Ccons}$ --- in particular every consumer computed by a simulator
+trained through the mechanism --- obeys
+$\mathbb{E}[(\Ccons - \hat{\Ccons})^{2} \mid \tape] \ge
+\mathrm{Var}(\Ccons \mid \tape)$, with equality iff
+$\hat{\Ccons} = \mathbb{E}[\Ccons \mid \tape]$. The floor is the exact
+minimax value over tape-information-constrained estimators, is
+tape-computable, grows as $\floorRMSE$, and has \emph{exact zeros} that make
+it falsifiable rather than a one-sided hedge (the price-notional consumer on
+random-unit splits has floor identically zero; the latency consumer's floor
+is positive exactly when a touched level's never-drawn orders straddle the
+window). The lead consequence is the separation package: on the same
+(prestate, request stream) the FIFO floor is positive while the random-unit
+floor is zero, so any \emph{uniformly valid kernel-blind} floor bound is
+forced identically zero while the ratio of kernel-specific floors is
+infinite --- \texttt{proven} given Theorem~1, and robust to the choice of
+reference convention: kernel-blind certification of tape-trained simulators
+is vacuous, not merely loose. A finite-gap companion
+($\rho = 4\,m_{\mathrm{out}}/m \in [0,4)$, same-data instance exactly $3$;
+\texttt{proven\_with\_conditions}) is stated together with its
+width-matching inversion: under a width-matched reference the headline gap
+inverts while the kernel-dependence and the exact zeros survive. If read as
+engineering of a classical bound, T2 is offered as risk characterization of
+tape-trained market simulators with mechanism-endogenous constants --- never
+as a new estimation theorem.
+
+\paragraph{Contribution III (Section~\ref{sec:t3h5}): deployment exposure
+and manipulation validity, T3 + H5.}
+We do not stop at impossibility: the fiber is characterized by what
+\emph{deployment} exposes. For a preregistered deployment grammar $\Gdep$
+--- record readout $\Dread$, raw-flow readout $\Draw$, kernel swaps by
+replaying the recorded request stream from the same prestate with the
+allocation rule exchanged ($\Dswapru$, $\Dswapfifo$), arrival-clock
+truncation $\Dtrunc$, horizon extension $\Dh$, and finite compositions ---
+Theorems T-1/T-2 give the exact exposed-set table with sign and magnitude
+(\texttt{proven}; T-2c \texttt{proven\_with\_conditions}): record readout
+exposes nothing for every consumer; raw-flow readout exposes all of
+$\Utau$; the swap to random-unit exposes $\Utau \setminus \{0\}$ for
+allocation consumers at first order $O(\delta/S)$; the swap to FIFO on FIFO
+cells is \emph{exactly blind}, $\Mfifo(\bar{z} + t\,u) = \Mfifo(\bar{z})$
+for all $t \ge 0$ on the integer lattice --- a preregistered point null;
+truncation localizes the floor to the window; and compositions create no
+exposure (functoriality), destroy it asymmetrically by order, and can
+postpone it across horizons. H5 then makes the kernel-swap arm a
+\emph{law-changing scientific manipulation} rather than re-plumbing, with
+the concession stated in the same sentence: at aggregate granularity the
+swap changes nothing (Layer~0, $\TV = 0$ --- both corpus laws are the same
+deterministic aggregate tape); on the full grammar it is maximally visible
+for a trivial reason (Layer~1, $\TV = 1$, draw-key presence; no lead claim
+rests on it); and on the key-equalized attribution projection the two arms
+are separated by $\TV = 1 - \prod_i \binom{q_i}{c_i^{F}} /
+\binom{\Rstar}{\Vstar}$ with per-fixture constants ($0.6429$, $0.8901$,
+$0.9950$, $0.9987$ at $\Vstar = 1, 2, 4, 6$ on the frozen family pool),
+\texttt{proven\_with\_conditions}: the engine draw-law realization
+(A3$'$) conditions the constants until the post-freeze machine check. No
+uniform-in-pool constant exists and none is claimed --- adversarial pools
+drive the separation to $1/\Rstar$ --- and the collapse strata (single-order
+pools, exhaustion) are preregistered negative controls. Finally, T3 fixes a
+three-way distinction with separating observables: mechanism-induced fiber
+divergence (ours), representational failure \citep{dolob2026}, and
+design-induced operator set-identification
+\citep{counterfactualoperator2025}; each failure mode has exactly one
+rescue lever, and the three levers are the cube's axes.
+
+\paragraph{Contribution IV (Section~\ref{sec:v4}): the gauge-conflation
+remark, V4.}
+Because ``fiber'' invites a gauge reading, we prove the reading wrong. The
+mechanism fiber is not a gauge symmetry, and quotienting the hypothesis
+space is not a repair. By Lemma~A (\texttt{proven} with its hypothesized
+conditions --- corpus compatibility and fiber nontriviality), any
+fiber-collapsing quotient breaks a preregistered consumer: the identity
+deployment separates unrecorded magnitude directions through the risk
+consumer, the kernel swap separates never-drawn split directions, and
+truncation separates clock directions. By Lemma~B (\texttt{proven}), every
+through-mechanism predictor is tape-measurable regardless of representation,
+so its best-case consumer error equals the Theorem~1 floor exactly ---
+quotienting deletes physically market-relevant states without moving the
+floor. What does survive as a genuine gauge is conceded precisely: ownership
+relabeling of never-executed orders. The correct responses to fiber
+degeneracy are exposure characterization and information-side repair, never
+quotienting; within-fiber optimizer drift (T4) is a separate
+\texttt{conjecture}-only question and carries no confirmatory weight, ever.
+
+\paragraph{Contribution V (Section~\ref{sec:cube}): a preregistered
+attribution cube --- design only, outcomes pending.}
+The theorems above are falsifiable only through an experiment that
+manipulates what the recording contract hides, so the experimental section
+is a preregistered eight-cell attribution cube: trained arms (output
+coordinate $\in$ \{absolute next state, increment\}) $\times$ (training
+enforcement $\in$ \{raw, through-M\}), each evaluated at both inference
+enforcements, with estimand
+$\Jest = \Dte{0}{0} - \Dte{1}{0} - \Dte{0}{1} + \Dte{1}{1}$ and its
+training/inference marginals $\phitrain$, $\phiinfer$ --- path-dependence
+\emph{attribution}, not superiority; no confirmatory test compares through-M
+with raw training for quality. The cube is crossed with four stress axes
+(identity, population $2N$, tick coarsening, kernel swap at inference with
+the truth reference unchanged) at horizons $\{1, 4, 16, 31\}$, on two
+simulator lineages against the frozen engine, with $\Kdraw = 16$
+inference-kernel draws per seed per cell and 30 seeds per block (299{,}520
+planned confirmatory evaluation records; 450 trainings; 420 horizon-one
+probes; all constants frozen before outcomes are seen). Zero-training
+surgery cells on sha256-locked checkpoints --- byte-identical parameters,
+zero optimizer steps --- are the empirical exhibit for V4. The design's
+external genre parent is the four-arm constraint-enforcement template of
+\citet{duruisseaux2024}, which owns the train$\times$infer factorial
+including the locked-checkpoint surgery cell; our delta is the
+competing-mechanism exchange at fixed truth reference and the
+SESOI-graded attribution estimand. In the market domain, the (raw-train,
+through-M-infer) cell is the production default
+\citep{nagy2023,mars2024,marketgpt2024,tablabm2025,tradefm2026,m3_2026} and
+no novelty is claimed for any single cell; the cube and its statistical
+contract descend from a predecessor manuscript \citep{paperd}, whose clauses
+are inherited verbatim, not re-derived. \RESULTSPENDING
+
+\paragraph{What this paper does not claim.}
+No first train$\times$infer-crossing claim (the enforcement template belongs
+to the PDE genre parent, \citealp{duruisseaux2024}); no bare
+positive-dimensional-fiber novelty (DPIOT owns it, \citealp{dpiot2022}); no
+claim that constrained training is better (the estimand is attribution,
+never superiority); no T4 theorem (within-fiber drift is conjecture-only and
+permanently exploratory); no quotient or gauge repair; no real-market
+mechanism-identification or performance claims (everything is stated for the
+frozen laboratory engine and its grammar); and no cross-market or
+universal-scaling claims. Section~\ref{sec:scope} carries the full nonclaim
+register and the limitations.
+
+\paragraph{The answer in one sentence.}
+The blindness bites at the forward-law level exactly when an
+identity-dependent channel is active (T1); it is bounded, consumer-relative,
+and tape-computable, with exact zeros (T2); it is detectable only through
+deployments that change the recording contract, and the kernel swap that
+tests it is itself a law-changing manipulation with preregistered constants
+(T3 + H5); and the experiment that could falsify this picture is frozen,
+hash-pinned, and has not yet run.
+
+\medskip
+\noindent\textbf{Contributions.}
+\begin{itemize}
+\item \textbf{T1 --- aggregate-sufficiency obstruction}
+(\texttt{proven\_with\_conditions}; Section~\ref{sec:t1}): the aggregate
+tape is not sufficient for the engine's forward law for identity-responsive
+flows, $\TV \ge 1 - \max_x p_x^{\MVHG}$ uniform over the responsive-policy
+class, with the sharp boundary ``no identity-dependent channel is active''
+(not ``M0 or below''), the aggregate-silent sharpness counterexample, and
+the kernel $\times$ granularity $\times$ policy-feedback triple-interaction
+scoping.
+\item \textbf{T2 --- consumer-variance floor and kernel-blind vacuity}
+(Theorem~1 \texttt{proven\_with\_conditions}; G2-2 \texttt{proven} given
+Theorem~1; Section~\ref{sec:t2}): exact, tight, tape-computable floors with
+preregistered exact zeros; every uniformly valid kernel-blind floor bound is
+forced identically zero.
+\item \textbf{T3 + H5 --- deployment exposed sets and manipulation
+validity} (\texttt{proven} / \texttt{proven\_with\_conditions} per
+statement; Section~\ref{sec:t3h5}): the exact exposed-set table for the
+preregistered deployment grammar, including the exactly-blind kernel swap
+(point null), and the stage-1 total-variation separation of the kernel swap
+with per-fixture constants and no uniform-in-pool constant.
+\item \textbf{V4 --- not a gauge} (Lemma~A \texttt{proven} with hypothesized
+conditions; Lemma~B \texttt{proven}; Section~\ref{sec:v4}): quotienting the
+hypothesis space is not a repair; the ownership-relabeling gauge core is
+conceded.
+\item \textbf{A preregistered eight-cell attribution cube} (design only;
+outcomes pending the D0 freeze of 2026-09-19 and the post-D0 campaign;
+Section~\ref{sec:cube}): eight cells $\times$ four axes $\times$ two
+lineages under the frozen statistical contract, zero-training surgery cells,
+and a two-estimator audit --- the falsification instrument for T2/T3.
+\item \textbf{Frozen instruments} (Sections~\ref{sec:setup}
+and~\ref{sec:cube}; appendices): the dual-hash fiber resampler, the
+lab-asset-v3.1 fixture enrichment, and the pinned through-M estimator menu,
+all built and hash-pinned before the D0 freeze.
+\end{itemize}

@@ -1,0 +1,242 @@
+% ============================================================================
+% APPENDIX B — ENGINE/SCHEMA GROUNDING — BRIEF (writer contract)
+% Sources: prereg v2 §1.1 (truth asset), §7.1–§7.4 (instruments and hash
+%   inventory), §4.1 (lineages/DGPs); A-2 exit artifacts (READ-ONLY — cited,
+%   never modified); enrichment artifacts; scripts/lab_asset/*;
+%   ecomd/mechanisms/through_m.py. Anchors verified against the working tree
+%   at authoring time (integration branch; name anonymized for review).
+% (full brief retained verbatim in the repo history of this stub; content
+%  below implements it)
+% ============================================================================
+\section{Engine and schema grounding}
+\label{app:engine}
+
+\begingroup\sloppy
+
+This appendix pins every formal object of the main text to its
+implementation artifact, so that a reader with repository access can check
+each claim against named files and line ranges. All cited artifacts are
+frozen: the A-2 exit bundle is read-only and never mutated; the instruments
+are hash-pinned. Instrument self-check counts quoted here (test counts,
+episode counts, preflight statistics) are engineering facts of the D-1 build
+records, each traceable to prereg~v2 \S7; no campaign result appears
+anywhere in this appendix. Naming policy (double-blind): internal project
+codenames, the integration branch name, and internal ruling identifiers are
+anonymized in the rendered text; artifact digests, seed namespaces, frozen
+constants, and the relative paths of the frozen lab-asset bundles are kept
+verbatim because they are the load-bearing engineering anchors.
+
+\subsection{The frozen engine contract (lab-asset-v3)}
+\label{app:engine-contract}
+
+\paragraph{Schema.}
+\texttt{scripts/lab\_asset/schema.py} defines the data model.
+\fld{schema\_version} is the literal \fld{lab-asset-v3}
+(\texttt{schema.py:225}). The priority-kernel set is exactly
+$\{\kfifo, \kru\}$ (\texttt{schema.py:22-24}); $\kproprata$ is not an
+engine kernel and never executes in any cell --- it exists only as exact
+arithmetic in the S3 Fisher-information analysis
+(\S\ref{sec:cube-endpoints}). Fourteen event types are enumerated at
+\texttt{schema.py:77-91}; the three clocks (event, environment, session) at
+\texttt{schema.py:94-101}. The per-execution payload carries
+\fld{maker\_remaining} (\texttt{schema.py:172-187}); the per-tape record
+carries \fld{pre/post\_state\_hash} and
+\fld{pre/post\_aggregate\_state\_hash} (\texttt{schema.py:190-200}).
+
+\paragraph{Hash semantics (the dual-hash contract).}
+\texttt{stable\_hash} is defined at \texttt{schema.py:228-232};
+\fld{prestate\_hash} at \texttt{schema.py:235-236};
+\fld{state\_hash} --- the full identity-layer hash including FIFO queue
+order and semantic RNG state --- at \texttt{schema.py:239-296}, with the
+\fld{rng\_state} parameter at \texttt{schema.py:259}; and
+\fld{aggregate\_state\_hash} --- anonymous and request-boundary --- at
+\texttt{schema.py:299-325}. The two hash families are the substrate of the
+fiber definition (Section~\ref{sec:setup}) and of the dual-hash resampler
+(\S\ref{app:engine-resampler}).
+
+\paragraph{Clearing laws.}
+\texttt{scripts/lab\_asset/matching.py} (945 lines) implements the reference
+engine. The engine RNG is seeded once per session
+(\texttt{matching.py:44}, \fld{self.rng = random.Random(prestate.seed)}) and
+its native state is captured into every record
+(\texttt{matching.py:122}). Maker selection is the kernel law
+(\texttt{matching.py:585-604}): FIFO returns the head of the price-queue
+(\texttt{matching.py:589-590}); $\kru$ enumerates \fld{eligible\_units},
+draws \fld{selected\_unit} with \fld{self.rng.randrange}
+(\texttt{matching.py:592-593}), and attaches the per-draw payload
+\fld{allocation\_draw} $=$ \{\fld{eligible\_units}, \fld{maker\_order\_id},
+\fld{price}, \fld{selected\_unit}\} (\texttt{matching.py:598-603},
+payload attach at \texttt{matching.py:344-345}). FIFO emits one record per
+maker per incoming order and carries no draw payload. The crossing loop
+(\texttt{matching.py:285-296}) enforces unit integrality: a FIFO fill is
+$\min(\text{remaining}, \text{maker\_qty})$, a random-unit fill is exactly
+one unit. \fld{maker\_remaining} is updated per execution
+(\texttt{matching.py:606-625}); settlement is integer-exact cash/inventory
+conservation (\texttt{matching.py:627-655}); records are sealed with
+pre/post best bid/ask quote fields that are \emph{prices only}
+(\texttt{matching.py:167-176}). Volume and cash conservation, unit
+integrality, and the tick lattice are engine invariants, checked by the
+conformance suite.
+
+\paragraph{The frozen bundle.}
+The A-2 exit bundle \texttt{experiments/lab\_asset\_a2/a2\_exit\_20260905/}
+(seven files; read-only) is the canonical truth anchor: two serialized
+fixtures (21 records FIFO-arm, 22 records random-unit-arm) plus
+\fld{schema\_spec.json}, whose execution payload fields are exactly
+\{\fld{execution}, \fld{aggressor\_role}, \fld{maker\_role},
+\fld{allocation\_draw}$^?$, \fld{pre\_best\_bid}, \fld{pre\_best\_ask},
+\fld{post\_best\_bid}, \fld{post\_best\_ask}\}. The bundle manifest is
+\bundlemanifest{} (full 64-hex, pinned once in prereg~v2 \S1.1). A known
+companion typo, the elided form \texttt{fea8b136...9581c}, appears in five
+lines across four companion documents and is inventoried in prereg Annex~C-4
+without editing: string-matching auditors are directed there, and the
+canonical anchor is the full 64-hex value above.
+
+\paragraph{Conformance and replay.}
+27 frozen conformance tests cover the schema and engine invariants
+(including the kernel laws, hash semantics, and conservation identities).
+The deterministic replay validator \texttt{scripts/lab\_asset/replay.py}
+regenerates a tape from its prestate and request sequence
+(\texttt{replay.py:64-131}) and compares record-by-record --- sequence,
+event type, all four hashes, and byte-level record JSON
+(\texttt{replay.py:157-169}). Bundle verification
+(\texttt{scripts/lab\_asset/verify\_fixtures.py:42}) re-validates manifest
+hashes, deterministic replay, and byte-exact regeneration from disk. The
+wire adapter (\texttt{scripts/lab\_asset/adapter.py:42} request conversion;
+\texttt{adapter.py:141} client view) is a platform-fork compatibility
+surface and plays no role in lineage training.
+
+\subsection{The enrichment (lab-asset-v3.1)}
+\label{app:engine-enrichment}
+
+\texttt{experiments/lab\_asset\_a2/enrichment\_20260906/} holds ten
+engine-generated fixtures with a per-file-\texttt{sha256} manifest, generated
+under master seed 20260972 and regenerable byte-exactly; the parent bundle
+(\fld{parent\_bundle\_manifest\_sha256} $=$ \bundlemanifest{}) is never
+mutated. Five fixtures are arm-consistent kernel-swap pairs on the S3
+scaffold $\qP = (5,4,3,2)$, $\Rstar = 14$, realizing the $\Vstar$-ladder
+$\Vstar \in \{1,2,4,6\}$ via pool sizes $Q \in \{6,7,9,11\}$ plus an
+exhaustion episode ($Q = 19$); the remainder are clock-straddling
+never-drawn sets at every interior rung under the frozen
+\fld{latency\_window\_rule} = \texttt{touched\_level\_median\_straddle}.
+The \fld{arrival\_clocks} extension is pre-session prestate metadata,
+deliberately excluded from \fld{prestate\_hash} by design (recorded in
+\fld{schema\_extension.json}): clocks live in the raw flow, which is exactly
+the $\Fexec$ point of Section~\ref{sec:setup} --- the recorded grammar, not
+the session prestate, carries what deployment maps may see.
+
+Conformance wording (frozen): enriched fixtures pass \textbf{13 of the 27}
+frozen conformance tests --- the scenario-applicable subset; the other 14
+are own-scenario and remain green in the frozen suite. Honest caveats,
+carried verbatim in substance: the $\Vstar$-ladder never-drawn realizations
+are seed-frozen facts, not laws; $\kru$ tapes realize one draw sequence per
+episode, so law-level work goes through the resampler or exact enumeration;
+and no rejection, latency-choice, or crossing-replace events exist by
+design.
+
+\subsection{The dual-hash fiber resampler}
+\label{app:engine-resampler}
+
+\texttt{scripts/lab\_asset/fiber\_resampler.py} (881 lines) regenerates
+without-replacement interleavings through the engine itself while holding
+the aggregate tape fixed. Acceptance (\texttt{fiber\_resampler.py:8-14}):
+identical \fld{aggregate\_state\_hash} sequence \emph{and} differing
+\fld{state\_hash} chain, with native RNG-state accounting
+(\texttt{NativeStatePreservingDrawSource},
+\texttt{fiber\_resampler.py:218}) so that state-chain equality coincides
+with allocation-trajectory equality. Criterion-(ii) semantics are ratified
+as native-RNG-state-preservation (ratified by a preregistration
+amendment-chain ruling; internal ruling id anonymized for review): the
+literal raw-hash reading is rejected because it would
+count RNG-state-only differences as variation, making $\kfifo$ and
+single-order pools trivially accepted and destroying the KT-A3 control ---
+which rests on deterministic kernels and single-order pools admitting
+\emph{no} accepted resample. The frozen prereg statement in the module
+(\texttt{fiber\_resampler.py:141-152}) carries \texttt{sha256}
+\resamplerhash{} (hash-pinned in the test); seed namespace 20260973
+(\texttt{fiber\_resampler.py:139}).
+
+\subsection{The K-variance preflight}
+\label{app:engine-kpreflight}
+
+The preflight ran 32 seeds $\times$ 6 episodes $\times$ 2 arms $\times$ 16
+nested draw replays --- 192 episodes, 6{,}144 engine evaluations, CPU ---
+on an M0-policy-class calibration generator in the reserved namespace
+31000--31099 (masters 31000--31031), under the variance identity
+$B(\Kdraw) = V_{\mathrm{between}} + W/\Kdraw$ with seeded bootstrap
+intervals. Results are frozen at \texttt{sha256} \kpreflighthash{}. The
+preregistered conservative rule (adopt the smallest $\Kdraw$ for which every
+draw-dependent statistic has a bootstrap 95\% upper bound of the
+between-ratio $\le 0.10$) returned \texttt{none\_in\_set}: the statistic
+\fld{alloc\_proprata\_dev\_mean} is draw-dominated at every authorized
+$\Kdraw$ (between-ratio $0.1958$, CI $[0.1182, 0.4703]$ at $\Kdraw = 16$).
+Outcome: $\Kdraw = 16$ adopted with the explicit insufficiency flag;
+$\Kdraw$ immutable after D0. The E-2 corpus-generator preflight re-run is
+pre-D0, caveat-and-reporting only (prereg clause C2(e) as rewritten at v2).
+
+\subsection{The RNG tree and pinned seed namespaces}
+\label{app:engine-seeds}
+
+Every random draw in the campaign descends from a frozen derivation tree:
+seed $s$ is the root, and the named substreams are $\spawn{s}{data}$,
+$\spawn{s}{init}$, $\spawn{s}{minibatch}$, $\spawn{s}{train\_kernel}$, and
+$\spawn{s}{kernel}$ indexed $k = 1,\dots,\Kdraw$
+(\S\ref{sec:cube-rng}). The pinned namespace allocation is:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{6.2cm}p{6.4cm}}
+\toprule
+Consumer & Namespace / derivation \\
+\midrule
+$\Lone$ / $\BOne$ training seeds & 11000--11029 \\
+$\Ltwo$ / $\BThree$ training seeds & 12000--12029 \\
+Stage-2 subsets ($\BTwo$, $\BFour$) & first 15 ascending: 11000--11014,
+12000--12014 \\
+Reflexive cell $+$ T4 telemetry subsets & first 10 of each namespace:
+11000--11009 ($\BOne$-side), 12000--12009 ($\BThree$-side) \\
+S3 robustness-arm seeds & 20260974, 20260975, 20260976 \\
+Enrichment master seed & 20260972 \\
+Fiber-resampler namespace & 20260973 \\
+K-variance preflight & 31000--31099 (masters 31000--31031) \\
+Bootstrap RNG derivation &
+$\mathrm{int}(\mathrm{sha256}(s)) \bmod 2^{63}$, with $s$ the frozen-string
+concatenation (block, family) per prereg Annex~B(a) \\
+Estimator replay default (fixture tests only) & 20260906 \\
+\bottomrule
+\end{tabular}
+\caption{Pinned seed namespaces (prereg v2 \S7.4 / Annex A). Gate G2 checks
+that every instrument namespace is disjoint from every training namespace
+and from every other.}
+\label{tab:seeds}
+\end{table}
+
+\subsection{Estimator implementation notes}
+\label{app:engine-estimators}
+
+The frozen release's through-M estimator module \texttt{through\_m.py}
+(332 lines; the repository directory path is anonymized for double-blind
+review --- every \texttt{through\_m.py:NN} anchor below is a line number
+within that one module) implements both
+surrogates of \S\ref{sec:cube-estimators} behind a common \fld{Kernel} enum
+(\texttt{through\_m.py:36-40}) and a shared exact-clearing forward path
+(\texttt{through\_m.py:95}) that is bit-identical to the engine's maker
+selection (\S\ref{app:engine-contract}). The pinned constants are
+module-level: \fld{PINNED\_STRAIGHT\_THROUGH\_SCALE} $= 1.0$
+(\texttt{through\_m.py:30}), \fld{PINNED\_PERTURB\_AND\_MAP\_SIGMA} $= 1.0$
+(\texttt{through\_m.py:31}), and the fixture-only replay default seed
+\fld{PINNED\_PERTURB\_AND\_MAP\_SEED} $= 20260906$
+(\texttt{through\_m.py:32}); none is caller-configurable, and production
+seeds come from the D0-frozen RNG tree. The straight-through path is
+\texttt{straight\_through\_through\_m} (\texttt{through\_m.py:278}); the
+perturb-and-MAP path is \texttt{perturb\_and\_map\_through\_m}
+(\texttt{through\_m.py:305}), with $\mathcal{N}(0,1)$ noise drawn up-front
+from a seeded CPU generator so that a fixed seed yields bitwise-identical
+allocations. The fixture competence gate (20 fixture tests per estimator,
+including the deterministic-arm $\sigma \to 0$ agreement assertions at
+$\sigma \in \{10^{-3},10^{-6},10^{-9},0\}$) is the forward-exactness
+premise of the KT-A4 audit; failure of both estimators is the STOP-class
+collapse of \S\ref{sec:cube-estimators}.
+\endgroup
+\endinput

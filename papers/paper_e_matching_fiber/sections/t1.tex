@@ -1,0 +1,655 @@
+% ============================================================================
+% SECTION 4 — THEOREM PACKAGE I: THE AGGREGATE-SUFFICIENCY OBSTRUCTION (T1)
+%   — BRIEF (writer contract)
+% Sources (authoritative order): prereg v2 §2.1 (VERBATIM-BINDING statement
+%   incl. every constant and concession), lemma writeup kt_g1_r2_
+%   non_lumpability_obstruction.md (proofs), kt_g4_g5_chart_free_and_
+%   exposed_sets_2026-09-06.md (KT-G4 prongs), theory appendix Part I
+%   (P0–P9 background; P4 grid; reduction check §3).
+% Lead statement: for identity-responsive (M1+) flows the aggregate tape is
+%   NOT sufficient for the engine's own forward law — aggregate-
+%   indistinguishable compositions induce one-step aggregate-transition laws
+%   separated by TV >= 1 - max_x p_x^MVHG, uniform over the responsive-policy
+%   class. Status: proven_with_conditions. State in the SAME block as the M0
+%   concession and the validation-channel remark: the honest boundary is
+%   "no active identity channel," not "M1 or below."
+% Component results, each with \claimstatus{} and a proof sketch (full
+%   proofs to Appendix A): R2-A (proven; ...), R2-B (proven_with_conditions;
+%   ...), R2-C (proven; ...), R2-D (proven; sup TV >= (1/2)(1 - max_x p_x)
+%   = 5/12; inline TV-triangle proof, Le Cam lineage EXCLUDED), sharpness
+%   counterexample (proven), KT-G4 prongs (a) proven, (b) proven,
+%   (c) proven_with_conditions, (d) refuted as stated + MANDATORY DPIOT /
+%   Perturb-Argmax concession sentence. Scoped/conceded: R1 toric
+%   concession (DS 1998; fibers 2014); deterministic shrinkage demoted to
+%   sufficiency corollary; 1 - O(R*^{-1/2}) UNPROVEN, not claimed; witness
+%   pair needs multi-order rationed level (frozen bundle has only
+%   single-maker touched levels); "lumpability" is vocabulary only.
+% FORBIDDEN: upgrading any label; quoting TV = 1 as pool-realizable; citing
+%   Le Cam as lineage; dropping the M0 stratum concession or the sharpness
+%   counterexample; any empirical sentence.
+% ============================================================================
+\section{Theorem package I: the aggregate-sufficiency obstruction (T1)}
+\label{sec:t1}
+
+This section establishes the paper's namesake fact: under identity-responsive
+flows, the aggregate tape is not a sufficient recording of the clearing
+mechanism even for the mechanism's \emph{own} forward law. Two readings must
+be separated first, because the weak one is true almost trivially and carries
+no content. The \emph{weak reading} says that for aggregate-indistinguishable
+states the full-state one-step forward laws differ --- true under every flow
+class, including M0, simply because the attribution of fills to makers
+differs in law; but a sufficiency reduction for the aggregate tape never
+promised predictability of the identity layer, so this reading settles
+nothing. The \emph{strong reading} says that the law of the
+\emph{aggregate-observable process itself} differs across
+aggregate-indistinguishable starting states: the coarsening is not closed
+under the dynamics. T1 is the strong reading, and it is a triple interaction
+--- kernel $\times$ tape granularity $\times$ policy feedback --- not a
+blanket non-sufficiency claim. A vocabulary note: we say
+\emph{aggregate-sufficiency obstruction} in theorem names; the word
+``lumpability'' (a coarsened chain whose transition kernel is a well-defined
+function of the coarse state) is vocabulary only --- every such statement
+below is proved directly from the engine semantics, and no theorem from the
+Markov-chain lumpability literature is invoked (that literature is on the
+preregistration's needs-verify list and is not cited as fact).
+
+The section is organized bottom-up. \S\ref{sec:t1-static} fixes the static
+(one-round, policy-free) fiber taxonomy and isolates what in it is novel
+versus conceded. \S\ref{sec:t1-dynamic} proves the obstruction.
+\S\ref{sec:t1-chartfree} shows the dichotomy is chart-free.
+\S\ref{sec:t1-scope} collects scope and concessions.
+
+\subsection{The static layer: recorded fibers by kernel and granularity}
+\label{sec:t1-static}
+
+\begin{proposition}[deterministic-kernel fibers --- a sufficiency corollary]
+\label{prop:t1-det}
+Fix the interior regime $0 < \Vstar < \Rstar$ and work in quantity space
+($d = 1 + b + m^{*} + |\mathcal{D}|$ with $b$ fully-cleared better-priced
+orders, $m^{*} = |\Pmarg|$, $\mathcal{D}$ the deeper levels). For the
+deterministic kernels:
+\begin{enumerate}
+\item[(i)] At $\gagg$ (both kernels) the recorded statistics are the
+better-level sums $S_p$ and $\Vstar$ --- all kernel-independent --- and
+$\dim \Fibkg = \sum_{p < p^{*}} (m_p - 1) + m^{*} + |\mathcal{D}|$: within-better-level
+splits, the whole pool, and the deeper levels are free; $Q$ is pinned via
+$\Vstar + S_{<}$.
+\item[(ii)] $(\kfifo, \gpo)$: the recorded linear map pins every fully
+filled order individually and one linear combination at the marginal order;
+the free directions are the marginal order's \emph{hidden depth}
+$q_{\jstar} - \cF_{\jstar} > 0$, the $m^{*} - \jstar$ pool orders beyond
+$\jstar$, and $\mathcal{D}$: $\dim \Fibkg = 1 + (m^{*} - \jstar) +
+|\mathcal{D}|$. The fiber is
+exactly the preimage of the recorded linear map on the cleared portion plus
+all uncleared-excess directions.
+\item[(iii)] $(\kproprata, \gpo)$ (taxonomy row): the fill vector determines
+pool proportions and $\Vstar$ determines nothing about pool scale; the pool
+fiber is the \emph{scale ray} $\{\lambda \qP : \lambda \geq \Vstar/\Rstar\}$,
+$\dim \Fibkg = 1 + |\mathcal{D}|$. The ray is the fiber of the proportion statistic
+$\qP \mapsto \qP/\Rstar$ --- a multiplicative fiber, \emph{not} an affine
+fiber of any linear statistic; the two deterministic kernels' fibers are
+mutually incomparable (prefix-plus-combination vs.\ proportions).
+\item[(iv)] $\gpu = \gpo$ for deterministic kernels: the unit-to-order
+sequence is a deterministic function of the fill vector.
+\item[(v)] No deterministic $(k, g)$ identifies $\rawflow$: every cell has
+$\dim \geq 1$. At exhaustion ($\Vstar = \Rstar$) the pool is fully recorded
+at $\gpo$/$\gpu$ for every kernel, so the dichotomy content lives on strict
+partial fills.
+\end{enumerate}
+\end{proposition}
+
+\claimstatus{proven (as a sufficiency corollary; see the concession below)}
+
+\emph{Concession (static toric content, R1).} In the linear case the
+deterministic fibers of Proposition~\ref{prop:t1-det} are exactly the
+classical shape ``integer points with a fixed linear sufficient statistic'',
+and rung-refinement monotonicity ($\gagg \to \gpo \to \gpu$ shrinks) is a
+bare data-processing corollary: Diaconis--Sturmfels
+\citep{diaconissturmfels1998} and the contingency-table fibers literature
+\citep{fibers2014} own the static fiber shape, and the deterministic branch
+of this paper is accordingly \emph{demoted to a sufficiency corollary with
+those citations}. What survives deterministically, and is claimed: (a) the
+market-native dimension formulas --- \emph{which} coordinates stay free
+(hidden depth $1 + (m^{*} - \jstar)$, deeper $|\mathcal{D}|$) are functions of the
+clearing combinatorics, not of generic linear algebra; (b) the pro-rata pool
+fiber is a multiplicative ray, not an affine fiber of any linear statistic;
+(c) the cross-kernel anonymity of Proposition~\ref{prop:t1-anon} below,
+which fixed-kernel data-processing statements do not express.
+
+\begin{proposition}[random-unit fibers at the per-order rung]
+\label{prop:t1-ru}
+Same regime, kernel $\kru$.
+\begin{enumerate}
+\item[(i)] \emph{Law.} The sequence law is
+$\mathbb{P}(\omega \mid \qP) = \prod_i (q_i)_{c_i(\omega)} / (\Rstar)_{\Vstar}$
+(falling factorials); the count vector $c$ is distributed $\MVHG(\qP,
+\Vstar)$ as in \eqref{eq:mvhg}, and the ordering given counts is uniform
+(ancillary).
+\item[(ii)] \emph{Saturation.} The factorization makes the count vector
+sufficient for $\qP$ from the per-unit tape, and the count marginal recovers
+the per-order law: $\Fibkg[\kru,\gpo] = \Fibkg[\kru,\gpu]$ exactly. The
+granularity ladder has exactly two informative rungs: $\{\gagg\}$ vs.\
+$\{\gpo, \gpu\}$.
+\item[(iii)] \emph{Closed-form identification.} Let
+$\rho_i = \mathbb{P}(\text{first draw hits } i) = q_i/\Rstar$ and
+$\gamma_i = \mathbb{P}(\text{first two draws both hit } i) =
+q_i(q_i-1)/(\Rstar(\Rstar-1))$. For $\Vstar \geq 2$ and $m^{*} \geq 2$,
+\[
+q_i \;=\; \frac{1 - \gamma_i/\rho_i}{1 - \gamma_i/\rho_i^{2}} ,
+\]
+so the law-level fiber on pool coordinates is a \emph{point}. For $\Vstar =
+1$ (unannotated rung) the law is categorical with $\mathbb{P}(c = e_i) =
+q_i/\Rstar$: scale-invariant, and the pool fiber is the scale ray ---
+proportions identified, scale not.
+\item[(iv)] \emph{Strict shrinkage.} On pool coordinates the point
+$\{\qP\}$ ($\Vstar \geq 2$) sits strictly inside
+$\Fibkg[\kfifo,\gpo]$ (free hidden depth and beyond-$\jstar$ directions) and
+is strictly smaller than the pro-rata ray (per deterministic kernel, a
+dimension drop to zero on pool coordinates).
+\item[(v)] \emph{Surviving symmetries --- why the full-$\rawflow$ fiber is
+never a point.} Deeper levels $|\mathcal{D}|$ are free in every cell; under
+agent-level aggregation behind order-level queue entries, all within-order
+co-ownership splits ($\sum_i (A_i - 1)$ directions) are exchangeable and
+invisible to every rung; at the realized-tape level never-drawn pool orders
+are pinned only through the pool-size residual; a general $B$ adds $\ker B$.
+The honest scoped claim is point identification \emph{on executed-pool
+coordinates only}.
+\end{enumerate}
+The hypergeometric identifiability algebra of (iii) is classical (folklore)
+and is credited as such; the contribution claimed here is the taxonomy and
+dimension formulas of Corollary~\ref{cor:t1-grid} and the exposure asymmetry
+of \S\ref{sec:t3h5}, not the hypergeometric lemma.
+\end{proposition}
+
+\claimstatus{proven}
+
+\begin{proposition}[kernel anonymity at aggregate granularity]
+\label{prop:t1-anon}
+At $\gagg$ the recorded statistics (level prints; $\Vstar$ at $p^{*}$) are
+deterministic functions of $(Q, q)$ and are kernel-\emph{independent}:
+$\mathcal{L}_{\kru,\gagg}(\rawflow) = \delta_{(p^{*},\Vstar)} =
+\mathcal{L}_{k,\gagg}(\rawflow)$ for every kernel $k$. The entire kernel
+anonymizes at aggregate granularity --- a cross-kernel statement, stronger
+than ``the randomness marginalizes out'', and the fixed point on which the
+dynamic obstruction must operate.
+\end{proposition}
+
+\claimstatus{proven}
+
+\begin{corollary}[granularity dichotomy: the interaction grid]
+\label{cor:t1-grid}
+Pool-coordinate fiber dimensions (quantity space; deeper/aggregation
+directions free everywhere):
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+$k \backslash g$ & $\gagg$ & $\gpo$ & $\gpu$ \\
+\midrule
+$\kfifo$ & $m^{*}$ & $1 + (m^{*} - \jstar)$ & $= \gpo$ \\
+$\kproprata$ (taxonomy) & $m^{*}$ & $1$ (scale ray) & $= \gpo$ \\
+$\kru$ & $m^{*}$ & $0$ ($\Vstar \geq 2$); $1$ ($\Vstar = 1$) & $= \gpo$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+(i) \emph{Neither factor alone identifies}: kernel randomness alone (at
+$\gagg$) collapses to the deterministic fiber (Proposition~\ref{prop:t1-anon});
+granularity alone (deterministic kernels, any rung) leaves $\dim \geq 1$
+(Proposition~\ref{prop:t1-det}(v)). (ii) The \emph{unique identifying cell}
+is $(\kru,\ \gpo\text{-or-finer})$ with $\Vstar \geq 2$ --- an interaction of
+kernel randomness and tape granularity; this is the static shadow of the T1
+lead. (iii) \emph{Boundary caveat}: on exhaustion rounds ($\Vstar = \Rstar$)
+every kernel identifies the pool at $\gpo$/$\gpu$; the dichotomy is a
+statement about strict partial fills, and the price-only post-quote reveals
+the stratum at every rung, so stratification is preregisterable and
+costless. (iv) \emph{$\Vstar = 1$ caveat}: single-unit fills degrade
+identification to proportions; the engine's \fld{eligible\_units} annotation
+adds the statistic $\Rstar$ and collapses the scale ray to a point for all
+$\Vstar \geq 1$ (while \fld{maker\_remaining} and \fld{selected\_unit} carry
+no further quantity information --- the latter are the literal
+exchangeable-unit labels).
+\end{corollary}
+
+\claimstatus{proven}
+
+\subsection{The obstruction: kernel $\times$ granularity $\times$ policy
+feedback}
+\label{sec:t1-dynamic}
+
+Two definitions fix the quantifier order. Recall $A$ is the engine's
+strongest aggregate observer (\S\ref{sec:engine}).
+
+\begin{definition}[aggregate sufficiency over a flow class]
+\label{def:t1-suff}
+$A$ is \emph{sufficient for the forward law over flow class $\Pi$} if for
+every $\pi \in \Pi$ and every pair $s, s'$ with $A(s) = A(s')$, the laws of
+the aggregate-observable process (aggregate state sequence plus prints)
+coincide. Equivalently (vocabulary): the aggregate chain is closed --- its
+transition kernel is a well-defined function of the aggregate state.
+\end{definition}
+
+\begin{definition}[responsive policy class $\Pi_{\mathrm{resp}}$]
+\label{def:t1-piresp}
+$\pi \in \Pi_{\mathrm{resp}}$ if, at the constructed node (a completed
+rationed round at $p^{*}$ with pool fill counts $c_i$), one designated
+responsive actor $r \in \Pmarg$ submits exactly one follow-up request of
+quantity $g(c_r)$, where $g$ is measurable and \emph{injective on the
+support of the spread fill-count law}; the request is \emph{resource-slack}
+(no cash, inventory, or induced-capacity constraint binds in any fiber
+member) and \emph{non-self-crossing} (it crosses no level containing $r$'s
+own resting order); all other actors are inert at that node. Two
+engine-native instantiations: a marketable sell of own fill count into the
+opposite side ($g = \mathrm{id}$; no self-trade possible), and a cancel of
+own remaining order (quantity $a - c$, injective in $c$; branch note: at $c =
+a$ the cancel is rejected \fld{already\_filled}, so the sell variant --- which
+has no degenerate branch --- is the one used in all proofs below).
+\end{definition}
+
+\begin{preregthm}{Theorem T1: the aggregate-sufficiency obstruction}{T1}
+\label{thm:t1-lead}
+Fix the engine of \S\ref{sec:engine}, kernel $\kru$, the frozen corpus
+contract $\Fexec$, and the aggregate observer $A$. There is a pair of states
+$s_{\mathrm{pm}}, s_{\mathrm{sp}}$ with $A(s_{\mathrm{pm}}) =
+A(s_{\mathrm{sp}})$ (the books of Lemma~\ref{lem:t1-r2b}) such that, at the
+node following a completed rationed round in the interior regime
+$\Vstar = 2 < \Rstar = 4$:
+\begin{enumerate}
+\item[(1)] \emph{Non-lumpability.} For every $\pi \in
+\Pi_{\mathrm{resp}}$ and every injective $g$,
+\[
+\TV\!\big(\mathcal{K}_{\pi}(\cdot \mid s_{\mathrm{pm}}),\,
+\mathcal{K}_{\pi}(\cdot \mid s_{\mathrm{sp}})\big)
+\;=\; 1 - \mathbb{P}_{\qP,\Vstar}(c_r = \text{forced value})
+\;\geq\; 1 - \max_x p^{\MVHG}_x ,
+\]
+with the explicit constant $\mathbf{5/6}$ on the balanced pool $\qP = (2,2)$,
+$\Vstar = 2$ --- \emph{uniform} over the responsive class.
+\item[(2)] \emph{M0 concession.} On the resource-slack / no-self-crossing
+stratum, M0 flows \emph{are} lumpable: $A$ is sufficient for the aggregate
+forward law there, and the classical sufficiency reduction goes through
+exactly as conceded (Proposition~\ref{prop:t1-r2c}).
+\item[(3)] \emph{Validation channel.} Off that stratum the obstruction holds
+already at M0, with $\TV = 1$, through the engine's identity-dependent
+validation (self-trade prevention; per-actor reserves).
+\end{enumerate}
+The honest boundary of the aggregate sufficiency reduction is therefore
+``\emph{no active identity channel}'', \emph{not} ``M1 or below''. Conditions:
+interior regime at the constructed node (the exhaustion stratum carries its
+own deterministic clause, Remark~\ref{rem:t1-exhaustion}); the spread member
+has $m^{*} \geq 2$ pool orders; a single responsive actor with injective,
+non-cancelling response; and the witness pair requires a multi-order
+rationed level --- the frozen 21/22-event bundle contains only single-maker
+touched levels, so any dynamic confirmation is bound to the enriched
+fixtures and the post-D0 S1a gates (no empirical claim is made here).
+\end{preregthm}
+
+\claimstatus{proven\_with\_conditions (live conditions: the
+$\Pi_{\mathrm{resp}}$ class of Definition~\ref{def:t1-piresp}; interior
+regime; multi-order pool in the spread member; the M0 concession is a
+stratum statement, not a class statement)}
+
+\begin{lemma}[R2-A: mechanism-level separation; policy-free]
+\label{lem:t1-r2a}
+Fix the interior regime at the marginal level, pool composition $\qP$ with
+$m^{*} \geq 2$, $q_i \geq 1$, and let $p = \MVHG(\qP, \Vstar)$ be the spread
+law.
+\begin{enumerate}
+\item[(i)] The engine draw law is exactly $\MVHG$: \eqref{eq:mvhg} with the
+per-step law of \S\ref{sec:scaffold}.
+\item[(ii)] \emph{Point-mass vs.\ spread.} Let $x^{\circ}$ be any
+composition whose induced split law is a point mass --- a single-order pool
+under any kernel, or any composition under a deterministic kernel (e.g.\
+$\cF$ under $\kfifo$). Then
+$\TV(\delta_{x^{\circ}}, p) = 1 - p(x^{\circ}) \geq 1 - \max_x p(x)$.
+\item[(iii)] \emph{Exact constants.} For the balanced pool $\qP = (2,2)$ and
+$\Vstar \in \{1,2\}$: $1 - \max_x p(x) = 1/2,\ 1/3$ (and $\TV = 5/6$ at
+$\Vstar = 2$ with $x^{\circ}$ the prefix fill). For the S3 scaffold pool
+$\qP = (5,4,3,2)$, $\Rstar = 14$, with point mass $x^{\circ} = (\Vstar,0,0,0)$:
+the \emph{feasible-ladder} constants $\TV = 9/14,\ 81/91,\ 996/1001$ at
+$\Vstar = 1,2,4$, and the FIFO-prefix value $0.9987$ at $\Vstar = 6$ (the
+two instantiations of the point mass coincide for $\Vstar \leq 5$). The bare
+value $\TV = 1$ at $\Vstar = 6$ is the \emph{infeasible-single-order
+witness}, not a pool-realizable constant: its $x^{\circ} = (6,0,0,0)$ cannot
+be produced by the pool ($q_1 = 5 < 6$), $\TV = 1$ holds there by empty
+intersection of the two supports, and it is reported only as the
+exhaustion-adjacent boundary witness, never quoted as a separation the pool
+attains. Kernel-law-general universal bounds $1 - \max_x p(x)$ --- the
+maximum over atoms of the designated pool order's fill-count marginal (the
+law a responsive policy reads; designated = largest order, $q_1 = 5$):
+$5/14,\ 46/91,\ 581/1001,\ 581/1001$ ($= 0.357,\ 0.505,\ 0.580,\ 0.580$)
+across the $\Vstar$-ladder.
+\item[(iv)] \emph{Balanced-family sharpening.} For $\qP = (m,m)$ at fixed
+$\Vstar = v$ and $m \to \infty$, the count law converges to
+$\mathrm{Binomial}(v, 1/2)$ pointwise, so $1 - \max_x p(x) \to 1 -
+\binom{v}{\lfloor v/2 \rfloor}/2^{v}$ ($= 1/2,\ 5/8,\ 11/16$ at $v = 2,4,6$).
+\end{enumerate}
+Exhaustion rounds ($\Vstar = \Rstar$) carry their own deterministic clause
+and are never merged with the random bound; $\Vstar = 1$ carries the $1/2$
+constant.
+\end{lemma}
+
+\claimstatus{proven}
+
+\begin{lemma}[R2-B: responsive-policy non-lumpability]
+\label{lem:t1-r2b}
+Fix actors $\{A, B, C\}$ with sufficient resource slack, price bands
+containing $99 \leq 101 \leq 103$, and the books
+\begin{align*}
+s_{\mathrm{pm}} &:\
+\mathrm{asks}[101] = [(O_1, A, 4)],\quad
+\mathrm{bids}[99] = [(O_0, E, 8)] ;\\
+s_{\mathrm{sp}} &:\
+\mathrm{asks}[101] = [(O_1, A, 2), (O_2, B, 2)],\quad
+\mathrm{bids}[99] = [(O_0, E, 8)] ,
+\end{align*}
+with identical actor-total cash and inventory (no trades yet; resting orders
+reserve nothing from the cash/inventory maps). Then
+$A(s_{\mathrm{pm}}) = A(s_{\mathrm{sp}})$ (level sums $[[101,4]]$ ask-side,
+$[[99,8]]$ bid-side, identical totals and clock). Let the incoming flow be:
+$C$ submits a marketable buy of quantity $2$ at price $101$, followed by the
+responsive action of $\Pi_{\mathrm{resp}}$ with responsive actor $r = A$ and
+$g = \mathrm{id}$ ($A$ submits, iff $c_A \geq 1$, a marketable sell of
+quantity $c_A$ at price $99$). Then the one-step aggregate-transition
+kernels at the post-round boundary satisfy, uniformly over every $\pi \in
+\Pi_{\mathrm{resp}}$ and every injective $g$,
+\[
+\TV\!\big(\mathcal{K}_{\pi}(\cdot \mid s_{\mathrm{pm}}),\,
+\mathcal{K}_{\pi}(\cdot \mid s_{\mathrm{sp}})\big)
+= 1 - \mathbb{P}_{s_{\mathrm{sp}}}(c_A = g\text{-matched value})
+\;\geq\; 5/6
+\qquad (g = \mathrm{id}:\ 1 - \mathbb{P}(c_A = 2) = 5/6),
+\]
+where the aggregate observation is the next aggregate state and print. The
+same separation is visible in the $\Fexec$ corpus contract (an execution
+record of quantity $c_A$ at price $99$) and in the level-total-only observer
+(bid level $8 - c_A \in \{8,7,6\}$).
+\end{lemma}
+
+\claimstatus{proven\_with\_conditions (live conditions: the
+$\Pi_{\mathrm{resp}}$ class --- single designated pool actor, injective
+non-cancelling response, resource slack, no self-crossing; interior regime;
+$m^{*} \geq 2$ in the spread member)}
+
+\emph{Proof sketch.} Step 1 (aggregate indistinguishability through round
+1): under both members $C$'s buy executes exactly $\Vstar = 2$ units at
+$101$; the level total becomes $2$, the print $(101,2)$ issues, settlement
+conserves totals, and the number of execution records equals $\Vstar$
+under $\kru$ --- the aggregate state and print sequences agree a.s.; only
+the attribution differs ($s_{\mathrm{pm}}$: $c_A = 2$ forced;
+$s_{\mathrm{sp}}$: $(c_A, c_B)$ spread $\MVHG(2,2)$ on
+$\{(2,0),(1,1),(0,2)\}$ with atoms $(1/6, 4/6, 1/6)$). Step 2 (the
+responsive action is valid in both members and injective in the
+attribution): $c_A$ is a function of $A$'s own state (own inventory/cash
+changed by $c_A$; own order remaining $4 - c_A$ resp.\ $2 - c_A$), so
+$g(c_A) = c_A$ is M1-admissible; the sell at $99$ crosses only the bid side
+where $A$ owns nothing (no self-trade), slack holds by assumption, and
+$c_A \geq 1$ when submitted; the next-observation map $c \mapsto
+(\text{print}(99,c),\ \text{level } 8-c)$ is injective in $c$. Step 3
+(pushforward): under $s_{\mathrm{pm}}$ the next observation is the point
+mass at $(\text{print}(99,2), \text{level }6)$; under $s_{\mathrm{sp}}$ it
+is the injective pushforward of $c_A \sim (1/6,4/6,1/6)$; injectivity makes
+the pushforward $\TV$ equal the count-law $\TV$, and R2-A(ii) gives $1 - 1/6
+= 5/6$. Uniformity: the value depends only on the engine's draw law at
+$(\qP, \Vstar)$ and on injectivity of $g$. Full proof in
+Appendix~\ref{app:t1proofs}.
+
+\begin{proposition}[R2-C: the M0 concession --- and its sharp boundary]
+\label{prop:t1-r2c}
+Let $\pi$ be an M0 flow and assume the resource-slack / no-self-cross
+condition: every request issued by $\pi$ at every reached aggregate state is
+accepted in \emph{every} fiber member. Then the aggregate state sequence is
+a measurable function of (aggregate initial state, request sequence, policy
+randomness): $\mathrm{Law}_{\pi}(A\text{-process} \mid s) =
+\mathrm{Law}_{\pi}(A\text{-process} \mid s')$ for all $s \equiv_A s'$ ---
+the aggregate statistic is sufficient for the aggregate forward law over
+M0-slack flows, exactly as the classical reduction claims.
+\emph{Grammar clause}: the statement is for request streams whose grammar is
+(side, price, quantity) submissions; order-id-addressed actions
+(cancel/replace) are not M0-admissible unless keyed to aggregate-observable
+labels, in which case the same argument runs. \emph{Off the slack stratum
+even M0 fails}: with the owner of the best ask differing across fiber
+members (asks $[(O_1, A, 2)]$ vs $[(O_1, B, 2)]$ --- identical aggregate
+level total), the aggregate-measurable request ``$A$ submits a marketable
+buy at $101$'' is rejected (\fld{self\_trade\_prevented}) in one member and
+executes in the other: aggregate one-step laws differ by $\TV = 1$; the
+same holds via per-actor \fld{insufficient\_cash}/\fld{insufficient\_inventory}
+reserves. The true boundary of the reduction is ``no identity-dependent
+channel is active'' --- policy feedback (M1) and validation feedback are the
+two engine-native instances. The M0 concession is a stratum statement, not a
+class statement.
+\end{proposition}
+
+\claimstatus{proven (with the request-grammar clause on order-id-addressed
+actions)}
+
+\begin{corollary}[R2-D: training-signal obstruction]
+\label{cor:t1-r2d}
+Let $\hat{\mathcal{K}}(\cdot \mid h)$ be any predictor of the next-observation law
+that is measurable in the aggregate tape history $h$ --- in particular any
+simulator trained by any loss functional of the aggregate tape distribution
+(by the Lemma~0 byte-identity argument at the $\gagg$ rung; Lemma~0 is
+stated in Appendix~\ref{app:proofs}). At the
+constructed node, with $\mathcal{K}_1, \mathcal{K}_2$ the two true one-step
+kernels of Lemma~\ref{lem:t1-r2b}:
+\[
+\sup_{s \in \{s_{\mathrm{pm}},\, s_{\mathrm{sp}}\}}
+\TV\!\big(\hat{\mathcal{K}}(\cdot \mid h_A),\ \mathcal{K}_s\big)
+\;\geq\; \tfrac{1}{2}\,\TV(\mathcal{K}_1, \mathcal{K}_2)
+\;\geq\; \tfrac{1}{2}\big(1 - \max_x p_x\big)
+\;=\; 5/12
+\ \text{on the } (2,2),\ \Vstar = 2 \text{ pool}.
+\]
+No aggregate-tape training signal can constrain the forward law on the
+identity-responsive stratum. The inequality is proved inline from the
+triangle inequality for total variation; the classical two-point lemma is
+deliberately not invoked (and is not cited as lineage).
+\end{corollary}
+
+\claimstatus{proven}
+
+\begin{proposition}[sharpness: the class assumption is necessary]
+\label{prop:t1-sharp}
+If \emph{every} pool actor responds with exact buy-back-own-fills on the
+same side ($g_i(c_i) = c_i$ for all $i \in \Pmarg$) within one aggregate
+window, the total response volume is $\sum_i c_i = \Vstar$ in every fiber
+member, the level totals reconcile, and the one-step aggregate separation at
+that node is $\TV = 0$. With per-event print granularity the print
+\emph{sequence} still separates --- a single print $(\Vstar)$ vs.\ the
+sequence $((c_i)_i)$, $\TV = 1 - \binom{q_r}{\Vstar}/\binom{\Rstar}{\Vstar}$
+($5/6$ on the $(2,2)$, $\Vstar = 2$ pool) --- but under a window-pooled
+aggregate observer the one-step separation genuinely vanishes. Hence: no
+injective-own-count response $\Rightarrow$ no uniform separation; the
+obstruction is exactly coextensive with $\Pi_{\mathrm{resp}}$-style active
+feedback, and the stronger ``all M1$+$'' claim is false and must never be
+made.
+\end{proposition}
+
+\claimstatus{proven}
+
+\begin{remark}[exhaustion and $\Vstar = 1$ strata]
+\label{rem:t1-exhaustion}
+At exhaustion ($\Vstar = \Rstar$) the single-round attribution becomes
+deterministic in every member, so R2-A's random separation degenerates; the
+non-lumpability survives \emph{deterministically} through the same M1
+channel with a fresh-order response: at exhaustion the designated actor's
+fill count is $4$ under point-mass-type members and $2$ under spread-type
+members (both deterministic), so a responsive resting submission of quantity
+$g(c_A)$ at an untouched price yields next aggregate level totals $g(4)$
+vs.\ $g(2)$: $\TV = 1$. This exhaustion clause is a \emph{different
+mechanism} (identity-forced counts, not draw randomness) and is never merged
+with the random bound. At $\Vstar = 1$ the separation persists at half
+strength ($\TV = 1 - \mathbb{P}(c_A = 1) = 1/2$): the forward-law obstruction
+does not degrade to zero where static per-order identification degrades to
+proportions.
+\end{remark}
+
+\begin{remark}[one point mass, two sources]
+\label{rem:t1-unify}
+Lemma~\ref{lem:t1-r2a}(ii) does not care where the point mass comes from: a
+concentrated composition under $\kru$, or a deterministic kernel at a fixed
+spread composition. The kernel-swap separation of \S\ref{sec:h5} (H5, Layer
+C) uses the second source; R2 uses the first, because R2's claim is about a
+single fixed kernel. Same bound, different witness --- stated here once, so
+no reader mistakes the two lemmas for a repetition.
+\end{remark}
+
+\subsection{The dichotomy is chart-free}
+\label{sec:t1-chartfree}
+
+The attack being discharged: ``dimension and identification statements are
+properties of the coordinate expression of the recorded statistic; the
+granularity dichotomy could be a coordinate artifact.'' Two kinds of
+re-description must be separated. A \emph{chart change} is a $C^1$
+diffeomorphism $\varphi$ of the flow space --- a harmless re-description. A
+\emph{fiber-preserving diffeomorphism} $\psi$ ($\recordedmap \circ \psi =
+\recordedmap$) moves the physical instance \emph{within} a fiber; that the
+named objects do not stay constant along such $\psi$ is not a coordinate
+artifact --- it is the exposure content of \S\ref{sec:t3h5}.
+
+\begin{proposition}[KT-G4(a): recorded information is a $\sigma$-algebra;
+identification content transports]
+\label{prop:t1-pronga}
+Let $T$ be the recorded map of any cell $(k, g, \mathcal{F})$, $Y$ standard
+Borel, $\mathcal{G} = \sigma(T)$. Then: (A1) for every $C^1$ diffeomorphism
+$\varphi$, $\sigma(T \circ \varphi) = \varphi^{-1}(\sigma(T))$, and
+$h$ is $\mathcal{G}$-measurable iff $h \circ \varphi$ is
+$\sigma(T \circ \varphi)$-measurable. (A2) the atoms of $\mathcal{G}$ are
+exactly the realized-tape fibers, so ``the tape point-identifies $h$''
+$\Leftrightarrow$ ``$h$ is $\mathcal{G}$-measurable'' --- a statement about
+the pair $(h, \mathcal{G})$, no coordinates involved; fiber dimension is a
+diffeomorphism invariant. (A3) ranks of recorded-statistic differentials are
+preserved under the chain rule, so the local fiber dimensions transport;
+the law-level identification content of
+Propositions~\ref{prop:t1-det}--\ref{cor:t1-grid} is a statement about
+$\sigma(\mathcal{L}_{k,g})$ and transports identically. (A4) a general
+linear $B$ transports by preimage, adding $\ker B$ to every dimension ---
+again $\sigma$-algebra transport, not a coordinate accident.
+\end{proposition}
+
+\claimstatus{proven}
+
+\begin{proposition}[KT-G4(b): the count-law family itself jumps]
+\label{prop:t1-prongb}
+Write $\theta \sim \theta'$ when two parameter points induce identical
+count-law measures, and compare the two count-law families: multinomial
+(with-replacement / proportional-to-initial --- the preregistered
+falsifier) and $\MVHG$ (engine semantics). (B1) The multinomial family
+\emph{never} identifies scale, at any $\Vstar \geq 1$: its law depends on
+$\qP$ only through proportions, so its $\sim$-classes are the scale rays.
+(B2) The $\MVHG$ family identifies scale exactly when $\Vstar \geq 2$: the
+law-functionals $\rho_i, \gamma_i$ of Proposition~\ref{prop:t1-ru}(iii)
+exhibit the closed form, the $\sim$-classes on pool coordinates are points,
+and the identified $\sigma$-algebra strictly increases from $\Vstar = 1$ to
+$\Vstar = 2$ --- the jump. (B3) The jump transports through every smooth
+reparameterization: equality of laws is preserved by transport, so no
+reparameterization creates a scale-identification jump for the multinomial
+at any $\Vstar$, and the $\MVHG$ jump survives every $C^1$ reparameterization
+that separates scale at fixed proportions (it can only persist or shrink by
+merging, never appear or invert). (B4) At immersion points the Fisher-information rank equals $d$ minus the tangent-fiber dimension, a
+diffeomorphism invariant --- so the preregistered S3 rank ladder (rank $6$
+at $\Vstar = 1$ rising to $7$ at $\Vstar \geq 2$ on the pool cell; the
+multinomial falsifier stays at rank $6$ at every $\Vstar$) is not a
+coordinate artifact, and its ``no jump $\Rightarrow$ the engine law is not
+draws-without-replacement'' reading is chart-free. The rank statement
+carries the immersion hypothesis; the identification statement (fiber
+dimension on pool coordinates) is unconditional.
+\end{proposition}
+
+\claimstatus{proven}
+
+\begin{proposition}[KT-G4(c): floor and exposed-set naturality]
+\label{prop:t1-prongc}
+(C1) The consumer floor of Theorem~1 transports exactly: for every $C^1$
+diffeomorphism $\varphi$, $\mathrm{floor}_{\varphi_{*}\mu}(C \circ \varphi
+\mid \sigma(T \circ \varphi)) = \mathrm{floor}_{\mu}(C \mid \sigma(T))$, and
+for fiber-preserving $\psi$ the floor of the transported consumer at the
+transported reference is invariant. (C2) The zero structure is chart-free:
+$\mathrm{floor} = 0 \Leftrightarrow C$ constant on fibers; the exact-zero
+predictions of Theorem~1(e) are $\sigma$-algebra facts. (C3) The floor is
+the squared norm of the projection of $v$ onto the fiber's free subspace
+$\ker \mathrm{d}T \cap (\text{quantity span})$, a geometric object of the
+recorded map's differential; the closed-form constant $R^{2}\|\vU\|^{2}/12$
+is its evaluation in the preregistered uniform-box chart --- the reference
+measure is a declared contract item, not a hidden coordinate choice. (C4)
+\emph{Conditioned}: exposed-set membership, sign, and the exposed/blind
+partition transport under chart changes that carry the deployment's
+semantic coordinates ($D \circ \varphi = \varphi_{\mathrm{out}} \circ D$) ---
+satisfied by the grammar maps of \S\ref{sec:t3h5} when $\varphi$ moves only
+coordinates the map does not read, or moves them together with the map's
+output. (C5) What is deliberately \emph{not} invariant: for a
+fiber-preserving $\psi$ that warps ambiguous coordinates, the kernel-swap
+deployment is not $\psi$-equivariant --- the swap reads the very coordinates
+the tape does not record --- so the exposed set varies along fiber warping;
+that non-invariance \emph{is} Theorem T-1 of \S\ref{sec:t3h5}, not a defect
+of this one.
+\end{proposition}
+
+\claimstatus{proven\_with\_conditions (live conditions: C4 requires the
+$D$-transport compatibility stated; the exact closed-form floor constant is
+reference-measure-relative --- a declared, preregistered contract item)}
+
+\paragraph{Prong (d): positive fiber dimension in $\theta$-charts ---
+refuted as stated.}
+Positive dimensionality of fibers in parameter space under a general neural
+parameterization $\rawflow = f_{\theta}(\zeta)$ \emph{is} chart-dependent
+and is not claimed: if $\mathrm{D}f_{\theta}$ is rank-deficient at $\zeta$
+(non-immersive), the $\zeta$-space fibers are strictly larger than the
+pulled-back flow-space fibers, and no flow-space statement constrains them.
+The concession is mandatory and verbatim from the preregistration:
+\emph{positive-dimensional preimages under nonlinear parameterization are
+owned by DPIOT \citep{dpiot2022} for learned simulators, with the
+perturb-argmax family analog owned by Perturb-Argmax/Softmax
+\citep{perturbargmax2024}; T1 claims no chart-dependent fiber-dimension
+novelty and is stated over the admissible flow draw space with the chart
+demoted to a convenience.} Adjacent chart-sensitive mechanism-fiber theorems
+at the inference level (Sinkhorn linearization \citep{sinkhornlinearization2026})
+and identification-up-to-shared-equivariance results
+\citep{propertiesmechanisms2022} are delimited analogs: neither states a
+granularity-gated sufficiency failure for a stateful mechanism under
+feedback flows.
+
+\claimstatus{refuted as stated (chart-dependent; conceded to DPIOT and
+Perturb-Argmax/Softmax as above)}
+
+\subsection{Scope, concessions, and the deployment counterpart}
+\label{sec:t1-scope}
+
+\paragraph{Conceded and delimited.} (R1) The static toric content is owned
+by \citep{diaconissturmfels1998, fibers2014}; the deterministic branch is a
+sufficiency corollary (Proposition~\ref{prop:t1-det}). (R3) The aggregate
+plus random collapse of Proposition~\ref{prop:t1-anon} is, from the per-unit
+rung's standpoint, a marginalization --- the trivial data-processing
+direction, labeled as such so no referee may inflate it; the obstruction is
+the \emph{dynamic} complement R2. The general-composition asymptotic
+constant $1 - O\bigl((\Rstar)^{-1/2}\bigr)$ is unproven and not claimed: the
+maximal-atom/log-concavity bounds it would need are not in the adjudicated
+citation base, and the result is scoped to the balanced-family Binomial
+limits of R2-A(iv). In the same spirit, \emph{no uniform-in-pool constant is
+claimed}: the constants are pool-parameterized, and adversarial pools
+(e.g.\ $\qP = (\Rstar - 1, 1)$ at $\Vstar = 1$) drive the universal bound to
+$0$ as $1/\Rstar$; the analogous H5 concession is stated with its own
+per-fixture table in \S\ref{sec:h5}. (Witness dependency) the R2 witness
+pair requires a multi-order rationed level: the frozen 21/22-event bundle
+contains only single-maker touched levels, and any empirical S1a-type
+realization depends on the lab-asset-v3.1 enrichment --- a design
+dependency, not an observed outcome.
+
+\paragraph{Deliberately not claimed.} No claim that M0 flows are lumpable
+off the slack stratum (false; Proposition~\ref{prop:t1-r2c}); no claim for
+all M1$+$ policies (false; Proposition~\ref{prop:t1-sharp}); no multi-step
+or asymptotic identification claim (only one-step separation --- hence
+finite-horizon non-sufficiency by the existence of a separating node ---
+is proven; the asymptotic picture remains conjecture per the preregistered
+boundary); no claim about $\kproprata$ as an engine kernel (it is not one);
+no characterization of \emph{all} separating policies
+(Proposition~\ref{prop:t1-sharp} gives necessity of the active channel, not
+an only-if).
+
+\paragraph{The deployment counterpart.} Which fiber directions each
+preregistered deployment map can detect --- the exposed sets of
+Definition~\ref{def:exposed} --- is the subject of Theorem T-1 in
+\S\ref{sec:t3h5}; the one-line summary is the asymmetry already visible in
+the static layer: swapping a fifo-trained cell to $\kru$ at deployment
+exposes the hidden-depth and split directions at first order $O(\delta/S)$,
+while swapping to $\kfifo$ on fifo cells is \emph{exactly} blind. T1 says
+the aggregate tape cannot support the forward law; T3 says which
+deployments can see what the tape omitted.

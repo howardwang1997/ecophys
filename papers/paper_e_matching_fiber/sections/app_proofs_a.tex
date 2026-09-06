@@ -1,0 +1,1165 @@
+% ============================================================================
+% APPENDIX A — FULL PROOFS — BRIEF (writer contract)
+% Sources (the ONLY proof sources): the five lemma writeups in
+%   papers/proposal/ecomd_reexploration_d1_lemma_writeups_2026-09-06/
+%   (kt_g1_r2_non_lumpability_obstruction.md; kt_g2_separation_lemma.md;
+%   kt_g3_gauge_conflation_lemma_pair.md; kt_g4_g5_chart_free_and_
+%   exposed_sets_2026-09-06.md; kt_a2_tv_separation_and_kt_m2_template_
+%   table.md) and the theory appendix (ecomd_reexploration_theory_
+%   appendix_2026-09-06.md, Parts I and II).
+% Structure mirrors sections 4–7: A.1 T1 (R2-A, R2-B, R2-C, R2-D,
+%   sharpness counterexample, KT-G4 prongs a–d); A.2 T2 (Lemma 0; Theorem
+%   1(a)–(e); Proposition 1b; Corollary 2; G2-1..G2-4 incl. the hash
+%   identity argument); A.3 T3 (T-1 table derivation; T-2a–d; Prop 3.5);
+%   A.4 H5 (Lemmas A/B/C/D with the Stirling-bound mode-atom argument);
+%   A.5 V4 (KT-G3 Lemmas A, A.2–A.5, B, B.2–B.5 incl. soft/randomized
+%   quotients and prior-universality). Each proof carries the same
+%   \claimstatus{} label as its main-text statement — no label drift, no
+%   condition dropped between main text and appendix. Hostile checks from
+%   the writeups (the attack each lemma answers) may be included as short
+%   remarks — they are theorem-level facts, not empirical results.
+% FORBIDDEN: altering any constant; "routine"/"obvious" suppressions of
+%   cases the writeups spell out; empirical content; new citations beyond
+%   refs.bib.
+% ============================================================================
+\section{Full proofs}
+\label{app:proofs}
+
+\subsection{Proofs for Theorem package I (T1)}
+\label{app:proofs-t1}
+
+\label{app:t1proofs}
+Throughout A.1 the scaffold is that of \S\ref{sec:scaffold} (marginal level
+$p^{*}$, pool $\Pmarg$, pool size $\Rstar$, residual demand $\Vstar$,
+interior regime $0 < \Vstar < \Rstar$ unless stated), the recording rungs
+are those of \S\ref{sec:corpora}, and quantity space is the real relaxation
+of \S\ref{sec:corpora} (integrality is a lattice remark: every recorded map
+below is integer-valued on the lattice and the dimension statements are
+those of its real linear relaxation). Each proof carries verbatim the claim
+status of its main-text statement (\S\ref{sec:t1}).
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-det} (deterministic-kernel
+fibers)]
+(i) At $\gagg$ the tape records, per touched level, the print $(p, V_p)$;
+pre/post BBO \emph{prices} carry no sizes. For $p < p^{*}$ the walk clears
+the level, so $V_p = S_p$: the level sum is pinned and the split of $S_p$
+among its $m_p$ orders is free ($m_p - 1$ dimensions each). At $p^{*}$ the
+recorded $\Vstar$ pins the executed total only; the pool quantities are
+unrecorded except through the open regime constraint
+$\sum_{i \in \Pmarg} q_i = \Rstar > \Vstar$, which leaves all $m^{*}$
+coordinates free. Deeper levels $|\mathcal{D}|$ appear only through
+unchanged quotes.
+$Q = \Vstar + S_{<}$ is pinned. Total:
+$\sum_{p < p^{*}}(m_p - 1) + m^{*} + |\mathcal{D}|$; no kernel enters, so
+the row is shared.
+
+(ii) At $(\kfifo, \gpo)$ the records are (order id, price, $c_i$) for
+$c_i > 0$. For $i < \jstar$ the fill is full ($c_i = q_i$): $q_i$ pinned
+individually. At $\jstar$ the demand walk gives
+$c_{\jstar} = \Vstar - \sum_{i < \jstar} q_i$, so the tape pins the prefix
+sum $\sum_{i \leq \jstar} q_i$: exactly one linear combination of the
+prefix coordinates. The complementary direction --- the hidden depth
+$q_{\jstar} - c_{\jstar}$, increased by appending units behind the demand
+--- leaves every record unchanged (the fill is demand-capped, the appended
+units never reach the queue head; the same argument as
+Corollary~\ref{cor:t2-recession}), and is feasible at every positive value
+in the interior regime. Orders $i > \jstar$ emit no record and are not
+constrained by the walk: $m^{*} - \jstar$ free coordinates. Deeper
+$|\mathcal{D}|$ free. Total $1 + (m^{*} - \jstar) + |\mathcal{D}|$; the
+fiber is the preimage of the
+recorded linear map on the cleared portion plus the uncleared-excess
+orthant directions.
+
+(iii) At $(\kproprata, \gpo)$ every pool order with $q_i \geq 1$ receives
+$c_i = \Vstar\, q_i/\Rstar > 0$ and is recorded: the tape determines
+$q_i/\Rstar$ for all $i$ (the proportions) and nothing about $\Rstar$
+beyond $\Rstar > \Vstar$. The pool fiber is
+$\{\lambda \qP : \lambda \geq \Vstar/\Rstar\}$, one scale coordinate;
+$\dim = 1 + |\mathcal{D}|$. It is not an affine subspace (a half-line, not closed
+under differences), hence not the fiber of any linear statistic --- a
+multiplicative fiber of the proportion statistic.
+
+(iv) For a deterministic kernel the unit-to-order sequence is a
+deterministic function of the fill vector (within an order, unit labels are
+exchangeable positions), so $\gpu$ adds labels and no quantity information:
+$\Fibkg[\cdot,\gpu] = \Fibkg[\cdot,\gpo]$.
+
+(v) Immediate from (i)--(iii): every deterministic cell has $\dim \geq 1$
+on pool coordinates alone. At $\Vstar = \Rstar$ every pool order clears
+fully, $c_i = q_i$ for all $i$, and $\gpo$/$\gpu$ record the whole pool
+under every kernel; and the post-trade best price jumps, so the stratum is
+revealed at every rung.
+\end{proof}
+
+\claimstatus{proven (as a sufficiency corollary; the concession stands)}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-ru} (random-unit fibers)]
+(i) Induction on the draw step: step $t$ hits order $i$ with probability
+$(q_i - c_i^{(t)})/(\Rstar - t)$ given the counts so far. Multiplying over
+an ordered realization $\omega$ with counts $c(\omega)$, order $i$'s
+successive factors telescope to the falling factorial $(q_i)_{c_i}$ and the
+denominators to $(\Rstar)_{\Vstar}$:
+$\mathbb{P}(\omega) = \prod_i (q_i)_{c_i(\omega)}/(\Rstar)_{\Vstar}$.
+The number of orderings with counts $c$ is
+$\Vstar!/\prod_i c_i!$, so the count marginal is
+\[
+\mathbb{P}(c) = \frac{\Vstar!}{\prod_i c_i!}\,
+\frac{\prod_i (q_i)_{c_i}}{(\Rstar)_{\Vstar}}
+= \frac{\prod_i \binom{q_i}{c_i}}{\binom{\Rstar}{\Vstar}} ,
+\]
+and $\mathbb{P}(\omega \mid c) = \prod_i c_i!/\Vstar!$ does not depend on
+$\qP$: the ordering is ancillary.
+
+(ii) The sequence law factorizes as (count law) $\times$ (uniform
+ordering given counts), so the count vector is sufficient for $\qP$ from
+the per-unit tape, and the $\gpo$ law (the count marginal) is a
+deterministic function of the $\gpu$ law and conversely:
+$\Fibkg[\kru,\gpo] = \Fibkg[\kru,\gpu]$.
+
+(iii) For $\Vstar \geq 2$, both $\rho_i$ and $\gamma_i$ are functionals of
+the count law: by exchangeability of the draws, $\mathbb{E}[c_i] = \Vstar
+\rho_i$ and $\mathbb{E}[c_i(c_i - 1)] = \Vstar(\Vstar - 1)\gamma_i$.
+Algebra:
+$\gamma_i/\rho_i = (q_i - 1)/(\Rstar - 1)$ and
+$\gamma_i/\rho_i^{2} = \Rstar(q_i - 1)/(q_i(\Rstar - 1))$, so
+\[
+\frac{1 - \gamma_i/\rho_i}{1 - \gamma_i/\rho_i^{2}}
+= \frac{(\Rstar - q_i)/(\Rstar - 1)}
+{(\Rstar - q_i)/(q_i(\Rstar - 1))} = q_i ,
+\]
+valid whenever $q_i < \Rstar$ (i.e.\ $m^{*} \geq 2$; for $m^{*} = 1$,
+$q_1 = \Rstar$ trivially). The count law determines every $q_i$: the
+law-level fiber on pool coordinates is a point. For $\Vstar = 1$ the law is
+$\mathbb{P}(c = e_i) = q_i/\Rstar$, invariant under $\qP \mapsto
+\lambda \qP$: proportions identified, scale not --- the scale ray.
+
+(iv) The point fiber is contained in, and strictly smaller than, the
+$(\kfifo,\gpo)$ fiber (free hidden depth and $m^{*} - \jstar$ orders;
+Proposition~\ref{prop:t1-det}(ii)) and in the pro-rata scale ray
+(Proposition~\ref{prop:t1-det}(iii)).
+
+(v) Deeper levels are unrecorded at every rung; within-order co-ownership
+splits leave every field unchanged (order entries, not actor entries, are
+the recorded objects; the split directions are exchangeable across the
+aggregation); at the realized-tape level never-drawn orders are pinned only
+through the \fld{eligible\_units} residual; a general $B$ contributes
+$\ker B$ by rank--nullity.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-anon} (kernel anonymity)]
+At $\gagg$ the recorded content is a function of the level walk, which is
+determined by $(Q, q)$ through price priority alone: the executed total per
+touched level is $V_p = \min(\text{demand reaching } p,\ S_p)$,
+kernel-independent, and the settlement transfers conserve the aggregate
+quantities. Under $\kru$ the attribution is random but the aggregate print
+is a deterministic function of $(Q, q)$; the randomness marginalizes:
+$\mathcal{L}_{\kru,\gagg}(\rawflow) = \delta_{(p^{*},\Vstar)}$, the same
+point mass as under any kernel $k$.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Corollary~\ref{cor:t1-grid} (interaction grid)]
+The table is the conjunction of
+Propositions~\ref{prop:t1-det}(i),(ii),(iii),(iv) and
+\ref{prop:t1-ru}(iii),(iv). (i) is Proposition~\ref{prop:t1-anon} plus
+Proposition~\ref{prop:t1-det}(v). (ii) is (iii)+(iv) of
+Proposition~\ref{prop:t1-ru}: the unique zero-dimensional pool cell is
+$(\kru, \gpo/\gpu)$ at $\Vstar \geq 2$. (iii) is
+Proposition~\ref{prop:t1-det}(v) plus the post-trade price jump of
+\S\ref{sec:scaffold}. (iv) The \fld{eligible\_units} chain of a round
+records the level's remaining total before each draw; its values and
+decrements reconstruct $\Rstar$ on pool coordinates, collapsing the scale
+ray for every $\Vstar \geq 1$; \fld{maker\_remaining} pins each drawn
+order's remaining quantity; \fld{selected\_unit} is a uniform label on
+$\{1,\dots,\fld{eligible\_units}\}$ --- exchangeable, carrying no quantity
+information beyond \fld{eligible\_units} itself.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Theorem~\ref{thm:t1-lead}]
+(1) is Lemma~\ref{lem:t1-r2b} with the constant evaluated through
+Lemma~\ref{lem:t1-r2a}(ii)--(iii): on $\qP = (2,2)$, $\Vstar = 2$,
+$\mathbb{P}(c_A = 2) = \binom{2}{2}\binom{2}{0}/\binom{4}{2} = 1/6$, so
+$\TV = 5/6$, and $5/6 = 1 - \max_x p_x$ bound per R2-A(ii). (2) is
+Proposition~\ref{prop:t1-r2c}. (3) is the off-stratum clause of
+Proposition~\ref{prop:t1-r2c}. The uniformity over $\Pi_{\mathrm{resp}}$
+and the conditions are those of Lemma~\ref{lem:t1-r2b}; the exhaustion
+stratum is handled by Remark~\ref{rem:t1-exhaustion} and never merged with
+the random bound.
+\end{proof}
+
+\claimstatus{proven\_with\_conditions (live conditions: the
+$\Pi_{\mathrm{resp}}$ class of Definition~\ref{def:t1-piresp}; interior
+regime; multi-order pool in the spread member; the M0 concession is a
+stratum statement, not a class statement)}
+
+\begin{proof}[Proof of Lemma~\ref{lem:t1-r2a} (R2-A)]
+(i) is Proposition~\ref{prop:t1-ru}(i).
+
+(ii) For a point mass $P = \delta_{x^{\circ}}$ and any law $p$:
+$\sum_x \min(P(x), p(x)) = p(x^{\circ})$, so
+$\TV(\delta_{x^{\circ}}, p) = 1 - p(x^{\circ}) \geq 1 - \max_x p(x)$, with
+equality when $x^{\circ}$ is a mode.
+
+(iii) \emph{Exact constants} (all verified by exact integer arithmetic; a
+CPU-only enumeration, no engine execution). $\qP = (2,2)$: at $\Vstar = 1$
+the atoms on $\{(1,0),(0,1)\}$ are $(1/2,1/2)$, $1 - \max = 1/2$; at
+$\Vstar = 2$ the atoms on $\{(2,0),(1,1),(0,2)\}$ are
+$(1/6, 4/6, 1/6)$, $1 - \max = 1/3$, and $\TV(\delta_{(2,0)}, p) = 5/6$.
+S3 scaffold $\qP = (5,4,3,2)$, $\Rstar = 14$, $x^{\circ} = (\Vstar,0,0,0)$:
+$p(x^{\circ}) = \binom{5}{\Vstar}/\binom{14}{\Vstar}$ gives $5/14$,
+$10/91$, $5/1001$ at $\Vstar = 1,2,4$, i.e.\ $\TV = 9/14$, $81/91$,
+$996/1001$; these $x^{\circ}$ coincide with the FIFO prefix for
+$\Vstar \leq q_1 = 5$. At $\Vstar = 6$ the FIFO prefix is $(5,1,0,0)$ with
+$p = \binom{5}{5}\binom{4}{1}/\binom{14}{6} = 4/3003$, $\TV = 2999/3003 =
+0.9987$. The bare $x^{\circ} = (6,0,0,0)$ has $q_1 = 5 < 6$: it is not in
+the pool's support, the two supports are disjoint, and $\TV = 1$ holds by
+empty intersection --- the \emph{infeasible-single-order witness}, reported
+only as the exhaustion-adjacent boundary value, never as a pool-realizable
+separation. \emph{Kernel-law-general universal bounds}: for the designated
+pool order (largest, $q_1 = 5$) the fill-count marginal is
+$\mathbb{P}(c_1 = k) = \binom{5}{k}\binom{9}{\Vstar -
+k}/\binom{14}{\Vstar}$ with atoms: $\Vstar = 1$: $(9/14, 5/14)$;
+$\Vstar = 2$: $(36/91, 45/91, 10/91)$; $\Vstar = 4$: $(126, 420, 360, 90,
+5)/1001$; $\Vstar = 6$: $(84, 630, 1260, 840, 180, 9)/3003$. The maxima
+are $9/14$, $45/91$, $420/1001$, $1260/3003$, giving $1 - \max = 5/14$,
+$46/91$, $581/1001$, $581/1001$ ($= 0.357, 0.505, 0.580, 0.580$; note
+$1260/3003 = 420/1001$). These marginal-based numbers lower-bound the
+joint-based $1 - \max_x p(x)$: the slice sum
+$\mathbb{P}(c_1 = \tilde{k})$ containing a joint mode $\tilde{x}$ is at
+least $p(\tilde{x})$, so $\max_k \mathbb{P}(c_1 = k) \geq \max_x p(x)$.
+
+(iv) For $\qP = (m,m)$ at fixed $\Vstar = v$:
+$\mathbb{P}(c = (k, v-k)) = \binom{m}{k}\binom{m}{v-k}/\binom{2m}{v} \to
+\binom{v}{k}/2^{v}$ as $m \to \infty$ (Vandermonde ratio limit; the
+without-replacement correction is $O(1/m)$ per draw), so
+$1 - \max_x p(x) \to 1 - \binom{v}{\lfloor v/2 \rfloor}/2^{v}$, which
+equals $1/2, 5/8, 11/16$ at $v = 2, 4, 6$. This is the balanced-family
+statement only; no general-composition asymptotic is claimed.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Lemma~\ref{lem:t1-r2b} (R2-B)]
+\emph{Step 1 (aggregate indistinguishability through round 1).} Both books
+have the same level maps in aggregate (ask total $4$ at $101$, bid total
+$8$ at $99$) and identical actor-total cash and inventory (no trades have
+occurred; resting orders reserve nothing). $C$'s marketable buy of
+quantity $2$ at $101$ walks to the only ask level:
+$\Vstar = \min(2, 4) = 2 < \Rstar = 4$ --- interior. After the round: the
+ask level total is $2$, the print $(101,2)$ issues, settlement conserves
+total cash and inventory and transfers $2$ units to $C$; the number of
+execution records differs across \emph{kernels} but $A$ does not read
+record counts. By the induction of Lemma~\ref{lem:g2-1} (whose engine
+content is kernel-independence of the aggregate walk), the aggregate state
+and print sequences agree a.s.: $A(s_{\mathrm{pm}}) = A(s_{\mathrm{sp}})$
+through the node. The attribution differs: under $s_{\mathrm{pm}}$ both
+kernels give $c_A = 2$ forced (all four units belong to $O_1$); under
+$s_{\mathrm{sp}}$ and $\kru$, $(c_A, c_B) \sim \MVHG((2,2), 2)$ with atoms
+$(1/6, 4/6, 1/6)$ on $\{(2,0),(1,1),(0,2)\}$.
+
+\emph{Step 2 (the responsive action is M1-admissible, valid in both
+members, and injective in the attribution).} $A$'s own post-round state is
+a function of $c_A$: cash $+101\,c_A$, inventory $-c_A$, own order
+remaining $4 - c_A$ (resp.\ $2 - c_A$). The response ``submit iff
+$c_A \geq 1$ a marketable sell of quantity $g(c_A)$ at $99$'' is therefore
+measurable in $A$'s own state --- the M1 channel (an M0 flow would submit
+a fixed function of the aggregate history, identical across members). It
+is valid in both members: the sell crosses the bid side where $A$ owns
+nothing (no self-trade); resource slack holds by the class conditions;
+$c_A \geq 1$ when submitted. The sell executes $\min(g(c_A), 8) = g(c_A)$
+at $99$ (slack), producing the next aggregate observation
+$f(g(c_A)) = (\text{print}(99, g(c_A)),\ \text{bid level } 8 - g(c_A))$;
+$f$ is injective on $\{1,2\}$ and $g$ is injective on
+$\mathrm{supp}(c_A) = \{0,1,2\}$ (with $c_A = 0$ mapping to ``no event,
+level $8$'', also distinct). Hence the next-observation map is injective
+in $c_A$.
+
+\emph{Step 3 (pushforward).} Under $s_{\mathrm{pm}}$ the next observation
+is the point mass at $f(g(2))$; under $s_{\mathrm{sp}}$ it is the
+injective pushforward of $c_A \sim (1/6, 4/6, 1/6)$. Injectivity makes
+pushforwards preserve total variation (the map is a bijection between the
+supports), so
+\[
+\TV = \mathbb{P}(f(g(c_A)) \ne f(g(2))) = \mathbb{P}(c_A \ne 2) = 5/6 .
+\]
+Uniformity: the computation used only the class conditions of
+$\Pi_{\mathrm{resp}}$ (one designated actor, one request, injective $g$,
+slack, no self-crossing, others inert) and the engine draw law at
+$(\qP, \Vstar)$ --- no other feature of $\pi$ enters. The separation is
+visible in the $\Fexec$ corpus contract (an execution record of quantity
+$c_A$ at price $99$ is an $\Fexec$ event) and in the level-total-only
+observer ($8 - c_A \in \{8,7,6\}$): the same injectivity argument runs on
+either projection.
+\end{proof}
+
+\claimstatus{proven\_with\_conditions (live conditions: the
+$\Pi_{\mathrm{resp}}$ class --- single designated pool actor, injective
+non-cancelling response, resource slack, no self-crossing; interior regime;
+$m^{*} \geq 2$ in the spread member)}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-r2c} (R2-C)]
+\emph{On-stratum (the concession).} Couple the policy randomness across the
+two members. Induction over completed requests: (a) the request issued at
+each boundary is a measurable function of the anonymous aggregate history
+plus the coupled randomness (M0), hence identical across members as long
+as the aggregate trajectories agree; (b) a request that is
+resource-slack and non-self-crossing in every fiber member is accepted in
+every member (validation depends on the request against per-actor
+quantities only through the slack/self-trade checks, both excluded), and
+its aggregate update is kernel- and attribution-independent
+(Lemma~\ref{lem:g2-1}'s execution step: the per-level totals filled are
+determined by the demand walking fixed price priorities against level
+totals). The induction closes: the aggregate process is a measurable
+function of (aggregate initial state, request sequence, policy
+randomness), so its law is constant on $\{s : A(s) = A(s_0)\}$.
+\emph{Grammar clause.} An order-id-addressed cancel/replace reads an id,
+which is not aggregate-measurable; the argument covers request grammars of
+(side, price, quantity) submissions, and order-id-addressed actions become
+admissible exactly when keyed to aggregate-observable labels
+(e.g.\ oldest-at-price), in which case (a) survives verbatim.
+\emph{Off-stratum (the sharp boundary).} Take
+asks$[101] = [(O_1, A, 2)]$ vs.\ asks$[101] = [(O_1, B, 2)]$: identical
+aggregate books, and the aggregate-measurable request ``$A$ submits a
+marketable buy at $101$''. In the first member the best ask is $A$'s own
+order: the request is rejected, \fld{self\_trade\_prevented}, no print and
+no level change; in the second it executes against $B$ with a print and a
+level decrement. The one-step aggregate laws differ on an event of
+probability one: $\TV = 1$ at M0. The per-actor reserve checks
+(\fld{insufficient\_cash}, \fld{insufficient\_inventory}) give the same
+effect whenever a per-actor quantity that differs across fiber members
+gates acceptance. The reduction's true boundary is ``no identity-dependent
+channel is active''; policy feedback (M1) and validation feedback are the
+two engine-native instances.
+\end{proof}
+
+\claimstatus{proven (with the request-grammar clause on order-id-addressed
+actions)}
+
+\begin{proof}[Proof of Corollary~\ref{cor:t1-r2d} (R2-D)]
+Let $h$ be the aggregate tape history; the two members induce the same $h$
+through the node (Step 1 of R2-B), and
+$\hat{\mathcal{K}}(\cdot \mid h)$ is a single law. The triangle inequality
+for total variation gives
+$\TV(\hat{\mathcal{K}}, \mathcal{K}_1) + \TV(\hat{\mathcal{K}},
+\mathcal{K}_2) \geq \TV(\mathcal{K}_1, \mathcal{K}_2)$, hence
+$\max_{s} \TV(\hat{\mathcal{K}}, \mathcal{K}_s) \geq
+\tfrac{1}{2}\TV(\mathcal{K}_1, \mathcal{K}_2) \geq
+\tfrac{1}{2}(1 - \max_x p_x) = \tfrac{1}{2}\cdot\tfrac{5}{6} = 5/12$ on
+the $(2,2)$, $\Vstar = 2$ pool. The training-signal clause is
+Lemma~\ref{lem:lemma0}: every through-M simulator's next-observation
+predictor is $\sigma(\tape)$-measurable, at the $\gagg$ rung a function of
+$h$ alone. The inequality is proved inline; no two-point lemma is invoked.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-sharp} (sharpness)]
+Let every pool actor respond with the exact buy-back-own-fills policy
+$g_i(c_i) = c_i$ within one aggregate window. By conservation of the
+round, $\sum_i c_i = \Vstar$ in every fiber member, so the window's total
+response volume, the level totals it restores, and the window-aggregated
+cash/inventory deltas are functions of $\Vstar$ alone: the windowed
+aggregate observation is fiber-constant and the one-step separation at
+that node is $\TV = 0$ --- although each individual submission is
+M1-admissible (it reads $c_i$). With per-event print granularity the
+observation is the print \emph{sequence} $((c_i)_i)$ (each submission
+prints its own quantity), which determines the count vector up to order;
+the event ``the sequence is the single print $(\Vstar)$'' is exactly
+$\{c_r = \Vstar\}$ for the designated actor $r$, of probability
+$\binom{q_r}{\Vstar}/\binom{\Rstar}{\Vstar}$ ($1/6$, i.e.\ separation
+$5/6$, on the $(2,2)$, $\Vstar = 2$ pool). Hence the pooled-window
+vanishing is genuine, not an artifact; the uniform bound of R2-B used
+injectivity of the response observation map in $c_r$, and buy-backs
+neutralize exactly that. The class assumption is necessary; ``all M1$+$''
+is false.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-pronga} (KT-G4 prong (a))]
+(A1) $(T \circ \varphi)^{-1}(A) = \varphi^{-1}(T^{-1}(A))$, so
+$\sigma(T \circ \varphi) = \{\varphi^{-1}(B) : B \in \sigma(T)\} =
+\varphi^{-1}(\sigma(T))$. Measurability transport: $h$ is
+$\mathcal{G}$-measurable iff $h$ factors through $T$ (classical
+factorization for standard Borel targets) iff $h \circ \varphi$ factors
+through $T \circ \varphi$ iff $h \circ \varphi$ is
+$\sigma(T \circ \varphi)$-measurable.
+
+(A2) The atom of $\sigma(T)$ containing $z$ is the realized-tape fiber
+$T^{-1}(\{T(z)\})$ (the recorded map's equivalence classes refine to atoms
+in the countably generated standard Borel setting). So ``the tape
+point-identifies $h$'' $\Leftrightarrow$ ``$h$ constant on fibers''
+$\Leftrightarrow$ ``$h$ is $\mathcal{G}$-measurable'' --- a statement
+about the pair $(h, \mathcal{G})$. Diffeomorphism invariance of the
+fibers: $z' \in \Fibtau[T \circ \varphi](z) \Leftrightarrow
+T(\varphi(z')) = T(\varphi(z))$, so $\varphi$ maps the $T \circ
+\varphi$-fiber of $z$ bijectively onto the $T$-fiber of $\varphi(z)$;
+dimensions agree.
+
+(A3) $\mathrm{d}(T \circ \varphi) = \mathrm{d}T \circ \mathrm{d}\varphi$
+with $\mathrm{d}\varphi$ invertible, so the differentials have equal rank
+at corresponding points and the tangent spaces of corresponding fibers are
+carried onto one another. The law-level statements substitute the
+measure-valued map $\mathcal{L}_{k,g}$ for $T$; (A1)--(A2) are about
+$\sigma$-algebras and apply verbatim.
+
+(A4) For linear $B$: the fibers of $T \circ B$ are $B$-preimages of
+fibers of $T$; rank--nullity adds $\dim \ker B$ to every fiber dimension,
+and the $\sigma$-algebra identity is again a preimage identity.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-prongb} (KT-G4 prong (b))]
+(B1) The multinomial count law with proportions $\pi_i = q_i/\Rstar$ has
+atoms $\propto \prod_i \pi_i^{c_i}$: invariant under $\qP \mapsto
+\lambda\qP$. Its equivalence classes are the scale rays (strictly: two
+proportion vectors differing in any coordinate give differing atoms),
+at every $\Vstar \geq 1$.
+
+(B2) For $\Vstar \geq 2$ the count law determines
+$\rho_i = \mathbb{E}[c_i]/\Vstar$ and $\gamma_i = \mathbb{E}[c_i(c_i -
+1)]/(\Vstar(\Vstar - 1))$ (first two factorial moments), and the algebra
+of Proposition~\ref{prop:t1-ru}(iii) recovers $q_i$ for every $i$
+($m^{*} \geq 2$): the $\MVHG$ classes on pool coordinates are points. At
+$\Vstar = 1$ the law is categorical with atoms $q_i/\Rstar$: the classes
+are the scale rays. The identified $\sigma$-algebra on pool coordinates
+strictly increases from $\Vstar = 1$ to $\Vstar = 2$ --- the jump.
+
+(B3) A $C^{1}$ reparameterization $\varphi$ acts on the family by
+transport, and equality of laws is preserved by transport:
+$q \sim q'$ iff $\varphi(q) \sim \varphi(q')$ (the transported family's
+atoms at $\varphi(q)$ are those of $q$). The equivalence relations are
+therefore isomorphic --- nontrivial classes stay nontrivial, point classes
+stay points --- so no reparameterization creates a scale-identification
+jump for the multinomial family at any $\Vstar$, and the $\MVHG$ jump
+cannot be erased or inverted by one. (A reparameterization at fixed
+proportions acts on the scale coordinate; the jump is the difference
+between ray classes and point classes, preserved under any bijection.)
+
+(B4) At an immersion point the Fisher-information rank equals the
+parameter dimension minus the tangent dimension of the likelihood map's
+level set (the tangent fiber); under a $C^{1}$ reparameterization the
+chain rule transports both the rank and the tangent fiber dimension, so
+the rank is a diffeomorphism invariant. The preregistered S3 rank ladder
+--- rank $6$ at $\Vstar = 1$ rising to $7$ at $\Vstar \geq 2$ on the pool
+cell, the multinomial falsifier constant at $6$ (exact integer arithmetic;
+part of the frozen S3 analysis arm) --- therefore reads, chart-free, as:
+no jump in the falsifier family at any $\Vstar$, jump in the engine
+family at $\Vstar = 2$; the engine law is not draws-without-replacement
+iff the jump is absent. The rank statement carries the immersion
+hypothesis; the fiber-dimension statement (B2) is unconditional.
+\end{proof}
+
+\claimstatus{proven}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t1-prongc} (KT-G4 prong (c))]
+(C1) The conditional variance
+$\mathrm{Var}_{\mu}(\Ccons \mid \sigma(T))$ is a functional of the joint
+law of $(\Ccons, \sigma(T))$-data. The map $z \mapsto \varphi(z)$ is a
+measure isomorphism $(\mu, \sigma(T)) \to (\varphi_{*}\mu,
+\sigma(T \circ \varphi))$ carrying $C$ to $C \circ \varphi^{-1}$ and
+fibers to fibers (prong (a), A2), so the functional's value is unchanged.
+For fiber-preserving $\psi$ the conditioning $\sigma$-algebra is literally
+unchanged ($\recordedmap \circ \psi = \recordedmap$) and the same
+isomorphism argument applies to the transported consumer at the
+transported reference.
+
+(C2) $\mathrm{floor} = 0$ iff $\Ccons$ is a.s.\ constant on the atoms of
+$\sigma(T)$ --- i.e.\ on fibers. The exact-zero predictions of
+Theorem~\ref{thm:t2-floor}(e) are exactly such statements (constant-$v$
+vectors lie in the kernel of the split projection).
+
+(C3) For the box reference the floor equals
+$\tfrac{R^{2}}{12}\|\vU\|^{2}$ --- the squared norm of the projection of
+$v$ onto $\ker \mathrm{d}T \cap (\text{quantity span})$ scaled by the
+per-coordinate variance of the box: a geometric object of the recorded
+map's differential. The closed-form constant
+$\tfrac{R^{2}}{12}\|\vU\|^{2}$ (orthant) /
+$\tfrac{R^{2}}{3}\sum(v_i - \bar{v}_\ell)^2$ (split) is its evaluation in
+the preregistered uniform charts of \S\ref{sec:consumers}; the reference
+measure is a declared contract item.
+
+(C4) Under the compatibility $D \circ \varphi = \varphi_{\mathrm{out}}
+\circ D$: $u \in \Exp(D, \Ccons)$ iff $\Ccons \circ D$ is not
+$u$-invariant iff $(\Ccons \circ \varphi^{-1}) \circ (D \circ \varphi)$ is
+not $\varphi(u)$-invariant (substitute the compatibility):
+$\Exp$ transports as $\varphi(\Exp(D, \Ccons)) = \Exp(D \circ
+\varphi, \Ccons \circ \varphi^{-1})$, preserving membership, sign, and the
+exposed/blind partition. The grammar maps of \S\ref{sec:t3h5} satisfy the
+compatibility when $\varphi$ moves only coordinates the map does not read,
+or moves them together with the map's output.
+
+(C5) $\Dswapru$ reads the level's remaining composition
+($q_i^{\mathrm{rem}}/S$ through the next-draw probabilities), coordinates
+the tape does not record; a fiber-preserving warp $\psi$ moves exactly
+those coordinates at fixed tape, so $\Dswapru \circ \psi \neq
+\psi_{\mathrm{out}} \circ \Dswapru$ in general and the exposed set varies
+along the warp. That non-invariance is the content of
+Theorem~\ref{thm:t3-t1}, not a defect of this proposition.
+\end{proof}
+
+\claimstatus{proven\_with\_conditions (live conditions: C4 requires the
+$D$-transport compatibility stated; the exact closed-form floor constant is
+reference-measure-relative --- a declared, preregistered contract item)}
+
+\begin{remark}[prong (d): why refuted as stated]
+\label{rem:t1-prongd}
+If $\mathrm{D}f_{\theta}$ is rank-deficient at $\zeta$, then
+$f_{\theta}$ is non-injective on every neighborhood and the
+$\zeta$-space fiber $\{\zeta' : T(f_{\theta}(\zeta')) = T(f_{\theta}
+(\zeta))\}$ is the strict union of $\zeta$-preimages over the
+flow-space fiber: positive-dimensional even where the flow-space fiber is
+a point. No flow-space statement constrains these fibers, so a
+$\theta$-space dimension claim is chart-dependent and is not made; the
+concession to DPIOT \citep{dpiot2022} and Perturb-Argmax/Softmax
+\citep{perturbargmax2024} stands verbatim as in \S\ref{sec:t1-chartfree}.
+\end{remark}
+
+\claimstatus{refuted as stated (chart-dependent; conceded to DPIOT and
+Perturb-Argmax/Softmax)}
+
+\begin{remark}[hostile checks carried]
+\label{rem:t1-hostile}
+(1) \emph{``The aggregate statistic is too weak; use a better one.''} The
+obstruction is proved against $A$, the engine's \emph{strongest} aggregate
+observer (\S\ref{sec:engine}); the witness pair's separation is checked
+directly in the level-total and print projections (Step 3 of R2-B). No
+general ``non-lumpability against $A$ implies non-lumpability against every
+coarser aggregate'' claim is made --- coarsening can merge next-observation
+values, and the implication is false in general; what holds is that this
+witness survives these named coarsenings, verified by hand.
+(2) \emph{``Determinism at exhaustion defeats the random bound.''} Handled
+by the separate deterministic clause (Remark~\ref{rem:t1-exhaustion}),
+never merged with the random bound.
+(3) \emph{Constants.} Every constant in R2-A was re-derived by exact
+integer arithmetic as a CPU-only enumeration (no engine execution); the
+frozen numbers print as computed, and the infeasible $\TV = 1$ at
+$\Vstar = 6$ is quarantined as a boundary witness, never quoted as
+pool-realizable.
+(4) \emph{Witness grounding.} The R2-B witness needs a multi-order
+rationed level; the frozen 21/22-event bundle's touched level is
+single-maker (the collapse stratum), so dynamic confirmation is bound to
+the lab-asset-v3.1 enrichment and the post-D0 S1a gates --- a design
+dependency, not an observed outcome.
+\end{remark}
+
+\subsection{Proofs for Theorem package II (T2)}
+\label{app:proofs-t2}
+
+Throughout A.2, $(k, \mathcal{F})$ is a fixed training cell with
+$\mathcal{F} = \Fexec$, $\tape$ a realized tape, $\Fibtau = \{\rawflow' :
+\recordedmap(\rawflow') = \tape\}$ its fiber, and $\muR$ the preregistered
+box reference of \S\ref{sec:t2-floor}. A1--A5 are in force.
+
+\begin{preregthm}{Lemma 0: training-signal identity}{0}
+\label{lem:lemma0}
+If $\recordedmap(\rawflow) = \recordedmap(\rawflow')$ then: (a) the two
+training corpora are byte-identical; (b) every training map $A$ (assumption
+A4: deterministic, or stochastic under paired seed draws) produces identical
+parameters $\hat{\theta} = A(\tape)$; (c) every consumer readout
+$\hat{\Ccons} = \Ccons \circ \mathrm{sim}(\hat{\theta})$ is a measurable
+function of $(\tape, \omega)$ alone --- in particular fiber-constant, i.e.\
+$\sigma(\tape)$-measurable.
+\end{preregthm}
+
+\claimstatus{proven (under A2 and A4 of the Theorem 1 package)}
+
+\begin{proof}
+(a) The corpus \emph{is} the sequence of payload projections; equal recorded
+maps produce equal byte sequences by definition of the grammar. (b) is
+determinism of $A$ on equal inputs (paired seeds make the stochastic case
+deterministic conditionally on the shared seed draw). (c) is composition of
+measurability: $\hat{\Ccons}$ factors through $(\tape, \omega)$, and on the
+fiber $\tape$ is constant.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:t2-floor}]
+(a) \emph{Orthant/box case.} On the never-executed coordinates the fiber is
+a translate of $\mathbb{R}_{\ge 0}^{|\Utau|}$; the box reference makes
+$q_i \sim \mathrm{Unif}[a_i, a_i + R]$ independent with
+$\mathrm{Var}(q_i) = R^2/12$. The consumer is
+$\Ccons = \sum_{i \notin \Utau} v_i q_i^{\mathrm{rec}} + \sum_{i \in \Utau}
+v_i q_i$ with the first sum fiber-constant, so independence gives
+$\mathrm{Var}_{\muR}(\Ccons \mid \tape) = \sum_{i \in \Utau} v_i^2 R^2/12 =
+(R^2/12)\|\vU\|^2$. \emph{Split case.} The fiber at a touched level $\ell$
+with never-drawn set $\mathrm{ND}(\ell)$, $|\mathrm{ND}(\ell)| = m$, is
+$\bar{\rawflow} + P_K\varepsilon$ with
+$P_K = I - \tfrac{1}{m}\mathbf{1}\mathbf{1}^{\top}$ and
+$\varepsilon_i \sim \mathrm{Unif}[-R,R]$ independent
+($\mathrm{Var}(\varepsilon_i) = R^2/3$). Then
+$\Ccons(\bar{\rawflow} + P_K\varepsilon) - \Ccons(\bar{\rawflow}) =
+v^{\top}P_K\varepsilon = (P_Kv)^{\top}\varepsilon$ ($P_K$ symmetric), and
+$P_Kv$ vanishes off $\mathrm{ND}(\ell)$ with coordinates
+$v_i - \bar{v}_\ell$ there; independence gives
+$\mathrm{Var} = (R^2/3)\sum_{i \in \mathrm{ND}(\ell)}(v_i -
+\bar{v}_\ell)^2$.
+
+(b) For any constant $c$ (any $\tape$-measurable predictor is fiber-constant
+by Lemma~\ref{lem:lemma0}),
+$\mathbb{E}(X - c)^2 = \mathrm{Var}\,X + (\mathbb{E}X - c)^2 \ge
+\mathrm{Var}\,X$ with equality iff $c = \mathbb{E}X$ a.s.
+
+(c) $\hat{\Ccons}^{*} = \mathbb{E}[\Ccons \mid \tape]$ is fiber-constant
+hence $\tape$-measurable, and attains equality in (b); no
+$\tape$-measurable predictor does better, so the infimum equals
+$\mathrm{Var}_{\muR}(\Ccons \mid \tape)$, which (a) evaluates to
+$R^2\|\vU\|^2/12$ in the orthant case.
+
+(d) $\floorRMSE = R\|\vU\|/\sqrt{12}$ and $1/\sqrt{12} = 0.2887\ldots
+\approx 0.289$. Tape-computability: $\Utau$ is decided by the tape itself
+(which orders never executed / were never drawn), and by
+Lemma~\ref{lem:g2-4} that determination is kernel-aware --- the corpus
+grammar carries the kernel fingerprint.
+
+(e) \emph{fifo cell.} $\Utau$ is the never-executed orthant (front orders up
+to the threshold are pinned by cumulative fills plus
+\fld{maker\_remaining}; the threshold order's fill is demand-capped so its
+hidden depth is free; orders at other levels are price-priority-untouched),
+so (a) applies with $\|\vU\|^2$ proportional to $|\Utau|$: $\Theta(R^2)$
+growth. \emph{$\kru$ + per-unit tape.} The \fld{eligible\_units} chain of
+each round records the level total before the draw
+($S = \sum_{i \in \mathrm{queue}(\ell)} q_i$), pinning the level aggregate;
+\fld{maker\_remaining} pins each drawn order; never-drawn order ids appear
+in no $\Fexec$ field. The fiber on never-drawn coordinates is exactly the
+split kernel $\{u : \sum_{i \in \mathrm{ND}(\ell)} u_i = 0\}$ (plus the
+untouched-level orthant), so the surviving variance is the split term of
+(a). (i) If $v_i \equiv p_\ell$ on $\mathrm{ND}(\ell)$ then $P_Kv = 0$:
+constant vectors are in the kernel of $P_K$, giving the exact zero.
+(ii) For $v_i = p_\ell\mathbf{1}\{t_i \le W\}$ the two-group variance
+identity gives
+$\sum_{i \in \mathrm{ND}(\ell)}(v_i - \bar{v}_\ell)^2 = p_\ell^2\,
+m_{\mathrm{in}}m_{\mathrm{out}}/m$
+(with $m = m_{\mathrm{in}} + m_{\mathrm{out}}$), positive exactly when
+$m_{\mathrm{in}}, m_{\mathrm{out}} \ge 1$ --- a straddling level.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t2-distill}]
+The student consumes the teacher's outputs and at most tape-side data; by
+Lemma~\ref{lem:lemma0} everything it sees is $\sigma(\tape)$-measurable,
+and a measurable function of $\tape$-measurable data is $\tape$-measurable.
+Theorem~\ref{thm:t2-floor}(b) then applies verbatim. Beating the floor
+requires a data source that varies on the fiber, i.e.\ raw-flow information.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:t2-recession}]
+\emph{fifo:} units appended to never-executed orders sit behind the queue
+head forever, and hidden depth at the threshold order $\jstar$ cannot change
+$\jstar$'s fill because the fill is demand-capped
+($\mathrm{fill} = \min(\mathrm{remaining}, \mathrm{maker\_qty})$: with
+incoming remaining $= \Vstar$-prefix $< q_{\jstar} + t$ the fill stays the
+demand). \emph{ru + aggregate tape:} the scale ray moves untouched-level
+quantities only. In all cases $\recordedmap(\bar{\rawflow} + tu) = \tape$
+for all $t \ge 0$ (integer $t$ included), while the consumer moves linearly.
+Lemma~\ref{lem:lemma0} gives identical corpora, hence exactly zero
+training-loss difference for all $t$. Mechanism-attributability holds
+because $\Exp(\Draw, \Ccons) = \Utau \ni u$
+(Proposition~\ref{prop:t3-attr}).
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:g2-1} (G2-1)]
+Process the request stream inductively over completed requests. Non-execution
+events (acceptances, cancels, replaces, rejections) touch the aggregate
+state through level totals and identical bookkeeping under both rules; they
+do not allocate, so their aggregate updates are rule-independent. An
+execution event at level $\ell$ changes the aggregate state only by: (i) the
+level total at $\ell$ decreases by the total filled during the incoming
+order's walk, (ii) the cash/inventory transfer, (iii) the
+\fld{last\_match\_ts}. The per-level totals filled are determined by the
+incoming demand walking fixed price priorities, independent of how the
+kernel allocates \emph{within} the level: the two kernels differ only in the
+maker-identity composition of the fill (front-of-queue vs.\ drawn unit),
+which the anonymous aggregate cannot see. Induction over the stream closes
+the argument; the comparison is at completed-request boundaries (the arms
+emit different numbers of execution records for the same total fill), and
+the frozen-fixture hash identity quoted in the statement is exactly this
+alignment realized: one aggregated fill record (quantity 2) vs.\ two unit
+fill records sharing \preagghash{} and reaching \postagghash{}. Kernel-blind
+functionals of the aggregate tape, of the scaffold, of $(R, \|v\|,
+\mathrm{dim})$, and of Lipschitz $\times$ diameter budgets are functions of
+this invariant content.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:g2-2} (G2-2)]
+(1) \emph{fifo cell.} With $\Vstar = 1$ the front order $O_1$ is selected
+and filled $1$; the tape records \fld{maker\_remaining} $= q_1 - 1$, pinning
+$q_1$. Orders $O_2,\dots,O_n$ appear in no $\Fexec$ field (execution
+payloads reference executed makers only; BBO quotes stay at the pool price
+on a strict partial fill, revealing no depth), so
+$\Utau = \{q_2,\dots,q_n\}$ and Theorem~\ref{thm:t2-floor}(a) gives
+$\mathrm{floor}_{\kfifo} = \sum_{i=2}^{n}p^2R^2/12 = (n-1)p^2R^2/12$;
+Theorem~\ref{thm:t2-floor}(c) makes this the exact minimax value.
+(2) \emph{ru cell.} The single draw is uniform over the $\Rstar$ eligible
+units; the tape records \fld{eligible\_units} $= \Rstar$ (pinning the level
+aggregate) and the drawn order's \fld{maker\_remaining} (pinning its
+quantity). The fiber on never-drawn coordinates is the split kernel, and the
+consumer $\Ccons = p\sum_i q_i$ is constant on it (the aggregate is
+pinned): $\mathrm{floor}_{\kru} = 0$ --- the exact-zero cell of
+Theorem~\ref{thm:t2-floor}(e)(i). (3) \emph{Separation.} Both tapes arise
+from the same $(P,s)$, so by G2-1 all kernel-blind data coincide; a
+uniformly valid kernel-blind $B$ must satisfy $B \le \mathrm{floor}_{\kru} =
+0$ on the ru cell and $B \ge 0$ everywhere, forcing $B = 0$; on the fifo
+cell the truth is $(n-1)p^2R^2/12 > 0$, so the ratio is infinite.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:g2-3} (G2-3)]
+Theorem~\ref{thm:t2-floor}(e)(ii) supplies both floors. The two-group
+variance identity (computed in the proof of
+Theorem~\ref{thm:t2-floor}(e)(ii)) gives the ru floor
+$(R^2/3)p^2m_{\mathrm{in}}m_{\mathrm{out}}/m$ and the fifo floor is
+$(R^2/12)p^2m_{\mathrm{in}}$ (only in-window never-executed coordinates
+carry $v_i = p$; out-of-window coordinates carry $v_i = 0$ and contribute
+$v_i^2R^2/12 = 0$). Dividing,
+$\rho = 4m_{\mathrm{out}}/m = 4(1 - m_{\mathrm{in}}/m)$. (i) is immediate.
+(ii) is the limit $m_{\mathrm{in}} = 1$, $m \to \infty$. More generally, for
+arbitrary $v$ on the common never-touched set with $S = \|v\|^2$ and
+$T = \sum_i v_i$, the identity
+$\sum(v_i - \bar{v})^2 = S - T^2/m$ gives
+$\rho = 4(1 - T^2/(mS)) \in [0,4)$ by Cauchy--Schwarz: $\rho \to 0$ as
+$v \to$ constant (the G2-2 cell), $\rho \to 4$ for single-in-window
+consumers on large levels. (iii) Direct computation: the fifo cell has
+$\Utau = \{O_2,\dots,O_5\}$, $v_{\Utau} = (p,0,0,0)$, floor
+$R^2p^2/12$; the ru cell (draw realization $O_1$, never-drawn
+$\{O_2,\dots,O_5\}$, $\bar{v} = p/4$) has
+$\sum(v_i - \bar{v})^2 = (3p/4)^2 + 3(p/4)^2 = 3p^2/4$, floor
+$(R^2/3)(3p^2/4) = R^2p^2/4$; ratio exactly 3. Dimensions: 4 vs.\
+$4 - 1 = 3$ (the split hyperplane). (iv) Pairwise second moments: fifo
+$\mathbb{E}\|Z - Z'\|^2 = 2\sum_{i=1}^{m_f}\mathrm{Var}(q_i) = 2m_fR^2/12$
+$= m_fR^2/6$; ru split
+$\mathbb{E}\|u - u'\|^2 = 2\,\mathrm{tr}((R^2/3)P_K) = (2R^2/3)(m_r - 1)$;
+equal at $m_f = 4(m_r - 1)$. With $m_r = 2$, $m_f = 4$ and total
+$\|v\| = p$ loaded on both, the floors are $R^2p^2/12$ vs.\ $R^2p^2/6$
+(ratio exactly 2). \emph{Width-matching:} under
+$\varepsilon \sim \mathrm{Unif}[-R/2,R/2]$ the split per-coordinate
+variance becomes $R^2/12$, so $\rho = 4m_{\mathrm{out}}/m$ becomes
+$m_{\mathrm{out}}/m \le 1$ --- the gap inverts, the separation survives
+(kernel-dependent, zero for constant $v$), and the headline constant does
+not transfer across conventions; the deviation-budget reading (both
+conventions bound $|\varepsilon_i| \le R$) is the frozen one.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:g2-4} (G2-4)]
+(i) is static schema inspection: (a) \fld{session\_start} carries
+\fld{allocation\_rule} verbatim; (b) \fld{allocation\_draw} is emitted in an
+execution payload exactly on the random-unit branch; (c) per-unit
+quantity-1 records vs.\ per-maker multi-unit records separate the granularities
+even absent (a)--(b). (ii) Drawn and executed order ids occur only inside
+execution/\fld{allocation\_draw} payloads; the aggregate levels are
+anonymous (price, total) pairs and cannot recover them. (iii) combines
+(i)--(ii) with G2-2/G2-3.
+\end{proof}
+
+\begin{remark}[hostile checks carried]
+\label{rem:g2-hostile}
+(1) \emph{Dichotomy, not victory over a triviality.} Any kernel-blind bound
+is either positive somewhere --- hence false as a certified lower bound on
+every split cell where the exact floor is smaller (the naive
+$R\|v\|/\sqrt{12}$ over-predicts the ru split floor by an infinite factor
+for the price-notional consumer) --- or identically zero wherever a
+zero-floor cell shares its kernel-blind data, hence uninformative by an
+infinite factor on the fifo cell of the same data. Validity $\times$
+informativeness is jointly impossible for any finite factor.
+(2) \emph{Convention coupling.} G2-2 is convention-robust (zero stays zero,
+positive stays positive under any positive-width rescaling); G2-3's finite
+factor is convention-coupled as disclosed in its statement. (3)
+\emph{Fixture grounding.} The multi-order rationed level needed for the
+split cells is engine-semantic; the frozen 21/22-event fixtures contain only
+a single-maker rationed level, so dynamic confirmation of the split cells
+waits on the enrichment and the post-D0 S1a gates.
+\end{remark}
+
+\subsection{Proofs for Theorem package III (T3)}
+\label{app:proofs-t3}
+
+\begin{proof}[Proof of Theorem~\ref{thm:t3-t1}]
+(1) $\Dread$ composes the consumer with the deployed tape: tape-measurable
+by Lemma~\ref{lem:lemma0}, hence fiber-constant, $\Exp = \emptyset$.
+$\Draw$ composes it with the identity on flows:
+$\Exp(\Draw, \Ccons) = \{u : v^{\top}u \ne 0\} = \Utau$ when
+$\vU \not\equiv 0$; magnitude $\Theta(\delta)$ exactly, linear.
+
+(3) \emph{$\Dswapfifo$ on the fifo cell: exact blindness.} Every direction
+in $\Utau_{\kfifo}$ is fifo-silent: appended units on never-executed orders
+never reach the queue head; hidden depth at $\jstar$ cannot change
+$\jstar$'s fill (demand cap, as in Corollary~\ref{cor:t2-recession});
+never-executed orders at other levels are untouched by price priority. Hence
+$\Mfifo(\bar{\rawflow} + tu) = \Mfifo(\bar{\rawflow})$ for all $t \ge 0$,
+integer $t$ included (no tie or crossing events arise: prefix sums at or
+before the threshold are unchanged; the exhaustion/tie wall is excluded by
+the interior regime). Every consumer of the deployed record is
+fiber-constant.
+
+(4) \emph{$\Dswapfifo$ on the ru cell.} Deploying fifo on the same book, let
+$F_f$ be the fifo filled set and $\jstar_{\mathrm{fifo}}$ the threshold.
+(i) Splits between never-drawn orders both beyond the threshold are blind:
+prefix sums at or before the threshold are unchanged and neither order is
+reached. (ii) Splits with an endpoint $a \in F_f$: the deployed fifo fill of
+$a$ is $\min(R_a, q_a + t\,s)$ ($R_a$ = demand reaching $a$); moving
+quantity out of $a$ changes allocations iff $q_a - \delta < R_a$, i.e.\
+iff $\delta$ exceeds the slack $h_a := R_a - \mathrm{fill}(a)$: magnitude
+$\Theta((\delta - h_a)^{+})$, an integer-lattice jump after a dead zone;
+sign: $a$ loses, later orders gain. $F_f$, $R_a$, $h_a$ depend on
+never-drawn quantities and are instance-level (computable from the
+fixture/prestate, not from the ru tape) --- the disclosed condition.
+
+(2) \emph{$\Dswapru$.} For $u = \delta e_i$ on a never-drawn order at a
+touched level ($S$ = level remaining = the recorded
+\fld{eligible\_units}), the uniform-over-remaining-units draw pmf
+$p_j = q_j^{\mathrm{rem}}/S$ differentiates to
+$\mathrm{d}p_j/\mathrm{d}q_i = -q_j/S^2$ ($j \ne i$),
+$\mathrm{d}p_i/\mathrm{d}q_i = 1/S - q_i/S^2 = (S - q_i)/S^2 > 0$ (strict
+while $\ge 2$ orders remain at the level). Deterministic channel: the
+deployed draw records' \fld{eligible\_units} reads $S + \delta$ (the engine
+computes $S$ as the full queue sum before the RNG call) --- an exact integer
+displacement visible with probability 1. Probability channel: expected
+counts $\mathbb{E}[c_j] = \Vstar\,p_j$ (sequential martingale structure of
+sampling without replacement) move at $\Theta(\delta/S)$ with the signs
+above. Deeper levels are one-step silent under both kernels (price
+priority); at the aggregate rung no swap exposure exists at all (kernel
+anonymity). Under the $\kru$ + per-unit training cell the magnitude
+coordinates are tape-pinned, and the swap's residual exposure is the split
+kernel: the next-draw probabilities $q_i/S$ read split directions
+one-for-one (Lemma~\ref{lem:v4-a}, item A.2).
+
+(5) \emph{$\Dtrunc[W]$: masking.} Out-of-window directions are dropped from
+the deployed flow before any consumer reads them:
+$\Exp(\Dtrunc[W], \Ccons) = \{u \in \Utau : \mathrm{supp}(u) \subseteq
+\text{in-window},\ v^{\top}u \ne 0\}$; magnitude unchanged
+($\Theta(\delta)$, linear) on surviving directions, exactly 0 on dropped
+ones. Floor localization: $\mathrm{Var} = (R^2/12)\|v_{\Utau \cap W}\|^2$ (orthant)
+and $(R^2/3)p_\ell^2(m_{\mathrm{in}}m_{\mathrm{out}}/m)$ (splits);
+monotone nondecreasing in $W$; zero when no straddling.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:t3-asym}]
+$\Dswapru$'s deterministic channel moves \fld{eligible\_units} by the full
+injected $\delta$ and the probability channel moves next-draw probabilities
+at $\delta/S$ per unit injection; over the reference ray $t \in [0,R]$ the
+allocation-level divergence is $\Theta(R/S) > 0$. $\Dswapfifo$ on fifo cells
+is exactly 0 by T-1(3) --- a point null, not a small effect.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:t3-t2}]
+(a) Induction on the number of factors: if every stage-$k$ input is
+$u$-invariant then $D_1(\rawflow + tu) = D_1(\rawflow)$ gives identical
+inputs to $D_2$, and the hypothesis at each stage gives identical outputs;
+the consumer composes through identical records. The ``only readers''
+clause is the exhaustive input-sensitivity list of the generators:
+$\Dswapru$ reads level totals and queue composition at touched levels;
+$\Dswapfifo$ reads the arrival prefix up to the demand threshold;
+$\Dtrunc[W]$ reads clocks; $\Dread/\Draw$ are bracketing controls. The
+lemma is elementary by design --- its content is this exhaustive table.
+
+(b) Truncation first: order $i$ (out-of-window, never-drawn) is deleted
+before the swap replays, so the deployed flows are literally equal and $u$
+is not exposed. Swap first: the swap replays on the full book whose level
+total is $S + \delta$; every deployed draw record of that level carries
+\fld{eligible\_units} $= S + \delta \ne S$ (the engine sums the whole queue
+--- a level total, not a window total), and the deployed execution records
+carry the in-window aggressor's clocks and survive the outer truncation:
+$u$ is exposed with probability 1, deterministically through the
+denominator channel. The strict difference is exactly the out-of-window
+magnitude directions at touched levels. The clock configuration is legal in
+the schema but absent from the current fixtures.
+
+(c) Every one-step factor is $u$-blind (round-1 swaps never touch the
+deeper level $\ell'$; round-1 truncation with $W \ge$ round-1 clocks does
+not read $\ell'$'s quantities). On $E_{\ell'}$ the book-update map (fills
+decrement; untouched levels persist across rounds) makes $\ell'$'s quantity
+a round-2 input, and T-1(2) applies verbatim at $\ell'$:
+\fld{eligible\_units} reads $S' + \delta$ with probability 1 and the
+probabilities move at $\Theta(\delta/S')$. Truncating before round 2 with
+$\mathrm{clock}_i > W$ destroys the exposure again (the (b) mechanism).
+
+(d) Replace $\Utau$ by
+$\Utau^{D} := \Utau \cap \{\text{directions the deployed record reads}\}$ in
+Theorem~\ref{thm:t2-floor}(a): the orthant part $(R^2/12)\|v_{\Utau^{D}}\|^2$
+and the split part over levels/orders still read give the localized floor.
+The inclusions are stage-wise by (a); the strict patterns are (b) and (c).
+Every quantity involved (never-drawn sets, \fld{eligible\_units} levels,
+clock straddling) is tape- or fixture-computable.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t3-attr}]
+$\mathrm{Var}_{\muR}(\Ccons \circ D \mid \rawflow) = 0$ trivially, so
+$\mathrm{Attr}(\Ccons, D) = \mathrm{Var}_{\muR}(\Ccons \circ D \mid \tape)$, which
+is positive iff the consumer is nonconstant on some direction of $\Fibtau$,
+i.e.\ iff $D$ exposes a direction with $v^{\top}u \ne 0$ (T-1); the
+localization is T-2(d). The estimand inequality: the through-M arm's
+predictor is $\tape$-measurable (Lemma~\ref{lem:lemma0}), so its worst-case
+error is at least the floor (Theorem~\ref{thm:t2-floor}(b)); the raw arm's
+estimation error is the explicit correction term. Criterion items (ii)--(iii)
+are the preregistered controls stated with the cube design.
+\end{proof}
+
+\subsection{Proofs for H5 (kernel-swap manipulation validity)}
+\label{app:proofs-h5}
+
+\begin{proof}[Proof of Lemma~\ref{lem:h5-a} (Layer 0)]
+The aggregate projection records level quantities and totals, which are
+functions of the book's evolution; the kernel allocates within the marginal
+pool only and conserves units and cash at every fill, so the anonymous level
+quantities are unaffected by which order inside the level was drawn. Both
+corpus laws are the point mass of the same deterministic aggregate tape
+(kernel anonymity at the aggregate rung). No (A3$'$) is needed.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:h5-b} (Layer 1)]
+Let $A$ be the event ``the projected tape contains at least one execution
+record carrying an \fld{allocation\_draw} key''. Under $\kru$ every executed
+unit produces exactly one execution record and every such record carries a
+non-null draw, so $A$ occurs as soon as any execution occurs; under
+$\kfifo$ the key is never emitted. Total variation dominates the
+indicator-event discrepancy:
+$\TV \ge |\Pr_{\kru}(A) - \Pr_{\kfifo}(A)| = 1$. Only draw
+\emph{presence}, not draw law, is used --- no (A3$'$) needed.
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:h5-c} (Layer 2)]
+(i) With no RNG consumption in the FIFO branch, the tape is a deterministic
+function of the DGP instance, and its $\Pi_{\mathrm{att}}$ projection is the
+fixed prefix-fill vector $\cF(\qP, \Vstar)$.
+
+(ii) Couple the draw mechanism to a uniformly random permutation of the
+$\Rstar$ resting units: step $t$ picks order $i$ with probability
+$(q_i - c_i^{(t)})/(\Rstar - t)$, which equals the conditional probability
+that position $t$ of a uniform random permutation of the $\Rstar$ units
+(blocked by queue position, the selected unit a uniform unit label) lands in
+order $i$'s block given the first-$t$ counts (induction on $t$; each step
+reveals one uniformly chosen remaining unit). The first $\Vstar$ positions
+of a uniform permutation have per-block counts distributed
+$\MVHG(\qP, \Vstar)$ (the classical composition law; no novelty claimed).
+The projection $\Pi_{\mathrm{att}}$ discards order and unit labels, leaving
+exactly the count vector.
+
+(iii) For $P = \delta_{\cF}$ and any law $\nu$:
+$\sum_x\min(P(x), \nu(x)) = \nu(\{\cF\})$, and
+$\TV = 1 - \sum_x\min$. Under (A3$'$), $\nu(\{\cF\}) =
+\prod_i\binom{q_i}{c_i^{F}}/\binom{\Rstar}{\Vstar}$.
+
+(iv)(b) The largest atom away from $\cF$ plus the atom at $\cF$ (or the
+mode, if different) sums to at most 1; in either case the largest atom away
+from $\cF$ is at most $1 - \nu(\{\cF\}) = \TV$. (iv)(c) is
+Lemma~\ref{lem:h5-d} applied with
+$\max_c Q(c) \le \max_x \Pr(c_j = x)$ (marginalization decreases atoms),
+$c_j \sim \mathrm{Hyperg}(\Rstar, q_j, \Vstar)$ with
+$\sigma_j^2 = \Vstar(q_j/\Rstar)(1 - q_j/\Rstar)(\Rstar -
+\Vstar)/(\Rstar - 1)$; in the contested regime
+$\sigma_j^2 \ge \Vstar\theta_0(1-\theta_0)v_0'$ with
+$v_0' = (1 - \Vstar/\Rstar)\Rstar/(\Rstar - 1) > 0$ a pool constant, giving
+$\TV \ge 1 - C/\sqrt{\Vstar}$,
+$C = 2/\sqrt{\theta_0(1-\theta_0)v_0'}$ --- the regime corollary.
+
+(v) Under (A3$'$): $Q(\cF) = 1$ iff the support of $Q$ is a single point,
+which happens iff $m = 1$ (support $\{(\Vstar)\}$) or $\Vstar = \Rstar$
+(support $\{q\}$); conversely with $m \ge 2$ and
+$1 \le \Vstar \le \Rstar - 1$ at least two allocations carry positive mass.
+Without (A3$'$), for any $\nu$ that is not a point mass at $\cF$,
+$\TV = 1 - \nu(\{\cF\}) > 0$ (non-degeneracy only). Partial-fill floor: the
+event ``first draw hits an order $i$ with $c_i^{F} = 0$'' has
+$\kru$-probability $q_i/\Rstar$ and forces $c_i \ge 1$, so
+$\nu(\{\cF\}) \le 1 - \sum_{i : c_i^{F} = 0}q_i/\Rstar$.
+
+\emph{Corpus-level contraction.} Coarsening the corpus by a grammar $G$
+coarser than the full tape (in particular $\Fexec$) applies the same Markov
+kernel to both laws, and $\TV$ contracts; the event ``first-round
+attribution $= \cF$'' contains the event ``entire corpus equals the
+FIFO-consistent corpus,'' so
+$\TV(\Lambda^{G}_{\kfifo}, \Lambda^{G}_{\kru}) \ge 1 - Q(\cF)$: the
+single-round constant lower-bounds the corpus separation. Only the first
+contested round is used (later-round pools are themselves draw-dependent
+under $\kru$ --- the forward non-lumpability of T1 --- and are not needed
+here).
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:h5-d}]
+Write $p(x) = \binom{K}{x}\binom{N-K}{n-x}/\binom{N}{n}$ on the interior
+support and $h$ for the natural binary entropy. The explicit Stirling
+bounds
+$\ln m! \in [m\ln m - m + \tfrac{1}{2}\ln(2\pi m),\; m\ln m - m +
+\tfrac{1}{2}\ln(2\pi m) + \tfrac{1}{12m}]$
+give
+\[
+p(x) \;\le\; e^{\varepsilon}(2\pi)^{-1/2}
+\sqrt{\frac{n\,(N-n)\,K\,(N-K)}
+{N\,x\,(K-x)\,(n-x)\,(N-K-n+x)}}\,
+e^{\,Kh(x/K) + (N-K)h\!\left(\frac{n-x}{N-K}\right) - Nh(n/N)},
+\]
+with
+$\varepsilon = \tfrac{1}{12K} + \tfrac{1}{12(N-K)} + \tfrac{1}{12n} +
+\tfrac{1}{12(N-n)} \le \tfrac{1}{3}$ on the interior support (degenerate
+edges have $\sigma = 0$, excluded).
+
+\emph{Entropy part.} By concavity of $h$ (mixture inequality with weight
+$a = K/N$, $p_1 = x/K$, $p_2 = (n-x)/(N-K)$, $ap_1 + (1-a)p_2 = n/N$):
+$Kh(x/K) + (N-K)h((n-x)/(N-K)) - Nh(n/N) \le 0$, so the exponential factor
+is at most 1.
+
+\emph{Mode location.} The forward ratio
+$r(x) = p(x+1)/p(x) = (K-x)(n-x)/((x+1)(N-K-n+x+1))$ is strictly decreasing
+(each factor monotone), so $p$ is unimodal with mode $x^{\dagger}$ the least
+$x$ with $r(x) \le 1$; solving the quadratic $r(x) = 1$ gives
+$|x^{\dagger} - \mu| \le 1$ with $\mu = n\theta$.
+
+\emph{Prefactor at the mean.} Each of the four denominators at $x = \mu$
+satisfies $\mu \ge \sigma^2$, $K - \mu = K(N-n)/N \ge \sigma^2$,
+$n - \mu = n(1-\theta) \ge \sigma^2$,
+$N-K-n+\mu = (N-K)(N-n)/N \ge \sigma^2$ (each from
+$\sigma^2 = n\theta(1-\theta)(N-n)/(N-1)$ plus interior-support bounds).
+Substituting $x = \mu$ the product collapses:
+$x(K-x)(n-x)(N-K-n+x) = K^2(N-K)^2n^2(N-n)^2/N^4$, so
+\[
+\text{prefactor}(\mu) = (2\pi)^{-1/2}\frac{N^{3/2}}
+{\sqrt{K(N-K)n(N-n)}} = (2\pi)^{-1/2}\frac{\sqrt{N/(N-1)}}{\sigma}
+\le (2\pi)^{-1/2}\frac{\sqrt{2}}{\sigma} \quad (N \ge 2).
+\]
+
+\emph{Window degradation.} At $x = x^{\dagger}$ each denominator is at least
+its value at $\mu$ minus 1, hence at least $\sigma^2 - 1 \ge
+\tfrac{3}{4}\sigma^2$ for $\sigma \ge 2$; the four-term square-root ratio
+contributes at most $(1 - 1/\sigma^2)^{-2} \le (3/4)^{-2} = 16/9$.
+
+Combining:
+$p(x^{\dagger}) \le e^{1/3}(2\pi)^{-1/2}\sqrt{2}\,(16/9)\,\sigma^{-1} \le
+2/\sigma$
+(numerical spot-checks from the writeup:
+$\mathrm{Hyperg}(140,50,60)$ mode atom $0.1399$ with $\sigma = 2.816$;
+$\mathrm{Hyperg}(301,150,150)$ atom $0.0916$ --- the bound holds with wide
+slack, the true asymptotic constant being $1/\sqrt{2\pi} \approx 0.40$).
+\end{proof}
+
+\subsection{Proofs for the gauge-conflation remark (V4)}
+\label{app:proofs-v4}
+
+\paragraph{Setup for A.5.} Raw flow $\rawflow = (q, t, \alpha)$: submitted
+quantities, strictly ordered arrival clocks (M1 scaffold), actor map. Write
+$Z_{qt}$ for the consumer-relevant coordinates: by assumption A3 every
+named consumer is a finite linear functional of $(q,t)$; $\alpha$ never
+enters a named consumer. The recorded map
+$\recordedmap : Z \to Y$ is the $\Fexec$ corpus projection with two
+load-bearing exclusions, both verified against the frozen artifacts:
+(a) the integrity hashes sit at the \emph{tape envelope} level, not inside
+any payload field, so $\Fexec$ --- a payload projection --- does not read
+them (if a referee reads the hashes into the corpus, every fiber is a point
+and T1--T3 are vacuous; the frozen corpus contract forbids this);
+(b) \fld{order\_accepted} (with \fld{resting\_quantity}) is excluded, so
+declared quantities of resting orders and the aggressor's unexecuted
+remainder are corpus-invisible. Engine facts E1--E5 (all verified,
+\S\ref{app:engine}): (E1) random-arm draw semantics ---
+\fld{eligible\_units} is the total remaining quantity at the marginal price
+before the draw, \fld{selected\_unit} uniform over remaining units;
+(E2) FIFO semantics --- front of queue, no draw payload, one demand-capped
+record; (E3) executed orders are pinned by cumulative fills plus
+\fld{maker\_remaining}; (E4) unrecorded magnitudes --- resting orders never
+executed appear in no $\Fexec$ field (only best \emph{prices}, not depths);
+(E5) execution payloads carry the aggressor's clocks only; accepted orders
+have quantity $\ge 1$ and prices are positive integers inside the bands.
+The fiber's consumer-relevant ambiguous coordinates fall into three
+direction classes plus a residue: magnitude directions $\mathcal{U}_{\mathrm{mag}}$ (never-executed
+quantities, unrecorded residuals --- the
+Corollary~\ref{cor:t2-recession} recession cone); never-drawn split
+directions $K_{\mathrm{split}}$ at touched levels; clock directions $\mathcal{U}_{\mathrm{clk}}$; and
+\emph{ownership relabeling} of never-executed orders --- fiber-internal,
+invisible to every named consumer by construction (A3), and conceded as a
+genuine gauge core (it is the engine-native realization of T1's aggregation
+directions). A \emph{quotient} is a surjection $\mathsf{Q}$ of raw-flow
+space onto
+a set carrying the final $\sigma$-algebra
+$\{A \subseteq X : \mathsf{Q}^{-1}(A) \in \mathcal{B}_Z\}$ --- the maximally
+permissive measurable structure the repair could ask for, so impossibility
+under it proves impossibility under every choice. Corpus-compatibility:
+$\recordedmap$ factors through $\mathsf{Q}$. Fiber-nontriviality:
+$\mathsf{Q}$ identifies at
+least two members of some mechanism fiber. Nontriviality must be
+\emph{hypothesized}, not derived: $\mathsf{Q} = \mathrm{id}$ is corpus-compatible
+and consumer-preserving and identifies nothing; a \emph{repair} is by
+definition fiber-nontrivial (its purpose is to collapse the training
+equivalence), and that is what collides with consumer preservation --- a
+strengthening of the honest quantifier structure, not a weakening.
+
+\begin{proof}[Proof of Lemma~\ref{lem:v4-a}]
+Given a corpus-compatible fiber-nontrivial $\mathsf{Q}$ and an identified pair
+$\rawflow \ne \rawflow'$ with $\recordedmap(\rawflow) =
+\recordedmap(\rawflow')$ differing in $(q,t)$: their difference lies in the
+fiber's free directions; write it as $(u, w)$ (quantity, clock).
+(A.1) If $u \ne 0$: Case 1, $\sum_i p_iu_i \ne 0$ --- then
+$\Crisk(\bar{\rawflow} + u) - \Crisk(\bar{\rawflow}) = \sum_ip_iu_i \ne 0$
+(in particular every single-order injection). Case 2,
+$\sum_ip_iu_i = 0$, $u \not\equiv 0$ --- order the support of $u$ by clock
+$t_{i_1} < \dots < t_{i_m}$ and set $S_k = \sum_{j \le k}p_{i_j}u_{i_j}$;
+$S_0 = 0 = S_m$; if all $S_k = 0$ then every $p_{i_j}u_{i_j} = 0$, hence
+$u \equiv 0$ (prices positive, E5) --- contradiction; so some $S_k \ne 0$
+and $\Clat[W]$ with $W = t_{i_k}$ separates. The dichotomy is complete for
+quantity directions. (A.2) For $u \in K_{\mathrm{split}}$ with support
+$\mathrm{ND}(\ell)$, $|\mathrm{ND}(\ell)| \ge 2$:
+$A^{\to\ru}_i(\bar{\rawflow} + u) - A^{\to\ru}_i(\bar{\rawflow}) =
+u_i/S_\ell \ne 0$ for every $i$ with $u_i \ne 0$ (the level total is pinned
+by the \fld{eligible\_units} chain, E1), and the next-draw laws differ by
+$\TV \ge \max_{i : u_i \ne 0}|u_i|/S_\ell$ --- a clock-free separator.
+(A.3) If $u = 0$ then $w \ne 0$; pick $i$ with $w_i \ne 0$ and $W$ strictly
+between $t_i$ and $t_i + w_i$: then
+$\Clat[W]$ moves by $p_iq_i \ne 0$ ($q_i \ge 1$, E5). In every case some
+named consumer is nonconstant on a $\mathsf{Q}$-fiber, so it cannot factor
+through $\mathsf{Q}$ (a factoring consumer is constant on
+$\mathsf{Q}$-fibers). (A.4): ($\Leftarrow$)
+if the $(q,t)$-ambiguous set is empty, any two fiber members agree on
+$(q,t)$ and every named consumer --- a functional of $(q,t)$ by A3 ---
+agrees; ($\Rightarrow$) is A.1--A.3. Under $\Fexec$ the ambiguous set is
+nonempty for every tape with any never-executed order, any unrecorded
+residual, any untouched level, or any touched level with $\ge 2$ never-drawn
+orders (E3--E5).
+\end{proof}
+
+\begin{proof}[Proof of Lemma~\ref{lem:v4-b}]
+(B.1) is Lemma~\ref{lem:lemma0}: the pipeline's information input is the
+corpus; no representation surgery adds information. (B.2) Let
+$\mathcal{H}_{\mathsf{Q}} = \{h \circ \mathsf{Q}\}$. If
+$g = \tilde{g} \circ \tape$ is
+$\sigma(\tape)$-measurable then $g = (\tilde{g} \circ \tilde{\tau}) \circ
+\mathsf{Q} \in \mathcal{H}_{\mathsf{Q}}$ (corpus-compatibility), so
+$\mathcal{H}_{\mathsf{Q}} \supseteq$ $\sigma(\tape)$-measurable functions,
+while by
+B.1 the reachable trained predictors are contained in them; the infimum of
+$\mathbb{E}_{\muR}[(\Ccons - \hat{\Ccons})^2 \mid \tape]$ over either class
+is $\mathrm{Var}_{\muR}(\Ccons \mid \tape)$ with the same unique a.s.\
+minimizer $\hat{\Ccons}^{*} = \mathbb{E}[\Ccons \mid \tape]$
+(Theorem~\ref{thm:t2-floor}(b)--(c)). The canonical repair's induced
+$\sigma$-algebra is exactly $\sigma(\tape)$. The floor's value depends only
+on $(\sigma(\tape), \Ccons, \muR)$. (B.3) A stochastic encoder is a Markov
+kernel $\kappa$; it is fiber-measurable iff
+$\kappa(\rawflow, \cdot) = \bar{\kappa}(\tape, \cdot)$ (every through-M
+encoder is, by Lemma~\ref{lem:lemma0}). With $\hat{\Ccons} = g(x, \omega)$:
+the conditional law of $(x, \omega)$ given $\rawflow$ is
+$\bar{\kappa}(\tape, \cdot) \otimes P_\omega$, a function of $\tape$ alone,
+so $\mathrm{Law}(\hat{\Ccons} \mid \rawflow)$ is fiber-constant --- constant
+in distribution. For the floor, condition on $(\tape, x, \omega)$:
+$\hat{\Ccons} = c$ a constant, and
+$\mathbb{E}[(\Ccons - c)^2 \mid \tape] = \mathrm{Var}(\Ccons \mid \tape) +
+(\mathbb{E}[\Ccons \mid \tape] - c)^2$; average over
+$(x,\omega) \sim \bar{\kappa}(\tape,\cdot) \otimes P_\omega$ (a law not
+depending on $\rawflow$ --- the entire point) and drop the nonnegative
+second term; equality forces $g = \mathbb{E}[\Ccons \mid \tape]$ a.e.\
+Randomization, softness, and attention-style fiber-weighting (any
+$\bar{\kappa}$) buy nothing. (B.4) For every prior $\pi$ with $\Ccons \in
+L^2(\pi)$: $\inf_{\hat{\Ccons}\ \tape\text{-driven}}
+\mathbb{E}_\pi[(\Ccons - \hat{\Ccons})^2] =
+\mathbb{E}_\pi[\mathrm{Var}_\pi(\Ccons \mid \sigma(\tape))]$ --- the same
+law-of-total-variance argument with $\pi$ in place of $\muR$; the floor is
+prior-relative but quotient-invariant. (B.5) $\Ccons \circ D$ is a named
+consumer composed with a grammar map; on fibers containing exposed
+directions it is nonconstant (Lemma~\ref{lem:v4-a} applied to the composed
+consumer), so no corpus-compatible fiber-nontrivial $\mathsf{Q}$ factors it: the
+quotient hypothesis space cannot represent the deployment-composed
+prediction. The best tape-driven approximation error to the deployed target
+is exactly $\mathrm{Var}_{\muR}(\Ccons \circ D \mid \tape)$ (B.2 with
+consumer $\Ccons \circ D$), strictly positive precisely on the exposed sets
+of T-1. $\Dswapru$ reads never-drawn quantities through
+$q_i^{\mathrm{rem}}/S_\ell$ (E1) and $\Dtrunc[W]$ reads arrival clocks
+(E5) --- the very coordinates the quotient identifies away: deletion, not
+relocation.
+\end{proof}

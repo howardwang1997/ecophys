@@ -1,0 +1,136 @@
+% ============================================================================
+% Paper E — papers/paper_e_matching_fiber/ — MANUSCRIPT SKELETON (D_minus_1;
+% pre-D0; D0 outcome-blind freeze pinned 2026-09-19).
+% Merged GAMMA-led paper: matching-fiber non-identifiability theorems for
+% market clearing (T1, T2, T3+H5; V4 remark) + a preregistered mechanism-layer
+% attribution cube (ALPHA), on the lab-asset-v3 engine + EcoMD v2 lineage.
+%
+% CLAIMS AUTHORITY (binding, in this order):
+%   1. papers/proposal/ecomd_reexploration_prereg_v2_2026-09-06.md
+%      — science. Status labels are VERBATIM-BINDING (proven /
+%      proven_with_conditions / conjecture); §8.1 nonclaims are binding;
+%      Annex C is the errata register.
+%   2. The statistical contract v1 as amended at v2 (clauses C1–C16, gates
+%      G1–G12) — statistics; restated in prereg v2 §3.
+%   3. Theory appendix + the five D-1 lemma writeups — statements and proofs.
+%   4. D-2 evidence map (papers/proposal/ecomd_reexploration_d2_evidence_map_
+%      2026-09-06.md) — the ONLY admissible related-work citation source,
+%      together with the project CLAUDE.md mandatory list where relevant.
+%
+% HARD RULES FOR WRITERS (violating any invalidates the work):
+%   - NO empirical-result sentences anywhere (nothing has run; D0 freeze is
+%     2026-09-19). Permitted numbers: theorem constants from the lemma
+%     writeups; frozen design constants (K=16, 30 seeds, horizons {1,4,16,31},
+%     299,520 planned records, 450 trainings, 420 horizon-one probes, seed
+%     namespaces); instrument hashes. Use \RESULTSPENDING{} where an observed
+%     outcome would go.
+%   - Status labels carry over VERBATIM; never upgrade a label, never strip a
+%     condition, never drop a concession.
+%   - Cite ONLY keys defined in refs.bib (each entry carries its D-2-map or
+%     CLAUDE.md provenance; unverified fields are flagged NEEDSVERIFY in the
+%     entry note). If a needed reference is absent, write
+%     \citep{NEEDSVERIFY:<topic>} rather than inventing one. The bogus
+%     "Tóth-Lux-Sornette PRL 2018" reference must never appear.
+%   - Wordings that must never appear (prereg v2 §2.6): "the fiber is a gauge
+%     symmetry"; "quotienting removes the degeneracy"; "canonical interleaving
+%     restores kernel invariance". Framings that must never appear (§8.1):
+%     any "first train×infer crossing" claim; bare positive-dimensional-fiber
+%     novelty (DPIOT owns it); constrained-is-better superiority; any T4
+%     theorem claim; any quotient/gauge repair claim; real-market mechanism
+%     identification; cross-market or universal-scaling claims.
+%   - Use the shared macros in notation.tex; do not define ad-hoc overrides.
+%   - Venue is undecided: this is deliberately a venue-neutral 11pt article.
+%     Do not vendor conference styles into this directory without a PI
+%     decision.
+% ============================================================================
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{url}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% ---------- theorem environments (named usage encouraged) ----------
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% The preregistration names its results (Theorem 1, Lemma 0, Proposition 1b,
+% Corollary 2, Proposition 3.5, Theorems T1/T-1/T-2, V4 Lemmas A/B, Lemma D).
+% Printing them through the shared auto-number would give one object two
+% numbers, so named results carry their prereg name as the printed
+% identifier: #1 = printed header, #2 = bare name that \ref prints.
+\makeatletter
+\newenvironment{preregthm}[2]{%
+  \par\medskip\noindent{\bfseries #1.}\ \itshape\ignorespaces
+  \phantomsection\def\@currentlabel{#2}%
+}{\par\medskip}
+\makeatother
+
+% ---------- frozen machinery (see notation.tex for the full contract) ----------
+\input{notation}
+
+% ---------- shared macros defined in main (kept minimal; see notation.tex) ----------
+% Claim-status tag: argument must be copied verbatim from prereg v2 §2/§2.7.
+\newcommand{\claimstatus}[1]{\nopagebreak\par\noindent{\small\itshape Claim
+status (verbatim from the frozen preregistration, \S2): #1.}\par}
+% Red placeholder wherever an empirical outcome would go. Post-D2 writers
+% replace these per prereg v2 §4; until then the red text MUST remain.
+\newcommand{\RESULTSPENDING}{\textcolor{red}{\textbf{[RESULTS: filled
+post-D2 per prereg v2 §4; no empirical sentence may appear before the D0
+freeze of 2026-09-19 and the one-shot analyzers.]}}}
+
+\title{The Aggregate Tape Is Not Sufficient:\\
+Matching-Fiber Non-Identifiability Theorems for Market Clearing,\\
+with a Preregistered Attribution Design}
+\author{Anonymous}
+\date{}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+
+\input{sections/intro}
+
+\input{sections/related}
+
+\input{sections/setup}
+
+\input{sections/t1}
+
+\input{sections/t2}
+
+\input{sections/t3h5}
+
+\input{sections/v4}
+
+\input{sections/cube}
+
+\input{sections/scope}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\appendix
+
+\input{sections/app_proofs_a}
+
+\input{sections/app_engine_b}
+
+\input{sections/app_prereg_c}
+
+\end{document}

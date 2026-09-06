@@ -1,0 +1,432 @@
+% ============================================================================
+% SECTION 5 — THEOREM PACKAGE II: CONSUMER FLOORS AND KERNEL-BLIND VACUITY
+%   (T2) — BRIEF (writer contract)
+% Sources: prereg v2 §2.2 (VERBATIM-BINDING), lemma writeup kt_g2_
+%   separation_lemma.md (G2 package), theory appendix Part II §1–§2, §6
+%   (hostile triviality check).
+% Theorem 1 (bounded quantitative floor; T2 lead) with items (a)–(e) and
+%   status proven_with_conditions under A1–A5 (list A1–A5 explicitly:
+%   one-step linear clearing; F = F_exec; finite linear consumers;
+%   deterministic training given corpus + paired seed draws; integer-lattice
+%   constructions): (a) Var_{mu_R}(C | tau) = (R^2/12)||v_U||^2 orthant/box;
+%   split case per touched level Var = (R^2/3) sum_{i in neverdrawn(l)}
+%   (v_i - vbar_l)^2. (b) every tau-measurable estimator Chat — in
+%   particular every through-M-trained simulator consumer — obeys
+%   E[(C - Chat)^2 | tau] >= Var, equality iff Chat = E[C | tau]. (c)
+%   tightness: fiber-center estimator attains; floor is the exact minimax
+%   value over tape-information-constrained estimators. (d) floor RMSE =
+%   R||v_U||/sqrt(12) ~ 0.289 R ||v_U||; per-direction contributions
+%   tape-computable. (e) granularity trace: fifo Theta(R^2) on the
+%   never-executed orthant; random_unit + per-unit tape pins magnitude
+%   directions and leaves the split term with EXACT ZEROS — price-notional
+%   consumer on ru splits floor identically 0; latency consumer floor
+%   (R^2/3) p_l^2 (m_in m_out / m), positive exactly when a touched level's
+%   never-drawn orders straddle the latency window. Then Proposition 1b
+%   (distillation no-recovery) and Corollary 2 (unbounded recession
+%   directions) — Corollary 2 deliberately SUBORDINATE, never led with.
+% Defense 4 (KT-G2 separation package; leads the armor): G2-1 (proven; the
+%   aggregate tape content is swap-invariant; frozen-fixture hash identity:
+%   fifo tape SEQUENCE 7 (one aggregated fill record, quantity 2) and
+%   random_unit tape SEQUENCE 8 (two unit fill records) share
+%   pre_aggregate_state_hash \preagghash{} and reach identical
+%   post_aggregate_state_hash \postagghash{} under the completed-request-
+%   boundary convention; record indices are per-arm tape indices, not
+%   episode event numbers). G2-2 (proven given Theorem 1; CONVENTION-ROBUST;
+%   the lead): same (prestate, request stream) gives floor_fifo =
+%   (n-1) p^2 R^2 / 12 > 0 while floor_ru = 0; any uniformly valid
+%   kernel-blind bound is forced identically zero while sup/inf over
+%   kernels is infinite — no kernel-blind bound is c-informative for any
+%   finite c, against (R, ||v||, dim) classes, Lipschitz x diameter
+%   budgets, and every swap-invariant functional. G2-3
+%   (proven_with_conditions; the finite-gap illustration UNDER THE FROZEN
+%   CONVENTION): rho = floor_ru / floor_fifo = 4 m_out / m in [0,4);
+%   same-data concrete instance ratio exactly 3 (n = 5, window {O_1, O_2},
+%   V* = 1, draw realization O_1); equal-second-moment-budget ratio 2;
+%   c < 4 impossible within the latency family; BOTH reference conventions
+%   preregistered (two-sided Unif[-R,R], constant R^2/3; one-sided box
+%   [0,R], constant R^2/12); WIDTH-MATCHING GAP INVERSION must be stated
+%   (under Unif[-R/2,R/2], rho = m_out/m <= 1, the >= 2x gap inverts, the
+%   separation SURVIVES but the headline "3" does not). G2-4 (proven;
+%   F_exec grammar carries a kernel fingerprint — allocation_draw presence,
+%   record granularity, eligible_units — so Theorem 1(e) tape-computability
+%   is kernel-aware; no Defense-1/Defense-4 circularity). Hash-augmented
+%   kernel-blind procedures fail in opposite directions on the two arms.
+% Hostile-triviality defenses 1–3 (frozen wording, prereg §2.2) + residual
+%   honesty: if judged "engineering of a classical bound," T2 is
+%   repositioned as risk characterization of tape-trained market simulators
+%   with mechanism-endogenous constants — NEVER sold as a new estimation
+%   theorem. Tobit lineage = exogenous-threshold censoring contrast
+%   (Defense 2), cite via the needs-verify pattern if needed (prefer
+%   prose). Conditions carried: multi-order split cells proven at
+%   engine-semantics level, dynamic confirmation deferred to post-D0 S1a
+%   gates; if the enriched engine ever records a per-never-drawn-order
+%   quantity, the G2-2 ru floor ceases to be zero AND Theorem 1(e) itself
+%   falsifies (S1a STOP class) — lemma and theorem stand or fall together.
+% FORBIDDEN: empirical results; leading with Corollary 2; quoting the
+%   instance ratio 3 without the width-matching inversion sentence;
+%   dropping A1–A5; upgrading G2-3's label.
+% ============================================================================
+\section{Theorem package II: consumer floors and kernel-blind vacuity (T2)}
+\label{sec:t2}
+
+Section~\ref{sec:t1} establishes that the aggregate tape is not a sufficient
+recording of the clearing mechanism. This section converts that qualitative
+obstruction into exact numbers: an exact, tight, tape-computable
+consumer-variance floor (Theorem~1), and the companion fact that any
+\emph{kernel-blind} certification of that floor is forced to be identically
+zero (Defense~4). Throughout, the corpus contract is the frozen
+$\Fexec$ grammar of \S\ref{sec:setup}, and we work in the one-step scaffold
+(a rationed price level $\ell$ with pool $\Pmarg$, pool total $\Rstar$,
+residual demand $\Vstar \in (0,\Rstar)$, never-executed / never-drawn order
+sets decided by the tape itself).
+
+\subsection{Theorem 1: the bounded consumer-variance floor}
+\label{sec:t2-floor}
+
+\paragraph{Assumptions (A1--A5).} Theorem~1 holds under the frozen conditions
+of the theory package: \textbf{(A1)} one-step linear clearing as in
+\S\ref{sec:setup}; \textbf{(A2)} $\mathcal{F} = \Fexec$ (execution payloads +
+\fld{allocation\_draw} when present + pre/post BBO \emph{prices}); \textbf{(A3)}
+consumers are finite linear functionals of the raw flow; \textbf{(A4)} training
+procedures are deterministic functions of the corpus plus paired seed draws;
+\textbf{(A5)} integer-lattice constructions (all injected quantities are
+integer units).
+
+\paragraph{Reference measure (both conventions preregistered).} $\muR$ is the
+product-uniform measure on the fiber truncated to a box of radius $R$ in the
+ambiguous coordinates, under the frozen \emph{deviation-budget} reading:
+$R$ bounds the per-coordinate deviation magnitude.
+\emph{(i) One-sided orthant/box convention} (fifo-type fibers):
+$q_i \sim \mathrm{Unif}[a_i,\,a_i+R]$ independently on the never-executed
+coordinates ($q_i - a_i \in [0,R]$; per-coordinate variance $R^2/12$).
+\emph{(ii) Two-sided split convention} (random-unit touched-level fibers):
+$u = P_K\varepsilon$ with $\varepsilon_i \sim \mathrm{Unif}[-R,R]$ i.i.d.\
+($|\varepsilon_i| \le R$; per-coordinate variance $R^2/3$) and
+$P_K = I - \tfrac{1}{m}\mathbf{1}\mathbf{1}^{\top}$ the projection onto the
+never-drawn split kernel of a touched level with $m$ never-drawn orders.
+Gaussian references give the same scaling. The role of the convention choice
+is analyzed explicitly in Lemma~\ref{lem:g2-3} below; the two conventions are
+both preregistered as per-coordinate deviation budgets so that no reader can
+misread the factor $4$ that relates them as an inconsistency.
+
+\begin{preregthm}{Theorem 1 (T2 lead): bounded quantitative consumer-variance floor}{1}
+\label{thm:t2-floor}
+Fix a tape $\tape$ with nonempty ambiguous set $\Utau$ under
+(kernel, granularity, $\Fexec$), the reference $\muR$ on the box-truncated
+fiber, and a linear consumer $\Ccons(\rawflow) = v^{\top}\rawflow$ with
+$\vU \not\equiv 0$ on the ambiguous coordinates. Then:
+\begin{enumerate}
+\item[(a)] \textbf{Exact variance.}
+$\mathrm{Var}_{\muR}(\Ccons \mid \tape) = \tfrac{R^2}{12}\|\vU\|^2$
+(orthant/box case); split case per touched level $\ell$:
+$\mathrm{Var} = \tfrac{R^2}{3}\sum_{i \in \mathrm{ND}(\ell)}
+(v_i - \bar{v}_\ell)^2$, with $\mathrm{ND}(\ell)$ the never-drawn orders of
+$\ell$ and $\bar{v}_\ell$ their level mean of $v$.
+\item[(b)] \textbf{Estimation floor.} Every $\tape$-measurable estimator
+$\hat{\Ccons}$ --- in particular every through-M-trained simulator consumer,
+by Lemma~0 (Appendix~\ref{app:proofs}) --- obeys
+$\mathbb{E}_{\muR}[(\Ccons - \hat{\Ccons})^2 \mid \tape] \ge
+\mathrm{Var}_{\muR}(\Ccons \mid \tape)$, with equality iff
+$\hat{\Ccons} = \mathbb{E}[\Ccons \mid \tape]$ $\mu$-a.s.
+\item[(c)] \textbf{Tightness.} The fiber-center estimator
+$\hat{\Ccons}^{*} = \mathbb{E}[\Ccons \mid \tape]$ attains the bound, so
+$\inf_{\hat{\Ccons}\ \tape\text{-meas.}}
+\mathbb{E}[(\Ccons-\hat{\Ccons})^2 \mid \tape]
+= R^2\|\vU\|^2/12$ exactly: the floor is the exact minimax value over
+tape-information-constrained estimators, not merely a valid lower bound.
+\item[(d)] \textbf{Growth.} Floor RMSE $= \floorRMSE \approx
+0.289 \cdot R \cdot \|\vU\|$ --- $\Theta(R)$ in scale, $\Theta(R^2)$ in
+variance; per-direction contributions $v_i^2 R^2/12$ are tape-computable
+(which orders never executed / were never drawn is decided by the tape
+itself).
+\item[(e)] \textbf{Granularity trace.} Under fifo ($\Fexec$) the floor grows
+$\Theta(R^2)$ in variance on the never-executed orthant. Under
+$\kru$ + per-unit tape the magnitude directions are pinned
+(\fld{eligible\_units} pins level aggregates; \fld{maker\_remaining} pins
+drawn orders) and the surviving floor is the split term --- with
+\emph{exact zeros}: (i) for the price-notional consumer
+$v_i \equiv p_\ell$ on never-drawn orders at a touched level, the split floor
+is \emph{identically zero}; (ii) for the latency consumer
+$v_i = p_\ell \mathbf{1}\{\mathrm{clock}_i \le W\}$, the split floor is
+$\tfrac{R^2}{3}\, p_\ell^2\, (m_{\mathrm{in}} m_{\mathrm{out}} / m)$, where
+$m_{\mathrm{in}}/m_{\mathrm{out}}$ count never-drawn orders inside/outside
+the latency window --- positive exactly when a touched level's never-drawn
+orders straddle the latency boundary.
+\end{enumerate}
+\end{preregthm}
+
+\claimstatus{proven\_with\_conditions (live conditions: A1--A5; reference
+convention declared)}
+
+\emph{Proof sketch.} (a) independence of the box coordinates plus the
+projection identity $\|\P_K v\|^2 = \sum_{i \in \mathrm{ND}(\ell)}
+(v_i - \bar v_\ell)^2$; (b) the conditional decomposition
+$\mathbb{E}(X - c)^2 = \mathrm{Var}\,X + (\mathbb{E}X - c)^2$ around a
+fiber-constant predictor; (c) the explicit fiber-center estimator; (e)
+\fld{eligible\_units} is a summation functional --- its kernel on the
+never-drawn coordinates is exactly the split subspace, so $P_K$ kills
+constant-$v$ vectors and retains clock-indicator vectors with the stated
+norm (two-group variance identity). Full proof in
+Appendix~\ref{app:proofs}, Part~A.2.
+
+\begin{preregthm}{Proposition 1b: distillation no-recovery}{1b}
+\label{prop:t2-distill}
+Let the teacher be any through-M-trained simulator and the student any
+measurable function of the teacher's outputs (any capacity; any data the
+teacher saw). Then the student inherits $\tape$-measurability and obeys the
+same floor as Theorem~\ref{thm:t2-floor}(b). A student can beat the floor
+only by consuming raw-flow information (raw arms).
+\end{preregthm}
+
+\claimstatus{proven\_with\_conditions (within the Theorem 1 package:
+A1--A5)}
+
+\begin{preregthm}{Corollary 2: unbounded recession directions --- deliberately
+subordinate}{2}
+\label{cor:t2-recession}
+Under fifo/$\Fexec$ (or pro-rata aggregate, or $\kru$ + aggregate tape),
+every $u \in \mathbb{R}_{\ge 0}^{\Utau}$ is a recession direction:
+$\recordedmap(\bar{\rawflow} + t u) = \tape$ for all $t \ge 0$ (units added
+behind the threshold / never executed / along the scale ray are unrecorded),
+while $|\Ccons(\bar{\rawflow} + t u) - \Ccons(\bar{\rawflow})| =
+t\,|v^{\top}u| \to \infty$. By Lemma~0 the training-loss difference is
+exactly zero for all $t$ (identical corpora), and the divergence is
+mechanism-attributable in the sense of Proposition~\ref{prop:t3-attr}.
+Theorem~1 already forces positive, exact-constant error on the truncated
+fiber; Corollary~2 only adds that the truncation is an artifact of the
+reference measure, not of the mechanism. It is never a lead claim.
+\end{preregthm}
+
+\claimstatus{proven\_with\_conditions (within the Theorem 1 package:
+A1--A5)}
+
+\paragraph{Positioning.} The existence-level content of
+Theorem~\ref{thm:t2-floor}(b) --- non-injective recording $\Rightarrow$
+positive conditional variance flooring every recorded-measurable predictor ---
+is generic and conceded; bare positive-dimensional fibers for learned
+simulators are owned by DPIOT \citep{dpiot2022}, with the perturb-argmax
+family analog owned by Perturb-Argmax/Softmax \citep{perturbargmax2024}, and
+the predecessor conservation-layer manuscript's rank-one projection gauge is
+the $|\Utau| = 1$ special case \citep{paperd}. What is not generic is carried
+by Defenses 1--4 below. Classical censored-regression (Tobit-lineage) bounds
+delimit an exogenous-threshold censoring geometry; they cannot predict the
+kernel $\times$ granularity interaction of Theorem~1(e) because
+$\Utau$ here is mechanism-endogenous (Defense~2).
+
+\paragraph{Hostile-triviality defenses 1--3 (frozen wording).} The strongest
+attack reads: ``Theorem 1(b) is the law of total variance / Rao--Blackwell
+applied to a non-injective recording; Le Cam two-point arguments,
+censored-regression and missing-data bounds give the same; the market
+mechanism only supplies a censoring pattern.'' The existence-level content
+of this attack is conceded. What defeats the reduction:
+\textbf{Defense 1} --- the constant $R\|\vU\|/\sqrt{12}$ is tape-computable
+from the public tape alone (the never-executed / never-drawn sets are
+decided by recorded events), converting a generic impossibility into an
+operational risk bound; generic non-injectivity supplies no constant and no
+computability. \textbf{Defense 2} --- the censoring geometry $\Utau$ is
+mechanism-endogenous and kernel-dependent (orthant vs.\ split kernel with
+exact zeros), not a fixed missingness pattern; an exogenous-threshold
+censoring model cannot predict the kernel $\times$ granularity interaction,
+which Theorem~1(e) predicts with falsifiable exact-zero point nulls.
+\textbf{Defense 3} --- tightness plus exact-zero point predictions
+(falsifiable nulls, not one-sided hedges). \emph{Residual honesty:} if
+reviewers judge Defenses 1--3 ``engineering of a classical bound,'' T2 is
+repositioned as risk characterization of tape-trained market simulators with
+mechanism-endogenous constants; T2 is never sold as a new estimation theorem.
+
+\subsection{Defense 4: kernel-blind certification is vacuous}
+\label{sec:t2-defense4}
+
+Defense 4 is the convention-robust lead of T2's armor: no method that is
+blind to the priority kernel can track Theorem~1's floor, in a precise sense
+that holds for every reference-convention choice.
+
+\begin{definition}[kernel-blind (swap-invariant) data and procedures]
+\label{def:kernelblind}
+Fix a prestate $P$ and an exogenous, resource-slack request stream $s$; write
+$\tape_k(P,s)$ for the tape under kernel
+$k \in \{\kfifo, \kru\}$ (the replay contract's native operation exchanges
+only \fld{allocation\_rule} on identical $(P,s)$). A datum or functional is
+\emph{kernel-blind} if its value on $\tape_k(P,s)$ is the same for all $k$
+and all $(P,s)$.
+\end{definition}
+
+\begin{definition}[uniformly valid and $c$-informative floor bounds]
+\label{def:validbound}
+A bound $B \ge 0$ computed from kernel-blind data (any of $(R, \|v\|,
+\mathrm{dim})$, Lipschitz $\times$ diameter geometry budgets, the aggregate
+tape, the scaffold --- all swap-invariant) is \emph{uniformly valid} for a
+consumer class $\mathcal{V}$ if for every cell $(k, g \in \{\gpo,
+\gpu\})$, every $(P,s)$, every realized tape $\tape$ of that cell and every
+$v \in \mathcal{V}$: $B \le \mathrm{floor}_k(\tape, v, R)$, the exact
+minimax value of Theorem~\ref{thm:t2-floor}(c). $B$ is
+\emph{$c$-informative} if additionally $B \ge \mathrm{floor}_k / c$
+pointwise on every cell. The two requirements are jointly satisfiable on a
+family of cells iff $\sup_k \mathrm{floor}_k / \inf_k \mathrm{floor}_k \le c$
+on every swap-equivalence class of data.
+\end{definition}
+
+\begin{lemma}[G2-1: aggregate-tape kernel invariance]
+\label{lem:g2-1}
+Fix $(P,s)$ exogenous and resource-slack. The sequence of aggregate states
+(anonymous level totals, cash, inventory, last-match timestamp --- exactly
+the \fld{aggregate\_state\_hash} content) evaluated after each completed
+request is identical under $\kfifo$ and $\kru$. Consequently every
+kernel-blind functional --- in particular every $(R,\|v\|,\mathrm{dim})$-type
+bound, every Lipschitz $\times$ diameter budget, and every functional of the
+aggregate tape or scaffold --- takes equal values on $\tape_{\kfifo}(P,s)$
+and $\tape_{\kru}(P,s)$. Frozen-fixture hash identity: the fifo tape
+\fld{SEQUENCE~7} (one aggregated fill record, quantity 2) and the
+random-unit tape \fld{SEQUENCE~8} (two unit fill records) share the
+\fld{pre\_aggregate\_state\_hash} \preagghash{} and reach the identical
+\fld{post\_aggregate\_state\_hash} \postagghash{}, under the
+completed-request-boundary convention (both arms processed the same
+completed request at that point of the episode; record indices are per-arm
+tape indices, not episode event numbers).
+\end{lemma}
+
+\claimstatus{proven (condition: exogenous, resource-slack request tape --- the
+M0-lumpable DGP class frozen for the cube)}
+
+\begin{lemma}[G2-2: infinity separation --- uniform validity forces zero;
+the lead]
+\label{lem:g2-2}
+There exist a scaffold with $n \ge 2$ orders at a rationed level, an incoming
+order of size $\Vstar = 1$, the price-notional consumer
+$\Ccons = p \sum_i q_i$ on the level coordinates, and any $R > 0$, such that
+$\tape_{\kfifo}(P,s)$ and $\tape_{\kru}(P,s)$ arise from the \emph{same}
+$(P,s)$ and
+\[
+\mathrm{floor}_{\kfifo} = \tfrac{(n-1)\,p^2 R^2}{12} > 0,
+\qquad
+\mathrm{floor}_{\kru} = 0 .
+\]
+Hence any kernel-blind, uniformly valid bound satisfies $B = 0$ on the shared
+kernel-blind data, while $\sup_k \mathrm{floor}_k / \inf_k \mathrm{floor}_k =
+\infty$: \emph{no kernel-blind bound is $c$-informative for any finite $c$}
+on this data --- against the $(R, \|v\|, \mathrm{dim})$ class, against
+Lipschitz $\times$ diameter budgets, and against every swap-invariant
+functional whatever. Zero stays zero and the fifo floor stays positive under
+any positive-width rescaling, so this lemma survives every
+reference-convention choice.
+\end{lemma}
+
+\claimstatus{proven (given Theorem 1; convention-robust; no live
+conditions)}
+
+\begin{lemma}[G2-3: same-data finite-gap separation under the frozen
+convention]
+\label{lem:g2-3}
+Same swap setting as Lemma~\ref{lem:g2-2} ($\Vstar = 1$; $m = n - 1$
+never-touched orders at the level, identical under both arms when the draw
+realization is the front order). Consumer
+$\Clat[W] = p \sum_i \mathbf{1}\{\mathrm{clock}_i \le W\} q_i$ with
+$m_{\mathrm{in}} \ge 1$ never-touched orders inside and
+$m_{\mathrm{out}} = m - m_{\mathrm{in}} \ge 1$ outside the window. Then
+(Theorem~\ref{thm:t2-floor}(e)(ii))
+\[
+\mathrm{floor}_{\kfifo} = \tfrac{R^2}{12} p^2 m_{\mathrm{in}},
+\qquad
+\mathrm{floor}_{\kru} = \tfrac{R^2}{3} p^2
+\tfrac{m_{\mathrm{in}} m_{\mathrm{out}}}{m},
+\qquad
+\rho := \frac{\mathrm{floor}_{\kru}}{\mathrm{floor}_{\kfifo}}
+= \frac{4 m_{\mathrm{out}}}{m} \in [0,4).
+\]
+(i) If $m_{\mathrm{out}} \ge m_{\mathrm{in}}$ then $\rho \ge 2$.
+(ii) $\sup \rho = 4$ (attained in the limit $m_{\mathrm{in}} = 1$,
+$m \to \infty$), so no kernel-blind uniformly valid bound is
+$c$-informative for any $c < 4$ within the latency family.
+(iii) \emph{Concrete same-data instance:} $n = 5$ orders, window covering
+exactly $\{O_1, O_2\}$, $\Vstar = 1$, draw realization $O_1$ (a
+positive-probability tape realization):
+$\mathrm{floor}_{\kfifo} = R^2 p^2/12$ ($\Utau = \{O_2,\dots,O_5\}$,
+$v_{\Utau} = (p,0,0,0)$), $\mathrm{floor}_{\kru} =
+(R^2/3)(3p^2/4) = R^2 p^2/4$ --- \emph{ratio exactly 3} on identical
+$(P,s,v,R)$ and identical aggregate tape; the ambiguous-set dimensions
+differ by exactly one (4 vs.\ 3), an intrinsic consequence of the
+aggregate-pinning hyperplane that \fld{eligible\_units} adds.
+(iv) \emph{Equal-second-moment budget (cross-instance):} fifo with
+$m_f = 4(m_r - 1)$ never-executed coordinates matches the ru split budget,
+both $\mathbb{E}\|Z - Z'\|^2 = \tfrac{2R^2}{3}(m_r - 1)$; with $m_r = 2$,
+$m_f = 4$, $\|v\| = p$ on both, the floors are $R^2 p^2/12$ vs.\
+$R^2 p^2/6$ --- ratio exactly 2 at equal $R$, equal $\|v\|$, equal budget.
+\emph{Width-matching gap inversion, stated so the factor 4 cannot be read as
+an inconsistency:} both reference conventions are preregistered as
+per-coordinate deviation budgets --- (i) two-sided
+$\varepsilon \sim \mathrm{Unif}[-R,R]$ (split case, $|\varepsilon_i| \le R$,
+constant $R^2/3$) and (ii) one-sided box $[0,R]$ (orthant case, constant
+$R^2/12$). Under the \emph{width-matched} convention
+$\varepsilon \sim \mathrm{Unif}[-R/2, R/2]$, $\rho = 4 m_{\mathrm{out}}/m$
+becomes $m_{\mathrm{out}}/m \le 1$: the ru floor is then always the smaller
+one, the $\ge 2\times$ gap of G2-3 inverts, the separation
+\emph{survives} ($\rho \in [0,1)$, still kernel-dependent, still exactly
+zero for constant $v$) but the headline number ``3'' does not. The theory
+appendix froze the deviation-budget reading, under which G2-3's constants
+hold as stated.
+\end{lemma}
+
+\claimstatus{proven\_with\_conditions (live conditions: frozen two-sided
+reference convention; draw-realization conditioning --- every realization of
+the instance gives $\rho \in \{3,4\}$; width-matching inversion disclosed)}
+
+\begin{lemma}[G2-4: the $\Fexec$ grammar carries a kernel fingerprint]
+\label{lem:g2-4}
+(i) The $\Fexec$ tape determines the allocation rule: (a)
+\fld{session\_start} carries \fld{allocation\_rule} verbatim; (b)
+\fld{allocation\_draw} appears in an execution payload iff the rule is
+random-unit; (c) absent those fields, the record granularity still separates
+them (per-unit quantity-1 records vs.\ per-maker multi-unit records).
+(ii) The set of drawn / executed order ids --- hence $\Utau$ and
+$\mathrm{ND}(\ell)$ --- is a function of the kernel-revealing part of the
+tape only; the aggregate tape is anonymous and cannot recover it.
+(iii) Therefore Theorem~\ref{thm:t2-floor}(e)'s tape-computability is a
+\emph{kernel-aware} computation, and the separation of
+Lemmas~\ref{lem:g2-2}--\ref{lem:g2-3} stands: kernel-blind data does not
+determine the floor within any constant factor; kernel-aware data (the
+corpus grammar) determines it exactly. T2's practical value (Defense 1: a
+practitioner evaluates the floor from the tape in hand) and T2's theoretical
+value (Defense 4: that evaluation is irreducibly mechanism-specific) are the
+two halves of one statement, not a contradiction --- no referee circularity
+between Defenses 1 and 4.
+\end{lemma}
+
+\claimstatus{proven (schema-static; no execution needed)}
+
+\paragraph{Hash-augmented kernel-blind procedures fail in both directions.}
+The strongest kernel-blind procedure constructible --- grant the full record
+chain including the completed-request aggregate states, the scaffold, $R$,
+$v$, and require only swap-invariance --- still fails, in opposite
+directions on the two arms of the same $(P,s)$: on the fifo cell,
+conditioning on the aggregate level total certifies (under a Gaussian or
+box reference) a sum-constrained conditional variance, but the true fifo
+floor is $(R^2/12)\|v_{\Utau}\|^2$ because the through-M corpus contains no
+aggregate depth field --- the trained simulator cannot condition on what its
+corpus omits (for the price-notional consumer the analyst certifies zero
+risk where the truth is $(n-1)p^2R^2/12$); on the ru split cell the corpus
+itself pins the aggregate, so aggregate conditioning is correct there, but
+no single kernel-blind reference width is correct on both cells, and a
+procedure that branches on the reference-measure geometry has read
+swap-variant data and is kernel-aware by the back door. Validity $\times$
+informativeness is jointly impossible for any finite factor: any kernel-blind
+bound is either positive somewhere --- hence false as a certified lower bound
+on every split cell where the exact floor is smaller, the naive
+$R\|v\|/\sqrt{12}$ over-predicting the ru split floor by an infinite factor
+--- or identically zero wherever a zero-floor cell shares its kernel-blind
+data. That dichotomy is the content: kernel-blind risk certification is
+vacuous; to certify a nonzero floor one must consume the kernel's censoring
+geometry.
+
+\subsection{Conditions carried}
+\label{sec:t2-conditions}
+
+Theorem~1 is stated exactly as proven in the theory appendix (A1--A5 above).
+The multi-order split cells of Lemmas~\ref{lem:g2-2}--\ref{lem:g2-3} are
+proven at the engine-semantics level; dynamic confirmation on enriched
+fixtures is deferred to the post-D0 S1a gates (the frozen 21/22-event bundle
+contains only single-maker touched levels). If the enriched engine ever
+records a per-never-drawn-order quantity, the G2-2 ru floor ceases to be
+zero --- and that event also falsifies Theorem~\ref{thm:t2-floor}(e) itself
+(S1a STOP class), so lemma and theorem stand or fall together. Theorem-level
+falsification is bound to the preregistered predictions O-A/O-D
+(\S\ref{sec:cube}); no empirical outcome is asserted here. \RESULTSPENDING{}

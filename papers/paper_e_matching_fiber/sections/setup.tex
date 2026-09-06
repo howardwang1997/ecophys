@@ -1,0 +1,352 @@
+% ============================================================================
+% SECTION 3 — SETUP: ENGINE, CORPORA, AND MATCHING FIBERS — BRIEF (contract)
+% Sources: theory appendix Part II §0 (formal setup; the engine-grounded
+%   fiber table), Part I §1 (M1 scaffold, kernels, rungs); prereg v2 §1.1
+%   (truth asset), §4.1 (lineages/DGPs), §7.2 (enrichment); simulator
+%   contracts doc for file:line anchors. Engine facts must match the frozen
+%   artifacts; the bundle manifest is printed via \bundlemanifest{} (full
+%   64-hex; never retype; Annex C-4 governs the known typo in companions).
+% Must define, with macros from notation.tex: (1) the lab-asset-v3 engine —
+%   exact integer uniform-price clearing, conservation + unit integrality +
+%   tick lattice; engine kernels EXACTLY {fifo, random_unit_within_price};
+%   pro_rata is NOT an engine kernel (S3 exact-arithmetic only, ruling
+%   D1_14); 27 conformance tests + replay validator; read-only bundle.
+%   (2) one-step scaffold: resting orders, pool \Pmarg, \Rstar, \Vstar,
+%   rationed level, exhaustion boundary. (3) raw flow \rawflow and the
+%   recorded map \recordedmap{}; the three grammar variants \Fexec,
+%   \Fexecorders, \Ffull with the frozen statement that \Fexec{} IS the
+%   corpus contract (under \Ffull{} the fiber is a point and T1–T3 are
+%   vacuous — say so explicitly, prereg STOP-class reversal row). (4)
+%   law-level vs realized-tape fibers \Fibkg{} vs \Fibtau{}; ambiguous set
+%   \Utau; the per-kernel fiber-shape table (orthant / split subspace +
+%   orthant / scale ray) from theory appendix Part II §0. (5) consumers
+%   \Crisk, \Clat[W]; reference measure \muR{} (both preregistered
+%   conventions: two-sided Unif[-R,R] split and one-sided box [0,R]
+%   orthant). (6) lineages \Lone{} (ecomd_v2 transformer/potential; MACE
+%   heritage — cite batatia2022 if invoked) and \Ltwo{} (recurrent
+%   fact-surrogate, code-only pre-D0); DGPs D1 = lab-asset dual-arm + frozen
+%   M0/M1-lumpable request generator, D2 = synthetic (Stage 2 only).
+%   (7) enriched fixtures lab-asset-v3.1 (master seed 20260972; the frozen
+%   21/22-event bundle has only single-maker touched levels — enrichment is
+%   a hard prerequisite for S1a; never claim the bundle itself was mutated).
+% FORBIDDEN: empirical results; describing \Ffull{} or \Fexecorders{} as the
+%   training contract; any engine fact not verifiable in the grounding docs.
+% ============================================================================
+\section{Setup: engine, corpora, and matching fibers}
+\label{sec:setup}
+
+This section fixes the objects that every theorem package speaks about: the
+frozen integer clearing engine and its two priority kernels
+(\S\ref{sec:engine}--\ref{sec:scaffold}), the raw flow, the recorded map and
+the frozen corpus contract (\S\ref{sec:corpora}), matching fibers
+(\S\ref{sec:fibers}), consumers and reference measures (\S\ref{sec:consumers}),
+flow-process classes (\S\ref{sec:policies}), and the lineages, data-generating
+processes, and fixtures of the preregistered design (\S\ref{sec:lineages}).
+Appendix~\ref{app:engine} carries the schema-level grounding (payload fields,
+hash inventory, fixture facts); every engine fact used below is verifiable
+there and in the frozen artifacts themselves. No statement in this section is
+an empirical claim about any market: the engine is a laboratory object whose
+semantics are frozen and hash-pinned.
+
+\paragraph{Notation disambiguation.} The letters $K$, $D$, and $g$ each
+serve several distinct frozen roles, fixed once here: $k$ is a priority
+kernel; $\mathcal{K}_{\pi}$, $\mathcal{K}_1$, $\mathcal{K}_2$ and
+$\hat{\mathcal{K}}$ are one-step aggregate-transition kernels of the T1
+package and predictors thereof; $\Kdraw = 16$ is the frozen number of
+inference-kernel draws of the design (\S\ref{sec:cube}); $P_K$ is the
+projection onto a level's never-drawn split kernel and
+$K_{\mathrm{split}}$ that subspace itself; $(N, K, n)$ are the
+hypergeometric parameters local to Lemma~D (Appendix~\ref{app:proofs});
+$D$ is a deployment map (T3); $\mathcal{D}$ is the set of price levels
+deeper than the marginal level; $\mathsf{d}$ is a DGP instance (H5);
+$\mathsf{Q}$ is a quotient of raw-flow space (V4); recording rungs always
+carry a subscript ($\gagg$, $\gpo$, $\gpu$), and the letter $g$ without a
+subscript is a policy response function (Definition~\ref{def:t1-piresp}).
+
+\subsection{The lab-asset-v3 clearing engine}
+\label{sec:engine}
+
+The truth asset is the lab-asset-v3 bundle, frozen at its qualification exit
+with manifest \bundlemanifest{} (canonical full 64-hex; a known companion-copy
+typo is inventoried in the preregistration's errata register, Annex C-4). The
+bundle is \emph{read-only}: it is never mutated, and every downstream artifact
+--- including the fixture enrichment of \S\ref{sec:lineages} --- is a separate
+object that cites it. Qualification comprised 27 conformance tests and a
+deterministic replay validator that regenerates both serialized fixture arms
+byte-exactly from disk.
+
+The engine clears a single instrument on an integer tick lattice by exact
+integer uniform-price matching. Volume, total cash, and total inventory are
+conserved by every settlement transfer, and every fill is an integer number of
+units. The books are order-level queues: a mapping from price to a list of
+(order id, actor, remaining quantity) entries. Priority at a price level is one
+of exactly two kernels --- the two members of the engine's
+\fld{AllocationRule} enumeration:
+\begin{itemize}
+\item $\kfifo$ (engine name \fld{fifo}): arrival-ordered head-of-queue fill.
+An incoming order consumes $\min(\text{residual demand},\ \text{head maker's
+remaining quantity})$ from each successive pool order; the engine emits one
+execution record per maker per incoming order and no draw payload.
+\item $\kru$ (engine name \fld{random_unit_within_price}): unit-by-unit
+clearing. Each executed unit is drawn uniformly without replacement from all
+remaining resting units at the price: the engine computes the level's remaining
+total, draws \fld{selected_unit} uniformly on that range, and walks the
+per-order cumulative remaining quantities. Each unit emits one execution
+record carrying \fld{maker_remaining} and the draw payload
+$\fld{allocation_draw} = \{\fld{eligible\_units},\ \fld{maker\_order\_id},\
+\fld{price},\ \fld{selected\_unit}\}$, with \fld{eligible\_units} the level's
+remaining total before the draw.
+\end{itemize}
+$\kproprata$ is \emph{not} an engine kernel: pro-rata allocation appears in
+this paper only as an exact-arithmetic taxonomy device (a frozen
+preregistration ruling; internal ruling id anonymized for review) --- a
+row of the static grid of \S\ref{sec:t1} and an arm of the S3
+exact-arithmetic analysis (EP3, \S\ref{sec:cube-endpoints}), never an
+executing arm.
+
+Request validation is identity-dependent: self-trade prevention and per-actor
+cash/inventory reserve checks reject requests
+(\fld{self\_trade\_prevented}, \fld{insufficient\_cash},
+\fld{insufficient\_inventory}). This channel is part of the engine's semantics
+and enters \S\ref{sec:t1} through Proposition~R2-C.
+
+The engine exposes two state hashes. The full state hash binds order identity,
+queue order, and the RNG state. The \emph{aggregate statistic}
+$A(s)$ --- the \fld{aggregate\_state\_hash} content --- records only the
+per-price level sums on each side, total cash, total inventory, and the
+last-match clock; by the schema's own contract, under an exogenous,
+resource-slack request tape $A$ is equal after each completed request even
+when identity allocations differ. $A$ is the strongest aggregate observer the
+engine exposes, and the obstruction of \S\ref{sec:t1} is proved against $A$
+itself; the same witness construction is visible in the level-total and print
+projections (Appendix~\ref{app:t1proofs}).
+
+\subsection{One-step clearing scaffold}
+\label{sec:scaffold}
+
+All theorem packages are instantiated on a one-step clearing round. Ask side
+(with the bid side symmetric): $n$ resting orders with prices on the tick
+lattice, quantities $q = (q_1,\dots,q_n) \in \mathbb{Z}_{\geq 0}^n$, arrival
+clocks $t_1 < \dots < t_n$ within each price, and an actor map assigning each
+order to an actor. An incoming marketable buy of integer size $Q$ walks the
+book by price priority: every level whose cumulative supply stays below $Q$
+clears fully; the \emph{marginal} (rationed) level $p^{*}$ carries the pool
+$\Pmarg$ of its resting orders, pool size $\Rstar = \sum_{i \in \Pmarg} q_i$,
+and residual demand $\Vstar = Q - S_{<} \in [0,\Rstar]$, where $S_{<}$ is
+supply at strictly better levels. The \emph{interior regime} is the strict
+partial fill $0 < \Vstar < \Rstar$; $\Vstar = \Rstar$ is the
+\emph{exhaustion boundary} (the pool clears and the post-trade best price
+jumps --- so the price-only post-quote reveals the stratum at every recording
+rung). Levels deeper than $p^{*}$ (the set $\mathcal{D}$) are untouched.
+
+The kernels allocate $\Vstar$ within $\Pmarg$ as follows. $\kfifo$
+prefix-fills by arrival rank: with threshold index $\jstar$ the partially
+filled pool order, the prefix allocation vector is $\cF$, and the executed
+counts are a deterministic function of $(\qP, \Vstar)$. $\kru$ draws $\Vstar$
+units sequentially, each uniform over the $\Rstar - t$ remaining pool units:
+the per-step hit law is
+$\mathbb{P}(\text{step } t \text{ hits order } i) =
+(q_i - c_i^{(t)})/(\Rstar - t)$ with $c_i^{(t)}$ the hits so far, and the
+per-order fill-count vector $c$ has the multivariate hypergeometric law
+\begin{equation}
+\label{eq:mvhg}
+\mathbb{P}(c \mid \qP) \;=\; \MVHG(\qP,\Vstar)
+\;=\; \frac{\prod_{i \in \Pmarg} \binom{q_i}{c_i}}
+{\binom{\Rstar}{\Vstar}},
+\qquad \textstyle\sum_i c_i = \Vstar ,
+\end{equation}
+the count marginal of the uniform-permutation sequence law (the ordering
+given counts is ancillary). Deterministic kernels induce point-mass
+allocations; \eqref{eq:mvhg} is the engine's only source of allocation
+randomness.
+
+The aggregate evolution of a round is kernel-independent: the level total at
+$p^{*}$ decreases by exactly $\Vstar$, a level is deleted when its total
+reaches zero, and settlement conserves totals. Everything the two kernels can
+disagree about lives below the aggregate layer --- in the attribution of
+$\Vstar$ to pool orders.
+
+\subsection{Raw flow, recorded map, and the frozen corpus contract}
+\label{sec:corpora}
+
+The \emph{raw flow} of a round is $\rawflow = (\text{quantities},\
+\text{arrival clocks},\ \text{actor map})$, an open subset of a
+finite-dimensional space in the linear relaxation $\mathbb{R}_{\geq 0}$
+(integrality is a lattice remark); a general linear parameterization
+$(Q, q) = B\rawflow$ pulls every fiber back through $\ker B$
+(rank--nullity: $\dim \ker B$ free directions are added; the pullback is
+trivial only in the full-column-rank case, where $\ker B = \{0\}$ and the
+parameterization changes nothing). The \emph{recorded map} $\recordedmap$ maps $\rawflow$ to
+the tape $\tape$: the sequence of records the engine emits under kernel $k$
+and recorded-field contract $\mathcal{F}$.
+
+Three grammar variants of $\mathcal{F}$ were separated at design time, and the
+choice is load-bearing:
+\begin{itemize}
+\item $\Ffull$: the entire event grammar, request events included. Under
+$\Ffull$ the recorded map is injective on the raw flow (the requests
+\emph{are} the flow), the fiber is a point, and Theorems T1--T3 are vacuous.
+This is a preregistered STOP-class reversal row (the halt-with-no-repair
+class of the preregistration; Section~\ref{sec:scope-stop}): re-admitting
+request events into the corpus would not refute the theorems, it would
+delete their subject.
+\item $\Fexecorders$: $\Fexec$ plus the request events
+(\fld{order\_request}/\fld{order\_accepted}). Since \fld{order\_accepted}
+carries \fld{resting\_quantity}, every accepted order's declared quantity is
+pinned and the fiber collapses to within-order timing ambiguity.
+\item $\Fexec$: execution payloads plus $\fld{allocation\_draw}$ when present
+plus pre/post best-bid/ask \emph{prices} (no sizes).
+\end{itemize}
+$\Fexec$ \emph{is} the frozen corpus contract (a frozen preregistration
+decision; internal id anonymized for review): it is the
+training corpus of every through-mechanism experiment in
+\S\ref{sec:cube}, and every theorem in \S\ref{sec:t1}--\S\ref{sec:t3h5} is
+stated under it. Within $\Fexec$, at each touched level with at least one
+draw, the tape records: the draw sequence and drawn order ids;
+\fld{maker\_remaining}, which pins each \emph{drawn} order's quantity exactly;
+and \fld{eligible\_units} per draw, which pins the level's \emph{aggregate}
+remaining quantity, hence the aggregate of the never-drawn orders --- the
+engine records an aggregate where a per-order quantity would have removed the
+symmetry. The fifo arm records no \fld{eligible\_units}; only executed orders'
+\fld{maker\_remaining} is pinned. Untouched levels appear only through
+best-price quotes: no depth at all.
+
+The recording \emph{rungs} $g$ coarsen only the execution/allocation records:
+$\gagg$ (aggregate prints, one per price: $\{(p, V_p)\}$; at $p^{*}$ the
+kernel-independent statistic $\Vstar$), $\gpo$ (one fill record per filled
+order: order id, price, $c_i$; zero-fill orders emit nothing), $\gpu$ (one
+record per drawn unit, with the engine annotations). Ambient fields ---
+pre/post BBO prices --- are held fixed across rungs, so the ladder is a pure
+recording treatment. We write $T_{k,g}$ for the recorded map with execution
+records further projected to rung $g$, and $\recordedmap$ for the unprojected
+$\Fexec$ map.
+
+\subsection{Matching fibers: law-level and realized-tape}
+\label{sec:fibers}
+
+Two identification objects must be distinguished throughout. The
+\emph{law-level fiber} is
+$\Fibkg(\rawflow_0) = \{\rawflow : \mathcal{L}_{k,g}(\rawflow) =
+\mathcal{L}_{k,g}(\rawflow_0)\}$, where $\mathcal{L}_{k,g}$ is the
+measure-valued map into laws of rung-$g$ tapes --- what a training
+\emph{distribution} identifies. The \emph{realized-tape fiber} is
+$\Fibtau = \{\rawflow' : \recordedmap(\rawflow') = \tape\}$ --- what one
+round's record identifies. The \emph{ambiguous set} $\Utau$ is the set of
+coordinates $\Fibtau$ leaves unpinned. The preregistered instrument explores
+the law-level object engine-natively: a dual-hash fiber resampler regenerates
+without-replacement interleavings holding the aggregate tape fixed
+(Appendix~\ref{app:engine}). Table~\ref{tab:fibershapes} fixes the
+engine-grounded fiber shapes used by T2 and T3.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}p{0.30\textwidth}p{0.31\textwidth}p{0.33\textwidth}@{}}
+\toprule
+Cell (kernel $\times$ tape) & Ambiguous set $\Utau$ & Fiber shape at
+$\bar{\rawflow}$ \\
+\midrule
+$\kfifo$, $\Fexec$ & never-executed orders (any level) $+$ residuals of
+partially executed orders beyond their last pinned \fld{maker\_remaining} &
+translate of the orthant $\mathbb{R}_{\geq 0}^{|\Utau|}$ (recession cone) \\
+$\kproprata$ (taxonomy only), aggregate & scale ray on the rationed side &
+$\{c \cdot a : c \geq 1\}$ \\
+$\kru$ $+$ per-unit tape, $\Fexec$ & at each touched level: split directions
+among never-drawn orders $\{u : \sum_{i \in \mathrm{ND}(\ell)} u_i = 0\}$
+(aggregate pinned by \fld{eligible\_units}; drawn orders pinned individually)
+$\oplus$ never-executed orders at untouched levels & lower-dimensional
+subspace (lineality) at touched levels $\oplus$ orthant at untouched levels
+--- strictly smaller than the fifo fiber, never a point whenever $\geq 2$
+never-drawn orders share a level or any level is untouched \\
+$\kru$ $+$ aggregate tape & randomness marginalizes out; support union &
+$\supseteq$ fifo fiber \\
+\bottomrule
+\end{tabular}
+\caption{Engine-grounded fiber shapes at $\Fexec$ (theory appendix, Part II
+\S0; $\mathrm{ND}(\ell)$ = never-drawn orders of level $\ell$). The pro-rata
+row is taxonomy-only: $\kproprata$ never executes in this engine.}
+\label{tab:fibershapes}
+\end{table}
+
+\subsection{Consumers and reference measures}
+\label{sec:consumers}
+
+A \emph{consumer} is a named market-native functional the deployed record is
+asked to support. All consumers in this paper are finite linear functionals
+$\Ccons(\rawflow) = v^{\top}\rawflow$ (assumption A3), with two named
+instances: the raw-flow portfolio notional
+$\Crisk(\rawflow) = \sum_i p_i q_i$ --- submitted/queue exposure, a risk
+manager's object, \emph{not} the tape's cleared volume --- and the
+latency-window notional $\Clat[W](\rawflow) = \sum_i p_i
+\mathbf{1}\{\mathrm{clock}_i \leq W\}\, q_i$ --- what a truncating deployment
+or a $\Delta t$-latency policy acts on. Allocation consumers
+$C_w(a) = \sum_j w_j c_j$, linear in fill counts, are the deployment-side
+readouts of \S\ref{sec:t3h5}.
+
+The \emph{reference measure} $\muR$ puts product-uniform mass on the fiber
+truncated to a box of radius $R$ in the ambiguous coordinates, with $R$ the
+admissible excess scale (an energy-bounded adversary). Both per-coordinate
+conventions are preregistered as frozen contract items and read as deviation
+budgets: the \emph{one-sided box} on orthant coordinates,
+$q_i \sim \mathrm{Unif}[a_i,\, a_i + R]$ independently ($q_i - a_i \in [0,R]$;
+per-coordinate variance $R^2/12$, lower bound $a_i$ the recorded allocation or
+pinned residual), and the \emph{two-sided split} convention on touched-level
+split coordinates, $u = P_K \varepsilon$ with $\varepsilon_i \sim
+\mathrm{Unif}[-R,R]$ i.i.d.\ ($|\varepsilon_i| \le R$; per-coordinate variance
+$R^2/3$) and $P_K = I - \tfrac{1}{m}\mathbf{1}\mathbf{1}^{\top}$ the
+projection onto the never-drawn split kernel of a level with $m$ never-drawn
+orders. Gaussian references give the same scaling.
+
+\subsection{Flow processes: the policy ladder}
+\label{sec:policies}
+
+The raw flow is generated by a stochastic process of actor requests. Two
+classes matter. \emph{M0 (aggregate-lumpable)}: each actor's request at each
+boundary is a measurable function of the anonymous aggregate history (level
+sums, public information, own exogenous signals) plus exogenous policy
+randomness; allocation identity never feeds back. \emph{M1$+$
+(identity/resource-responsive)}: requests may additionally depend on the
+identity-level components of the actor's own state --- own realized fills,
+inventory, cash, induced values. (M2 feedback-adaptive and M3 rule-aware
+policies are contained in M1$+$ for our purposes.) The boundary that the
+theorems actually locate is stated in \S\ref{sec:t1}: ``no active identity
+channel'', of which policy feedback (M1) and validation feedback (self-trade
+prevention, per-actor reserves) are the two engine-native instances.
+
+The data-generating processes of the preregistered design freeze the request
+generator in the M0/M1-lumpable class: actions depend only on the anonymous
+book state, own inventory, cash, and induced values --- never on allocation
+identity --- so executed request streams are kernel-invariant and
+request-level common random numbers pair the two arms exactly. This is the
+single load-bearing pairing assumption of the experimental design; the
+theorems of \S\ref{sec:t1}--\S\ref{sec:t3h5} do not rest on it (they are
+statements about the engine's own laws), but every planned measurement does.
+
+\subsection{Lineages, DGPs, and fixtures}
+\label{sec:lineages}
+
+Two simulator lineages carry the attribution cube of \S\ref{sec:cube}.
+$\Lone$ is the transformer/potential surrogate lineage of
+Section~\ref{sec:setup} (graph-potential architecture; internal codename
+anonymized for double-blind review): state-dependent
+interaction potentials in the graph-potential sense of MACE
+\citep{batatia2022}, adapted to book state. $\Ltwo$ is a recurrent
+fact-surrogate lineage --- code-frozen before D0, carrying no training claim.
+Two data-generating processes are used: D1 = the lab-asset dual-arm engine
+(same prestate and request stream, only \fld{allocation\_rule} exchanged)
+driven by the frozen M0/M1-lumpable request generator; D2 = a synthetic
+generator reserved for Stage 2. No outcome of any run is asserted anywhere in
+this paper.
+
+The frozen 21/22-event bundle instantiates the \emph{collapse stratum}: its
+only touched level carries a single maker, so it contains no multi-order
+rationed level. The enriched fixture family lab-asset-v3.1 (master seed
+20260972; a separate artifact that cites, and never mutates, the frozen
+bundle) exists precisely to place multi-order pools at touched levels on the
+S3 scaffold $\qP = (5,4,3,2)$ with a $\Vstar$-ladder, plus clock-straddling
+never-drawn sets; Appendix~\ref{app:engine} carries its contract. This
+enrichment is a hard prerequisite for the post-D0 S1a gates (the
+preregistered constructed-fiber-pair gate set, EP4 of
+\S\ref{sec:cube-endpoints}) that would
+dynamically confirm the multi-order cells; the static and law-level theorems
+stand on the engine semantics alone. \RESULTSPENDING{}

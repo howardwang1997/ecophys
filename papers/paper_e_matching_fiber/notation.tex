@@ -1,0 +1,101 @@
+% ============================================================================
+% notation.tex — shared math macros for Paper E.
+% Writers MUST use these macros and MUST NOT define competing ad-hoc macros
+% for the same objects (consistency is a prereg-fidelity requirement: the
+% notation mirrors prereg v2 and the theory appendix).
+% Naming follows: prereg v2 §2–§4 (T1/T2/T3+H5 statements; cube estimands;
+% statistical contract) and the theory appendix (Part I §1 scaffold, Part II
+% §0 setup). Where the prereg prints an elided hash, the macro carries the
+% elided form exactly as prereg §7.4 prints it.
+% ============================================================================
+
+% ---------- engines, mechanisms, kernels ----------
+\newcommand{\Mk}{M_k}                                   % clearing layer under kernel k
+\newcommand{\Mfifo}{M_{\mathrm{fifo}}}                  % deterministic FIFO clearing
+\newcommand{\Mru}{M_{\mathrm{ru}}}                      % random_unit clearing
+\newcommand{\kfifo}{\mathsf{fifo}}
+\newcommand{\kru}{\mathsf{random\_unit}}                % engine name: random_unit_within_price
+\newcommand{\ru}{\mathrm{ru}}                            % short kernel tag; REQUIRED by \Dswapru below
+                                                          % (was missing from the skeleton 2026-09-07; repair, not a redefinition)
+\newcommand{\kproprata}{\mathsf{pro\_rata}}             % NOT an engine kernel: S3 exact-arithmetic only
+
+% ---------- raw flow, pools, one-step clearing scaffold ----------
+\newcommand{\rawflow}{z}                                % raw submitted flow (quantities, clocks, actor map)
+\newcommand{\Vstar}{V^{*}}                              % residual demand at the rationed level
+\newcommand{\Rstar}{R^{*}}                              % pool size at the marginal price
+\newcommand{\jstar}{j^{*}}                              % FIFO threshold index in the pool
+\newcommand{\qP}{q_{P}}                                 % pool quantity vector
+\newcommand{\cF}{c^{F}}                                 % FIFO prefix allocation vector
+\newcommand{\Pmarg}{P}                                  % set of orders at the marginal price
+\DeclareMathOperator{\MVHG}{MVHG}                       % multivariate hypergeometric law
+\DeclareMathOperator{\TV}{TV}                           % total-variation distance
+
+% ---------- tapes, recorded-field contracts, fibers ----------
+\newcommand{\tape}{\tau}                                % recorded tape
+\newcommand{\recordedmap}{T_{k,\mathcal{F}}}            % recorded map (kernel k, grammar F)
+\newcommand{\Fexec}{\mathcal{F}_{\mathrm{exec}}}        % FROZEN corpus contract: executions + draws + BBO prices
+\newcommand{\Fexecorders}{\mathcal{F}_{\mathrm{exec+orders}}}
+\newcommand{\Ffull}{\mathcal{F}_{\mathrm{full}}}        % full grammar: fibers collapse to a point
+\newcommand{\gagg}{g_{\mathrm{agg}}}                    % tape rung: aggregate prints
+\newcommand{\gpo}{g_{\mathrm{po}}}                      % tape rung: per-order fills
+\newcommand{\gpu}{g_{\mathrm{pu}}}                      % tape rung: per-unit draw records
+\newcommand{\Fibkg}{F_{k,g}}                            % law-level fiber
+\newcommand{\Fibtau}{F_{\tape}}                         % realized-tape fiber
+\newcommand{\Utau}{U(\tape)}                            % ambiguous set of tape tau
+\newcommand{\vU}{v_{U}}                                 % consumer weights restricted to U(tau)
+\newcommand{\muR}{\mu_{R}}                              % box-truncated reference measure on the fiber
+
+% ---------- consumers ----------
+\newcommand{\Ccons}{C}                                  % generic linear consumer C(z) = v^T z
+\newcommand{\Crisk}{C_{\mathrm{risk}}}                  % raw-flow portfolio notional
+\newcommand{\Clat}[1][W]{C_{\mathrm{lat}}^{#1}}         % latency-window notional
+\newcommand{\floorRMSE}{R\,\lVert\vU\rVert/\sqrt{12}}   % Theorem 1(d) floor RMSE constant
+
+% ---------- deployment grammar and exposed sets ----------
+\newcommand{\Gdep}{\mathcal{G}}                         % preregistered deployment grammar
+\DeclareMathOperator{\Exp}{Exp}                         % exposed set Exp(D, C)
+\newcommand{\Dread}{D_{\mathrm{read}}}                  % record readout (null control; Exp = emptyset)
+\newcommand{\Draw}{D_{\mathrm{raw}}}                    % raw-flow readout (maximal control; Exp = U(tau))
+\newcommand{\Dswapru}{D_{\mathrm{swap}\to\ru}}          % kernel swap to random_unit at inference
+\newcommand{\Dswapfifo}{D_{\mathrm{swap}\to\kfifo}}     % kernel swap to fifo at inference
+\newcommand{\Dtrunc}[1][W]{D_{\mathrm{trunc}}^{#1}}     % truncation window on arrival clocks
+\newcommand{\Dh}[1][h]{D_{#1}}                          % horizon extension
+
+% ---------- the eight-cell cube (C3; pinned definitions) ----------
+\newcommand{\Jest}{J}                                   % J = D_00 - D_10 - D_01 + D_11
+\newcommand{\Dte}[2]{D_{#1#2}}                          % D_{te}, subscript order: (training, inference)
+\newcommand{\Tzero}{T_{0}}                              % T_0 = D_00 - D_10  (training contrast, raw-infer)
+\newcommand{\Tone}{T_{1}}                               % T_1 = D_01 - D_11  (training contrast, through-M-infer)
+\newcommand{\Ezero}{E_{0}}                              % E_0 = D_00 - D_01  (inference contrast, raw-train)
+\newcommand{\Eone}{E_{1}}                               % E_1 = D_10 - D_11  (inference contrast, through-M-train)
+\newcommand{\phitrain}{\varphi_{\mathrm{train}}}        % (T_0 + T_1)/2
+\newcommand{\phiinfer}{\varphi_{\mathrm{infer}}}        % (E_0 + E_1)/2
+
+% ---------- blocks, lineages, seeds, statistical contract ----------
+\newcommand{\BOne}{B_{1}}   \newcommand{\BTwo}{B_{2}}   \newcommand{\BThree}{B_{3}}   \newcommand{\BFour}{B_{4}}
+\newcommand{\Lone}{L_{1}}   \newcommand{\Ltwo}{L_{2}}   % L1 = ecomd_v2 transformer/potential; L2 = recurrent fact-surrogate
+\newcommand{\Kdraw}{K}                                  % frozen K = 16 inference-kernel draws per seed per cell
+\newcommand{\deltas}{\delta_{s}}                        % SESOI: delta_s = 0.1 * mean Y at R00(s)
+\newcommand{\Rzeros}{R_{00}(s)}                         % (increment, raw-train, raw-infer) cell of stratum s
+\newcommand{\Yend}{Y}                                   % primary endpoint (two aggregate conserving channels)
+\newcommand{\spawn}[2]{\operatorname{spawn}(#1,\,\texttt{"#2"})}  % RNG-tree derivation
+
+% ---------- engine schema field names (verbatim, \texttt) ----------
+% Skeleton repair 2026-09-07: the shipped \fld{\texttt{#1}} could not print its
+% own documented examples (\fld{allocation_draw} etc.) — a raw "_" in the
+% argument is a text-mode subscript and aborts the build, while other sections
+% call \fld with escaped "\_". Reading the argument with catcode-12 "_"
+% accepts BOTH conventions verbatim; nothing else changes.
+\newcommand{\fld}{\begingroup\catcode`\_=12 \fldhelper}
+\newcommand{\fldhelper}[1]{\endgroup\texttt{#1}}
+
+% ---------- frozen hashes and identifiers (print exactly; never retype) ----------
+% Canonical A-2 bundle manifest, full 64-hex (prereg v2 §1.1; Annex C-4 typo inventory governs audit reconciliation).
+\newcommand{\bundlemanifest}{\texttt{fea8a136b0c3e19a00bddcb131a1540ca40fda6c1576dbc949001dbf76a9581c}}
+% K-preflight results sha256, full 64-hex (prereg v2 §3.2/§7.3).
+\newcommand{\kpreflighthash}{\texttt{f61e410cd59c37b5624504a3cdf057c701b4b682067f948d2f8528ace018c2d4}}
+% Fiber-resampler prereg statement sha256 — elided form exactly as prereg §7.4 prints it.
+\newcommand{\resamplerhash}{\texttt{703ca36e...2c4b}}
+% G2-1 frozen-fixture hash identity (elided forms exactly as prereg §2.2 prints them).
+\newcommand{\preagghash}{\texttt{da930600...}}
+\newcommand{\postagghash}{\texttt{f0862093...}}
