@@ -433,7 +433,8 @@ final empirical sentence is rewritten as a boundary report.
 > hypothesis space is a function-preserving equivalence: every observable, loss, and deployment
 > map is constant on its orbits, so quotienting is harmless-by-design and removes genuine
 > redundancy — the design principle of Quotient-Space Diffusion Models (ICLR 2026) for internal
-> SE(3) orbits, and of the conservation-law weight structure in Neural Mechanics (ICLR 2020).
+> SE(3) orbits, and, in the same symmetry family, of the conservation laws Neural Mechanics
+> derives for the training dynamics (ICLR 2021).
 > The through-M mechanism fiber is provably not of this kind. **By Lemma A**, any quotient of
 > raw-flow space that (i) keeps the F_exec training corpus recoverable (corpus-compatibility)
 > and (ii) is nontrivial on the fiber — as any fiber-collapsing repair must be — necessarily
@@ -1473,6 +1474,16 @@ pre-freeze per Section 1.3(4))
   item (14)'s itemized membership (2 tests per L1 block, 1 per L2 block; recorded reason).
 - **C-10** Prereg v1 §2.2 G2-1 "sequence 6/7" wording — superseded by the v2 §2.2 wording
   (fifo SEQUENCE 7 = random_unit SEQUENCE 8, hash roles and boundary convention pinned).
+- **C-11** v2 §2.6 V4 citation clause and v2 References: "conservation-law weight structure in
+  Neural Mechanics (ICLR 2020)" — mischaracterization and wrong year against the verified
+  publication record (Kunin, Sagastuy-Brena, Ganguli, Yamins, Tanaka, "Neural Mechanics:
+  Symmetry and Broken Conservation Laws in Deep Learning Dynamics", ICLR 2021,
+  arXiv:2012.04728): the work derives conservation laws of the training dynamics from
+  architectural symmetry and studies their breaking; it does not build a conservation-law
+  structure into the weights. Both sites corrected 2026-09-08 as a PI-approved pre-freeze
+  erratum (verification evidence: arXiv abs page, 2026-09-07 bibliographic round; manuscript
+  V4 citation clause corrected in step on 2026-09-07). No theorem statement, condition,
+  constant, or ruling is affected; the V4 lemma argument is untouched.
 
 ---
 
@@ -1488,7 +1499,7 @@ et al., AAMAS 2023); **Nagy et al. (2023, ICAIF) — "Generative AI for End-to-e
 Modelling", D-2 map §2.2 adjudicated row (replaces the v1 Dyer column, Section 6.3)**;
 Gen-DFL (2025); MarS (2024, ICLR 2025); M3 State-Event Foundation Model (2026); KineticSim
 (2026); matching-engine ABM (2021) (map §2.5 + citation condition 4); Quotient-Space Diffusion
-Models (ICLR 2026); Neural Mechanics (ICLR 2020); Soudry et al. (2017); "The Loss Does Not See
+Models (ICLR 2026); Neural Mechanics (ICLR 2021); Soudry et al. (2017); "The Loss Does Not See
 the Basis but Adam Does" (2026); "Do Differentiable Simulators Give Better Policy Gradients?"
 (ICLR 2026; "Onoda ICLR 2026" in D-1 documents); Minimizing Surrogate Losses for DFL (2025);
 Gumbel-Softmax (2016); Do LLMs Understand LOB Dynamics (2026); Counterfactual Operator
