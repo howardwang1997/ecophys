@@ -103,6 +103,21 @@ NEEDSVERIFY entries — expected under the verification convention, to be
 resolved in the post-freeze bibliographic completion pass. Bibliography
 mechanism is single (natbib [numbers,sort&compress] + plainnat + refs.bib).
 
+**Post-full-bib-verification compile: SUCCESS** (2026-09-07, after the
+complete 40/40 refs.bib verification in item 3). Zero LaTeX errors, zero
+undefined references/citations; 39 of 40 entries cited and rendering
+(`maskawa2025` uncited per the A1.3 waiver). Spot-checked against the
+regenerated `.bbl`: `chopra2023` renders the real 7-author AAMAS record,
+`neuralmechanics2020` renders as Kunin et al. (2021), `diffsimpolicy2026`
+renders the exact nested double-quoted title verbatim, `solverinloop2020`
+stays title-only, `paperd` renders as Anonymous (2026). bibtex log is now
+error-free with only the two expected `solverinloop2020` author-less sorting
+warnings (down from 22 notices at v0.2). Engineering note for future editors:
+bibtex treats a bare `@` in `%` comment lines as an entry-start token —
+write entry types in comments without the `@` (e.g., "retyped article ->
+misc"), or bibtex emits "expecting `{` or `(`" errors (introduced and fixed
+2026-09-07).
+
 ## What is deliberately absent (unchanged from skeleton contract)
 
 - **All empirical results** (D0 freeze 2026-09-19). Permitted numbers only:
@@ -114,15 +129,133 @@ mechanism is single (natbib [numbers,sort&compress] + plainnat + refs.bib).
 - **Venue-specific style** (venue-neutral 11pt article; no vendored
   conference styles; `papers/paper_d_constraints/` untouched).
 
-## Remaining open
+## Independent bib-verification audit (2026-09-07, post completion)
+
+Independent auditor re-loaded ~30/40 entries from authoritative pages
+(arXiv abs/export API, Crossref, PMLR, IFAAMAS, OpenReview) and compared
+field-by-field, weighted toward corrected entries and including all five
+identity-critical corrections: **zero fabricated or wrong bib fields**;
+mechanical checks all pass (key set identical to git HEAD, 40 entries, only
+refs.bib + DRAFT_STATUS.md modified, verify stamps on 39/40 with paperd the
+documented exception). Verdict `issues_found` was driven entirely by
+prose-consistency findings, all dispositioned same day:
+
+| Finding | Disposition |
+|---|---|
+| related.tex fabricated quotation: ``the noise law determines the stochastic fiber'' attributed to `perturbargmax2024` (0 hits in arXiv:2406.02180) | **Fixed.** De-quoted and recast as our characterization ("owns the principle that the noise law determines the selection distribution for the state-free argmax family"); the concept-level scoping claim was audit-judged defensible, only the quotation marks were false. |
+| related.tex lane (f): "Neural Mechanics builds conservation laws into the weight structure --- both function-preserving by construction" | **Fixed.** Real record (Kunin et al., ICLR 2021, "Neural Mechanics: Symmetry and Broken Conservation Laws in Deep Learning Dynamics") DERIVES conservation laws of the training dynamics from architectural symmetry. Rewritten accordingly; the function-preserving-by-construction property now attaches to `quotientdiffusion2026` alone. |
+| v4.tex same defect inside the V4 remark's citation clause | **Fixed.** Now "in the same symmetry family, the conservation laws Neural Mechanics derives for the training dynamics". V4's not-a-gauge content and Lemma v4-a argument untouched. |
+| cube.tex over-attribution: "the perturb-argmax surrogate of probability-proportional-to-remaining draws \citep{perturbargmax2024}" | **Fixed.** Citation now scopes to the perturb-then-argmax construction only ("a perturb-then-argmax surrogate \citep{...} of ..."); estimator semantics, pinned noise, and frozen constants untouched. |
+| refs.bib `kineticsim2026` % comment claimed "no journal-ref/Comments/DOI" | **Fixed.** arXiv v2 carries a Comments string ("12 pages, 7 figures, 5 tables. IEEE format"); comment corrected. Fields/type unaffected. |
+
+Cleared by the same audit (recorded, no action): `chopra2023` prose
+("establishes the differentiable-agent-based-model feasibility") judged
+defensible under the corrected record; `mars2024` prose defensible;
+`maskawa2025` confirmed single author Jun-ichi Maskawa (not the Nobel
+laureate) and confirmed uncited per the A1.3 waiver; `solverinloop2020`
+title-only form is the documented prereg ruling R3-10; `duruisseaux2024`
+prose (train-x-infer template, Fourier/Leray projection) supported by the
+abstract. Additional self-check beyond the audit: the `lossbasis2026`
+quotation "the loss does not see the basis, but Adam does" is verbatim the
+paper's TITLE (arXiv:2608.05136) — legitimate quotation, kept. Residual
+low-risk note: `chopra2023` end page 1857 from the editor's record (start
+page 1848 independently confirmed on the IFAAMAS contents page).
+
+
 
 1. **D0 freeze sha256 + timestamp** — pinned at D0 (2026-09-19) only;
    Appendix C placeholders stay empty until then.
 2. **Post-D2 outcome writing** — every `\RESULTSPENDING{}` site; final
    abstract rewrite.
-3. **NEEDSVERIFY bibliographic completion** — full author lists, venues,
-   volume/pages against publication records (includes MarS author list,
-   A1.4). Never from memory; frozen-field discipline applies.
+3. **NEEDSVERIFY bibliographic completion — COMPLETE 2026-09-07 (full
+   coverage, 40/40 entries; five verifier clusters integrated idempotently
+   by the editor from the on-disk state; never from memory; no key changed,
+   no entry added or removed).** 31 entries corrected against loaded
+   authoritative pages (arXiv abs pages, arXiv export API, Crossref REST,
+   PMLR publisher pages, OpenReview metadata/API, IFAAMAS proceedings
+   contents, Springer chapter page, MDPI article page, Project Euclid); 8
+   entries confirmed with fields already correct (`cont2001`, `soudry2017`,
+   `lossbasis2026`, `walkingfiber2025`, `counterfactualoperator2025`,
+   `extremepoints2024`, `smartlotteries2026`, `solverinloop2020` — the last
+   deliberately kept title-only per prereg ruling R3-10); `paperd` is
+   internal-by-design. **Zero unverifiable entries; zero fabricated
+   fields.** Every corrected entry's `%` comment carries its evidence URL
+   and a "verified ... 2026-09-07" stamp; all stale NEEDSVERIFY flags
+   cleared.
+   - **Identity-critical corrections (PI should be aware):**
+     - `chopra2023`: the previous title "GradABM: Learning Agent-Based
+       Market Simulators from Data" matches NO publication (official IFAAMAS
+       AAMAS 2023 proceedings contents, arXiv site search, DBLP search and
+       the author's full DBLP listing all return 0 hits). Corrected to the
+       real AAMAS 2023 paper "Differentiable Agent-based Epidemiology"
+       (Chopra, Rodríguez, Subramanian, Quera-Bofarull, Krishnamurthy,
+       Prakash, Raskar; pp. 1848--1857; arXiv:2207.09714), which introduces
+       the GradABM framework and matches the D-2 map row's "epi feasibility"
+       note. The removed Dyer ICAIF 2023 market-side row was NOT
+       reintroduced as a substitute (prereg v2 removal stands).
+     - `neuralmechanics2020`: the exact previous title ("...Conservation
+       Laws in Vision", ICLR 2020) exists nowhere in the publication record;
+       identity resolves via the D-2 map row's "weight-space conservation
+       laws" pin to Kunin, Sagastuy-Brena, Ganguli, Yamins, Tanaka, "Neural
+       Mechanics: Symmetry and Broken Conservation Laws in Deep Learning
+       Dynamics", ICLR 2021 Poster, arXiv:2012.04728 — title, venue-year
+       (2020→2021) and authors changed; key kept for map traceability.
+       **Explicit PI sign-off requested** (flagged in the entry comment): if
+       a different vision-specific paper was intended, no such paper exists
+       in the searched record and the entry must be treated as unverifiable
+       rather than silently retargeted.
+     - `maskawa2025`: author given name corrected Hideki → **Jun-ichi**
+       Maskawa (Seijo University; NOT the Nobel laureate — a different
+       person); Entropy 27(4):435, DOI 10.3390/e27040435 added.
+     - `perturbargmax2024`: first author is **Hedda** Cohen Indelman (bib
+       had "Gil"); exact long title restored.
+     - `diffsimpolicy2026`: exact nested title restored — Does "Do
+       Differentiable Simulators Give Better Policy Gradients?" Give Better
+       Policy Gradients? (ICLR 2026, arXiv:2604.18161); the previous flat
+       form collided with the distinct Suh et al. ICML 2022 paper.
+   - **Entry-type corrections (no venue existed to cite):**
+     `fibers2014`, `sinkhornlinearization2026`, `matchingengineabm2021`
+     retyped to arXiv-preprint `@misc` (no journal-ref/venue in the record
+     for any of the three; matchingengineabm2021's presumed journal does not
+     exist); `mongegap2023` `@misc`→`@inproceedings` (ICML 2023, PMLR v202,
+     pp. 34709--34733); `diffsimpolicy2026` `@misc`→`@inproceedings`
+     (ICLR 2026).
+   - **Et-al / title-only expansions completed:** `toth2011` (full 6-author
+     list; published title + "in Financial Markets"; PRX 1(2), DOI),
+     `batatia2022` (5 authors; NeurIPS 35), `diaconissturmfels1998`
+     (26(1):363--397 + DOI), `taskbased2017` (Donti/Amos/Kolter; title
+     suffix restored; NIPS 30, pp. 5484--5494), `gumbelsoftmax2016`
+     (title-merge resolved to Maddison/Mnih/Teh arXiv:1611.00712; the
+     companion Jang/Gu/Poole arXiv:1611.01144 is recorded in the entry
+     comment only, no entry added), `dpiot2022` (Chiu/Wang/Shafto; PMLR
+     v162, pp. 3925--3946), `propertiesmechanisms2022`
+     (Ahuja/Hartford/Bengio; ICLR 2022 Spotlight), `quotientdiffusion2026`
+     (7 authors; ICLR 2026 Oral confirmed), `duruisseaux2024` (4 authors;
+     title gains final word "Frameworks"; ICML 2024 AI for Science
+     Workshop), `nagy2023` (7 authors; full two-part title; ICAIF '23,
+     pp. 91--99, DOI), `mars2024` (7 authors; full title — **A1.4 author
+     list now closed**), plus the market-model `@misc` completions
+     `marketgpt2024` (Wheeler/Varner; identity pinned by four independent
+     enumerations), `tablabm2025` (Olby/Baggott/Stillman), `tradefm2026`
+     (5 authors), `m3_2026` (5 authors; exact title), `kineticsim2026`
+     (Jayakody/Jayakody), `gendfl2025` (5 authors; arXiv-only — cite as
+     arXiv:2502.05468, never from memory as IJCAI), `trades2025`
+     (Berti/Prenkaj/Velardi; ECAI 2025, FAIA 413, pp. 3703--3710, DOI),
+     `surrogateldfl2025` (4 authors with exact diacritics), and
+     `dexclosedloop2026` (single author Wang; exact title).
+   - t4-cluster re-check against the fresh verdicts: `dolob2026`
+     re-corrected (primary class [cs.AI], not [q-fin.TR] — the one field
+     the partial run left wrong); `transportationpolytopes2004` note editor
+     order set to Springer's cite line (Bienstock, Nemhauser) and stamp
+     refreshed to the Springer evidence URL.
+   - `paperd` double-blind safety re-checked 2026-09-07: fields are
+     `Anonymous` + descriptive title + year only — no author, repo, branch,
+     or URL leakage. Unchanged.
+   - Uncited sweep 2026-09-07 (`main.tex` + `notation.tex` +
+     `sections/*.tex`; the two `NEEDSVERIFY:` cite strings sit in `%`
+     comments): `maskawa2025` is the only refs.bib entry never cited (A1.3
+     waiver stands; entry kept). All other 39 entries are cited at least
+     once.
 4. **maskawa2025 waiver** — PI-recorded here (A1.3); revisit only if
    volatility-cascade content ever enters the paper.
 5. **Camera-ready name restoration** — anonymized internal names per the

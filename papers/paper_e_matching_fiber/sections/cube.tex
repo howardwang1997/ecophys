@@ -477,9 +477,9 @@ unit-Jacobian convention, frozen before any training.
 Forward $=$ exact $\Mk$ applied to perturbed priority scores, where the
 scores are kernel-fixed frozen functions of the raw flow (FIFO:
 $-$queue position, stable descending argsort; random-unit: depleting
-remaining quantity, per-draw argmax with unit depletion --- the
-perturb-argmax surrogate of probability-proportional-to-remaining draws
-\citep{perturbargmax2024}). Noise $= \mathcal{N}(0,1)$ drawn up-front from a
+remaining quantity, per-draw argmax with unit depletion --- a
+perturb-then-argmax surrogate \citep{perturbargmax2024} of
+probability-proportional-to-remaining draws). Noise $= \mathcal{N}(0,1)$ drawn up-front from a
 seeded CPU \texttt{torch.Generator}; $\sigma = 1.0$
 (\texttt{PINNED\_PERTURB\_AND\_MAP\_SIGMA}; one lattice unit of the
 priority-score scale), frozen, not caller-configurable. Backward $=$
