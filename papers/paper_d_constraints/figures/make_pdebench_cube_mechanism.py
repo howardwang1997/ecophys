@@ -67,13 +67,15 @@ def make_figure(analysis: dict[str, Any], output: Path) -> None:
             "ps.fonttype": 42,
         }
     )
-    figure, axes = plt.subplots(
-        1,
-        3,
-        figsize=(7.05, 2.35),
-        gridspec_kw={"width_ratios": [1.08, 0.86, 1.18]},
-        constrained_layout=True,
+    figure = plt.figure(figsize=(7.05, 2.75), constrained_layout=True)
+    grid = figure.add_gridspec(
+        2, 3, width_ratios=[1.08, 0.86, 1.18], height_ratios=[1, 0.24]
     )
+    axes = [figure.add_subplot(grid[0, column]) for column in range(3)]
+    rollout_legend_axis = figure.add_subplot(grid[1, :2])
+    interaction_legend_axis = figure.add_subplot(grid[1, 2])
+    rollout_legend_axis.set_axis_off()
+    interaction_legend_axis.set_axis_off()
 
     horizons = [1, 4, 16, 31]
     primary_case = "ood_r512"
@@ -109,7 +111,10 @@ def make_figure(analysis: dict[str, Any], output: Path) -> None:
     rollout_axis.set_title("(a) Hard-trained checkpoints", loc="left", fontweight="bold")
     rollout_axis.grid(axis="y", color="#E4E4E4", linewidth=0.55)
     rollout_axis.spines[["top", "right"]].set_visible(False)
-    rollout_axis.legend(frameon=False, loc="upper left")
+    rollout_legend_axis.legend(
+        *rollout_axis.get_legend_handles_labels(),
+        frameon=False, loc="center", ncol=2, borderaxespad=0,
+    )
 
     primary = analysis["primary"]
     effect_axis = axes[1]
@@ -141,6 +146,7 @@ def make_figure(analysis: dict[str, Any], output: Path) -> None:
         ha="center",
         va="bottom",
         fontsize=6.8,
+        bbox={"facecolor": "white", "edgecolor": "none", "pad": 1.4},
     )
     effect_axis.set_yticks([0, 1], [label for _, label, _ in effect_spec])
     effect_axis.set_ylim(-0.55, 1.75)
@@ -188,7 +194,10 @@ def make_figure(analysis: dict[str, Any], output: Path) -> None:
     interaction_axis.set_title("(c) Feedback-emergent interaction", loc="left", fontweight="bold")
     interaction_axis.grid(axis="y", color="#E4E4E4", linewidth=0.55)
     interaction_axis.spines[["top", "right"]].set_visible(False)
-    interaction_axis.legend(frameon=False, loc="upper right")
+    interaction_legend_axis.legend(
+        *interaction_axis.get_legend_handles_labels(),
+        frameon=False, loc="center", borderaxespad=0,
+    )
 
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.suffix.lower() != ".pdf":
