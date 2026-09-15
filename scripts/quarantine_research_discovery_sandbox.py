@@ -20,6 +20,7 @@ from scripts.run_research_discovery_sandbox import (
     SandboxRuntimeError,
     append_event,
     canonical_artifact,
+    container_exists,
     sandbox_lock,
     sha256_file,
     timestamp,
@@ -209,20 +210,7 @@ def container_name(sandbox_id: str, branch_id: str) -> str:
 
 
 def inspect_container(name: str) -> bool:
-    try:
-        completed = subprocess.run(
-            ["docker", "container", "inspect", name],
-            check=False,
-            capture_output=True,
-            timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
-        )
-    except subprocess.TimeoutExpired as exc:
-        raise SandboxRuntimeError("timed out inspecting the interrupted container") from exc
-    if completed.returncode == 0:
-        return True
-    if completed.returncode == 1:
-        return False
-    raise SandboxRuntimeError("could not establish interrupted container state")
+    return container_exists(name)
 
 
 def cleanup_container(name: str) -> str:

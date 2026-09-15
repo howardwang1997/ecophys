@@ -47,6 +47,7 @@ STDERR_LIMIT_BYTES = 1_000_000
 RUNTIME_OVERHEAD_BYTES = 1_000_000
 DOCKER_TMPFS_BYTES = 67_108_864
 DOCKER_CONTROL_TIMEOUT_SECONDS = 10
+DOCKER_CLEANUP_RESERVE_SECONDS = 4 * DOCKER_CONTROL_TIMEOUT_SECONDS + 2
 MAX_TAR_MEMBERS = 10_000
 
 
@@ -337,6 +338,8 @@ def build_docker_command(plan: RuntimePlan) -> list[str]:
         "2g",
         "--cpus",
         "1",
+        "--ulimit",
+        f"cpu={plan.cpu_seconds}:{plan.cpu_seconds}",
         "--user",
         "65534:65534",
         "--log-driver",
@@ -413,14 +416,31 @@ def kill_container(plan: RuntimePlan) -> None:
         )
 
 
+def container_exists(name: str) -> bool:
+    try:
+        completed = subprocess.run(
+            ["docker", "container", "ls", "--all", "--filter", f"name={name}", "--format", "{{.Names}}"],
+            check=False, capture_output=True, text=True, timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise SandboxRuntimeError("timed out checking named-container absence") from exc
+    if completed.returncode != 0:
+        raise SandboxRuntimeError("Docker control query failed; container absence is unproven")
+    return name in completed.stdout.splitlines()
+
+
 def remove_container(plan: RuntimePlan) -> None:
-    with suppress(subprocess.TimeoutExpired):
-        subprocess.run(
+    try:
+        completed = subprocess.run(
             ["docker", "rm", "-f", docker_container_name(plan)],
             check=False,
             capture_output=True,
             timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
         )
+    except subprocess.TimeoutExpired as exc:
+        raise SandboxRuntimeError("timed out removing named container; absence is unproven") from exc
+    if container_exists(docker_container_name(plan)):
+        raise SandboxRuntimeError(f"named container remains after cleanup (return code {completed.returncode})")
 
 
 def capture_container(plan: RuntimePlan) -> tuple[str, int | None, int, int, list[Path]]:
@@ -442,7 +462,7 @@ def capture_container(plan: RuntimePlan) -> tuple[str, int | None, int, int, lis
     status: str | None = None
     forced_exit_at: float | None = None
     deadline = min(
-        started + plan.cpu_seconds,
+        started + max(1, plan.cpu_seconds - DOCKER_CLEANUP_RESERVE_SECONDS),
         started + max(0.0, (plan.expires_at - datetime.now(UTC)).total_seconds()),
     )
     try:
@@ -532,6 +552,10 @@ def execute_plan(plan: RuntimePlan) -> dict[str, object]:
     started_at = utc_now()
     status, exit_code, wall_seconds, storage_bytes, artifacts = capture_container(plan)
     finished_at = utc_now()
+    if status != "completed" or wall_seconds > plan.cpu_seconds or finished_at >= plan.expires_at:
+        raise SandboxRuntimeError(
+            "branch did not complete within its execution contract; leave it unfinished and quarantine, never retry"
+        )
     receipt_path = plan.branch_root / "receipt.json"
     receipt = {
         "schema_version": 1,

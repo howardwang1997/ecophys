@@ -1,0 +1,14 @@
+{
+  "anti_selection": "D0 timestamp and protocol must be immutable before T; no refreeze or pulse replacement after observing a pulse.",
+  "derivation": "SHA256(UTF8('g_response_dx_confirm_v1\\n'+unit_id+'\\n') || bytes.fromhex(pulse.outputValue)); interpret digest as unsigned big-endian PCG64 seed",
+  "endpoint_template": "https://beacon.nist.gov/beacon/2.0/pulse/time/next/{unix_milliseconds}",
+  "failure_policy": "If the designated pulse or verification is unavailable, confirmation stays sealed; no alternate pulse/provider/seed.",
+  "implementation": "No confirmation generator or retrieval code is included in this scientific image.",
+  "provider": "NIST Randomness Beacon v2",
+  "pulse_rule": "first signed pulse strictly after T; query pulse/time/next/{1000*T}",
+  "release_gate": "DX terminal receipt and independently frozen D0 are both required",
+  "source_documentation": "https://csrc.nist.gov/Projects/interoperable-randomness-beacons/beacon-20",
+  "status": "future_rule_only_no_pulse_access",
+  "time_rule": "T = ceil(max(DX terminal UTC epoch seconds, D0 freeze UTC epoch seconds)) + 600",
+  "verification": "verify pulse signature/certificate and timestamp > T; archive exact response and certificate"
+}
