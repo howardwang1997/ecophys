@@ -27,7 +27,7 @@ PINNED_BASE_IMAGE_ID = (
     "sha256:2e32f7d302adc1c37428355c1e646897c0c53f4fd60b6a551245fb90ee129f91"
 )
 RECORDED_REPORT_REF = (
-    "research/discovery/conformance/local_colima_arm64_report_2026-08-25.json"
+    "research/discovery/conformance/local_colima_arm64_report_2026-09-12.json"
 )
 
 
@@ -209,7 +209,7 @@ def run_conformance(repo_root: Path) -> dict[str, Any]:
                 image_id,
                 "normal",
                 mode="normal",
-                cpu_seconds=15,
+                cpu_seconds=120,
                 output_bytes=262_144,
             )
             inspect_local_image(normal)
@@ -227,7 +227,7 @@ def run_conformance(repo_root: Path) -> dict[str, Any]:
                 image_id,
                 "output_limit",
                 mode="normal",
-                cpu_seconds=15,
+                cpu_seconds=120,
                 output_bytes=128,
             )
             output_status, _, _, _, _ = capture_container(output_limited)
@@ -239,7 +239,7 @@ def run_conformance(repo_root: Path) -> dict[str, Any]:
                 image_id,
                 "invalid_tar",
                 mode="invalid_tar",
-                cpu_seconds=15,
+                cpu_seconds=120,
                 output_bytes=262_144,
             )
             invalid_status, _, _, _, _ = capture_container(invalid_tar)

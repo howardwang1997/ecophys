@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import yaml
@@ -18,9 +19,13 @@ if __package__ in {None, ""}:
 from scripts.run_research_discovery_sandbox import (
     DOCKER_CONTROL_TIMEOUT_SECONDS,
     SandboxRuntimeError,
+    anchor_record,
+    append_anchor_record,
     append_event,
     canonical_artifact,
     container_exists,
+    enforce_anchor,
+    resolve_base_commit,
     sandbox_lock,
     sha256_file,
     timestamp,
@@ -39,6 +44,7 @@ from scripts.validate_research_discovery import (
     require_nonnegative_integer,
     require_sha256,
     require_string,
+    require_utc_timestamp,
     validate_discovery,
 )
 
@@ -54,6 +60,7 @@ REASON_CODES = {
 class QuarantinePlan:
     repo_root: Path
     base_ref: str
+    base_commit: str
     sandbox_id: str
     branch_id: str
     ledger_path: Path
@@ -68,6 +75,7 @@ class QuarantinePlan:
     charged_usage: dict[str, int]
     prior_usage: dict[str, int]
     branch_ids: list[str]
+    resuming: bool
 
 
 def write_new_bytes(path: Path, payload: bytes) -> None:
@@ -99,6 +107,11 @@ def atomic_replace_bytes(path: Path, payload: bytes) -> None:
 def receipt_usage(repo_root: Path, entry: dict[str, object]) -> dict[str, int]:
     receipt_ref = require_mapping(entry.get("receipt"), "finished branch receipt")
     receipt_path = repo_root / require_string(receipt_ref.get("ref"), "finished receipt.ref")
+    receipt_digest = require_sha256(receipt_ref.get("sha256"), "finished receipt.sha256")
+    if sha256_file(receipt_path) != receipt_digest:
+        raise SandboxRuntimeError(
+            f"finished-branch receipt {receipt_path} no longer matches its ledger digest"
+        )
     receipt = load_canonical_json_mapping(receipt_path, f"receipt {receipt_path}")
     return {
         field: require_nonnegative_integer(receipt.get(field), f"receipt {receipt_path}.{field}")
@@ -117,7 +130,6 @@ def load_quarantine_plan(
     branch_id: str,
     base_ref: str,
 ) -> QuarantinePlan:
-    validate_discovery(repo_root, base_ref=base_ref)
     manifest_ref = f"research/discovery/sandboxes/{sandbox_id}.yaml"
     if manifest_ref not in set(git_tree_files(repo_root, base_ref, manifest_ref)):
         raise SandboxRuntimeError("sandbox authorization is absent from the protected base")
@@ -125,6 +137,13 @@ def load_quarantine_plan(
     manifest = load_yaml(manifest_path, f"sandbox manifest {sandbox_id}")
     if manifest.get("id") != sandbox_id:
         raise SandboxRuntimeError("sandbox manifest identity mismatch")
+    expires_at = require_utc_timestamp(manifest.get("expires_at"), f"sandbox {sandbox_id}.expires_at")
+    # An expired sandbox with an unfinished branch is exactly the state the handler
+    # must terminalize, so validate its live-state contract as of the last moment
+    # it was still inside its authorization window; the post-quarantine validate
+    # below runs at wall-clock time with the terminal state in place.
+    pinned_as_of = min(datetime.now(UTC), expires_at - timedelta(seconds=1))
+    validate_discovery(repo_root, base_ref=base_ref, as_of=pinned_as_of)
     execution = require_mapping(
         manifest.get("execution_contract"),
         f"sandbox {sandbox_id}.execution_contract",
@@ -142,8 +161,12 @@ def load_quarantine_plan(
     branch_root = artifact_root / "branches" / branch_id
     ledger_path = artifact_root / "events.jsonl"
     entries = [dict(entry) for entry in load_canonical_event_log(ledger_path, "sandbox ledger")]
+    base_commit = resolve_base_commit(repo_root, base_ref)
+    enforce_anchor(sandbox_id, entries, base_commit)
+    registry_path = repo_root / "research" / "discovery" / "sandbox_taint_registry.yaml"
     opened: dict[str, dict[str, object]] = {}
     resolved: set[str] = set()
+    resuming = False
     prior_usage = {
         "cpu_seconds": 0,
         "storage_bytes": 0,
@@ -154,7 +177,13 @@ def load_quarantine_plan(
         event_type = entry.get("event_type")
         event_branch = entry.get("branch_id")
         if event_type == "state_transition":
-            raise SandboxRuntimeError("sandbox is already terminal")
+            if taint_registry_has_sandbox(registry_path, sandbox_id):
+                raise SandboxRuntimeError("sandbox is already terminal")
+            complete_terminal_registry(repo_root, base_ref, sandbox_id, entry)
+            raise SandboxRuntimeError(
+                "terminal sandbox lacked its taint-registry entry; the entry has been "
+                "appended and the sandbox is fully terminal; rerun is unnecessary"
+            )
         if event_type == "branch_opened":
             opened[require_id(event_branch, "opened branch id")] = entry
         elif event_type == "branch_finished":
@@ -163,7 +192,13 @@ def load_quarantine_plan(
             for field, value in receipt_usage(repo_root, entry).items():
                 prior_usage[field] += value
         elif event_type == "branch_quarantined":
-            raise SandboxRuntimeError("sandbox already contains a quarantine event")
+            if event_branch != branch_id:
+                raise SandboxRuntimeError("sandbox already contains a quarantine event")
+            if not branch_root.joinpath("runtime_incident.json").is_file():
+                raise SandboxRuntimeError(
+                    "quarantine event lacks its incident report; refuse to resume"
+                )
+            resuming = True
     unfinished = set(opened) - resolved
     if unfinished != {branch_id}:
         raise SandboxRuntimeError(
@@ -188,6 +223,7 @@ def load_quarantine_plan(
     return QuarantinePlan(
         repo_root=repo_root,
         base_ref=base_ref,
+        base_commit=base_commit,
         sandbox_id=sandbox_id,
         branch_id=branch_id,
         ledger_path=ledger_path,
@@ -195,13 +231,14 @@ def load_quarantine_plan(
         branch_root=branch_root,
         incident_path=branch_root / "runtime_incident.json",
         result_path=artifact_root / "result.yaml",
-        registry_path=repo_root / "research" / "discovery" / "sandbox_taint_registry.yaml",
+        registry_path=registry_path,
         manifest_sha256=hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         partition_sha256=require_sha256(partition.get("sha256"), "partition.sha256"),
         campaign_id=require_id(manifest.get("campaign_id"), "sandbox campaign_id"),
         charged_usage=charged_usage,
         prior_usage=prior_usage,
         branch_ids=sorted(opened),
+        resuming=resuming,
     )
 
 
@@ -230,22 +267,39 @@ def cleanup_container(name: str) -> str:
     return "removed"
 
 
-def append_taint_registry(plan: QuarantinePlan, result_sha256: str) -> None:
-    registry = dict(load_yaml(plan.registry_path, "sandbox taint registry"))
+def taint_registry_has_sandbox(registry_path: Path, sandbox_id: str) -> bool:
+    registry = dict(load_yaml(registry_path, "sandbox taint registry"))
+    raw_entries = registry.get("sandbox_results")
+    if not isinstance(raw_entries, list):
+        raise SandboxRuntimeError("sandbox taint registry entries are invalid")
+    return any(
+        isinstance(entry, dict) and entry.get("sandbox_id") == sandbox_id
+        for entry in raw_entries
+    )
+
+
+def register_taint_entry(
+    registry_path: Path,
+    repo_root: Path,
+    sandbox_id: str,
+    result_path: Path,
+    result_sha256: str,
+) -> None:
+    registry = dict(load_yaml(registry_path, "sandbox taint registry"))
     raw_entries = registry.get("sandbox_results")
     if not isinstance(raw_entries, list):
         raise SandboxRuntimeError("sandbox taint registry entries are invalid")
     if any(
-        isinstance(entry, dict) and entry.get("sandbox_id") == plan.sandbox_id
+        isinstance(entry, dict) and entry.get("sandbox_id") == sandbox_id
         for entry in raw_entries
     ):
         raise SandboxRuntimeError("sandbox already appears in the taint registry")
     raw_entries.append(
         {
-            "id": f"{plan.sandbox_id}_result",
+            "id": f"{sandbox_id}_result",
             "kind": "sandbox_result",
-            "sandbox_id": plan.sandbox_id,
-            "artifact_ref": plan.result_path.relative_to(plan.repo_root).as_posix(),
+            "sandbox_id": sandbox_id,
+            "artifact_ref": result_path.relative_to(repo_root).as_posix(),
             "artifact_sha256": result_sha256,
             "derived_from": [],
             "epistemic_class": "sandbox_exploratory_tainted",
@@ -253,7 +307,28 @@ def append_taint_registry(plan: QuarantinePlan, result_sha256: str) -> None:
         }
     )
     payload = yaml.safe_dump(registry, sort_keys=False, allow_unicode=True).encode("utf-8")
-    atomic_replace_bytes(plan.registry_path, payload)
+    atomic_replace_bytes(registry_path, payload)
+
+
+def complete_terminal_registry(
+    repo_root: Path,
+    base_ref: str,
+    sandbox_id: str,
+    terminal_entry: dict[str, object],
+) -> None:
+    result_ref = require_mapping(terminal_entry.get("result"), "terminal result ref")
+    result_path = repo_root / require_string(result_ref.get("ref"), "terminal result.ref")
+    result_digest = require_sha256(result_ref.get("sha256"), "terminal result.sha256")
+    if sha256_file(result_path) != result_digest:
+        raise SandboxRuntimeError("terminal result no longer matches its ledger digest")
+    register_taint_entry(
+        repo_root / "research" / "discovery" / "sandbox_taint_registry.yaml",
+        repo_root,
+        sandbox_id,
+        result_path,
+        result_digest,
+    )
+    validate_discovery(repo_root, base_ref=base_ref)
 
 
 def execute_quarantine(
@@ -278,21 +353,33 @@ def execute_quarantine(
         "charged_usage": plan.charged_usage,
         "operator": operator,
     }
-    write_new_bytes(plan.incident_path, canonical_json_bytes(incident))
-    quarantine_event = append_event(
-        plan.ledger_path,
-        {
-            "event_type": "branch_quarantined",
-            "occurred_at": occurred_at,
-            "branch_id": plan.branch_id,
-            "incident": canonical_artifact(
-                plan.incident_path,
-                plan.repo_root,
-                include_bytes=False,
-            ),
-            "charged_usage": plan.charged_usage,
-        },
-    )
+    if plan.resuming:
+        quarantine_event = next(
+            entry
+            for entry in load_canonical_event_log(plan.ledger_path, "sandbox ledger")
+            if entry.get("event_type") == "branch_quarantined"
+            and entry.get("branch_id") == plan.branch_id
+        )
+    else:
+        write_new_bytes(plan.incident_path, canonical_json_bytes(incident))
+        quarantine_event = append_event(
+            plan.ledger_path,
+            {
+                "event_type": "branch_quarantined",
+                "occurred_at": occurred_at,
+                "branch_id": plan.branch_id,
+                "incident": canonical_artifact(
+                    plan.incident_path,
+                    plan.repo_root,
+                    include_bytes=False,
+                ),
+                "charged_usage": plan.charged_usage,
+            },
+        )
+        append_anchor_record(
+            plan.sandbox_id,
+            anchor_record(plan.base_ref, plan.base_commit, quarantine_event, terminal=False),
+        )
     usage = {
         field: plan.prior_usage[field] + plan.charged_usage[field]
         for field in plan.prior_usage
@@ -322,9 +409,14 @@ def execute_quarantine(
         ),
     }
     result_payload = yaml.safe_dump(result, sort_keys=False, allow_unicode=True).encode("utf-8")
-    write_new_bytes(plan.result_path, result_payload)
+    if plan.resuming and plan.result_path.is_file():
+        # A crash before the terminal append leaves result.yaml unreferenced by the
+        # ledger, so replacing it is safe; the state_transition below re-pins it.
+        atomic_replace_bytes(plan.result_path, result_payload)
+    else:
+        write_new_bytes(plan.result_path, result_payload)
     result_sha256 = sha256_file(plan.result_path)
-    append_event(
+    terminal_event = append_event(
         plan.ledger_path,
         {
             "event_type": "state_transition",
@@ -339,7 +431,17 @@ def execute_quarantine(
             ),
         },
     )
-    append_taint_registry(plan, result_sha256)
+    append_anchor_record(
+        plan.sandbox_id,
+        anchor_record(plan.base_ref, plan.base_commit, terminal_event, terminal=True),
+    )
+    register_taint_entry(
+        plan.registry_path,
+        plan.repo_root,
+        plan.sandbox_id,
+        plan.result_path,
+        result_sha256,
+    )
     validate_discovery(plan.repo_root, base_ref=plan.base_ref)
     return result
 

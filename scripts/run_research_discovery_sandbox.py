@@ -44,11 +44,14 @@ from scripts.validate_research_discovery import (
 )
 
 STDERR_LIMIT_BYTES = 1_000_000
-RUNTIME_OVERHEAD_BYTES = 1_000_000
+RECEIPT_ALLOWANCE_BYTES = 8_192
+RUNTIME_OVERHEAD_BYTES = STDERR_LIMIT_BYTES + RECEIPT_ALLOWANCE_BYTES
 DOCKER_TMPFS_BYTES = 67_108_864
 DOCKER_CONTROL_TIMEOUT_SECONDS = 10
 DOCKER_CLEANUP_RESERVE_SECONDS = 4 * DOCKER_CONTROL_TIMEOUT_SECONDS + 2
+GIT_CONTROL_TIMEOUT_SECONDS = 30
 MAX_TAR_MEMBERS = 10_000
+ANCHOR_ROOT = Path.home() / ".ecomd" / "discovery_sandbox_anchors"
 
 
 class SandboxRuntimeError(RuntimeError):
@@ -59,6 +62,7 @@ class SandboxRuntimeError(RuntimeError):
 class RuntimePlan:
     repo_root: Path
     base_ref: str
+    base_commit: str
     sandbox_id: str
     branch_id: str
     ledger_path: Path
@@ -78,16 +82,152 @@ class RuntimePlan:
 
 @contextmanager
 def sandbox_lock(sandbox_id: str) -> Iterator[None]:
-    lock_path = Path("/tmp") / f"ecomd_discovery_{sandbox_id}.lock"
+    lock_path = ANCHOR_ROOT / "locks" / f"{sandbox_id}.lock"
+    lock_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     with lock_path.open("a+b") as handle:
         try:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise SandboxRuntimeError(f"sandbox {sandbox_id} already has a running launcher") from exc
         try:
+            if os.fstat(handle.fileno()).st_ino != os.stat(lock_path).st_ino:
+                raise SandboxRuntimeError(
+                    f"sandbox {sandbox_id} lock file was replaced during acquisition"
+                )
             yield
         finally:
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def anchor_path(sandbox_id: str) -> Path:
+    return ANCHOR_ROOT / f"{sandbox_id}.jsonl"
+
+
+def load_anchor_records(sandbox_id: str) -> list[dict[str, object]]:
+    path = anchor_path(sandbox_id)
+    if not path.is_file():
+        return []
+    records: list[dict[str, object]] = []
+    previous: str | None = None
+    for index, raw_line in enumerate(path.read_bytes().splitlines()):
+        if not raw_line.strip():
+            continue
+        try:
+            record = cast(
+                dict[str, object],
+                require_mapping(json.loads(raw_line.decode("utf-8")), f"anchor {sandbox_id}[{index}]"),
+            )
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise SandboxRuntimeError(
+                f"sandbox {sandbox_id} out-of-tree anchor is unreadable: {exc}"
+            ) from exc
+        if record.get("previous_record_sha256") != previous or record.get("record_sha256") != sha256_mapping_without(
+            record, "record_sha256"
+        ):
+            raise SandboxRuntimeError(
+                f"sandbox {sandbox_id} out-of-tree anchor chain is broken"
+            )
+        previous = require_string(record.get("record_sha256"), f"anchor {sandbox_id}[{index}]")
+        records.append(record)
+    return records
+
+
+def append_anchor_record(sandbox_id: str, record: dict[str, object]) -> dict[str, object]:
+    ANCHOR_ROOT.mkdir(mode=0o700, parents=True, exist_ok=True)
+    existing = load_anchor_records(sandbox_id)
+    payload = dict(record)
+    payload["schema_version"] = 1
+    payload["sandbox_id"] = sandbox_id
+    payload["previous_record_sha256"] = (
+        existing[-1]["record_sha256"] if existing else None
+    )
+    payload["record_sha256"] = sha256_mapping_without(payload, "record_sha256")
+    encoded = canonical_json_bytes(payload) + b"\n"
+    descriptor = os.open(anchor_path(sandbox_id), os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+    try:
+        written = os.write(descriptor, encoded)
+        if written != len(encoded):
+            raise SandboxRuntimeError("short append to sandbox out-of-tree anchor")
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    return payload
+
+
+def resolve_base_commit(repo_root: Path, base_ref: str) -> str:
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(repo_root), "rev-parse", "--verify", f"{base_ref}^{{commit}}"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=GIT_CONTROL_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise SandboxRuntimeError(f"timed out resolving base ref {base_ref}") from exc
+    if completed.returncode != 0:
+        raise SandboxRuntimeError(f"base ref {base_ref} does not resolve to a commit")
+    resolved = completed.stdout.strip()
+    if not (len(resolved) in {40, 64} and all(c in "0123456789abcdef" for c in resolved)):
+        raise SandboxRuntimeError(f"base ref {base_ref} resolved to a malformed commit id")
+    return resolved
+
+
+def enforce_anchor(sandbox_id: str, entries: list[dict[str, object]], base_commit: str) -> None:
+    records = load_anchor_records(sandbox_id)
+    if not records:
+        return
+    last = records[-1]
+    if last.get("terminal") is True:
+        raise SandboxRuntimeError(
+            f"sandbox {sandbox_id} is terminal according to its out-of-tree anchor"
+        )
+    if last.get("base_commit") != base_commit:
+        raise SandboxRuntimeError(
+            f"sandbox {sandbox_id} protected base commit changed since the anchored run"
+        )
+    head_seq = require_nonnegative_integer(
+        last.get("ledger_entry_seq"), f"anchor {sandbox_id} ledger entry seq"
+    )
+    head_sha = require_sha256(
+        last.get("ledger_entry_sha256"), f"anchor {sandbox_id} ledger entry sha256"
+    )
+    if head_seq >= len(entries) or entries[head_seq].get("entry_sha256") != head_sha:
+        raise SandboxRuntimeError(
+            f"sandbox {sandbox_id} event ledger diverges from its out-of-tree anchor; "
+            "erase-and-rerun is forbidden, quarantine the sandbox instead"
+        )
+
+
+def anchor_record(
+    base_ref: str,
+    base_commit: str,
+    event: dict[str, object],
+    *,
+    terminal: bool,
+) -> dict[str, object]:
+    return {
+        "recorded_at": timestamp(utc_now()),
+        "base_ref": base_ref,
+        "base_commit": base_commit,
+        "ledger_entry_seq": event["seq"],
+        "ledger_entry_sha256": event["entry_sha256"],
+        "terminal": terminal,
+    }
+
+
+def anchored_event_record(
+    plan: RuntimePlan,
+    event: dict[str, object],
+    *,
+    terminal: bool,
+) -> dict[str, object]:
+    return anchor_record(plan.base_ref, plan.base_commit, event, terminal=terminal)
+
+
+def authorized_config_sha256(plan: RuntimePlan) -> str:
+    config_ref = require_mapping(plan.request.get("config"), "branch request.config")
+    return require_sha256(config_ref.get("sha256"), "branch request.config.sha256")
 
 
 def sha256_file(path: Path) -> str:
@@ -134,10 +274,16 @@ def existing_usage(repo_root: Path, entries: list[dict[str, object]]) -> tuple[i
             branch_id = require_id(entry.get("branch_id"), "existing branch id")
             receipt = require_mapping(entry.get("receipt"), f"receipt ref for {branch_id}")
             receipt_ref = require_string(receipt.get("ref"), f"receipt ref for {branch_id}.ref")
+            receipt_digest = require_sha256(receipt.get("sha256"), f"receipt ref for {branch_id}.sha256")
             receipt_path = repo_root / receipt_ref
+            receipt_bytes = receipt_path.read_bytes()
+            if hashlib.sha256(receipt_bytes).hexdigest() != receipt_digest:
+                raise SandboxRuntimeError(
+                    f"receipt for {branch_id} no longer matches its ledger digest"
+                )
             receipt_value = cast(
                 dict[str, object],
-                json.loads(receipt_path.read_text(encoding="utf-8")),
+                json.loads(receipt_bytes.decode("utf-8")),
             )
             cpu_seconds += require_nonnegative_integer(
                 receipt_value.get("cpu_seconds"), f"receipt {branch_id}.cpu_seconds"
@@ -170,6 +316,20 @@ def load_runtime_plan(
         )
     manifest_path = repo_root / manifest_ref
     manifest = load_yaml(manifest_path, f"sandbox manifest {sandbox_id}")
+    artifact_root = repo_root / "research" / "discovery" / "sandbox_artifacts" / sandbox_id
+    ledger_path = artifact_root / "events.jsonl"
+    entries = [dict(entry) for entry in load_canonical_event_log(ledger_path, "sandbox ledger")]
+    if not entries:
+        raise SandboxRuntimeError(f"sandbox {sandbox_id} event ledger lacks its genesis entry")
+    manifest_sha256 = require_sha256(
+        entries[0].get("manifest_sha256"), f"sandbox {sandbox_id} genesis manifest digest"
+    )
+    if sha256_file(manifest_path) != manifest_sha256:
+        raise SandboxRuntimeError(
+            "working-tree sandbox manifest differs from its authorized genesis digest"
+        )
+    base_commit = resolve_base_commit(repo_root, base_ref)
+    enforce_anchor(sandbox_id, entries, base_commit)
     if manifest.get("id") != sandbox_id:
         raise SandboxRuntimeError("sandbox manifest identity mismatch")
     asset = require_mapping(manifest.get("asset"), f"sandbox {sandbox_id}.asset")
@@ -181,9 +341,6 @@ def load_runtime_plan(
     if confirmation.get("mode") != "future_public_randomness":
         raise SandboxRuntimeError("synthetic confirmation is not protected by future randomness")
 
-    artifact_root = repo_root / "research" / "discovery" / "sandbox_artifacts" / sandbox_id
-    ledger_path = artifact_root / "events.jsonl"
-    entries = [dict(entry) for entry in load_canonical_event_log(ledger_path, "sandbox ledger")]
     if any(entry.get("event_type") == "state_transition" for entry in entries):
         raise SandboxRuntimeError("sandbox is already terminal")
 
@@ -292,6 +449,7 @@ def load_runtime_plan(
     return RuntimePlan(
         repo_root=repo_root,
         base_ref=base_ref,
+        base_commit=base_commit,
         sandbox_id=sandbox_id,
         branch_id=branch_id,
         ledger_path=ledger_path,
@@ -449,12 +607,7 @@ def capture_container(plan: RuntimePlan) -> tuple[str, int | None, int, int, lis
     stderr_path = plan.branch_root / "stderr.log"
     command = build_docker_command(plan)
     started = time.monotonic()
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if process.stdout is None or process.stderr is None:
-        raise SandboxRuntimeError("Docker process did not expose output pipes")
     selector = selectors.DefaultSelector()
-    selector.register(process.stdout, selectors.EVENT_READ, (bundle_path, plan.output_bytes))
-    selector.register(process.stderr, selectors.EVENT_READ, (stderr_path, STDERR_LIMIT_BYTES))
     handles: dict[Path, IO[bytes]] = {
         bundle_path: bundle_path.open("xb"),
         stderr_path: stderr_path.open("xb"),
@@ -466,6 +619,11 @@ def capture_container(plan: RuntimePlan) -> tuple[str, int | None, int, int, lis
         started + max(0.0, (plan.expires_at - datetime.now(UTC)).total_seconds()),
     )
     try:
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if process.stdout is None or process.stderr is None:
+            raise SandboxRuntimeError("Docker process did not expose output pipes")
+        selector.register(process.stdout, selectors.EVENT_READ, (bundle_path, plan.output_bytes))
+        selector.register(process.stderr, selectors.EVENT_READ, (stderr_path, STDERR_LIMIT_BYTES))
         while selector.get_map():
             if time.monotonic() >= deadline and status is None:
                 status = "timeout"
@@ -537,6 +695,11 @@ def timestamp(value: datetime) -> str:
 
 def execute_plan(plan: RuntimePlan) -> dict[str, object]:
     inspect_local_image(plan)
+    config_sha256 = authorized_config_sha256(plan)
+    if sha256_file(plan.config_path) != config_sha256:
+        raise SandboxRuntimeError(
+            "branch config no longer matches its authorized digest; refusing to execute"
+        )
     request_ref = canonical_artifact(plan.request_path, plan.repo_root, include_bytes=False)
     opened_payload = {
         "event_type": "branch_opened",
@@ -546,15 +709,30 @@ def execute_plan(plan: RuntimePlan) -> dict[str, object]:
             for field in plan.request
             if field not in {"schema_version", "sandbox_id"}
         },
+        "launcher_base_ref": plan.base_ref,
+        "launcher_base_commit": plan.base_commit,
         "request": request_ref,
     }
-    append_event(plan.ledger_path, opened_payload)
+    opened_event = append_event(plan.ledger_path, opened_payload)
+    append_anchor_record(
+        plan.sandbox_id, anchored_event_record(plan, opened_event, terminal=False)
+    )
+    if sha256_file(plan.config_path) != config_sha256:
+        raise SandboxRuntimeError(
+            "branch config changed between authorization and container start; "
+            "leave the branch unfinished and quarantine, never retry"
+        )
     started_at = utc_now()
     status, exit_code, wall_seconds, storage_bytes, artifacts = capture_container(plan)
     finished_at = utc_now()
     if status != "completed" or wall_seconds > plan.cpu_seconds or finished_at >= plan.expires_at:
         raise SandboxRuntimeError(
             "branch did not complete within its execution contract; leave it unfinished and quarantine, never retry"
+        )
+    if sha256_file(plan.config_path) != config_sha256:
+        raise SandboxRuntimeError(
+            "branch config changed during execution; the consumed input is ambiguous; "
+            "leave the branch unfinished and quarantine, never retry"
         )
     receipt_path = plan.branch_root / "receipt.json"
     receipt = {
@@ -593,7 +771,10 @@ def execute_plan(plan: RuntimePlan) -> dict[str, object]:
             canonical_artifact(path, plan.repo_root, include_bytes=True) for path in artifacts
         ],
     }
-    append_event(plan.ledger_path, finished_payload)
+    finished_event = append_event(plan.ledger_path, finished_payload)
+    append_anchor_record(
+        plan.sandbox_id, anchored_event_record(plan, finished_event, terminal=False)
+    )
     validate_discovery(plan.repo_root, base_ref=plan.base_ref)
     return receipt
 

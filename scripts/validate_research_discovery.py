@@ -503,19 +503,71 @@ def require_oci_image_digest(value: object, context: str) -> str:
     return digest
 
 
+TERMINAL_PIN_HISTORY_LIMIT = 64
+
+
 def require_digest_ref(
     repo_root: Path,
     value: object,
     context: str,
+    *,
+    allow_committed_match: bool = False,
 ) -> tuple[str, Path, str]:
     mapping = require_mapping(value, context)
     require_exact_fields(mapping, {"ref", "sha256"}, context)
     raw_ref = require_string(mapping.get("ref"), f"{context}.ref")
     path = safe_repo_path(repo_root, raw_ref, f"{context}.ref")
     digest = require_sha256(mapping.get("sha256"), f"{context}.sha256")
-    if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
-        raise DiscoveryValidationError(f"{context}.sha256 mismatch")
+    working_tree_matches = hashlib.sha256(path.read_bytes()).hexdigest() == digest
+    if not working_tree_matches and not (
+        allow_committed_match and committed_version_matches(repo_root, raw_ref, digest)
+    ):
+        detail = (
+            " matches neither the working tree nor a committed version"
+            if allow_committed_match
+            else " mismatch"
+        )
+        raise DiscoveryValidationError(f"{context}.sha256{detail}")
     return raw_ref, path, digest
+
+
+def committed_version_matches(repo_root: Path, ref: str, digest: str) -> bool:
+    try:
+        listing = run_git_bytes(
+            repo_root,
+            ["log", "--format=%H", "--", ref],
+            f"committed versions of {ref}",
+        )
+    except DiscoveryValidationError:
+        return False
+    for raw_commit in listing.split()[:TERMINAL_PIN_HISTORY_LIMIT]:
+        commit = raw_commit.decode("utf-8", errors="replace")
+        try:
+            blob = run_git_bytes(
+                repo_root,
+                ["show", f"{commit}:{ref}"],
+                f"committed blob {commit}:{ref}",
+            )
+        except DiscoveryValidationError:
+            continue
+        if hashlib.sha256(blob).hexdigest() == digest:
+            return True
+    return False
+
+
+def sandbox_ledger_is_terminal(artifact_root: Path) -> bool:
+    try:
+        raw = (artifact_root / "events.jsonl").read_bytes()
+    except OSError:
+        return False
+    for line in raw.splitlines():
+        try:
+            entry = json.loads(line.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return False
+        if isinstance(entry, dict) and entry.get("event_type") == "state_transition":
+            return True
+    return False
 
 
 def canonical_json_bytes(value: Mapping[str, object]) -> bytes:
@@ -1450,7 +1502,8 @@ def validate_search_cycle_ledger(
     ):
         context = f"search-cycle ledger.cycles[{index}]"
         cycle = require_mapping(raw_cycle, context)
-        require_exact_fields(cycle, cycle_fields, context)
+        optional_cycle_fields = {"deferred_at_f1"} & set(cycle)
+        require_exact_fields(cycle, cycle_fields | optional_cycle_fields, context)
         cycle_id = require_id(cycle.get("id"), f"{context}.id")
         if cycle_id in cycle_ids:
             raise DiscoveryValidationError(f"duplicate search-cycle id: {cycle_id}")
@@ -1509,11 +1562,24 @@ def validate_search_cycle_ledger(
             parsed_counts["raw_question_programs"] - parsed_counts["quick_screens"]
         ):
             raise DiscoveryValidationError(f"{context} portfolio-pruned count is inconsistent")
-        if parsed_dispositions["quick_closed"] + parsed_dispositions["deduplicated"] != (
+        deferred_at_f1 = require_nonnegative_integer(
+            cycle.get("deferred_at_f1", 0), f"{context}.deferred_at_f1"
+        )
+        if deferred_at_f1 > parsed_dispositions["deferred"]:
+            raise DiscoveryValidationError(f"{context} F1 deferrals exceed total deferrals")
+        if (
+            parsed_dispositions["quick_closed"]
+            + parsed_dispositions["deduplicated"]
+            + deferred_at_f1
+        ) != (
             parsed_counts["quick_screens"] - parsed_counts["collision_screens"]
         ):
             raise DiscoveryValidationError(f"{context} quick-screen dispositions are inconsistent")
-        if parsed_dispositions["collision_closed"] + parsed_dispositions["deferred"] != (
+        if (
+            parsed_dispositions["collision_closed"]
+            + parsed_dispositions["deferred"]
+            - deferred_at_f1
+        ) != (
             parsed_counts["collision_screens"] - parsed_counts["full_hostile_audits"]
         ):
             raise DiscoveryValidationError(f"{context} collision-screen dispositions are inconsistent")
@@ -3180,15 +3246,21 @@ def validate_sandbox_v2(
     )
     if executor != "oci_container":
         raise DiscoveryValidationError(f"{sandbox_id} must use the OCI sandbox executor")
+    # A terminal sandbox's execution contract is historical: once its ledger
+    # records a state transition, the pinned bytes only need to stay auditable
+    # in git history, not byte-present in the live working tree.
+    terminal_ledger = sandbox_ledger_is_terminal(artifact_root)
     _, _, launcher_sha256 = require_digest_ref(
         repo_root,
         execution_raw.get("launcher"),
         f"{sandbox_id}.execution_contract.launcher",
+        allow_committed_match=terminal_ledger,
     )
     _, _, incident_handler_sha256 = require_digest_ref(
         repo_root,
         execution_raw.get("incident_handler"),
         f"{sandbox_id}.execution_contract.incident_handler",
+        allow_committed_match=terminal_ledger,
     )
     image_digest = require_oci_image_digest(
         execution_raw.get("image_digest"),
@@ -3328,8 +3400,25 @@ def validate_sandbox_v2(
         }
         if event_type == "branch_opened":
             request_entry_fields = SANDBOX_BRANCH_REQUEST_FIELDS - {"schema_version", "sandbox_id"}
-            fields = common | request_entry_fields | {"request"}
+            optional_launcher_fields = {"launcher_base_ref", "launcher_base_commit"} & set(entry)
+            fields = common | request_entry_fields | {"request"} | optional_launcher_fields
             require_exact_fields(entry, fields, entry_context)
+            if "launcher_base_ref" in entry:
+                require_string(
+                    entry.get("launcher_base_ref"), f"{entry_context}.launcher_base_ref"
+                )
+            if "launcher_base_commit" in entry:
+                launcher_base_commit = require_string(
+                    entry.get("launcher_base_commit"),
+                    f"{entry_context}.launcher_base_commit",
+                )
+                if not (
+                    len(launcher_base_commit) in {40, 64}
+                    and all(c in "0123456789abcdef" for c in launcher_base_commit)
+                ):
+                    raise DiscoveryValidationError(
+                        f"{entry_context}.launcher_base_commit is not a git commit id"
+                    )
             if occurred_at >= expires_at:
                 raise DiscoveryValidationError(f"{entry_context} opened at or after expiry")
             branch_id = require_id(entry.get("branch_id"), f"{entry_context}.branch_id")

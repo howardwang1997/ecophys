@@ -20,6 +20,7 @@ from scripts.quarantine_research_discovery_sandbox import (
 from scripts.validate_research_discovery import (
     DiscoveryValidationError,
     validate_discovery,
+    validate_search_cycle_ledger,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -57,7 +58,17 @@ def copy_fixture(tmp_path: Path) -> Path:
     repo = tmp_path / "repo"
     discovery = repo / "research" / "discovery"
     graph_dir = repo / ".claude" / "memory"
-    shutil.copytree(REPO_ROOT / "research" / "discovery", discovery)
+    shutil.copytree(
+        REPO_ROOT / "research" / "discovery",
+        discovery,
+        ignore=shutil.ignore_patterns(
+            "sandbox_inputs", "sandbox_artifacts", "sandboxes", "sandbox_decisions",
+        ),
+    )
+    write_mapping(
+        discovery / "sandbox_taint_registry.yaml",
+        {"schema_version": 1, "sandbox_results": []},
+    )
     graph_dir.mkdir(parents=True)
     shutil.copy2(
         REPO_ROOT / ".claude" / "memory" / "research_route_knowledge_graph.yaml",
@@ -146,6 +157,14 @@ def copy_fixture(tmp_path: Path) -> Path:
         / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
         result_dir / "ecomd_discovery_bottleneck_truth_asset_preflight_2026-08-26.md",
     )
+    cycle_ledger = load_mapping(discovery / "search_cycle_ledger.yaml")
+    for cycle in child_mappings(cycle_ledger, "cycles"):
+        result_ref = cycle["result_ref"]
+        assert isinstance(result_ref, str)
+        destination = repo / result_ref
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if not destination.is_file():
+            shutil.copy2(REPO_ROOT / result_ref, destination)
     trigger_ledger = load_mapping(discovery / "reentry_trigger_ledger.yaml")
     for entry in child_mappings(trigger_ledger, "entries"):
         result_ref = entry["result_ref"]
@@ -764,13 +783,14 @@ def test_canonical_discovery_contract_validates() -> None:
     result = validate_discovery(REPO_ROOT)
 
     assert "1 cards (failed_closed=1)" in result
-    assert "684 evidence records" in result
+    assert "1390 evidence records" in result
     assert "25 primary-work assignments" in result
     assert "1 status transitions" in result
-    assert "0 exploration sandboxes (none)" in result
-    assert "3 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
-    assert "99 re-entry trigger audits (0 qualified)" in result
-    assert "7 prospective search cycles (84 raw questions; 0 cards)" in result
+    assert "1 exploration sandboxes (quarantined=1)" in result
+    assert "1 sandbox-tainted results" in result
+    assert "9 prospective forecasts (2 resolved; 2 T0-floor resolutions)" in result
+    assert "176 re-entry trigger audits (0 qualified)" in result
+    assert "38 prospective search cycles (191 raw questions; 0 cards)" in result
 
 
 def test_authorized_disposable_exploration_sandbox_validates(tmp_path: Path) -> None:
@@ -824,7 +844,7 @@ def test_protected_history_allows_appended_forecast_resolution(tmp_path: Path) -
 
     result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
 
-    assert "3 prospective forecasts (3 resolved; 2 T0-floor resolutions)" in result
+    assert "9 prospective forecasts (3 resolved; 2 T0-floor resolutions)" in result
 
 
 def test_protected_history_rejects_rewritten_reentry_trigger(tmp_path: Path) -> None:
@@ -1076,10 +1096,15 @@ def test_interrupted_branch_is_irreversibly_quarantined(
     def validate_at_fixture_time(
         repo_root: Path,
         *,
+        as_of: datetime | None = None,
         base_ref: str | None = None,
     ) -> str:
-        return validate_discovery(repo_root, as_of=FIXED_AS_OF, base_ref=base_ref)
+        return validate_discovery(repo_root, as_of=as_of or FIXED_AS_OF, base_ref=base_ref)
 
+    monkeypatch.setattr(
+        "scripts.run_research_discovery_sandbox.ANCHOR_ROOT",
+        tmp_path / "anchors",
+    )
     monkeypatch.setattr(
         "scripts.quarantine_research_discovery_sandbox.validate_discovery",
         validate_at_fixture_time,
@@ -1107,6 +1132,132 @@ def test_interrupted_branch_is_irreversibly_quarantined(
     assert usage["storage_bytes"] == 1_020_000
     validation = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
     assert "1 exploration sandboxes (quarantined=1)" in validation
+
+
+def test_interrupted_branch_of_expired_sandbox_can_be_quarantined(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo, expires_at="2026-08-25T06:00:00Z")
+    initialize_git_base(repo)
+    add_open_branch(repo)
+
+    monkeypatch.setattr(
+        "scripts.run_research_discovery_sandbox.ANCHOR_ROOT",
+        tmp_path / "anchors",
+    )
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.cleanup_container",
+        lambda _name: "absent",
+    )
+    monkeypatch.setattr(
+        "scripts.quarantine_research_discovery_sandbox.utc_now",
+        lambda: datetime(2026, 8, 25, 7, 0, tzinfo=UTC),
+    )
+    plan = load_quarantine_plan(repo, SANDBOX_ID, "branch_one", "HEAD")
+
+    assert plan.resuming is False
+
+    result = execute_quarantine(
+        plan,
+        "host_interruption",
+        "Fixture interruption discovered after the sandbox expired.",
+        "fixture_operator",
+    )
+
+    assert result["outcome_status"] == "quarantined"
+    validation = validate_discovery(
+        repo, as_of=datetime(2026, 8, 25, 7, 0, tzinfo=UTC), base_ref="HEAD"
+    )
+    assert "1 exploration sandboxes (quarantined=1)" in validation
+
+
+def test_branch_event_records_launcher_base_provenance(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    ledger_path = (
+        repo
+        / "research"
+        / "discovery"
+        / "sandbox_artifacts"
+        / SANDBOX_ID
+        / "events.jsonl"
+    )
+    entries = load_event_log(ledger_path)
+    for entry in entries:
+        if entry.get("event_type") == "branch_opened":
+            entry["launcher_base_ref"] = "origin/main"
+            entry["launcher_base_commit"] = "a" * 40
+    write_event_log(ledger_path, entries)
+    close_sandbox(repo)
+
+    result = validate_discovery(repo, as_of=FIXED_AS_OF)
+
+    assert "1 sandbox-tainted results" in result
+
+
+def test_terminal_sandbox_pin_accepts_a_committed_handler_version(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    close_sandbox(repo)
+    initialize_git_base(repo)
+    (repo / "scripts" / "quarantine_research_discovery_sandbox.py").write_text(
+        "# evolved after the sandbox reached its terminal state\n", encoding="utf-8"
+    )
+
+    result = validate_discovery(repo, as_of=FIXED_AS_OF, base_ref="HEAD")
+
+    assert "1 sandbox-tainted results" in result
+
+
+def test_terminal_sandbox_pin_rejected_without_a_committed_version(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    close_sandbox(repo)
+    (repo / "scripts" / "quarantine_research_discovery_sandbox.py").write_text(
+        "# evolved outside git\n", encoding="utf-8"
+    )
+
+    with pytest.raises(
+        DiscoveryValidationError,
+        match="neither the working tree nor a committed version",
+    ):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_terminal_sandbox_pin_rejects_a_version_never_committed(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    handler = repo / "scripts" / "quarantine_research_discovery_sandbox.py"
+    handler.write_text("# frozen predecessor\n", encoding="utf-8")
+    initialize_git_base(repo)
+    handler.write_text("#!/usr/bin/env python3\nprint('authorized handler')\n", encoding="utf-8")
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    close_sandbox(repo)
+    handler.write_text("# evolved after terminalization\n", encoding="utf-8")
+
+    with pytest.raises(
+        DiscoveryValidationError,
+        match="neither the working tree nor a committed version",
+    ):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
+
+
+def test_active_sandbox_pin_still_requires_the_working_tree_file(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    initialize_git_base(repo)
+    add_authorized_sandbox(repo)
+    add_finished_branch(repo)
+    (repo / "scripts" / "quarantine_research_discovery_sandbox.py").write_text(
+        "# evolved while the sandbox is live\n", encoding="utf-8"
+    )
+
+    with pytest.raises(DiscoveryValidationError, match=r"incident_handler\.sha256 mismatch"):
+        validate_discovery(repo, as_of=FIXED_AS_OF)
 
 
 def test_branch_request_cannot_select_confirmation_unit(tmp_path: Path) -> None:
@@ -1449,6 +1600,40 @@ def test_cycle12_to_cycle14_quick_screen_gates_are_required(
 
     with pytest.raises(DiscoveryValidationError, match="quick-screen requirements"):
         validate_discovery(repo)
+
+
+def test_search_cycle_f1_deferral_does_not_invent_f2(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(search_cycle_path(repo))
+    cycle = child_mappings(ledger, "cycles")[0]
+    cycle["deferred_at_f1"] = 1
+    counts = child_mapping(cycle, "counts")
+    counts["collision_screens"] = cast(int, counts["collision_screens"]) - 1
+    write_mapping(search_cycle_path(repo), ledger)
+
+    assert validate_search_cycle_ledger(
+        repo, "research/discovery/search_cycle_ledger.yaml"
+    ) == (36, 173, 0)
+
+
+def test_search_cycle_f1_deferral_preserves_stage_accounting(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(search_cycle_path(repo))
+    child_mappings(ledger, "cycles")[0]["deferred_at_f1"] = 1
+    write_mapping(search_cycle_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="quick-screen dispositions"):
+        validate_search_cycle_ledger(repo, "research/discovery/search_cycle_ledger.yaml")
+
+
+def test_search_cycle_f1_deferral_cannot_exceed_total(tmp_path: Path) -> None:
+    repo = copy_fixture(tmp_path)
+    ledger = load_mapping(search_cycle_path(repo))
+    child_mappings(ledger, "cycles")[0]["deferred_at_f1"] = 2
+    write_mapping(search_cycle_path(repo), ledger)
+
+    with pytest.raises(DiscoveryValidationError, match="F1 deferrals exceed total"):
+        validate_search_cycle_ledger(repo, "research/discovery/search_cycle_ledger.yaml")
 
 
 def test_search_cycle_funnel_limit_is_enforced(tmp_path: Path) -> None:
