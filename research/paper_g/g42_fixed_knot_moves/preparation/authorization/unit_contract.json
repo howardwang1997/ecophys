@@ -1,0 +1,132 @@
+{
+  "branch_contingency": "Planned branches g42_b01..g42_b07 consume 12960 of the 14400 CPU-second reservation and 7 of 8 branch slots; the remaining 1440 CPU-seconds and the 8th slot are in-envelope contingency only, never usable after a quarantine (stop rule forbids retry). Per-unit cpu cap = (branch_cpu_seconds - 128) // 32 = 56/56/51/51/61/61/41 s by branch order; the 128 s branch-level reserve keeps the worst-case all-capped branch (32 x unit cap + startup) inside the launcher wall deadline of branch_cpu_seconds - 42 s.",
+  "campaign_id": "g42_fixed_knot_moves_20260916",
+  "cells": {
+    "n128_01_t1": {
+      "branch_cpu_seconds": 1920,
+      "branch_id": "g42_b01",
+      "branch_order": 1,
+      "knot": "0_1",
+      "n_vertices": 128,
+      "proposals": 400000,
+      "temperature": 1.0,
+      "thin": 1000
+    },
+    "n128_01_t3": {
+      "branch_cpu_seconds": 1920,
+      "branch_id": "g42_b02",
+      "branch_order": 2,
+      "knot": "0_1",
+      "n_vertices": 128,
+      "proposals": 400000,
+      "temperature": 3.0,
+      "thin": 1000
+    },
+    "n160_31_t1": {
+      "branch_cpu_seconds": 1760,
+      "branch_id": "g42_b03",
+      "branch_order": 3,
+      "knot": "3_1",
+      "n_vertices": 160,
+      "proposals": 400000,
+      "temperature": 1.0,
+      "thin": 1000
+    },
+    "n160_31_t3": {
+      "branch_cpu_seconds": 1760,
+      "branch_id": "g42_b04",
+      "branch_order": 4,
+      "knot": "3_1",
+      "n_vertices": 160,
+      "proposals": 400000,
+      "temperature": 3.0,
+      "thin": 1000
+    },
+    "n256_41_t1": {
+      "branch_cpu_seconds": 2080,
+      "branch_id": "g42_b05",
+      "branch_order": 5,
+      "knot": "4_1",
+      "n_vertices": 256,
+      "proposals": 180000,
+      "temperature": 1.0,
+      "thin": 500
+    },
+    "n256_41_t3": {
+      "branch_cpu_seconds": 2080,
+      "branch_id": "g42_b06",
+      "branch_order": 6,
+      "knot": "4_1",
+      "n_vertices": 256,
+      "proposals": 180000,
+      "temperature": 3.0,
+      "thin": 500
+    },
+    "n96_01_t1": {
+      "branch_cpu_seconds": 1440,
+      "branch_id": "g42_b07",
+      "branch_order": 7,
+      "knot": "0_1",
+      "n_vertices": 96,
+      "proposals": 500000,
+      "temperature": 1.0,
+      "thin": 1000
+    }
+  },
+  "confirmation": {
+    "policies": [
+      "p0",
+      "p3"
+    ],
+    "template_count": 112,
+    "unit_id_rule": "unit_id = 'g42_confirm_' + first 16 hex characters of pulse.outputValue + '_' + template"
+  },
+  "context_thresholds": {
+    "128": [
+      25.4,
+      150.5
+    ],
+    "160": [
+      29.5,
+      195.4
+    ],
+    "256": [
+      40.3,
+      339.7
+    ],
+    "96": [
+      20.6,
+      107.2
+    ]
+  },
+  "engine_version": "g42_fixed_knot_moves_engine_1.1.1",
+  "falsifier": "Apply the frozen assess rule only to completed paired units: primary statistic is the per-cell tail-tau ratio p0/p3 pooled across seeds; secondary are the ESS-tail ratio and contacts-mean equilibrium consistency. Units ending certification_ambiguous or cpu_budget are excluded per the frozen exclusion rule, as are units whose rg2_var_tail is 0 (degenerate tail: the tau-tail estimator's floor 0.5 is indistinguishable from ideal decorrelation); if more than half of a cell's units are excluded the cell is void. No threshold, seed, or policy replacement.",
+  "hypothesis": "Context-bucket proposal selection (p3) reduces the integrated autocorrelation time of Rg^2 relative to uniform proposals (p0) at matched total proposal budget in fixed-knot lattice rings.",
+  "hypothesis_id": "context_move_selection_matched_budget_decorrelation",
+  "multiplicity_family_id": "g42_fixed_knot_moves_7_cells_4_policies_8_seeds",
+  "policies": {
+    "p0": {
+      "kind": "uniform"
+    },
+    "p1": "parameterized-per-n-vertices",
+    "p2": "parameterized-per-n-vertices",
+    "p3": "parameterized-per-n-vertices"
+  },
+  "sandbox_id": "g42_fixed_knot_moves_20260916",
+  "schema_version": 1,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "test_ids": [
+    "rg2_tau_int_tail_ratio_p0_over_p3",
+    "rg2_ess_tail_ratio_p0_over_p3",
+    "contacts_mean_equilibrium_consistency"
+  ]
+}

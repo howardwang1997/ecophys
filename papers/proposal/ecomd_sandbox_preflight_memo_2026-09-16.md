@@ -124,8 +124,11 @@ compensating controls from the original option 3 remain in force; first-launch
 
 1. A separate authorization-only merge for the Bourse 0.4.0 execution design.
 2. the g42 fixed-knot learned-moves sandbox manifest and decision record (PI selection
-   2026-09-16; g38 not selected; per-sandbox launcher copies under `sandbox_inputs/<id>/`
-   are preferred over shared `scripts/` pins; the fixture already follows this shape).
+   2026-09-16; g38 not selected; corrected 2026-09-16 after the adversarial audit:
+   per-sandbox launcher copies under `sandbox_inputs/<id>/` are impossible by
+   construction — the launcher verifies that manifest launcher/handler refs resolve to
+   its own canonical `scripts/` paths — so canonical `scripts/` pins are mandatory, and
+   the g42 manifest pins the canonical launcher `4e8ae8a7…` / handler `5cda87cf…`).
 3. ~~PI decision on Section 4~~ resolved 2026-09-16: platform gate satisfied (Section 4).
 4. Consider an out-of-band backup of the anchor root if sandbox runs resume.
 

@@ -1,0 +1,63 @@
+{
+  "confirmation_outcomes_materialized": false,
+  "discovery_validator_exit": 0,
+  "engine_tests": {
+    "engine_version": "g42_fixed_knot_moves_engine_1.1.1",
+    "exit": 0,
+    "failed": 0,
+    "file": "tests/test_paper_g_g42_engine.py",
+    "passed": 44
+  },
+  "graph_validator_exit": 0,
+  "image_qualification": {
+    "conformance_cases": {
+      "invalid_tar": "container_failed",
+      "normal": "completed",
+      "output_limit": "output_limit",
+      "timeout": "timeout"
+    },
+    "image_digest": "sha256:3428e3025c64a17173365290951b780fcf9a0b2e998ffaa8e3445057cc31deda",
+    "isolation_checks_passed": 14,
+    "passed": true,
+    "report": "research/paper_g/g42_fixed_knot_moves/preparation/image_conformance.json",
+    "source_byte_identity": "image /opt/g42_fixed_knot_moves/{model,runner,oci_probe}.py sha256 match repository sources"
+  },
+  "independent_review": "PASS",
+  "independent_review_record": {
+    "confirmed_findings": 22,
+    "fixed_pre_restage": 22,
+    "method": "5-dimension adversarial audit workflow (27 agents: dimension finders, per-finding refuters, synthesis); every finding survived adversarial refutation with file/line evidence",
+    "note": "two blockers were in the staged payload itself (asset fingerprint formula/snapshot cycle; unregistered evidence_ref id), both fixed by the dx-conforming restructure; engine findings fixed in v1.1.1; full record in appendix section 7",
+    "severity_counts": {
+      "blocker": 2,
+      "major": 6,
+      "minor": 14
+    }
+  },
+  "payload_chain_reverified": {
+    "asset_fingerprint_sha256": "116659cdc15ff890400a41e0bd5433ecaab24990eed36dd15d1a29623c6f71de",
+    "checks": [
+      "fingerprint == sha256(canonical_json({asset_key, kind, snapshot_sha256, source, version})) per scripts/validate_research_discovery.py",
+      "partition.asset_fingerprint_sha256 == manifest.asset.fingerprint_sha256 == recomputed value",
+      "members/partition/provenance/snapshot sha256 cross-pins in manifest",
+      "manifest_sha256 pinned by genesis entry and decision",
+      "genesis entry_sha256 hash-chain recomputed",
+      "snapshot excludes partition/provenance/snapshot_manifest/pre_execution_verification (acyclic, dx shape, 23 source files)",
+      "224 unit configs pass engine validate_config at caps 56/56/51/51/61/61/41"
+    ],
+    "manifest_sha256": "1cf4a774457c0d6717c41ff454d4fc46a21f94f63b83c6d39826e2b939ea05d8",
+    "staged_at": "2026-09-16T06:43:08Z"
+  },
+  "preparation_commit": null,
+  "preparation_commit_note": "null in this draft; stamped at promotion via stage_authorization.py --preparation-commit (appendix section 5, README promotion procedure)",
+  "root_worktree_head_at_verification": "4b32e1d6f278e3d5dd5a710aee0ecef893e25632",
+  "ruff_exit": 0,
+  "scientific_outcomes_accessed": false,
+  "strict_mypy": {
+    "exit": 0,
+    "files": 5,
+    "scope": "research/paper_g/g42_fixed_knot_moves/"
+  },
+  "validators_run_at": "2026-09-16T06:45Z",
+  "visibility": "private_internal"
+}
