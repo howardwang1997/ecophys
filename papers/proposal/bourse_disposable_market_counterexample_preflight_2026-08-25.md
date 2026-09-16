@@ -121,9 +121,16 @@ remains forbidden until all of the following happen in order:
    and single `authorized` genesis event; and
 6. that authorization-only change is merged before any branch can open.
 
-The protected baseline now satisfies item 1. A self-reported runtime receipt remains an audit
-record rather than cryptographic proof of host isolation. Until items 2--6 are complete, the
-expected scientific value does not justify execution.
+Item 1 is satisfied as of 2026-09-16. It was not satisfied before that date: while the
+repository was private, both branch-protection APIs returned 403 on GitHub Free, so the
+earlier "now satisfies item 1" sentence here overstated the platform state. On 2026-09-16
+the PI selected the public-repository option and re-confirmed it after the 2026-09-05
+private setting was traced to its actual rationale (Paper D ICLR-2027 double-blind
+protection, abstract deadline 2026-09-18); `main` then received the required
+`research-governance` check (strict) with force pushes and deletion disabled and
+administrator bypass off. A self-reported runtime receipt remains an audit record rather
+than cryptographic proof of host isolation. Until items 2--6 are complete, the expected
+scientific value does not justify execution.
 
 ## Calibrated value
 
