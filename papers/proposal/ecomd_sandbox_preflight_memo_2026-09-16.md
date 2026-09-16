@@ -37,8 +37,31 @@ defects, all confirmed on re-examination. Root causes:
   a terminal sandbox missing its entry.
 
 Verification: `tests/test_run_research_discovery_sandbox.py` 23/23; sandbox/branch
-subset of `tests/test_research_discovery.py` green; ruff and `mypy --strict` clean on
-the governance scope.
+subset of `tests/test_research_discovery.py` green; ruff and `mypy --strict` reported
+clean on the files checked at the time. Post-commit audit (2026-09-16, later session):
+`mypy --strict` on the committed tree flags
+`scripts/test_research_discovery_oci_conformance.py:107` — `make_plan` had not been
+updated for the new `RuntimePlan.base_commit` field, so the conformance `--execute`
+path raised a `TypeError`. No CI run had occurred on the hardened tree (branch
+protection and its required check only took effect after the platform-gate commit),
+which is why the defect surfaced only at the item-2 conformance rerun. Fixed by
+passing a `conformance-only` sentinel for `base_commit`; the recorded conformance
+report is refreshed by that rerun (its pinned source digests change with any
+launcher edit by design).
+
+Rerun outcome (2026-09-16, later session): `--execute` on the final runner reports
+`passed: true` with all 14 isolation checks and all 3 failure-mode checks green and
+`scientific_outcomes_accessed: false`. The report is recorded at
+`research/discovery/conformance/local_colima_arm64_report_2026-09-16.json`
+(probe image `sha256:3f364251…`, base image pinned at `sha256:2e32f7d…`, host
+local_colima_arm64, launcher `4e8ae8a7…` / handler `5cda87cf…`), and
+`--verify-recorded-report` plus `tests/test_research_discovery_oci_conformance.py`
+are green against it. The 2026-09-12 report is retained as history. Because the
+report pins `conformance_runner_sha256` (the runner's own digest), the
+`RECORDED_REPORT_REF` update preceded the final execution; the intermediate
+report from the pre-ref runner was discarded. This refreshes the conformance half
+of Bourse preflight item 2; the independent-runtime-review half was satisfied by
+the Section-1 adversarial launcher review.
 
 ## 3. Launcher-pin governance defect — found and fixed while restoring validation
 

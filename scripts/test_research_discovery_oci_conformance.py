@@ -27,7 +27,7 @@ PINNED_BASE_IMAGE_ID = (
     "sha256:2e32f7d302adc1c37428355c1e646897c0c53f4fd60b6a551245fb90ee129f91"
 )
 RECORDED_REPORT_REF = (
-    "research/discovery/conformance/local_colima_arm64_report_2026-09-12.json"
+    "research/discovery/conformance/local_colima_arm64_report_2026-09-16.json"
 )
 
 
@@ -107,6 +107,7 @@ def make_plan(
     return RuntimePlan(
         repo_root=root,
         base_ref="conformance-only",
+        base_commit="conformance-only",
         sandbox_id=f"oci_{case_id}",
         branch_id="probe",
         ledger_path=case_root / "unused-events.jsonl",
