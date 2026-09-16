@@ -13,10 +13,10 @@ EcoMD is a differentiable, stateful, molecular-dynamics-style simulator for fina
 The disposable-sandbox validator now includes protected-base prefix checks and a pinned OCI
 execution contract. The platform gate was executed 2026-09-16 (repository public, `main`
 protected, research-governance check required) and the enforcing launcher passed a conformance
-rerun. This still does not authorize execution: the g42 preflight (engine 1.1.0, frozen image,
-item-4 beacon freeze, staged draft authorization payload under
-`research/paper_g/g42_fixed_knot_moves/preparation/authorization/`) requires a separate
-authorization-only merge ordered by the PI before any branch runs.
+rerun. The g42 fixed-knot-moves sandbox was then authorized (PI "全部授权", merge commit
+56522d954), ran to a host-interruption quarantine the same day (b01–b04 completed, b05
+interrupted; retry forbidden), and is terminal — its output is exploratory-tainted, admissible
+only as screening-question motivation, with the post-terminal assess still pending.
 
 ## Work log discipline (non-negotiable)
 

@@ -1,6 +1,6 @@
 ---
 name: sandbox-launcher-hardening-2026-09-16
-description: Sandbox launcher hardening + full g42 preflight through the 2026-09-16 adversarial audit (engine 1.1.1, payload re-staged non-operatively); only the PI authorization-only merge remains
+description: Sandbox launcher hardening + g42 preflight, authorization, campaign, and terminal host-OOM quarantine (2026-09-16); post-terminal assess pending
 metadata: 
   node_type: memory
   type: project
