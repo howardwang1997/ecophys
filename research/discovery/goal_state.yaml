@@ -202,6 +202,26 @@ session_history:
       launcher-pin claim corrected to canonical scripts/ pins. Both offline
       validators green. No sandbox authorized; authorization-only merge
       reserved to the PI.
+  - date: "2026-09-16"
+    mode: g42_campaign_terminal_quarantined_host_oom
+    ledger_ref: logs/2026-09-16.md Session 9
+    note: >-
+      PI blanket authorization "全部授权" executed: preparation commit 91c08c767a,
+      operative re-freeze 2026-09-16T08:48:13Z, authorization-only merge 56522d954
+      pushed; validators green before and after. Campaign ran outcome-blind:
+      b01 325 s, b02 97 s, b03 838 s, b04 142 s all completed inside their
+      execution contracts; mid-b05 the host killed the launcher on memory
+      pressure and the frozen incident contract fired — quarantine handler
+      terminalized the sandbox (host_interruption, container removed,
+      runtime_incident.json, state_transition authorized→quarantined, anchor
+      terminal, taint registry entry), charging 3,482 of 14,400 reserved
+      CPU-seconds; retry forbidden. Operational counts only were inspected
+      pre-terminal (b01 25/32 and b02 32/32 certification_ambiguous); the
+      frozen assess rule (>50% excluded → cell void) trends both n128 cells
+      void; assess application deferred to a dedicated post-terminal session.
+      Both offline validators green at terminal (2 quarantined sandboxes, 2
+      tainted results registered). Anchor backups at 085526Z and terminal
+      092936Z (05ade80e…); off-machine copy pending.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each

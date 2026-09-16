@@ -2,7 +2,7 @@
 
 ## Current state
 
-- [Sandbox launcher hardening](project_sandbox_launcher_hardening_2026-09-16.md) — launcher hardened, repo public + main protected; g42 preflight staged through the 22-finding adversarial audit (engine 1.1.1, payload re-staged non-operatively); only the PI authorization-only merge remains.
+- [Sandbox launcher hardening](project_sandbox_launcher_hardening_2026-09-16.md) — g42 sandbox authorized, run, and TERMINAL: 4 branches completed, host-OOM kill mid-b05 → frozen quarantine contract fired; certification_ambiguous dominated n128 cells (void risk); post-terminal assess is next.
 - [Current Paper G strategy review](project_paper_g_strategy_review_2026-09-16.md) — 109-program death-gate aggregation over cycles 17-47; no unconditional Cycle 48; resumptions only via sandbox authorization or external data events; redirect to Paper D/D0.
 - [Paper D manuscript revision 2026-09-16](project_paper_d_manuscript_revision_2026-09-16.md) — PRIVATE: ED4/ED5/ED6 written into current TeX/PDF; actual ED2 amplitudes ±0.25/±0.5 preserved; negative controls and post-hoc roles retained; main text ends on page 9.
 - [Paper D approved revision execution 2026-09-08](project_constraint_revision_execution_2026-09-08.md) — PRIVATE: ED0/ED1 complete and hash-verified; ED2 analysis done but local transfer/receipt acceptance incomplete; gates unchanged; separate continuation decision.
