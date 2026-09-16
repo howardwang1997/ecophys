@@ -1,0 +1,126 @@
+schema_version: 1
+record_type: private_internal_primary_comparison_and_theorem_scope_audit
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T10:08:17Z'
+literature_cutoff: '2026-09-09'
+previous_goal_turn_classification: progress
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_gradient_gate_scope_audit_2026-09-09.md
+related_route_ids:
+- paper_g_physical_history_impulse_response
+- ncs_invariant_calibration_v4
+decision: not_trigger
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+named_blockers:
+- generic_sensitivity_and_history_nuisance_remedies_have_direct_prior
+- no_new_variance_cost_result
+source_scope:
+  new_method: Onoda et al.,arXiv2604.18161v1 dated2026-04-20;selected sections1-4 and appendicesB-C.
+  new_method_venue_metadata: https://proceedings.iclr.cc/paper_files/paper/2026/hash/4f0a2a0b2ca6ffd5c8d5de26d3e8d54d-Abstract-Conference.html
+  new_method_version_boundary: Official ICLR2026 venue confirmed;technical reading is the arXiv version,not claimed identical to final proceedings PDF.
+  existing_parent: Suh et al.,ICML2022 official PDF;selected sections2-3,lemmas3.1-3.5 and appendixC assumptions.
+  mathematical_parent: Lehec2008,The symmetric property(tau) for the Gaussian measure;lemma2.3 and Hermite proof,printed pages360-361.
+  returned_other_passages: Other method/experiment/appendix passages returned incidentally;not promoted to independent verification or scientific conclusions.
+  code_inspected_or_executed: false
+  primary_comparison: Both method papers retain rare-gradient finite-batch behavior;practical variance dominance on another task suite does not reverse the original conditional claims.
+diagnostics:
+- id: gaussian_population_gate_reduction
+  epistemic_class: classical_paper_only_refined_poincare_and_whitening
+  assumptions: X~N(mu,sigma^2*I),sigma>0;scalar f in Gaussian H1;finite function and weak-gradient second moments.
+  definitions: m=E grad f,Vf=Var(f),Vg=E norm(grad f-m)^2.
+  exact_inequality: Q=Vg+2*norm(m)^2-2*Vf/sigma^2>=0.
+  proof: Subtract mean and linear Gaussian projection;apply refined spectral-gap2 inequality to orthogonal residual.
+  hermite_deficit: Q=sum_{degree>=3}(degree-2)*coefficient_squared/sigma^2.
+  null: Every polynomial of total degree<=2 has Q=0.
+  positive: Normalized third Hermite polynomial has Vf=1,m=0,Vg=3/sigma^2,Q=1/sigma^2.
+  outside_class: Indicator has zero ordinary derivative and negative substituted Q;not H1,so not a counterexample to the inequality.
+  covariance_form: E[(grad f-m)^T*Sigma*(grad f-m)]+2*m^T*Sigma*m-2*Vf>=0 for positive-definite Sigma.
+  source_comparison: Onoda population Eq32 with c in[0,1] follows from this classical bound;no near-quadratic assumption needed for that population inequality.
+  scope: Does not certify finite-sample variances,unseen support,gradient MSE,mixture optimality or empirical performance.
+- id: gaussian_smooth_missed_support
+  epistemic_class: elementary_paper_only_integration_by_parts_and_two_function_coupling
+  oracle: N fixed iid N(0,sigma^2) inputs,function values and exact first derivatives;functions fixed before sampling.
+  functions: f0=0,f1=A*psi((x-r)/h),A>0,r>h>0,nonnegative nonzero smooth bump psi supported inside(-1,1).
+  support_mass: p=P(X in(r-h,r+h)).
+  matching_transcript_probability: (1-p)^N.
+  true_smoothed_gradient_gap: d=E[f1'(X)]=E[X*f1(X)]/sigma^2>0.
+  gate_null_transcript: Values,derivatives and empirical variances all zero outside support;stated scalar gate passes for any nonnegative floor.
+  testing_bound: e0+e1>=(1-p)^N;max(e0,e1)>=(1-p)^N/2.
+  necessary_sample_condition: N>=log(2*delta)/log(1-p) for both classification errors<=delta<1/2.
+  fixed_gap_boundary: Fixed amplitude can give a shrinking gap as p shrinks;fixed nonzero gap requires growing amplitude or derivative bounds.
+  exclusions: No claim about implemented mixture zero-denominator behavior,source experiment failure,adaptive targeted queries,known whole-function formulas or uniformly bounded classes.
+comparison_contract:
+  target: Derivative of a stated finite-horizon Gaussian-smoothed scalar return;not automatically unperturbed policy return or stationary response.
+  state_action_noise: Freeze initial physical state,policy parameters,latent noise distribution,clipping/squashing map and physical intervention duration.
+  accessible_information: Function/gradient/trajectory oracle and any complete formula or support information explicitly separated.
+  sampling_cost: Declare all function,gradient,trajectory and targeted-support queries,precision and variance-estimation cost.
+  regularity_tail_precision: Population H1 is sufficient for the inequality;finite-batch reliability additionally needs justified bounds and a stated error/failure-probability contract.
+  baselines: Existing AoBG,DDCG,stepwise mixing and relevant sensitivity methods at matched target/access cost;retain estimator covariance and data-dependent weight selection.
+  confirmation: Both controls are development;no untouched nonlinear-fluid confirmation or independent simulator replication qualified.
+  stop_rule: No promotion from necessary population relation or passing empirical gate to a reliable finite-cost gradient theorem without the missing assumptions.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  new_selected_primary_fulltext_works: 2
+  existing_primary_selected_fulltext_rechecks: 1
+  existing_platform_source_records_reused: 1
+  previous_source_cache_hashes_rechecked: 7
+  new_evidence_records: 2
+  paper_only_diagnostics: 2
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  outcome_assets_accessed: 0
+source_refs:
+- gradient_gate_onoda_primary
+- gradient_gate_refined_poincare_primary
+reused_source_refs:
+- trigger_suh_diffsim_gradients_primary
+- hydrogym_truth_expanded_preprint
+source_records:
+- id: gradient_gate_onoda_primary
+  kind: primary_research_work
+  title: 'Onoda et al.: Does Do Differentiable Simulators Give Better Policy Gradients
+    Give Better Policy Gradients?'
+  uri: https://arxiv.org/html/2604.18161v1
+  version: v1_20260420_selected_sections1_4_appendicesB_C_read_20260909_ICLR2026_venue_separately_confirmed
+  license: arXiv declares CC BY4.0; primary reading only.
+  role: Direct DDCG and stepwise inverse-variance method parent; population versus
+    empirical gate contract.
+  limitation: Inspected technical version is arXiv; final proceedings PDF identity
+    and empirical results not independently verified. No universal variance-dominance
+    or finite-batch truth certificate inferred.
+- id: gradient_gate_refined_poincare_primary
+  kind: primary_research_work
+  title: 'Lehec: The symmetric property tau for the Gaussian measure'
+  uri: https://www.numdam.org/article/AFST_2008_6_17_2_357_0.pdf
+  version: 2008_AFST17_2_lemma2_3_and_Hermite_proof_printed_pages360_361_read_20260909
+  license: Primary reading only; no third-party text or PDF redistribution.
+  role: Classical spectral-gap2 Gaussian inequality after removing constant and linear
+    modes.
+  limitation: Selected lemma and proof, not full article audit or a statistical finite-sample
+    guarantee. Gaussian H1 extension and covariance whitening are classical paper-only
+    reductions.
+recorded_at: '2026-09-09T10:39:50Z'
+reentry_audit_id: paper_g_gradient_gate_primary_scope_20260909
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb

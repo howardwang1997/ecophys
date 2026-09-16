@@ -243,3 +243,11 @@ def test_manifest_refuses_to_redact_frozen_numerical_records(tmp_path: Path) -> 
     records.write_text(json.dumps({"path": private_path}) + "\n", encoding="utf-8")
     with pytest.raises(RuntimeError, match="frozen numerical record"):
         build_manifest(tmp_path, [Path("records.jsonl")])
+
+
+def test_public_manifest_rejects_internal_provenance(tmp_path):
+    import pytest
+    from pathlib import Path
+    from scripts.build_paper_d_supplement import build_manifest
+    with pytest.raises(RuntimeError, match="internal provenance"):
+        build_manifest(tmp_path, [Path("experiments/constraint_attribution_iclr/deployment/run.log")])

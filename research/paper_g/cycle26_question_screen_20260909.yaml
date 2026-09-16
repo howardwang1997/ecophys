@@ -1,0 +1,128 @@
+schema_version: 1
+record_type: private_internal_exploratory_question_screen
+visibility: private_internal
+public_evidence_eligible: false
+cycle_id: discovery_cycle_26_20260909
+recorded_at: '2026-09-09T01:12:36Z'
+session_started_at: '2026-09-09T01:00:01Z'
+literature_cutoff: '2026-09-09'
+prospectively_frozen: false
+result_ref: papers/proposal/ecomd_paper_g_topic_cycle26_2026-09-09.md
+eligibility:
+  parents: [tied_economic_dispatch_emissions_measurement, parametric_insurance_score_welfare_alignment]
+  registry_duplicate_found: false
+  verified_same_state_primary_disagreement: false
+  compact_cycle: true
+  sampling_note: Two measurement questions with analytic truth; not a twelve-program cycle or an advancement quota.
+  closure_separation: No re-entry into CfD, nonconvex settlement, generic simulator certification, hidden-account inference, carbon-inventory condensation or Cycle25 parents.
+counts:
+  raw_question_programs: 2
+  quick_screens: 2
+  collision_screens: 0
+  full_hostile_audits: 0
+  machine_cards: 0
+questions:
+- id: G26-01
+  route_id: paper_g_lme_cost_noise_common_truth
+  archetype: measurement_method
+  source_lane: market_native_action_or_constraint
+  native_object: Marginal emissions under tied economic dispatch, comparing small cost perturbation with emission-minimizing tie selection.
+  rivals:
+  - Vanishing economic-cost noise recovers the same emissions truth as lexicographic selection.
+  - The procedures select different dispatch responses even as economic-cost perturbations vanish.
+  discriminator: Solve both signs of a cost perturbation and the unperturbed emissions-minimizing rule in a two-generator fixture.
+  positive_value: Establish when the procedures share a valid reference target.
+  null_value: Identify the dispatch selection rule needed for measurement and calibration.
+  minimal_truth: Full costs, capacities, demand direction, emissions rates, tie selection and whether perturbations are held fixed during load changes.
+  source_refs: [cycle26_sun_cote_lme, cycle26_gorka_emissions]
+  diagnostic_refs: [A_dispatch_selection]
+  stage: F1
+  disposition: quick_closed
+  terminal_gate: different_dispatch_selection_targets_and_elementary_cost_tie_boundary
+  interpretation_limit: No actual operator tie rule or field emissions established; no refutation of complete original methods or new generic simulator certificate.
+- id: G26-02
+  route_id: paper_g_parametric_basis_score_welfare_certificate
+  archetype: measurement_method
+  source_lane: market_native_action_or_constraint
+  native_object: Asymmetric basis-risk scoring of parametric payouts under a fixed loss/trigger law, loading and premium budget.
+  rivals:
+  - A lower asymmetric squared basis-risk score certifies higher mean-variance welfare.
+  - Premium and residual-risk changes can reverse the score and welfare ranking.
+  discriminator: Compare exact score and welfare optima within the same budget-feasible payout class.
+  positive_value: Justify use of the score as a decision certificate under explicit conditions.
+  null_value: Prevent welfare conclusions from an unmatched statistical objective.
+  minimal_truth: Joint loss/trigger law, payout class, actual premium functional, budget, evaluation loss and opt-out option.
+  source_refs: [cycle26_maier_basis, cycle26_maier_utility, cycle26_avanzi_budget]
+  diagnostic_refs: [B_score_welfare]
+  stage: F1
+  disposition: quick_closed
+  terminal_gate: direct_utility_weighting_prior_and_objective_mismatch
+  interpretation_limit: Not a premium-matched or indemnity comparison; mean-variance is explicit, not general expected utility. Richer feasible classes under the same objective remain weakly beneficial.
+diagnostics:
+- id: A_dispatch_selection
+  epistemic_class: elementary_paper_only_dispatch_derivation
+  interval: One hour, single node, demand d strictly between0and2.
+  generators: {capacities: [2, 2], minimum_output: [0, 0], costs: [1, 1], emissions_rates: [0, 1]}
+  base_rule: Minimize g1+g2 subject to g1+g2=d; minimize emissions on the optimal face.
+  base_dispatch: [d, 0]
+  base_emissions: 0
+  base_marginal_emissions: 0
+  dirty_favoring_costs: [1+delta, 1]
+  dirty_dispatch: [0, d]
+  dirty_emissions: d
+  dirty_marginal_emissions: 1
+  clean_favoring_costs: [1, 1+delta]
+  clean_marginal_emissions: 0
+  objective_perturbation_bound: delta*d
+  random_selection_assumptions: iid continuous noise supported on [0,1]; held fixed across demand perturbations; analytic expectation only.
+  expected_random_emissions: d/2
+  expected_random_marginal_emissions: '1/2'
+  positive_boundary: Cost gap Delta>0 and coordinate perturbations bounded by eta<Delta/2 preserve merit order in this interior fixture.
+  limitation: No physical phase, actual field selection, numerical error measurement or new sensitivity theorem.
+- id: B_score_welfare
+  epistemic_class: elementary_paper_only_contract_derivation
+  states:
+  - {probability: '1/2', I: 0, S: 0}
+  - {probability: '1/4', I: 1, S: 1}
+  - {probability: '1/4', I: 1, S: 3}
+  payout: k*I
+  loading: '1/10'
+  fixed_fees: 0
+  premium: 11*k/20
+  premium_budget: '8/5'
+  feasible_k: '[0,32/11]'
+  score: E[0.9*(S-k*I)_+^2+0.1*(k*I-S)_+^2]
+  objective: V=E[W]-Var(W), W=w-S+k*I-premium
+  expected_wealth: w-1-k/20
+  residual_variance: 3/2-k+k^2/4
+  welfare: w-5/2+19*k/20-k^2/4
+  score_optimum: {k: '14/5', premium: '77/50', score: '9/100', variance: '33/50', welfare: w-9/5}
+  welfare_optimum: {k: '19/10', premium: '209/200', score: '117/400', variance: '201/400', welfare: w-639/400}
+  score_improvement: '81/400'
+  welfare_loss: '81/400'
+  no_insurance_welfare: w-5/2
+  positive_boundaries:
+  - Fixed mean payout makes unweighted squared error and residual variance rank identically; equal premiums then align the chosen mean-variance objective.
+  - Nested feasible contract classes cannot lower the optimized value under the same objective and constraints.
+  limitation: Equal budget but unequal spent premia; no generic expected-utility equivalence, full indemnity comparison or field welfare conclusion.
+access_accounting:
+  retained_primary_sources_opened: 5
+  selected_substantive_model_reads: 5
+  full_paper_audits: 0
+  independent_confirmatory_evidence: 0
+  target_outcome_assets_accessed: 0
+  new_evidence_records: 5
+  intake_note: Gorka v2/v3 count as one work; v3 is the screened version. Other indexed weather, emissions and insurance hits remained unformulated intake.
+authorization:
+  new_trigger_audits: 0
+  qualified_triggers: 0
+  new_machine_decisions: 0
+  prospective_forecasts: 0
+  scientific_implementation: false
+  simulator_runs: 0
+  gpu_work: false
+  accounts_or_purchases: false
+  outreach_or_participants: false
+  publication: false
+surviving_program_ids: []
+next_update: Freeze the complete reference decision rule and end-use loss before comparing measurement methods; closed formulations require a blocker-removing result/control asset and applicable qualified trigger.

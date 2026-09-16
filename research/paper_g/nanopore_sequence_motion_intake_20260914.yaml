@@ -1,0 +1,86 @@
+schema_version: 1
+visibility: private_internal
+public_evidence_eligible: false
+record_type: bounded_prequestion_source_intake
+status: complete_direct_decoding_and_physical_readout_parents_no_distinct_question
+recorded_at: '2026-09-14T10:48:44Z'
+start_ref: research/paper_g/nanopore_sequence_motion_intake_start_20260914.yaml
+parent_ref: research/paper_g/paddlewheel_intervention_audit_completion_20260914.yaml
+formal_result_ref: papers/proposal/ecomd_paper_g_nanopore_sequence_motion_intake_2026-09-14.md
+prior_goal_turn_classification: progress
+new_primary_work_lineages: 4
+new_source_ids:
+- pg_nanopore_rereads2021
+- pg_nanopore_helicase_hmm2024
+- pg_nanopore_phospho2024
+- pg_nanopore_tpal2026
+new_questions: 0
+new_search_cycles: 0
+new_graph_nodes: 0
+route_status_changes: 0
+analytic_controls:
+- id: C1_reread_precision_vs_shared_offset
+  status: standard_random_effects_variance_control_not_new_theorem
+  construction: Let R repeated observations from one molecule/pore satisfy Y_r=mu_s+B+epsilon_r, with Var(B)=tau^2,
+    independent epsilon_r of variance sigma^2, and B shared across repeats. Then Var(mean(Y))=tau^2+sigma^2/R.
+    Under Gaussian B and noise, equal-prior discrimination of two means separated by delta has error Phi[-delta/(2*sqrt(tau^2+sigma^2/R))].
+  implication: Repeated readings suppress independent noise but not an unobserved shared offset. More events
+    are not automatically more independent measurement units.
+  limitation: Illustrative scalar random-effects model only; no actual pore offset distribution, failure of
+    published consensus performance, new estimator or generic calibration-transfer candidate claimed. A measured
+    per-pore reference can remove a shared nuisance under additional assumptions.
+decision: Generic motor-aware inference, consensus rereading, charge-dependent read-frame modeling and cleavage-stage
+  graph decoding have direct parents. tPAL is a real new assay capability, but no distinctive scientific/learning
+  question formed. No nanopore-wide closure.
+next_step: Stop generic decoder/classifier expansion. Any future tPAL follow-up needs a specific sequence-context
+  or cleavage-stage ambiguity with a matched physical control and useful gain beyond its classifier/graph decoder,
+  while respecting grouped measurement units. Do not reopen saturated generic calibration-transfer under a
+  nanopore label.
+comparison_contract:
+- Separate finite-library variant identification, PTM localization and de novo sequence reconstruction.
+- DNA motor state models are relevant inference parents but do not specify peptide current/stretching physics.
+- Separate helicase-driven translocation from N-terminal coordination of a tethered peptide undergoing chemical
+  cleavage.
+- tPAL already uses multivoltage classification and stage-wise overlap graphs; those operations are not new.
+- State pore/molecule/experiment versus event-level sampling units and distinguish classifier tests from independent
+  sequence-assembly measurements.
+- Preserve current-only, force/stretch and cleavage-stage targets; a resolved current stage is not automatically
+  a calibrated amino-acid label.
+- Training data locator is not a complete raw-assay or untouched-confirmation contract.
+reading_depth: 'Four works at unequal depth: selected indexed 2021/2023-24 primary main; selected HHMM v1 main;
+  tPAL publisher preview/extended captions and selected supplementary PDF methods/captions. No complete main/supplement
+  audit or payload access.'
+new_forecasts: 0
+new_machine_cards: 0
+F2_performed: false
+F3_performed: false
+new_family_saturation: false
+full_truth_contract_required_at_intake: false
+published_results_read: true
+published_result_label: development
+outcome_payload_accessed: false
+scientific_execution_authorized: false
+delegation_authorized: false
+protected_sha256:
+  research/discovery/protocol.yaml: ac5d9ac16d68ad6913b65c7631efa7c2da36f0528d2c53445c4c84c3a72b55e6
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb
+  research/discovery/reentry_trigger_ledger.yaml: 359d39032e4ad1864fadd80e72f3567dd2a48911b8cc6cae5effd021691e690b
+  research/discovery/search_cycle_ledger.yaml: 4133913542582d58ad86e17f340e9e81009acff7b22af664dabeded561f43598
+  .claude/memory/research_route_knowledge_graph.yaml: bca047d79834feb51bb428c9442cf8695153dd23ce35322d91b1401242e979d3
+  research/paper_g/paddlewheel_intervention_audit_completion_20260914.yaml: 3918832b39598206c7307bc5b6a0eda6f590440e013083ade2ac86d06d0fa4de
+  research/paper_g/nanopore_sequence_motion_intake_start_20260914.yaml: 161609665e1d7e8531caa75d577520e74b618fca4e95231c71eeba10683ae699
+counts:
+  paper_g_formulations: 89
+  paper_g_cycles: 29
+  cards: 0
+  detailed_cycles: 36
+  detailed_raw: 173
+  inclusive_cycles: 45
+  inclusive_raw: 229
+  graph_nodes: 333
+  graph_edges: 279
+  graph_locators: 1986
+  evidence: 1327
+  candidate: 0
+  parked: 14
+goal_complete: false

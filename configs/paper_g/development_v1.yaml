@@ -1,0 +1,26 @@
+schema_version: paper-g-development-v1
+evidence_label: development_not_confirmation
+decision_ref: research/discovery/decisions/pi_paper_g_development_authorization_20260908.yaml
+capacity: 2
+initial_inventory: 1
+horizon: 1024
+law:
+  buy_probability: 0.5
+  buyer_high_probability: 0.55
+  seller_low_probability: 0.55
+refill_probabilities: [0.1, 1.0]
+feedback: [actual, reveal]
+methods: [certainty_equivalent, posterior_sampling]
+seeds: [710000, 710001, 710002, 710003, 710004, 710005, 710006, 710007]
+prior: independent_beta_1_1
+prior_success: 1.0
+prior_failure: 1.0
+replan_at: zero_and_powers_of_two
+certainty_equivalent_epsilon: "min(1, 1/sqrt(t+1))"
+exploration_scale: 1.0
+tie_breaking: first_action_in_lexicographic_hedge_bid_ask_order
+oracle_tolerance_short: 1.0e-8
+max_workers: 4
+max_cpu_core_hours: 8
+max_wall_seconds: 7200
+max_output_bytes: 268435456

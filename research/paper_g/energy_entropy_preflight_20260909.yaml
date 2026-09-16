@@ -1,0 +1,139 @@
+schema_version: 1
+record_type: private_internal_truth_asset_preflight
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T07:14:16Z'
+literature_cutoff: '2026-09-09'
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_energy_entropy_preflight_2026-09-09.md
+related_route_ids: [theory_exploration_equation_audit_v3]
+repository_anchor: papers/paper_d_constraints/main.tex
+decision: partial_capability
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+named_blockers:
+- state_closure_reduced_to_predictive_state_prior_art
+- omitted_state_not_repaired_by_long_horizon_calibration
+source_refs:
+- energy_entropy_ecnn_2024
+- energy_entropy_collision_2026
+- energy_entropy_wpinns
+- energy_entropy_eno_2025
+- energy_entropy_ecnn_repository
+source_records:
+- id: energy_entropy_ecnn_2024
+  kind: primary_research_work
+  title: 'van Gastelen, Edeling and Sanderse: Energy-Conserving Neural Network for Turbulence Closure Modeling'
+  uri: https://arxiv.org/pdf/2301.13770v5
+  version: v5_20240315_selected_Sections2_5_3_2_Equations29_33_42_code_pointer_read_20260909
+  license: Primary-paper reading only; no software or dataset rights inferred.
+  role: Direct parent for stable resolved/subgrid energy exchange, signed linear SGS compression and structure-preserving neural closure.
+  limitation: Its SGS state is not just unsigned total energy; the analytic sign twin is not a refutation of its actual transform. No complete hidden-state identification or empirical implementation endorsement inferred.
+- id: energy_entropy_collision_2026
+  kind: primary_research_work
+  title: 'Roohi, Shoja-sani and Stefanov: Physics constrained neural collision operators for hard sphere surrogates and ab initio angle prediction in direct simulation Monte Carlo'
+  uri: https://doi.org/10.1063/5.0328463
+  version: Physics_of_Fluids38_057123_20260520_selected_SectionsII_C_D_read_20260909
+  license: Primary-paper reading only; no software or dataset rights inferred.
+  role: Pair-level momentum and energy constraints with conditional stochastic collision modeling; explicitly distinguishes regression-to-mean variance suppression from stochastic prediction.
+  limitation: No endorsement of the fitted angular kernel, broad thermodynamic guarantees or optional cell-level stabilization. Gaussian latent noise alone is not claimed to identify the physical conditional law.
+- id: energy_entropy_wpinns
+  kind: primary_research_work
+  title: 'De Ryck, Mishra and Molinaro: wPINNs, Weak Physics informed neural networks for approximating entropy solutions of hyperbolic conservation laws'
+  uri: https://arxiv.org/pdf/2207.08483
+  version: arxiv2207_08483_selected_Section2_1_and_Equations2_10_2_11_read_20260909
+  license: Primary-paper reading only; no software or dataset rights inferred.
+  role: Direct parent for local Kruzhkov entropy residuals, test-function min-max neural approximation and the distinction between weak and entropy solutions.
+  limitation: Selected scalar-law contract only; no new entropy test or general multidimensional-system theorem inferred.
+- id: energy_entropy_eno_2025
+  kind: primary_research_work
+  title: 'Tanaka et al.: Energy-consistent Neural Operators for Hamiltonian and Dissipative Partial Differential Equations'
+  uri: https://proceedings.mlr.press/v258/tanaka25a.html
+  version: AISTATS2025_primary_abstract_only_read_20260909
+  license: Primary-abstract reading only; no software or dataset rights inferred.
+  role: Direct broad prior for energy-consistent operator learning through a physics-based training penalty.
+  limitation: No exact state/observation contract or same-estimand disagreement inferred from the abstract; no claim its actual method enforces a wrong coarse-energy law.
+- id: energy_entropy_ecnn_repository
+  kind: official_repository_metadata
+  title: 'tobyvg/ECNCM_1D: energy-conserving neural closure source metadata'
+  uri: https://github.com/tobyvg/ECNCM_1D
+  version: mutable_master_README_directory_metadata_read_20260909
+  license: Repository page displays MIT label; full license text, dependency/data and derived-release rights unqualified.
+  role: Documents Julia closure source, tests, dependency manifest and tutorial pointers for Burgers and KdV.
+  limitation: No source implementation, notebook outputs, training data, immutable replay, accuracy or independent confirmation qualified.
+diagnostics:
+- id: A_resolved_energy_sign_twin
+  epistemic_class: elementary_paper_only_full_PDE_instantaneous_derivative
+  system: Periodic viscous Burgers on[0,2*pi], nu>0; initial u=a*sin(x)+b*sin(2*x), a!=0.
+  normalization: norm(u)^2=(1/pi)*integral(u^2); E=norm(u)^2/2; P retains first sine mode.
+  derivatives_at_zero: a_dot=a*b/2-nu*a; b_dot=-a^2/2-4*nu*b.
+  energy_derivatives_at_zero: E_P_dot=a^2*(b/2-nu); E_dot=-nu*(a^2+4*b^2).
+  matched_pair: b=+B versus-B, B>2*nu; same resolved field, momentum, SGS energy, full energy and full dissipation; opposite resolved-energy derivative signs.
+  competent_control: Signed b distinguishes this pair; full state supplies exact PDE response; established augmented closures permit exchange.
+  limit: Instantaneous full-PDE identity, not a truncated rollout or collision under the source's actual signed transform T.
+- id: B_conditional_mean_invariant
+  epistemic_class: elementary_paper_only_conditional_expectation_geometry
+  assumptions: Supplied information O; norm(Y)=r(O) almost surely; finite second moment; m=E[Y|O], Sigma=Cov(Y|O).
+  energy_identity: r^2=norm(m)^2+trace(Sigma).
+  risk_identity: E[norm(Y-z)^2|O]=trace(Sigma)+norm(z-m)^2.
+  equality_constraint_excess: Minimum extra squared risk under norm(z)=r is(r-norm(m))^2.
+  isotropic_scattering_control: Y=r*S with S uniform unit sphere and r>0 gives m=0; mean risk r^2; any constrained deterministic prediction risk2*r^2.
+  sampling_control: Independent correct sample also has risk2*r^2; distributional prediction requires a proper distributional score, not a claim to beat the mean in squared error.
+  nulls: Sigma=0 eliminates conflict; convex norm upper bound contains m; affine AY=c(O) implies A*m=c(O).
+  limit: No refutation of PaperD affine constraints or all energy inequalities; no new uncertainty method.
+- id: C_global_vs_local_entropy
+  epistemic_class: elementary_paper_only_distributional_weak_solution
+  system: Inviscid Burgers on periodic(-pi,pi); stationary u=+1 on(-pi,0), u=-1 on(0,pi).
+  weak_solution: u^2/2 is constant; mass0 and all spatial entropy integrals constant.
+  local_entropy_pair: eta=u^2/2; q=u^3/3.
+  entropy_residual: (2/3)*delta_pi-(2/3)*delta_0 on the circle; nonnegative test localized near seam detects positive residual.
+  competent_control: Standard local entropy admissibility rejects the expansion jump; wPINNs and entropy-admissible numerical solvers are existing baselines.
+  limit: No omitted boundary flux; no claim of failure in an entropy-trained model or a novel local entropy method.
+truth_asset_preflight:
+  source: ECNCM_1D source lineage plus selected primary mathematical contracts.
+  verified_capability: Explicit resolved/SGS energy state and linear transform in primary work; repository source/test/manifest/tutorial pointers.
+  immutable_version: Paper ECNNv5 pinned by version; repository master unpinned.
+  supported_estimand_family: Separately frozen resolved/full transfer, conditional risk, and local entropy residual; no single realism score.
+  assignment_interference: Full initial state fixed before evolution; separate physical, observation and model randomness; sign pair is an analytic diagnostic, not empirical replication.
+  event_lifecycle: PDE, viscosity, domain, boundary, full initial field, projection/quadrature, signed compression/initialization, forcing, integration/tolerance, entropy/test support, observation map and RNG.
+  rights_ethics_release: No participants; license label alone does not qualify code/dependency/data/derived-release rights.
+  untouched_confirmation: Reserve fine initial-field families, uncertainty kernels and physical regimes before outcomes; separate compression fitting/training/calibration/selection/evaluation; none qualified; existing PaperD roles retained.
+  independent_replication: Analytic controls are not independent executed solvers; no second nonlinear solver or real bridge qualified.
+  cost: Scientific compute0; solver, auxiliary-state storage, training, inference and entropy integration budgets unqualified.
+  stop_rules: Wrong state/statistic or global/local substitution; reduction to existing closure, stochastic-kernel or entropy baselines; incomplete replay/rights/confirmation; no qualified trigger.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  selected_primary_fulltext_works: 3
+  primary_abstract_boundary_records: 1
+  repository_metadata_records: 1
+  new_evidence_records: 5
+  paper_only_diagnostics: 3
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  outcome_assets_accessed: 0
+unpromoted_intake:
+- subject: Entropy-admissible neural finite volume and graph operators.
+  scope: Search metadata including ICLR2026(U)NFV and HypNO; no full audit or new candidate formed.
+- subject: Statistical solutions and vanishing-viscosity selection.
+  scope: Search metadata only; no same-state model disagreement or truth asset qualified.
+- subject: Generic probabilistic neural operators, turbulent reconstruction and analytic constraints.
+  scope: Search metadata only; not new contributions from adding a physical domain name.
+recorded_at: '2026-09-09T07:24:54Z'
+reentry_audit_id: paper_g_energy_entropy_target_contract_20260909
+unchanged_search_cycle_ledger_sha256: 05a63e14f17ff35671a11906dcee8f84631ad18fe714f75e749d0d248e5854ed

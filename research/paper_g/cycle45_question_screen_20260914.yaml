@@ -1,0 +1,130 @@
+schema_version: 1
+visibility: private_internal
+public_evidence_eligible: false
+record_type: bounded_F0_F1_question_screen
+cycle_id: discovery_cycle_45_20260914
+authorization_ref: research/discovery/decisions/pi_cross_domain_ml_scope_20260912.yaml
+start_ref: research/paper_g/cycle45_start_20260914.yaml
+recorded_at: '2026-09-13T17:19:10Z'
+status: completed_F0_F1_one_provisional_candidate
+question_level_prospective_freeze: false
+outcome_accessed: false
+scientific_execution_authorized: false
+questions:
+- id: g45_antibody_mutation_kinetic_selectivity
+  archetype: empirical_intervention
+  source_lane: market_native_action_or_constraint
+  scientific_domain: antigen_antibody_mutation_kinetics
+  native_object: Parent-mutant protein pair in a fixed binding assay with explicit antigen, construct/valency,
+    temperature, buffer, surface loading, fitting model and measurement window.
+  action: Experimentally substituted residues or designed sequence relative to the registered parent; evaluate
+    mutation effects rather than pooled absolute rates.
+  response: Paired changes a=log(kon_mut/kon_parent), b=log(koff_mut/koff_parent); d=log(KD_mut/KD_parent)=b-a
+    under the same 1:1 kinetic model. Primary claim remains protocol-conditioned kinetics.
+  rivals:
+    H1: Affinity-pretrained representations retain mutation-sensitive information about common kinetic shifts
+      a approximately b beyond affinity changes and parent identity.
+    H0: Their apparent kinetic predictive value is exhausted by affinity and between-parent variation; ordinary
+      raw-embedding or existing mutation-kinetics predictors suffice for within-parent changes.
+  discriminator: Frozen family/mutation holdout comparison of joint rate-change prediction, plus independently
+    defined near-isoaffinity strata with measurable common kinetic shifts. Match supervision, parent-reference
+    availability and total fitting budget. Compare frozen affinity representations, raw representations, fine-tuning,
+    direct hotspot predictors and affinity/parent diagnostic nulls.
+  positive_value: Determine whether equilibrium-trained representations support kinetic-selective mutation
+    screening and which representation training retains that capability.
+  null_value: Delimit affinity-pretraining transfer and avoid claiming kinetic engineering ability from pooled
+    affinity-correlated scores; null alone is not conference readiness.
+  closest_closed_route: g33_protein_assay_epistasis
+  substantive_difference: Observed mutation-induced rate changes with a specific representation-transfer question,
+    not latent phenotype/readout decomposition, probability recalibration or small-panel acquisition/population
+    transfer. Existing calibration and generic learned-MC guards unchanged.
+  screen_status: deferred
+  decision_stage: F1
+  decision_reason: Native intervention and plausible kinetic references exist; standard controls show the requested
+    response is not fixed by affinity or pooled accuracy. Retain provisionally for bounded contribution/support
+    review, not a validated novelty or performance claim.
+  primary_source_ids:
+  - g45_abagker
+  - g45_agius
+  - g45_aintibody
+  additional_assay_source_ids:
+  - g45_maxtia
+  killer_controls:
+  - C1_isoaffinity_common_rate_mode
+  - C2_pooled_parent_signal_without_mutation_skill
+  early_truth_contract: Published matched construct/control SPR kinetics and a second mutation panel are plausible
+    protocol-conditioned truth. Replicate separation, fit uncertainty/censoring, independent affinity selection,
+    lineage splits and rights require qualification. No native transition-state or clinical efficacy truth
+    claimed.
+  F2_performed: false
+primary_source_ids:
+- g45_abagker
+- g45_agius
+- g45_aintibody
+- g45_maxtia
+F1_anchor_primary_source_ids:
+- g45_abagker
+- g45_agius
+- g45_aintibody
+documentation_source_ids:
+- g45_maxtia
+killer_controls:
+- id: C1_isoaffinity_common_rate_mode
+  result: 'For 1:1 binding scale kon and koff by c>0. KD is unchanged, but relaxation at concentration C scales
+    by c: kon*C+koff. Mutation log-rate differences a=b=log(c), d=0. This is a standard kinetic identity, not
+    evidence of realizable mutations or a new theorem.'
+- id: C2_pooled_parent_signal_without_mutation_skill
+  result: Let y_gm=mu_g+epsilon_gm with independent centered terms and predictor yhat=mu_g. Corr(y,yhat)=sqrt(Var(mu)/(Var(mu)+Var(epsilon)))
+    approaches1 with between-parent variance, although all within-parent predictions are zero after centering.
+    This is an illustrative null, not a measured failure of any source model.
+killer_control_count: 2
+new_theorem_claim: false
+primary_work_cap: 4
+retained_primary_works: 4
+reading_scope: Three selected F1 anchors plus previously inspected MAXTIA assay documentation; unequal bounded
+  depth, no full four-work audit.
+sampling_note: One empirical question; diversity targets unmet, not a twelve-program cycle or broad source-scarcity
+  claim.
+preallocation_intake: Other protein-ligand, eLife, high-throughput2023, SKEMPI/dbMPIKT and affinity papers
+  remain discovery hits, not retained reviews or extra questions.
+claim_controls:
+- No first kinetics predictor, no new two-head parameterization claim.
+- 'Do not use KD computed from the same fitted rates as an independent affinity match: shared fit errors can
+  induce conditional effects.'
+- Separate sequence-only deployment baselines from oracle-affinity diagnostic controls; no test mutant labels
+  as deployment inputs.
+- Published prospective data are already viewed literature; new use is retrospective development until an untouched
+  confirmation partition is established.
+- Protocol-fitted rates and finite-exposure response are not intrinsic barrier or clinical-effect truth.
+- Complete valid-reference metadata and distinct scientific conclusion remain unqualified; ordinary residual
+  reporting alone leads to parking.
+F2_performed: false
+F3_performed: false
+new_forecasts: 0
+new_machine_cards: 0
+protected_sha256:
+  research/discovery/protocol.yaml: ac5d9ac16d68ad6913b65c7631efa7c2da36f0528d2c53445c4c84c3a72b55e6
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb
+  research/discovery/reentry_trigger_ledger.yaml: 359d39032e4ad1864fadd80e72f3567dd2a48911b8cc6cae5effd021691e690b
+  research/paper_g/generator_audit_20260914.yaml: ed059be756f0892faa6ac4a30a32b6c576ec9359d1b5ebd89573b2a4e2e831ea
+  research/paper_g/aging_intervention_intake_completion_20260914.yaml: 26ac6065a752f08b8648501f34b571ab95d7ecfce28cde1f41aae661207d236f
+  research/paper_g/binding_intervention_intake_start_20260914.yaml: 8486e3816e2e67746a10fdc712b7fc132945ec0336388eb71d253be1a762f651
+  research/paper_g/cycle45_start_20260914.yaml: c09c22ecd8be89a45352dfd12d8fe331b06a0879686fd5978a0ab18961cb46dd
+counts:
+  paper_g_formulations: 89
+  paper_g_cycles: 29
+  cards: 0
+  detailed_cycles: 36
+  detailed_raw: 173
+  inclusive_cycles: 45
+  inclusive_raw: 229
+  graph_nodes: 333
+  graph_edges: 279
+  graph_locators: 1972
+  evidence: 1243
+  candidate: 1
+  parked: 13
+next_step: 'Bounded outcome-blind contribution/support review: inspect existing mutation-rate evaluations and
+  metadata/code interfaces only, verify a possible independent affinity/kinetic replicate split and adequate
+  within-parent support. Park if the contribution reduces to standard stratified evaluation or matched kinetic
+  truth is inadequate.'

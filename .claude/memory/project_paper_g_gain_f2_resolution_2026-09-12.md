@@ -1,0 +1,17 @@
+# Paper G transient-gain formulation: bounded F2 closure
+
+PRIVATE / INTERNAL. The direct PI continuation “继续” after the reviewable F2 proposal authorized one paper-only adjudication. Separate decision recorded before the review; original pending proposal and Cycle31 artifacts remain historical. The one-use exception is now consumed, with no further F2, candidate harvesting, F3, forecast, card, scientific execution or delegation authority.
+
+Current canonical status of g31_transient_energy_gain: **failed_closed**, at the distinct calibrated measurement contribution gate. This supersedes its historical F1 candidate status. Six existing primary works anchor the comparison; three selected texts were revisited/expanded, zero new works. Two paper-only controls show exact full-span paired-data recovery of the entire restricted two-mode reference and conditional operator-to-gain/achieved-energy bounds. These are ordinary identification and perturbation results, not a new method or physical finding.
+
+Actual response distortion in trained models, its prevalence and sign, general nonlinear calibration and independent physical truth remain unanswered. This closure does not establish a null empirical effect or field-wide impossibility. Preserve the shear, damping/covariance, metric and outer-dissipation assets. Stop generic gain-diagnostic variants; reopening requires a specific same-estimand result or actual truth/control capability removing a named contribution/calibration blocker, then a qualified re-entry record.
+
+Counts: Paper G55formulations/15cycles/0cards; detailed22cycles/139questions, historical-inclusive31cycles/195formulations. This was one follow-up F2, zero new cycles. Evidence1066, re-entry174/qualified0 unchanged. Graph299nodes/279edges/1660locators; candidate0, active1(separate verification-liquidity), parked2, failed_closed269, passed_closed26, superseded1. Original cycle31 screen-time survivor and stage counts remain historical in the search ledger; an appended comment points to the structured follow-up.
+
+Formal: papers/proposal/ecomd_paper_g_gain_f2_resolution_2026-09-12.md.
+Receipt: research/paper_g/gain_f2_resolution_20260912.yaml.
+PI decision: research/discovery/decisions/pi_paper_g_bounded_f2_exception_20260912.yaml.
+
+Post-resolution frontier check: the generation and F2 exceptions are both consumed; all174 re-entry records remain unqualified, with no harvesting authority. The other open graph routes do not authorize Paper G work. Reviewed generic response-archive and restoration-search chains retain their prior contribution stops. No concrete independent blocker-removing action was identified in this check. Do not replace the missing contribution with another unmotivated process exception or claim scientific progress from administrative rechecks. Audit: research/paper_g/post_f2_frontier_audit_20260912.yaml. The full objective remains incomplete.
+
+Three consecutive post-F2 canonical-state checks found the same frontier and no new matching decision or independent blocker-removing next action. The goal tool confirmed **blocked**, with the full publication objective preserved and unfinished. No scientific or graph change followed from these checks. Detailed history remains in the structured audit and daily log. Resume requires actual qualifying evidence/capability or a substantive scoped allocation change; a resumed goal starts a fresh blocked audit.

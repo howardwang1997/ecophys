@@ -1,0 +1,135 @@
+schema_version: 1
+record_type: private_internal_truth_asset_preflight
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T06:53:28Z'
+literature_cutoff: '2026-09-09'
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_control_execution_preflight_2026-09-09.md
+related_route_ids: [paper_g_physical_history_impulse_response]
+repository_anchor: papers/paper_d_constraints/main.tex
+decision: partial_capability
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+named_blockers:
+- generic_sensitivity_and_history_nuisance_remedies_have_direct_prior
+source_refs:
+- control_execution_diffphycon_2024
+- control_execution_safediffcon_v4_2026
+- control_execution_levine_2018
+- control_execution_weighted_cp_2019
+- control_execution_copp_2023
+- control_execution_robust_generative_cp_2026
+- control_execution_safediffcon_repository
+source_contracts:
+  diffphycon:
+    version: NeurIPS2024 proceedings.
+    read_scope: Sections2_3, selected evaluation descriptions and appendixL.
+    known_capability: Joint trajectory/control generation; objective guidance; control-prior reweighting; simulator execution of controls.
+    boundary: Actual execution comparison is already part of the work, not a new proposed evaluation.
+  safediffcon:
+    version: arxiv2502_02205v4_20260624; ICML2025 venue separately verified.
+    read_scope: Sections4_1_4_3 and selected appendixA; v1 HTML was also encountered but is not merged into v4.
+    known_capability: Safety residual calibration, post-training and inference-time adaptation of diffusion controllers.
+    boundary: No independent coverage or implementation endorsement; no stochastic-fixture empirical conclusion about its benchmark.
+  levine:
+    version: arxiv1805_00909v3_20180520.
+    read_scope: Sections2_3_3_2.
+    known_capability: Stochastic optimism in exact control-as-inference; structured variational control with fixed true dynamics.
+  weighted_cp:
+    version: NeurIPS2019 proceedings.
+    read_scope: Section2, Equation6 and Corollary1.
+    known_capability: Target/source covariate weights with invariant conditional response and target-support condition.
+    boundary: Weighted residual masses plus test infinity atom; marginal coverage is not uniform conditional safety.
+  copp:
+    read_scope: AISTATS2023 primary abstract only.
+    known_capability: Target-policy return prediction using pseudo-policy resampling.
+  robust_generative_cp:
+    read_scope: L4DC2026 primary abstract only.
+    known_capability: Nuisance-conditioned generative environment prior with robust conformal regions and MPC.
+diagnostics:
+- id: A_generated_and_executed_laws
+  epistemic_class: elementary_paper_only_probability_identity
+  assumptions: Fixed full initial state, open-loop behavior action law mu, true conditional trajectory kernel K, perfect joint model, finite positive normalizer.
+  generated_law: q_gen(da,du)=mu(da)*K(du|a)*exp(-W(u,a))/Z.
+  action_law: q_A(da)=mu(da)*E_K[exp(-W(U,a))|a]/Z.
+  executed_law: q_exec(da,du)=q_A(da)*K(du|a).
+  equality_condition: For q_A-almost every a, exp(-W(U,a)) is K-almost surely constant.
+  deterministic_null: K=delta_S(a) and exact model imply q_gen=q_exec.
+  limit: Model sampling noise is not physical noise; partial state and feedback require explicitly different conditioning contracts.
+- id: B_safe_action_four_atom_control
+  epistemic_class: elementary_paper_only_exact_normalization_and_KL_minimization
+  plant: A in {0,-2}, uniform behavior; U=A+xi, fresh independent fair xi in {-1,1}; unsafe U>0.
+  cost: W=beta*1{U>0}+lambda*A^2, beta and lambda nonnegative.
+  abbreviations: b=exp(-beta); h=exp(-4*lambda); D=1+b+2*h.
+  generated_risk: b/D.
+  executed_risk: (1+b)/(2*D).
+  limit_fixed_lambda: As beta grows, generated risk tends0 while executed risk tends1/(2*(1+2*h)).
+  competent_baseline: Minimize E_nuK W+KL(nu||mu), giving nu*(a) proportional to mu(a)*exp(-E_K[W|a]).
+  baseline_risk: exp(-beta/2)/(2*(exp(-beta/2)+h)), tending0 at fixed lambda.
+  boundary: Safe action exists; exact known physical law; no model error or numerical experiment. Established control-as-inference example, not a new optimizer or source-paper empirical failure.
+- id: C_executed_policy_calibration
+  epistemic_class: elementary_paper_only_Radon_Nikodym_identity_and_existing_coverage_contract
+  assumptions: Fixed open-loop policies, X=(initial state, action sequence), calibration p_X*K, independent target q_X*K, q_X absolutely continuous with respect to p_X.
+  correct_weight: d(q_X*K)/d(p_X*K)=dq_X/dp_X(X).
+  conformal_contract: Independently trained fixed predictor; residual probability masses proportional to weights; include target weight at infinity.
+  feedback_boundary: With common initial and environment law, trajectory ratio is product of conditional target/behavior action probabilities; support and sampling/dependence conditions still required.
+  limit: Joint generated ratio need not equal execution ratio; environment shift, adaptive calibration reuse, controller selection and accepted-only deployment require their own validity contract.
+truth_asset_preflight:
+  source: Official SafeDiffCon repository README/directory metadata and DiffPhyCon evaluation description.
+  verified_capability: Documented Burgers, smoke and tokamak control tasks and training/evaluation entry points; published numerical execution of control signals.
+  inspection_level: Papers and README metadata; no implementation, raw data or checkpoint qualification.
+  immutable_version: Paper versions recorded; repository main is mutable and unpinned.
+  supported_estimand_family: Executed safety probability and control cost under one declared initial-state and policy law; generated scores separate.
+  assignment_interference: Policy assigned before reset; separate physical, observation, action-policy and generator randomness; shared tapes are coupling, not independent units; no future noise available to controller.
+  event_lifecycle: Full physical reset state, parameters, observation map, boundary conditions, actuator support/saturation, action times/interpolation, physical disturbance kernel, solver tolerance, policy updates and RNG states.
+  rights_ethics_release: Repository displays MIT label; full license and dependency/data/derived-release rights not qualified. No participant or field work.
+  untouched_confirmation: Entire physical regimes and independent disturbances reserved before outcomes; separate training/calibration/selection/evaluation. None qualified yet; PaperD is development for new hypotheses.
+  independent_replication: Related DiffPhyCon papers share a lineage; no independent second solver or real bridge qualified.
+  cost: Current scientific compute0; future solver, training, calibration, online adaptation and inference costs unqualified.
+  stop_rules: No residual beyond competent fixed-dynamics and calibration baselines; incomplete replay/support/rights; absent untouched confirmation; no qualified reentry trigger.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  selected_primary_fulltext_works: 4
+  primary_abstract_boundary_records: 2
+  repository_metadata_records: 1
+  new_evidence_records: 7
+  paper_only_diagnostics: 3
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  outcome_assets_accessed: 0
+unpromoted_intake:
+- title: CL-DiffPhyCon
+  uri: https://arxiv.org/abs/2408.03124
+  read_scope: Abstract/official repository pointer; closed-loop control already named; no new question formed.
+- title: Derivative-informed Fourier neural operators
+  uri: https://arxiv.org/abs/2512.14086
+  read_scope: Abstract metadata only; generic derivative-accuracy framing not promoted.
+- title: Dynamics-aware Diffusion Models for Planning and Control
+  uri: https://www.roboticsproceedings.org/rss21/p078.pdf
+  read_scope: Search metadata only; no claim to a readable full-text inspection.
+- title: Conformal prediction under feedback covariate shift for biomolecular design
+  uri: https://doi.org/10.1073/pnas.2204569119
+  read_scope: Search metadata only; no detailed coverage claim used.
+- title: Conformal Off-Policy Prediction in Contextual Bandits
+  uri: https://arxiv.org/abs/2206.04405
+  read_scope: Search metadata only; distinct from retained AISTATS2023 work.
+recorded_at: '2026-09-09T07:11:16Z'
+reentry_audit_id: paper_g_control_execution_source_contract_20260909
+unchanged_search_cycle_ledger_sha256: 05a63e14f17ff35671a11906dcee8f84631ad18fe714f75e749d0d248e5854ed

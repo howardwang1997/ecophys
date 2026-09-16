@@ -1,0 +1,225 @@
+schema_version: 1
+record_type: private_internal_exploratory_question_screen
+cycle_id: discovery_cycle_22_20260909
+recorded_at: '2026-09-08T13:00:37Z'
+result_ref: papers/proposal/ecomd_paper_g_topic_cycle22_2026-09-09.md
+later_resolution_ref: research/paper_g/information_rent_resolution_20260909.yaml
+later_resolution_note: The initially deferred G22-05 parent is subsequently closed at its bounded F2 qualification stop. Original counts and dispositions below are preserved as history.
+prospectively_frozen: false
+scouting_started_local: 2026-09-09 00:37 Pacific/Auckland
+first_retained_consolidation_at: '2026-09-08T12:55:04Z'
+counts:
+  raw_question_programs: 6
+  quick_screens: 6
+  collision_screens: 1
+  full_hostile_audits: 0
+  machine_cards: 0
+questions:
+- id: G22-01
+  route_id: paper_g_random_call_end_manipulation_broad
+  archetype: empirical_intervention
+  source_lane: market_native_action_or_constraint
+  native_object: Random ending rule for opening/closing call auctions.
+  rivals:
+  - Random ending deters late manipulation and improves price formation.
+  - It only reallocates submission timing without incremental efficiency.
+  discriminator: Actual rule intervention and price formation under comparable market conditions.
+  positive_value: Identify the ending rule contribution.
+  null_value: Bound the benefit of this auction design.
+  disposition: deduplicated
+  stage: F1
+  source_refs:
+  - cycle22_random_call_end
+- id: G22-02
+  route_id: paper_g_candle_front_running_broad
+  archetype: theory_mechanism
+  source_lane: market_native_action_or_constraint
+  native_object: Random-close ascending auctions with leaked rival bids.
+  rivals:
+  - Random close limits the informed follower advantage.
+  - The leakage advantage survives random close.
+  discriminator: Same-game equilibrium allocation/payments under ending-rule alternatives.
+  positive_value: A protection boundary for auction design.
+  null_value: A limitation on random-close protection.
+  disposition: deduplicated
+  stage: F1
+  source_refs:
+  - cycle22_candle_front_running
+  - cycle22_candle_field_lab
+- id: G22-03
+  route_id: paper_g_corn_redelivery_spread_broad
+  archetype: empirical_intervention
+  source_lane: market_native_action_or_constraint
+  native_object: Corn futures recipients redelivering shipping certificates.
+  rivals:
+  - Redelivery creates incremental pressure on the nearby spread.
+  - Common carry/storage conditions account for apparent pressure.
+  discriminator: Redelivery-specific response with assigned exposure or justified control for common conditions.
+  positive_value: Identify a delivery friction.
+  null_value: Bound its independent price contribution.
+  disposition: deduplicated
+  stage: F1
+  source_refs:
+  - cycle22_corn_deliveries
+- id: G22-04
+  route_id: paper_g_redelivery_from_net_registered_stock
+  archetype: measurement_method
+  source_lane: market_native_action_or_constraint
+  native_object: Exact certificate redelivery count inferred from total deliveries and net registered
+    stock.
+  rivals:
+  - Those aggregates identify redelivery.
+  - Different gross issuance/cancellation histories give the same aggregates.
+  discriminator: Same observable totals with different redelivery counts.
+  positive_value: Validate a sufficient measurement statistic.
+  null_value: Specify required lifecycle data.
+  disposition: quick_closed
+  stage: F1
+  source_refs:
+  - cycle22_corn_deliveries
+  - cycle22_cbot_ch7
+- id: G22-05
+  route_id: paper_g_information_rent_execution_measurement
+  archetype: measurement_method
+  source_lane: cross_domain_theorem_with_market_specific_obstruction
+  native_object: Information-rent measurement from signed executions and quote changes under finite market/limit-order
+    choice.
+  rivals:
+  - A profit bound survives the stated finite trading class.
+  - Order role or timing breaks it in an otherwise qualified equilibrium.
+  discriminator: Compare the statistic with exact cash/payoff profits in one fully specified equilibrium.
+  positive_value: A transferable validity boundary for information-rent measurement.
+  null_value: A certified failure boundary and required extra observables, without claiming empirical
+    mismeasurement.
+  disposition: deferred
+  stage: F2
+  source_refs:
+  - cycle22_information_value_v2
+  - cycle22_kaniel_liu
+  - cycle22_goettler_parlour_rajan
+  - cycle22_collin_dufresne_fos
+  - cycle22_back_baruch
+  - cycle22_bloomfield_ohara_saar
+  - cycle22_hasbrouck
+- id: G22-06
+  route_id: paper_g_calibration_slope_underreaction_certificate
+  archetype: measurement_method
+  source_lane: cross_domain_theorem_with_market_specific_obstruction
+  native_object: Binary-market price updating against a calibrated state-only probability model.
+  rivals:
+  - Calibration plus a slope below one certifies underreaction.
+  - Different information sets produce that pattern with efficient prices.
+  discriminator: An exactly calibrated efficient-price model giving a zero slope.
+  positive_value: A valid underreaction certificate if sufficient.
+  null_value: Prevent misattribution from an incomplete benchmark.
+  disposition: quick_closed
+  stage: F1
+  source_refs:
+  - cycle22_prediction_updating
+  - cycle22_calibration_sharpness
+analytic_assets:
+- id: net_certificate_lifecycle_twin
+  status: elementary_observation_counterexample
+  initial_registered_stock: 110
+  initial_stock_previously_delivered: true
+  observed_deliveries: 11
+  observed_net_stock_change: 0
+  world_A:
+    registrations: 11
+    cancellations: 11
+    first_deliveries: 11
+    redeliveries: 0
+  world_B:
+    registrations: 0
+    cancellations: 0
+    first_deliveries: 0
+    redeliveries: 11
+  identity: Delta B=N-K
+  conditional_identity: If all and only newly registered certificates first-deliver in the aligned window,
+    D-Delta B=R+K.
+  nonclaims:
+  - No actual certificate history reconstructed.
+  - No claim that every public source lacks gross flows.
+  - No empirical refutation of a deliberately labelled proxy.
+- id: calibrated_different_information_twin
+  status: elementary_conditional_expectation_counterexample
+  signal: S symmetric +/-1
+  payoff: V|S Bernoulli(0.5+0.3*S)
+  benchmark: q0=0.5; q1=0.5+0.3*S
+  market: p0=p1=0.5+0.3*S
+  updating_slope: 0
+  calibration: Both benchmark and market forecasts are calibrated for their respective information sets.
+  boundary: The benchmark is not conditional on all public market information, because it omits the already
+    informative market price.
+  nonclaims:
+  - Does not refute later-drift evidence or the full prediction-market paper.
+  - No observed market inefficiency or new calibration theorem.
+- id: impact_weighted_orthogonality_diagnostic
+  status: abstract_statistical_negative_control_not_equilibrium
+  X: symmetric +/-1
+  Z: independent symmetric +/-2
+  Y: X+Z
+  impact: lambda=1 if XZ>0; lambda=4 if XZ<0
+  price_change: lambda*Y
+  moments:
+    E_XZ: 0
+    E_lambda_XY: -0.5
+    E_lambda_Y_squared: 6.5
+    E_lambda_YZ: 7.0
+  limitation: 'The last moment is a defined slippage functional, not informed profit: no fundamental,
+    dealer rationality or strategy optimality is specified.'
+  restoring_condition: Deterministic impact or correctly conditioned orthogonality with predictable impact
+    removes this particular weighting objection.
+  nonclaims:
+  - No refutation of the published theorem.
+  - No market-equilibrium counterexample or new covariance method.
+- id: separated_quote_execution_partition_diagnostic
+  status: elementary_nonsynchronous_event_tape_not_profit_truth
+  events:
+  - quote_change: 1
+    signed_execution: 0
+  - quote_change: 0
+    signed_execution: 1
+  separate_partition_covariation: 0
+  joined_partition_covariation: 1
+  fine_jump_covariation: 0
+  limitation: The tape does not label information or identify any expected profit.
+  nonclaims:
+  - No new lead-lag method.
+  - No field timing or measurement anomaly.
+outcome_accessed: false
+f2_screen_ref: research/paper_g/information_rent_source_screen_20260909.yaml
+source_evidence_ids:
+- cycle22_random_call_end
+- cycle22_candle_front_running
+- cycle22_candle_field_lab
+- cycle22_corn_deliveries
+- cycle22_cbot_ch7
+- cycle22_information_value_v2
+- cycle22_kaniel_liu
+- cycle22_goettler_parlour_rajan
+- cycle22_collin_dufresne_fos
+- cycle22_back_baruch
+- cycle22_bloomfield_ohara_saar
+- cycle22_hasbrouck
+- cycle22_prediction_updating
+- cycle22_calibration_sharpness
+access_profile:
+  substantive_primary_documents_or_pages_opened: 8
+  additional_indexed_primary_works: 6
+  f2_primary_work_count: 7
+  full_primary_proof_audits: 0
+route_boundary: No reopening of CfD, latent provenance, participant identity, latency-race, random-match-clock,
+  or Paper G learning routes. Known direct collisions terminate before child harvesting.
+qualified_same_state_primary_model_disagreements: 0
+reentry_trigger_created: false
+authorization:
+  candidate_harvest_authorized: false
+  outcome_access: false
+  implementation: false
+  simulation: false
+  gpu: false
+  purchase: false
+  outreach: false
+  participant_work: false
+  ecomd_integration: false

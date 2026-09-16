@@ -1,0 +1,153 @@
+schema_version: 1
+record_type: private_internal_exploratory_question_screen
+visibility: private_internal
+public_evidence_eligible: false
+cycle_id: discovery_cycle_23_20260909
+recorded_at: '2026-09-08T15:18:33Z'
+result_ref: papers/proposal/ecomd_paper_g_topic_cycle23_2026-09-09.md
+prospectively_frozen: false
+session_started_at: '2026-09-08T15:04:59Z'
+literature_cutoff: '2026-09-09'
+eligibility:
+  parent: open_end_fund_swing_pricing
+  registry_duplicate_found: false
+  verified_same_state_primary_disagreement: false
+  compact_cycle: true
+  sampling_note: Four related questions; twelve-program generator targets do not apply.
+  prior_intake_duplicate: marketron_gauge_reduction_screen_20260904
+  prior_intake_disposition: Stopped; no new question, source record, trigger or family re-entry.
+counts:
+  raw_question_programs: 4
+  quick_screens: 4
+  collision_screens: 0
+  full_hostile_audits: 0
+  machine_cards: 0
+questions:
+- id: G23-01
+  route_id: paper_g_swing_cost_recovery_broad
+  archetype: theory_mechanism
+  source_lane: market_native_action_or_constraint
+  native_object: Common transaction NAV for predetermined gross fund share subscriptions and redemptions.
+  rivals:
+  - Properly calibrated net-flow charges protect stayers despite an opposite-side benefit.
+  - That benefit necessarily prevents complete cost recovery.
+  discriminator: Balance assets and shares under the same realized cost and exact price rule.
+  positive_value: Establish the conditional cost-neutrality rule.
+  null_value: Identify the missing charges or binding policy constraint.
+  minimal_truth: Share versus amount orders, pre-cost NAV, actual cost under induced execution, all cash flows and price rule.
+  source_refs: [cycle23_sec_swing_2016, cycle23_roncalli_liquidity_part3]
+  diagnostic_refs: [A_net_cost_accounting]
+  stage: F1
+  disposition: deduplicated
+  terminal_gate: direct_primary_collision_at_f1
+- id: G23-02
+  route_id: paper_g_swing_accounting_volatility_broad
+  archetype: measurement_method
+  source_lane: market_native_action_or_constraint
+  native_object: Published fund NAV returns under a signed swing factor.
+  rivals:
+  - Extra quoted-price variance represents additional underlying portfolio variation.
+  - The pricing factor can account for it without that underlying variation.
+  discriminator: Return decomposition and admissible same-price factorization paths.
+  positive_value: Validate separation of economic-value variation from accounting variation.
+  null_value: Specify the additional pricing-factor record and narrower estimand needed.
+  minimal_truth: Swung and unswung valuation clocks and exact factor; a causal policy effect additionally needs counterfactual portfolio assignment.
+  source_refs: [cycle23_bis_lewrick_schanz, cycle23_roncalli_liquidity_part3]
+  diagnostic_refs: [B_price_factorization]
+  stage: F1
+  disposition: deduplicated
+  terminal_gate: direct_primary_collision_at_f1
+- id: G23-03
+  route_id: paper_g_swing_liquidity_provision_broad
+  archetype: theory_mechanism
+  source_lane: market_native_action_or_constraint
+  native_object: Contract payment divided by direct-liquidation value at fixed portfolio, fundamentals and outflow.
+  rivals:
+  - Swing pricing must improve this conditional liquidity-provision index.
+  - Incorporating liquidation costs lowers it in some solvent states.
+  discriminator: Evaluate the published two payment rules on one feasible frozen state.
+  positive_value: Establish the conditional contract benefit before portfolio and run responses.
+  null_value: Delimit that benefit and distinguish endogenous from fixed-state comparisons.
+  minimal_truth: Exact payment contract, portfolio, liquidation discount, outflow and value benchmark; equilibrium claims require optimality and selection.
+  source_refs: [cycle23_ma_xiao_zeng, cycle23_bis_lewrick_schanz, cycle23_diamond_dybvig_context]
+  diagnostic_refs: [C_conditional_lpi]
+  stage: F1
+  disposition: deduplicated
+  terminal_gate: direct_primary_collision_at_f1
+- id: G23-04
+  route_id: paper_g_swing_stress_outflow_broad
+  archetype: empirical_intervention
+  source_lane: market_native_action_or_constraint
+  native_object: Investor withdrawals during stress under an assigned exact fund-pricing rule.
+  rivals:
+  - Cost-sensitive redemption pricing reduces first-mover-driven withdrawals.
+  - Selection and common stress explain the apparent reduction.
+  discriminator: Comparable policy assignment with investor flow, factor and prestate records.
+  positive_value: Identify the incremental rule effect in the defined population.
+  null_value: Bound that effect without denying cost recovery or other welfare channels.
+  minimal_truth: Rule and factor versions, investor assignment/interference, complete lifecycle, costs, lawful rights and untouched independent confirmation.
+  source_refs: [cycle23_jin_et_al, cycle23_bis_lewrick_schanz]
+  diagnostic_refs: []
+  stage: F1
+  disposition: deduplicated
+  terminal_gate: direct_primary_collision_at_f1
+  stop_note: Direct prior collision; no data sourcing, empirical replication or additional toy needed.
+diagnostics:
+- id: A_net_cost_accounting
+  epistemic_class: elementary_paper_only_accounting
+  identity: p_after = p + (n*delta - C)/(N+n), n=S-R
+  neutrality_condition: n*delta=C
+  assumptions: Predetermined share quantities, one positive transaction price, positive remaining shares, no other cash flows; cost evaluated under induced execution.
+  fixture: {N: 100, p: 100, R: 20, S: 10, C: 20}
+  gross_denominator_rule: {transaction_price: 99, net_cost_retained: 10, stayer_nav: '899/9'}
+  net_denominator_rule: {transaction_price: 98, net_cost_retained: 20, stayer_nav: '100'}
+  interpretation: Subscriber benefit can coexist with complete net cost recovery; the two denominator rules are different treatments.
+  limitation: Not a current legal rule, equilibrium policy, unknown-cost solution or original theorem.
+- id: B_price_factorization
+  epistemic_class: elementary_paper_only_measurement_guardrail
+  identity: rP=rV+Delta(log(1+s))
+  observed_P: [100, 99, 100]
+  toy_factor_magnitude_limit: '0.02'
+  common_flow_direction: net_redemption
+  path_A: {s: ['-0.01', '-0.01', '-0.01'], V: 'P/0.99'}
+  path_B: {s: ['-0.01', '-0.0199', '-0.01'], V: 'constant 100/0.99'}
+  interpretation: Same published prices and flow direction with different underlying returns.
+  limitation: Different unobserved value/cost paths; no same-full-state equilibrium or current legal-cap claim; no new latent recovery route.
+- id: C_conditional_lpi
+  epistemic_class: published_formula_paper_only_substitution
+  source_ref: cycle23_ma_xiao_zeng
+  formula_refs: ['equation (1.4)', 'equation (5.1)', 'proof of Proposition 2']
+  fixture: {x: '1/5', y: '4/5', beta_R: '1', phi: '1/5', lambda: '1/2'}
+  cash_threshold: '1/5'
+  unswung_solvency_threshold: '21/25'
+  direct_liquidation_value: '21/25'
+  LPI_f: '4/21'
+  LPI_s: '1/9'
+  difference_s_minus_f: '-5/63'
+  payment_f: '1'
+  payment_s: '14/15'
+  interpretation: Lower conditional payment at fixed feasible portfolio and outflow; known prior mechanism.
+  limitation: No optimized portfolio, outflow equilibrium, welfare ordering or empirical estimate certified.
+  contract_separation: This post-cost NAV shares costs across agents; it is not A's protection of pre-cost stayer NAV.
+access_accounting:
+  primary_sources_opened: 6
+  substantive_fund_specific_documents: 5
+  foundational_abstract_only: 1
+  full_paper_audits: 0
+  new_evidence_records: 6
+  independent_confirmatory_evidence: 0
+  target_outcome_assets_accessed: 0
+  primary_empirical_tables: Published literature context only; no reproduced estimates or raw outcome assets.
+authorization:
+  new_trigger_audits: 0
+  qualified_triggers: 0
+  new_machine_decisions: 0
+  prospective_forecasts: 0
+  scientific_implementation: false
+  simulator_runs: 0
+  gpu_work: false
+  outreach_or_participants: false
+  accounts_or_purchases: false
+  publication: false
+surviving_program_ids: []
+next_update: New native assignment or a genuinely matched primary-model fork; no relabelled expansion of these closed pitches without a substantive blocker-removing trigger.

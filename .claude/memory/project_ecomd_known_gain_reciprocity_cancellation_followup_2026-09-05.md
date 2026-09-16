@@ -1,5 +1,17 @@
 # EcoMD known-gain reciprocity-cancellation follow-up (2026-09-05)
 
+Further scope clarification: September 11 gain-scale embedding shows the
+outgoing-column versus full-mechanism distinction is not an irreducible class
+separation. Known invertible coordinate transforms and a zero-gain relay map
+the model to existing scale-intervention SCMs; solvability does not establish
+parameter identification. See `project_paper_g_gain_scale_embedding_2026-09-11.md`.
+
+Successor: September 11 `project_paper_g_gain_nuisance_resolution_2026-09-11.md`
+derives the two-channel efficient score at an identity-noise/diagonal-reciprocal
+base and an exact two-arm ambiguity with common unknown noise. A specified
+third arm restores local joint rank at zero feedback. The fixed-nuisance
+results below stay valid; general/global and uniform inference remain open.
+
 - The prior pure-circulation result is exact but does not imply that unequal gains always reveal
   orientation. With `K=I`, `Phi=diag(p1,p2)+a[[0,1],[-1,0]]`, the off-diagonal precision signal is
   `a c`, where `c=(g1-g2)+g1*g2*(p1-p2)`.

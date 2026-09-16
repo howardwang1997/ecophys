@@ -1,0 +1,94 @@
+schema_version: 1
+visibility: private_internal
+public_evidence_eligible: false
+record_type: bounded_primary_intake
+status: complete_no_distinct_question
+recorded_at: '2026-09-14T08:13:35Z'
+start_ref: research/paper_g/protein_stability_curve_intake_start_20260914.yaml
+formal_result_ref: papers/proposal/ecomd_paper_g_protein_stability_curve_intake_2026-09-14.md
+prior_goal_turn_classification: progress
+new_primary_work_lineages: 4
+new_primary_work_limit: 4
+new_source_ids:
+- pg_protein_curve_scoop2017
+- pg_protein_curve_hotmusic2016
+- pg_protein_curve_ito2024
+- pg_protein_curve_robic2003
+new_questions: 0
+new_search_cycles: 0
+new_graph_nodes: 0
+route_status_changes: 0
+analytic_controls:
+- id: C1_affine_mutation_null
+  result: At fixed pressure, buffer and composition, using unfolding free energy and constant unfolding heat
+    capacities, delta-delta-G(T)=a+b*(T-T0)+c*((T-T0)-T*log(T/T0)), where c=delta-delta-Cp. Thus second derivative=-c/T.
+    Rejecting a constant offset does not isolate a heat-capacity effect because b can differ at c=0.
+  scope: Elementary Gibbs-Helmholtz consequence under equilibrium two-state interpretation. Does not identify
+    microscopic origin or prove empirical model failure.
+  new_theorem: false
+- id: C2_equal_reference_and_melting_point
+  result: For distinct positive T0 and Tm, let q(T)=(T-T0)-T*log(T/T0) and r(T)=q(T)-q(Tm)*(T-T0)/(Tm-T0).
+    Then r(T0)=r(Tm)=0 and r_second(T)=-1/T. Adding epsilon*r to an admissible constant-Cp stability curve
+    preserves its reference free energy and zero at Tm while changing Cp by epsilon.
+  scope: For sufficiently small perturbations in an interior admissible family, this is a standard nonuniqueness
+    control. It preserves the named root, not every root or all physical constraints for arbitrary epsilon.
+    No claim that complete thermograms contain no information.
+  new_theorem: false
+findings:
+- Full curve prediction already has a direct parent; replacing its predictor by a generic protein language
+  model is not a specified scientific increment.
+- The constant-offset versus curvature fork needs an affine entropy-shift control.
+- Comparative mutations already provide evidence for unfolded-state heat-capacity contributions in RNase H;
+  the basic mechanism cannot be claimed new.
+- Published high-throughput fluorescence screening supplies an assay-specific target; equilibrium Cp coverage
+  is not established by the existence of melting curves.
+required_comparators:
+- Existing full-curve predictor with matched structural and organism information
+- Temperature-independent mutant offset and affine-in-temperature mutant effect
+- Appropriate sequence/structure predictors at equal training information
+- For any mechanism claim, direct thermodynamic constraints beyond a successful temperature prediction
+decision: Stop this bounded generic full-curve-prediction chain before forming a counted question. A distinct
+  learning construction or scientifically unresolved matched intervention was not specified; no broad protein-stability
+  closure.
+next_step: Start from an unsaturated primary model disagreement or an intervention with a concrete learning
+  consequence. Revisit this line only with a specific increment beyond full-curve prediction, known unfolded-state
+  contributions, or generic sparse-label transfer.
+new_forecasts: 0
+new_machine_cards: 0
+F2_performed: false
+F3_performed: false
+outcome_payload_accessed: false
+published_results_read: true
+scientific_execution_authorized: false
+delegation_authorized: false
+new_family_saturation: false
+full_truth_contract_required_at_intake: false
+protected_sha256:
+  research/discovery/protocol.yaml: ac5d9ac16d68ad6913b65c7631efa7c2da36f0528d2c53445c4c84c3a72b55e6
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb
+  research/discovery/reentry_trigger_ledger.yaml: 359d39032e4ad1864fadd80e72f3567dd2a48911b8cc6cae5effd021691e690b
+  research/discovery/search_cycle_ledger.yaml: 4133913542582d58ad86e17f340e9e81009acff7b22af664dabeded561f43598
+  .claude/memory/research_route_knowledge_graph.yaml: b4fd1abad35a4166c53b3164cb9c6e61c285b5f5dc591f2d366d9eb7f5caa1a3
+  research/paper_g/battery_diagnostic_intake_completion_20260914.yaml: a9084e24b98cc5eb6eed9df102d59049e0ffc67fe28023ed23d8b8831da44498
+  research/paper_g/protein_stability_curve_intake_start_20260914.yaml: 1bed36bb1611c00137abe755919acd6d11935e1cf8538014f66f44f83d694d27
+counts:
+  paper_g_formulations: 89
+  paper_g_cycles: 29
+  cards: 0
+  detailed_cycles: 36
+  detailed_raw: 173
+  inclusive_cycles: 45
+  inclusive_raw: 229
+  graph_nodes: 333
+  graph_edges: 279
+  graph_locators: 1980
+  evidence: 1271
+  candidate: 0
+  parked: 14
+goal_complete: false
+metadata_only_locators:
+- https://web.iitm.ac.in/bioinfo2/prothermdb/
+- https://loschmidt.chemi.muni.cz/fireprotdb/
+reading_scope_note: Database descriptions and other search hits were discovery aids, not retained primary reviews
+  or proof of complete curve availability. The four selected works were read at explicitly unequal depths.
+  Published results are development evidence, not untouched confirmation.

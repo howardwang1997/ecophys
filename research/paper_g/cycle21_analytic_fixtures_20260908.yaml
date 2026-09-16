@@ -1,0 +1,65 @@
+schema_version: 1
+visibility: private_internal
+record_type: declared_analytic_fixtures_no_scientific_execution
+cycle_id: discovery_cycle_21_20260908
+result_ref: papers/proposal/ecomd_paper_g_topic_cycle21_2026-09-08.md
+simulator_runs: 0
+outcome_assets_accessed: 0
+fixtures:
+- id: cross_block_rolling_payment
+  assumptions:
+  - Screened legacy six-hour intermittent CfD rule applies.
+  - Ordinary equal-hour units and a correctly pinned auction delivery boundary.
+  - Earlier tail is preceded by a nonnegative reference price; each alternative prefix is followed by a nonnegative
+    price.
+  - Earlier prices and lawful positive payment amounts a_t are held fixed.
+  old_tail_negative_hours: 3
+  new_prefix_negative_hours:
+  - 2
+  - 3
+  total_run_hours:
+  - 5
+  - 6
+  old_tail_payment_multipliers:
+  - 1
+  - 0
+  old_tail_payment_difference: -sum(a_t)
+  proves: Conditional payment dependence on another auction delivery block.
+  does_not_prove:
+  - Exogenous assignment
+  - A feasible individual price-moving action
+  - Behavioral response or equilibrium
+  - Novel theorem
+- id: negative_duration_aggregation_pair
+  native_interval_hours: 0.25
+  paths:
+  - prices:
+    - -3
+    - -3
+    - -3
+    - 10
+    hourly_mean: 0.25
+    fine_negative_hours: 0.75
+    coarse_negative_hours: 0
+  - prices:
+    - 3
+    - 3
+    - 3
+    - -10
+    hourly_mean: -0.25
+    fine_negative_hours: 0.25
+    coarse_negative_hours: 1
+  proves: Thresholding and averaging do not commute; bias direction reverses.
+  does_not_prove:
+  - Response to a legal change in market trading intervals
+  - A new invariant measurement method
+  - Physical surplus or welfare change
+- id: eligibility_hidden_news_twin
+  observed: Z=U; Y=-Z
+  causal_world: Y(a)=-a
+  zero_effect_world: Y(a)=-U
+  proves: Identical observational distributions permit different intervention effects.
+  does_not_prove:
+  - A calibrated electricity equilibrium
+  - That every stronger design is impossible
+  - A new identification theorem

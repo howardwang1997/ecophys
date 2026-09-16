@@ -1,0 +1,10 @@
+# Paper G Cycle46 — 2026-09-15
+
+PRIVATE / INTERNAL.
+
+- Twelve raw programs harvested across eight lane-scoped screeners (unresolved 4 / new-truth 3 / native-action 1 / cross-domain 4; measurement 6 / empirical 4 / simulator 2 / theory 0). One generator died on schema serialization; its two programs salvaged verbatim from transcript. One all-"test" payload excluded as a non-program.
+- One F0 drop verified against closed node `household_demand_response_many_body` (DR rebound on the same CER substrate, same missing contracts).
+- Six F1 screens, all closed with named killers: stress-drop fc/kappa (occupied by Abercrombie–Baltay 2025 ensemble + fc-kappa ridge non-identifiability at 2 events × 21 stations); eddy saturation (transport-branch adjudication is the anchor group's own published result; transient-EKE branch estimand-asymmetric); shipping SOx (Zhang 2025 CEE already published the ML corridor SW-CRE estimate; regime-matching DiD conditions on a mediator and sits below the detectability power bound); kinesin trajectory EP (hidden self-loop futile-hydrolysis counterexample makes H1/H0 likelihood-identical; no single-molecule load-resolved ATP counting exists); GW SBI vs Fisher floor (occupied on all four axes; PSD-plugged CRB not a bound under misspecification; third coverage regime refutes the fork as posed); prime-editing variant-by-background (efficiency-mixture killer L(v,b)=log[1+p(v,b)(e^s−1)] generates 0.19–0.36 log-unit spurious interaction under additive truth; only one public paired dataset, confounded cell lines, no second locus).
+- Four record-only programs unscreened (Rydberg Lindblad certification; SMF microstates; retrosynthesis route-failure correlation; lab pipelining adaptivity gap) with named weaknesses. WebSearch 529 degraded coverage; arXiv/PubMed/INSPIRE/DuckDuckGo fallbacks recorded per anchor.
+- Zero survivors; no F2/F3/forecast/card/execution. 31 primaries registered (evidence 1336→1367); 6 killer toys; failure mode is occupancy/parents (10/12), not missing ideas.
+- Formal: papers/proposal/ecomd_paper_g_topic_cycle46_2026-09-15.md

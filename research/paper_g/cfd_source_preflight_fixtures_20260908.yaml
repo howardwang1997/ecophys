@@ -1,0 +1,50 @@
+schema_version: 1
+visibility: private_internal
+record_type: declared_analytic_checks_no_scientific_execution
+parent_cycle_id: discovery_cycle_21_20260908
+result_ref: papers/proposal/ecomd_paper_g_cfd_source_preflight_2026-09-08.md
+new_search_cycle: false
+fixtures:
+- id: final_notification_observation_loss
+  class: Future-period intended plans in [0,C] with no additional private-history restrictions.
+  capacity: 100
+  common_final_fpn: 40
+  histories:
+  - before_auction: 100
+    after_auction: 0
+    final: 40
+    immediate_revision: -100
+  - before_auction: 0
+    after_auction: 100
+    final: 40
+    immediate_revision: 100
+  general_result: Conditional on identical final public records, immediate revision remains in [-C,C].
+  construction: For any d in [-C,C], before=max(-d,0), after=max(d,0); later converge to the common final FPN.
+  scope: Elementary observation-map nonidentification, not a new theorem or a model of observed plant conduct.
+- id: minimal_prefix_eligibility_score
+  assumptions:
+  - Exact legacy six-hour rule applies.
+  - Ordinary hourly reference units and correct successive-auction delivery boundary.
+  - Old block ends in exactly r negative hours, 1<=r<=5, preceded by a nonnegative hour.
+  pre_auction_risk_set: Defined by old-block prices and contract state before later revelation.
+  prefix_length: m=6-r
+  score: R=max(P_1,...,P_m), using lawful new-block IMRP values
+  old_tail_support_lost: R<0
+  zero_boundary: R=0 breaks the run and preserves support for the old tail.
+  proof: All m prices negative completes six hours. Otherwise the first nonnegative price breaks the run before
+    six.
+  scope: Eligibility identity only; joint prices are endogenous and neither assignment nor local continuity
+    is proved.
+- id: ordinary_dispatch_strict_and_null_regions
+  assumptions:
+  - Capacity C>0
+  - Zero operating marginal cost
+  - Lawful positive subsidy a>0
+  - Fixed net marginal market revenue m; no strategic or network response
+  objective: max_{0<=q<=C} (m+a*eligibility)*q
+  strict_response_region: '-a<m<0: supported output C, unsupported output 0'
+  null_regions:
+  - 'm>0: both output C'
+  - 'm<-a: both output 0'
+  boundary: At m=0 or m=-a, optimizer may be nonunique.
+  scope: Standard optimization baseline, not universal curtailment, novel economics or field causal truth.

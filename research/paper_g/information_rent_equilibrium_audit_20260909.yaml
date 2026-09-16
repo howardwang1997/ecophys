@@ -1,0 +1,144 @@
+schema_version: 1
+record_type: private_internal_exploratory_equilibrium_followup
+recorded_at: '2026-09-08T13:21:30Z'
+parent_program_id: paper_g_information_rent_execution_measurement
+parent_cycle_id: discovery_cycle_22_20260909
+prior_record_ref: research/paper_g/information_rent_source_screen_20260909.yaml
+result_ref: papers/proposal/ecomd_paper_g_information_rent_equilibrium_audit_2026-09-09.md
+decision: retain_parent_f2_deferred_close_centered_uniform_counterexample_family
+status: f2_deferred
+later_resolution_ref: research/paper_g/information_rent_resolution_20260909.yaml
+later_status: failed_closed
+historical_status_note: This record preserves the first follow-up decision; the later bounded resolution closes the parent.
+topic_status: null
+new_search_cycle: false
+new_raw_programs: 0
+new_primary_works: 0
+deeper_source_access_records: 1
+new_killer_test_count: 0
+prospective_freeze: false
+probability_forecast: null
+full_hostile_audit: false
+source_evidence_ids:
+  - cycle22_information_value_v2
+  - cycle22_kaniel_liu
+  - information_rent_kaniel_liu_model_text_20260909
+primary_access:
+  canonical_doi: https://doi.org/10.1086/503651
+  reproduction_uri: https://www.researchgate.net/publication/24103582_What_Orders_do_Informed_Traders_Use
+  inspected: Section II, equilibrium equations and Appendix A characterization/proofs for Propositions 1-2 and Lemmas 1, 4-6.
+  entire_paper_audited: false
+  empirical_results_replicated: false
+model:
+  parent: Kaniel-Liu 2006 equilibrium characterization
+  class: Finite dates, continuous values and prices; maintained continuous quote-updating rule.
+  centered_value: v uniform on [-1,1]; add 2 to all values and prices for a positive-price asset.
+  uninformed_probability: 1/3
+  patient_uninformed_fraction: 1/4
+  information_survival_probability: 6/7
+  trade_size: 1
+  short_sales: allowed
+  fees: 0
+  discounting: 0
+  informed_cohort: All informed arrivals over the information horizon.
+  profit_target: Cash plus terminal-valued inventory minus initial endowments; gross of signal costs.
+  horizon: First public revelation of v; pending orders expire, later completion at known value lies outside measured flow.
+  terminal_completion: Explicit payoff-preserving completion of the primary model, not a claim about field cancellation timing.
+  partition: Separate every order-arrival and disclosure event, unchanged across price definitions.
+  flow: Aggressor-signed executed quantity; resting-side inventory has the opposite sign.
+  initial_price_centered: 0
+  price_definitions:
+    M: Public conditional mean after every event, including no-order and disclosure; not a quote midpoint.
+    T: Last transaction price carried forward through nontrade events.
+equilibrium:
+  initial_ask: 3/7
+  initial_bid: -3/7
+  initial_limit_buy_price: 0
+  initial_limit_sell_price: 0
+  informed_threshold: 1/2
+  informed_limit_execution_probability: 1/7
+  patient_buy_expected_completion_cost: 1/7
+  first_order_probabilities:
+    MB: 7/24
+    MS: 7/24
+    LB: 5/24
+    LS: 5/24
+  posterior_means:
+    MB: 3/7
+    LB: 1/5
+    sell_histories: Reflection of buy histories.
+  continuation_quotes:
+    MB_ask: A=(45-sqrt(353))/38
+    MB_bid: 0
+    LB_ask: B=6/17
+    LB_bid: 0
+  continuation_ask_equations:
+    MB: 19*A^2-45*A+22=0; A in (1/2,1)
+    LB: 17*B^2-23*B+6=0; B in (0,1/2)
+qualification:
+  published_characterization_equations_verified: true
+  on_path_order_choice_verified: true
+  competitive_quote_bayes_equations_verified: true
+  patient_participation_verified: true
+  aggregate_dealer_profit_zero: true
+  cohort_cash_and_inventory_accounting_verified: true
+  off_path_basis: Rely on the primary paper's maintained continuous quote-updater existence and optimal-limit characterization.
+  independent_extensive_form_off_path_certificate: false
+  finite_tick_book_verified: false
+  empirical_observation_bridge: false
+  new_bound_with_irreducible_novelty: false
+  counterexample_to_published_theorem: false
+  uniform_family_counterexample: false
+exact_results:
+  first_informed_market_profit: 3/28
+  first_informed_limit_profit: 1/84
+  first_uninformed_impatient_profit: -3/28
+  first_uninformed_patient_profit: -1/84
+  second_informed_profit: A/12+5/238
+  second_uninformed_profit: -(A/12+5/238)
+  dealer_profit: 0
+  total_informed_profit: A/12+50/357
+  G_MB: (106-125*A)/147
+  G_LB: 56/1275
+  C_M: Omega+11/84+G_MB/2+5*G_LB/14
+  C_T: C_M+1/105
+  approximate_scalar_values:
+    A: 0.6897817308406333
+    Omega: 0.1975378333123497
+    C_M: 0.4114461610361701
+    C_T: 0.42096997055997964
+  scalar_evaluation_only: true
+  simulation_or_equilibrium_solver_used: false
+family_exclusion:
+  closed_formulation: paper_g_information_rent_zero_center_limit_counterexample
+  status: failed_closed
+  scope: Uniform centered values, limit buy price at prior mean, original equilibrium characterization, public-mark M and fixed information horizon.
+  equations:
+    - ell=c^2
+    - q=mu*p/2 in (0,mu/2)
+    - a=c*(1-q)=(1-mu)*(1+c)/(2*(1+mu*c))
+  deductions:
+    - 1-c > mu*(1+2*c^2)-mu^2*c^2 > mu
+    - q < (1-c)/2
+    - C_M1-Omega1=(1-mu)*c*((1-c)-q*(1-c/2)) > 0
+    - Second-event gap is nonnegative by competitive quote ordering and conditional expectations.
+  conclusion: C_M>Omega throughout the feasible centered-limit uniform family.
+  transaction_price_family_result: Not established; C_T comparison is at the explicit parameter point only.
+  classification: Elementary exclusion using an existing equilibrium characterization, not a new universal measurement theorem.
+next_bounded_check:
+  maximum_further_paper_only_followups: 1
+  task: Derive the sign of C-Omega in the remaining Kaniel-Liu class, starting with noncentered limit prices and retaining the declared economic target and observation semantics.
+  stop: Close the current candidate if only ordinary conditional-expectation accounting or known informed order choice remains, without an irreducible measurement result.
+  model_harvest_authorized: false
+  field_or_simulator_work_authorized: false
+outcome_accessed: false
+authorization:
+  candidate_harvest_authorized: false
+  outcome_access: false
+  implementation: false
+  simulation: false
+  gpu: false
+  purchase: false
+  outreach: false
+  participant_work: false
+  ecomd_integration: false

@@ -1,0 +1,40 @@
+schema_version: pi-paper-g-response-dx-local-freeze-v1
+decision_id: pi_paper_g_response_dx_local_freeze_20260912
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "批准"
+approved_proposal_ref: papers/proposal/ecomd_paper_g_response_dx_preparation_review_2026-09-12.md
+status: scoped_exception_approved_execution_still_requires_review_and_freeze
+scope:
+  campaign_id: g_response_dx_20260911
+  replace: GitHub-enforced protected-branch authorization merge
+  with: isolated_local_authorization_commit_exact_sha_and_conversation_anchored_hash_bundle
+  independent_review: one_read_only_subagent_with_reinspection_after_material_corrections
+preserved_requirements:
+  - complete_isolated_checkout_validates_before_execution
+  - exact_base_commit_and_prefix_immutability_checks
+  - source_image_config_partition_binding
+  - independent_runtime_review_pass_before_first_branch
+  - one_read_only_config_mount_no_network_no_gpu_no_confirmation
+  - immutable_branch_requests_append_only_events
+  - ambiguous_runtime_quarantine_no_retry_full_reservation_charge
+  - no_scientific_claim_or_route_promotion_from_exploration
+limits:
+  cpu_seconds: 10800
+  branches: 16
+  storage_bytes: 1000000000
+  gpu_seconds: 0
+  monetary_cost_usd_micros: 0
+  ttl_seconds_after_machine_authorization: 604800
+explicit_tradeoff: >-
+  Local ref deletion or rewriting is possible for the owner; fixed commit IDs
+  and conversation-anchored hashes provide tamper detection rather than the
+  server's access enforcement. This approved exception is limited to this
+  campaign and does not change the global protocol or permit another relaxed gate.
+forbidden:
+  - unrelated_worktree_changes_in_authorization_commit
+  - payment_or_repository_publication
+  - outreach_or_additional_delegation
+  - execution_before_remaining_gates
+visibility: private_internal
+public_evidence_eligible: false

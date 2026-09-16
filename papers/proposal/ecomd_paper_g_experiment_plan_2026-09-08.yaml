@@ -1,0 +1,85 @@
+schema_version: paper-g-planning-manifest-v0.1
+status: proposed_not_frozen
+execution_authorized: false
+ready_to_run: false
+parent_cycle: discovery_cycle_17_20260908
+plan_ref: papers/proposal/ecomd_paper_g_experiment_plan_2026-09-08.md
+dependencies:
+  paper_e_results: false
+  paper_f_results: false
+  reusable_engine: scripts/lab_asset/matching.py
+  new_model_and_oracle_required: true
+model:
+  name: M0_segmented_dealer_and_hedge_venue
+  reference_price_ticks: 100
+  quote_bid_ticks: [null, 98, 99]
+  quote_ask_ticks: [null, 101, 102]
+  hedge_bid_ticks: 99
+  hedge_ask_ticks: 101
+  hedge_depth_per_side: 1
+  maximum_hedge_units_per_round: 1
+  customer_opportunities_per_round: 1
+  initial_inventory_units: 1
+  request_side_observed: after_action_in_both_feedback_arms
+  fees_ticks: 0
+  terminal_objective: marked_wealth_not_executable_liquidation
+  dealer_cash_rule: "103 * (2 * max(horizons) + max(inventory_caps))"
+  within_run_resets: false
+matrix:
+  inventory_caps: [2, 8]
+  feedback: [actual_receipts, after_action_customer_type_reveal]
+  recovery:
+    - {id: scarce, refill_probability: 0.1}
+    - {id: abundant, refill_probability: 1.0}
+  regimes:
+    - {id: balanced_near_tie, buy_probability: 0.5, buyer_high_value_probability: 0.55, seller_low_cost_probability: 0.55}
+    - {id: directional_asymmetric, buy_probability: 0.8, buyer_high_value_probability: 0.75, seller_low_cost_probability: 0.25}
+  horizons: [1024, 4096, 16384]
+  methods_budget_max: 4
+  required_learners: [structured_certainty_equivalent, structured_posterior_sampler, tabular_optimistic_control]
+  optional_fourth_method: requires_prospective_specification
+  physical_cells: 16
+  oracle_models: 8
+  confirmation_n_options: [32, 64, 128]
+  selected_confirmation_n: null
+  maximum_tuning_settings_per_method: 8
+statistics:
+  primary_method: structured_posterior_sampler
+  primary_horizon: 16384
+  primary_contrast: "(regret_actual_scarce - regret_reveal_scarce) - (regret_actual_abundant - regret_reveal_abundant)"
+  normalization: ticks_per_customer_opportunity
+  aggregation: equal_weight_over_four_inventory_regime_strata
+  independent_unit: root_replicate
+  alpha_two_sided: 0.05
+  nominal_power_target: 0.8
+  detectable_contrast_target: 0.02
+  precision_pilot_replicates: 12
+  n_selection: upper_variance_bound_then_smallest_feasible_option_before_confirmation
+  primary_interval: paired_replicate_t_95_percent
+  secondary_stratum_tests: holm_four_contrasts
+seed_roots_proposed_inclusive:
+  development: [710000, 710015]
+  precision_pilot: [720000, 720011]
+  confirmation_pool: [730000, 730127]
+  robustness_development: [740000, 740015]
+budget_ceilings_proposed:
+  reference_cpu_core_hours: 8
+  development_tuning_precision_cpu_core_hours: 32
+  confirmation_cpu_core_hours: 64
+  core_gpu_hours: 0
+  optional_later_v100_pilot_gpu_hours: 2
+  optional_later_v100_total_gpu_hours_including_pilot: 24
+  runtime_scheduling_margin: 1.5
+  measured_throughput: null
+counts_at_method_budget_max:
+  - {n: 32, runs: 6144, dealer_rounds: 44040192}
+  - {n: 64, runs: 12288, dealer_rounds: 88080384}
+  - {n: 128, runs: 24576, dealer_rounds: 176160768}
+freeze_blockers:
+  - distinct_proposition_beyond_parent_theory
+  - qualified_transition_and_independent_event_reference
+  - exact_learner_model_class_likelihood_prior_and_methods
+  - certified_oracle_accuracy
+  - variance_based_sample_size_and_measured_runtime
+  - seed_and_analysis_manifest_hashes
+  - applicable_machine_execution_decision

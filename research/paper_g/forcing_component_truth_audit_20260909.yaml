@@ -1,0 +1,126 @@
+schema_version: 1
+record_type: private_internal_primary_comparison_and_truth_scope_audit
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T11:06:36Z'
+literature_cutoff: '2026-09-09'
+previous_goal_turn_classification: progress
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_forcing_component_truth_audit_2026-09-09.md
+related_route_ids:
+- paper_g_physical_history_impulse_response
+- ncs_invariant_calibration_v4
+decision: not_trigger
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+named_blockers:
+- generic_sensitivity_and_history_nuisance_remedies_have_direct_prior
+- no_new_variance_cost_result
+source_scope:
+  paleoclimate: arXiv2608.13494v1 dated2026-08-13;selected sections2.1-2.5,4.1-4.2 and Open Research;selected overview and response/epoch passages only elsewhere.
+  response_framework: Womack et al. ESD17,107-139 published2026-01-16;selected sections2.1-2.3.2,3.1-3.4,4.4-4.5 and metadata.
+  existing_response: Falasca arXiv2506.22552v8;rechecked sectionsIII.2-III.3,especially full-state response scope;existing registry record reused.
+  source_code_inspected_or_executed: false
+  raw_data_or_checkpoints_accessed: false
+  primary_comparison: Different states,controls,observation clocks and conditioning;no matched contradiction. Source explicitly limits additivity to emulator responses without single-forcing CESM2 reference experiments.
+  version_boundary: Selected preprint versions are not assumed identical to any later journal version;Womack publisher article is the inspected version of record.
+diagnostics:
+- id: conservative_two_compartment_component_truth
+  epistemic_class: elementary_paper_only_linear_exchange_and_treatment_support
+  native_state: Nonnegative tracer masses x,y with x+y=1;initial x=y=1/2.
+  controls: u,v in [0,1] externally set exchange-rate controls;gamma>0 fixed.
+  family: m_lambda=1/2+u/8+v/8+lambda*u*(1-v);lambda in {-1/8,0,1/8}.
+  dynamics: x_dot=gamma*m_lambda*y-gamma*(1-m_lambda)*x;y_dot=-x_dot.
+  positivity_proof: Bilinear interpolation of four corner m values in [1/2,3/4];nonnegative exchange rates and inward boundary derivatives.
+  held_response: R_lambda(u,v;t)=(1-exp(-gamma*t))*(u/8+v/8+lambda*u*(1-v)).
+  identical_reference_paths: Baseline(0,0) and joint-control(1,1) paths,including arbitrary switching between these endpoints,agree for all lambda.
+  interaction: I_lambda=R11-R10-R01+R00=-(1-exp(-gamma*t))*lambda.
+  positive_negative_null: At positive t,lambda=-1/8 gives positive interaction,+1/8 negative,0 additive;at t=0 all zero.
+  within_family_single_probe: R10/g-1/8=lambda for t>0,g=1-exp(-gamma*t),known gamma and fixed additive coefficient.
+  within_family_joint_dose_probe: R_half_half-R11/2=g*lambda/4;also cancels arbitrary additive coefficients within the same bilinear family.
+  probe_scope: One-probe sufficiency is parametric only;unrestricted response surfaces can match joint doses and differ at individual corners.
+  interpretation: Perfect total-response matching and conservation do not identify unobserved component interactions;standard off-support reduction,not novel theorem or measured model failure.
+comparison_contract:
+  targets:
+  - total_response_between_two_boundary_regimes
+  - single_component_response_with_other_controls_held_fixed
+  - mixed_control_interaction
+  assignment_and_support: Each target requires corresponding reference interventions or an explicit identifying structural model;matching endpoint regimes alone does not identify intermediate/component treatments.
+  state_clock_conditioning: Freeze initial-state law,full or partial observation,physical horizon,control timing and ensemble/time averaging;keep climatological and coupled boundary histories distinct.
+  reference_access: Dedicated perturbation-ensemble access cannot be silently equated with archived scenario-only data.
+  rights_and_release: Article reading only;selected CC-BY-4.0 primary texts;code/data rights and immutable release identity not audited.
+  untouched_confirmation: No untouched whole-source confirmation partition or independent same-target reference qualified or accessed.
+  cost_precision: Paper reading and one exact fixture only;no simulation,reference-label cost,field precision or training/inference budget certified.
+  stop_rules:
+  - Do not infer a scientific contradiction from different climate,triad and response-function tasks.
+  - Keep emulator additivity distinct from unavailable physical component-response truth.
+  - Do not declare universal joint-distribution support from scalar range comparisons.
+  - Do not infer a full factorial requirement or general one-probe sufficiency from the parametric fixture.
+  - Do not reopen generic response diagnostics or augmentation under another physical label.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  new_selected_primary_fulltext_works: 2
+  existing_primary_selected_fulltext_rechecks: 1
+  new_evidence_records: 2
+  paper_only_diagnostics: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  new_source_code_files_accessed: 0
+  previous_source_or_metadata_cache_hashes_rechecked: 6
+  outcome_assets_accessed: 0
+intake_not_escalated:
+- Other 2026 climate-emulator and stochastic-neural-operator abstracts appeared in search;no full audit or candidate generated from them.
+source_refs:
+- forcing_component_paleoclimate_primary
+- forcing_component_response_framework_primary
+reused_source_refs:
+- stats_response_forced_primary
+source_records:
+- id: forcing_component_paleoclimate_primary
+  kind: primary_research_work
+  title: 'Subel and Zanna: Paleoclimate Boundary Conditions as an Out-of-Sample Test
+    for the Forced Response of Ocean Climate Emulators'
+  uri: https://arxiv.org/html/2608.13494v1
+  version: v1_20260813_selected_sections2_1_2_5_4_1_4_2_OpenResearch_and_overview_read_20260909
+  license: CC-BY-4.0 on inspected arXiv page; primary reading only, no code/data/figure
+    redistribution.
+  role: Recent prescribed-boundary ocean response protocol; explicit emulator-only
+    additivity and absent single-forcing reference scope.
+  limitation: No full experimental replication, raw fields, checkpoints or code inspected.
+    Numerical total climate contrast is not independent physical component-response
+    truth or a matched contradiction with stochastic triad results.
+- id: forcing_component_response_framework_primary
+  kind: primary_research_work
+  title: 'Womack et al.: A theoretical framework to understand sources of error in
+    Earth System Model emulation'
+  uri: https://esd.copernicus.org/articles/17/107/2026/
+  version: ESD17_107_139_published20260116_selected_passages_sections2_1_2_3_2_3_1_3_4_4_4_4_5_read_20260909
+  license: Publisher CC-BY-4.0; primary reading only; source/data terms not audited.
+  role: Direct operator/response-function parent and explicit governing-equation/perturbation-ensemble
+    access contract.
+  limitation: Selected method and experiment scope, not full proofs or reproduced
+    performance. Dedicated perturbation access is not implied by archived scenario
+    pairs; no source implementation observation used as research evidence.
+recorded_at: '2026-09-09T11:15:58Z'
+reentry_audit_id: paper_g_forcing_component_truth_scope_20260909
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb

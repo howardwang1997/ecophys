@@ -986,6 +986,15 @@ def collect_release_files(root: Path) -> list[Path]:
 
 
 def build_manifest(root: Path, paths: Iterable[Path]) -> dict[str, Any]:
+    paths = list(paths)
+    for relative in paths:
+        if "deployment" in relative.parts or any(
+            token in relative.name for token in ("admission_failure", "nonfinite_incident")
+        ):
+            raise RuntimeError(
+                "public artifact includes internal provenance; rebuild its explicit "
+                f"scientific whitelist before release: {relative}"
+            )
     entries = []
     redactions: list[dict[str, Any]] = []
     for relative in paths:

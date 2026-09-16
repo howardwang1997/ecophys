@@ -1,0 +1,139 @@
+schema_version: 1
+record_type: private_internal_primary_disagreement_audit
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T08:57:02Z'
+literature_cutoff: '2026-09-09'
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_statistical_response_reentry_audit_2026-09-09.md
+related_route_ids:
+- paper_g_physical_history_impulse_response
+- ncs_invariant_calibration_v4
+decision: not_trigger
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+named_blockers:
+- generic_sensitivity_and_history_nuisance_remedies_have_direct_prior
+- reducible_to_existing_method_components
+additional_prior_blocker: generic_statistical_accuracy_and_forced_response_have_direct_prior
+comparison_targets:
+- paired_finite_window_moments
+- long_run_physical_measure
+- specified_impulse_or_held_force_response
+primary_disagreement_qualified: false
+diagnostics:
+- id: paired_moments_and_relaxation_time
+  epistemic_class: elementary_paper_only_statistics_and_stable_flow_control
+  paired_mean_bound: norm(mean(X)-mean(Y),2)<=RMSE.
+  paired_std_bound: norm(std_population(X)-std_population(Y),2)<=RMSE via column norms and the centering projection.
+  flow_twin: x_dot=-epsilon*x versus x_dot=epsilon*(1-x),x0=0,epsilon>0.
+  finite_window: State discrepancy<=epsilon*T; exact equal drift derivatives.
+  long_run: Physical measures delta0 and delta1 have coordinate W1 distance1.
+  conservation: Add y=1-x; both flows preserve the nonnegative unit simplex.
+  scope: A varying-relaxation-rate family defeats a uniform conclusion, not a fixed-margin or uniformly hyperbolic theorem.
+- id: sampled_ou_actuation_alias
+  epistemic_class: classical_paper_only_system_aliasing_and_linear_sde
+  generator: A_k=-gamma*I+(2*pi*k/tau)*J;J=[[0,-1],[1,0]],gamma,sigma,tau>0.
+  observations: Full state at integer multiples of the same physical tau; identical sampled kernels and all sampled path laws under a common initial law.
+  mean_map: exp(tau*A_k)=exp(-gamma*tau)*I.
+  noise_covariance: sigma^2*(1-exp(-2*gamma*tau))/(2*gamma)*I.
+  held_gain: (1-exp(-gamma*tau))*(gamma*I+omega_k*J)/(gamma^2+omega_k^2).
+  discriminator: Same held physical force in coordinate1 has a nonzero coordinate2 response for k!=0 but zero for k=0.
+  null: Grid-time instantaneous resets have identical subsequent sampled responses for every k.
+  scope: Does not establish aliasing in the published triad or a failure of the cycle29 instantaneous-reset control; generator frequency assumptions and intervention timing matter.
+source_scope:
+  statistical_accuracy: arXiv2411.06311v2 sections2-3,Assumption1,Theorem1,and AppendixC.7; final conference metadata separately confirmed.
+  symbolic_node: arXiv2608.22112v1 AppendixC propositions7-8; finite paired trajectories.
+  forced_response: arXiv2506.22552v8 sectionsII-III; preliminary v2 reading is not the decisive version.
+  aliasing: arXiv1605.06973 primary abstract only; OU algebra derived independently.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  selected_primary_fulltext_works: 3
+  primary_abstract_only_works: 1
+  official_venue_metadata_pages: 1
+  new_evidence_records: 5
+  paper_only_diagnostics: 2
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  outcome_assets_accessed: 0
+source_refs:
+- stats_response_park_primary
+- stats_response_symbolic_primary
+- stats_response_forced_primary
+- stats_response_alias_primary
+- stats_response_neurips_metadata
+source_records:
+- id: stats_response_park_primary
+  kind: primary_research_work
+  title: 'Park et al.: When are dynamical systems learned from time series data statistically
+    accurate?'
+  uri: https://arxiv.org/html/2411.06311v2
+  version: v2_20250617_sections2_3_assumption1_theorem1_appendixC7_read_20260909
+  license: Primary-paper reading only; code/data reuse separate.
+  role: Direct statistical-fidelity, Jacobian-training and unrolling parent with generated-orbit
+    and typical-shadowing conditions.
+  limitation: Selected v2 reading, not assumed identical to final conference text;
+    no independent replication or universal C1 test-loss guarantee.
+- id: stats_response_symbolic_primary
+  kind: primary_research_work
+  title: 'Boddupalli and Moehlis: Symbolic Neural ODEs: Learning interpretable models
+    from time-series data'
+  uri: https://arxiv.org/html/2608.22112v1
+  version: v1_20260822_appendixC_propositions7_8_read_20260909
+  license: Primary-paper reading only; code/data reuse separate.
+  role: Finite paired-trajectory RMSE bounds for empirical means and variances.
+  limitation: Selected bound concerns the same finite rows, not an independent long-run
+    physical measure or forcing guarantee; no model outcomes accessed.
+- id: stats_response_forced_primary
+  kind: primary_research_work
+  title: 'Falasca: Probing forced responses and causality in data-driven climate emulators:
+    conceptual limitations and the role of reduced-order models'
+  uri: https://arxiv.org/html/2506.22552v8
+  version: v8_20260124_sectionsII_III_read_and_submission_history_checked_20260909
+  license: Primary-paper reading only; code/data reuse separate.
+  role: Direct full/partial-observation, stochastic-closure and forced-response comparison
+    for neural emulators.
+  limitation: Selected triad protocols do not establish arbitrary finite-sampling
+    generator identification; no alias or result failure inferred in that experiment.
+- id: stats_response_alias_primary
+  kind: primary_research_work
+  title: 'Yue et al.: Inverse Problems for Matrix Exponential in System Identification:
+    System Aliasing'
+  uri: https://arxiv.org/abs/1605.06973
+  version: primary_abstract_and_bibliographic_metadata_only_read_20260909
+  license: Primary abstract reading only; no source reuse.
+  role: Direct matrix-exponential system-aliasing parent.
+  limitation: No full-paper theorem or experiment reading claimed; retained OU calculation
+    is self-contained paper-only algebra.
+- id: stats_response_neurips_metadata
+  kind: official_source_document
+  title: Official NeurIPS2024 Main Conference record for statistical accuracy of learned
+    dynamics
+  uri: https://papers.nips.cc/paper_files/paper/2024/hash/4dc57702c987e1e72f0dd2921edb5ded-Abstract-Conference.html
+  version: official_volume37_main_track_title_authors_and_abstract_read_20260909
+  license: Official proceedings metadata reading only.
+  role: Confirms NeurIPS2024 Main Conference venue and published contribution scope.
+  limitation: Does not establish identity of the conference paper body and the later
+    arXiv v2.
+recorded_at: '2026-09-09T09:09:18Z'
+reentry_audit_id: paper_g_statistical_response_primary_fork_20260909
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb

@@ -53,9 +53,9 @@ def node_locators(node: dict[str, object], field: str) -> list[dict[str, object]
 def test_canonical_graph_validates_offline() -> None:
     result = validate_graph(GRAPH_PATH, REPO_ROOT)
 
-    assert "251 route nodes" in result
-    assert "270 typed edges" in result
-    assert "964 evidence/artifact locators" in result
+    assert "333 route nodes" in result
+    assert "279 typed edges" in result
+    assert "1995 evidence/artifact locators" in result
     assert "git_ref=35" in result
 
 
@@ -73,6 +73,19 @@ def test_only_declared_routes_remain_open() -> None:
     assert open_routes == {
         "dcrdex_verifiable_sequencing_response": "parked",
         "verification_liquidity": "active",
+        "reexploration_merged_gamma_led_paper": "parked",
+        "g32_reaction_uq_stress_transfer": "parked",
+        "g33_lru_decoder_policy_transfer": "parked",
+        "g34_isotope_spectral_response": "parked",
+        "g35_clone_conditional_response": "parked",
+        "g36_cryo_population_acquisition_transfer": "parked",
+        "g37_kepler_injection_rank_transfer": "parked",
+        "g38_ka_cage_assisted_swap": "parked",
+        "g40_learned_mode_coupling_repair": "parked",
+        "g41_electronic_overlap_transport": "parked",
+        "g42_fixed_knot_learned_moves": "parked",
+        "g43_synaptic_history_coded_measurement": "parked",
+        "g45_antibody_mutation_kinetic_selectivity": "parked",
     }
 
 

@@ -1,0 +1,173 @@
+schema_version: 1
+visibility: private_internal
+public_evidence_eligible: false
+cycle_id: discovery_cycle_32_20260912
+authorization_ref: research/discovery/decisions/pi_cross_domain_ml_scope_20260912.yaml
+start_ref: research/paper_g/cycle32_start_20260912.yaml
+record_type: bounded_F0_F1_question_screen
+status: completed_F0_F1_one_deferred
+recorded_at: '2026-09-12T10:10:51Z'
+question_level_prospective_freeze: false
+outcome_accessed: false
+scientific_execution_authorized: false
+questions:
+- id: g32_perturbation_specific_signal
+  archetype: measurement_method
+  source_lane: new_truth_or_control_capability
+  scientific_domain: biology_ml
+  native_object: Perturbation-specific transcriptomic response at fixed cell context, batch and baseline expression.
+  action: Apply a specified genetic perturbation; hold evaluation split and model information fixed.
+  response: Held-out perturbation-specific expression change after explicitly accounting for shared response.
+  rivals:
+    H1: Reported predictive skill represents gene-specific response.
+    H0: Shared systematic variation or extra prior information explains apparent skill.
+  discriminator: Compare Systema-style specificity scores with matched linear/additive and information-matched baselines.
+  positive_value: Establish which biological signal the model actually predicts.
+  null_value: Show tested model skill survives systematic-response controls.
+  closest_closed_route: null
+  substantive_difference: No exact formulation duplicate found in the canonical route graph by domain and target
+    search. Generic earlier market/PDE failures do not veto this native question.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: The generic metric-correction and strong-baseline contribution has direct parents. No additional
+    biological mechanism or distinct measurement result is specified.
+  primary_source_ids:
+  - g32_ahlmann_linear
+  - g32_systema
+  new_primary_works: 2
+  F2_performed: false
+- id: g32_assigned_gene_dose
+  archetype: empirical_intervention
+  source_lane: market_native_action_or_constraint
+  scientific_domain: biology_ml
+  native_object: Cell response to externally assigned knockdown dosage at fixed guide, cell context and measurement
+    time.
+  action: Assign dosage independently of post-treatment expression and sequencing depth.
+  response: Transcriptomic dose-response and transfer across guides.
+  rivals:
+    H1: An abundance-conditioned model transfers the effect of assigned dose.
+    H0: Observed sgRNA abundance or response-derived scores carry state and measurement selection rather than assigned-dose
+      effects.
+  discriminator: Matched externally assigned dose ladder with pretreatment covariates and calibrated guide efficiency.
+  positive_value: Enable causal dose-response transfer for perturbation models.
+  null_value: Bound proxy-conditioned predictions to their observational scope.
+  closest_closed_route: null
+  substantive_difference: No exact formulation duplicate found in the canonical route graph by domain and target
+    search. Generic earlier market/PDE failures do not veto this native question.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: The selected sources support abundance stratification and response scoring, but do not qualify
+    the proposed dose-assignment truth contract. This closes the proxy-as-assignment formulation, not perturbation
+    biology.
+  primary_source_ids:
+  - g32_orion
+  - g32_perturbation_score
+  new_primary_works: 2
+  F2_performed: false
+- id: g32_reaction_uq_stress_transfer
+  archetype: measurement_method
+  source_lane: new_truth_or_control_capability
+  scientific_domain: chemistry_ml
+  native_object: Reaction-specific loss under a declared temperature or moisture perturbation law at fixed substrate
+    and nominal recipe.
+  action: Apply a recorded condition shift with a contemporaneous nominal control.
+  response: Difference in expected assay yield between nominal and perturbed conditions, with assay calibration
+    uncertainty.
+  rivals:
+    H1: Nominal aleatoric scores retain useful stress-loss ranking beyond nominal yield, class margin and repeatability.
+    H0: The scores mostly rank nominal class ambiguity or within-protocol variability and lose incremental value
+      for a new perturbation law.
+  discriminator: Held-out reaction-family and stress-family comparison of entropy, mean-yield/margin, replicate
+    and input-aware baselines at matched information and label cost.
+  positive_value: Establish conditions in which cheap nominal uncertainty supports process selection.
+  null_value: Identify where a declared perturbation distribution and stress calibration are necessary.
+  closest_closed_route: null
+  substantive_difference: No exact formulation duplicate found in the canonical route graph by domain and target
+    search. Generic earlier market/PDE failures do not veto this native question.
+  screen_status: deferred
+  decision_stage: F1
+  decision_reason: 'An elementary equal-observation-law control separates nominal uncertainty from intervention
+    loss. Retain F1 only: novelty of the proposed measurement result and a calibrated stress-data asset remain unqualified.'
+  primary_source_ids:
+  - g32_zhong_reaction_uq
+  - g32_oliveira_uncertain_inputs
+  new_primary_works: 2
+  F2_performed: false
+- id: g32_impurity_to_recipe_success
+  archetype: empirical_intervention
+  source_lane: market_native_action_or_constraint
+  scientific_domain: materials_ml
+  native_object: Phase-pure target production under a specified solid-state synthesis recipe.
+  action: Assign temperature, precursor and time recipe with an explicit phase-assay endpoint.
+  response: Probability of phase-pure target production.
+  rivals:
+    H1: Text-mined impurity labels permit learning recipe-specific physical success.
+    H0: Reporting selection and unreported impurity make the apparent success target unidentifiable.
+  discriminator: Independent assigned recipes with complete phase assays, including reported and unreported-impurity
+    categories.
+  positive_value: Support reliable synthesis recommendation from literature plus validated labels.
+  null_value: Separate report prediction from physical synthesizability and preserve useful multilabel extraction.
+  closest_closed_route: null
+  substantive_difference: No exact formulation duplicate found in the canonical route graph by domain and target
+    search. Generic earlier market/PDE failures do not veto this native question.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: The resource describes impurity coexisting with the target; no mention does not certify purity.
+    The proposed success endpoint and assignment are not supplied. PU learning already addresses a related incomplete-label
+    setting.
+  primary_source_ids:
+  - g32_impurity_recipes
+  - g32_solid_state_pu
+  new_primary_works: 2
+  F2_performed: false
+- id: g32_synthesis_failure_objective
+  archetype: theory_mechanism
+  source_lane: cross_domain_theorem_with_market_specific_obstruction
+  scientific_domain: chemistry_ml
+  native_object: Chemical optimization with a specified meaning of a failed query.
+  action: Select a recipe with success probability p and conditional successful utility f.
+  response: Either latent assay utility f or realized production utility p*f, fixed before optimization.
+  rivals:
+    H1: Discarding failed observations optimizes the desired deployment objective.
+    H0: Discarding zero-production attempts targets the wrong conditional utility.
+  discriminator: Two-recipe comparison under matched success probabilities and an explicit missing-observation versus
+    zero-production contract.
+  positive_value: Prevent optimizing the wrong process utility.
+  null_value: Validate observation-failure abstraction when the utility really exists despite missing measurement.
+  closest_closed_route: null
+  substantive_difference: No exact formulation duplicate found in the canonical route graph by domain and target
+    search. Generic earlier market/PDE failures do not veto this native question.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: Generic stochastic-observation-failure BO has a direct parent; f versus p*f is elementary target
+    bookkeeping. No distinct rate, identification result or chemical intervention is specified.
+  primary_source_ids:
+  - g32_iwazaki_failures
+  new_primary_works: 1
+  F2_performed: false
+- id: g32_local_charge_state
+  archetype: theory_mechanism
+  source_lane: cross_domain_theorem_with_market_specific_obstruction
+  scientific_domain: materials_ml
+  native_object: Local force or energy prediction in materials with specified global charge and electrostatic boundary
+    conditions.
+  action: Vary remote charge/polarization while holding an atom's local neighborhood fixed.
+  response: Local force or energy contribution under the complete physical state.
+  rivals:
+    H1: The chosen finite local descriptor suffices for the proposed response.
+    H0: Nonlocal electrostatics creates different responses at the same local descriptor.
+  discriminator: Matched local environments with different declared long-range state and a polarizable long-range
+    comparator.
+  positive_value: Delimit descriptor sufficiency for a specific physical regime.
+  null_value: Validate locality within the restricted tested regime.
+  closest_closed_route: null
+  substantive_difference: No exact formulation duplicate found in the canonical route graph by domain and target
+    search. Generic earlier market/PDE failures do not veto this native question.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: The generic locality obstruction and remedy via polarizable long-range interactions have direct
+    prior art. No independent architecture, physical regime result or nontrivial theorem is specified.
+  primary_source_ids:
+  - g32_polarizable_potential
+  new_primary_works: 1
+  F2_performed: false

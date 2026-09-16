@@ -1,0 +1,176 @@
+schema_version: 1
+record_type: private_internal_observation_truth_asset_preflight
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T11:44:02Z'
+literature_cutoff: '2026-09-09'
+previous_goal_turn_classification: progress
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_observation_constraint_truth_preflight_2026-09-09.md
+source_manifest_ref: research/paper_g/piv_observation_source_manifest_20260909.json
+related_route_ids:
+- paper_g_numerical_teacher_continuum_ranking
+- ncs_invariant_calibration_v4
+decision: partial_capability
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+named_blockers:
+- exact_and_stochastic_physical_supervision_have_direct_parents
+- no_new_variance_cost_result
+source_scope:
+  cylinder: Selected methods,data records,three-dimensional effects and usage scope;article version/date distinguished
+    from 2025 data v2.
+  aivt: arXiv2407.15727v2;selected sections2,3.1,3.2,4.1-4.4;not later journal full text.
+  planar_method: Meccanica2024 selected introduction and2.1;different missing-component target but direct geometry/remedy
+    parent.
+  metadata: Two official API JSON records plus landing/schema descriptions;all raw outcome files remain untouched.
+  source_code_inspected_or_executed: false
+  raw_data_or_checkpoints_accessed: false
+diagnostics:
+- id: incompressible_flow_planar_restriction_and_error_control
+  epistemic_class: elementary_paper_only_navier_stokes_and_orthogonal_projection
+  state: Periodic [0,2pi]^3 incompressible velocity U and pressure p;viscosity nu>0.
+  exact_solution: a=A*exp(-2nu*t);U=(a*sin(x)*cos(z),0,-a*cos(x)*sin(z));p=a^2*(cos(2x)+cos(2z))/4.
+  proof: divU=0;DeltaU=-2U;U_t=nu*DeltaU;U_dot_gradU=-gradp.
+  observation: O retains first two components at z=0;OU=(a*sin(x),0);planar divergence=a*cos(x).
+  missing_term: Normal component U_z is zero on the plane but its normal derivative is -a*cos(x);single-plane
+    stereo does not supply that derivative.
+  projection: P3U=U;P2OU=0;OP3U=OU for periodic orthogonal Helmholtz projections.
+  loss: With normalized plane area,squared error from projecting noiseless OU is a^2/2.
+  'null': True planar shear U=(B*exp(-nu*t)*sin(y),0,0) is preserved after restriction.
+  generic_identity: norm(P*(v+e)-v)^2-norm(e)^2=norm(Q*v)^2-norm(Q*e)^2;Q=I-P;no zero-mean or independence
+    needed.
+  ambiguity: At a fixed time,the exact physical plane and zero field with matching measurement error produce
+    the same observation;requires an explicit error model or additional reference.
+  nearby_plane_control: '[U_z(h)-U_z(-h)]/(2h)=-a*cos(x)*sin(h)/h;within-family finite-spacing correction only.'
+  noise_variance: Independent endpoint errors of variance sigma^2 give central-difference variance sigma^2/(2h^2).
+  scope: Standard observation and projection geometry;no new method,benchmark result or general exact finite-spacing
+    derivative.
+comparison_contract:
+  supported_estimand_family:
+  - documented_planar_velocity_sequences
+  - joint_volumetric_particle_velocity_and_calibrated_temperature_values
+  unqualified_targets:
+  - independent_derivative_truth
+  - complete_state_rollout
+  - total_boundary_flux
+  - counterfactual_actuator_response
+  assignment_interference: No new randomized intervention or independent run assignment qualified;spatial and
+    temporal dependence must be preserved.
+  lifecycle_replay: Freeze coordinate calibration,volume,sequence and particle identity,time,projection weights
+    and boundary conditions. A 100-frame unit cannot silently become a continuous concatenated run.
+  rights_release: Caltech v2 CC-BY4 and Dryad v4 CC0 verified by official APIs;article and code rights separate;older
+    dates do not become post-closure releases.
+  measurement_truth: Velocity/temperature values remain calibrated sparse measurements;model-inferred gradients
+    are not independent reference for the same constraint.
+  untouched_confirmation: No untouched whole-run or whole-source partition qualified or accessed.
+  independent_replication: Two different experiments are not automatically same-state/action/clock replication;none
+    qualified.
+  cost: Metadata and paper algebra only;Caltech advertised64.8GB,Dryad listed53.81MB MAT. No training,reference
+    precision or run cost certified.
+  stop_rules:
+  - Stop at partial capability;do not launch a third relabelled neural-PDE measurement cycle.
+  - Do not equate planar incompressibility with full incompressibility or three components with a spatial volume.
+  - Do not validate a constraint using only fields inferred under that same constraint.
+  - Require a distinct contribution beyond known projection-risk and out-of-plane reconstruction parents.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  new_selected_primary_fulltext_works: 3
+  new_official_dataset_metadata_records: 2
+  new_evidence_records: 5
+  paper_only_diagnostics: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  new_source_code_files_accessed: 0
+  previous_source_or_metadata_cache_hashes_rechecked: 0
+  new_metadata_cache_hashes: 2
+  new_public_article_pdf_downloads: 0
+  outcome_assets_accessed: 0
+intake_not_escalated:
+- TU Delft2026 volumetric-PIV thesis dataset institutional description only;full capability unqualified.
+- Water-distribution disturbance,BLASTNet,other imaging and generative-MD search intake did not become candidates
+  or full reviews.
+- Later AIVT journal metadata located;selected full-text reading remains explicitly the arXiv v2.
+source_refs:
+- observation_truth_cylinder_primary
+- observation_truth_caltech_metadata
+- observation_truth_aivt_primary
+- observation_truth_dryad_metadata
+- observation_truth_planar_reconstruction_primary
+reused_source_refs: []
+source_records:
+- id: observation_truth_cylinder_primary
+  kind: primary_research_work
+  title: 'Renn, Palmer and Gharib: Experimental dataset of sub-critical cylinder wake velocity fields'
+  uri: https://www.nature.com/articles/s41597-026-07368-z
+  version: SciData13_1123_published20260516_page_reports_VOR20260804_selected_methods_data_records_3D_effects_read_20260909
+  license: Article CC-BY-NC-ND-4.0; reading only, no figures or adapted article material redistributed. Dataset
+    rights checked separately.
+  role: Actual planar cylinder-wake observations and explicit three-dimensional observation boundary.
+  limitation: Not volumetric derivative or actuator-response truth. No raw values, file contents or numerical
+    performance reproduced; acquisition process details are not scientific claims.
+- id: observation_truth_caltech_metadata
+  kind: official_dataset_metadata
+  title: 'CaltechDATA: Particle-image-velocimetry data of cylinder wakes, record g2z1f-nex65'
+  uri: https://data.caltech.edu/api/records/g2z1f-nex65
+  version: record_g2z1f_nex65_version_index2_created20251106_official_JSON_and_landing_read_20260909
+  license: Official record metadata explicitly CC-BY-4.0; files public, no embargo. No file download or redistribution
+    performed.
+  role: Pins actual public data release, rights and seven advertised file identities without accessing outcomes.
+  limitation: Advertised file checksums were not verified against data bytes. Metadata is not a calibrated
+    measurement-error or independent truth certificate.
+- id: observation_truth_aivt_primary
+  kind: primary_research_work
+  title: 'Toscano et al.: Inferring turbulent velocity and temperature fields and their statistics from Lagrangian
+    velocity measurements using physics-informed Kolmogorov-Arnold Networks'
+  uri: https://arxiv.org/html/2407.15727v2
+  version: v2_20240723_selected_sections2_3_1_3_2_4_1_4_4_and_overview_read_20260909
+  license: Inspected arXiv v2 CC-BY-4.0; article reading only. Later journal text and code terms not presumed
+    identical.
+  role: Simultaneous volumetric particle velocity and calibrated temperature observation protocol; separates
+    these references from inferred gradients.
+  limitation: Selected preprint scope only, not journal full-text audit or replication. Model-derived gradients
+    and cross-regime statistical comparisons do not supply simultaneous independent derivative truth.
+- id: observation_truth_dryad_metadata
+  kind: official_dataset_metadata
+  title: 'Dryad: AIVT experimental velocity-temperature data, doi10.5061/dryad.jm63xsjnj'
+  uri: https://datadryad.org/api/v2/datasets/doi%3A10.5061%2Fdryad.jm63xsjnj
+  version: dataset154294_version4_version_resource359200_published20250416_official_JSON_and_README_read_20260909
+  license: Official dataset API states CC0-1.0. No MAT file downloaded or redistributed; linked code rights
+    separate.
+  role: Actual txyz/uvwT joint observation schema and versioned public release identity.
+  limitation: No data content, calibration assets, source-to-file transformation or untouched whole-run partition
+    inspected. Sparse calibrated values are not exact derivative labels.
+- id: observation_truth_planar_reconstruction_primary
+  kind: primary_research_work
+  title: 'Shimano, Shiratori and Nagano: A novel method of reconstructing planar flow field from given distribution
+    of single velocity component: comparison to conventional divergence-free approach'
+  uri: https://link.springer.com/article/10.1007/s11012-024-01771-9
+  version: Meccanica59_1191_1227_published20240717_selected_intro_section2_1_equations1_8_and_scope_read_20260909
+  license: Publisher CC-BY-4.0; reading only, no source code or data accessed.
+  role: Direct observation-geometry and out-of-plane-transport method parent.
+  limitation: Its missing-component reconstruction differs from two-component denoising. No blanket performance
+    or identification guarantee inferred; the broad mismatch and generic remedy are prior work.
+recorded_at: '2026-09-09T12:01:48Z'
+reentry_audit_id: paper_g_observation_constraint_truth_20260909
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb

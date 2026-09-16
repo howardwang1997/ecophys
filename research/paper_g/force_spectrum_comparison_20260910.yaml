@@ -1,0 +1,154 @@
+schema_version: 1
+visibility: private_internal
+public_evidence_eligible: false
+local_session_date: '2026-09-10'
+literature_cutoff: '2026-09-09'
+previous_goal_turn_classification: progress
+related_route_ids:
+- slow_memory_random_batch_invariant_correction
+named_blockers:
+- force_variance_artificial_heating_correction_direct_prior
+- uniform_slow_memory_correction_or_bound_absent
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+new_search_cycle: false
+prospectively_frozen: false
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb
+learned_force_intervention_asset_qualified: false
+physical_response_truth_qualified: false
+new_theorem_claimed: false
+record_type: private_internal_force_spectrum_comparison
+session_started_at: '2026-09-09T16:17:54Z'
+recorded_at: '2026-09-09T16:33:28Z'
+decision: not_trigger
+result_ref: papers/proposal/ecomd_paper_g_force_spectrum_comparison_2026-09-10.md
+source_manifest_ref: research/paper_g/force_spectrum_source_manifest_20260910.json
+preceding_contract_ref: research/paper_g/response_path_contract_20260910.yaml
+reentry_audit_id: paper_g_force_spectrum_comparison_20260910
+source_refs:
+- force_spectrum_dmts_nc_v1
+- force_spectrum_dpa1_2024
+source_records:
+- id: force_spectrum_dmts_nc_v1
+  title: 'Gouraud et al.: Faster Molecular Dynamics with Neural Network Potentials via Distilled Multiple Time-Stepping
+    and Non-Conservative Forces'
+  uri: https://arxiv.org/html/2602.14975v1
+  version: arxiv2602_14975v1_20260216_selected_Sections2_3_1_force_split_mass_bath_and_diffusion_contract_read20260909
+  license: Public preprint reading and private article cache; downstream implementation/data rights not audited.
+  role: Independent hybrid-force comparison with conservative target correction, HMR, fixed Langevin bath and
+    diffusion/sampling-efficiency scope.
+  limitation: Different reference force, mass matrix and correction intervention from PET direct-force dynamics;
+    not a matched opposite mechanism prediction or reproduced physical truth.
+  kind: primary_research_work
+- id: force_spectrum_dpa1_2024
+  title: 'Zhang et al.: Pretraining of attention-based deep learning potential model for molecular simulation'
+  uri: https://www.nature.com/articles/s41524-024-01278-7
+  version: npjComputationalMaterials10_94_20240507_selected_Introduction_Results_conservation_smoothness_and_dynamical_observables_read20260909
+  license: Open-access primary article reading and private cache; downstream source/data rights not audited.
+  role: Independent discussion of conservation, smoothness and dynamic observables in pretraining/force-model
+    comparisons.
+  limitation: Neither a matched PET/bath/response contrast nor a pure conservation intervention; supplementary
+    Notes5_6 and empirical outcomes not independently audited.
+  kind: primary_research_work
+reused_source_refs:
+- force_thermostat_bigi_2025
+diagnostics:
+- id: conservative_target_split
+  epistemic_class: standard_paper_only_generator_identity
+  hypotheses: F_C=-grad U; fast F_S and correction F_L=F_C-F_S; fixed masses and bath.
+  identity: B_S+B_L=B_C, while finite-step composition still depends on the split,ordering and step sizes.
+  limitation: Hybrid success does not identify uncorrected F_S dynamics or establish exact continuum response.
+- id: mass_matrix_spectral_control
+  epistemic_class: standard_paper_only_harmonic_control
+  hypotheses: Constant positive masses and fixed potential; two harmonic coordinates with k_i>0 and fixed m1+m2.
+  identity: Canonical position law does not depend on constant M; omega_i^2=k_i/m_i changes under mass repartition.
+  limitation: A spectral matching control, not a refutation of reported water diffusion or a new molecular
+    mechanism.
+- id: einstein_vacf_bridge
+  epistemic_class: standard_paper_only_stationary_second_moment_identity
+  hypotheses: Zero-mean stationary velocity,finite second moments,unwrapped positions; absolute correlation
+    integrability for infinite-time limit.
+  identity: E|q(H)-q(0)|^2=2 integral_0^H(H-t)C(t)dt; D_H=(1/d)integral_0^H(1-t/H)C(t)dt -> (1/d)integral_0^infinity
+    C(t)dt.
+  limitation: Finite fitted MSD slopes need not equal endpoint D_H; wrapping,drift,coordinates,preparation
+    and lag windows require explicit matching.
+response_target: Liquid-water velocity-correlation spectrum and diffusion, with complete force,mass,bath,preparation
+  and intervention matching.
+comparability:
+  bath_overlap_possible: true
+  same_asymptotic_diffusion_possible: true
+  matched_reference_force: false
+  matched_mass_matrix: false
+  matched_direct_force_intervention: false
+  matched_force_fidelity: false
+  qualified_primary_disagreement: false
+stop_force_spectrum_crosspaper_expansion: true
+physical_accuracy_is_sampling_efficiency: false
+truth_contract:
+  estimands: Velocity-correlation spectrum and physical diffusion; wall-time sampling efficiency is a separate
+    objective.
+  assignment_interference: Hold exact reference/fast forces,mass matrix,bath,initial preparation and correction
+    schedule fixed before interpreting a conservation effect.
+  lifecycle_replay: Complete force model,atom/molecule labeling,masses,periodic unwrapping,integrator,step
+    size,force-evaluation schedule,thermostat,observation cadence and lag/slope convention.
+  rights_ethics_release: Two public primary article caches only; no software/model/data payload or downstream
+    release authority.
+  untouched_confirmation: Absent; reported comparisons are development-visible literature, not independent
+    Paper G confirmation.
+  independent_replication: No matched independent physical-response truth or source reproduction; two independent
+    papers do not create a matched replication.
+  cost: Force-reference queries,decorrelation of each target observable,long-time tail validation and full
+    correction cost unqualified.
+  stop_rules: No disagreement from direct versus corrected dynamics,alternate force references,mass repartition
+    or estimator names. No another MTS/thermostat/head variant without a trigger.
+next_source_lead:
+  uri: https://arxiv.org/abs/2406.04709
+  year: 2024
+  scope: Primary abstract only; source/schema audit lead, no candidate.
+  related_route_id: paper_g_numerical_teacher_continuum_ranking
+  named_blockers:
+  - supplied_reference_certificate_is_elementary_error_propagation
+  - exact_and_stochastic_physical_supervision_have_direct_parents
+  new_publication_trigger: false
+  candidate_harvest_authorized: false
+access_accounting:
+  new_selected_primary_fulltext_works: 2
+  reused_primary_selected_readings: 1
+  primary_abstract_only_routing_leads: 1
+  new_evidence_records: 2
+  paper_only_diagnostics: 3
+  new_reentry_audits: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  full_hostile_audits: 0
+  new_forecasts: 0
+  new_source_code_files_accessed: 0
+  new_local_primary_pdf_downloads: 0
+  primary_pdf_pages_visually_checked: 0
+  outcome_assets_accessed: 0
+  scientific_archive_payloads_downloaded: 0
+  model_payloads_downloaded: 0
+scope_note: Cross-reference for the force/bath analogy and original conservation question; no route/scope authority
+  change or Paper D outcome transfer.
+next_decisive_update: 'Stop this bounded cross-paper force-spectrum disagreement search; re-entry needs a named
+  same-force,mass,bath,preparation,response and intervention prediction or a blocker-removing theorem/control.
+  Continue via the repository neural-PDE connection: source-only ConDiff2406.04709 interface/flux contract
+  audit against the numerical-teacher parent, stopping if it supplies only another dataset or elementary elliptic
+  certificate. The 2024 abstract is not a new-publication trigger and does not authorize candidate harvesting.'

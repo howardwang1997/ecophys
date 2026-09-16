@@ -12,6 +12,23 @@ worker: v100ts (/root/ecophys-remote, conda env ecophys-d0v2, CPU-only throughou
 
 # Remote pytest regression battery — work record (2026-09-08)
 
+> **PRIVATE/INTERNAL — operational audit only; exclude from public research artifacts.**
+> **Continuation completed, 2026-09-08 13:37 NZST:** four previously failing
+> files now pass on V100 after authentic fixture/history staging. Numerical
+> reference and missing-route failures remain; the previously excluded slow
+> checkpoint case was run and failed allocation under a 24 GiB CPU process cap.
+> Seven targeted files: 102 tests, 57 passed, 45 failed, no errors/skips.
+> Latest durable receipts: `logs/private/regression_continue_20260908/README.md`.
+> **Receipt correction, 2026-09-08 13:12 NZST:** the latest available remote
+> receipts (`/tmp/regv2/summary.tsv`, `rerun1/summary.tsv`, `rerun2/summary.tsv`),
+> merged by filename using the last exit code, show **140/146 passing files and
+> six nonzero files**, not the 142/146 reported below. The additional failures are
+> `test_exp127_v100_worker.py` and `test_sim2science_artifact_builder.py`; their
+> latest remote logs report missing legacy configuration/data fixtures. Local
+> spot-check success does not establish remote success. No later receipt was
+> found in the recorded locations. The historical tally below is superseded
+> pending new receipts; the slow-test exclusion also remains in force.
+
 ## 1. Goal and scope
 
 D1_18(a) directed a full pytest regression battery on the remote worker as pre-freeze

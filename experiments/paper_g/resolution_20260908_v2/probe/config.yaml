@@ -1,0 +1,34 @@
+schema_version: paper-g-resolution-v2
+evidence_label: development_not_confirmation
+decision_ref: research/discovery/decisions/pi_paper_g_resolution_authorization_20260908.yaml
+capacities: [2, 8]
+initial_inventory: 1
+audit_horizon: 4096
+laws:
+  balanced:
+    buy_probability: 0.5
+    buyer_high_probability: 0.55
+    seller_low_probability: 0.55
+  directional:
+    buy_probability: 0.8
+    buyer_high_probability: 0.75
+    seller_low_probability: 0.25
+refill_probabilities: [0.1, 1.0]
+binding_value_per_round_threshold: 0.01
+learning_law: directional
+learning_horizons: [1024, 4096]
+learning_seeds: [750000, 750001, 750002, 750003, 750004, 750005, 750006, 750007, 750008, 750009, 750010, 750011, 750012, 750013, 750014, 750015]
+methods: [certainty_equivalent, posterior_sampling]
+feedback: [actual, reveal]
+prior_success: 1.0
+prior_failure: 1.0
+exploration_scale: 1.0
+probe_horizon: 4096
+probe_seed_start: 751000
+probe_seed_count: 32
+probe_refill_probabilities: [0.0, 0.1, 1.0]
+probe_initial_depths: [0, 0]
+max_workers: 4
+max_cpu_core_hours: 8
+max_wall_seconds: 7200
+max_output_bytes: 1073741824

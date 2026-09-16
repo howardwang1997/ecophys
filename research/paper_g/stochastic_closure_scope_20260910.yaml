@@ -1,0 +1,152 @@
+schema_version: 1
+record_type: private_internal_primary_model_scope_audit
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T12:54:02Z'
+local_session_date: '2026-09-10'
+literature_cutoff: '2026-09-09'
+recorded_at: '2026-09-09T13:11:01Z'
+previous_goal_turn_classification: progress
+decision: not_trigger
+result_ref: papers/proposal/ecomd_paper_g_stochastic_closure_scope_2026-09-10.md
+reentry_audit_id: paper_g_stochastic_closure_scope_20260910
+related_route_ids:
+- paper_g_physical_history_impulse_response
+named_blockers:
+- necessary_memory_control_changes_observation_regime
+- generic_statistical_accuracy_and_forced_response_have_direct_prior
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+new_search_cycle: false
+prospectively_frozen: false
+source_refs:
+- stochastic_scope_freitas_2026
+- stochastic_scope_lemos_2024
+- stochastic_scope_brolly_2025
+- stochastic_scope_mailybaev_rg_2026
+- stochastic_scope_bandak_2024_abstract
+- stochastic_scope_freeman_2022_abstract
+source_records:
+- id: stochastic_scope_freitas_2026
+  title: 'Freitas et al.: On the importance of stochasticity in closures of turbulence'
+  uri: https://doi.org/10.1209/0295-5075/ae5a56
+  version: EPL154_Apr22_2026_selected_final_main_text_and_arXiv2602.19875v1_AppendicesC_D_read20260909
+  license: Final article CC-BY-4.0; private reading only, no software or data rights inferred.
+  role: Direct parent for truncated-Sabra finite-time ensemble uncertainty and sustained stochastic closure.
+  limitation: Tested drift-preserving ablation, not a bound for all retrained latent models; written auxiliary-state
+    dynamics retained in source interpretation.
+  kind: primary_research_work
+- id: stochastic_scope_lemos_2024
+  title: 'Domingues Lemos and Mailybaev: Data-based approach for time-correlated closures of turbulence models'
+  uri: https://arxiv.org/html/2308.01503v1
+  version: v1_20230803_selected_III_V_VI_VII_VIII_PRE109_025101_lineage_read20260909
+  license: Primary article reading only; software and data rights not qualified.
+  role: Direct history-conditioned shell-closure parent using an intrinsic clock.
+  limitation: Stationary moments and flux distributions differ from the later conditional finite-time variance
+    target.
+  kind: primary_research_work
+- id: stochastic_scope_brolly_2025
+  title: 'Brolly: Stochastic Parameterization: The Importance of Nonlocality and Memory'
+  uri: https://doi.org/10.1029/2025MS005223
+  version: JAMES17_e2025MS005223_published20250831_selected3_1_4_1_2_4_1_3_5_read20260909
+  license: Publisher open-access article reading only; no code or data accessed.
+  role: Direct prior for memory/nonlocality, resampling intervals, finite-time scoring and sampling-cost tradeoffs.
+  limitation: Lorenz model and targets do not establish a same-subject contradiction with Sabra; distinct from
+    Brolly2026.
+  kind: primary_research_work
+- id: stochastic_scope_mailybaev_rg_2026
+  title: 'Mailybaev: RG theory of spontaneous stochasticity for Sabra model of turbulence'
+  uri: https://arxiv.org/pdf/2510.01204v2
+  version: v2_20260305_selected_introduction_VB_VC_equations38_42_only_read20260909
+  license: Primary preprint reading via web only; no figure redistribution or data access.
+  role: Scope check on the applicable RG relation and attraction-basin assumptions.
+  limitation: Not a fixed-point existence proof audit; SectionVI physical-viscosity extension not audited;
+    no arbitrary-closure universality inferred.
+  kind: primary_research_work
+- id: stochastic_scope_bandak_2024_abstract
+  title: 'Bandak et al.: Spontaneous stochasticity amplifies even thermal noise to the largest scales of turbulence
+    in a few eddy turnover times'
+  uri: https://arxiv.org/abs/2401.13881v3
+  version: v3_20240217_abstract_and_metadata_only_read20260909
+  license: Abstract reading only; no full text, code or data accessed.
+  role: Primary intake for microscopic-noise amplification and finite-time rather than solely stationary statistics.
+  limitation: Noise decay rate matters; Navier-Stokes extension remains conditional in the abstract.
+  kind: primary_research_work
+- id: stochastic_scope_freeman_2022_abstract
+  title: 'Freeman, Giannakis and Slawinska: Quantum Mechanics for Closure of Dynamical Systems'
+  uri: https://arxiv.org/abs/2208.03390v1
+  version: v1_20220805_abstract_and_metadata_only_read20260909
+  license: Abstract reading only; no full text, code or data accessed.
+  role: Primary intake for operator-state closure on Lorenz systems.
+  limitation: No same-conditioning Sabra finite-time prediction established by this abstract.
+  kind: primary_research_work
+reused_source_refs:
+- true_memory_brolly_score_contract_2026
+comparison_scope:
+  native_object: Resolved shell-velocity conditional law at finite physical lead time.
+  information: Full-state initialization, coarse-state conditioning, observed history and random auxiliary
+    initialization must be distinguished.
+  complete_state: Include auxiliary shells or multipliers, memory history, forcing, boundary and random-input
+    law.
+  target_match: Stationary moments, finite-time conditional variance, and joint path law are distinct targets.
+  physical_action: Deleting model noise is an ablation; it is not automatically a physical intervention on
+    the reference.
+  conclusion: Three comparison anchors do not supply opposite predictions under the same native contract.
+diagnostics:
+- id: matched_covariance_summaries_control
+  epistemic_class: standard_paper_only_covariance_identity
+  estimand: Var[integral_0^t F(s)ds | X(0)=0], stationary unobserved zero-mean Gaussian force.
+  kernel_a: v*exp(-abs(h)/tau)
+  kernel_b: v*(exp(-abs(h)/(2*tau))/3+2*exp(-2*abs(h)/tau)/3)
+  matched:
+  - physical_time
+  - initial_observation
+  - force_variance_v
+  - integral_correlation_time_tau
+  variance_identity: V(t)=2*integral_0^t (t-h)*C(h)dh; V_second_derivative(t)=2*C(t).
+  value_a_at_tau: 2*exp(-1)*v*tau^2
+  value_b_at_tau: (-1+8*exp(-1/2)/3+exp(-2)/3)*v*tau^2
+  'null': Equal covariance on [0,t] gives equal variance at t.
+  limitation: Both alternatives are stochastic, augmented dimensions differ, and no turbulent cascade is represented.
+    Not a novelty or complexity result.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  new_comparison_anchors_selected: 3
+  new_additional_rg_scope_checks: 1
+  new_selected_primary_fulltext_works: 4
+  new_primary_abstract_only_works: 2
+  new_evidence_records: 6
+  paper_only_diagnostics: 1
+  new_reentry_audits: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  full_hostile_audits: 0
+  new_forecasts: 0
+  previous_source_or_metadata_cache_hashes_rechecked: 3
+  new_source_code_files_accessed: 0
+  new_local_source_downloads: 0
+  outcome_assets_accessed: 0
+intake_not_escalated:
+- 'Freitas2025 and symmetry follow-up: bibliographic intake only.'
+- Repository landing descriptions encountered; no code or outcome assets accessed.
+- RG physical-viscosity extension SectionVI not audited; no missing-theory claim inferred.
+next_decisive_update: Stop generic noise/history source expansion. Require a named same-conditioning model
+  discrepancy or substantive cascade-specific theorem beyond the covariance-kernel control; otherwise change
+  source lane.
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb

@@ -1,0 +1,125 @@
+schema_version: 1
+record_type: private_internal_truth_asset_preflight
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T06:36:22Z'
+literature_cutoff: '2026-09-09'
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_true_memory_preflight_2026-09-09.md
+related_route_ids: [paper_g_physical_history_impulse_response, theory_exploration_equation_audit_v3]
+repository_anchor: papers/paper_d_constraints/main.tex
+decision: partial_capability
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+named_blockers:
+- memory_and_operator_methods_occupied
+- state_closure_reduced_to_predictive_state_prior_art
+- omitted_state_not_repaired_by_long_horizon_calibration
+- supplied_counterexample_reduces_to_off_support_extension
+source_refs:
+- true_memory_memno_2025
+- true_memory_hsfno_contract_2026
+- true_memory_flux_form_2026
+- true_memory_pan_duraisamy_2018
+- true_memory_brolly_score_contract_2026
+- true_memory_lpsda_fork_metadata
+- true_memory_lpsda_license
+source_contracts:
+  memno:
+    read_scope: ICLR2025 selected sections1_5 and dataset-generation description.
+    inference_input: Observed initial field; subsequent model-generated history and internal states.
+    observation: 1D cubic interpolation and 2D downsampling in the stated experiment; not identical to a sharp spectral projector.
+    occupied_contribution: Memory benefits for partially observed/noisy PDEs and neural-operator sequence architecture.
+  hsfno:
+    read_scope: Selected sections3_4 and discussion; expanded beyond cycle29 abstract.
+    inference_input: Supplied delay-PDE history segment with shift-append transport.
+    boundary: Exact transport does not repair new-slice error or an undersampled history grid.
+  flux_form:
+    read_scope: Selected sections2_4_1.
+    inference_input: Sharp-spectrally filtered history slab.
+    memory_guideline: Correlation time of q=<closure_residual,resolved_field>, with oscillatory-correlation caveat and subsequent grid search.
+    boundary: Not a universal target-observability theorem; its q diagnostic was not evaluated here.
+  pan_duraisamy:
+    read_scope: SIADS2018 sections3_5, especially Theorem5_2, Lemma5_5 and Theorem5_6.
+    occupied_contribution: Rank criteria for finite-memory closure, including target quantity without full hidden-state reconstruction.
+  brolly:
+    read_scope: arXiv2603_28671v1 HTML scoring rules, equations8_11 and Proposition1.
+    conditioning: Coarse initial state and model-independent random innovations.
+    scored_target: Energy scores evaluated separately at each lead, averaged over a trajectory window.
+    boundary: Does not alone strictly identify temporal copula or full joint-path law; no disagreement with its conditional-marginal or MSE results.
+diagnostics:
+- id: A_generated_history_information
+  epistemic_class: elementary_conditional_expectation_identity
+  assumptions: Fixed trained parameters; test-realization information O; generated states are measurable functions of O.
+  identity: sigma(O,G1(O),...,Gm(O))=sigma(O).
+  risk: Infimum squared risk equals E[trace(Cov(Y|O))].
+  limit: Does not rule out finite-capacity, optimization or information-retention benefits of recurrence; independent sampling can represent uncertainty.
+- id: B_kernel_duration_and_observation_length
+  epistemic_class: elementary_linear_PDE_mode_elimination
+  physical_system: Periodic advection-diffusion u=x*cos(k*s)-z*sin(k*s), gamma=nu*k^2>0, omega=c*k>0.
+  dynamics: xdot=-gamma*x+omega*z; zdot=-omega*x-gamma*z.
+  observation: One cosine quadrature x; this differs from retaining both real Fourier coordinates.
+  eliminated_kernel: K(t)=-omega^2*exp(-gamma*t), plus initial hidden force omega*exp(-gamma*t)*z0.
+  sampled_recurrence: x_next=2*r*cos(theta)*x_current-r^2*x_previous; r=exp(-gamma*Delta), theta=omega*Delta.
+  recovered_hidden_state: z_current=(cos(theta)*x_current-r*x_previous)/sin(theta), sin(theta)!=0.
+  separation: At theta=pi/2 two exact observations suffice while normalized kernel decay1/gamma can be arbitrarily long.
+  commuting_null: Full-pair Fourier projection commutes with constant-coefficient evolution and gives an exact Markov retained field regardless of discarded energy.
+  limit: Standard realization/observability; no universal physics claim and no evaluation of the flux paper's injection-correlation guideline.
+- id: C_target_and_noise_conditioned_observability
+  epistemic_class: elementary_sampling_and_Gaussian_conditioning
+  resonant_sampling: Delta=pi/omega gives sampled map-r*I, so any x history leaves z unknown but all future x on that grid are predictable.
+  off_grid_target: At tau=pi/(2*omega), x(t+tau)=exp(-gamma*tau)*z(t), unidentified from that sampled x history.
+  noisy_fixture: Z~N(0,Sigma), O=H*Z+epsilon, epsilon~N(0,R) independent, Sigma and R positive definite.
+  posterior_covariance: Sigma_post=Sigma-Sigma*H^T*(H*Sigma*H^T+R)^(-1)*H*Sigma.
+  target_risk: trace(B*Sigma_post*B^T) for target B*Z.
+  limit: Standard target observability and filtering; no new rank or covariance method.
+- id: D_marginal_vs_joint_path_score
+  epistemic_class: elementary_probability_counterexample
+  paired_laws: With fair sign R and fixed initial observation, future pair(R,R) versus(R,-R).
+  matched_quantity: Identical per-lead marginals and equal expected sums of lead-wise energy scores.
+  separated_quantity: Temporal covariance+1 versus-1; variance of two-time sum4 versus0.
+  limit: Additional correctly specified Markov-kernel assumptions may identify joint laws; the additive score alone does not. Existing joint scores are not proposed as novel.
+truth_asset_preflight:
+  source: r-buitrago/LPSDA fork named by MemNO AppendixE.
+  verified_capability: README documents fixed time spacing and exposed viscosity/initial-mode controls; repository MIT license inspected.
+  inspection_level: README, directory metadata and license only; no implementation qualification.
+  immutable_version: Unqualified mutable master branch.
+  supported_estimand_family: Conditional risk for frozen resolved field or BZ; separately specified full joint-path score.
+  unsupported_estimand: Physical actuation response without a full-state lift and reset contract.
+  assignment_interference: Observation map, sensor noise and actual observed-history provision must be assigned explicitly; deterministic paired truth if later authorized.
+  event_lifecycle: Full fine state, PDE parameters, boundary conditions, clock, P, sensor RNG, actual true observations, generated feedback, recurrent initialization and target times.
+  rights_ethics_release: Repository MIT text is documented; exact implementation/dependency and generated-data release contract not qualified; no participants or field contact.
+  untouched_confirmation: Prospective disjoint trajectory/seed and observation partitions must be frozen before outcomes; none qualified yet. Existing PaperD is development for any new hypothesis.
+  independent_replication: No second independently maintained nonlinear solver or real-system bridge qualified; a fork is not automatically an independent lineage.
+  cost: Current scientific compute0; future solver, observation, training, recurrent storage and inference budgets separately unqualified.
+  stop_rules: Stop on mismatched information budgets, absent immutable replay or rights, missing confirmation, or reduction to direct memory/filtering/score parents.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  expanded_existing_primary_works: 2
+  new_primary_research_works: 3
+  repository_and_license_records: 2
+  retained_primary_research_works: 5
+  new_evidence_records: 7
+  paper_only_diagnostics: 4
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  outcome_assets_accessed: 0
+recorded_at: '2026-09-09T06:49:05Z'
+reentry_audit_id: paper_g_true_memory_source_observability_20260909
+unchanged_search_cycle_ledger_sha256: 05a63e14f17ff35671a11906dcee8f84631ad18fe714f75e749d0d248e5854ed

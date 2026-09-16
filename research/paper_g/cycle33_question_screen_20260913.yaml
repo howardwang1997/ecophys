@@ -1,0 +1,129 @@
+schema_version: 1
+record_type: bounded_F0_F1_question_screen
+visibility: private_internal
+public_evidence_eligible: false
+cycle_id: discovery_cycle_33_20260913
+authorization_ref: research/discovery/decisions/pi_cross_domain_ml_scope_20260912.yaml
+start_ref: research/paper_g/cycle33_start_20260913.yaml
+recorded_at: '2026-09-12T15:05:43Z'
+question_level_prospective_freeze: false
+status: completed_F0_F1_one_deferred
+outcome_accessed: false
+scientific_execution_authorized: false
+questions:
+- id: g33_protein_assay_epistasis
+  archetype: measurement_method
+  source_lane: market_native_action_or_constraint
+  scientific_domain: biology_ml
+  native_object: Genotype-to-function relation observed through a multiplexed variant assay.
+  action: Specified single and combined mutations under a fixed measurement protocol.
+  response: Nonadditivity of observed response versus latent phenotype.
+  rivals:
+    H1: Observed interaction reflects molecular epistasis.
+    H0: An additive latent phenotype followed by nonlinear readout produces the interaction.
+  discriminator: Combinatorial variants with independently justified measurement calibration.
+  positive_value: Identify biological interactions supported beyond the readout model.
+  null_value: Avoid treating assay nonlinearity as molecular interaction.
+  closest_closed_route: null
+  substantive_difference: No exact route-graph duplicate found for this native object. Prior chemistry and market/PDE
+    closures do not establish duplication.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: Generic latent-phenotype/readout separation has a direct MAVE-NN parent; no independent measurement
+    result or mechanism specified.
+  primary_source_ids:
+  - g33_mavenn
+  killer_control: Additive latent values 0,1,1,2 under y=phi^2 give an observed double-mutant contrast of2.
+  early_truth_contract: Direct parent resolves generic contribution before full asset qualification.
+  F2_performed: false
+- id: g33_quantum_decoder_confidence
+  archetype: measurement_method
+  source_lane: new_truth_or_control_capability
+  scientific_domain: physics_ml
+  native_object: Logical-error probability for a specified quantum decoder conditional on syndrome history.
+  action: Accept or flag a shot at a declared acceptance rate.
+  response: Logical error among accepted shots and calibration of predicted risk.
+  rivals:
+    H1: Neural confidence provides calibrated risk information.
+    H0: Better hard decisions or confidence scale accounts for the apparent gain.
+  discriminator: Cross score sources with hard decoders on identical syndromes, then compare calibration and selective
+    risk.
+  positive_value: Establish useful risk information beyond hard-decision performance.
+  null_value: Bound the added value of soft decoder output.
+  closest_closed_route: null
+  substantive_difference: No exact route-graph duplicate found for this native object. Prior chemistry and market/PDE
+    closures do not establish duplication.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: AlphaQubit calibration and the 2026 decoder-gap crossed-score study directly cover the generic
+    contribution. No distinct noise mechanism or measurement result specified.
+  primary_source_ids:
+  - g33_alphaqubit
+  - g33_decoder_gap
+  killer_control: Doubling a logit preserves hard decisions and score ordering but turns a calibrated0.9 probability
+    into approximately0.988 without changing correctness.
+  early_truth_contract: Analytic calibration control available; generic novelty fails.
+  F2_performed: false
+- id: g33_protein_temperature_stability
+  archetype: empirical_intervention
+  source_lane: market_native_action_or_constraint
+  scientific_domain: biology_ml
+  native_object: Functional output and stability of the same bacterial kinase variants across temperature.
+  action: Assign temperature while retaining variant identity and a separate activity/stability assay.
+  response: Temperature-resistant function versus an independently supported stability change.
+  rivals:
+    H1: Resistance reflects improved thermal stability.
+    H0: Higher activity provides more margin without improved stability.
+  discriminator: Paired temperature responses with basal-activity and independent stability controls.
+  positive_value: Support stability-guided design when that mechanism explains response.
+  null_value: Redirect design toward activity or other mechanisms when stability does not explain resistance.
+  closest_closed_route: null
+  substantive_difference: No exact route-graph duplicate found for this native object. Prior chemistry and market/PDE
+    closures do not establish duplication.
+  screen_status: quick_closed
+  decision_stage: F1
+  decision_reason: The selected primary experiment already reports the activity-versus-stability distinction. No
+    separate predictive ML result specified; detailed empirical asset contract remains unverified.
+  primary_source_ids:
+  - g33_kinase_temperature
+  - g33_mavenn
+  killer_control: A_g(T)=c_g*r(T), with c=1 or2 and r=1 or0.4, crosses a0.7 functional threshold differently despite
+    identical fractional response.
+  early_truth_contract: Publisher summary establishes a direct biological parent, not a reusable calibrated assay
+    contract.
+  F2_performed: false
+- id: g33_lru_decoder_policy_transfer
+  archetype: empirical_intervention
+  source_lane: new_truth_or_control_capability
+  scientific_domain: physics_ml
+  native_object: Logical decoding of a fixed memory/stability circuit under a declared physical leakage-removal
+    policy.
+  action: Switch physical LRU off/on at documented circuit preparation, round count and injected-leakage setting;
+    evaluate frozen decoder weights across regimes.
+  response: Target-regime logical risk R_train_policy_to_test_policy, with adaptation labels and inference costs
+    accounted for.
+  rivals:
+    H1: Leakage information transfers after a small calibrated noise-parameter update.
+    H0: Policy-specific persistence/correlations require adaptation beyond rate calibration.
+  discriminator: Cross LRU training/evaluation regimes with target-native and equal-budget adaptation references
+    and a calibrated temporal leakage baseline.
+  positive_value: Identify a physical source of transfer failure and an effective bounded adaptation rule.
+  null_value: Establish where existing calibration transfers and retraining is unnecessary.
+  closest_closed_route: null
+  substantive_difference: No exact route-graph duplicate found for this native object. Prior chemistry and market/PDE
+    closures do not establish duplication.
+  screen_status: deferred
+  decision_stage: F1
+  decision_reason: A named physical factorial experiment and observation/label design support an F1 truth path.
+    Existing cross-rate evaluation is acknowledged; cross-LRU coverage, complete release rights/joins and contribution
+    beyond HMM recalibration or fine-tuning remain unqualified.
+  primary_source_ids:
+  - g33_lru_experiment
+  - g33_leakage_removal
+  - g33_leakage_hmm
+  killer_control: Stationary binary chains with pi=0.1 and rho=0.9 or0.1 have identical occupancy but lag-one covariance0.081
+    or0.009. Elementary HMM control, not a physical result.
+  early_truth_contract: Physical assignment, circuit preparation, readout processing and logical label design are
+    documented. File-level rights, temporal block/drift control and confirmation partitions remain prerequisites
+    before escalation.
+  F2_performed: false

@@ -1,0 +1,128 @@
+schema_version: 1
+record_type: private_internal_primary_theorem_scope_audit
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T11:20:33Z'
+literature_cutoff: '2026-09-09'
+previous_goal_turn_classification: progress
+prospectively_frozen: false
+new_search_cycle: false
+result_ref: papers/proposal/ecomd_paper_g_noise_cancellation_support_audit_2026-09-09.md
+related_route_ids:
+- paper_g_physical_history_impulse_response
+- ncs_invariant_calibration_v4
+decision: not_trigger
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+named_blockers:
+- generic_sensitivity_and_history_nuisance_remedies_have_direct_prior
+- no_new_variance_cost_result
+source_scope:
+  noise_cancellation: arXiv2606.26727v1 dated2026-06-25;selected method sections2,3.1.1,3.3,3.4,4 and appendicesB,C,E;Theorem1 and AppendixC visually checked at printed pages7,14,15 of original PDF.
+  noise2noise: Official PMLR80 ICML2018 article;selected section2,especially equations3-6 and input-conditioned target-mean argument;publisher metadata.
+  version_boundary: The inspected v1 is not presumed identical to any later version or publication.
+  interpretation: Universal representation plus independent zero-mean innovations does not alone identify unvisited target states;the comparison needs an identified feature component and suitable excitation.
+  benchmark_boundary: No actual trained-model failure or refutation of reported numerical benchmarks inferred;multiple-start and broadened-support regimes require separate assessment.
+  source_code_inspected_or_executed: false
+  raw_data_or_checkpoints_accessed: false
+diagnostics:
+- id: bounded_noise_support_and_regression_projection
+  epistemic_class: elementary_paper_only_support_nonidentification_and_linear_algebra
+  state: Y in [-2,2];Y0=1;fully observed discrete-time scalar process.
+  family: f_theta(y)=theta*(1-y^2);theta in {-1/4,0,+1/4}.
+  training: Y_next=f_theta(Y)+nu;independent equiprobable signs nu with conditional mean zero given the past.
+  validity: For all Y in [-2,2],abs(f_theta(Y))<=3/4;all noisy updates stay in [-7/4,7/4].
+  identical_training_law: Every state after initialization is an independent sign;all theta induce the same entire path law at epsilon=1 for every training length.
+  target: Noise-free rollout from the same initial state has Y1=0,Y2=theta.
+  risk_statement: A common estimator at zero has max absolute error over the positive and negative alternatives at least1/4 under a common transcript;maximum expected absolute risk also at least1/4.
+  stability: Noise-free trajectories enter [0,1/4] or [-1/4,0],with derivative magnitude at most1/8.
+  exact_features: phi=(1,y,y^2);w_theta=(theta,0,-theta);X*w_theta=0 but phi(0)^T*w_theta=theta.
+  regression_identity: f-phiT*w_hat=(f-phiT*w_star)+phiT*(I-Xplus*X)*w_star-phiT*Xplus*r-epsilon*phiT*Xplus*v.
+  error_bound: delta*(1+norm1(phiT*Xplus))+abs(phiT*(I-Xplus*X)*w_star)+epsilon*abs(phiT*Xplus*v).
+  identifying_condition: Query feature in the row space or coefficient in identified subspace eliminates the unobserved component;full column rank is sufficient but not necessary.
+  noise_limit_condition: Stable Gram/excitation and suitable martingale convergence;zero innovation mean alone is insufficient,especially with growing feature dimension.
+  resolving_query: Reset at zero under the same noise;Z=theta+nu. Repeated independent reset sample mean has expectation theta and variance1/N;one additional query type completes the quadratic design rank.
+  discrete_support_caveat: Exact known Rademacher law and the stipulated discrete alternatives permit stronger individual-observation identification;variance1/N is not a minimax lower bound or a necessity claim.
+  interpretation: Classical support/rank obstruction and ordinary labelled augmentation;not a new impossibility theorem,bifurcation result,or benchmark replication.
+comparison_contract:
+  estimands:
+  - conditional_mean_under_training_state_law
+  - noise_free_rollout_from_declared_initial_state
+  - dynamics_under_a_specified_changed_noise_law
+  assignment_and_support: Freeze state observation,initial distribution,innovation law and entry mechanism,conditioning,clock,horizon,reachable target states and legally available resets.
+  reference_access: Repeated same-start trajectories need not cover the query state;new-state reset access is a separate capability,even when clean labels are absent.
+  rights_and_release: Public article reading only;code and data release terms not qualified;no redistribution of article figures.
+  untouched_confirmation: None qualified or accessed;selected source reading and paper controls are development evidence.
+  cost_precision: One exact support/projection diagnostic only;sample-mean variance is elementary within the fixture,no novel cost guarantee or training budget certified.
+  stop_rules:
+  - Do not infer global identification from conditional-mean denoising alone.
+  - Do not infer failure of source benchmarks from a different admissible training law.
+  - Do not convert one additional reset type into unrestricted reconstruction sufficiency.
+  - Do not reopen generic support diagnosis or augmentation as a new noise or tipping method.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+access_accounting:
+  new_selected_primary_fulltext_works: 2
+  existing_primary_selected_fulltext_rechecks: 0
+  new_evidence_records: 2
+  paper_only_diagnostics: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  new_reentry_audits: 1
+  full_hostile_audits: 0
+  new_forecasts: 0
+  new_source_code_files_accessed: 0
+  previous_source_or_metadata_cache_hashes_rechecked: 0
+  new_public_article_pdf_downloads: 1
+  outcome_assets_accessed: 0
+intake_not_escalated:
+- RNO tipping-point forecasting arXiv2308.08794v4 and its public repository README;abstract/metadata and README only,no source or notebook outputs.
+- Panahi et al. critical-transition primary abstract and author-hosted article intake;no full theorem or benchmark audit.
+- Lai-Wei stochastic-regression bibliographic intake was not qualified as primary theorem reading or added as evidence.
+source_refs:
+- noise_support_akashi_primary
+- noise_support_noise2noise_primary
+reused_source_refs: []
+source_records:
+- id: noise_support_akashi_primary
+  kind: primary_research_work
+  title: 'Akashi et al.: One-shot prediction of noise-induced bifurcations with reservoir
+    computing'
+  uri: https://arxiv.org/html/2606.26727v1
+  version: v1_20260625_selected_methods_Theorem1_AppendixC_and_protocol_scope_read_20260909_PDF_pages7_14_15_visually_checked
+  license: CC-BY-4.0 on inspected arXiv page; article reading only, no figure redistribution
+    or code/data rights audit.
+  role: Recent dynamical noise-cancellation theorem and explicit training/changed-noise
+    protocol scope; assessed for identification assumptions.
+  limitation: Selected scope audit only. No benchmark replication or trained-model
+    failure inferred. The independent support counterexample is development mathematics,
+    not new physics or evidence from implementation.
+- id: noise_support_noise2noise_primary
+  kind: primary_research_work
+  title: 'Lehtinen et al.: Noise2Noise: Learning Image Restoration without Clean Data'
+  uri: https://proceedings.mlr.press/v80/lehtinen18a.html
+  version: PMLR80_ICML2018_selected_section2_equations3_6_and_official_metadata_read_20260909
+  license: Public PMLR article; PDF copyright by authors. Primary reading only; no
+    figure, code or data redistribution.
+  role: Conditional-mean preservation under noisy regression targets; direct statistical
+    parent.
+  limitation: This image-restoration source is not a theorem of global dynamical identification,
+    noise-removal rollout support or adaptive stochastic-regression convergence.
+recorded_at: '2026-09-09T11:39:05Z'
+reentry_audit_id: paper_g_noise_cancellation_support_scope_20260909
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb

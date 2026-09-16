@@ -1,0 +1,153 @@
+schema_version: 1
+visibility: private_internal
+public_evidence_eligible: false
+local_session_date: '2026-09-10'
+literature_cutoff: '2026-09-09'
+previous_goal_turn_classification: progress
+related_route_ids:
+- paper_g_numerical_teacher_continuum_ranking
+named_blockers:
+- supplied_reference_certificate_is_elementary_error_propagation
+- exact_and_stochastic_physical_supervision_have_direct_parents
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+new_search_cycle: false
+prospectively_frozen: false
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb
+new_theorem_claimed: false
+record_type: private_internal_flux_locality_scope_audit
+session_started_at: '2026-09-09T17:06:20Z'
+recorded_at: '2026-09-09T17:23:17Z'
+decision: not_trigger
+result_ref: papers/proposal/ecomd_paper_g_flux_locality_scope_2026-09-10.md
+source_manifest_ref: research/paper_g/flux_locality_source_manifest_20260910.json
+preceding_contract_ref: research/paper_g/constraint_comparability_audit_20260910.yaml
+reentry_audit_id: paper_g_flux_locality_scope_20260910
+source_refs:
+- flux_locality_mcgreivy_v2
+- flux_locality_vde_v1
+source_records:
+- id: flux_locality_mcgreivy_v2
+  title: 'McGreivy and Hakim: Invariant Preservation in Machine Learned PDE Solvers via Error Correction'
+  uri: https://arxiv.org/html/2303.16110v2
+  version: arxiv2303_16110v2_20230329_introduction_Sections2_6_1_8_selected_scope_read20260909
+  license: ArXiv perpetual non-exclusive license; private article reading/cache only.
+  role: Direct parent explicitly treats global invariant correction, local flux restrictions and propagation
+    trade-offs.
+  limitation: Finite-speed qualification concerns hyperbolic response; timestep, boundary flux and noninvariant
+    terms remain part of the stated scope. No results reproduced.
+  kind: primary_research_work
+- id: flux_locality_vde_v1
+  title: 'Ye, Li and Yan: Virtual domain extension for imposing boundary conditions in flow simulation using
+    pre-trained local neural operator'
+  uri: https://arxiv.org/html/2504.09807v1
+  version: arxiv2504_09807v1_20250414_Sections2_1_2_3_3_equations_initialization_boundary_scope_read20260909
+  license: ArXiv perpetual non-exclusive license; private article reading/cache, no code/data or release authority.
+  role: Local operator definition and boundary/domain extension for compressible viscous flow with thermal
+    conduction.
+  limitation: Zero exterior input derivative, finite-time viscous response and restricted initialization distribution
+    are different scopes; no practical model failure established.
+  kind: primary_research_work
+reused_source_refs:
+- constraint_comparison_huang_v1
+matched_primary_disagreement: false
+practical_model_failure_established: false
+stop_generic_locality_harvesting: true
+diagnostics:
+- id: flux_representation_does_not_identify_locality
+  epistemic_class: standard_paper_only_algebra
+  hypotheses: Periodic equal-volume 1D grid, spacing h, sum_j r_j(u)=0.
+  identity: F_(j+1/2)=-h sum_(i<=j) r_i; r_j=-(F_(j+1/2)-F_(j-1/2))/h; flux may depend on all u.
+  limitation: Balance and flux gauge do not establish response-Jacobian locality or physical accuracy/stability.
+- id: viscous_response_local_generator_global_map
+  epistemic_class: standard_paper_only_heat_kernel_and_linearization
+  hypotheses: Heat flow nu>0; unrestricted exterior amplitude A for tail radius. Separately, small smooth transverse
+    shear around positive uniform compressible rest state.
+  identity: Exterior uncertainty radius A erfc(R/sqrt(4 nu t)); source Eq7 written shear normalization nu=2/(rho0
+    Re).
+  limitation: Tail worst case has its own exterior class; periodic opposite zero-mean bumps match total invariants
+    but are outside cited low-mode initializations. Not nonlinear finite-amplitude truth or observed model
+    error.
+- id: restricted_initial_family_observation_uniqueness
+  epistemic_class: standard_paper_only_analytic_uniqueness
+  hypotheses: Finite trigonometric polynomial and exact values on an open interval.
+  identity: Agreement on an open interval determines the full polynomial; finite samples require full rank
+    and conditioning.
+  limitation: Neither source sampling rank nor performance mechanism established; later nonlinear states require
+    separate analysis.
+comparisons:
+  global_correction_tradeoff_direct_parent: true
+  vde_target: compressible_viscous_flow_with_thermal_conduction
+  vde_exterior_input_derivative_zero: true
+  vde_initial_family: finite_low_mode_trigonometric_velocity_constant_density_temperature
+  flux_form_implies_response_locality: false
+  local_generator_implies_local_finite_time_map: false
+  finite_grid_observability_established: false
+  bump_control_inside_published_initial_family: false
+  same_condition_opposite_primary_predictions: false
+truth_contract:
+  estimands: Separate arbitrary-admissible remote-field derivative, prediction on restricted state distribution
+    and above-tolerance response; freeze PDE and observable.
+  assignment_interference: Legal remote interventions must retain local observations and declared global invariants;
+    same physical coefficients, horizon and conditioning set. Nonlocal coupling is part of the intervention.
+  lifecycle_replay: State family, observation sampling, boundary, grid/cell volumes, flux input dependence,
+    normalization, attention, pressure/elliptic solve, time integrator, noise and tolerance.
+  rights_ethics_release: Two public article HTML caches and one abstract-only lead; no code/data rights, participant
+    or publication authority.
+  untouched_confirmation: Absent; article-visible numerical results are not Paper G confirmation. Paper-only
+    controls are not new empirical evidence.
+  independent_replication: Not qualified; different PDE/architecture scopes do not supply opposing matched
+    predictions or independent truth.
+  cost: Training, global communication/correction, boundary extension, pressure solve, time stepping and continuum
+    reference costs all required; none qualified.
+  stop_rules: Stop at flux telescoping, classical heat-tail/observability theory or known correction trade-offs;
+    require a nonstandard source-specific legal residual before re-entry.
+next_source_lead:
+  title: Neural-Schwarz Tiling for Geometry-Universal PDE Solving at Scale
+  authors: Secchi, Balint and Maurizi
+  uri: https://arxiv.org/abs/2605.12343v1
+  version: arxiv2605_12343v1_20260512
+  reading_scope: official_abstract_only
+  primary_work_located: true
+  fulltext_read: false
+  new_publication_trigger: false
+  candidate_harvest_authorized: false
+access_accounting:
+  new_selected_primary_fulltext_works: 2
+  new_evidence_records: 2
+  reused_primary_scope_works: 1
+  abstract_only_routing_leads: 1
+  new_paper_only_diagnostics: 3
+  new_reentry_audits: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  full_hostile_audits: 0
+  new_forecasts: 0
+  new_source_code_files_accessed: 0
+  new_local_primary_pdf_downloads: 0
+  primary_pdf_pages_visually_checked: 0
+  outcome_assets_accessed: 0
+  scientific_archive_payloads_downloaded: 0
+  model_payloads_downloaded: 0
+next_decisive_update: 'Stop generic local/global correction, flux rewrites, heat-tail certificates and locality-label
+  harvesting. Source-only lead NEST2605.12343v1: inspect actual interface variables, global Schwarz coupling/convergence
+  and reference truth. Local learned patches alone do not imply local physical response. Classical domain decomposition
+  without a source-specific nonstandard residual removes no blocker. No candidate harvesting without a separately
+  qualified blocker-removing ledger entry.'

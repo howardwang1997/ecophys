@@ -1,0 +1,159 @@
+schema_version: 1
+record_type: private_internal_response_path_contract_audit
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T15:55:51Z'
+local_session_date: '2026-09-10'
+literature_cutoff: '2026-09-09'
+recorded_at: '2026-09-09T16:13:58Z'
+previous_goal_turn_classification: progress
+decision: not_trigger
+result_ref: papers/proposal/ecomd_paper_g_response_path_contract_2026-09-10.md
+source_manifest_ref: research/paper_g/response_path_source_manifest_20260910.json
+preceding_contract_ref: research/paper_g/dual_force_asset_resolution_20260910.yaml
+reentry_audit_id: paper_g_response_path_contract_20260910
+related_route_ids:
+- slow_memory_random_batch_invariant_correction
+named_blockers:
+- force_variance_artificial_heating_correction_direct_prior
+- uniform_slow_memory_correction_or_bound_absent
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+new_search_cycle: false
+prospectively_frozen: false
+source_refs:
+- response_path_zou_v2_scope
+- response_path_bkr_v4
+- response_path_integrator_v1
+source_records:
+- id: response_path_zou_v2_scope
+  title: 'Zou, Lie and Marzouk: Goal-oriented learning of stochastic differential equations using error bounds
+    on path-space observables; kinetic and estimator scope'
+  uri: https://arxiv.org/html/2603.20467v2
+  version: arxiv2603_20467v2_20260701_selected_Sections2_3_Remark3_Lemma7_Proposition11_and_Section4_scope_read20260909
+  license: CC-BY-4.0 displayed by arXiv; article reading only, no code/data reuse.
+  role: 'Extends the reading scope of the already registered goal-oriented SDE parent: explicit kinetic example,
+    moment-dependent bounds, gradient conditions and inexact-loss distinction.'
+  limitation: No standalone inertial extension novelty; no model-specific integrability, finite-sample certificate,
+    velocity-spectrum tail or actual learned-component attribution established.
+  kind: primary_research_work
+- id: response_path_bkr_v4
+  title: 'Birrell, Katsoulakis and Rey-Bellet: Quantification of Model Uncertainty on Path-Space via Goal-Oriented
+    Relative Entropy'
+  uri: https://arxiv.org/html/1906.09282v4
+  version: arxiv1906_09282v4_20200902_selected_Theorem1_Corollary1_AppendixD3_Assumption2_Lemma7_Corollary6_read20260909
+  license: arXiv perpetual nonexclusive display license; private article cache, no redistribution or implementation.
+  role: Observable-specific information bounds and stopped path entropy with explicit noise-range drift perturbations,
+    martingale conditions and auxiliary-state marginalization.
+  limitation: Conditional population bounds do not establish a finite-data certificate or remove the recorded
+    uniform-slow-memory blocker; final/preprint identity not audited.
+  kind: primary_research_work
+- id: response_path_integrator_v1
+  title: 'Kieninger, Ghysbrecht and Keller: Girsanov reweighting for simulations of underdamped Langevin dynamics.
+    Theory'
+  uri: https://arxiv.org/html/2303.14696v1
+  version: arxiv2303_14696v1_20230326_selected_Table1_SectionsIV_V_AppendicesA1_A2_read20260909
+  license: arXiv perpetual nonexclusive display license; private article cache, no code/data use or redistribution.
+  role: Direct parent for integration-step phase-space support and likelihood analysis; supplies ABOBA/BAOAB
+    algebraic contracts.
+  limitation: No blanket claim for position-only/coarsely saved paths, all force pairs or continuum bias; no
+    software or empirical validation performed.
+  kind: primary_research_work
+reused_source_refs:
+- trigger_goal_oriented_sde_path_observable_primary
+- force_thermostat_bigi_2025
+- dual_force_upet_metadata
+diagnostics:
+- id: kinetic_finite_path_entropy
+  epistemic_class: standard_paper_only_girsanov_specialization
+  hypotheses: Common initial law and fixed unconstrained unit-mass Langevin bath; perturbation (0,r) in noise
+    range; well-posed nonexplosive laws and valid exponential martingale.
+  identity: KL(P1_H||P0_H)=E1 integral_0^H |r|^2/(4*gamma*Tb)dt; <=H*R^2/(4*gamma*Tb) for |r|<=R.
+  limitation: No force-component separation, generic training-RMSE substitution, spectral-tail control or finite-sample
+    confidence guarantee.
+- id: bounded_response_and_uncapped_tail
+  epistemic_class: standard_paper_only_information_control
+  hypotheses: Finite-horizon path KL K; fixed hitting target and censoring horizon H.
+  identity: Hit probability error<=min(1,sqrt(K/2)); capped mean-time error<=H*min(1,sqrt(K/2)). Times H+1
+    and H+L have identical caps and different uncapped means.
+  limitation: Capped times are controls, not replacements for velocity-correlation spectrum or infinite-time
+    diffusion. Unbounded velocity products require moments and spectral tails require decay bounds.
+- id: matched_integrator_support
+  epistemic_class: standard_paper_only_splitting_parent_instantiation
+  hypotheses: One-dimensional unit-mass BAOAB/ABOBA, fixed pre-state,h>0,gamma>0,Tb>0; F0=-k*q,F1=F0+epsilon*tanh(q),k>0,epsilon!=0.
+  identity: 'BAOAB: vprime+v-2*(qprime-q)/h=h*(F(qprime)-F(q))/2; common transitions require qprime=q, a zero-probability
+    event. ABOBA common line qprime=q+h*(v+vprime)/2 with Gaussian conditional KL h^2*(1+c)^2*r(qmid)^2/[8*Tb*(1-c^2)],c=exp(-gamma*h).'
+  limitation: Known integrator-support mechanism; two conservative forces, no new nonconservative effect or
+    actual checkpoint/implementation claim. Discrete-kernel exactness is not continuum-response exactness.
+- id: bath_quadratic_variation
+  epistemic_class: standard_paper_only_path_law_control
+  hypotheses: Full continuous velocity paths for constant standard unit-mass Langevin baths.
+  identity: '[v_i,v_j]_H=2*gamma*Tb*H*delta_ij; different gamma*Tb implies singular full path laws.'
+  limitation: Equal noise covariance only removes this obstruction; friction integrability and finite sampled
+    transition laws still need separate analysis.
+response_target: Velocity-correlation spectrum and low-frequency diffusion interpretation in the preceding
+  Bigi liquid-water force study; fixed force,bath,preparation and conditioning required.
+bounded_hitting_time_is_target_replacement: false
+conditional_kinetic_bound_available: true
+matched_discrete_support_control_available: true
+learned_force_intervention_asset_qualified: false
+physical_response_truth_qualified: false
+new_theorem_claimed: false
+stop_generic_kinetic_path_method_expansion: true
+truth_contract:
+  estimands: Specified velocity-correlation spectrum/low-frequency diffusion; bounded hitting probabilities
+    and capped times are scope controls only.
+  assignment_interference: Freeze both forces,component definition,bath and initial preparation; changing the
+    bath or integrator is a distinct intervention.
+  lifecycle_replay: Complete forces,masses,boundaries,initial law,noise covariance,integrator and splitting,step
+    size,saved state/cadence,hit set and censoring,random inputs,reference-force queries before replay.
+  rights_ethics_release: Public primary article reading only; three private HTML caches, no research code/model/data
+    payload or publication authority.
+  untouched_confirmation: Absent; prior model documentation and published examples are development-visible.
+  independent_replication: Hand-derived conditional controls only; no independently certified learned-force
+    response or second physical truth system.
+  cost: Reference-force evaluations under the relevant occupation law,envelope/moment/tail validation,continuum
+    bias and dependent sampling costs remain unqualified.
+  stop_rules: No novelty from inertia,KL-loss,stopped entropy or integrator support; no replacement of spectral
+    response by capped hitting times or a discrete-kernel certificate.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb
+scope_note: Cross-reference for the prior force/bath attribution boundary, not atomistic implementation authorization
+  or reopening of a market route. No Paper D evidence or authority transfer.
+access_accounting:
+  new_selected_primary_fulltext_works: 2
+  reused_primary_selected_readings: 2
+  new_evidence_records: 3
+  paper_only_diagnostics: 4
+  new_reentry_audits: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  full_hostile_audits: 0
+  new_forecasts: 0
+  new_source_code_files_accessed: 0
+  new_local_primary_pdf_downloads: 0
+  primary_pdf_pages_visually_checked: 0
+  outcome_assets_accessed: 0
+  scientific_archive_payloads_downloaded: 0
+  model_payloads_downloaded: 0
+next_decisive_update: Stop generic kinetic/KL-loss/reweighting/integrator-support preflights. At the physical-mechanism
+  level, check the velocity-correlation spectrum and low-frequency diffusion response in the Bigi liquid-water
+  study for an independent primary prediction under the same force,bath,preparation and conditioning. Only
+  a matched disagreement or a theorem removing the recorded attribution blocker can justify re-entry; capped
+  hitting times,extra integrators and new method labels cannot replace that response.

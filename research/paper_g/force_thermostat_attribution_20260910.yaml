@@ -1,0 +1,169 @@
+schema_version: 1
+record_type: private_internal_attribution_control_asset_preflight
+visibility: private_internal
+public_evidence_eligible: false
+session_started_at: '2026-09-09T15:07:08Z'
+local_session_date: '2026-09-10'
+literature_cutoff: '2026-09-09'
+recorded_at: '2026-09-09T15:23:09Z'
+previous_goal_turn_classification: progress
+decision: partial_capability
+result_ref: papers/proposal/ecomd_paper_g_force_thermostat_attribution_2026-09-10.md
+source_manifest_ref: research/paper_g/force_thermostat_source_manifest_20260910.json
+preceding_contract_ref: research/paper_g/blowup_stability_scope_20260910.yaml
+reentry_audit_id: paper_g_force_thermostat_attribution_20260910
+related_route_ids:
+- slow_memory_random_batch_invariant_correction
+named_blockers:
+- force_variance_artificial_heating_correction_direct_prior
+- uniform_slow_memory_correction_or_bound_absent
+removed_blockers: []
+candidate_harvest_authorized: false
+qualified_new_topic: false
+primary_disagreement_qualified: false
+new_search_cycle: false
+prospectively_frozen: false
+source_refs:
+- force_thermostat_hinz_2023
+- force_thermostat_bigi_2025
+- force_thermostat_gdml_2017_excerpt
+- force_thermostat_dlp_2016
+- force_thermostat_zhang_2023_abstract
+source_records:
+- id: force_thermostat_hinz_2023
+  title: 'Hinz, Karasiev, Hu and Mihaylov: Development of a machine-learning-based ionic-force correction model
+    for quantum molecular dynamic simulations of warm dense matter'
+  uri: https://doi.org/10.1103/PhysRevMaterials.7.083801
+  version: PRMaterials7_083801_2023_selected_CHORUS_accepted_main_text_and_OSTI76page_bundle_SupplementIV_read20260909_visual_bundle_pages21_73
+  license: Public accepted manuscript and OSTI article/supplement bundle; private reading/cache only, no redistribution
+    or software/data rights inferred.
+  role: Concrete delta-force/thermostat primary statement and its explicit energy-distribution reservation;
+    native warm-dense-hydrogen contract.
+  limitation: Not a same-material, same-force, same-thermostat, same-response contrast to Bigi. Force-work
+    diagnostic is not an independent canonical-law oracle.
+  kind: primary_research_work
+- id: force_thermostat_bigi_2025
+  title: 'Bigi, Langer and Ceriotti: The dark side of the forces: assessing non-conservative force models for
+    atomistic machine learning'
+  uri: https://arxiv.org/html/2412.11569v6
+  version: arxiv_v6_20251025_selected_Sections3_1_4_5_4_6_G_5_G_6_read20260909_ICML2025_venue_separately_verified_PMLR267
+  license: Public preprint and PMLR venue metadata; article reading only, no model or software/data rights
+    inferred.
+  role: Direct Jacobian-asymmetry, thermostat/structure/dynamics and conservative/direct-force parent; explicit
+    G5 attribution limitation.
+  limitation: Detailed readings use v6, not asserted identical to the proceedings version. A stated attribution
+    limitation is not proof of an unresolved literature-wide gap.
+  kind: primary_research_work
+- id: force_thermostat_gdml_2017_excerpt
+  title: 'Chmiela et al.: Machine learning of accurate energy-conserving molecular force fields'
+  uri: https://pmc.ncbi.nlm.nih.gov/articles/PMC5419702/
+  version: ScienceAdvances3_e1603015_2017_primary_indexed_Methods_Eqs6_7_and_metadata_only_read20260909
+  license: Public primary indexed Methods/metadata reading; no complete article, software or data reuse inferred.
+  role: Existing same-sample/descriptor/kernel harmonic toy and Helmholtz/Poisson force decomposition parent.
+  limitation: Indexed method excerpts only; no full thermostat, transport or contemporary novelty audit inferred.
+  kind: primary_research_work
+- id: force_thermostat_dlp_2016
+  title: 'Duncan, Lelievre and Pavliotis: Variance Reduction Using Nonreversible Langevin Samplers'
+  uri: https://doi.org/10.1007/s10955-016-1491-2
+  version: JStatPhys163_457_491_2016_author_hosted_final_selected_Sections1_2_1_3_Eqs6_8_read20260909
+  license: CC-BY-4.0 final article per primary notice; selected article reading only, no scientific code/results
+    reproduction.
+  role: Weighted divergence-free drift preserves an overdamped target measure while changing dynamics; direct
+    parent for density/current distinction.
+  limitation: Does not certify arbitrary positional force errors in inertial molecular dynamics. Full proof
+    and numerical analysis not independently reproduced.
+  kind: primary_research_work
+- id: force_thermostat_zhang_2023_abstract
+  title: 'Zhang, Hou, Ge and Dral: Energy-conserving molecular dynamics is not energy conserving'
+  uri: https://arxiv.org/abs/2308.11305
+  version: arxiv2308_11305v1_20230822_abstract_metadata_only_read20260909
+  license: Public primary abstract/metadata reading only; no full text, code or data rights inferred.
+  role: Direct primary distinction between simulation-energy and true-energy conservation.
+  limitation: No specific full-text criterion or infrared result imported.
+  kind: primary_research_work
+reused_source_refs: []
+diagnostics:
+- id: canonical_generator_residual
+  epistemic_class: standard_paper_only_generator_control
+  hypotheses: Smooth confining U,full velocity support,unit mass,kB1,position-only deterministic error r,standard
+    Langevin or Andersen bath at fixed T.
+  identity: Lstar_r rho0=(r dot v)*rho0/T; unchanged canonical phase-space target iff r=0.
+  limitation: Not a no-go for velocity-dependent forces,augmented samplers,changed targets or all thermostats;
+    overdamped weighted-divergence condition differs.
+- id: rotational_ou_joint_marginal_control
+  epistemic_class: standard_paper_only_linear_diffusion_control
+  hypotheses: dq=v dt,dv=[(-kI+aJ)q-gamma*v]dt+sqrt(2gamma*Tb)dW;k,gamma,Tb>0,a^2<gamma^2*k.
+  identity: s=Tb/(k-a^2/gamma^2);Q=sI,V=ksI,C=-(a*s/gamma)J. Retuned Tb=Tstar*(1-a^2/(gamma^2*k)) matches separate
+    marginals but current=2a*Tstar/(gamma*k).
+  limitation: Retuning is a different bath intervention using analytic truth; full energy distribution not
+    matched. Synthetic linear family, not learned-force outcome evidence.
+- id: matched_rmse_different_response
+  epistemic_class: standard_paper_only_observable_control
+  hypotheses: Overdamped 2D harmonic reference U=k|q|^2/2,0<|a|<k;r_rot=aJq,r_grad=a*diag(1,-1)q.
+  identity: Both reference-measure MSE=2a^2*T/k; rotational error preserves position law,gradient error gives
+    covariance diag(T/(k-a),T/(k+a)).
+  limitation: Same error magnitude does not match response; no preference for nonconservative trained models
+    or new OOD theorem.
+truth_contract:
+  estimands: Fixed physical invariant law,position/velocity joint moments,current and physical-time correlations;
+    separate static marginal checks.
+  assignment_interference: Force component,thermostat kernel,bath parameter are distinct interventions. Freeze
+    reference force,component decomposition measure/domain/boundary.
+  lifecycle_replay: Potential,masses,domain,complete force field,thermostat diffusion/collision law,boundaries,initial/stationary
+    law,physical clock and estimand.
+  rights_ethics_release: Public primary reading,one privately cached OSTI manuscript/supplement bundle; no
+    software/data reuse,redistribution,participants or outreach authority.
+  untouched_confirmation: None. All controls and source examples development-visible; no model/reference arrays
+    accessed.
+  independent_replication: No solver execution; linear controls share one analytic lineage. No matched learned-force
+    control asset qualified.
+  cost: Paper algebra only; decomposition cost,reference force cost and independent-sample cost unqualified.
+    No compute allocated.
+  stop_rules: No mismatched headline clash,marginal-as-joint truth,deterministic-error-as-white-noise substitution,synthetic-as-learned
+    evidence,or Paper D transfer; no repeated generic OU/Hodge/curl-penalty cycle.
+authorization:
+  candidate_harvest: false
+  full_fifteen_work_audit: false
+  machine_card: false
+  outcome_access: false
+  scientific_implementation: false
+  solver_or_simulation: false
+  gpu: false
+  participant_work: false
+  outreach: false
+  purchase: false
+  publication: false
+unchanged_registry_sha256:
+  research/discovery/search_cycle_ledger.yaml: 22d7f47193a282bf04efc025968fdc1d5ca4af14492847b138a02b800c88eed2
+  research/discovery/protocol.yaml: 76a425f7888250e010921ee02e952db43a2936e2c7b7ff2aaa7ccb3ad8218e36
+  research/discovery/forecast_ledger.yaml: dfe571ed381617bfad0d16dad25b39cdfcca78475c79a3dcf8af3d64cfaa45eb
+scope_note: Cross-reference control asset for the recorded thermostat analogy; not an atomistic implementation
+  scope amendment or reopening of the slow-memory market route. Paper D outcomes and authority excluded.
+primary_fork:
+  matched_material: false
+  matched_force: false
+  matched_thermostat: false
+  matched_observable: false
+  hinz_reservation_retained: true
+  bigi_attribution_limit_retained: true
+  literature_wide_gap_established: false
+learned_force_intervention_asset_qualified: false
+new_theorem_claimed: false
+access_accounting:
+  new_selected_primary_fulltext_works: 3
+  new_primary_indexed_method_excerpt_works: 1
+  new_primary_abstract_only_works: 1
+  new_evidence_records: 5
+  paper_only_diagnostics: 3
+  new_reentry_audits: 1
+  new_raw_questions: 0
+  new_cycles: 0
+  full_hostile_audits: 0
+  new_forecasts: 0
+  new_source_code_files_accessed: 0
+  new_local_primary_pdf_downloads: 1
+  primary_pdf_pages_visually_checked: 2
+  outcome_assets_accessed: 0
+next_decisive_update: Source/schema qualification of one existing learned-force asset supporting a fixed conservative
+  component and residual-only intervention with independent physical response truth, or a nonclassical response
+  theorem. Fixed-target OU/Poisson algebra alone is insufficient. No generic thermostat/curl/Hodge expansion.

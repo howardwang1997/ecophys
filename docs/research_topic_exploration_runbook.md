@@ -1,9 +1,29 @@
 # Research topic exploration runbook
 
+**Current scope, 2026-09-12.** The PI explicitly broadened discovery to ML/AI applications
+in finance, physics, biology, chemistry, materials and other scientific domains, targeting
+ICLR or ICML main. A connection to previous repository experiments is no longer required.
+Use the actual domain's native state, intervention and response wherever historical text
+below says market-native. Legacy source-lane identifiers retain their schema but take that
+domain-specific meaning. The historical scope paragraph below is superseded by this addendum.
+Exact closed formulations remain closed; unrelated unsaturated questions are eligible.
+Archetype-specific truth, novelty, logging and separate execution decisions remain required.
+See [the scope decision](../research/discovery/decisions/pi_cross_domain_ml_scope_20260912.yaml).
+
 This runbook turns the [Discovery Loop](research_discovery_loop.md) into a repeatable way
 to search for a publishable question in simulated markets, market physics, and financial
 physics. It does not authorize an experiment. The machine authority remains
 [`research/discovery/protocol.yaml`](../research/discovery/protocol.yaml).
+
+**Paper G scope addendum, 2026-09-09.** The PI's persistent objective includes
+ICML main and requires a connection to the repository's past experiments. The
+existing neural-PDE work is therefore an eligible discovery parent. For this
+branch, use the physically native state, intervention and response in the same
+funnel; market-specific requirements apply to market claims. This does not
+reopen a closed market formulation, establish a new truth asset by declaration,
+or authorize experiments. Record the exact repository connection and assess
+novelty against scientific-ML and parent-method work. All remaining gates and
+the prospective forecast rule are unchanged.
 
 ## What counts as a topic
 
