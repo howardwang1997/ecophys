@@ -36,25 +36,21 @@ in Neural PDE Surrogates}
 \maketitle
 
 \begin{abstract}
-Exact conservation layers guarantee admissible outputs, but their removal can change the dynamics
-of an autoregressive predictor. We distinguish output coordinates, projection during training,
-and projection during inference with an eight-cell intervention design. Projected training
-identifies the deployed predictor only up to an unconstrained raw invariant component. In a
-prospectively frozen, 30-seed PDEBench Advection study, the three-way interaction is
-$\CubeJ$ [$\CubeJLow$, $\CubeJHigh$], material in \CubeMaterialCells/12 mandatory
-resolution--horizon cells. Opposite-signed training and inference credits obscure this dependence
-in the ordinary bundled comparison; removal damage emerges through autoregressive feedback.
-An independently frozen, 30-seed shallow-water study has material path dependence in
-\SWEMaterialCells/8 cells, although residual models remain near persistence in a checkpoint replay. A direct input intervention also establishes that changes along the
-invariant direction can affect conserving dynamics in the tested FNOs. The registered U-Net
-transfer has an unresolved primary interaction and only \UNetMaterialCells/12 material cells;
-post-hoc replay places its eight native-grid primary cells below persistence. A separate post-hoc
-U-Net deployment control, computed on a fixed spatial grid, is predictive and exhibits path
-dependence, but changes the deployment strategy and does not replace that registered transfer. These results show that, in the tested FNOs,
-a conservation layer can become part of the learned autoregressive transition. A second
-Advection recipe retains the interaction, while equal-RMS direction controls limit any
-claim that the feedback response is specific to the invariant direction. Exact enforcement
-alone does not justify treating that layer as a detachable post-processor.
+Projected training can make a conservation layer part of the learned autoregressive transition.
+Removing the layer then changes conserving dynamics through feedback. We distinguish output
+coordinates, projection during training and projection during inference with an eight-cell
+intervention design. Projected training identifies the deployed predictor only up to an
+unconstrained raw invariant component. In a prospectively frozen, 30-seed PDEBench Advection
+study, the three-way interaction is $\CubeJ$ [$\CubeJLow$, $\CubeJHigh$], material in
+\CubeMaterialCells/12 mandatory resolution--horizon cells. Opposite-signed training and inference
+credits obscure this dependence in the ordinary bundled comparison. An independently frozen,
+30-seed shallow-water study reproduces material path dependence in \SWEMaterialCells/8 cells.
+A direct input intervention establishes that changes along the invariant direction affect
+conserving dynamics in the tested FNOs. Architecture transfer depends on deployment: the
+registered U-Net interaction remains unresolved, while a separate post-hoc fixed-grid control
+is predictive and exhibits path dependence. The experiments identify the conservation layer's
+role in the learned FNO transition and show why changes to its deployment must be evaluated
+through the resulting rollout dynamics.
 \end{abstract}
 
 \section{Introduction}
@@ -63,7 +59,7 @@ Learned simulators can achieve low average error while violating identities that
 system satisfies exactly. Architectural constraint layers, output projection, probabilistic
 conditioning, and physics penalties address this problem in climate emulation, PDE surrogate
 modeling, and neural operators \citep{beucler2021,hansen2023,harder2023,liu2024clawno}. Exact
-enforcement has an unambiguous benefit: every returned state belongs to the admissible set. A
+enforcement has an unambiguous benefit: every returned state satisfies the enforced invariant. A
 different claim---that the constraint itself improved predictive accuracy or out-of-distribution
 (OOD) generalization---requires a controlled attribution design.
 
@@ -75,7 +71,7 @@ and enforcement. Residual updates are themselves a strong inductive bias in lear
 \citep{pfaff2021}. A favorable comparison therefore does not identify which factor deserves
 credit.
 
-We study attribution rather than proposing another enforcement operator. The trained design
+We separate the predictive effects of coordinates, training enforcement and inference enforcement. The trained design
 crosses absolute/residual outputs with free/hard training; toggling projection on each locked
 checkpoint completes an eight-cell cube without optimization. This also exposes that projected
 training identifies raw outputs only modulo the invariant direction: a checkpoint may be accurate
@@ -85,14 +81,15 @@ compatibility or exact constraint satisfaction.
 
 Our contributions are:
 \begin{itemize}
-  \item an eight-cell intervention design that separately identifies output coordinate, training
-  enforcement, inference enforcement, and their three-way path dependence;
+  \item an eight-cell intervention design that identifies separate coordinate, training and
+  inference effects, including three-way dependence hidden by a bundled comparison;
   \item a projection-gauge non-identifiability result and a direct same-checkpoint intervention
-  showing that an invariant-direction input change transfers materially into conserving dynamics;
+  establishing material transfer from invariant-direction input changes to conserving dynamics;
   \item prospectively frozen 30-seed Advection and independently frozen 30-seed 2D shallow-water
-  FNO evidence, plus a registered larger U-Net transfer that does not pass its gate; and
-  \item orthogonal error and tangent-kernel analyses, including a frozen local mechanism test whose
-  unsupported final association bounds rather than embellishes the explanation.
+  studies that establish material projector dependence in the tested FNO rollouts; the registered
+  U-Net transfer and post-hoc deployment control define the observed architecture scope; and
+  \item orthogonal error identities, a channel-separable training null and tangent-kernel bounds
+  that distinguish mechanically removed drift from changes in learned conserving dynamics.
 \end{itemize}
 
 \section{Related work}
@@ -126,7 +123,7 @@ use its public Advection and two-dimensional shallow-water data, but change the 
 question: rather than ranking a new operator, we estimate paired effects of parameterization and
 enforcement under the same locked weights.
 
-\section{A matched attribution audit}
+\section{Separating parameterization and conservation effects}
 \label{sec:audit}
 
 \subsection{Linear invariant and error channels}
@@ -313,7 +310,7 @@ Here $J$ is the coordinate-by-training-by-inference interaction. The path-averag
 \end{equation}
 obey $\phi_{\mathrm{train}}+\phi_{\mathrm{infer}}=I_{\mathrm{bundle}}$. We froze this cube while
 the fresh factorial was incomplete and no metric had been accessed. Its primary cell, bootstrap,
-SESOI, and ordered classification are inherited from the two-factor audit. The local gradient
+SESOI, and ordered classification are inherited from the two-factor experiment. The local gradient
 diagnostic is matched to $T_1$, where both endpoints use projected inference; its association with
 $I_{\mathrm{bundle}}$ is retained only as a labeled secondary analysis.
 
@@ -355,25 +352,23 @@ capacity-matched architecture effect (FNO: 23,937 parameters; U-Net: 66,941) nor
 finite-receptive-field U-Net is a discretization-invariant operator. The post-hoc forecast-skill
 analysis below separately tests whether these checkpoints improve on persistence.
 
-Before inspecting any factorial metric, we separately froze a mechanism audit that reconstructs
+Before inspecting any factorial metric, we separately froze a mechanism test that reconstructs
 each seed's exact epoch-zero first minibatch. In absolute and residual coordinates it decomposes
 the full loss into $L_Q+L_P$, records $\langle g_Q,g_P\rangle$ and its cosine, and executes matched
-free and hard one-step Adam updates from the identical initial tensor. Its local interaction is
-the absolute-minus-residual difference between post-step free-minus-hard conserving losses. The
+free and hard one-step Adam updates from the identical initial tensor. For each coordinate system,
+we compute the post-step free-minus-hard conserving-loss difference. The local interaction
+subtracts the residual-coordinate difference from the absolute-coordinate difference. The
 frozen primary test is the paired-seed Spearman association between that local
 interaction and the inference-matched training interaction $T_1$, with a 50,000-draw 95\%
 bootstrap interval. The original association with the bundled interaction remains secondary.
 A non-positive or zero-crossing interval does not support the proposed local mechanism.
 
-After the cube was complete and that gradient association was unsupported, we froze a targeted
-same-checkpoint gauge intervention before any new record existed. From one ground-truth history it
-computes a hard checkpoint's compatible raw state $z_1$ and projection $p_1$, appends each to an
-otherwise identical history, and compares the conserving channel of the next raw prediction. The
-primary per-seed estimand is this feedback RMSE divided by the projected-history branch's conserving
-RMSE, averaged across coordinates at OOD 512; materiality requires its 95\% interval to lie wholly
-above 0.10. The exact 60-record run crosses 30 seeds and two coordinates with zero optimization.
-The numerical identity criterion uses a $10^{-6}$ absolute floor together with a
-worst-case IEEE-754 bound; non-invariant roundoff must remain below 0.1\% of the projected baseline.
+A separately frozen, same-checkpoint gauge intervention compares the next
+conserving prediction after appending either a compatible raw state or its
+projection to an otherwise identical history. Its 60 records cross 30 seeds
+and two coordinates. The primary feedback RMSE, normalized by projected-history
+conserving RMSE at OOD 512, must have its 95\% interval above 0.10. Appendix
+\ref{app:revision-gauge-details} gives the construction and numerical identity bounds.
 
 \paragraph{Prospective primary and integrity gates.}
 The primary cell was fixed as OOD 512 at horizon 16; the other 11 cells were mandatory secondary
@@ -407,13 +402,13 @@ third, dynamics-specific outcome.
 
 \subsection{The four trained cells show a small bundled interaction}
 
-The fresh four-cell factorial first gives a plausible but incomplete story. In the primary
-OOD-512, horizon-16 cell, residual coordinates reduce conserving RMSE by
+In the fresh four-cell factorial, the primary
+OOD-512, horizon-16 cell shows that residual coordinates reduce conserving RMSE by
 $\FactorPZero$ [$\FactorPZeroLow$, $\FactorPZeroHigh$] under free training and by
 $\FactorPOne$ [$\FactorPOneLow$, $\FactorPOneHigh$] under hard training. Their difference,
 $I_{\mathrm{bundle}}=\FactorInteraction$ [$\FactorInteractionLow$,
 $\FactorInteractionHigh$], excludes zero but crosses the frozen SESOI boundary
-$-\FactorSesoi$. Its ordered classification is therefore \emph{\FactorClassification}, not
+$-\FactorSesoi$. Its ordered classification is therefore \emph{smaller statistical non-additivity}, not
 material non-additivity. The two-factor Shapley credits are both positive:
 $\phiP=\FactorPhiParameterization$ [$\FactorPhiParameterizationLow$,
 $\FactorPhiParameterizationHigh$] and $\phiE=\FactorPhiEnforcement$
@@ -423,7 +418,8 @@ both modeling choices appear useful and only mildly path dependent.
 \begin{table}[t]
   \caption{Fresh-seed primary effects. Positive $P_0$ and $P_1$ favor residual coordinates.
   $I_{\mathrm{bundle}}$ is the four-trained-cell interaction; $J$ is the full
-  coordinate-by-training-by-inference interaction. Intervals are 95\% paired bootstrap CIs.}
+  coordinate-by-training-by-inference interaction. Intervals are 95\% paired bootstrap CIs.
+  The bundled interval follows the factorial primary analysis.}
   \label{tab:primary}
   \centering
   \small
@@ -433,7 +429,7 @@ both modeling choices appear useful and only mildly path dependent.
     \midrule
     $P_0$ & \FactorPZero & [\FactorPZeroLow, \FactorPZeroHigh] & residual favored \\
     $P_1$ & \FactorPOne & [\FactorPOneLow, \FactorPOneHigh] & residual favored \\
-    $I_{\mathrm{bundle}}$ & \CubeIBundle & [\CubeIBundleLow, \CubeIBundleHigh] & smaller non-additivity \\
+    $I_{\mathrm{bundle}}$ & \FactorInteraction & [\FactorInteractionLow, \FactorInteractionHigh] & smaller statistical non-additivity \\
     $J$ & \CubeJ & [\CubeJLow, \CubeJHigh] & material non-additivity \\
     $\phi_{\mathrm{train}}$ & \CubePhiTrain & [\CubePhiTrainLow, \CubePhiTrainHigh] & countervailing credit \\
     $\phi_{\mathrm{infer}}$ & \CubePhiInfer & [\CubePhiInferLow, \CubePhiInferHigh] & countervailing credit \\
@@ -486,8 +482,8 @@ eight OOD-512/horizon-16 cells below persistence, while deployed residual FNO sk
 predictively successful architectures; the registered results remain unchanged.
 
 A separate post-hoc deployment control uses the same 120 U-Net checkpoints. At every step it
-block-averages history onto 256 cells, evaluates the U-Net there, and periodically interpolates
-the output back to the target cell centers before feedback. No weights change. On the same 256
+block-averages history onto 256 cells, evaluates the U-Net there, and interpolates
+the output back to the target cell centers using periodic boundary conditions before feedback. No weights change. On the same 256
 observed evaluation trajectories, the four trained/deployed arms have OOD-512/horizon-16 skill
 0.942--0.986, and $J=0.351$ [0.198, 0.556] under paired-seed resampling. The crossed
 seed/trajectory interval is [0.197, 0.555]. Thus a predictively useful non-FNO procedure can also
@@ -496,7 +492,7 @@ development trajectories for predictive competence; it is not independent archit
 confirmation or a pure model-body effect. Appendix~\ref{app:resolution-adapter} reports all cells,
 including the raw hard-checkpoint policies, both interval definitions and paired changes.
 
-\subsection{Independent shallow water reproduces and amplifies the path dependence}
+\subsection{Independent shallow water reproduces path dependence}
 
 The prospectively frozen 2D shallow-water replication passes the same admission rule on a
 different equation, dimension, boundary geometry, and linear mass invariant. Its ordinary
@@ -508,16 +504,16 @@ then material at horizons 4, 16, and 31, for \SWEMaterialCells/8 mandatory cells
 
 The diagnostic failure is sharply coordinate dependent: removing the projector from the
 hard-trained absolute checkpoint raises mean conserving RMSE from \SWEAOneOne{} to
-\SWEAOneZero{}, whereas the corresponding residual checkpoint remains near \SWEROneOne{} versus
-\SWEROneZero{}. The path-averaged training and inference credits are again large and opposing,
+\SWEAOneZero{}, whereas the corresponding residual checkpoint is unchanged at the reported precision
+(\SWEROneOne{} in both conditions). The path-averaged training and inference credits are again large and opposing,
 \SWEPhiTrain{} and \SWEPhiInfer{}, summing to the much smaller bundled interaction. This is not a
 claim that the unprojected hard model is a sensible deployment mode; it is evidence that the
 projector is constitutive of what projected training learned. Post-hoc paired-seed summaries
-show median absolute-coordinate removal harm 74.71 (IQR 42.71--128.71), positive in 28/30
-seeds, showing broad seed-level harm within this fixed test cohort
+show median absolute-coordinate removal harm of 74.71 (IQR 42.71--128.71), positive in 28/30
+seeds within this fixed test cohort
 (Appendix~\ref{app:seed-distributions}).
 
-The independent admissibility test does not reveal a hidden cost. At OOD-128/horizon-31, adding
+The independent admissibility test finds joint improvements. At OOD-128/horizon-31, adding
 projection to free-trained checkpoints improves maximum mass drift by \SWETradeoffConservation{}
 [\SWETradeoffConservationLow, \SWETradeoffConservationHigh], conserving RMSE by
 \SWETradeoffDynamics{} [\SWETradeoffDynamicsLow, \SWETradeoffDynamicsHigh], and mean negative-depth
@@ -539,82 +535,87 @@ and residual coordinates do so separately. The maximum numerical contamination i
 \GaugeMaxContamination{} of the projected baseline, below the prespecified
 \GaugeContaminationLimit{} gate.
 
-This establishes that an invariant-direction input perturbation can transfer directly into the
-learned admissible dynamics. It does not show that the two-step magnitude ranks eventual rollout
-failure across seeds: its Spearman association with coordinate-averaged horizon-16 removal harm is
-$\rho=\GaugeAssociationRho$ [\GaugeAssociationRhoLow, \GaugeAssociationRhoHigh], classified
-\emph{\GaugeAssociationClassification}. We therefore claim existence and materiality of the
-feedback channel, not a seed-level quantitative explanation of every long-horizon divergence.
+The intervention establishes material transfer from the invariant input direction into the
+learned conserving dynamics. Across seeds, its Spearman association with coordinate-averaged
+horizon-16 removal harm is $\rho=\GaugeAssociationRho$
+[\GaugeAssociationRhoLow, \GaugeAssociationRhoHigh], classified
+\emph{\GaugeAssociationClassification}. The direct response identifies the feedback channel;
+the seed association leaves its two-step magnitude unvalidated as a predictor of later harm.
 
-\paragraph{Physical-history response.}
-A post-hoc Advection control shifts all ten input frames by a constant or adds an
-analytically advecting sinusoid. Under whole-history constant shifts, OOD-512 conserving
-residuals are 0.0083--0.0106 across the four arms, with positive hard-minus-free contrasts
-in both coordinates. Exact output conservation does not establish better equivariance
-to this physical transformation. Appendix~\ref{app:revision-history} gives amplitudes,
-analytic references and uncertainty.
+\paragraph{Physically consistent histories distinguish a second question.}
+The gauge experiment compares two histories induced by projector removal. A post-hoc Advection
+analysis shifts all ten input frames by a common constant, or adds an analytically advecting
+sinusoid, and compares the next-step response with the corresponding physical response.
+For whole-history constant shifts, the OOD-512 normalized conserving residual is 0.0083--0.0106
+across the four training arms. Hard-minus-free differences are positive in both coordinates:
+the hard-trained checkpoints have larger constant-shift equivariance errors on these histories
+(Table~\ref{tab:revision-history}). This descriptive comparison reuses the checkpoints and tests
+a physically consistent history perturbation separately from projector removal.
+Appendix~\ref{app:revision-history} gives amplitudes, analytic references and uncertainty.
 
-\paragraph{Local gradient boundary.}
-The frozen one-Adam-step intervention has an absolute-minus-residual effect of
-$\CubeOneStepInteraction$ [$\CubeOneStepInteractionLow$, $\CubeOneStepInteractionHigh$].
-Its association with the final inference-matched training interaction is unresolved:
-$\rho=\CubeMechanismRho$ [$\CubeMechanismRhoLow$, $\CubeMechanismRhoHigh$].
-The direct gauge intervention establishes a feedback channel, but this local gradient
-diagnostic does not explain the final seed-level variation.
+\paragraph{Initial gradient interaction and final training effects.}
 
-\paragraph{Guarantee versus predictive attribution.}
+The frozen first-minibatch intervention finds an absolute-minus-residual one-Adam-step effect of
+$\CubeOneStepInteraction$ [$\CubeOneStepInteractionLow$,
+$\CubeOneStepInteractionHigh$], with the interval excluding zero. Its paired-seed association
+with the inference-matched final training interaction $T_1=\CubeFinalTrainingInteraction$
+is $\rho=\CubeMechanismRho$ with 95\% bootstrap CI
+[$\CubeMechanismRhoLow$, $\CubeMechanismRhoHigh$], classified
+\emph{\CubeMechanismClassification}. The analogous bundled association is also unsupported.
+The intervention detects a local training interaction; its seed-level association with the final
+effect remains uncertain. The material feedback result comes from the direct input intervention.
 
-Hard and projected rollouts satisfy the invariant while free models have no such guarantee.
-Because conserving RMSE excludes the mechanically corrected channel and fixed projection cannot
-change it (Proposition~\ref{prop:decoupling}), our accuracy result concerns training and feedback
-through the projector, not a detachable post-hoc correction.
+\paragraph{Conserving error isolates learned predictive changes.}
 
-\paragraph{Competence, training recipe and direction controls.}
-A post-hoc replay evaluates all shallow-water checkpoints against the same persistence
-forecast. In the primary OOD-128/horizon-16 cell, skill is 0.3657 for A01 and 0.5653
-for A11, while every residual cell is approximately at persistence and A00 has skill
-$-3.9501$. The large interaction is dominated by projector removal from the absolute
-hard-trained model. It is evidence of dependence in this cube, not uniform predictive
-competence across its eight cells (Appendix~\ref{app:revision-expanded}).
+Hard and projected rollouts enforce the invariant. Conserving RMSE measures the orthogonal
+channel that fixed projection leaves unchanged (Proposition~\ref{prop:decoupling}). Changes
+in this error therefore identify effects of training and autoregressive feedback beyond the
+mechanically removed invariant drift.
 
-A second Advection recipe trains all four arms for 300 epochs at learning rate
-$3\times10^{-4}$ on 30 new seeds. On OOD-512/horizon-16, its interaction is
-$0.2724$ [crossed 95\% CI $0.2293$, $0.3178$]. All six cells outside hard-trained
-projector removal have persistence skill above 0.9977; both removal cells are unstable.
-This post-hoc same-task result tests recipe sensitivity without replacing the frozen recipe.
+\paragraph{Competence, recipe and direction controls.}
+Post-hoc shallow-water skill at OOD-128/horizon-16 is 0.3657 for A01, 0.5653
+for A11, approximately zero for residual cells and $-3.9501$ for A00. Thus
+cube dependence coexists with uneven predictive competence. A second Advection
+recipe (four arms, 30 new seeds, 300 epochs, learning rate $3\times10^{-4}$)
+gives interaction $0.2724$ [crossed 95\% CI $0.2293$, $0.3178$]; the six cells
+outside hard-trained projector removal have skill above 0.9977. Across ten
+histories, equal-RMS Gaussian and low-frequency controls often exceed the
+observed gauge response. Feedback is present, but preferential gauge sensitivity
+is not established. Appendix~\ref{app:revision-expanded} retains every cell,
+negative control and interval.
 
-Finally, ten shared histories per checkpoint compare the observed gauge perturbation
-with five Gaussian and five low-frequency directions, with both signs and equal RMS.
-The 79,200 FNO/U-Net records retain every condition. Responses to the observed gauge
-are nonzero, but equal-amplitude controls often produce larger conserving responses.
-The intervention establishes a feedback channel; it does not establish preferential
-sensitivity to that direction. Appendix~\ref{app:revision-expanded} reports all model,
-coordinate and resolution contrasts with seed/history uncertainty.
+\section{Implications and conclusion}
 
-\section{Implications}
+The two frozen FNO studies establish material dependence on the inference
+projector. In Advection, projection leaves conserving error unchanged at
+horizon one; later removal interactions and the direct input intervention
+locate a learned feedback pathway. Opposite-signed training and inference
+credits largely cancel in the bundled comparison. The eight-cell design
+recovers them by toggling projection on fixed free- and hard-trained weights.
 
-Evaluation should add and remove projection on each locked checkpoint, separating
-output coordinates, training and deployment. An asymmetric comparison that only adds
-projection to free models cannot detect learned removal dependence. Raw outputs of
-projected models are identified only modulo the invariant direction; bypassing the
-projector can change the autoregressive transition even when one-step conserving
-predictions agree. Report invariant and conserving errors separately, alongside
-forecast skill and trajectory quality. The observed feedback channel need not be
-direction-specific, and large interaction magnitude need not imply useful prediction.
+Projected loss leaves the raw invariant component unconstrained, so bypassing
+the projector requires separate rollout validation. Report conserving error
+$\lVert Qe\rVert$ alongside invariant error $\lVert Pe\rVert$: the former tests
+prediction outside the mechanically corrected channel, the latter enforcement.
+Positivity requires its own compatibility condition (Proposition~\ref{prop:positivity}).
+The U-Net and resolution-adapter results further make deployment strategy part
+of the empirical scope.
 
 \section{Limitations}
 
-The experiments cover two PDEBench scenarios, uniform mass and resolution shifts.
-They do not establish generality over coefficients, nonlinear invariants or initial
-conditions. Both independent path-dependence studies use FNOs. Shallow-water residual
-cells remain near persistence; the depth-only surrogate does not establish full-system
-fidelity. Native-grid U-Net is below persistence, while its predictive post-hoc adapter
-changes deployment and is not capacity matched. Gauge non-identification permits,
-but does not force, unstable raw predictions. Credits and materiality thresholds
-condition on the fixed cube. Seed-only intervals condition on trajectories; the
-crossed bootstrap additionally resamples the observed trajectories, with pointwise
-post-hoc intervals. Equal-RMS controls test local response specificity, not rollout
-robustness. Advection's constant-shift and advecting-sine controls do not apply to
+Evidence spans two public datasets, one coefficient/scenario per equation, uniform mass, and
+resolution shifts plus post-hoc Advection history interventions; it does not cover nonlinear
+invariants, generic noise, coefficient shifts, or broad initial-condition distributions. Both independent positive PDE studies use FNOs. The larger native-grid U-Net does not pass its
+frozen gate and is below persistence in the primary cell. Its predictive post-hoc resolution
+adapter changes deployment as well as effective spatial processing; neither comparison is
+capacity matched, and independent architecture scope remains open. The shallow-water
+surrogate observes depth but not momentum or velocity, making its evidence partial-state rather
+than full-system fidelity. Projector removal is diagnostic, and gauge non-identification does not
+force every optimizer to select an unstable representative. Credits, the training null, and the
+10\% SESOI condition on the fixed design; cells share trained models, and intervals condition on
+the frozen trajectories. The post-hoc crossed bootstrap additionally resamples those observed
+trajectories; it does not establish coverage for every initial-condition distribution.
+Constant-shift and advecting-sine symmetries apply here to linear periodic Advection, not to
 shallow-water depth.
 
 \subsection*{Reproducibility statement}
@@ -629,7 +630,7 @@ payload identity, and SHA-256; this does not imply that the weight bytes are emb
 supplement. All formal records bind to source and protocol hashes. The accompanying revision data view
 contains all 192 checkpoint-skill cells and 144 physical-history response cells, both interval
 definitions, and generated tables. Their post-hoc status remains separate from the original
-confirmation. The resolution-adapter view additionally contains 192 native/adapted skill cells and paired trajectory errors for CPU replay. Full checkpoints and trajectory arrays are retained in the recovery archive.
+confirmation. The resolution-adapter view additionally contains 192 native/adapted skill cells and paired trajectory errors for CPU replay. The revision extension also provides the 120-model second-recipe summaries, all shallow-water skill cells and multi-history direction-control comparisons (Appendix~\ref{app:revision-expanded}), with seed/trajectory uncertainty and deterministically generated tables. Full checkpoints and trajectory arrays are retained in the recovery archive.
 
 \subsection*{AI use statement}
 
@@ -638,7 +639,9 @@ mathematical statements and proof drafts, hypotheses and the prospective experim
 implement and test experiment and analysis code; prepare the conservative data interface; interpret
 frozen outputs; discover and summarize related literature; generate figure code; format references;
 and draft and edit the manuscript. They were not used to generate the underlying PDEBench
-observations. The authors take responsibility for the final content,
+observations. The authors
+reviewed the primary sources, executable tests, immutable hashes, analysis outputs, mathematical
+claims, and all AI-assisted text and code. The authors take responsibility for the final content,
 including claims and artifacts produced with AI assistance.
 
 \bibliography{refs}
@@ -755,7 +758,7 @@ training is nonlinear, we prospectively record both the gradient geometry and th
 one-Adam-step difference; neither is assumed to explain the final rollout interaction. This use of
 gradient alignment follows the broader composite-loss diagnostic literature
 \citep{hwang2024dcgd,wang2025gradient}, while the orthogonal conservation channels and matched
-enforcement intervention are specific to our audit.
+enforcement intervention are specific to our design.
 
 \section{Proof of tangent-kernel channel transfer}
 \label{app:ntk-transfer}
@@ -891,7 +894,7 @@ unresolved. This pattern is a boundary result, not evidence of absence in every 
 
 \begin{table}[H]
   \caption{All mandatory U-Net intervention-cube cells. $J/\delta$ uses the same prespecified
-  practical threshold as the FNO audit; $p$ is Holm-adjusted.}
+  practical threshold as the FNO experiment; $p$ is Holm-adjusted.}
   \label{tab:unet-allcells}
   \centering
   \scriptsize
@@ -1034,7 +1037,7 @@ sinusoid, the reference instead transports that perturbation at velocity $\beta=
 both the ten history times and the next prediction time. Its analytic $Q$ response is nonzero.
 For each existing FNO checkpoint we compare the deployed next-step responses with and without
 these interventions. We divide the spatial RMS of the response minus its analytic $Q$ reference
-by $|\alpha|$, using amplitudes $\alpha/\sigma\in\{-0.5,-0.1,0.1,0.5\}$.
+by $|\alpha|$, using amplitudes $\alpha/\sigma\in\{-0.5,-0.25,0.25,0.5\}$.
 The scale $\sigma=0.7960596902$ is the standard deviation of native-grid values in the first ten
 frames of seed 3000's 2,048 training trajectories; test values do not determine it.
 
@@ -1069,8 +1072,8 @@ shallow-water depth.
 
 This analysis changes deployment while preserving all 120 trained checkpoints. The wrapper
 restricts each input history to the training grid of 256 cells by block averaging. It evaluates
-the original network on that grid and interpolates its output periodically to the target cell
-centers. The interpolated prediction enters the next history at the target resolution. For an
+the original network on that grid and interpolates its output to the target cell
+centers using periodic boundary conditions. The interpolated prediction enters the next history at the target resolution. For an
 integer refinement factor $r$, interpolation uses coordinate $(j+1/2)/r-1/2$ in coarse-cell
 indices and the adjacent periodic centers. Restriction and interpolation preserve the spatial
 mean. The wrapper is the identity operation at resolution 256; the paired replay arrays agree
@@ -1116,11 +1119,45 @@ and its decision rule are retained separately.}
 \input{revision-next/adapter-interactions.tex}
 \end{table}
 
+\section{Direct-gauge construction and numerical checks}
+\label{app:revision-gauge-details}
 
-
+After the cube was complete and that gradient association was unsupported, we froze a targeted
+same-checkpoint gauge intervention before any new record existed. From one ground-truth history it
+computes a hard checkpoint's compatible raw state $z_1$ and projection $p_1$, appends each to an
+otherwise identical history, and compares the conserving channel of the next raw prediction. The
+primary per-seed estimand is this feedback RMSE divided by the projected-history branch's conserving
+RMSE, averaged across coordinates at OOD 512; materiality requires its 95\% interval to lie wholly
+above 0.10. The exact 60-record run crosses 30 seeds and two coordinates with zero optimization.
+The numerical identity criterion uses a $10^{-6}$ absolute floor together with a
+worst-case IEEE-754 bound; non-invariant roundoff must remain below 0.1\% of the projected baseline.
 
 \section{Post-hoc competence, recipe and direction controls}
 \label{app:revision-expanded}
+
+\paragraph{Competence, training recipe and direction controls.}
+A post-hoc replay evaluates all shallow-water checkpoints against the same persistence
+forecast. In the primary OOD-128/horizon-16 cell, skill is 0.3657 for A01 and 0.5653
+for A11, while every residual cell is approximately at persistence and A00 has skill
+$-3.9501$. The large interaction is dominated by projector removal from the absolute
+hard-trained model. It is evidence of dependence in this cube, not uniform predictive
+competence across its eight cells (Appendix~\ref{app:revision-expanded}).
+
+A second Advection recipe trains all four arms for 300 epochs at learning rate
+$3\times10^{-4}$ on 30 new seeds. On OOD-512/horizon-16, its interaction is
+$0.2724$ [crossed 95\% CI $0.2293$, $0.3178$]. All six cells outside hard-trained
+projector removal have persistence skill above 0.9977; both removal cells are unstable.
+This post-hoc same-task result tests recipe sensitivity without replacing the frozen recipe.
+
+Finally, ten shared histories per checkpoint compare the observed gauge perturbation
+with five Gaussian and five low-frequency directions, with both signs and equal RMS.
+The 79,200 FNO/U-Net records retain every condition. Responses to the observed gauge
+are nonzero, but equal-amplitude controls often produce larger conserving responses.
+The intervention establishes a feedback channel; it does not establish preferential
+sensitivity to that direction. Appendix~\ref{app:revision-expanded} reports all model,
+coordinate and resolution contrasts with seed/history uncertainty.
+
+
 
 \subsection{A second Advection training recipe}
 The recipe uses a learning rate of $3\times10^{-4}$ and 300 epochs, with 30 new seeds
@@ -1156,5 +1193,6 @@ conditions. The full view also retains individual conditions, sign-symmetric con
 and ratio-of-means endpoints. Ratios do not identify a mechanistic contribution share.
 
 \input{revision-submission/direction-tables.tex}
+
 
 \end{document}

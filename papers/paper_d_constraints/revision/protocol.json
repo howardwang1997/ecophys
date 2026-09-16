@@ -1,0 +1,19 @@
+{
+  "source_analysis_sha256": {
+    "ed1-summary": "d3141808f1a0d26abf2b9b99df41b097cc1d53a1f73ca36b45ab096aaff99f0f",
+    "ed2-summary": "691439a10ffc770a86314c8ad7945f001aa0a387c2288f213af7efd66084eee7"
+  },
+  "scope": "Post-hoc analysis of existing Advection checkpoints; no independent confirmation or SWE symmetry test.",
+  "skill": "1 - aggregate total MSE / aggregate persistence MSE; not an average of trajectory-level ratios",
+  "sampling": "30 seeds and 256 shared trajectories; 10000 crossed bootstrap draws",
+  "skill_primary": "OOD 512 / horizon 16; R11 two-architecture adjusted intervals have 97.5% coverage; other intervals are descriptive 95%",
+  "history": "All ten frames receive a constant shift or an analytically advecting sinusoid; one-step response uses the same deployed checkpoint.",
+  "history_amplitudes_sigma": [
+    -0.5,
+    -0.25,
+    0.25,
+    0.5
+  ],
+  "history_primary": "Mean of four signed-amplitude normalized conserving residuals per seed at OOD 512; four-arm adjusted intervals have 98.75% coverage.",
+  "last_frame": "Response sensitivity only; whole-history and last-frame inputs differ in energy."
+}
