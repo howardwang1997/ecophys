@@ -1,7 +1,7 @@
 schema_version: 2
 graph:
   id: ecophys_research_routes
-  updated_at: '2026-09-14'
+  updated_at: '2026-09-19'
   scope:
     start_date: '2026-04-24'
     end_date: null
@@ -94,17 +94,28 @@ nodes:
 - id: reexploration_merged_gamma_led_paper
   node_type: research_route
   title: 'Existing GAMMA-led re-exploration program: forecast subject lineage'
-  status: parked
+  status: active
   opened_at: '2026-09-06'
   closed_at: null
-  phase: existing_D_minus_1_planning_subject_registered_20260912
+  phase: activated_d0_amended_20261009_pre_freeze_builds
   terminal_gate: null
   failure_codes: []
   summary: Registered on September12 to preserve the subject and plan locators of six existing September6 forecast
     entries. The source experiment plan states D-minus-2 to D-minus-1 planning; the PI pre-D0 decision withholds
     confirmation and training activation. Parked is a lineage record, not a new candidate, scientific result, forecast
-    freeze or execution authorization. Forecast bytes and scientific thresholds remain unchanged.
+    freeze or execution authorization. Forecast bytes and scientific thresholds remain unchanged. ACTIVATED
+    2026-09-19 by PI decision pi_gamma_activation_d0_amendment_20260919 — the withhold is lifted, the D0
+    outcome-blind freeze date is amended pre-hash from 2026-09-19 to 2026-10-09 (prereg v2 Annex B(j) +
+    Section 1.3 + consistency sites, errata entry C-12), Annex B convention constants are ratified as pinned,
+    and the program's compute-location rule forbids any experiment on the MacBook (all execution remote via
+    ssh). Pre-freeze builds (analyzer contract, cleanup scripts, reflexive policy) run 2026-09-19 to 2026-10-09;
+    post-freeze campaign per the frozen ops plan; forecast entry d1_merged_gammas_led_paper_gate resolves at
+    the outcome-blind D-1 exit gates. No scientific outcome exists or is claimed at activation.
   evidence:
+  - id: pi_gamma_activation_d0_amendment_20260919
+    kind: private_internal_PI_decision
+    availability: present
+    path: research/discovery/decisions/pi_gamma_activation_d0_amendment_20260919.yaml
   - id: d1_contract_v1_c9
     kind: existing_plan_or_code_locator
     availability: present
