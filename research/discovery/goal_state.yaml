@@ -25,8 +25,12 @@ mode_basis:
     item 8, the long pole) DONE 2026-09-19: v0.3 authored from 233 pins, adversarial audit
     (22 agents, 12 findings) and verifier pass complete, all 16 PI flags ratified at their
     defaults (decision pi_analyzer_contract_flags_ratification_20260919, "整体批，授权"),
-    committed; remaining are cleanup scripts (item 9, dry-runs remote), reflexive policy
-    implementation (item 10, smokes remote), regression-battery status re-verification; D0 freeze session
+    committed; item 9 (cleanup/archive tooling) completed and committed 002b91c53 the same
+    day (both-node dry-run evidence under research/discovery/ops/d0_cleanup_dryrun_20260919/);
+    item 10 (reflexive deployment cell) completed the same day: module + 21-test suite,
+    remote smoke matrix 16/16 all-filled/replay_ok on v100ts (evidence under
+    research/discovery/ops/d0_reflexive_smoke_20260919/); remaining pre-freeze work is the
+    regression-battery status re-verification; D0 freeze session
     2026-10-09 per prereg Section 1.3; post-freeze Stage 1 (~650 V100-h) and conditional
     Stage 2 (~410 V100-h) per the frozen ops plan, hard ceiling 2026-11-06; the merged paper
     targets ICML 2027 main track per the PI 2026-09-18 venue directive. (2) Paper D ICLR 2027
@@ -48,21 +52,15 @@ mode_basis:
 last_derived_at: "2026-09-19"
 next_action_queue:
   - action: >-
-      Pre-freeze item 10 (reflexive-policy implementation) under the amended
-      compute-location rule: author on the Mac; run every smoke remotely via ssh
-      (v100ts/v100bts), never on the MacBook. Item 9 (cleanup scripts) is complete:
-      authored, adversarially audited (35 confirmed findings, all fixed), 30/30 tests
-      + ruff + mypy --strict green, and the pre-D0 dry-run re-executed on both nodes
-      (289 eligible / 172 duplicate pins merged, evidence under
-      research/discovery/ops/d0_cleanup_dryrun_20260919/); commit awaits PI authorization.
-    rationale: Activation supersedes the ops plan's Mac-legal smoke classification; item 10 is not freeze-blocking before D0+12. Item 8 (analyzer contract) completed and ratified 2026-09-19, removing the long pole.
-    cost_estimate: authoring days + remote CPU/GPU smoke windows.
-  - action: >-
       Re-verify the 2026-09-08 regression-battery result is still green against the current
       tree (remote execution), then hold the D0 freeze session on 2026-10-09 per prereg
       Section 1.3 (commit of the exact frozen file set, per-file sha256 + commit hash +
       timestamp, R2 upload to r2://ecophys/alpha_cube_d0_20261009/freeze_record.json,
-      session log with etag).
+      session log with etag). Pre-freeze items 8-10 are all complete: item 8 analyzer
+      contract v0.3 ratified; item 9 cleanup tooling (commit 002b91c53); item 10 reflexive
+      deployment cell (ecomd/reexploration/reflexive.py + 21 tests; remote smoke matrix
+      16/16 all-filled, replay_ok, firewalls stamped, evidence under
+      research/discovery/ops/d0_reflexive_smoke_20260919/).
     rationale: Freeze mechanics are pinned; order is mandatory and a failure at any step stops the freeze.
     cost_estimate: one remote battery re-run + one freeze session.
   - action: >-
@@ -312,6 +310,24 @@ session_history:
       per the PI compute rule: 12 plans, 289 eligible, 2,232,714 bytes, 172
       duplicate pins merged; only ~2.2MB is manifest-covered, so the Section 8.3
       >=40%-free STOP gate is expected to fire mechanically at D0-S1.
+  - date: "2026-09-19"
+    mode: pre_freeze_item10_reflexive_cell_complete
+    ledger_ref: logs/2026-09-19.md Session 6
+    note: >-
+      Item 10 complete (PI-authorized): ecomd/reexploration/reflexive.py (R00/R11
+      campaign-grid cells, C12 five firewalls in code, deterministic no-RNG
+      participation policy with EWMA volume as the single sim-in-loop channel,
+      E-2 sha256 seed derivation with training-substream disjointness asserted)
+      + 21-test suite. Two fill-rate defects from the first smoke fixed
+      (floating empty-side anchoring; same-price FIFO hold). Remote smoke on
+      v100ts under scripts/rfx_smoke_driver_20260919.sh: full matrix
+      {l1,l2} x {R00,R11} x {dgp,sim-untrained} x 2 seeds, 16/16 filled 100/100,
+      replay_ok, firewalls stamped; l2 sim metrics match dgp per seed (benign
+      chunk_max saturation), l1 sim paths diverge as expected. tape_sha256 is
+      not a cross-run_id comparator (session_id embedded in tape records).
+      ReferenceEngine per-event state seal = O(tape^2), ~10 CPU-min per
+      225-round session; lab_asset untouched (frozen); scheduled cell ~13 CPU-h
+      remote. Queue head is now the regression-battery re-verification.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each
