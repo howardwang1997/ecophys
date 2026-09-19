@@ -1,0 +1,81 @@
+schema_version: pi-analyzer-contract-flags-ratification-v1
+decision_id: pi_analyzer_contract_flags_ratification_20260919
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "整体批，授权"
+recorded_at: "2026-09-19T06:12:00Z"
+status: executed
+parent_decision: pi_gamma_activation_d0_amendment_20260919
+subject_document: papers/proposal/ecomd_reexploration_analyzer_contract_2026-09-19.md
+scope_interpretation: >-
+  Two clauses answering the 2026-09-19 14:00 local PI report on the analyzer
+  contract (D0 readiness item 8). Clause 1 "整体批": all 16 open items in Part 10
+  of the analyzer contract are RATIFIED at their proposed defaults, including the
+  four blocker items — FLAG-1 (Annex B(a) preimage byte rule: UTF-8 plain
+  concatenation of the three strings, no separator bytes, resolving the PR
+  line-656 ASCII "||" vs line-1434 U+2016 "‖" print inconsistency), FLAG-2
+  (block_id/family_id string table as tabled in contract Part 7.3, covering all
+  three elements: the strings; O-test bootstrap seeds on all five block_ids;
+  KT_A3/KT_M1 default block assignment B1+B3), FLAG-3 (four-analyzer roster
+  A_B1/A_B2/A_B3/A_B4 one per block, A10 audit as a separately published fifth
+  analysis unit), and FLAG-10 (statistical-engine pins: numpy default_rng PCG64
+  for bootstrap resampling; complete sign-flip enumeration when 2^n <= 2^24
+  else a seeded 10^7 random flip subset with _signflip suffix). The remaining
+  twelve flags (4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16) are ratified at their
+  Part 10 defaults as written; the "Alternative" column of each row is closed as
+  a live option and survives only as the recorded stake (any future switch to an
+  alternative after the D0 hash requires a new frozen, hash-recorded amendment
+  per contract Part 11 / prereg C13). With this ratification no flag remains
+  open at the D0 hash, satisfying the contract Part 0 closure condition. Clause
+  2 "授权": the PI authorizes the git commit of the analyzer-contract change
+  set — the contract file itself, this decision record, the 2026-09-19 session
+  log, the in-repo memory updates, and the goal_state queue advance. The
+  authorization is bounded to exactly this change set: it does NOT extend to the
+  unrelated modified working-tree files (papers/paper_d_constraints/* including
+  revision-submission/, output/pdf/*, .claude/memory/project_paper_d_manuscript_revision_2026-09-16.md —
+  the Paper D track is private and stays uncommitted), and it does NOT
+  authorize analyzer or gate execution of any kind (that remains D0-gated per
+  prereg Section 1.3 and the contract Part 1 authority clause).
+not_resolved_here: >-
+  Explicitly NOT resolved by this decision and still open on the PI desk:
+  (1) the physics-project bulk disk decision on the V100 nodes (prereg Section
+  8.3 >=40%-free STOP-class launch prerequisite; v100bts /data ~32% free,
+  v100ts /data ~14% free; required before campaign launch, executes at D0-S1);
+  (2) the iCloud-eviction durable fix (materialize or desync the repo) which
+  must land before the 2026-10-09 freeze session runs its byte-exact git
+  commit — the present commit again uses the one-shot
+  core.checkStat=minimal / core.trustctime=false workaround.
+ratified_flags:
+  FLAG-1: annex_b_a_preimage_utf8_plain_concatenation_no_separator_bytes
+  FLAG-2: string_table_as_tabled_part_7_3_with_all_blocks_o_tests_and_kt_b1_b3
+  FLAG-3: per_block_quartet_roster_a10_separate_fifth_unit
+  FLAG-4: c12_govers_reflexive_after_four_hash_publication
+  FLAG-5: stage2_cancellation_not_run_stub_jsons_with_published_hashes
+  FLAG-6: per_session_gate_scoping_d0_s6_campaign_reconciliation
+  FLAG-7: rc1_rc4_taxonomy_trainings_excluded_dot_joined_record_key
+  FLAG-8: surgery_records_inside_8_cell_grid_no_separate_row
+  FLAG-9: one_16_cell_family_per_b4_variant_sub_block
+  FLAG-10: default_rng_pcg64_complete_enumeration_to_2e24_else_1e7_seeded_subset
+  FLAG-11: r2_alpha_cube_d0_20261009_analysis_channel_plus_git_plus_log
+  FLAG-12: l1_4_status_recorded_in_freeze_record_flagged_if_not_landed
+  FLAG-13: trunc_cap_l2_de_scope_only_pop_4x_drop_does_not_apply
+  FLAG-14: fixture_gate_external_pre_gate_each_session_on_node
+  FLAG-15: dummy_scope_items_1_to_6_as_written
+  FLAG-16: proportional_halt_gt_10pct_of_cell_seeds_ge_2_of_15_ge_2_of_12
+authorized_actions:
+  - commit_of_the_analyzer_contract_change_set_only_as_enumerated_above
+forbidden_actions:
+  - analyzer_or_gate_or_dummy_execution_before_d0_freeze_plus_pi_authorization
+  - commits_touching_the_paper_d_private_track_or_other_unrelated_working_tree_files
+  - post_hash_change_of_any_ratified_flag_without_a_new_frozen_hash_recorded_amendment
+evidence_label: governance_ratification_record
+public_evidence_eligible: true
+execution_record: >-
+  Executed 2026-09-19 ~14:12 local: this record written; the contract updated
+  to v0.3 with all ratification-phrased passages closed (Part 0 definition,
+  inline FLAG-1/FLAG-2/FLAG-16/Part-3/Part-7.5/Part-8.5 notes, Part 10 heading);
+  goal_state next_action_queue advanced (item 8 complete, items 9-10 promoted);
+  session log Session 3 appended; memory updated; both offline fail-closed
+  validators re-run green; the enumerated change set committed on branch
+  paper-d-iclr-2027-completion and pushed (hash recorded in git log; the D0
+  freeze archive pins the frozen-file hashes on 2026-10-09).

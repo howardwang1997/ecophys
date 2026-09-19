@@ -22,9 +22,11 @@ mode_basis:
     in force: no experiment of any size on the MacBook (supersedes the ops plan's Mac-legal
     dry-run/smoke classifications for pre-freeze items 9-10); all execution remote via ssh.
     Live tracks: (1) pre-freeze builds 2026-09-19 to 2026-10-09 — analyzer contract (readiness
-    item 8, the long pole: derive from frozen C1-C16 / G1-G12 / Annex B, then adversarial
-    audit), cleanup scripts (item 9, dry-runs remote), reflexive policy implementation
-    (item 10, smokes remote), regression-battery status re-verification; D0 freeze session
+    item 8, the long pole) DONE 2026-09-19: v0.3 authored from 233 pins, adversarial audit
+    (22 agents, 12 findings) and verifier pass complete, all 16 PI flags ratified at their
+    defaults (decision pi_analyzer_contract_flags_ratification_20260919, "整体批，授权"),
+    committed; remaining are cleanup scripts (item 9, dry-runs remote), reflexive policy
+    implementation (item 10, smokes remote), regression-battery status re-verification; D0 freeze session
     2026-10-09 per prereg Section 1.3; post-freeze Stage 1 (~650 V100-h) and conditional
     Stage 2 (~410 V100-h) per the frozen ops plan, hard ceiling 2026-11-06; the merged paper
     targets ICML 2027 main track per the PI 2026-09-18 venue directive. (2) Paper D ICLR 2027
@@ -43,18 +45,10 @@ mode_basis:
 last_derived_at: "2026-09-19"
 next_action_queue:
   - action: >-
-      Author the analyzer contract (D0 readiness item 8, the pre-freeze long pole):
-      derive one-shot G1-G12 execution order, input record schema, bootstrap mechanics
-      (Annex B(a)), and macro emission (Annex B(g)) entirely from the frozen prereg v2 /
-      contract / Annex B text; then adversarial audit against prereg v2 before hashing.
-      Mac-legal document authoring; any executable validation runs remote.
-    rationale: Item 8 is the only freeze-blocking build without which the 2026-10-09 D0 cannot execute.
-    cost_estimate: 3-4 focused authoring days + 1-2 audit days; zero GPU.
-  - action: >-
       Pre-freeze items 9-10 under the amended compute-location rule: author cleanup scripts
       and the reflexive-policy implementation on the Mac; run every dry-run and smoke
       remotely via ssh (v100ts/v100bts), never on the MacBook.
-    rationale: Activation supersedes the ops plan's Mac-legal smoke classification; item 10 is not freeze-blocking before D0+12.
+    rationale: Activation supersedes the ops plan's Mac-legal smoke classification; item 10 is not freeze-blocking before D0+12. Item 8 (analyzer contract) completed and ratified 2026-09-19, removing the long pole.
     cost_estimate: authoring days + remote CPU/GPU smoke windows.
   - action: >-
       Re-verify the 2026-09-08 regression-battery result is still green against the current
@@ -273,6 +267,25 @@ session_history:
       completed the same day (both nodes verified, symlinks intact); the >=40%-free
       STOP-class launch gate (prereg 8.3) still requires the physics-bulk PI decision before
       campaign launch. Pre-freeze build window 2026-09-19 to 2026-10-09 begins.
+  - date: "2026-09-19"
+    mode: analyzer_contract_authored_audited_ratified_item_8_done
+    ledger_ref: logs/2026-09-19.md Session 2
+    note: >-
+      Analyzer contract (D0 readiness item 8, the pre-freeze long pole) authored at
+      papers/proposal/ecomd_reexploration_analyzer_contract_2026-09-19.md from 233 frozen
+      pins: one-shot G1-G12 execution order, four block analyzers A_B1/A_B2/A_B3/A_B4
+      plus the A10 audit as a separately published fifth analysis unit (five-hash
+      publication story), record schema, O-tests with the verbatim PR Section 4.4 count
+      column, Annex B(a) bootstrap with the FLAG-1 byte rule, Annex B(g) macros, dummies.
+      Adversarial audit workflow (22 agents, 2.29M tokens): 12 confirmed findings fixed
+      (publication mechanics, Stage-2 bootstrap-seed coverage on all five blocks,
+      estimands family, h=64 descriptive stream, 15-seed halt translation), 4 allegations
+      refuted on verified arithmetic. Independent verifier: PASS-with-notes, 3 residuals
+      fixed. PI ratified all 16 flags at their defaults and authorized the commit
+      ("整体批，授权", decision pi_analyzer_contract_flags_ratification_20260919);
+      contract at v0.3, no flag open. No code executed anywhere. Remaining open PI items
+      unchanged: physics-bulk disk decision (launch-blocking, D0-S1) and the iCloud
+      durable fix before the freeze session.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each
