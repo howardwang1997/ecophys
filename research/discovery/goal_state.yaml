@@ -40,8 +40,11 @@ mode_basis:
     gate to 2026-11-20. V100 disk state: cold-data migration completed 2026-09-19 (v100bts
     / 100%->87%; v100ts /data 99%->86%); prereg Section 8.3 makes >=40%-free nodes a
     STOP-class LAUNCH prerequisite and both training volumes are below it (v100bts /data
-    ~32% free, v100ts /data ~14% free), so the physics-project bulk decision is required
-    before campaign launch (executes at D0-S1).
+    ~32% free, v100ts /data ~14% free). PI directive 2026-09-19
+    (pi_bulk_icloud_no_action_20260919, "bulk和icloud不用管"): neither item is
+    agent-managed or re-raised further; the frozen 8.3 gate itself is NOT amended and
+    still fires mechanically at launch if below floor (STOP, PI decision at that point);
+    the freeze session proceeds on the one-shot iCloud-safe git flags.
 last_derived_at: "2026-09-19"
 next_action_queue:
   - action: >-
@@ -58,14 +61,6 @@ next_action_queue:
       session log with etag).
     rationale: Freeze mechanics are pinned; order is mandatory and a failure at any step stops the freeze.
     cost_estimate: one remote battery re-run + one freeze session.
-  - action: >-
-      PI decision REQUIRED before campaign launch (not before the D0 freeze): which
-      physics-project bulk on the V100 nodes to move or archive (phonon trees,
-      /data/results 107G, graphene_physical_fd_dfpt 84G, phonon_offload) to bring both
-      training volumes to >=40% free; migration executes at D0-S1 per the frozen calendar.
-    rationale: prereg v2 Section 8.3 makes nodes-not->=40%-free a STOP-class launch
-      blocker, and both /data volumes are currently below the floor (~32% / ~14% free).
-    cost_estimate: one PI call + remote migration sessions before D0-S1.
   - action: >-
       After 2026-10-17 UTC, re-derive the verification_liquidity sealed-holdout state.
     rationale: Separate sealed protocol; holdout opening is forbidden before that date.
@@ -283,9 +278,21 @@ session_history:
       refuted on verified arithmetic. Independent verifier: PASS-with-notes, 3 residuals
       fixed. PI ratified all 16 flags at their defaults and authorized the commit
       ("整体批，授权", decision pi_analyzer_contract_flags_ratification_20260919);
-      contract at v0.3, no flag open. No code executed anywhere. Remaining open PI items
-      unchanged: physics-bulk disk decision (launch-blocking, D0-S1) and the iCloud
-      durable fix before the freeze session.
+      contract at v0.3, no flag open. No code executed anywhere.
+  - date: "2026-09-19"
+    mode: pi_directive_bulk_icloud_no_action
+    ledger_ref: logs/2026-09-19.md Session 4
+    note: >-
+      PI directive "bulk和icloud不用管" recorded as decision
+      pi_bulk_icloud_no_action_20260919: the physics-bulk disk decision and the
+      iCloud durable fix are removed from agent-tracked open items and are not
+      re-raised. Not an amendment of frozen text: prereg Section 8.3's
+      >=40%-free STOP-class launch gate stands unchanged and fires mechanically
+      at D0-S1 if either training volume is below floor (STOP, PI decision at
+      that point); the 2026-10-09 freeze session proceeds on the proven
+      one-shot core.checkStat=minimal / core.trustctime=false git flags with
+      pre-cleaned index.lock and no bare git status / git add -A. Queue head is
+      now pre-freeze items 9-10.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each

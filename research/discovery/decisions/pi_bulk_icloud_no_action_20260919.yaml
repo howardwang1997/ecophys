@@ -1,0 +1,47 @@
+schema_version: pi-bulk-icloud-no-action-v1
+decision_id: pi_bulk_icloud_no_action_20260919
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "bulk和icloud不用管"
+recorded_at: "2026-09-19T06:23:00Z"
+status: executed
+parent_decision: pi_gamma_activation_d0_amendment_20260919
+context: >-
+  Answer to the 2026-09-19 session report listing the two remaining PI items on
+  the launch path: (1) the physics-project bulk disk decision on the V100
+  nodes, tracked as a required pre-launch decision because prereg v2 Section
+  8.3 makes >=40%-free training volumes a STOP-class LAUNCH prerequisite and
+  both are currently below it (v100bts /data ~32% free, v100ts /data ~14%
+  free); (2) the iCloud-eviction durable fix (materialize or desync the repo)
+  ahead of the 2026-10-09 freeze session's byte-exact git commit, currently
+  worked around by the one-shot core.checkStat=minimal /
+  core.trustctime=false git flags (proven on commits 21359e930 and 71498d1f9).
+scope_interpretation: >-
+  The PI directs that neither item is to be managed, tracked, or re-raised by
+  the program agent: no physics-bulk migration planning or prompting, and no
+  iCloud durable-fix work. Consequences recorded precisely:
+  (a) This is NOT an amendment of frozen text. Prereg v2 Section 8.3 is
+  unchanged: if either training volume is still below the 40% floor at
+  campaign launch (D0-S1), the frozen STOP-class gate fires as written and the
+  outcome is a PI decision at that point under the gate's own terms. The
+  directive removes the standing pre-launch prompting item, not the gate.
+  (b) The D0 freeze session (2026-10-09) proceeds without a durable iCloud
+  fix: all git operations in that session use the proven one-shot
+  core.checkStat=minimal / core.trustctime=false flags, and the session plan
+  should pre-clean .git/index.lock and avoid bare git status / git add -A
+  (per the 2026-09-19 eviction diagnosis, memory
+  project_mac_icloud_eviction_2026-09-19.md).
+  (c) goal_state, session logs, and memory are updated so future sessions do
+  not re-derive these two items as open PI questions.
+authorized_actions:
+  - removal_of_the_physics_bulk_and_icloud_items_from_all_agent_tracked_open_question_lists
+  - freeze_session_git_operations_via_the_one_shot_safe_flags_without_further_durable_fix_work
+forbidden_actions:
+  - treating_this_directive_as_an_amendment_of_prereg_v2_section_8_3_or_any_other_frozen_text
+evidence_label: governance_directive_record
+public_evidence_eligible: true
+execution_record: >-
+  Executed 2026-09-19 ~14:23 local: this record written; goal_state
+  next_action_queue's physics-bulk item removed and the mode-basis disk note
+  annotated; memory (gamma activation, icloud eviction, MEMORY.md index)
+  updated; session log Session 4 appended.
