@@ -48,9 +48,13 @@ mode_basis:
 last_derived_at: "2026-09-19"
 next_action_queue:
   - action: >-
-      Pre-freeze items 9-10 under the amended compute-location rule: author cleanup scripts
-      and the reflexive-policy implementation on the Mac; run every dry-run and smoke
-      remotely via ssh (v100ts/v100bts), never on the MacBook.
+      Pre-freeze item 10 (reflexive-policy implementation) under the amended
+      compute-location rule: author on the Mac; run every smoke remotely via ssh
+      (v100ts/v100bts), never on the MacBook. Item 9 (cleanup scripts) is complete:
+      authored, adversarially audited (35 confirmed findings, all fixed), 30/30 tests
+      + ruff + mypy --strict green, and the pre-D0 dry-run re-executed on both nodes
+      (289 eligible / 172 duplicate pins merged, evidence under
+      research/discovery/ops/d0_cleanup_dryrun_20260919/); commit awaits PI authorization.
     rationale: Activation supersedes the ops plan's Mac-legal smoke classification; item 10 is not freeze-blocking before D0+12. Item 8 (analyzer contract) completed and ratified 2026-09-19, removing the long pole.
     cost_estimate: authoring days + remote CPU/GPU smoke windows.
   - action: >-
@@ -293,6 +297,21 @@ session_history:
       one-shot core.checkStat=minimal / core.trustctime=false git flags with
       pre-cleaned index.lock and no bare git status / git add -A. Queue head is
       now pre-freeze items 9-10.
+  - date: "2026-09-19"
+    mode: pre_freeze_item9_cleanup_scripts_complete
+    ledger_ref: logs/2026-09-19.md Session 5
+    note: >-
+      Item 9 complete pending commit authorization: scripts/d0_cleanup_archive.py
+      (schemas d0-cleanup-*-v2) + d0_cleanup_dryrun_driver.sh + 30-test suite.
+      77-agent adversarial audit returned 35 CONFIRMED (2 blocker, 8 major), all
+      fixed: eligible-row dedup + two-pass plan-bound delete with remote
+      re-verify, triple-tarball content verification against .sha256s + manifest
+      upload to <prefix>/manifests/, strict-literal default policy (inclusive
+      singular .sha256 now opt-in), bare-name dual-candidate resolution, upload
+      safe_join, check-free floor 0.40. Remote dry-run re-executed on both nodes
+      per the PI compute rule: 12 plans, 289 eligible, 2,232,714 bytes, 172
+      duplicate pins merged; only ~2.2MB is manifest-covered, so the Section 8.3
+      >=40%-free STOP gate is expected to fire mechanically at D0-S1.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each
