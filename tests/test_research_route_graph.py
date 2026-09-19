@@ -55,7 +55,10 @@ def test_canonical_graph_validates_offline() -> None:
 
     assert "333 route nodes" in result
     assert "279 typed edges" in result
-    assert "1995 evidence/artifact locators" in result
+    # Locator-count pin re-based 2026-09-20 (PI-approved,
+    # pi_battery_v3_dispositions_20260920): 1995 -> 1997 via 91c08c767 (g42)
+    # and 21359e930 (GAMMA activation), each adding one locator.
+    assert "1997 evidence/artifact locators" in result
     assert "git_ref=35" in result
 
 
@@ -73,7 +76,10 @@ def test_only_declared_routes_remain_open() -> None:
     assert open_routes == {
         "dcrdex_verifiable_sequencing_response": "parked",
         "verification_liquidity": "active",
-        "reexploration_merged_gamma_led_paper": "parked",
+        # Status pin updated 2026-09-20 (PI-approved, pi_battery_v3_
+        # dispositions_20260920): GAMMA activation (21359e930) un-parked
+        # this route to active.
+        "reexploration_merged_gamma_led_paper": "active",
         "g32_reaction_uq_stress_transfer": "parked",
         "g33_lru_decoder_policy_transfer": "parked",
         "g34_isotope_spectral_response": "parked",

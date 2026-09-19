@@ -57,9 +57,11 @@ def test_default_off_equivalence():
     s_prev = s.detach().clone()
     ps = sim.init_price()
     _, _, traj, _ = sim.rollout_chunk(s, s_prev, ps, n_steps=4, generator=gen, create_graph=True)
-    # Hardcoded reference value from pre-Tier-4.2 baseline (verified
-    # repeatedly during arch-extensions sprint smoke tests).
-    assert abs(traj.log_returns.sum().item() - 0.263843) < 1e-4
+    # Hardcoded reference value; re-pinned 2026-09-20 (PI-approved,
+    # pi_battery_v3_dispositions_20260920) from 0.263843 after the L1-4 RNG
+    # fix (commit 15e139928) invalidated the old constant — battery v3 record
+    # section 2.1, papers/proposal/ecomd_reexploration_d0_regression_battery_2026-09-19.md.
+    assert abs(traj.log_returns.sum().item() - 0.075823) < 1e-4
 
 
 @pytest.mark.parametrize("custom_fn", [False, True])

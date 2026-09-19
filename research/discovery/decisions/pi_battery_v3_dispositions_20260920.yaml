@@ -1,0 +1,44 @@
+schema_version: pi-battery-v3-dispositions-v1
+decision_id: pi_battery_v3_dispositions_20260920
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "都批准"
+recorded_at: "2026-09-19T12:45:00Z"
+status: executed
+parent_decision: pi_gamma_activation_d0_amendment_20260919
+context: >-
+  Answer to the battery-v3 re-verification report (logs/2026-09-19.md Session 7
+  and papers/proposal/ecomd_reexploration_d0_regression_battery_2026-09-19.md
+  section 4) approving all listed decision items. Battery v3: 154 files / 1562
+  tests on v100ts, two epochs with identical rc sets — 151 green, 3 red, all
+  dispositioned, none unexplained; verified by a 15-agent adversarial
+  workflow and a full post-sync rerun.
+authorized_actions:
+  - item_1_re_pin_all_four_drifted_test_pins:
+      - tests/test_dynamic_graph.py:62 constant 0.263843 -> 0.075823 (invalidated by commit 15e139928, the L1-4 RNG fix; verified pre-baseline drift, identical computed value on both battery epochs)
+      - tests/test_research_discovery.py f1 test (36, 173, 0) -> (38, 191, 0) (ledger growth through post-09-08 search cycles; counts confirmed by the canonical discovery validator output)
+      - tests/test_research_route_graph.py:58 "1995 evidence/artifact locators" -> "1997" (commits 91c08c767 +1 and 21359e930 +1, test last touched 55af5d0aa)
+      - tests/test_research_route_graph.py:73 open-routes dict reexploration_merged_gamma_led_paper "parked" -> "active" (commit 21359e930, the PI GAMMA activation)
+  - item_2_two_gitignored_route_graph_locators_dispositioned_keep_and_document:
+      - locators nodes[0].artifacts[11] and response_dx_terminal_private_audit stay availability "present" pointing at logs/private/ files that .gitignore deliberately never commits
+      - documented as worktree-only bindings in the battery-v3 record; known consequence recorded: the pull_request-triggered research-governance check on main will fail on them at the post-freeze merge of paper-d-iclr-2027-completion (merge-blocking, not freeze-blocking); handling scheduled to that merge, not to the 2026-10-09 freeze
+  - item_3_node_only_launcher_pin_red_accepted:
+      - g_response_dx_20260912 launcher sha256 f04ff05b stays pinned to the 09-12 script version committed at 6727e7dad
+      - the mirror red on v100ts (partial git, no commit history) is accepted as the documented 09-08 doc section 5.3.5 git-history-binding class; canonical and CI (fetch-depth:0) green
+  - item_5_durable_record_and_script_disposal:
+      - commit papers/proposal/ecomd_reexploration_d0_regression_battery_2026-09-19.md (the durable in-git record) and scripts/reg_battery_v3_driver_20260919.sh
+      - scripts/rfx_diag_20260919.py stays deliberately uncommitted
+  - item_6_queue_acceptance_criterion_amended:
+      - the goal_state queue item's literal "still green" is replaced by the recorded criterion "no unexplained regressions; every red dispositioned" (battery v3 satisfies it: 3 red files, all dispositioned, zero unexplained)
+  - item_7_commit_authorization:
+      - the battery change set: battery-v3 record doc, driver script, decision record, the three re-pinned test files, session logs, goal_state, memory files
+forbidden_actions:
+  - unignoring_or_committing_logs_private_content (conflicts with the sealed/private-research-state rule; item 2 was dispositioned keep-and-document, not unignore)
+  - re_pinning_the_g_response_dx_sandbox_yaml_launcher_hash (item 3 accepted the canonical-only binding; re-pinning would break the what-actually-ran authenticity record)
+execution_evidence:
+  - post_re_pin_remote_verification_2026-09-20:
+      - tests/test_dynamic_graph.py rc=0 on v100ts
+      - tests/test_research_route_graph.py rc=0 on v100ts
+      - tests/test_research_discovery.py rc=1 with exactly the accepted node-only launcher-pin failure (test_canonical_discovery_contract_validates); canonical and CI green by mechanism
+  - receipts: /root/regv3/logs/test_{dynamic_graph,research_route_graph,research_discovery}.repin.log on v100ts
+  - node battery state after dispositions: 153/154 green, 1 documented node-only red

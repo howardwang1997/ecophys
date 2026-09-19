@@ -1611,9 +1611,12 @@ def test_search_cycle_f1_deferral_does_not_invent_f2(tmp_path: Path) -> None:
     counts["collision_screens"] = cast(int, counts["collision_screens"]) - 1
     write_mapping(search_cycle_path(repo), ledger)
 
+    # Live-count pin re-based 2026-09-20 (PI-approved, pi_battery_v3_
+    # dispositions_20260920): ledger grew to 38 cycles / 191 raw questions
+    # through the post-09-08 search cycles; cards still 0.
     assert validate_search_cycle_ledger(
         repo, "research/discovery/search_cycle_ledger.yaml"
-    ) == (36, 173, 0)
+    ) == (38, 191, 0)
 
 
 def test_search_cycle_f1_deferral_preserves_stage_accounting(tmp_path: Path) -> None:
