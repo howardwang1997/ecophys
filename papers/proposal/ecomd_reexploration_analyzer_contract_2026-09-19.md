@@ -1,7 +1,7 @@
 # EcoMD Re-Exploration — Analyzer Contract
 
 **File** (freeze-list path): `papers/proposal/ecomd_reexploration_analyzer_contract_2026-09-19.md`
-**Status**: DRAFT v0.3 — adversarial-audit findings incorporated (audit run 2026-09-19: 22 agents, 12 confirmed findings fixed; provenance labels, O-test count column, Stage-2 bootstrap-seed coverage, h = 64 descriptive stream, 15-seed halt translation, audit-publication story, and citation prefixes corrected). Verifier pass complete 2026-09-19: PASS-with-notes; 3 residual defects (one citation mis-attribution, one header overstatement, three bare § refs) fixed. **All 16 Part 10 flags PI-ratified at their defaults 2026-09-19** (decision `pi_analyzer_contract_flags_ratification_20260919`; "整体批，授权"); no flag remains open. NOT FROZEN. This file enters the prereg v2 §1.3(2) freeze list (per-file sha256 plus one commit-level hash over the ordered file list, lexicographic by path) at the D0 outcome-blind freeze on **2026-10-09** (Annex B(j); amended pre-hash from 2026-09-19 by PI decision `pi_gamma_activation_d0_amendment_20260919`, Annex C item C-12).
+**Status**: DRAFT v0.3 — adversarial-audit findings incorporated (audit run 2026-09-19: 22 agents, 12 confirmed findings fixed; provenance labels, O-test count column, Stage-2 bootstrap-seed coverage, h = 64 descriptive stream, 15-seed halt translation, audit-publication story, and citation prefixes corrected). Verifier pass complete 2026-09-19: PASS-with-notes; 3 residual defects (one citation mis-attribution, one header overstatement, three bare § refs) fixed. **All 16 Part 10 flags PI-ratified at their defaults 2026-09-19** (decision `pi_analyzer_contract_flags_ratification_20260919`; "整体批，授权"); no flag remains open. NOT FROZEN. This file enters the prereg v2 §1.3(2) freeze list (per-file sha256 plus one commit-level hash over the ordered file list, lexicographic by path) at the D0 outcome-blind freeze on **2026-09-21** (Annex B(j); amended pre-hash from 2026-10-09 on 2026-09-21 by PI decision `pi_campaign_advance_20260921`, Annex C item C-13; originally 2026-09-19 per C-12).
 **Authoring window**: pre-D0, Mac-legal document work (OPS Part A §3 "writing all empirical protocols into frozen macros"; D0 calendar items 8–10, authorized under the D1 blanket/build scope).
 **Authority**: none. This contract authorizes no run, no analysis execution, no data access. Analyzer execution requires the D0 outcome-blind freeze plus explicit PI authorization (CV1 governance; OPS Part A §3; MENU compute gate). After the freeze this file is immutable; any change is a new frozen, hash-recorded amendment (C13/C15), and any breach is STOP-class, no repair (PR §1.3, §8.3).
 
@@ -72,7 +72,7 @@ The KT-A4 two-estimator audit analysis is a **separate one-shot unit executed in
 
 ### 2.3 Execution order
 
-- **D0-S4** (2026-10-25/26 at D0 = 2026-10-09): gates G1→G12 in order, scoped per Part 4.1 → `A_B1` → `A_B3` → A10-audit → Stage-2 go/no-go via t1–t4 (mechanical only) [pin, OPS D0-S4 row; C13; PR §4.1].
+- **D0-S4** (2026-10-07/08 at D0 = 2026-09-21): gates G1→G12 in order, scoped per Part 4.1 → `A_B1` → `A_B3` → A10-audit → Stage-2 go/no-go via t1–t4 (mechanical only) [pin, OPS D0-S4 row; C13; PR §4.1].
 - **D0-S5** (if triggered): gates G1→G12 scoped to the Stage-2 record set → `A_B2` → `A_B4` [pin, OPS D0-S5; derived scoping per Part 4.1].
 - **D0-S6**: campaign-total reconciliation against the full PR §3.4 table (Part 4.1).
 
@@ -103,7 +103,7 @@ Reflexive records (namespace-separated, uncounted, C12/G11); T4 telemetry (EP5);
 
 ### 3.1 Session timing under the amended freeze
 
-D0 = **2026-10-09** [pin, Annex B(j), C-12]. Only day-offsets are operative [pin, CAL §3]; dates below are computed from D0 for convenience: D0-S4 = days 16–17 = 2026-10-25/26; t2 deadline "Stage 1 complete by D0+26d" = 2026-11-04; 4-week hard ceiling = 2026-11-06 (reserved for the shrink ladder, not slippage); D0-S5 = days 17–28; D0-S6 = days 28–29.
+D0 = **2026-09-21** [pin, Annex B(j), C-13]. Only day-offsets are operative [pin, CAL §3]; dates below are computed from D0 for convenience: D0-S4 = days 16–17 = 2026-10-07/08; t2 deadline "Stage 1 complete by D0+26d" = 2026-10-17; 4-week hard ceiling = 2026-10-19 (reserved for the shrink ladder, not slippage); D0-S5 = days 17–28; D0-S6 = days 28–29.
 
 **Reflexive scheduling supersession (FLAG-4)**: the OPS session table's "reflexive cell days 14–16" slot (inside D0-S3) is stale under every reading of C12 — reflexive execution is schedulable only after all four analyzers have run and their hashes published, which happens at the earliest at the end of D0-S5. C12 (prereg v2, later and more specific) governs. Consequence recorded: the ~6 V100-h reflexive line moves out of the D0-S3 window in burn accounting; the reflexive cell (10 seeds 11000–11009 / 12000–12009, cells {R00, R11}, D1, both lineages) is scheduled after the four-hash publication event.
 
@@ -414,7 +414,7 @@ Per mandatory cell (all 16 × 5 sub-blocks): classification macro, estimand valu
 
 ### 8.5 Publication channel (FLAG-11)
 
-Proposed: each analyzer's `analysis.json`, macro files, and analyzer manifest (bootstrap seeds, gate receipts, session metadata) upload to `r2://ecophys/alpha_cube_d0_20261009/analysis/<analyzer_id>/`, followed by a git commit of the macro tables and a session-log entry with the R2 etags — mirroring the PR §1.3 freeze recording order (git commit → R2 immutable object → session log). The published analysis-JSON hashes are the C12 unlock event for the reflexive cell. PR pins "hashes published" but not the channel; the PI ratified the proposed channel 2026-09-19 (Part 10 row 11).
+Proposed: each analyzer's `analysis.json`, macro files, and analyzer manifest (bootstrap seeds, gate receipts, session metadata) upload to `r2://ecophys/alpha_cube_d0_20260921/analysis/<analyzer_id>/`, followed by a git commit of the macro tables and a session-log entry with the R2 etags — mirroring the PR §1.3 freeze recording order (git commit → R2 immutable object → session log). The published analysis-JSON hashes are the C12 unlock event for the reflexive cell. PR pins "hashes published" but not the channel; the PI ratified the proposed channel 2026-09-19 (Part 10 row 11).
 
 ---
 
@@ -449,7 +449,7 @@ The "Proposed default" column below is the ratified resolution of each item. The
 | 8 | Surgery records inside the 8-cell grid as the t ≠ e cells (5.5) | Yes; no separate PR §3.4 row | Separate surgery record class + count row | G1 counting basis for surgery cells |
 | 9 | B4 family split under D1_05 (6.5) | One 16-cell family per variant sub-block (5 families total) | One 32-cell B4 family | Holm bookkeeping for Stage-2 completeness only |
 | 10 | Statistical-engine pins: bootstrap generator; sign-flip enumeration (7.5) | `default_rng` PCG64; complete enumeration ≤ 2^24 else 10^7 seeded subset | PI-specified engine | Intervals not reproducible → blocker |
-| 11 | G12/C12 hash-publication channel (8.5) | R2 `alpha_cube_d0_20261009/analysis/` + git + session log | PI-specified channel | "Published" undefined |
+| 11 | G12/C12 hash-publication channel (8.5) | R2 `alpha_cube_d0_20260921/analysis/` + git + session log | PI-specified channel | "Published" undefined |
 | 12 | L1-4 generator-threading status recorded at freeze (4.9) | Record status in freeze record; flag L1 G9 if not landed | — | L1 replay rests on uncontracted global-RNG assumption |
 | 13 | OPS "8/6 conditions" line vs PR §3.4 (5.6) | trunc_cap L2 de-scope only; pop_4x drop does not apply | PI-specified reading | Axis-condition set ambiguous for L2 |
 | 14 | Fixture-gate placement (3) | External pre-gate, re-run at each session start on the node | Inside G1 | Gate-order ambiguity |

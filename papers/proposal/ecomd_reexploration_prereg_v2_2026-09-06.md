@@ -7,10 +7,11 @@ panel: adversarial 3-reviewer panel (D1_08), 2026-09-06 — three major_revision
   28 issues (9 + 9 + 10); all 28 incorporated in this v2 (disposition table in
   papers/proposal/ecomd_reexploration_prereg_panel_response_2026-09-06.md)
 stage: D_minus_1_execution_authorized_prep_d0 (decision pi_reexploration_d1_authorization_20260906)
-freeze_date: PINNED 2026-10-09 (originally 2026-09-19 per D1_08 reference calendar, R1-9/R3
-  panel ruling, Annex A.10; amended pre-hash 2026-09-19 by PI decision
-  pi_gamma_activation_d0_amendment_20260919 — Annex C item C-12)
-freeze_policy: sha256-frozen at D0 2026-10-09; exact freeze timestamp + freeze sha256 are the
+freeze_date: PINNED 2026-09-21 (originally 2026-09-19 per D1_08 reference calendar, R1-9/R3
+  panel ruling, Annex A.10; amended pre-hash to 2026-10-09 on 2026-09-19 by PI decision
+  pi_gamma_activation_d0_amendment_20260919 — Annex C item C-12; amended pre-hash to
+  2026-09-21 on 2026-09-21 by PI decision pi_campaign_advance_20260921 — Annex C item C-13)
+freeze_policy: sha256-frozen at D0 2026-09-21; exact freeze timestamp + freeze sha256 are the
   only [TO BE PINNED AT D0] items remaining in this document (freeze mechanics: Section 1.3)
 outcome_access_at_authoring: none — no confirmatory endpoint measured, no GPU used, no market
   data accessed; the frozen A-2 bundle was consumed strictly read-only
@@ -53,11 +54,11 @@ never mutated) with the authorized lab-asset-v3.1 fixture enrichment (Section 7.
 | v1 (`ecomd_reexploration_prereg_v1_2026-09-06.md`) | Complete freeze-grade draft; five mandatory wording changes; C14 recomputed under K = 16 with loud flag | SUPERSEDED by panel outcome |
 | Panel (D1_08, 2026-09-06) | Adversarial 3-reviewer panel: preregistration-integrity auditor, statistical methodologist, market-microstructure/scientific-ML referee. Three **major_revision** verdicts; 28 issues (R1: 9, R2: 9, R3: 10) | Closed; verdicts and dispositions recorded in the panel-response document |
 | v2 (this document) | All 28 panel issues incorporated (28 fixed, 0 rejected, 0 deferred); restated C14 with full record enumeration; C16 ledger extended to items (13)–(16); freeze mechanics, seed pinning, and family definitions completed (Annex B) | Freeze candidate — PI review, then D0 hash-freeze |
-| D0 freeze (2026-10-09; amended from 2026-09-19 pre-hash, Annex C item C-12) | v2 sha256-frozen together with the amended contract, theory appendix, and hash-locked archive (Section 1.3); DGP configs, seed/stream manifest, estimator hashes, analyzer contracts, enriched-fixture manifest, ops plan hash-locked in the same archive | [TO BE PINNED AT D0: freeze timestamp + freeze sha256 ONLY] |
+| D0 freeze (2026-09-21; amended from 2026-10-09 pre-hash on 2026-09-21, Annex C item C-13; originally 2026-09-19, C-12) | v2 sha256-frozen together with the amended contract, theory appendix, and hash-locked archive (Section 1.3); DGP configs, seed/stream manifest, estimator hashes, analyzer contracts, enriched-fixture manifest, ops plan hash-locked in the same archive | [TO BE PINNED AT D0: freeze timestamp + freeze sha256 ONLY] |
 
 Reference calendar (PI decision D1_08, as pinned by the panel per Annex A.10): theorem work
-complete ~2026-09-12 (done, ahead of schedule); **D0 outcome-blind freeze 2026-10-09** (amended
-from 2026-09-19 pre-hash on 2026-09-19, Annex C item C-12);
+complete ~2026-09-12 (done, ahead of schedule); **D0 outcome-blind freeze 2026-09-21** (amended
+from 2026-10-09 pre-hash on 2026-09-21, Annex C item C-13; originally 2026-09-19 per C-12);
 post-freeze campaign: Stage 1 ~19–20 wall-clock days at 70% efficiency, 4-week hard ceiling
 (Section 8.2).
 
@@ -85,7 +86,7 @@ post-freeze campaign: Stage 1 ~19–20 wall-clock days at 70% efficiency, 4-week
 3. *Recording location and order.* (i) git commit on `paper-d-iclr-2027-completion` containing
    exactly the frozen file set (commit sha256 recorded); (ii) upload of the freeze record
    (per-file hashes + commit hash + freeze timestamp) to the immutable R2 object
-   `r2://ecophys/alpha_cube_d0_20261009/freeze_record.json`; (iii) entry in the D0 session log
+   `r2://ecophys/alpha_cube_d0_20260921/freeze_record.json`; (iii) entry in the D0 session log
    with the R2 object etag. Order is mandatory; a failure at any step stops the freeze (no
    partial freeze).
 4. *Known-typo policy.* The four companion documents that print the bundle-anchor typo
@@ -1254,7 +1255,7 @@ byte-identity gate.
 | Reflexive + telemetry 10-seed subsets (Annex B(d)) | 11000–11009, 12000–12009 |
 | Bootstrap seed derivation (Annex B(a)) | sha256 over frozen strings (block, family); mod 2^63 |
 | Estimator module defaults | λ = 1.0, σ = 1.0, PAM default seed 20260906 (fixture/replay only) |
-| D0 archive layout | r2://ecophys/alpha_cube_d0_20261009/ (immutable staging; byte-exact re-derivation on both nodes; path amended from 20260919 pre-hash, Annex C item C-12) |
+| D0 archive layout | r2://ecophys/alpha_cube_d0_20260921/ (immutable staging; byte-exact re-derivation on both nodes; path amended from 20261009 pre-hash on 2026-09-21, Annex C item C-13; originally 20260919 per C-12) |
 | D0 freeze hash + timestamp | [TO BE PINNED AT D0 — the only two such items in this document] |
 
 ---
@@ -1424,7 +1425,9 @@ of the v2 freeze candidate.
 10. **D0 date** — RESOLVED: pinned 2026-09-19 at v2; "by the panel at D0" phrasing
     removed everywhere. Amended to 2026-10-09 by the PI pre-freeze activation decision of
     2026-09-19 (pi_gamma_activation_d0_amendment_20260919), before any hash was computed;
-    Section 1.2 now pins 2026-10-09; Annex C item C-12.
+    further amended to 2026-09-21 by the PI campaign-advance decision of 2026-09-21
+    (pi_campaign_advance_20260921), before any hash was computed;
+    Section 1.2 now pins 2026-09-21; Annex C items C-12 and C-13.
 
 ## ANNEX B — Consolidated pinning table (panel R1-7; every formerly analyst-choosable degree
 of freedom pinned in this frozen text)
@@ -1440,7 +1443,7 @@ of freedom pinned in this frozen text)
 | (g) | Classification label → analyzer macro mapping | "material non-additivity" → `class_material_nonadditivity`; "smaller statistical non-additivity" → `class_smaller_stat_nonadditivity`; "practical additivity" → `class_practical_additivity`; "unresolved" → `class_unresolved`; "unresolved (reference-degenerate)" → `class_unresolved_ref_degenerate`; "unresolved (draw-noise-dominated)" → `class_unresolved_draw_noise_dominated` (Section 4.4); "not run" → `class_not_run` |
 | (h) | KT-A1 P1/P2/P3 frozen decision rule (restated inline from killer-tests L43) | **P1** = opposing-sign training/inference enforcement credits (T-contrast and E-contrast signs oppose); **P2** = pure interaction (J material with both main-effect contrasts non-material); **P3** = surgery hysteresis on locked checkpoints (surgery cells diverge across deployment maps while parents are training-loss-identical). Kill pattern: \|I\| ≤ δ/2 everywhere, no sign opposition, surgery antisymmetric → ALPHA is an ablation (REFRAME, Section 8.3) |
 | (i) | Freeze mechanics | Section 1.3 (agent, hash inputs, recording order, known-typo policy) |
-| (j) | Freeze date | 2026-10-09 (Section 1.2; amended from the panel's 2026-09-19 pin by the PI pre-freeze activation decision of 2026-09-19 before any hash was computed — Annex C item C-12) |
+| (j) | Freeze date | 2026-09-21 (Section 1.2; amended from 2026-10-09 by the PI campaign-advance decision of 2026-09-21 before any hash was computed — Annex C item C-13; originally the panel's 2026-09-19 pin per C-12) |
 
 Provenance note (honesty): (a)–(d) are convention constants — deterministic rules chosen at
 v2 because the panel ruled that v2 is the hashed text and no such choice may remain open; they
@@ -1523,6 +1526,36 @@ pre-freeze per Section 1.3(4))
   For string-audit reconciliation: the D0 calendar proposal of 2026-09-08 contains a
   pre-existing archive-name typo `alpha_cube_d0_20261209` in its archive-name note; the
   proposal is a superseded historical record and is intentionally unedited per Section 1.3(4).
+- **C-13** Freeze-date amendment (pre-hash, PI-approved): the D0 outcome-blind freeze date
+  pinned at 2026-10-09 (Section 1.2, Annex A.10 item 10, Annex B(j)) is amended to
+  **2026-09-21**, and the R2 archive path `alpha_cube_d0_20261009/` to
+  `alpha_cube_d0_20260921/` (Section 1.3 step 3(ii), Section 7 layout table), by PI decision
+  pi_campaign_advance_20260921 (2026-09-21; authorization text preserved verbatim in the
+  decision record — the PI ordered the campaign advanced to the present with all three named
+  machines in use, and on the structured follow-up chose to run the freeze in parallel with
+  launch staging rather than waive it), recorded before any freeze hash was computed: no
+  [TO BE PINNED AT D0] field has been filled, no outcome has been accessed, and the freeze
+  mechanism of Section 1.3 has not executed. The amendment is lawful per the C-11/C-12
+  pre-freeze-erratum precedent and the mechanism named by the D0 calendar proposal of
+  2026-09-08 (its note on the archive name). Edited sites: header freeze_date/freeze_policy;
+  Section 1.2 version-table D0 row; Section 1.2 reference calendar; Section 1.3 R2 object
+  path; Section 7 archive-layout row; Annex A.10 item 10; Annex B(j); plus the date/path
+  convenience strings in the analyzer contract of 2026-09-19 (header freeze sentence, D0-S4
+  row, D0 anchor line with the derived t2/ceiling dates, and the two
+  alpha_cube_d0_20260921/analysis/ path occurrences including Part 10 row 11 — channel
+  substance unchanged, the path string follows the amended archive). Superseded documents are
+  historical records and are not edited. The same decision re-bases the campaign-anchored
+  forecast-ledger resolve_by dates by −18 days (d1_gamma_theorem_structure_survival
+  2026-10-09 to 2026-09-21; d1_alpha_attribution_estimand_survival, d1_component_l2_transfer_gate,
+  d1_component_ep1_material 2026-11-14 to 2026-10-27; d1_merged_gammas_led_paper_gate and
+  d1_component_bridge_qualification 2026-11-20 to 2026-11-02), preserving each margin to its
+  resolving analyzer session; the re-basing table is recorded in the decision record only —
+  the ledger file is intentionally untouched, because existing entries are prefix-protected
+  by the discovery validator and resolutions require boolean outcomes. Derived schedule
+  anchors recomputed for D0 = 2026-09-21: 4-week hard ceiling 2026-10-19, t2 Stage-1
+  deadline 2026-10-17, D0-S4 2026-10-07/08. No theorem statement, condition, constant,
+  seed, gate, estimand, or ruling other than the date and archive-path strings is affected;
+  outcome-blind discipline is indifferent to the freeze date (calendar proposal Section 2).
 
 ---
 

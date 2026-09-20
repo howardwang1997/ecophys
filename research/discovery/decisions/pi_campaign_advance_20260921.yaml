@@ -1,0 +1,65 @@
+schema_version: pi-campaign-advance-v1
+decision_id: pi_campaign_advance_20260921
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "不要有任何冻结，不要等，只要能跑你就跑。这三台机器都要跑。你先帮我规划好有哪些实验要做、在哪些机器上，然后就直接开始跑，不要有任何等待。你的所谓预注册本来就没有效力，直接开始跑。实验提前到现在"
+structured_followup_choice: "冻结并行做（推荐）" (AskUserQuestion, same day)
+recorded_at: "2026-09-21T10:30:00Z"
+status: executed
+context: >-
+  With every pre-freeze build complete since 2026-09-20 (items 8-10, battery v3
+  dispositioned, freeze runbook rehearsed with zero open decisions) and the freeze
+  date 2026-10-09 carrying no remaining function, the PI ordered the campaign
+  advanced to the present. On the agent's structured follow-up (freeze costs ~1h
+  inside the mandatory launch-staging window and preserves the
+  plan-before-data claim; skipping it forfeits the preregistration story) the PI
+  chose to run the freeze in parallel with staging rather than waive it. This
+  decision records both the advance order and the freeze-in-parallel choice.
+actions:
+  - c13_amendment: >-
+      Prereg v2 freeze date amended pre-hash 2026-10-09 -> 2026-09-21 and R2 archive
+      path alpha_cube_d0_20261009/ -> alpha_cube_d0_20260921/ at the C-12 sites
+      (header freeze_date/freeze_policy; Section 1.2 version-table D0 row; Section 1.2
+      reference calendar; Section 1.3 R2 object path; Section 7 archive-layout row;
+      Annex A.10 item 10; Annex B(j); new errata item C-13), plus the date/path
+      convenience strings in the analyzer contract of 2026-09-19 (header freeze
+      sentence, D0-S4 row, D0 anchor line with derived t2/ceiling dates, two
+      analysis-path occurrences including Part 10 row 11 — channel substance
+      unchanged). Lawful per the C-11/C-12 pre-freeze-erratum precedent: no
+      [TO BE PINNED AT D0] field filled, no outcome accessed, freeze mechanism
+      unexecuted before this record.
+  - freeze_session_same_day: >-
+      The D0 freeze session executes today per runbook §5 (validators, pin-fill,
+      26-path hash, freeze commit, freeze_record.json upload to
+      r2://ecophys/alpha_cube_d0_20260921/freeze_record.json, session log + second
+      commit, FLAG-12 line), in parallel with node staging.
+  - campaign_launch: >-
+      Stage 1 launches immediately after the freeze completes, on all three
+      PI-named machines (100.80.236.112 v100ts, 100.123.220.57 v100bts,
+      100.70.122.100 dual-RTX3080). Heterogeneous-pool rule: 3080 cells must not
+      silently mix with V100-benchmarked cells; 3080 enrollment follows a
+      qualification benchmark. Pinned constants (seeds, K=16, grid, order) bind
+      the launcher.
+  - schedule_rebasing: >-
+      Campaign-anchored forecast-ledger resolve_by dates re-based -18 days in this
+      record only (ledger file untouched, prefix-protected): d1_gamma_theorem_structure_survival
+      2026-10-09 -> 2026-09-21; d1_alpha_attribution_estimand_survival,
+      d1_component_l2_transfer_gate, d1_component_ep1_material 2026-11-14 ->
+      2026-10-27; d1_merged_gammas_led_paper_gate and d1_component_bridge_qualification
+      2026-11-20 -> 2026-11-02. Derived anchors for D0 = 2026-09-21: 4-week hard
+      ceiling 2026-10-19, t2 Stage-1 deadline 2026-10-17, D0-S4 2026-10-07/08.
+  - agent_pushback_recorded: >-
+      The agent corrected the PI's premise once before executing: the
+      preregistration is not without force (analysis plans git-committed 2026-09-19
+      with 233 pins and 16 ratified flags; the freeze adds the tamper-evident
+      plan-before-data hash + R2 timestamp; arXiv pre-registration is one of the
+      PI's own 2026-04-24 rigor clauses). The PI's structured choice then made the
+      freeze part of the launch rather than a casualty of it.
+notes:
+  - no_experiment_ran_before_the_freeze: all execution stayed remote; zero outcome access pre-hash
+  - verification_liquidity_untouched: separate sealed protocol, embargo to 2026-10-17 UTC unaffected
+  - pi_statements_on_prereg_validity: preserved verbatim above for the record; the executed
+      path (freeze first, same day) is consistent with preserving preregistration force
+execution_evidence:
+  - prereg v2 + analyzer contract C-13 edits (commit follows this record)
+  - freeze session record logs/2026-09-21.md + r2://ecophys/alpha_cube_d0_20260921/freeze_record.json
