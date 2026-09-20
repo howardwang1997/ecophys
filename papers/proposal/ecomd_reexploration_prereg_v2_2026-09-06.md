@@ -11,8 +11,12 @@ freeze_date: PINNED 2026-09-21 (originally 2026-09-19 per D1_08 reference calend
   panel ruling, Annex A.10; amended pre-hash to 2026-10-09 on 2026-09-19 by PI decision
   pi_gamma_activation_d0_amendment_20260919 — Annex C item C-12; amended pre-hash to
   2026-09-21 on 2026-09-21 by PI decision pi_campaign_advance_20260921 — Annex C item C-13)
-freeze_policy: sha256-frozen at D0 2026-09-21; exact freeze timestamp + freeze sha256 are the
-  only [TO BE PINNED AT D0] items remaining in this document (freeze mechanics: Section 1.3)
+freeze_policy: sha256-frozen at D0 2026-09-21, executed 2026-09-20T15:11Z (UTC ISO-8601; the
+  instant the Section 1.3(1) hash command ran; local session date 2026-09-21 per the C-12
+  date-label convention); the freeze sha256 is not embeddable in this document (it hashes
+  this file's own bytes) and is pinned per Section 1.3(3) in
+  r2://ecophys/alpha_cube_d0_20260921/freeze_record.json and the D0 session log; no
+  [TO BE PINNED AT D0] item remains (freeze mechanics: Section 1.3)
 outcome_access_at_authoring: none — no confirmatory endpoint measured, no GPU used, no market
   data accessed; the frozen A-2 bundle was consumed strictly read-only
 ---
@@ -54,7 +58,7 @@ never mutated) with the authorized lab-asset-v3.1 fixture enrichment (Section 7.
 | v1 (`ecomd_reexploration_prereg_v1_2026-09-06.md`) | Complete freeze-grade draft; five mandatory wording changes; C14 recomputed under K = 16 with loud flag | SUPERSEDED by panel outcome |
 | Panel (D1_08, 2026-09-06) | Adversarial 3-reviewer panel: preregistration-integrity auditor, statistical methodologist, market-microstructure/scientific-ML referee. Three **major_revision** verdicts; 28 issues (R1: 9, R2: 9, R3: 10) | Closed; verdicts and dispositions recorded in the panel-response document |
 | v2 (this document) | All 28 panel issues incorporated (28 fixed, 0 rejected, 0 deferred); restated C14 with full record enumeration; C16 ledger extended to items (13)–(16); freeze mechanics, seed pinning, and family definitions completed (Annex B) | Freeze candidate — PI review, then D0 hash-freeze |
-| D0 freeze (2026-09-21; amended from 2026-10-09 pre-hash on 2026-09-21, Annex C item C-13; originally 2026-09-19, C-12) | v2 sha256-frozen together with the amended contract, theory appendix, and hash-locked archive (Section 1.3); DGP configs, seed/stream manifest, estimator hashes, analyzer contracts, enriched-fixture manifest, ops plan hash-locked in the same archive | [TO BE PINNED AT D0: freeze timestamp + freeze sha256 ONLY] |
+| D0 freeze (2026-09-21; amended from 2026-10-09 pre-hash on 2026-09-21, Annex C item C-13; originally 2026-09-19, C-12) | v2 sha256-frozen together with the amended contract, theory appendix, and hash-locked archive (Section 1.3); DGP configs, seed/stream manifest, estimator hashes, analyzer contracts, enriched-fixture manifest, ops plan hash-locked in the same archive | Executed 2026-09-20T15:11Z (UTC ISO-8601); freeze sha256 = the Section 1.3(2) commit-level hash, pinned in r2://ecophys/alpha_cube_d0_20260921/freeze_record.json and the D0 session log with R2 etag (not embeddable here: it hashes this file's bytes); per-file hashes and git commit id in the same record |
 
 Reference calendar (PI decision D1_08, as pinned by the panel per Annex A.10): theorem work
 complete ~2026-09-12 (done, ahead of schedule); **D0 outcome-blind freeze 2026-09-21** (amended
@@ -1256,7 +1260,7 @@ byte-identity gate.
 | Bootstrap seed derivation (Annex B(a)) | sha256 over frozen strings (block, family); mod 2^63 |
 | Estimator module defaults | λ = 1.0, σ = 1.0, PAM default seed 20260906 (fixture/replay only) |
 | D0 archive layout | r2://ecophys/alpha_cube_d0_20260921/ (immutable staging; byte-exact re-derivation on both nodes; path amended from 20261009 pre-hash on 2026-09-21, Annex C item C-13; originally 20260919 per C-12) |
-| D0 freeze hash + timestamp | [TO BE PINNED AT D0 — the only two such items in this document] |
+| D0 freeze hash + timestamp | Timestamp 2026-09-20T15:11Z (UTC ISO-8601), pinned here; freeze sha256 pinned externally per Section 1.3(3) in r2://ecophys/alpha_cube_d0_20260921/freeze_record.json + D0 session log (self-embedding excluded by construction) |
 
 ---
 
@@ -1398,7 +1402,9 @@ of the v2 freeze candidate.
    `papers/proposal/ecomd_reexploration_prereg_panel_response_2026-09-06.md`.
 5. This preregistration v2 (2026-09-06) — post-panel freeze candidate; incorporates all 28
    panel dispositions; records the v2 pre-freeze restatements (C)–(F) of Section 3.1 into the
-   contract's amendment banner; D0 freeze sha256 [TO BE PINNED AT D0].
+   contract's amendment banner; frozen 2026-09-20T15:11Z (UTC) with the freeze sha256 recorded
+   per Section 1.3(3) in r2://ecophys/alpha_cube_d0_20260921/freeze_record.json and the D0
+   session log (not embeddable in this document, which it hashes).
 
 ---
 
