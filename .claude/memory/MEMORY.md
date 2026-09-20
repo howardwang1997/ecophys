@@ -25,6 +25,7 @@
 - [Workflow split](feedback_workflow.md) — Mac dev + R2 canonical data + GitHub code + replaceable non-H20 compute pools; current 2×V100 plus separately benchmarked/scheduled A800 40 GB; respect frozen host assignments.
 - [Pre-registration clauses](feedback_preregistration.md) — 3 rigor clauses user accepted 2026-04-24 (surrogate kill, sanity-check cascade, arXiv pre-registration); binding for Paper B.
 - [Smoke-test autonomy](feedback_smoke_test_autonomous.md) — 2026-05-22 user pref: run smoke tests without permission asks; up to 3 fail-loop rounds autonomously before escalating.
+- [Commit autonomy](feedback_commit_autonomy.md) — 2026-09-20 user pref: commit+push agent change sets without per-commit asks (decision pi_commit_autonomy_20260920); private-content exclusions, frozen-text/lab_asset gates, and the deliberate-uncommitted list unaffected.
 - [No downgrade on negatives](feedback_no_downgrade.md) — 2026-05-28: user rejects narrative softening on negative results; escalate via pre-registered A→B→C ladder, and first check the negative isn't an invalid test.
 - [Seed-count lottery](feedback_seed_count_lottery.md) — never report mean from n<20 seeds; 4 confirmed hits (047/048/090c/098); even n=30 can underflow on heavy-tail seed dists.
 - [Mac BLAS determinism](feedback_mac_blas_determinism.md) — Mac in-process A/B needs `torch.set_num_threads(1)`; SPS edge gen fixed in `ce47e4fb`; H20 unaffected.

@@ -1,0 +1,40 @@
+schema_version: pi-commit-autonomy-v1
+decision_id: pi_commit_autonomy_20260920
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "去掉这个规矩，直接做"
+recorded_at: "2026-09-19T13:50:00Z"
+status: active
+parent_decision: pi_disk_directive_20260920
+context: >-
+  The agent ended the 2026-09-20 disk-directive session by asking for
+  per-commit authorization ("commit 授权?"), the fifth such ask across recent
+  sessions (analyzer-contract ratification, item 9, item 10, battery-v3
+  dispositions, disk directive). The PI removed the asking rule itself.
+  This record exists so future sessions do not re-derive ask-first behavior.
+scope_interpretation: >-
+  (a) Standing pre-authorization to commit and push agent-executed change
+  sets on the working branch (paper-d-iclr-2027-completion) without a
+  per-commit ask, using the proven iCloud-safe one-shot git flags
+  (core.checkStat=minimal, core.trustctime=false) and explicit path adds.
+  (b) What this does NOT touch — these are content/procedure rules, not
+  authorization rituals, and remain fully binding: the private-content
+  exclusions (never commit logs/private/, private paper_d/output/pdf
+  revision content); scripts/lab_asset/ frozen; frozen prereg text is not
+  agent-amendable (frozen-amendment procedures are their own gates); the
+  deliberate-uncommitted list (e.g. scripts/rfx_diag_20260919.py per
+  pi_battery_v3_dispositions_20260920); the 2026-10-09 freeze-session
+  mechanics per prereg Section 1.3.
+  (c) Scope of "directly do" covers ordinary session change sets
+  (decisions, goal_state, logs, memory, code, tests, docs). It does not
+  authorize new experiments, GPU use, or anything else gated by other
+  decisions; those gates are unchanged.
+authorized_actions:
+  - commit_and_push_agent_executed_change_sets_on_the_working_branch_without_per_commit_asks
+forbidden_actions:
+  - committing_private_content_logs_private_or_paper_d_private_revision_material
+  - amending_frozen_text_or_lab_asset_under_this_authorization
+  - treating_this_as_authorization_for_experiments_or_gpu_use
+execution_evidence:
+  - disk-directive change set committed without further ask as fe10e7af2 (5 files, both validators green pre-commit)
+  - this record + memory feedback_commit_autonomy.md + logs/2026-09-20.md Session 3 committed in the same session
