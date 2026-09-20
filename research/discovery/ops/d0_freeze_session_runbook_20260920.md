@@ -213,15 +213,19 @@ narrative statements and the panel response (historical per C-12).
   per Section 1.3(3) in r2://ecophys/alpha_cube_d0_20261009/freeze_record.json and the D0
   session log (not embeddable in this document, which it hashes)."
 
-## 7. PI one-liners needed at (or before) session open
+## 7. PI one-liners — ALL RATIFIED 2026-09-20 ("批准", decision `pi_freeze_runbook_ratification_20260920`)
 
-1. Item (7)=(18) same-file resolution + §3 defaults (or PI names different artifacts).
+1. Item (7)=(18) same-file resolution + §3 defaults — RATIFIED.
 2. Tree-contains reading of §1.3(3)(i) + the dual commit-id record (sha1 id + object
-   sha256).
-3. Mac boto3 as the freeze-record upload channel (governance I/O, not an experiment).
+   sha256) — RATIFIED.
+3. Mac boto3 as the freeze-record upload channel (governance I/O, not an experiment) —
+   RATIFIED.
 4. Keep `scripts/rfx_diag_20260919.py` untracked through the freeze (deliberate-uncommitted
-   list).
-5. Confirm .env.r2 credential backup exists PI-side (gitignored; unrecoverable from repo).
+   list) — RATIFIED.
+5. .env.r2 credential backup PI-side (gitignored; unrecoverable from repo) — requirement
+   acknowledged by the PI; the backup action itself is PI-side and not agent-verifiable.
+
+The 2026-10-09 session therefore has zero open decisions; it executes §5 as written.
 
 ## 8. Failure paths (pre-planned; all end in §1.3(3) STOP, none in silent repair)
 

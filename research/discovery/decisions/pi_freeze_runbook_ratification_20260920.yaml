@@ -1,0 +1,46 @@
+schema_version: pi-freeze-runbook-ratification-v1
+decision_id: pi_freeze_runbook_ratification_20260920
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "批准"
+recorded_at: "2026-09-19T17:00:00Z"
+status: executed
+subject_document: research/discovery/ops/d0_freeze_session_runbook_20260920.md
+context: >-
+  Answer to the five runbook section-7 one-liners surfaced at the end of the
+  2026-09-20 freeze-readiness session (logs/2026-09-20.md Session 4). The PI
+  approved the list as presented; this record executes that approval so the
+  2026-10-09 freeze session has zero open decisions and is a mechanical
+  runbook execution.
+ratified_items:
+  - item_7_equals_18_same_file: >-
+      prereg Section 1.3(2) items (7) and (18) resolve to the same file
+      (papers/proposal/ecomd_reexploration_d1_killer_tests_and_ops_2026-09-06.md);
+      the frozen path list deduplicates and hashes it once. Section-3
+      resolution defaults (items 10/13/14/16) stand as recorded in the runbook.
+  - tree_contains_reading_and_dual_commit_record: >-
+      "Commit containing exactly the frozen file set" reads tree-contains
+      (all 26 paths present in the commit tree at their recorded hashes and
+      clean; the freeze commit is the prereg pin-fill commit). The sha1-format
+      repo makes a literal "commit sha256" unsatisfiable; freeze_record.json
+      records BOTH the 40-hex git commit id and the sha256 of the commit
+      object bytes, labeled.
+  - mac_boto3_upload_channel: >-
+      The freeze-record upload (Section 1.3(3)(ii)) runs on the Mac via
+      ecomd/data/r2_sync.py (boto3 + repo-local .env.r2) - seconds-scale
+      governance I/O under the compute-location rule, not an experiment.
+      Section 1.3(3) mandates the object path and etag capture, not the tool.
+  - rfx_diag_stays_untracked: >-
+      scripts/rfx_diag_20260919.py remains untracked through the freeze
+      (deliberate-uncommitted list per pi_battery_v3_dispositions_20260920).
+  - env_r2_backup_pi_side: >-
+      The .env.r2 credential backup is a PI-side action (file is gitignored
+      and unrecoverable from the repo). This decision records the requirement
+      as acknowledged; the agent cannot verify the backup exists and does not
+      read or print the credentials.
+notes:
+  - freeze_remains_date_pinned: nothing in this record executes the freeze early or amends any frozen text
+  - rehearsal_evidence: r2://ecophys/rehearsals/d0_freeze_rehearsal_20260920/freeze_record.json (etag 8970a22db6006920cbb2fe073b265c09)
+execution_evidence:
+  - runbook_section_7_marked_ratified (commit follows this record)
+  - goal_state session entry logs/2026-09-20.md Session 5
