@@ -142,6 +142,12 @@ Separate follow-up (NOT freeze-blocking): `scripts/d0_cleanup_archive.py` hard-r
 rclone (`shutil.which` guard) — rclone must be installed + a remote configured on the D0-S1
 node before that tooling's upload/delete phases can run at campaign launch.
 
+**RESOLVED 2026-09-21**: rclone v1.75.1 at `/usr/local/bin/rclone` on v100ts, v100bts, and
+the newly enumerated third node 100.70.122.100 (Ubuntu 24.04, 2×RTX 3080 10 GB, idle); `r2:`
+remote built from `.env.r2` (`/root/.config/rclone/rclone.conf`, mode 600, credentials never
+printed); read-only `rclone lsd r2:ecophys` verified on all three hosts. The remote name
+matches the tooling's `R2_BASE = "r2:ecophys"`. Item-9 D0-S1 dependency closed.
+
 ## 5. Freeze-session command sequence (2026-10-09, execute verbatim)
 
 Order is §1.3(3)-mandatory; a failure at any step stops the freeze (no partial freeze). All
