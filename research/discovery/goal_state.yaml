@@ -57,22 +57,26 @@ mode_basis:
 last_derived_at: "2026-09-19"
 next_action_queue:
   - action: >-
-      Hold the D0 freeze session on 2026-10-09 per prereg Section 1.3 (commit
-      of the exact frozen file set, per-file sha256 + commit hash + timestamp,
-      R2 upload to r2://ecophys/alpha_cube_d0_20261009/freeze_record.json,
-      session log with etag), then campaign launch per the frozen ops plan
-      (Section 8.3 >=40%-free STOP gate fires mechanically if below floor).
-      The regression-battery re-verification is COMPLETE and ACCEPTED under
-      the PI-recorded criterion "no unexplained regressions; every red
-      dispositioned" (decision pi_battery_v3_dispositions_20260920, "都批准"):
-      154 files / 1562 tests remote, post-disposition node state 153/154 green
-      with 1 documented node-only red (git-history binding, canonical/CI
-      green); four drifted test pins re-pinned; two gitignored-locator
-      consequences scheduled to the post-freeze merge of
-      paper-d-iclr-2027-completion, not to the freeze. Pre-freeze items 8-10
-      all complete. FLAG-12 L1-4 landing check recorded at freeze.
-    rationale: Freeze mechanics are pinned; order is mandatory and a failure at any step stops the freeze. Battery acceptance criterion as amended by pi_battery_v3_dispositions_20260920.
-    cost_estimate: one freeze session.
+      Campaign launch on all three PI-named machines. D0 freeze EXECUTED
+      2026-09-21 (UTC 2026-09-20T15:12Z, C-13 + pi_campaign_advance_20260921):
+      freeze sha256 fd4a40b0306d415cef9a8a41b8e94e5afb21126e4e3d7ff99097e066f9981f57,
+      freeze commit f4e61bafed21f12a6ec73dbe82b9ed4ea87bdd37, R2 record
+      alpha_cube_d0_20260921/freeze_record.json etag 52b5b8edfdffb962b1c86c12cfde70c1.
+      Order: node staging (repo bundle from the freeze commit + CUDA env on
+      v100ts/v100bts, CPU env on the 3080 node) -> D0-S1 preflight per host
+      (focus tests >=25, seed-999 CUDA preflight, launch receipt) -> D0-S2
+      corpus generation -> D0-S3 training. Machine assignment: v100ts = L1
+      channel (B1 + A10 audit + Stage-2 B2), v100bts = L2 channel (B3 +
+      Stage-2 B4), 3080 node = CPU + exploratory channel (corpus/DGP/F_exec
+      streams core-capped, S3 FIM grid, analyzers, G9 engine replay).
+      Heterogeneous-pool rule binding: no 3080 cell inside a V100-benchmarked
+      block without a qualification benchmark + PI arbitration; B1 never on
+      the 3080s. Section 8.3 >=40%-free STOP gate reads the 2026-09-20
+      disk-spread directive at D0-S1. Re-verify the v100ts discovery validator
+      on the full-history bundle clone (node-only git-history red disposition
+      from the freeze session).
+    rationale: Freeze complete; campaign order is frozen in the ops plan; the PI ordered launch without waiting (pi_campaign_advance_20260921).
+    cost_estimate: Stage 1 ~650 V100-h over ~19-20 wall days; conditional Stage 2 ~410 V100-h.
   - action: >-
       After 2026-10-17 UTC, re-derive the verification_liquidity sealed-holdout state.
     rationale: Separate sealed protocol; holdout opening is forbidden before that date.
@@ -410,6 +414,27 @@ session_history:
       earlier-freeze option (pre-hash C-13 amendment on the C-11/C-12 precedent, then
       runbook execution, then launch) was surfaced to the PI as the lawful "don't
       wait" path; not executed unilaterally.
+  - date: "2026-09-21"
+    mode: d0_freeze_executed_campaign_ordered_launched
+    ledger_ref: logs/2026-09-21.md Session 2
+    note: >-
+      PI ordered the campaign advanced now ("不要有任何冻结，不要等...直接开始跑"); on the
+      structured follow-up the PI chose freeze-in-parallel over waiver (decision
+      pi_campaign_advance_20260921). C-13 pre-hash amendment executed (freeze date
+      2026-10-09 -> 2026-09-21, R2 path alpha_cube_d0_20260921/, commit df7b60cdc; agent
+      pushback recorded once: the prereg is NOT without force). D0 freeze session then
+      EXECUTED per runbook §5, all seven steps: validators dispositioned (local green,
+      node route-graph green, one documented node-only git-history red), pin-fill at
+      2026-09-20T15:11Z, 26-path hash -> commit-level freeze sha256
+      fd4a40b0306d415cef9a8a41b8e94e5afb21126e4e3d7ff99097e066f9981f57, freeze commit
+      f4e61bafed21f12a6ec73dbe82b9ed4ea87bdd37 (dual id + object sha256 720c4111...fe205b),
+      freeze_record.json at r2://ecophys/alpha_cube_d0_20260921/ etag 52b5b8ed...70c1
+      (local sha256 bdf92b2c...a4ca1, 11261 bytes), session log + second commit d519824fd,
+      FLAG-12 line recorded (L1-4 landed pre-freeze, 15e139928). 24/26 per-file rows match
+      the runbook baseline; the 2 deltas are exactly the C-13-edited files. Zero outcome
+      access pre-hash; zero Mac experiments. Derived anchors at D0=2026-09-21: ceiling
+      2026-10-19, t2 2026-10-17, D0-S4 2026-10-07/08. Queue head = node staging +
+      campaign launch on all three machines.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each

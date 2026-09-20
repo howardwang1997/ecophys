@@ -1,5 +1,7 @@
 # D0 freeze-session runbook + rehearsal record (2026-09-20)
 
+**EXECUTED 2026-09-21 (UTC 2026-09-20T15:12Z)** per C-13 + `pi_campaign_advance_20260921`: freeze sha256 `fd4a40b0306d415cef9a8a41b8e94e5afb21126e4e3d7ff99097e066f9981f57`, freeze commit `f4e61bafe` (+ object sha256 `720c4111…fe205b`), R2 `alpha_cube_d0_20260921/freeze_record.json` etag `52b5b8ed…70c1`, log commit `d519824fd`. Session record: `logs/2026-09-21.md` Session 2.
+
 Preparation artifact for the date-pinned D0 outcome-blind freeze **2026-10-09** (prereg v2
 §1.3, as amended by C-12). NOT part of the frozen file set, NOT an amendment of any frozen
 text. Produced by a 15-agent read-only readiness audit (7 resolvers + adversarial verify,
