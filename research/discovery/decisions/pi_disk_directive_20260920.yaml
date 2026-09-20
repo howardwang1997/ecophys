@@ -1,0 +1,56 @@
+schema_version: pi-disk-directive-v1
+decision_id: pi_disk_directive_20260920
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "有额外数据盘，不要让一个磁盘卡住你"
+recorded_at: "2026-09-19T13:10:00Z"
+status: executed
+parent_decision: pi_battery_v3_dispositions_20260920
+context: >-
+  Answer to the 2026-09-20 disk-status report showing both training volumes
+  below the prereg Section 8.3 >=40%-free floor (v100ts /data 14%, v100bts
+  /data 32%) and the expectation that the STOP-class gate fires mechanically
+  at D0-S1. Full disk enumeration performed the same day: both nodes carry a
+  second 200G data disk (vdc mounted /data2). Free space map: v100ts /data
+  70G (14%) + /data2 19G (9%) + / 26G; v100bts /data 153G (32%) + /data2 82G
+  (56%) + / 26G; cluster total 376G, fragmented. v100ts /data2 is occupied by
+  other-project content (graphene_k_cusp_nosmear 61G, nvhpc toolkit 14G,
+  huggingface cache 43G) covered by the 2026-09-19 physics-bulk stand-down
+  (pi_bulk_icloud_no_action_20260919). The ops plan's own working-set budget
+  (ecomd_reexploration_d1_killer_tests_and_ops_2026-09-06.md line 183) is
+  ~300-500 GB across both nodes (480 final checkpoints x 0.15-0.5 GB +
+  corpora + logs).
+scope_interpretation: >-
+  (a) The directive answers the Section 8.3 STOP in advance under the gate's
+  own "PI decision at that point" clause: launch is not to be blocked by any
+  single volume's relative-free percentage. Frozen text is NOT amended; the
+  gate still fires mechanically at D0-S1 and this record is the standing PI
+  answer it reads.
+  (b) Campaign storage spreads across the available data disks instead of
+  depending on one: scratch volumes designated per node (v100ts /data +
+  v100bts /data2 primary, v100bts /data secondary), with final locked
+  checkpoints uploaded R2-canonically as runs complete (project workflow
+  rule: workers stage immutable inputs from r2://ecophys/ and upload
+  manifests/results afterward; ops line 186 requires retention until paper
+  acceptance, which R2 satisfies) and the frozen disk-pressure rule
+  (intermediates deleted first, only the 10-seed T4 drift subset retains
+  30-min checkpoints) enforced locally. Peak local working set under this
+  flow is in-flight scratch + active corpora + the T4 subset, well inside
+  the 70G+82G+153G spread.
+  (c) Physics bulk on any volume is NOT touched: the 2026-09-19 stand-down
+  (pi_bulk_icloud_no_action_20260919) remains in force; this directive adds
+  no authority to move or delete other projects' data, and no single-volume
+  40% target is pursued on v100ts because reaching it would require exactly
+  such movement.
+  (d) If the PI instead prefers a fresh attached volume for v100ts (zero
+  data movement, designation-only compliance), that is a console action on
+  the PI side; this record does not assume it.
+authorized_actions:
+  - campaign_scratch_spread_across_data_and_data2_per_node_with_r2_canonical_checkpoint_upload
+  - treating_this_directive_as_the_standing_pi_answer_read_by_the_section_8_3_stop_gate_at_d0_s1
+forbidden_actions:
+  - amending_prereg_v2_section_8_3_or_any_frozen_text
+  - moving_or_deleting_physics_project_bulk_on_any_volume (stand-down unchanged)
+execution_evidence:
+  - disk_enumeration_2026-09-20: lsblk + df on both nodes (vda 200G /, vdb 500G /data, vdc 200G /data2 each); du top-level per mount recorded in logs/2026-09-20.md Session 2
+  - no_storage_changes_made_yet: campaign scratch directories are created at D0-S1 by the launch flow; nothing moved or deleted
