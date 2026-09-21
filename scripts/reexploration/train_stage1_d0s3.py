@@ -298,8 +298,11 @@ def check_lineage_against_module_defaults(lineage_cfg: dict[str, Any], surface: 
 
 
 def load_dgp_config(repo_root: Path) -> dict[str, Any]:
+    """The DGP parameter mapping (the yaml's `config` sub-key, as the corpus
+    driver passes it); the wrapper keys dgp_id/dgp_label/series_law are not
+    DGPConfig fields."""
     path = repo_root / "configs" / "reexploration" / "dgp" / "lab_asset.yaml"
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text())["config"]
 
 
 # --------------------------------------------------- training-episode stream
