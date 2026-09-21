@@ -435,6 +435,24 @@ session_history:
       access pre-hash; zero Mac experiments. Derived anchors at D0=2026-09-21: ceiling
       2026-10-19, t2 2026-10-17, D0-S4 2026-10-07/08. Queue head = node staging +
       campaign launch on all three machines.
+  - date: "2026-09-21"
+    mode: d0s2_corpus_complete_d0s3_training_launched
+    ledger_ref: logs/2026-09-21.md Sessions 3-4
+    note: >-
+      D0-S2 corpus grid complete on the 3080 CPU channel (23,040 sessions, 12/12 manifests,
+      3.6G; post_corpus R2-staging + 12-batch validate running). D0-S3 production training
+      driver train_stage1_d0s3.py authored, adversarially verified by a 31-agent
+      verify/refute workflow (4 blockers + 3 contract gaps confirmed and fixed, 12 findings
+      refuted; structural through-M coordinate-blindness upheld: blind mode gives
+      byte-identical through-M arms, D_01=D_11=0). PI ratified production constants
+      pi_d0s3_train_constants_20260921: differentiated coordinate mode, n_train 2048
+      (L1)/4096 (L2) at episode window [64,64+n), n_iters 100, device cuda (trainings are
+      G4-hash-covered and not a G9 re-execution class, so no frozen pin breaks; PI accepted
+      non-bitwise retraining residual). Smoke pass on seed 11030 (disjoint) exercised the
+      differentiated through-M CUDA path end-to-end incl. lock checkpoint + G4
+      training_log.json. B1 (v100ts, l1, 11000:11030) and B3 (v100bts, l2, 12000:12030)
+      LAUNCHED and staging. All three machines active. Watchers armed for training
+      progress, block manifests, and post_corpus/R2 markers.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each
