@@ -76,8 +76,10 @@ FREEZE_FILE_PINS: dict[str, str] = {
     "scripts/lab_asset/dgp_request_generator.py":
         "2cef5a334cc7f0020459062e3f37d76aab55d4440c8a305e50a222bfd4d72152",
 }
-DRAW_SEED_TAG = "d0s2-corpus"  # UNPINNED: PI ratification required before first execution
-DEFAULT_EPISODES = 64  # UNPINNED (F1 sec.0 cost basis only): PI ratification required
+# PI-ratified 2026-09-21 (decision pi_d0s2_corpus_seed_pins_20260921):
+# tag "draw" = the E-5-blessed derivation path; 64 = the F1 sec.0 cost basis.
+DRAW_SEED_TAG = "draw"
+DEFAULT_EPISODES = 64
 
 _SURFACE: dict[str, Any] = {}
 

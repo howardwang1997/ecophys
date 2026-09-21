@@ -1,0 +1,34 @@
+schema_version: pi-d0s2-corpus-seed-pins-v1
+decision_id: pi_d0s2_corpus_seed_pins_20260921
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "draw（E-5 已 bless，推荐）; 64（F1 成本基准，推荐）"
+recorded_at: "2026-09-21T02:02Z"
+status: ratified
+parent_decision: pi_campaign_advance_20260921
+context: >-
+  The adversarial check of the D0-S2 corpus driver (commit a50cd4692) found
+  two BLOCKING constants unpinned in every frozen authority (F1/F2/F3, the
+  E-5 seed/stream manifest, and the executed freeze record fd4a40b0...):
+  the corpus-prestate draw-seed derivation tag and episodes-per-seed. Both
+  are post-freeze confirmatory seed material, so they were put to the PI
+  rather than defaulted by the agent. No outcome had been accessed at
+  ratification time (outcome-blind preserved: no training or estimation had
+  run on any campaign data).
+authorized_actions:
+  - item_1_draw_seed_tag_draw:
+      - corpus prestate derivation rule = derive_seed(seed_root, "draw", episode_index), the E-5-blessed derivation path
+      - driver constant DRAW_SEED_TAG = "draw" in scripts/reexploration/generate_corpus_d0s2.py (replacing the draft placeholder "d0s2-corpus")
+      - recorded verbatim in both stream and corpus manifests as draw_seed_rule
+  - item_2_episodes_per_seed_64:
+      - episodes per seed root = 64, matching the F1 sec.0 cost basis behind the ~650 V100-h Stage-1 budget
+      - the CLI flag --episodes-per-seed stays required (no silent default); every invocation must pass 64 explicitly and the value is cross-checked against the stream manifest at validation time
+  - item_3_record_and_binding:
+      - commit this decision record together with the driver tag change on paper-d-iclr-2027-completion
+      - first corpus execution must descend from that commit; both manifests carry episodes_pin_status pointing at this decision id
+forbidden_actions:
+  - changing_either_value_after_first_corpus_execution (would split the confirmatory corpus across two seed rules; any change requires a new PI decision record before the next batch, and cross-batch mixing is never authorized)
+  - deriving_corpus_prestates_with_any_other_tag_or_episode_count_and_calling_it_d0s2
+execution_evidence:
+  - ratification_channel: AskUserQuestion structured choice, answers verbatim in authorization_text
+  - driver_commit_pending_this_record: DRAW_SEED_TAG="draw", DEFAULT_EPISODES=64 with pointer comment naming this decision id
