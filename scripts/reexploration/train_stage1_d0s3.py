@@ -527,27 +527,38 @@ def mechanism_channel_prediction(batch: Any, flow: Any, demand: Any, mechanism: 
                         mechanism increment (teacher-forced base, mirroring the
                         raw increment head's composition); ABSOLUTE arms
                         cumulate from the base.
+
+    Device policy (pi_d0s3_train_constants_20260921 item 4): the engine bridge
+    is a CPU Python engine, so on CUDA each per-call slice round-trips through
+    CPU (.to("cpu") is autograd-transparent and a no-op on CPU; the composed
+    increments move back to the flow device before cumulation).
     """
 
     import torch
 
+    device = flow.device
     batch_size, n_rounds, _ = flow.shape
     rows = []
     for step in range(n_rounds):
         for episode in range(batch_size):
-            allocation = mechanism(flow[episode, step], int(demand[episode, step].detach().item()))
-            cash_increment = (allocation * batch.slot_prices[episode, step]).sum()
+            allocation = mechanism(
+                flow[episode, step].to("cpu"),
+                int(demand[episode, step].detach().item()),
+            )
+            cash_increment = (
+                allocation * batch.slot_prices[episode, step].to("cpu")
+            ).sum()
             rows.append(torch.stack(
                 (allocation.sum().unsqueeze(0), cash_increment.unsqueeze(0))
             ))
     increments = (
-        torch.stack(rows).view(n_rounds, batch_size, N_CHANNELS).permute(1, 0, 2)
+        torch.stack(rows).view(n_rounds, batch_size, N_CHANNELS)
+        .permute(1, 0, 2).to(device)
     )
-    base = (
-        batch.channels_init.unsqueeze(1)
-        if batch.channels_init is not None
-        else torch.zeros(batch_size, 1, N_CHANNELS, dtype=increments.dtype)
-    )
+    if batch.channels_init is not None:
+        base = batch.channels_init.unsqueeze(1).to(device)
+    else:
+        base = torch.zeros(batch_size, 1, N_CHANNELS, dtype=increments.dtype, device=device)
     if coordinate_mode == "differentiated" and increment_arm:
         previous = torch.cat((base, batch.channels[:, :-1]), dim=1)
         return previous + increments
@@ -583,6 +594,7 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
     seed_root = job["seed_root"]
     n_iters = job["n_iters"]
     coordinate_mode = job["through_m_coordinate_mode"]
+    device = torch.device(job.get("device", "cpu"))
     through_m = arm["enforcement"] == "through_m"
     increment_arm = arm["coordinate"] == "increment"
 
@@ -613,7 +625,7 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
         )
         model = surface["RecurrentFactSurrogate"](
             surface["FactSurrogateConfig"](), generator=init_generator
-        )
+        ).to(device)
         config_json = surface["config_payload"](config)
         order_stream = None
     else:
@@ -636,7 +648,7 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
         }
         model = surface["L1CoordinateHeads"](
             surface["L1CoordinateHeadsConfig"](), generator=init_generator
-        )
+        ).to(device)
         order_stream = surface["MinibatchOrderStream"].from_seed_root(seed_root)
 
     mechanism = None
@@ -650,12 +662,16 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
         )
         mechanism = surface["build_mechanism"](mech_config, seed_root=seed_root)
 
-    scales = torch.tensor((1.0, 1.0), dtype=torch.float32)  # sealed s_ch = module default (C5)
+    scales = torch.tensor((1.0, 1.0), dtype=torch.float32, device=device)  # sealed s_ch = module default (C5)
     lr = float(lineage_cfg["train"]["lr"])
     grad_clip = float(lineage_cfg["train"]["grad_clip"])
     w_supervised = float(lineage_cfg["train"]["w_supervised"])
 
     batches = SeedBatches(Path(job["train_dir"]))
+    if device.type != "cpu":
+        for bucket in batches.buckets:
+            for key in ("features", "channels", "slot_prices"):
+                bucket[key] = bucket[key].to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     denominator = float(batches.total_rounds * N_CHANNELS)
 
@@ -709,7 +725,7 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
             loss_sum += float(deviation.sum().item()) / denominator
 
         with torch.no_grad():
-            grad_sq = torch.tensor(0.0)
+            grad_sq = torch.tensor(0.0, device=device)
             for parameter in model.parameters():
                 if parameter.grad is not None:
                     grad_sq = grad_sq + parameter.grad.detach().pow(2).sum()
@@ -755,7 +771,7 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
         "arm_id": job["arm_id"],
         "lineage": lineage,
         "git_sha": job["git_sha"],
-        "device": "cpu",
+        "device": job.get("device", "cpu"),
         "n_train": job["n_train"],
         "episode_start": job["episode_start"],
         "n_iters": n_iters,
@@ -990,6 +1006,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--episode-start", type=int, default=DEFAULT_EPISODE_START)
     parser.add_argument("--through-m-coordinate-mode", choices=["blind", "differentiated"],
                         default="blind")
+    parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu",
+                        help="training device (pi_d0s3_train_constants_20260921: cuda; "
+                             "blind mode is cpu-only — the frozen forward routes the "
+                             "mechanism without device marshalling)")
     parser.add_argument("--out-dir", required=True, type=Path)
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--pip-freeze", type=Path, default=None)
@@ -1018,6 +1038,12 @@ def main(argv: list[str] | None = None) -> int:
             "refusing to run production training without --production-constants-decision "
             "(the PI decision id pinning n_train / n_iters / episode window / "
             "through-M coordinate mode)"
+        )
+    if args.device != "cpu" and args.through_m_coordinate_mode == "blind":
+        raise RuntimeError(
+            "blind mode is cpu-only: the frozen forward calls the mechanism on "
+            "device-resident slices without marshalling. Use differentiated "
+            "(the ratified production mode) or --device cpu."
         )
 
     block_id = LINEAGE_BLOCK[args.lineage]
@@ -1069,6 +1095,7 @@ def main(argv: list[str] | None = None) -> int:
                 "n_iters": args.n_iters,
                 "episode_start": args.episode_start,
                 "through_m_coordinate_mode": args.through_m_coordinate_mode,
+                "device": args.device,
                 "train_dir": str(train_data_dir(out_dir, seed_root)),
                 "job_dir": str(out_dir / block_id / f"arm_{arm_id}" / f"seed_{seed_root:06d}"),
                 "git_sha": git_sha,
@@ -1097,7 +1124,7 @@ def main(argv: list[str] | None = None) -> int:
             "n_iters": args.n_iters,
             "episode_start": args.episode_start,
             "through_m_coordinate_mode": args.through_m_coordinate_mode,
-            "device": "cpu",
+            "device": args.device,
             "lr": 3e-4,
             "grad_clip": 1.0,
             "channel_scales": [1.0, 1.0],

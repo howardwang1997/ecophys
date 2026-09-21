@@ -1,0 +1,43 @@
+schema_version: pi-d0s3-train-constants-v1
+decision_id: pi_d0s3_train_constants_20260921
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "differentiated（推荐）; L1 2048 / L2 4096（推荐）; 100（推荐）; V100 GPU"
+recorded_at: "2026-09-21T12:10Z"
+status: ratified
+parent_decision: pi_d0s2_corpus_seed_pins_20260921
+context: >-
+  The adversarial 31-agent verify/refute workflow over
+  scripts/reexploration/train_stage1_d0s3.py confirmed the through-M
+  coordinate-blindness structure: under the frozen _predicted_channels
+  semantics the mechanism path never touches the coordinate heads, so
+  (absolute, through_m) and (increment, through_m) train byte-identically
+  per seed, D_01 = D_11 = 0 identically, and J degenerates to T_0. The
+  cube-structure dimension independently verified that the driver's
+  differentiated composition mirrors the frozen forward's mechanism loop
+  verbatim and the raw INC branch's composition, with the estimator-blind
+  kernel stream identical across modes. Four production constants unpinned
+  by every frozen authority (F1 anchors a cost basis, not a pin; E-5
+  defers iteration counts to "the D0 trainer runtime") were put to the PI.
+  No outcome had been accessed at ratification time.
+authorized_actions:
+  - item_1_through_m_coordinate_mode_differentiated:
+      - --through-m-coordinate-mode differentiated in every production invocation
+      - increment arms predict observed-previous + per-round mechanism increment; absolute arms cumulate from the init base; all 8 cells distinct, C3 estimands D_00/D_01/D_10/D_11 preserved
+  - item_2_n_train_2048_4096:
+      - n_train = 2048 (L1/B1) and 4096 (L2/B3) training episodes per seed root
+      - episode window [64, 64+n_train), disjoint from the 64 D0-S2 eval episodes; --episode-start stays >= 64 (contamination guard)
+  - item_3_n_iters_100:
+      - n_iters = 100 full-pass optimizer iterations (one pass over all T-buckets + one Adam step per iteration)
+  - item_4_device_cuda:
+      - production training on the V100 CUDA device (--device cuda)
+      - contract note recorded with the ratification: training records are G4-hash-covered and explicitly NOT a G9 re-execution class (analyzer contract Part 4.9, FLAG-7: "trainings are already hash-covered by G4 rather than re-executed"), and G8 binds eval draw-records, so no frozen pin is broken by CUDA nondeterminism
+      - residual consequence accepted by the PI: a voluntary retraining of the same seed would not be bitwise identical (cuDNN RNN backward nondeterminism); checkpoints remain hash-pinned by the lock chain
+      - blind mode is cpu-only (frozen forward routes the mechanism without device marshalling); blind+cuda is refused by the driver
+forbidden_actions:
+  - changing_any_of_the_four_constants_after_first_training_execution (a change requires a new PI decision record; seeds already trained under other constants are never silently mixed into the same block manifest)
+  - running_production_training_without_through_m_coordinate_mode_differentiated
+  - running_production_training_without_the_driver_flag_production_constants_decision_naming_this_decision_id
+execution_evidence:
+  - ratification_channel: AskUserQuestion structured choice, answers verbatim in authorization_text
+  - driver_commit: this record committed together with the --device implementation on paper-d-iclr-2027-completion; first training execution descends from that commit
