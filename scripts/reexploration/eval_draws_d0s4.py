@@ -2,8 +2,11 @@
 """D0-S4 evaluation-draw driver (block B1 = L1 x lab-asset-v3).
 
 Emits the RC1 mandatory-axes records (8 cells x 4 axes x 4 horizons x K=16
-draws per seed) and the RC4 horizon-one probes of analyzer-contract Part 4.9
-for B1: 30 seeds x 2,048 + 30 x 4 = 61,440 + 120 records.  NOT a frozen D0
+draws per seed), the RC2 truncation deployment passes (ID axis, conditions
+trunc_lag W=20 / trunc_cap W=40, same 8 cells x 4 horizons x K=16 grid; PR
+§3.4 secondary family), and the RC4 horizon-one probes of analyzer-contract
+Part 4.9 for B1: 30 seeds x 2,048 + 30 x 1,024 + 30 x 4 = 61,440 + 30,720
++ 120 records.  NOT a frozen D0
 file (freeze sha256 fd4a40b0...): this driver must CONFORM to the frozen
 pins.  Remote execution only (PI compute rule 2026-09-06) -- never run on the
 Mac beyond argument parsing.
@@ -97,6 +100,17 @@ HORIZONS: tuple[int, ...] = (1, 4, 16, 31)
 CORPUS_EPISODES_PER_SEED = 64
 PROBE_EPISODE_INDEX = 0
 
+# RC2 truncation passes (PI decision pi_d0s4_eval_constants_20260922):
+# D_trunc^W removes initial resting orders with arrival_clock > W from the
+# deployed book before replaying the recorded request stream (lemma writeup
+# kt_g4_g5 §4).  cap = the frozen latency window (latency_window_ticks = 40;
+# exactly the per-level first orders survive, every level straddles by
+# construction); lag = the half-window rung (late firsts dropped too, levels
+# can empty; 61/64 seed-11000 episodes discriminate the two conditions).
+RC2_AXIS = "id"               # truncation passes run at the ID axis (PR §3.4)
+RC2_W: dict[str, int] = {"trunc_lag": 20, "trunc_cap": 40}
+DRAW_SEED_TAG = "draw"        # must equal generate_corpus_d0s2.py's tag
+
 # E-5 AXIS_SPECS vocabulary (campaign.py) -- kswap reuses the id corpus with
 # the through-M deployment kernel swapped (C4(ii)).
 AXES: tuple[dict[str, Any], ...] = (
@@ -183,10 +197,17 @@ def load_surface(repo_root: Path) -> dict[str, Any]:
     sys.path.insert(0, str(repo_root))
 
     from lab_asset import dgp_request_generator as dgp
+    from lab_asset.conserving_emitter import (
+        conservation_violations,
+        emit_conserving_channels,
+        settlement_violations,
+    )
+    from lab_asset.matching import ReferenceEngine
     from lab_asset.replay import replay
-    from lab_asset.schema import AllocationRule, prestate_from_json
+    from lab_asset.schema import AllocationRule, prestate_from_json, record_to_json
     from lab_asset.verify_fixtures import load_tape
 
+    from ecomd.corpus.fexec_projector import project_fexec_corpus
     from ecomd.models.fact_surrogate import FactSurrogateBatch
     from ecomd.models.l1_coordinate_heads import (
         L1CoordinateHeads,
@@ -206,6 +227,12 @@ def load_surface(repo_root: Path) -> dict[str, Any]:
         load_tape=load_tape,
         prestate_from_json=prestate_from_json,
         AllocationRule=AllocationRule,
+        conservation_violations=conservation_violations,
+        emit_conserving_channels=emit_conserving_channels,
+        settlement_violations=settlement_violations,
+        ReferenceEngine=ReferenceEngine,
+        record_to_json=record_to_json,
+        project_fexec_corpus=project_fexec_corpus,
         FactSurrogateBatch=FactSurrogateBatch,
         L1CoordinateHeads=L1CoordinateHeads,
         L1CoordinateHeadsConfig=L1CoordinateHeadsConfig,
@@ -296,11 +323,13 @@ def load_eval_episodes(corpus_root: Path, axis: str, seed_root: int) -> tuple[li
             "episode_index": entry["episode_index"],
             "n_rounds": entry["n_rounds"],
             "corpus_hash": entry["corpus_hash"],
+            "canonical_sha": entry["episode_canonical_json_sha256"],
+            "config_fingerprint": entry["config_fingerprint"],
             "dir": edir,
             "features": features,
             "channels_cumulative": channels,
             "slot_prices": slot_prices,
-            "boundaries": episode_boundaries(edir / "tape.jsonl"),
+            "boundaries": episode_boundaries(tape_records(edir / "tape.jsonl")),
         })
     if len(episodes) != CORPUS_EPISODES_PER_SEED:
         raise RuntimeError(
@@ -309,8 +338,12 @@ def load_eval_episodes(corpus_root: Path, axis: str, seed_root: int) -> tuple[li
     return episodes, sha256_file(stream_manifest_path)
 
 
-def episode_boundaries(tape_path: Path) -> dict[str, Any]:
-    """Envelope boundary facts of one session tape.
+def tape_records(tape_path: Path) -> list[dict[str, Any]]:
+    return [json.loads(line) for line in tape_path.read_text().splitlines()]
+
+
+def episode_boundaries(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Envelope boundary facts of one session tape (parsed records).
 
     The four state hashes are top-level on the first/last records
     (session_start/session_end).  Best quotes live inside the payloads of
@@ -318,7 +351,6 @@ def episode_boundaries(tape_path: Path) -> dict[str, Any]:
     is the first event's pre_best_*, the post BBO the last event's post_best_*.
     """
 
-    records = [json.loads(line) for line in tape_path.read_text().splitlines()]
     first, last = records[0], records[-1]
     pre_quote = next(
         r["payload"] for r in records if "pre_best_bid" in r["payload"]
@@ -393,6 +425,102 @@ def window_hash(episodes: list[dict[str, Any]], window: list[tuple[int, int]]) -
         "pre_state_hash", "post_state_hash",
         "pre_aggregate_state_hash", "post_aggregate_state_hash",
     )}
+
+
+# ------------------------------------------------------- RC2 truncation passes
+
+def trunc_session_episodes(
+    surface: dict[str, Any],
+    repo_root: Path,
+    seed_root: int,
+    id_episodes: list[dict[str, Any]],
+    window: int,
+) -> list[dict[str, Any]]:
+    """D_trunc^W sessions of one seed at the ID axis (RC2 truth side).
+
+    Per episode: re-derive the stream from the seed with the frozen generator
+    and PASS the episode_canonical_json_sha256 guard against the corpus
+    manifest (clocks live only in the raw flow -- corpus prestates do not
+    serialize them), drop initial resting orders with arrival_clock > W, then
+    re-execute the recorded request stream from the truncated prestate (the
+    replay contract's native operation, prestate side).  Features AND truth
+    come from the truncated session itself, mirroring the pop_2x axis
+    treatment.  E-4 conservation/settlement gates re-run on every truncated
+    tape.  The request stream and round structure are clock-independent by
+    construction (all arrival clocks <= initial_clock_max 80 <
+    request_tick_start 100).
+    """
+
+    import dataclasses
+
+    dgp = surface["dgp"]
+    mapping = yaml.safe_load(
+        (repo_root / "configs" / "reexploration" / "dgp" / "lab_asset.yaml").read_text()
+    )["config"]
+    cfg = dgp.config_for_axis(dgp.config_from_mapping(mapping), RC2_AXIS)
+    episodes: list[dict[str, Any]] = []
+    for episode in id_episodes:
+        index = episode["episode_index"]
+        stream = dgp.generate_episode(seed_root, index, cfg)
+        if dgp.config_fingerprint(cfg) != episode["config_fingerprint"]:
+            raise RuntimeError(
+                f"RC2 re-derivation config mismatch seed={seed_root} ep={index}"
+            )
+        if sha256_bytes(dgp.episode_canonical_json(stream)) != episode["canonical_sha"]:
+            raise RuntimeError(
+                f"RC2 canonical-json guard failed seed={seed_root} ep={index}: "
+                "re-derived episode does not match the corpus manifest"
+            )
+        kept = tuple(o for o in stream.initial_book if o.arrival_clock <= window)
+        trunc = dataclasses.replace(stream, initial_book=kept)
+        draw_seed = dgp.derive_seed(seed_root, DRAW_SEED_TAG, index)
+        prestate = dgp.build_prestate(
+            trunc, surface["AllocationRule"](TRAINING_KERNEL), draw_seed
+        )
+        engine = surface["ReferenceEngine"](prestate)
+        for request in dgp.order_requests(stream):
+            engine.submit(request)
+        engine.finish()
+        tape = engine.tape
+        series = surface["emit_conserving_channels"](prestate, tape)
+        violations = surface["conservation_violations"](series) + \
+            surface["settlement_violations"](prestate, tape, series)
+        if violations:
+            raise RuntimeError(
+                f"RC2 truncated-session gate failed seed={seed_root} ep={index} "
+                f"W={window}: {violations}"
+            )
+        corpus = surface["project_fexec_corpus"](prestate, tape, seed_root)
+        records = [json.loads(surface["record_to_json"](r)) for r in tape]
+        episodes.append({
+            "episode_index": index,
+            "n_rounds": int(corpus.features.shape[0]),
+            "corpus_hash": episode["corpus_hash"],
+            "canonical_sha": episode["canonical_sha"],
+            "config_fingerprint": episode["config_fingerprint"],
+            "dir": episode["dir"],
+            "features": corpus.features.float(),
+            "channels_cumulative": corpus.channels_cumulative.float(),
+            "slot_prices": corpus.slot_prices,
+            "boundaries": episode_boundaries(records),
+        })
+    return episodes
+
+
+def load_arm_surface(
+    surface: dict[str, Any], block_dir: Path, arm_id: str, seed_root: int
+) -> tuple[Any, str]:
+    """(model, checkpoint_lock_sha256) of one trained arm checkpoint."""
+
+    checkpoint_path = block_dir / f"arm_{arm_id}" / f"seed_{seed_root:06d}" / "checkpoint.lock"
+    if not checkpoint_path.exists():
+        raise RuntimeError(f"missing trained checkpoint {checkpoint_path}")
+    sidecar_path = surface["lock_sidecar_path"](checkpoint_path)
+    sidecar = json.loads(sidecar_path.read_text())
+    model = surface["L1CoordinateHeads"](surface["L1CoordinateHeadsConfig"]())
+    surface["load_lock_checkpoint"](checkpoint_path, model=model)
+    model.eval()
+    return model, sidecar["checkpoint_sha256"]
 
 
 # ------------------------------------------------------------------- rollouts
@@ -574,6 +702,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--arms", default=",".join(ARM_IDS))
     parser.add_argument("--axes", default="id,pop_2x,tick_2x,kswap")
     parser.add_argument("--horizons", default=",".join(str(h) for h in HORIZONS))
+    parser.add_argument("--rc2-conditions", default=",".join(RC2_W),
+                        help="RC2 truncation conditions to emit ('none' disables; "
+                             "subset of trunc_lag,trunc_cap)")
     parser.add_argument("--horizon-mode", default="chained", choices=["chained", "within_cap"])
     parser.add_argument("--scales-json", required=True, type=Path,
                         help="s_ch materialization (Annex B(e)) with provenance")
@@ -618,6 +749,16 @@ def main(argv: list[str] | None = None) -> int:
     arm_ids = [a.strip() for a in args.arms.split(",") if a.strip()]
     axis_ids = [a.strip() for a in args.axes.split(",") if a.strip()]
     horizons = [int(h) for h in args.horizons.split(",") if h.strip()]
+    rc2_conditions = (
+        [] if args.rc2_conditions.strip().lower() in ("", "none")
+        else [c.strip() for c in args.rc2_conditions.split(",") if c.strip()]
+    )
+    unknown = [c for c in rc2_conditions if c not in RC2_W]
+    if unknown:
+        parser.error(f"unknown RC2 conditions {unknown} (choose from {sorted(RC2_W)})")
+    if rc2_conditions and RC2_AXIS not in axis_ids:
+        parser.error(f"RC2 requires the {RC2_AXIS!r} axis in --axes (truncation passes "
+                     "re-derive the ID corpus)")
     arms = {arm_id: load_arm(repo_root, arm_id) for arm_id in arm_ids}
     for arm_id, arm in arms.items():
         if arm["training_kernel"] != TRAINING_KERNEL:
@@ -636,6 +777,7 @@ def main(argv: list[str] | None = None) -> int:
 
     started = time.time()
     written_rc1 = 0
+    written_rc2 = 0
     written_rc4 = 0
     dup_written_total = 0
     skipped_existing = 0
@@ -725,18 +867,9 @@ def main(argv: list[str] | None = None) -> int:
         # RC1 grid: 4 arms x 2 inference enforcements x axes x horizons x K
         for arm_id in arm_ids:
             arm = arms[arm_id]
-            checkpoint_path = (
-                block_dir / f"arm_{arm_id}" / f"seed_{seed_root:06d}" / "checkpoint.lock"
+            model, checkpoint_lock_sha256 = load_arm_surface(
+                surface, block_dir, arm_id, seed_root
             )
-            if not checkpoint_path.exists():
-                raise RuntimeError(f"missing trained checkpoint {checkpoint_path}")
-            sidecar_path = surface["lock_sidecar_path"](checkpoint_path)
-            sidecar = json.loads(sidecar_path.read_text())
-            checkpoint_lock_sha256 = sidecar["checkpoint_sha256"]
-
-            model = surface["L1CoordinateHeads"](surface["L1CoordinateHeadsConfig"]())
-            surface["load_lock_checkpoint"](checkpoint_path, model=model)
-            model.eval()
 
             for inference_enforcement in INFERENCE_ENFORCEMENTS:
                 cell_id = f"{arm['coordinate']}-{arm['enforcement']}-{inference_enforcement}"
@@ -860,9 +993,136 @@ def main(argv: list[str] | None = None) -> int:
         written_rc1 += dup_written
         dup_written_total += dup_written
         skipped_existing += dup_skipped
+
+        # RC2 truncation deployment passes (ID axis, PR §3.4 secondary family):
+        # same 8-cell grid, conditions trunc_lag/trunc_cap, one pinned W each.
+        if rc2_conditions:
+            episodes_id, id_fixture_sha = episodes_by_corpus_axis[RC2_AXIS]
+            trunc_cache: dict[str, list[dict[str, Any]]] = {}
+            for condition in rc2_conditions:
+                w = RC2_W[condition]
+                trunc_episodes = trunc_cache.get(condition)
+                if trunc_episodes is None:
+                    trunc_episodes = trunc_session_episodes(
+                        surface, repo_root, seed_root, episodes_id, w
+                    )
+                    trunc_cache[condition] = trunc_episodes
+                for arm_id in arm_ids:
+                    arm = arms[arm_id]
+                    model, checkpoint_lock_sha256 = load_arm_surface(
+                        surface, block_dir, arm_id, seed_root
+                    )
+                    for inference_enforcement in INFERENCE_ENFORCEMENTS:
+                        cell_id = f"{arm['coordinate']}-{arm['enforcement']}-{inference_enforcement}"
+                        for horizon in horizons:
+                            window = horizon_window(trunc_episodes, horizon, args.horizon_mode)
+                            hashes = window_hash(trunc_episodes, window)
+                            for draw_index in range(1, K_INFERENCE_DRAWS + 1):
+                                key = record_key(
+                                    args.block_id, "RC2", condition, RC2_AXIS, horizon,
+                                    cell_id, seed_root, draw_index,
+                                )
+                                if (out_records / f"{key}.json").exists():
+                                    skipped_existing += 1
+                                    continue
+                                mechanism = (
+                                    surface["build_inference_mechanism"](
+                                        _inference_config(surface, TRAINING_KERNEL),
+                                        seed_root=seed_root,
+                                        draw_index=draw_index,
+                                    )
+                                    if inference_enforcement == "through_m" else None
+                                )
+                                result = evaluate_cell(
+                                    surface, model, mechanism, trunc_episodes, window,
+                                    inference_enforcement=inference_enforcement,
+                                    coordinate=arm["coordinate"],
+                                )
+                                y = endpoint_y(result["error"], scales)
+                                error = result["error"]
+                                record = make_record(
+                                    record_key=key,
+                                    record_class="RC2",
+                                    run_id=(
+                                        f"{args.block_id}.eval.{arm_id}.{condition}.{cell_id}."
+                                        f"{seed_root:05d}.{draw_index:02d}"
+                                    ),
+                                    block_id=args.block_id,
+                                    lineage="l1",
+                                    dgp_variant="lab-asset-v3",
+                                    seed=seed_root,
+                                    cell_id=cell_id,
+                                    axis=RC2_AXIS,
+                                    horizon=horizon,
+                                    draw_index=draw_index,
+                                    condition=condition,
+                                    config_sha256=sha256_bytes(canonical_bytes({
+                                        "runtime": RUNTIME_ID,
+                                        "horizon_mode": args.horizon_mode,
+                                        "coordinate": arm["coordinate"],
+                                        "training_enforcement": arm["enforcement"],
+                                        "inference_enforcement": inference_enforcement,
+                                        "axis": RC2_AXIS,
+                                        "condition": condition,
+                                        "truncation_window": w,
+                                        "horizon": horizon,
+                                        "estimator": "straight_through",
+                                        "mechanism_backend": "engine_bridge",
+                                        "checkpoint_lock_sha256": checkpoint_lock_sha256,
+                                        "scales_sha256": sha256_bytes(
+                                            canonical_bytes(scales_payload)
+                                        ),
+                                    })),
+                                    git_sha=git_sha,
+                                    fixture_manifest_sha256=id_fixture_sha,
+                                    schema_version="lab-asset-v3",
+                                    stream_hashes=stream_hashes_for(surface, seed_root),
+                                    checkpoint_lock_sha256=checkpoint_lock_sha256,
+                                    allocation_rule=TRAINING_KERNEL,
+                                    n_draws=K_INFERENCE_DRAWS,
+                                    metrics={
+                                        "endpoint_y": y,
+                                        "n_window_rounds": result["n_window_rounds"],
+                                        "max_abs_error_volume_units": float(
+                                            error[:, 0].abs().max().item()
+                                        ),
+                                        "max_abs_error_cash_ticks": float(
+                                            error[:, 1].abs().max().item()
+                                        ),
+                                        "finite": bool(y == y),
+                                    },
+                                    pre_best_bid=result["boundaries"]["pre_best_bid"],
+                                    pre_best_ask=result["boundaries"]["pre_best_ask"],
+                                    post_best_bid=result["boundaries"]["post_best_bid"],
+                                    post_best_ask=result["boundaries"]["post_best_ask"],
+                                    conservation_violation_steps={
+                                        "volume": result["volume_violations"],
+                                        "cash": result["cash_violations"],
+                                    },
+                                    pre_state_hash=hashes["pre_state_hash"],
+                                    post_state_hash=hashes["post_state_hash"],
+                                    pre_aggregate_state_hash=hashes["pre_aggregate_state_hash"],
+                                    post_aggregate_state_hash=hashes["post_aggregate_state_hash"],
+                                )
+                                write_record(out_records, record)
+                                written_rc2 += 1
+                                if args.max_records and written_rc2 >= args.max_records:
+                                    stopped_early = True
+                                    break
+                            if stopped_early:
+                                break
+                        if stopped_early:
+                            break
+                    if stopped_early:
+                        break
+                if stopped_early:
+                    break
+            if stopped_early:
+                break
+
         print(
-            f"[{RUNTIME_ID}] seed {seed_root} rc1={written_rc1} (dupes={dup_written}) "
-            f"rc4={written_rc4} skipped={skipped_existing} "
+            f"[{RUNTIME_ID}] seed {seed_root} rc1={written_rc1} (dupes={dup_written_total}) "
+            f"rc2={written_rc2} rc4={written_rc4} skipped={skipped_existing} "
             f"wall={time.time() - seed_started:.0f}s",
             flush=True,
         )
@@ -876,6 +1136,7 @@ def main(argv: list[str] | None = None) -> int:
         "arms": arm_ids,
         "axes": axis_ids,
         "horizons": horizons,
+        "rc2_conditions": rc2_conditions,
         "horizon_mode": args.horizon_mode,
         "scales": scales_payload,
         "production_decision": args.production_decision,
@@ -883,17 +1144,37 @@ def main(argv: list[str] | None = None) -> int:
         "git_sha": git_sha,
         "pinned_constants": {
             "record_literals": {
-                "record_class": ["RC1", "RC4"],
-                "condition": "id",
+                "record_class": ["RC1", "RC2", "RC4"],
+                "condition": ["id", "trunc_lag", "trunc_cap"],
                 "schema_version": "lab-asset-v3",
                 "lineage": "l1",
                 "dgp_variant": "lab-asset-v3",
             },
             "run_id_formats": {
                 "rc1": "{block}.eval.{arm}.{axis}.{cell}.{seed:05d}.{draw:02d}",
+                "rc2": "{block}.eval.{arm}.{condition}.{cell}.{seed:05d}.{draw:02d}",
                 "probe": "{block}.probe.{axis}.{seed}",
                 "kswap_duplicate_suffix": ".kswap",
                 "g8_exempt_fields": ["record_key", "run_id", "axis"],
+            },
+            "rc2_truncation": {
+                "conditions_w": dict(RC2_W),
+                "operator": (
+                    "D_trunc^W: initial resting orders with arrival_clock > W removed "
+                    "from the deployed book, then the recorded request stream replayed "
+                    "from the truncated prestate (lemma writeup kt_g4_g5 section 4)"
+                ),
+                "axis": RC2_AXIS,
+                "truth_side": (
+                    "truncated session's own re-executed channels_cumulative "
+                    "(pop_2x-axis treatment)"
+                ),
+                "fixture_binding": "ID-axis stream manifest sha256 (kswap precedent)",
+                "guards": [
+                    "episode_canonical_json_sha256 hash guard on every re-derivation",
+                    "E-4 conservation + settlement gates re-run on every truncated tape",
+                ],
+                "kswap_duplicates": "none (ID axis only)",
             },
             "stream_hashes": (
                 "sha256(canonical_json({data,init,minibatch,train_kernel} "
@@ -948,6 +1229,7 @@ def main(argv: list[str] | None = None) -> int:
         "counts": {
             "rc1_written": written_rc1,
             "rc1_kswap_duplicates": dup_written_total,
+            "rc2_written": written_rc2,
             "rc4_written": written_rc4,
             "skipped_existing": skipped_existing,
             "stopped_early": stopped_early,

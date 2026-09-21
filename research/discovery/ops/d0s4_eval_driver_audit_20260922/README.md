@@ -51,4 +51,26 @@ duplicate silent-skip semantics, atomic-write tmp orphan/durability.
   out-of-namespace seeds fail fast.
 
 Remaining open items are PI decisions, not driver defects: see
-`../d0s4_eval_pi_package_20260922.md`.
+`../d0s4_eval_pi_package_20260922.md`. All were decided 2026-09-22 in
+`../../../decisions/pi_d0s4_eval_constants_20260922.yaml` (horizon chained,
+D2-D12 blanket, RC2 extend-now with cap=40/lag=20 + the mechanical package,
+production authorization at B1 60/60).
+
+## RC2 extension (same day, post-decision)
+
+`eval_draws_d0s4.py` extended with the 30,720 RC2 truncation-pass records:
+D_trunc^W removes initial resting orders with arrival_clock > W from the
+deployed book, then replays the recorded request stream from the truncated
+prestate (lemma writeup kt_g4_g5 §4). Corpus prestates do not serialize
+arrival clocks, so every episode is re-derived from the seed with the frozen
+generator under an episode_canonical_json_sha256 guard against the corpus
+manifest (ID re-execution reproduces the disk corpus byte-exactly — verified
+on the node); E-4 conservation + settlement gates re-run on every truncated
+tape. Smoke (seed 11000, arm absolute_raw, both cells, horizons 1/4/16/31,
+both conditions): 1 payload class over 16 draws per (cell, condition,
+horizon); independent re-run byte-identical including the re-derivation path;
+resume skips all pre-existing records. Exposure structure matches the frozen
+prediction: truncation invisible at h=1/4 (early rounds do not touch removed
+followers), trunc != ID at h=16, lag != cap at h=31. s_ch sealed separately
+by `scripts/reexploration/materialize_s_ch_d0s4.py` (namespace 20260977, 512
+episodes, sha256 debb15a7…).

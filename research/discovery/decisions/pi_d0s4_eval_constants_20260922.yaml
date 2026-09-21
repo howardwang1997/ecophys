@@ -1,0 +1,76 @@
+schema_version: pi-d0s4-eval-constants-v1
+decision_id: pi_d0s4_eval_constants_20260922
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: >-
+  Round 1 (horizon mode + RC2 fork + blanket constants): "chained（推荐）";
+  "现在扩展驱动" (extend the eval driver with RC2 truncation passes now,
+  explicitly over the recommended deferral); "批准并授权（推荐）" (blanket
+  ratification of D2-D12 defaults + authorization to start production eval on
+  the 3080 CPU node once B1 training reaches 60/60).  Round 2 (RC2 W grid +
+  mechanical package): "cap=40, lag=20（推荐）"; "批准（推荐）".
+recorded_at: "2026-09-22T00:00Z"
+status: ratified
+parent_decision: pi_d0s3_l2_invalid_test_20260921
+context: >-
+  The rewritten B1 eval driver scripts/reexploration/eval_draws_d0s4.py was
+  adversarially verified (69-agent workflow wf_86e9b2ee-be5: 1 blocker + 1
+  major + 3 minors confirmed and fixed) and smoke-green on the 3080 node;
+  every constant the frozen text leaves unpinned was packaged
+  (research/discovery/ops/d0s4_eval_pi_package_20260922.md, items D1-D12)
+  and put to the PI in two rounds the same day.  No production eval record
+  existed at ratification time; B1 training was still in flight (the driver
+  fails fast on missing checkpoints, so no partial grid can be written).
+  RC2 grounding: corpus prestates do not serialize arrival clocks (clocks
+  live in the raw flow only), so the driver re-derives each ID episode from
+  the seed with the frozen generator under an episode_canonical_json_sha256
+  guard; D_trunc^W mechanics follow the lemma writeup (kt_g4_g5 section 4:
+  out-of-window resting orders are removed from the deployed book before
+  replay), verified end-to-end on the node (ID re-execution reproduces the
+  disk corpus byte-exactly; truncated re-executions pass the E-4 gates).
+authorized_actions:
+  - item_1_horizon_mode_chained:
+      - --horizon-mode chained in every production invocation (episodes pooled in index order; the filling episode contributes the remainder)
+  - item_2_blanket_defaults_d2_to_d8_d11_d12:
+      - D2 stream_hashes = sha256 over canonical JSON of the 4-name {data, init, minibatch, train_kernel} sub-dict of derive_substream_seeds(seed_root) (training's recipe)
+      - D3 fixture_manifest_sha256 = sha256 of the per-(corpus-axis, seed) stream_manifest.json file
+      - D4 record literals + run_id formats as implemented (condition 'id' for RC1; record_class RC1/RC2/RC4; cell_id {coordinate}-{training}-{inference}; run_id {block}.eval.{arm}.{axis}.{cell}.{seed:05d}.{draw:02d}; probe {block}.probe.{axis}.{seed}; kswap suffix .kswap; G8 exempt fields {record_key, run_id, axis})
+      - D5 window_hash = sha256 over canonical JSON of [{episode_index, rounds, **boundaries}] in episode-index order, same digest in all four hash fields; pooled BBO = last window episode's session boundaries
+      - D6 config_sha256 = per-record canonical dict (runtime, horizon_mode, coordinate, training/inference enforcement, axis, horizon, estimator, mechanism_backend, checkpoint_lock_sha256, scales_sha256)
+      - D7 mechanism cadence = fresh build_inference_mechanism per (cell, axis, horizon, draw) record
+      - D8 RC4 probe conventions (cell_id engine-replay-probe, draw_index 0, horizon 1, n_draws 16, fifo on every axis, episode 0, abort the seed on replay failure)
+      - D11 execution site = 3080 CPU node (driver is CPU-only; deterministic kernels for G8/G9)
+      - D12 scope guards (no L2/B3 eval per pi_d0s3_l2_invalid_test_20260921; B4 disposition at the mechanical gate flagged honestly; STRAIGHT_THROUGH + ENGINE_BRIDGE on every through-M cell; through-M coordinate composition = engine-increment cumulation from a per-episode zero base; freeze pin-set = 3-file sha256 pins + FREEZE_COMMIT ancestry)
+  - item_3_s_ch_materialization_plan_d9:
+      - Annex B(e)/§C5 s_ch = DGP-native per-event innovation std from a hash-sealed DGP-only sample: frozen generate_episode + frozen lab_asset.yaml DGPConfig (ID axis), reserved seed namespace 20260977 (disjoint from 11000+/12000+/31000+/20260972-76), 512 episodes (episode_index 0..511), s_ch = per-channel std of channels_delta pooled over all rounds of all episodes; DGP-truth side only, never simulator output, never the paired corpus
+      - file {s_ch, provenance{derivation, n_episodes, seed_namespace, generator pins}}; the file's sha256 is recorded below (the seal); the driver refuses the [1.0, 1.0] training placeholder
+  - item_4_rc2_extend_now_w_grid:
+      - RC2 truncation passes are produced by eval_draws_d0s4.py itself (no deferral): 2 conditions x 30 seeds x 8 cells x 4 horizons x K=16 = 30,720 B1 records, ID axis only, record_class RC2, condition literals trunc_lag / trunc_cap (PR §3.4 / C16(14))
+      - W grid: trunc_cap = W 40 (= frozen latency_window_ticks; exactly the per-level first orders survive, every level straddles by construction) and trunc_lag = W 20 (= half window; late firsts dropped too, levels can empty; 61/64 seed-11000 episodes discriminate the two conditions)
+      - operator: D_trunc^W removes initial resting orders with arrival_clock > W from the deployed book, then the recorded request stream is replayed from the truncated prestate (lemma writeup kt_g4_g5 section 4; the replay contract's native operation, prestate side)
+  - item_5_rc2_mechanical_package:
+      - truth side: the truncated session's own re-executed channels_cumulative (model reads truncated features, Y against truncated truth; mirrors the pop_2x axis treatment; the "truncated features vs original truth" reading conflates environment change with model error and is rejected)
+      - fixture binding: RC2 fixture_manifest_sha256 = the ID-axis stream manifest sha256 (kswap precedent of reusing the id corpus tree)
+      - guards: every episode re-derivation must pass the episode_canonical_json_sha256 guard against the corpus manifest before truncation; E-4 conservation + settlement gates re-run on every truncated tape (any violation aborts the seed)
+      - request stream and round structure unchanged by construction (all arrival clocks <= initial_clock_max 80 < request_tick_start 100)
+      - RC2 run_id format {block}.eval.{arm}.{condition}.{cell}.{seed:05d}.{draw:02d}; no kswap duplicates (ID axis only); allocation_rule fifo on every RC2 cell
+  - item_6_production_authorization:
+      - at B1 training 60/60, the full-grid production eval (seeds 11000:11030, 61,440 RC1 + 30,720 RC2 + 120 RC4) launches on the 3080 CPU node with --production-decision pi_d0s4_eval_constants_20260922, then R2-staged under alpha_cube_d0_20260921/eval/B1/
+forbidden_actions:
+  - changing_any_ratified_constant_after_first_production_eval_record (any change requires a new PI decision record; records already written under other constants are never silently mixed)
+  - writing_any_RC2_record_without_the_canonical_json_hash_guard_or_with_a_truncated_tape_that_failed_the_E4_gates
+  - reporting_any_L2_cell_as_a_trained_comparison (inherited from pi_d0s3_l2_invalid_test_20260921; B3/B4 evaluation requires a new PI decision)
+  - running_the_eval_driver_on_the_Mac (PI compute-location rule 2026-09-06; remote nodes only)
+verification_evidence:
+  - selfcheck_eval_streams_d0s4 7/7 PASS (C2(b) mechanism cadence)
+  - RC2 smoke (seed 11000, arm absolute_raw, both cells, horizons 1/4/16/31, both conditions): 385 records; 1 payload class over 16 draws per (cell, condition, horizon) [G8]; independent re-run byte-identical including the truncation re-derivation path [G9]; resume skips all pre-existing records with zero writes
+  - exposure structure matches the frozen prediction: truncation invisible at h=1/4 (early rounds do not touch removed followers), trunc != ID at h=16, lag != cap separates at h=31
+  - truncation severity census (seed 11000, 64 episodes): W=0 keeps ~0.1 of ~12.5 resting orders, W=20 keeps 2.5 mean, W=40 keeps exactly 5 (the per-level firsts, deterministic), W=60 keeps 8.9, W=80 keeps all
+s_ch_seal:
+  materialized_by: scripts/reexploration/materialize_s_ch_d0s4.py
+  file: "3080:/data/ecophys-campaign/eval_d0s4_production/s_ch_20260977.json (staged to alpha_cube_d0_20260921/eval/B1/ with the records)"
+  sha256: debb15a761d5b08cfb3a05428ddd9d5f820abe09d2480b552360ac9800735e0b
+  s_ch: [5.4546989294724275, 5458.5636934342465]
+  rounds_pooled: 6368
+  episodes: 512
+  seed_namespace: 20260977
