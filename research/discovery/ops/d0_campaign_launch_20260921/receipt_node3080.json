@@ -1,0 +1,40 @@
+{
+  "schema_version": "ecomd-d0s1-launch-receipt-v1",
+  "node": "100.70.122.100",
+  "host": "node3080 (Ubuntu 24.04, 2x RTX 3080 10GB - atomistic fleet claims both GPUs)",
+  "campaign_role": "CPU channel (corpus/DGP/F_exec streams core-capped; no 3080 cell in V100-benchmarked blocks, B1 never here)",
+  "recorded_at_utc": "2026-09-21T10:55Z",
+  "source": {
+    "repo": "/data/ecophys-campaign/repo (GitHub clone, branch paper-d-iclr-2027-completion)",
+    "git_head": "9b8bba834598ed0f1f1d878094c58eee9f75edc0",
+    "descends_from_freeze_commit_f4e61bafe": true,
+    "freeze_sha256": "fd4a40b0306d415cef9a8a41b8e94e5afb21126e4e3d7ff99097e066f9981f57",
+    "git_installed_this_session": "2.43.0 (node had no git; apt-get)"
+  },
+  "env": {
+    "prefix": "/data/ecophys-campaign/env",
+    "python": "3.11",
+    "torch": "2.3.1+cu121",
+    "cuda_available": true,
+    "device": "RTX 3080 (campaign use CPU-only)",
+    "deps": "numpy 2.4.6, pytest 9.1.1, jsonschema, yaml"
+  },
+  "gates": {
+    "focused_tests": "rc=0 (nice 15, concurrent with corpus batch 1); 1 documented xfail",
+    "corpus_rate_gate": "PASS - probe root 11001, 8 episodes, 1 worker: 4 s wall incl. startup (~0.4 s/episode); full grid 23040 sessions ~2.6 CPU-h vs 18 V100-h frozen basis",
+    "seed_999_cuda_preflight": "not applicable at D0-S1 (CPU channel; GPU claimed by atomistic fleet)"
+  },
+  "d0s2_launch": {
+    "launched_utc": "2026-09-21 ~10:55Z",
+    "grid": "2 namespaces (l1 11000:11030, l2 12000:12030) x 3 dgp axes (id, pop_2x, tick_2x) x 2 kernels (fifo, random_unit_within_price) x 30 roots x 64 episodes = 23040 sessions",
+    "seed_pins": "pi_d0s2_corpus_seed_pins_20260921 (draw tag, 64 episodes)",
+    "command": "nohup /data/ecophys-campaign/corpus_launcher.sh; log /data/ecophys-campaign/corpus_launch.log; out /data/ecophys-campaign/corpus/",
+    "batch_manifests": "corpus_manifest_<ns>_<axis>_<kernel>.json x12 preserved per batch",
+    "nice": 10, "workers": 6
+  },
+  "disk": {
+    "data_free": "41G/49G",
+    "section_8_3_read": "pi_disk_directive_20260920; corpus est. single-digit GB"
+  },
+  "shared_node_note": "load ~33/16 cores from pyscf atomistic fleet; corpus nice'd 10 and capped at 6 workers"
+}

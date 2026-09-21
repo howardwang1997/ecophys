@@ -1,0 +1,33 @@
+{
+  "schema_version": "ecomd-d0s1-launch-receipt-v1",
+  "node": "100.80.236.112",
+  "host": "v100ts",
+  "campaign_role": "L1 channel (B1 training + A10 audit + Stage-2 B2)",
+  "recorded_at_utc": "2026-09-21T10:55Z",
+  "source": {
+    "repo": "/data/ecophys-campaign/repo (GitHub clone, branch paper-d-iclr-2027-completion)",
+    "git_head": "9b8bba834598ed0f1f1d878094c58eee9f75edc0",
+    "descends_from_freeze_commit_f4e61bafe": true,
+    "freeze_sha256": "fd4a40b0306d415cef9a8a41b8e94e5afb21126e4e3d7ff99097e066f9981f57"
+  },
+  "env": {
+    "prefix": "/data/ecophys-campaign/env",
+    "python": "3.11",
+    "torch": "2.3.1+cu121",
+    "cuda_available": true,
+    "device": "Tesla PG503-216 (V100 32GB)",
+    "pip_freeze_sha256_after_deps": "8e421f7aa3497ae89ed7d90425c411e632a5361089f5a8e38a21619691ee5c3a",
+    "pip_freeze_sha256_identical_to_v100bts": true
+  },
+  "gates": {
+    "focused_tests": "rc=0; 13 files covering all frozen module surfaces; 165 items, 1 documented xfail (fiber_resampler single-order-pool, frozen fixture limitation)",
+    "seed_999_cuda_preflight": "EQ True (manual_seed(999) matmul reproducible bit-exact)",
+    "discovery_validator": "OK on full-history clone: 1 cards, 1390 evidence records, 176 re-entry audits (node-only git-history red from the freeze session DISCHARGED)",
+    "route_graph_validator": "OK on full-history clone: 333 route nodes, 1997 locators verified; the two logs/private/ locator reds are the battery-v3 dispositioned gitignored files, worktree-bound (scp'd, never committed)"
+  },
+  "disk": {
+    "data_free": "54G/492G (11%)",
+    "section_8_3_read": "pi_disk_directive_20260920: scratch spread /data+/data2, R2-canonical checkpoints, physics bulk untouched; no single-volume 40% floor"
+  },
+  "log_error_scan": "clean (focus_ts.log rc=0, validators OK)"
+}

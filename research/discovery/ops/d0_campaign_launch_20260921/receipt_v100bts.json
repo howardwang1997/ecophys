@@ -1,0 +1,35 @@
+{
+  "schema_version": "ecomd-d0s1-launch-receipt-v1",
+  "node": "100.123.220.57",
+  "host": "v100bts",
+  "campaign_role": "L2 channel (B3 training + Stage-2 B4)",
+  "recorded_at_utc": "2026-09-21T10:55Z",
+  "source": {
+    "repo": "/data/ecophys-campaign/repo (GitHub clone, branch paper-d-iclr-2027-completion)",
+    "git_head": "9b8bba834598ed0f1f1d878094c58eee9f75edc0",
+    "descends_from_freeze_commit_f4e61bafe": true,
+    "freeze_sha256": "fd4a40b0306d415cef9a8a41b8e94e5afb21126e4e3d7ff99097e066f9981f57"
+  },
+  "env": {
+    "prefix": "/data/ecophys-campaign/env",
+    "python": "3.11",
+    "torch": "2.3.1+cu121",
+    "cuda_available": true,
+    "device": "Tesla V100-SXM2-32GB",
+    "pip_freeze_sha256_after_deps": "8e421f7aa3497ae89ed7d90425c411e632a5361089f5a8e38a21619691ee5c3a",
+    "pip_freeze_sha256_identical_to_v100ts": true
+  },
+  "gates": {
+    "focused_tests": "rc=0; same 13-file focus set; 165 items, 1 documented xfail (fiber_resampler single-order-pool)",
+    "seed_999_cuda_preflight": "EQ True (manual_seed(999) matmul reproducible bit-exact)",
+    "validators": "not re-run on this node at D0-S1 (canonical ts re-verification green on identical tree); run before any B3 analyzer stage"
+  },
+  "disk": {
+    "data_free": "137G/492G (71%)",
+    "section_8_3_read": "pi_disk_directive_20260920 spread directive; /data comfortably above floor"
+  },
+  "log_error_scan": "clean (focus_bts.log rc=0)",
+  "blockers": {
+    "B3_training": "waits on L2 surrogate build (ecomd/reexploration/fact_surrogates.py stub has no units); corpus staged from R2 once D0-S2 completes"
+  }
+}
