@@ -1,0 +1,59 @@
+schema_version: pi-d0s3-l2-invalid-test-v1
+decision_id: pi_d0s3_l2_invalid_test_20260921
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "停掉，记 invalid-test（推荐）; 接管 B1 半数剩余 through-M 种子（推荐）"
+recorded_at: "2026-09-21T10:55Z"
+status: ratified
+parent_decision: pi_d0s3_train_constants_20260921
+context: >-
+  The first L2/B3 through-M record (arm absolute_through_m, seed_root 12000,
+  n_train 4096, n_iters 100, differentiated, cuda) landed with loss flat at
+  9.1283e+08 across all 100 iterations (six significant figures unchanged;
+  +1.4e-09 relative drift) while grad_norm grew 1.95e8 -> 1.76e9. A
+  measurement chain over the frozen corpus and the trained checkpoints
+  (read-only; no retraining) established a representational-reachability
+  failure of the frozen L2 architecture under the ratified constants, not a
+  driver defect: (1) corpus channel scales are O(1e3-1e5) in BOTH lineages
+  (L1 channels mean 29139 / max 113068, increments mean 3064; L2 fexec
+  increments ~3000/round, slot_prices mean 264 / max 1005); (2) B1/L1 trains
+  through-M to 83.4% loss reduction because L1CoordinateHeads feeds the
+  teacher-forced observed channel base O(1e4) into an UNBOUNDED SiLU-MLP
+  encoder, so its representation carries O(1e2-1e3) magnitude from init and
+  the trained flow lattice reaches O(75-913) per slot (flow_head |W| stayed
+  0.0156 -- the trunk carries the gain); (3) RecurrentFactSurrogate consumes
+  only O(1) FEXEC features through a GRUCell whose hidden state is bounded
+  in [-1, 1] (measured |h| mean 0.958 / max 0.978 after training: every unit
+  on the tanh rails), so the trained flow decode is stuck at lattice
+  {1,2,3} and demand at 1; reaching the required resting-quantity lattice
+  O(10-100) needs softplus pre-activations O(10-100), i.e. flow_head row
+  norms grown from 0.018 to O(10-100), which at the frozen lr 3e-4 requires
+  >= 3e4-3e5 iterations (300-3000x the ratified 100); (4) loss-rescaling
+  cannot fix this (Adam is scale-invariant and the mechanism's physical
+  semantics fix the output units), and (5) both lineages share the identical
+  mechanism bridge, composition helper, optimizer, and clip in the driver,
+  so the divergence is architectural. Consequence: all four L2 cells sit at
+  the trivial-predictor floor (raw 0.0085% / 0.043%, through-M 0.00%), so
+  the L2 column's J degenerates for reasons unrelated to the estimand --
+  an invalid test of the L2 half of the cube, escalated per the no-downgrade
+  rule rather than narrated as undertrained. The PI was shown this evidence
+  table together with the disposal options before any halt or host change.
+authorized_actions:
+  - item_1_halt_b3_remaining_through_m:
+      - kill the sequential B3 driver on v100bts; the remaining 59 L2 through-M jobs (~12.5 V100-days sequential) are not executed
+      - B3 terminal state: 30 absolute_raw + 30 increment_raw + 1 absolute_through_m records (+ the in-flight absolute_through_m seed 12001 killed mid-job, no record) -- the through-M datum and the reachability chain above are the invalid-test evidence
+      - B3 block manifest at close-out documents the halted state explicitly; no degenerate-cell results are reported as trained comparisons
+      - the L2 column is reported in the paper as an invalid test with the root-cause analysis (mechanism-exact training is unreachable at L2 scale without magnitude-carrying inputs; L1's teacher-forced base is what makes the mechanism arm trainable)
+  - item_2_bts_takes_half_of_b1_remaining:
+      - host-assignment deviation from the frozen ops plan (v100ts = L1 channel, v100bts = L2 channel) is authorized for B1 through-M completion: v100bts (same V100 32 GB pool, no heterogeneous-pool implication) runs increment_through_m seeds 11001:11009 / 11009:11017 / 11017:11024 / 11024:11030 in four concurrent drivers while v100ts runs absolute_through_m seeds 11002:11011 / 11012:11021 / 11022:11030 in three
+      - partition covers exactly the 55 missing jobs (26 absolute + 29 increment; seeds 11000/11001/11011/11021/11026 absolute-side already done are excluded, never retrained)
+      - per-job determinism unaffected: jobs are independent, episode staging is the frozen seed-derived derivation (bts re-stages its seeds locally, resume-aware), training records remain G4-hash-covered and not a G9 re-execution class
+      - the merged B1 block manifest at completion is assembled from both hosts' per-job artifacts and records this decision id
+forbidden_actions:
+  - reporting_any_L2_cell_as_a_trained_comparison (the four B3 cells are invalid-test evidence, not estimand measurements)
+  - silently_merging_B3_records_into_a_block_manifest_that_does_not_disclose_the_halt
+  - revising_the_freeze_or_constants_to_make_L2_trainable_without_a_new_PI_decision (the reachability arithmetic shows lr / n_iters / loss-rescaling fixes are ineffective; a real fix is architecture- or DGP-level and requires re-registration of the L2 estimand)
+execution_evidence:
+  - decision_channel: AskUserQuestion structured choice, answers verbatim in authorization_text
+  - b3_driver_kill: pkill at 2026-09-21T10:52Z, verified 0 processes on a fresh connection
+  - worker_relaunch: 3 drivers on v100ts (train_b1_abs_*.log) + 4 drivers on v100bts (train_b1_inc_*.log), all under pi_d0s3_train_constants_20260921 constants, verified by log headers

@@ -453,6 +453,27 @@ session_history:
       training_log.json. B1 (v100ts, l1, 11000:11030) and B3 (v100bts, l2, 12000:12030)
       LAUNCHED and staging. All three machines active. Watchers armed for training
       progress, block manifests, and post_corpus/R2 markers.
+  - date: "2026-09-21"
+    mode: d0s3_l2_invalid_test_pi_halted_bts_reallocated
+    ledger_ref: logs/2026-09-21.md Session 5
+    note: >-
+      First L2 through-M datum landed flat (loss fixed at 9.1283e+08 over all
+      100 iters, grad_norm growing) and was root-caused to a
+      representational-reachability failure of the frozen L2 architecture
+      under the ratified constants (bounded GRUCell hidden measured on the
+      tanh rails vs L1's unbounded encoder fed the O(1e4) teacher-forced
+      base; required flow lattice O(10-100) needs >=3e4-3e5 iters at lr 3e-4;
+      loss rescaling ineffective). All four L2 cells at the
+      trivial-predictor floor: L2 column escalated as an INVALID test and
+      PI-dispositioned (decision pi_d0s3_l2_invalid_test_20260921): B3's 59
+      remaining through-M jobs halted (terminal: 30+30 raw, 1 through-M);
+      v100bts authorized to deviate from the frozen host assignment within
+      the V100 pool and took half of B1's remaining through-M seeds (ts 3
+      drivers absolute, bts 4 drivers increment; 55-job partition, no
+      retraining of done seeds). D0-S2 validation: CPU channel
+      CPU-CHANNEL-VALIDATE-ALL-PASS 09:14:49Z; both V100 R2 pulls done,
+      batch validates in flight. B1 ETA ~23 h; merged block manifest to be
+      assembled from both hosts at completion.
 derivation_rule: >-
   Every field in this file except goal_id, terminal_objective, and derivation_rule must be
   re-derived from the canonical sources listed in the research-goal skill at the start of each
