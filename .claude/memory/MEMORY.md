@@ -2,7 +2,8 @@
 
 ## Current state
 
-- [GAMMA activation and freeze](project_gamma_activation_2026-09-19.md) — ACTIVE, ICML 2027 target; D0 executed 2026-09-21 under C-13 (f4e61bafe), superseding the earlier 10-09 schedule; campaign ceiling 2026-10-19. All experiments remote; analyzer contract ratified; pre-freeze builds complete.
+- [GAMMA activation and freeze](project_gamma_activation_2026-09-19.md) — ACTIVE; D0 executed 2026-09-21 under C-13 (f4e61bafe), superseding the earlier 10-09 schedule; campaign ceiling 2026-10-19. All experiments remote; analyzer contract ratified; pre-freeze builds complete. Earlier ICML target superseded by the PI's ICLR update below.
+- [GAMMA claim review and ICLR submission](project_gamma_claim_review_2026-09-23.md) — PRIVATE/INTERNAL: PI reports ICLR abstract submitted, full paper pending; official deadline 2026-09-25 23:59 AoE (09-26 23:59 NZST). Current theorem package requires correction/review; empirical claims remain pending. Submitted abstract text not yet supplied.
 - [GAMMA campaign execution](project_d0_campaign_execution_2026-09-21.md) — PRIVATE/INTERNAL: B1 training 120/120 and dual-V100 corpus validation complete, verified 2026-09-23; full evaluation, theory-facing checks and A10 audit remain. L2 disposition and public-evidence restrictions tracked internally. Current operational snapshot: logs/2026-09-23.md.
 - [Sandbox launcher hardening](project_sandbox_launcher_hardening_2026-09-16.md) — g42 sandbox authorized, run, and TERMINAL: 4 branches completed, host-OOM kill mid-b05 → frozen quarantine contract fired; certification_ambiguous dominated n128 cells (void risk); post-terminal assess DEFERRED (lowest priority, behind GAMMA).
 - [V100 disk migration 2026-09-19](project_v100_disk_migration_2026-09-19.md) — both nodes' cold data moved to data disks with verified symlinks (bts / 100%→87%; ts /data 99%→86%); physics-project bulk intentionally not moved; ssh-heredoc script corruption lesson.
