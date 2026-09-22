@@ -77,6 +77,7 @@ import yaml
 
 CAMPAIGN_ID = "alpha_cube_d0_20260919"
 RUNTIME_ID = "eval_draws_d0s4"
+RUN_ID_DECISION = "pi_d0s4_run_id_horizon_20260923"
 RUNTIME_SCHEMA = "ecomd-d0s4-eval-runtime-v1"
 
 FREEZE_COMMIT = "f4e61bafed21f12a6ec73dbe82b9ed4ea87bdd37"
@@ -655,7 +656,46 @@ def record_key(block_id: str, record_class: str, condition: str, axis: str,
 
 
 def make_record(**fields: Any) -> dict[str, Any]:
+    if fields["record_class"] in ("RC1", "RC2"):
+        fields["run_id"] += f".h{fields['horizon']:02d}"
     return dict(fields)
+
+
+def validate_existing_record_ids(out_records: Path) -> None:
+    """Check resume metadata before any production record is written."""
+    run_ids: set[str] = set()
+    for path in sorted(out_records.glob("*.json")):
+        record = json.loads(path.read_text())
+        key = record_key(
+            record["block_id"], record["record_class"], record["condition"],
+            record["axis"], record["horizon"], record["cell_id"],
+            record["seed"], record["draw_index"],
+        )
+        if record["record_key"] != key or path.stem != key:
+            raise RuntimeError(f"record-key binding mismatch: {path.name}")
+        run_id = record["run_id"]
+        if record["record_class"] in ("RC1", "RC2"):
+            suffix = f".h{record['horizon']:02d}"
+            if record["axis"] == "kswap" and record["cell_id"].endswith("-raw"):
+                suffix += ".kswap"
+            if not run_id.endswith(suffix):
+                raise RuntimeError(f"run-ID horizon binding mismatch: {path.name}")
+        if run_id in run_ids:
+            raise RuntimeError(f"duplicate run_id: {run_id}")
+        run_ids.add(run_id)
+
+
+def require_run_id_decision(repo_root: Path, decision_id: str) -> str:
+    """Return the hash of the ratified production metadata decision."""
+    if decision_id != RUN_ID_DECISION:
+        raise RuntimeError(f"production requires {RUN_ID_DECISION}")
+    path = repo_root / "research" / "discovery" / "decisions" / f"{decision_id}.yaml"
+    decision = yaml.safe_load(path.read_text())
+    if (decision.get("decision_id") != decision_id
+            or decision.get("status") != "ratified"
+            or decision.get("authorized_by") != "PI"):
+        raise RuntimeError(f"production decision is not PI-ratified: {decision_id}")
+    return sha256_file(path)
 
 
 def write_record(out_records: Path, record: dict[str, Any]) -> str:
@@ -726,6 +766,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     repo_root = args.repo_root.resolve()
+    production_decision_sha256 = require_run_id_decision(repo_root, args.production_decision)
     enforce_freeze_pins(repo_root)
     surface = load_surface(repo_root)
     scales, scales_payload = load_scales(args.scales_json)
@@ -773,6 +814,7 @@ def main(argv: list[str] | None = None) -> int:
 
     block_dir = args.train_dir / args.block_id
     out_records = args.out_dir / "records"
+    validate_existing_record_ids(out_records)
     out_records.mkdir(parents=True, exist_ok=True)
 
     started = time.time()
@@ -1140,6 +1182,7 @@ def main(argv: list[str] | None = None) -> int:
         "horizon_mode": args.horizon_mode,
         "scales": scales_payload,
         "production_decision": args.production_decision,
+        "production_decision_sha256": production_decision_sha256,
         "freeze_commit": FREEZE_COMMIT,
         "git_sha": git_sha,
         "pinned_constants": {
@@ -1151,8 +1194,8 @@ def main(argv: list[str] | None = None) -> int:
                 "dgp_variant": "lab-asset-v3",
             },
             "run_id_formats": {
-                "rc1": "{block}.eval.{arm}.{axis}.{cell}.{seed:05d}.{draw:02d}",
-                "rc2": "{block}.eval.{arm}.{condition}.{cell}.{seed:05d}.{draw:02d}",
+                "rc1": "{block}.eval.{arm}.{axis}.{cell}.{seed:05d}.{draw:02d}.h{horizon:02d}",
+                "rc2": "{block}.eval.{arm}.{condition}.{cell}.{seed:05d}.{draw:02d}.h{horizon:02d}",
                 "probe": "{block}.probe.{axis}.{seed}",
                 "kswap_duplicate_suffix": ".kswap",
                 "g8_exempt_fields": ["record_key", "run_id", "axis"],

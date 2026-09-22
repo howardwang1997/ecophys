@@ -1,0 +1,47 @@
+schema_version: pi-d0s4-run-id-horizon-v1
+decision_id: pi_d0s4_run_id_horizon_20260923
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "批准修订并继续全量评估（推荐）"
+recorded_at: "2026-09-22T14:45:37Z"
+status: ratified
+visibility: private_internal
+public_artifact_policy: exclude_by_default_not_research_evidence
+parent_decision: pi_d0s4_eval_constants_20260922
+scope: B1 evaluation record identity and a separate full-grid production version
+authorized_actions:
+  - append_horizon_to_rc1_and_rc2_run_ids:
+      rc1: "{block}.eval.{arm}.{axis}.{cell}.{seed:05d}.{draw:02d}.h{horizon:02d}"
+      rc2: "{block}.eval.{arm}.{condition}.{cell}.{seed:05d}.{draw:02d}.h{horizon:02d}"
+      raw_infer_kswap: append .kswap to the corresponding ID run_id
+      rc4: unchanged
+      record_key_and_sort_order: unchanged
+  - preserve_prior_3076_records_as_private_internal_history:
+      prior_directory: /data/ecophys-campaign/eval_d0s4_production/out
+      disposition: preserve bytes and hashes; exclude from the replacement production inputs
+  - generate_complete_replacement_b1_grid:
+      seeds: "11000:11030"
+      counts: {RC1: 61440, RC2: 30720, RC4: 120}
+      execution_site: rtx3080_cpu
+      output_directory: /data/ecophys-campaign/eval_d0s4_run_id_horizon_20260923/out
+      r2_prefix: alpha_cube_d0_20260921/eval/B1/run_id_horizon_20260923/
+      scope: one replacement record-generation pass, including seed 11000; no analyzer rerun
+  - bind_production_to_this_ratified_decision_and_its_sha256
+inherited_unchanged:
+  - all frozen scientific hypotheses, endpoints, thresholds, statistical families and gates
+  - all 120 B1 checkpoint locks, seeds, data, training constants and trained weights
+  - all parent-decision constants except the RC1 and RC2 run_id formats specified above
+  - chained horizons, K16, RC2 windows and truth semantics, sealed s_ch, freeze pins
+  - B3 halt and complete-records requirements; no new lineage or Stage-2 authorization
+forbidden_actions:
+  - silently_mixing_prior_and_replacement_record_versions
+  - overwriting_prior_records_or_changing_their_record_keys
+  - inspecting_or_reporting_partial_scientific_endpoints
+  - changing_any_scientific_setting_under_this_metadata_only_decision
+  - exporting_internal_audit_or_implementation_history_as_research_evidence
+verification:
+  candidate_driver_sha256: 1221d8e8edc08f276336fbb62f230017ae1b7940c2a624d5814ef70e8383aea1
+  test_file_sha256: 02dd68b64183774a51dd740d029356fcaa2d494620af37ca7447a9e8a4e09793
+  remote_site: v100bts
+  result: 2 tests passed; all 92280 constructed record IDs unique; old metadata and unratified decisions rejected
+  private_package: logs/private/gamma_run_id_amendment_20260923.md
