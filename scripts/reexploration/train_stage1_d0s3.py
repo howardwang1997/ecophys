@@ -586,6 +586,24 @@ def raw_channel_prediction(output: Any, batch: Any, surface: dict[str, Any],
     return previous + output.inc_channels
 
 
+def save_progress_snapshot(path: Path, model: Any, optimizer: Any,
+                           iteration: int, config: dict[str, Any], seed: int) -> None:
+    """Save a private progress checkpoint, excluded from final lock inputs."""
+    import io
+    import torch
+
+    payload = {
+        "role": "private_training_progress", "resume_supported": False,
+        "iter_idx": iteration, "seed": seed, "config": config,
+        "model_state_dict": {k: v.detach().cpu().clone() for k, v in model.state_dict().items()},
+        "optimizer_state_dict": optimizer.state_dict(),
+    }
+    buffer = io.BytesIO()
+    torch.save(payload, buffer)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_bytes(path, buffer.getvalue())
+
+
 # ------------------------------------------------------------- training jobs
 
 def train_one(job: dict[str, Any]) -> dict[str, Any]:
@@ -680,6 +698,7 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
 
     history: list[dict[str, Any]] = []
     started = time.time()
+    last_progress_checkpoint = started
     for iteration in range(n_iters):
         optimizer.zero_grad()
         loss_sum = 0.0
@@ -746,6 +765,12 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
             "enforcement": arm["enforcement"],
             "lineage": lineage,
         })
+        if job.get("progress_dir") and time.time() - last_progress_checkpoint >= 1800:
+            save_progress_snapshot(
+                Path(job["progress_dir"]) / "latest.pt", model, optimizer,
+                iteration + 1, config_json, seed_root,
+            )
+            last_progress_checkpoint = time.time()
     wall_seconds = time.time() - started
 
     # ---- lock checkpoint (L1-5 / L2-4 format, adopted verbatim)
