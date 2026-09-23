@@ -23,10 +23,9 @@ Design pins (recorded in every block manifest):
   round-weighted mean  sum(((pred-target)/s_ch)^2) / (sum_e T_e * C) — the
   frozen trainers' `.mean()` generalized to ragged T (identical on uniform
   batches).
-* Device is CPU-only: the trained surfaces are d_hidden-64 MLP/GRU models
-  (GPU advantage negligible), the through-M engine bridge is per-call pure
-  Python, and G8/G9 byte-identical re-execution requires deterministic
-  kernels (CUDA RNN backward is not).
+* The runtime records the approved training device. Production uses CUDA;
+  G8/G9 evaluation uses separate deterministic CPU paths. The engine bridge
+  remains on CPU, with autograd-preserving transfers at the mechanism call.
 * Raw arms supervise the coordinate head decode exactly as the frozen
   loops; through-M arms supervise the engine-executed channel cumulation.
   Through-M coordinate composition mode (blind vs differentiated) is a
@@ -644,10 +643,20 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
             mechanism_backend=surface["MechanismBackend"].ENGINE_BRIDGE,
             **l2_extra,
         )
-        model = surface["RecurrentFactSurrogate"](
-            surface["FactSurrogateConfig"](), generator=init_generator
-        ).to(device)
         config_json = surface["config_payload"](config)
+        if "l2_units" in job:
+            from ecomd.models.unit_fact_surrogate import UnitRecurrentFactSurrogate
+
+            units = {key: torch.tensor(value, dtype=torch.float32)
+                     for key, value in job["l2_units"]["values"].items()}
+            model = UnitRecurrentFactSurrogate(
+                surface["FactSurrogateConfig"](), units, generator=init_generator
+            ).to(device)
+            config_json["l2_units"] = job["l2_units"]
+        else:
+            model = surface["RecurrentFactSurrogate"](
+                surface["FactSurrogateConfig"](), generator=init_generator
+            ).to(device)
         order_stream = None
     else:
         # L1 has no enforcement/estimator/kernel config fields (deliberate,
@@ -682,6 +691,14 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
             mechanism_backend=surface["MechanismBackend"].ENGINE_BRIDGE,
         )
         mechanism = surface["build_mechanism"](mech_config, seed_root=seed_root)
+        if job.get("cache_fifo"):
+            from ecomd.mechanisms.fifo_cache import cached_fifo_hook
+            from ecomd.mechanisms.through_m_wrapper import TrainKernelStream
+
+            if (lineage != "l2" or "l2_units" not in job
+                    or arm["estimator"] != "straight_through" or TRAINING_KERNEL != "fifo"):
+                raise ValueError("FIFO cache requires the revised L2 straight-through arm")
+            mechanism = cached_fifo_hook(TrainKernelStream(seed_root))
 
     scales = torch.tensor((1.0, 1.0), dtype=torch.float32, device=device)  # sealed s_ch = module default (C5)
     lr = float(lineage_cfg["train"]["lr"])
@@ -809,6 +826,10 @@ def train_one(job: dict[str, Any]) -> dict[str, Any]:
         "wall_seconds": wall_seconds,
         "production_constants_decision": job["production_constants_decision"],
     }
+    if "l2_units" in job:
+        execution_metadata["l2_revision"] = job["l2_units"]["revision"]
+        execution_metadata["l2_units_sha256"] = sha256_bytes(canonical_bytes(job["l2_units"]))
+        execution_metadata["fifo_allocation_cache"] = bool(job.get("cache_fifo"))
     substream_generators = {"init": init_generator}
     if minibatch_generator is not None:
         # L1 consumes MinibatchOrderStream's private generator, which is not

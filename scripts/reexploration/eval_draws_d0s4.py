@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""D0-S4 evaluation-draw driver (block B1 = L1 x lab-asset-v3).
+"""D0-S4 evaluation-draw driver for B1 and the ratified recurrent B3 lineage.
 
 Emits the RC1 mandatory-axes records (8 cells x 4 axes x 4 horizons x K=16
 draws per seed), the RC2 truncation deployment passes (ID axis, conditions
@@ -54,9 +54,10 @@ production execution): --horizon-mode, --scales-json, the record literals
 (record_class/condition/axis strings), the pooled-record hash construction
 (window_hash), probes' cell_id/draw_index conventions.
 
-L2 is deliberately not implemented: the L2 column is an invalid test
-(decision pi_d0s3_l2_invalid_test_20260921); B3 evaluation requires a new
-PI decision, not a driver flag.
+B3 requires pi_gamma_l2_units_revision_20260923 and its hash-bound unit
+configuration. It retains recurrent history within each episode and resets
+at episode boundaries. B3 includes trunc_lag only: 61,440 RC1 records,
+15,360 RC2 records and 120 probes.
 """
 
 from __future__ import annotations
@@ -210,6 +211,8 @@ def load_surface(repo_root: Path) -> dict[str, Any]:
 
     from ecomd.corpus.fexec_projector import project_fexec_corpus
     from ecomd.models.fact_surrogate import FactSurrogateBatch
+    from ecomd.models.fact_surrogate import FactSurrogateConfig, RecurrentFactSurrogate
+    from ecomd.models.unit_fact_surrogate import UnitRecurrentFactSurrogate
     from ecomd.models.l1_coordinate_heads import (
         L1CoordinateHeads,
         L1CoordinateHeadsConfig,
@@ -223,6 +226,7 @@ def load_surface(repo_root: Path) -> dict[str, Any]:
     )
 
     _SURFACE.update(
+        repo_root=repo_root,
         dgp=dgp,
         replay=replay,
         load_tape=load_tape,
@@ -235,6 +239,9 @@ def load_surface(repo_root: Path) -> dict[str, Any]:
         record_to_json=record_to_json,
         project_fexec_corpus=project_fexec_corpus,
         FactSurrogateBatch=FactSurrogateBatch,
+        FactSurrogateConfig=FactSurrogateConfig,
+        RecurrentFactSurrogate=RecurrentFactSurrogate,
+        UnitRecurrentFactSurrogate=UnitRecurrentFactSurrogate,
         L1CoordinateHeads=L1CoordinateHeads,
         L1CoordinateHeadsConfig=L1CoordinateHeadsConfig,
         BLOCKS_BY_ID=BLOCKS_BY_ID,
@@ -518,8 +525,34 @@ def load_arm_surface(
         raise RuntimeError(f"missing trained checkpoint {checkpoint_path}")
     sidecar_path = surface["lock_sidecar_path"](checkpoint_path)
     sidecar = json.loads(sidecar_path.read_text())
-    model = surface["L1CoordinateHeads"](surface["L1CoordinateHeadsConfig"]())
+    if block_dir.name == "B3":
+        import torch
+        from train_b3_units import DECISION, REVISION, require_decision
+
+        locked = surface["load_lock_checkpoint"](checkpoint_path)
+        unit_config = locked.payload["sim_config"].get("l2_units")
+        metadata = locked.payload["execution_metadata"]
+        if (not unit_config or unit_config["revision"] != REVISION
+                or unit_config["decision"] != DECISION or unit_config["seed"] != seed_root
+                or unit_config["decision_sha256"] != require_decision(surface["repo_root"])
+                or unit_config["n_train"] != 4096 or unit_config["episode_start"] != 64
+                or metadata["production_constants_decision"] != DECISION
+                or metadata["block_id"] != "B3" or metadata["arm_id"] != arm_id
+                or metadata["n_iters"] != 100 or metadata["device"] != "cuda"
+                or locked.sidecar.binding["seed_root"] != seed_root):
+            raise RuntimeError("B3 requires an accepted revised L2 production checkpoint")
+        model = surface["UnitRecurrentFactSurrogate"](
+            surface["FactSurrogateConfig"](),
+            {key: torch.tensor(value, dtype=torch.float32) for key, value in unit_config["values"].items()},
+            generator=torch.Generator().manual_seed(0),
+        )
+    else:
+        model = surface["L1CoordinateHeads"](surface["L1CoordinateHeadsConfig"]())
+    expected_buffers = {key: value.clone() for key, value in model.named_buffers()}
     surface["load_lock_checkpoint"](checkpoint_path, model=model)
+    if block_dir.name == "B3" and any(
+            not torch.equal(value, dict(model.named_buffers())[key]) for key, value in expected_buffers.items()):
+        raise RuntimeError("B3 unit buffers differ from the locked unit configuration")
     model.eval()
     return model, sidecar["checkpoint_sha256"]
 
@@ -559,6 +592,14 @@ def rollout_episode(
     volume_violations = 0
     cash_violations = 0
     with torch.no_grad():
+        recurrent = isinstance(model, surface.get("RecurrentFactSurrogate", ()))
+        if recurrent:
+            recurrent_output = model(batch_cls(
+                features=features[:rounds].unsqueeze(0),
+                channels=torch.zeros(1, rounds, N_CHANNELS),
+                slot_prices=slot_prices[:rounds].unsqueeze(0),
+                channels_init=state,
+            ))
         for step in range(rounds):
             batch = batch_cls(
                 features=features[step: step + 1].unsqueeze(0),
@@ -566,11 +607,12 @@ def rollout_episode(
                 slot_prices=slot_prices[step: step + 1].unsqueeze(0),
                 channels_init=state,
             )
-            output = model(batch)
+            output = recurrent_output if recurrent else model(batch)
+            output_step = step if recurrent else 0
             if inference_enforcement == "through_m":
                 allocation = mechanism(
-                    output.flow[0, 0].to("cpu"),
-                    int(output.demand[0, 0].detach().item()),
+                    output.flow[0, output_step].to("cpu"),
+                    int(output.demand[0, output_step].detach().item()),
                 )
                 increment = torch.stack((
                     allocation.sum(),
@@ -583,9 +625,9 @@ def rollout_episode(
                     cash_violations += 1
                 state = state + increment.unsqueeze(0)
             elif coordinate == "absolute":
-                state = output.abs_channels[0, 0].unsqueeze(0)
+                state = output.abs_channels[0, output_step].unsqueeze(0)
             else:
-                state = state + output.inc_channels[0, 0].unsqueeze(0)
+                state = state + output.inc_channels[0, output_step].unsqueeze(0)
             prediction[step] = state[0]
     return {
         "prediction": prediction,
@@ -658,6 +700,8 @@ def record_key(block_id: str, record_class: str, condition: str, axis: str,
 def make_record(**fields: Any) -> dict[str, Any]:
     if fields["record_class"] in ("RC1", "RC2"):
         fields["run_id"] += f".h{fields['horizon']:02d}"
+    if fields.get("block_id") == "B3":
+        fields["protocol_amendment"] = "pi_gamma_l2_units_revision_20260923"
     return dict(fields)
 
 
@@ -685,10 +729,11 @@ def validate_existing_record_ids(out_records: Path) -> None:
         run_ids.add(run_id)
 
 
-def require_run_id_decision(repo_root: Path, decision_id: str) -> str:
+def require_run_id_decision(repo_root: Path, decision_id: str, block_id: str = "B1") -> str:
     """Return the hash of the ratified production metadata decision."""
-    if decision_id != RUN_ID_DECISION:
-        raise RuntimeError(f"production requires {RUN_ID_DECISION}")
+    expected = {"B1": RUN_ID_DECISION, "B3": "pi_gamma_l2_units_revision_20260923"}
+    if block_id not in expected or decision_id != expected[block_id]:
+        raise RuntimeError(f"production requires {expected.get(block_id, 'a supported block')}")
     path = repo_root / "research" / "discovery" / "decisions" / f"{decision_id}.yaml"
     decision = yaml.safe_load(path.read_text())
     if (decision.get("decision_id") != decision_id
@@ -742,7 +787,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--arms", default=",".join(ARM_IDS))
     parser.add_argument("--axes", default="id,pop_2x,tick_2x,kswap")
     parser.add_argument("--horizons", default=",".join(str(h) for h in HORIZONS))
-    parser.add_argument("--rc2-conditions", default=",".join(RC2_W),
+    parser.add_argument("--rc2-conditions", default=None,
                         help="RC2 truncation conditions to emit ('none' disables; "
                              "subset of trunc_lag,trunc_cap)")
     parser.add_argument("--horizon-mode", default="chained", choices=["chained", "within_cap"])
@@ -766,7 +811,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     repo_root = args.repo_root.resolve()
-    production_decision_sha256 = require_run_id_decision(repo_root, args.production_decision)
+    production_decision_sha256 = require_run_id_decision(repo_root, args.production_decision, args.block_id)
     enforce_freeze_pins(repo_root)
     surface = load_surface(repo_root)
     scales, scales_payload = load_scales(args.scales_json)
@@ -780,6 +825,9 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(f"--seeds {args.seeds!r} is an empty range")
     if args.block_id not in surface["BLOCKS_BY_ID"]:
         raise RuntimeError(f"unknown block id {args.block_id!r} (campaign.BLOCKS_BY_ID)")
+    lineage = "l2" if args.block_id == "B3" else "l1"
+    if args.rc2_conditions is None:
+        args.rc2_conditions = "trunc_lag" if args.block_id == "B3" else ",".join(RC2_W)
     block_seeds = set(surface["BLOCKS_BY_ID"][args.block_id].seeds)
     outside = [s for s in seeds if s not in block_seeds]
     if outside:
@@ -797,6 +845,8 @@ def main(argv: list[str] | None = None) -> int:
     unknown = [c for c in rc2_conditions if c not in RC2_W]
     if unknown:
         parser.error(f"unknown RC2 conditions {unknown} (choose from {sorted(RC2_W)})")
+    if args.block_id == "B3" and any(condition != "trunc_lag" for condition in rc2_conditions):
+        parser.error("B3 includes only the frozen trunc_lag condition")
     if rc2_conditions and RC2_AXIS not in axis_ids:
         parser.error(f"RC2 requires the {RC2_AXIS!r} axis in --axes (truncation passes "
                      "re-derive the ID corpus)")
@@ -864,7 +914,7 @@ def main(argv: list[str] | None = None) -> int:
                 record_class="RC4",
                 run_id=f"{args.block_id}.probe.{axis_id}.{seed_root}",
                 block_id=args.block_id,
-                lineage="l1",
+                lineage=lineage,
                 dgp_variant="lab-asset-v3",
                 seed=seed_root,
                 cell_id="engine-replay-probe",
@@ -954,7 +1004,7 @@ def main(argv: list[str] | None = None) -> int:
                                     f"{seed_root:05d}.{draw_index:02d}"
                                 ),
                                 block_id=args.block_id,
-                                lineage="l1",
+                                lineage=lineage,
                                 dgp_variant="lab-asset-v3",
                                 seed=seed_root,
                                 cell_id=cell_id,
@@ -1090,7 +1140,7 @@ def main(argv: list[str] | None = None) -> int:
                                         f"{seed_root:05d}.{draw_index:02d}"
                                     ),
                                     block_id=args.block_id,
-                                    lineage="l1",
+                                    lineage=lineage,
                                     dgp_variant="lab-asset-v3",
                                     seed=seed_root,
                                     cell_id=cell_id,
@@ -1190,7 +1240,7 @@ def main(argv: list[str] | None = None) -> int:
                 "record_class": ["RC1", "RC2", "RC4"],
                 "condition": ["id", "trunc_lag", "trunc_cap"],
                 "schema_version": "lab-asset-v3",
-                "lineage": "l1",
+                "lineage": lineage,
                 "dgp_variant": "lab-asset-v3",
             },
             "run_id_formats": {

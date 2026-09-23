@@ -1,0 +1,61 @@
+schema_version: pi-gamma-l2-units-v1
+decision_id: pi_gamma_l2_units_revision_20260923
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "批准具体 L2 修订并全量执行（推荐）"
+recorded_at: "2026-09-23T06:13:37Z"
+status: ratified
+visibility: private_internal
+public_artifact_policy: exclude_by_default_not_research_evidence
+parent_decision: pi_gamma_dual_lineage_scope_20260923
+scope: full B3 under a prospectively revised recurrent-model parameterization
+model_revision: l2_training_units_v1
+model:
+  recurrent_core: frozen_GRU_64
+  units_fit_partition: per_seed_training_episodes_64_through_4159
+  sharing: identical_fixed_units_across_all_four_arms_of_each_seed
+  features: training_mean_and_population_std_with_std_floor_one
+  coordinate_heads: training_target_mean_and_population_std_with_std_floor_one
+  flow_logit_scale: maximum_training_round_volume_with_floor_one
+  flow_logit_offset: inverse_softplus_of_max_mean_training_round_volume_divided_by_eight_and_one
+  demand_logit_scale: maximum_training_round_volume_with_floor_one
+  demand_logit_offset: inverse_softplus_of_maximum_training_round_volume_with_floor_one
+  inference: retain_recurrent_history_within_episode_and_reset_at_episode_boundary
+production:
+  block_id: B3
+  lineage: l2
+  seeds: "12000:12030"
+  n_train: 4096
+  n_iters: 100
+  device: cuda
+  training_kernel: fifo
+  estimator: straight_through
+  through_m_coordinate_mode: differentiated
+  checkpoint_count: 120
+  evaluation_counts: {RC1: 61440, RC2: 15360, RC4: 120}
+  rc2_conditions: [trunc_lag]
+  horizons: [1, 4, 16, 31]
+  axes: [id, pop_2x, tick_2x, kswap]
+  K: 16
+  evaluation_device: cpu
+  evaluation_horizon_mode: chained
+  run_ids: include_horizon_as_in_pi_d0s4_run_id_horizon_20260923
+  s_ch: retain_the_existing_sealed_materialization
+prelaunch_requirements:
+  - committed_code_and_input_hashes
+  - training_checkpoint_and_recurrence_aware_evaluation_validation
+  - V100_development_acceptance_before_full_production
+  - separate_new_output_directories_and_explicit_revision_binding
+evidence_labels:
+  - prospectively_amended_L2_replication_with_revision_date
+  - all_development_checks_remain_private_and_outside_scientific_evidence
+  - do_not_describe_the_original_unamended_B3_implementation_as_completed
+preserved:
+  - all_required_controls_and_valid_theory_checks
+  - complete_dual_lineage_acceptance_counts_and_statistical_rules
+  - mandatory_seed_pairing_and_negative_null_uncertain_results
+forbidden:
+  - mixing_old_L2_records_into_new_B3_inputs
+  - fitting_units_on_evaluation_or_deployment_data
+  - selecting_the_model_from_production_evaluation_outcomes
+private_preflight_package: logs/private/gamma_deadline_20260923/l2_revision_proposal.md
