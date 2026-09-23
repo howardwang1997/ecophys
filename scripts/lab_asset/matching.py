@@ -642,6 +642,14 @@ class ReferenceEngine:
         self.cash[seller] += notional
         self.inventory[buyer] += quantity
         self.inventory[seller] -= quantity
+        if (
+            quantity > 0
+            and self.prestate.induced_buy_values.get(buyer) is None
+            and self.prestate.induced_sell_costs.get(seller) is None
+        ):
+            self.units_bought[buyer] += quantity
+            self.units_sold[seller] += quantity
+            return
         for _ in range(quantity):
             buy_index = self.units_bought[buyer]
             sell_index = self.units_sold[seller]
