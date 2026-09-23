@@ -1,0 +1,52 @@
+schema_version: pi-gamma-worker-expansion-v1
+decision_id: pi_gamma_howardpc_expansion_20260923
+status: ratified
+authorized_by: PI
+authorization_channel: interactive_chat
+authorization_text: "授权这些实验文件的传输与训练"
+budget_authorization_text: "不限上限，但是不能浪费"
+rental_operator_text: "我来开机器"
+visibility: private_internal
+public_artifact_policy: exclude_by_default_not_research_evidence
+parent_decision: pi_gamma_l2_units_revision_20260923
+scientific_producer: d36ef8b7b8d694d6407cbc3aa7bced768704c2b5
+private_inventory: logs/private/gamma_deadline_20260923/howardpc_expansion_20260923.md
+runtime:
+  new_worker: howardpc
+  separate_gpu_pool: RTX_2060_SUPER_8GiB
+  initial_concurrent_seed_workers: 1
+  transferred_seed: 12014
+  previous_owner: v100ts
+  new_owner: howardpc
+  seed_assignment_sha256: f4eec035f71dc9f6fd7b2b15cf707e729b8be74ad3203612c6a088326b91a368
+  source_not_started_verified_at: "2026-09-23T09:03:36.885105+00:00"
+  source_execution_lock_acquired_before_transfer: true
+  actual_training_started_at: "2026-09-23T09:05:10Z"
+  all_four_arms_remain_on_the_same_worker: true
+readiness:
+  exact_producer_and_freeze_ancestor_verified: true
+  torch_version: 2.3.1+cu121
+  existing_runtime_checks_passed: 13
+  development_arms_passed: 4
+  development_seed: 2026092304
+  episodes_per_development_arm: 32
+  iterations_per_development_arm: 100
+  development_receipt_sha256: 7f3eead79a881f2b74229610304eae50b3893d53cc13e44c9e619727fc80802d
+  final_scheduler_and_relay_checks_passed: 5
+  input_archive_marker_sha256: fab6ee70ec9e0d56e784869ba01d919b833353902f69606f42e0038aabe07b8d
+  production_seed_episode_hashes_verified: 4096
+handoff:
+  input: accepted_R2_archive_relayed_by_existing_V100_over_SSH
+  output: new_worker_local_archive_then_existing_V100_verification_and_R2_publication
+  R2_credentials_copied_to_new_worker: false
+  readiness_marker: publish_only_after_checkpoint_bindings_and_R2_archive_check
+preserved:
+  - all_scientific_settings_counts_controls_and_statistical_rules
+  - all_previously_running_training_processes
+  - outcome_blind_selection_of_an_unstarted_whole_paired_seed
+  - existing_CPU_evaluation_and_formal_analysis_gates
+rental:
+  operator: PI
+  initial_increment: one_nonpreemptible_single_GPU_worker
+  scale_up_only_after_measured_throughput_and_remaining_queue_review: true
+  H20_excluded: true
